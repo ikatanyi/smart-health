@@ -1,0 +1,104 @@
+* Appointment confirmation and reminders alerts (SMS and Email)
+* Patient eligibility checks for Insurance - Insurance | Scheme | Member | Benefits
+
+Registrations & Appointments
+    - Demographics
+    - Eligibility Checks
+Check In - Patient Visit
+    - Insurance 
+
+CheckOut
+    - billing
+    - schedule next appointments
+
+Patient Documentations
+    * add Clinical Notes
+        - allow doctor to select document
+        - enable template definition 
+        - track document if draft or final
+         Clinical Progress Note - Presenting Complaints | History of present complaints | Past Medical History | Family/Social History | Past Surgical History
+         Revie of System
+        Examination
+# Setting up store
+* name
+* location
+* product Type store holds
+* is it a dispensing store
+* does it receive purchases
+
+# Staff
+  Person
+    - Staff
+        - HealthProvider
+            - Doctor
+            - Nurse
+            - Radiographer
+            - Lab Technologist
+            - Pharmacist 
+       
+Organization
+    - facility
+    - location (basically a service point)
+       *be able to add a consultation room and link it to a location
+
+
+Documents uploads
+ - Document Type
+ - Document Name
+-  Description
+
+   When creating Employee  - Department | Unit | Work Location | Job Title | level 
+                                               - Be able to attach to login
+
+
+#
+Product Types
+    1. Non-Inventory 
+        - dont track quantities
+        -  set selling price
+        - set income account
+        - indicate if this service is outsourced to an external provider | I purchase this product/service from a supplier.
+            if so
+                -  cost price
+                - expense account
+                - supplier
+
+     2. Service
+          - Same as above
+     3. Inventory
+         - Name
+         - Category
+         - Initial Quantity on hand - during setup
+         - Reorder point
+         - Inventory asset account
+         - Sales price/rate
+         - Income account
+         - purchasing information - cost | expense account | preferred supplier
+
+
+https://medium.com/@RobertKhou/double-entry-accounting-in-a-relational-database-2b7838a5d7f8
+
+http://filipmatthew.com/technology/database-schema-of-double-entry-accounting-module/
+
+
+Base classes
+
+* Organization
+    - facility
+    - partner
+        -> Supplier 
+        -> Insurance
+* Person
+    - Patient
+    - Employee
+* Product [Service & Drug] 
+    - Drug
+* Invoice
+    - Sales Invoice [Patient Invoice]
+    - Purchase Invoice [Supplier Invoice]
+* Doctor's Request
+* Visit
+* Partner - 
+    ** Stock Items **
+
+Get access to the subledger api to learn on structuring

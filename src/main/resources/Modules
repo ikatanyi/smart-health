@@ -1,0 +1,167 @@
+#Registration Module
+• Detailed information of patients
+• Mandatory fields for crucial patient information as per JCI Standards
+• Alerts in place to prevent erroneous data entry
+• Generates Smart Card with Unique Health Identification Number (UHID)
+• Advanced multi-criteria search for registered patients
+• RFID wrist band generation
+• Provision for recording sponsor, insurance and medical tourism details 
+
+#Outpatient Management Module
+• Dashboards for patients activity/sponsor activity
+• Dashboards for user activity
+• Dashboard for advances/payments/refunds etc
+• UHID creation/merging/activation
+• Schedules for doctors
+• Patient evaluation
+• Diagnosis
+• Lab orders
+• Medication orders
+• Procedure orders
+• Cross referral
+• Token system (Digital Signage)
+• Data reports on user activity/patient activity/doctor activity
+• Reports on OPD/patient count/service billing/revenue
+
+#Inpatient Management Module
+• Conversion from OP to IP
+• NABH/JCI standards in registration process
+• RFID wrist band for tracking of patient in the hospitals
+• Bed allotment
+• Inter-departmental consultation
+• Bed transfers
+• Requisition of drugs and consumables from the pharmacy
+• Raising investigations and report viewing
+• Maintenance of billing sheets for patients
+• Dashboard for patient access
+• Dashboard for billing activities/audit
+• Dashboard for quick links (counts, revenue, discount etc)
+• Discharge summary 
+
+#Pharmacy Management
+• Provides a comprehensive online list of available drugs for the doctors
+• Displays alternative drugs for the non available drugs
+• Supports interfacing with drug databases
+• The ABC, VED classification of medicines
+• Auto-generation of alerts when minimum stock levels are reached
+• Online requisition for stock order from the main store
+• Provision to manage consignment items
+• Barcode/RFID for the items
+• Can be interfaced with Pneumatic tube for dispatch
+• Drug allergy alerts 
+
+#Admission, Transfer & Discharge
+• Comprehensive form for collection of precise data regarding the patient
+• Thorough evaluation of the patient condition
+• Recording the doctors and nursing notes for further management
+• Processing orders in real time to the respective departments
+• Managing the billing process
+• Managing the payments done by third parties
+• Bed and ward allocation and transfer
+• E-prescribing of the medications
+• Final billing and settlements
+• Clinical packages management
+
+#Patient Care Module
+Births and Deaths Registration Module:
+
+This module provides the registration of births and deaths, accurate birth and death certificates, handling of birth and death registers management and generation of statistical reports, updated in real time. 
+
+The Birth Registration Module includes:
+
+• Registration of birth data for a newborn
+• Generation of an ID number when registering a newborn
+• Registration of family relationships
+• Printing of accurate, secured birth certificates
+• Providing statistical information
+• Information can be ported to any Govt. Portals
+
+The Death Registration Module includes:
+
+• Registration of death data for a deceased person
+• Printing of accurate and secured death certificates
+• Information can be ported to any Govt. Portals
+
+Identity and Access Management Module:
+
+This module gives an overall view of the organization’s activities, reports, periodic revenue & expense register, surgical statistics, OP/IP statistics like number of walk-in admissions, appointments, cancelled appointments, patient transfers, discharges, absconding patients, patient referrals and many more such reports, registers & views. 
+
+The Order Management System includes:
+
+• Electronic prescribing and generating drug order to pharmacy
+• Lab order
+• Diet order
+• Vital order
+• Blood order
+• Procedure order
+• ICU services by nurse
+• Ward services by nurse
+• Surgical medication items template orders
+
+Medication Management:
+
+Certain people are sensitive to certain drugs. SmartHealth iHMIS takes care of this through a ‘Pharmacy’ module which works closely with ‘Medication Allergy’. Additionally, SmartHealth iHMIS has ‘Medication Interaction’; Medication Alert’ & ‘Electronic Medication Administration Recording’ functionality which greatly enhances patient safety with respect to medication. This is an important area of JCI Accreditation Standards, conformation to which is facilitated by SmartHealth iHMIS. 
+
+#Laboratory
+• Service and test setup
+• Sponsor-wise service mapped with diagnostic tests
+• Diagnostic packages using different tests
+• Billing using lab orders from clinical module
+• Requisition generation from lab order/bill
+• Requisition creation based on facility wise, test wise, sample type wise
+• Sample collection process
+• Interfacing with lab analyzers
+• Results fetching from analyzer data
+• Results recheck process
+• Results authorization
+• Redo process from sample collection
+• Status update
+• Prints with NABL standards
+• Print queue process
+• Access previous lab results based on tests and UHID number
+• Lab reagents and kits inventory management
+• Dashboard for authorization
+• Dashboard for TAT
+• Dashboard for work in progress
+• Analysis dashboard based on parameters and tests
+
+#Radiology
+• Service and test setup
+• Sponsor-wise service mapped with diagnostic tests
+• Billing using lab orders from clinical module
+• Requisition generation from lab order/bill
+• Requisition creation based on facility, test, and modality
+• HL7 message generation for patient creation, order creation
+• Requisition status change
+• Report entry using templates
+• Reporting with HL7 message generation and send it to PACS
+• Results authorization
+• Redo process
+• Status update
+• Prints with NABL standards
+• Print queue process
+• Access previous lab results based on tests and UHID number
+• Dashboard for authorization
+• Dashboard for TAT
+• Dashboard for work in progress
+• Speech-to-text for radiologists 
+
+#Material Management
+• Masters (generics, drugs, surgical items, categories, sub categories)
+• Supplier management
+• Location management (warehouses, sub stores, departments, stock points, crash carts etc)
+• Preparation of various warehouses for general items, drugs, assets, surgical items
+• Protocols for purchase, stocking, stock tracking and verifications, distribution, sales
+• Today transactions reports 
+
+#Cashier
+• Payment modes/details
+• Patient billing details
+• Sponsor conversions
+• Part bill generation
+• Multi sponsor billing
+• Multi currency payment
+• User-defined billing cycles
+• Cash collection dashboards 
+
+#
