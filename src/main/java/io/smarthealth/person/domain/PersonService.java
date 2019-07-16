@@ -19,6 +19,6 @@ public class PersonService {
     PersonRepository personRepository;
 
     public Person fetchPersonByUUID(String personUUID) {
-        return personRepository.findByUUID(personUUID).get();
+        return personRepository.findByUuid(personUUID).get();
     }
 }

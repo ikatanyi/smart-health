@@ -3,14 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.payer.domain;
+package io.smarthealth.visit.domain;
 
+import io.smarthealth.patient.domain.Patient;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
  * @author Simon.waweru
  */
-public interface PayerRepository extends JpaRepository<Payer, Long> {
+public interface VisitRepository extends JpaRepository<Visit, Long> {
+
+    Page<Visit> findByPatient(Patient patient);
 
 }
