@@ -76,6 +76,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
      * Handle MethodArgumentNotValidException. Triggered when an object fails
+     *
      * @Valid validation.
      *
      * @param ex the MethodArgumentNotValidException that is thrown when @Valid
@@ -100,6 +101,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
      * Handles javax.validation.ConstraintViolationException. Thrown when
+     *
      * @Validated fails.
      *
      * @param ex the ConstraintViolationException
@@ -183,9 +185,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
             HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.info("{} for given url: {} ", ex.getMessage(), request.getContextPath());
-        ApiError error=new ApiError(status);
+        ApiError error = new ApiError(status);
         error.setMessage(ex.getLocalizedMessage());
-        
+
         return buildResponseEntity(error);
     }
 

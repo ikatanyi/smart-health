@@ -6,11 +6,11 @@
 package io.smarthealth.patient.domain;
 
 import io.smarthealth.common.utility.APIException;
-import io.smarthealth.common.utility.CrudErrorException;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 
 /**
  *
@@ -53,7 +53,8 @@ public class PatientService {
 
             return patient.getPatientNumber();
         } catch (Exception e) {
-            throw new CrudErrorException(e.getMessage());
+            e.printStackTrace();
+            throw new RestClientException("Error updating patient number" + patientNumber);
         }
     }
 
