@@ -1,9 +1,9 @@
 package io.smarthealth.product.domain;
 
-import io.smarthealth.accounting.domain.Account;
+import io.smarthealth.financial.accounting.domain.Account;
 import io.smarthealth.common.domain.Identifiable;
-import io.smarthealth.organization.domain.Facility;
-import io.smarthealth.supplier.domain.Supplier;
+import io.smarthealth.organization.facility.domain.Facility;
+import io.smarthealth.organization.partner.supplier.domain.Supplier;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
