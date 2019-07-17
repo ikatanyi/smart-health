@@ -1,4 +1,4 @@
-package io.smarthealth.common.utility;
+package io.smarthealth.infrastructure.utility;
 
 public final class ServiceError {
 

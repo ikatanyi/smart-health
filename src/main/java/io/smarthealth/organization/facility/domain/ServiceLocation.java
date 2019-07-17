@@ -1,7 +1,7 @@
 package io.smarthealth.organization.facility.domain;
 
 import io.smarthealth.organization.facility.domain.Facility;
-import io.smarthealth.common.domain.BaseMetadata;
+import io.smarthealth.infrastructure.domain.BaseMetadata;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;

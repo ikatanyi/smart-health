@@ -1,6 +1,6 @@
 package io.smarthealth.organization.person.domain;
 
-import io.smarthealth.common.domain.Auditable;
+import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.Column;

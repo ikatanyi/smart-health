@@ -1,6 +1,6 @@
 package io.smarthealth.organization.person.domain;
 
-import io.smarthealth.common.domain.Contact;
+import io.smarthealth.infrastructure.domain.Contact;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;

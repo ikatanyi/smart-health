@@ -1,6 +1,6 @@
 package io.smarthealth.organization.person.patient.domain;
 
-import io.smarthealth.common.domain.Identifiable;
+import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;

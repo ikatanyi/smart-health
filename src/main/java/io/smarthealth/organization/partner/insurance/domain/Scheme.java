@@ -1,6 +1,6 @@
 package io.smarthealth.organization.partner.insurance.domain;
 
-import io.smarthealth.common.domain.Auditable;
+import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

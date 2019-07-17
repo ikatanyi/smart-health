@@ -1,6 +1,6 @@
 package io.smarthealth.inventory.domain;
 
-import io.smarthealth.common.domain.Identifiable;
+import io.smarthealth.infrastructure.domain.Identifiable;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Entity;

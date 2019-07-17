@@ -1,7 +1,7 @@
 package io.smarthealth.product.domain;
 
 import io.smarthealth.financial.accounting.domain.Account;
-import io.smarthealth.common.domain.Identifiable;
+import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.partner.supplier.domain.Supplier;
 import java.math.BigDecimal;

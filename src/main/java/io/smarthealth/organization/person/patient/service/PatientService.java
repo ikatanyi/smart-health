@@ -5,7 +5,7 @@
  */
 package io.smarthealth.organization.person.patient.service;
 
-import io.smarthealth.common.utility.APIException;
+import io.smarthealth.infrastructure.utility.APIException;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.time.Instant;

@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.visit.domain;
+package io.smarthealth.clinical.visit.service;
 
+import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import org.springframework.data.domain.Page;

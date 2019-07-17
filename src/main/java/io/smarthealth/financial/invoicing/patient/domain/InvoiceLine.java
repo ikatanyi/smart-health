@@ -2,7 +2,7 @@ package io.smarthealth.financial.invoicing.patient.domain;
 
 import io.smarthealth.financial.accounting.domain.Account;
 import io.smarthealth.financial.accounting.domain.Period;
-import io.smarthealth.common.domain.Identifiable;
+import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.product.domain.Product;
 import java.math.BigDecimal;
 import javax.persistence.Entity;

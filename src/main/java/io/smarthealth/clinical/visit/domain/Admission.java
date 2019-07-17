@@ -1,4 +1,4 @@
-package io.smarthealth.clinical.visit.admission.domain;
+package io.smarthealth.clinical.visit.domain;
 
 import io.smarthealth.clinical.documents.domain.Diagnosis;
 import io.smarthealth.organization.facility.domain.Bed;

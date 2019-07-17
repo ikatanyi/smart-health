@@ -5,7 +5,7 @@
  */
 package io.smarthealth.financial.accounting.domain;
 
-import io.smarthealth.common.domain.Identifiable;
+import io.smarthealth.infrastructure.domain.Identifiable;
 import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;

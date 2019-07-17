@@ -1,4 +1,4 @@
-package io.smarthealth.common.utility;
+package io.smarthealth.infrastructure.utility;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase;
-import static io.smarthealth.common.utility.Constants.DATE_TIME_PATTERN;
+import static io.smarthealth.infrastructure.utility.Constants.DATE_TIME_PATTERN;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package io.smarthealth.common.utility;
+package io.smarthealth.infrastructure.utility;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;

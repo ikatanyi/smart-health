@@ -2,7 +2,7 @@ package io.smarthealth.financial.invoicing.patient.domain;
 
 import io.smarthealth.organization.partner.insurance.domain.Payer;
 import io.smarthealth.financial.accounting.domain.Period;
-import io.smarthealth.common.domain.Auditable;
+import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.domain.Partner;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.math.BigDecimal;

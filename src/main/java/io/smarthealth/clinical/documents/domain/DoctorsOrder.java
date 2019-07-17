@@ -1,6 +1,6 @@
 package io.smarthealth.clinical.documents.domain;
 
-import io.smarthealth.common.domain.Auditable;
+import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.product.domain.Product;
 import io.smarthealth.organization.person.patient.domain.Patient;

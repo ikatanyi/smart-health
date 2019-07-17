@@ -1,6 +1,6 @@
 package io.smarthealth.product.domain;
 
-import io.smarthealth.common.domain.SetupMetadata;
+import io.smarthealth.infrastructure.domain.SetupMetadata;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 

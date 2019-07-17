@@ -1,6 +1,6 @@
 package io.smarthealth.financial.accounting.domain;
 
-import io.smarthealth.common.domain.Identifiable;
+import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.product.domain.Product;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

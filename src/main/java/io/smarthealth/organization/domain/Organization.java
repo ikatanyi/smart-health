@@ -1,6 +1,6 @@
 package io.smarthealth.organization.domain;
 
-import io.smarthealth.common.domain.Auditable;
+import io.smarthealth.infrastructure.domain.Auditable;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;

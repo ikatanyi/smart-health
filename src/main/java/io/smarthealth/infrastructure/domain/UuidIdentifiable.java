@@ -1,4 +1,4 @@
-package io.smarthealth.common.domain;
+package io.smarthealth.infrastructure.domain;
 
 import java.io.Serializable;
 import java.time.Instant;

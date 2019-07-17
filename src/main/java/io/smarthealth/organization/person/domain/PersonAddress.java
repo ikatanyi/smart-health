@@ -1,6 +1,6 @@
 package io.smarthealth.organization.person.domain;
 
-import io.smarthealth.common.domain.Address;
+import io.smarthealth.infrastructure.domain.Address;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import lombok.Data;

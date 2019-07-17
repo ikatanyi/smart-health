@@ -1,6 +1,6 @@
 package io.smarthealth.financial.invoicing.supplier.domain;
 
-import io.smarthealth.common.domain.Auditable;
+import io.smarthealth.infrastructure.domain.Auditable;
 import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.Table;

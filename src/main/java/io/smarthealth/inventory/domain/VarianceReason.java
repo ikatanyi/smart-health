@@ -1,6 +1,6 @@
 package io.smarthealth.inventory.domain;
 
-import io.smarthealth.common.domain.SetupMetadata;
+import io.smarthealth.infrastructure.domain.SetupMetadata;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.Data;

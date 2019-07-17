@@ -1,6 +1,6 @@
 package io.smarthealth.organization.domain;
 
-import io.smarthealth.common.domain.BankDetails;
+import io.smarthealth.infrastructure.domain.BankDetails;
 import java.math.BigDecimal;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;

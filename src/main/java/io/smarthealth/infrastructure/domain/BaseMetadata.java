@@ -1,4 +1,4 @@
-package io.smarthealth.common.domain;
+package io.smarthealth.infrastructure.domain;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;

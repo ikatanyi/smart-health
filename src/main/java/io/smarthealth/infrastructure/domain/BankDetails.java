@@ -1,4 +1,4 @@
-package io.smarthealth.common.domain;
+package io.smarthealth.infrastructure.domain;
 
 import javax.persistence.Embeddable;
 import lombok.Data;
