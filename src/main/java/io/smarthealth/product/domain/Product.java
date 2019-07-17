@@ -1,8 +1,9 @@
 package io.smarthealth.product.domain;
 
-import io.smarthealth.common.domain.Identifiable;
-import io.smarthealth.organization.domain.Facility;
-import io.smarthealth.supplier.domain.Supplier;
+import io.smarthealth.financial.accounting.domain.Account;
+import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.organization.facility.domain.Facility;
+import io.smarthealth.organization.partner.supplier.domain.Supplier;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -72,13 +73,21 @@ public abstract class Product extends Identifiable {
      * Suppliers list linked in supplying this {@link  Product}
      */
     @ManyToMany(mappedBy = "products")
-     private Set<Supplier> suppliers=new HashSet<>();
+    private Set<Supplier> suppliers = new HashSet<>();
     /**
      * Inventory Reordering Rules
      */
     @OneToOne
     private ReorderRule reorderRule;
-    
+
+    @OneToOne
+    private Account incomeAccount;
+    @OneToOne
+    private Account expenseAccount;
+
     //Todo :: Method of costing the price and it's price list 
-    
+    //this should be linked to a gl account
+    //this product may be linked to many gla
+    ///
+    //need to know the debit and credit account that belongs to this account for me to make it
 }

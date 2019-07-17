@@ -1,6 +1,6 @@
 package io.smarthealth.auth.domain;
 
-import io.smarthealth.common.domain.Identifiable;
+import io.smarthealth.infrastructure.domain.Identifiable;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

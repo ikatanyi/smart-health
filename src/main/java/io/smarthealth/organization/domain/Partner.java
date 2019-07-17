@@ -1,6 +1,6 @@
 package io.smarthealth.organization.domain;
 
-import io.smarthealth.common.domain.BankDetails;
+import io.smarthealth.infrastructure.domain.BankDetails;
 import java.math.BigDecimal;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -8,9 +8,10 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.NaturalId;
 
 /**
- *
+ *  {@link  Organization} business partners like Suppliers and Insurance
  * @author Kelsas
  */
 @Entity
@@ -20,9 +21,12 @@ import lombok.Data;
 public class Partner extends Organization {
 
     /**
-     * Supplier Account Reference number
+     * Partner Account Reference number
      */
     private String reference;
+    // partner code
+    @NaturalId
+    private String code;
     private String curreny;
     private BigDecimal creditLimit;
     private String vatNumber;

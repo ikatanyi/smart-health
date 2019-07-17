@@ -1,6 +1,6 @@
 package io.smarthealth.inventory.domain;
 
-import io.smarthealth.common.domain.Auditable;
+import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.product.domain.Product;
 import io.smarthealth.product.domain.Uom;
 import java.math.BigDecimal;

@@ -1,7 +1,7 @@
 package io.smarthealth.auth.domain;
 
-import io.smarthealth.common.domain.Identifiable;
-import io.smarthealth.person.domain.Person;
+import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.organization.person.domain.Person;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;

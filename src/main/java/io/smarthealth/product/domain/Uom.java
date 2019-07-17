@@ -1,8 +1,8 @@
 package io.smarthealth.product.domain;
 
-import io.smarthealth.common.domain.Identifiable;
+import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.product.domain.UomCategory;
-import io.smarthealth.common.domain.SetupMetadata;
+import io.smarthealth.infrastructure.domain.SetupMetadata;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
