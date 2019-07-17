@@ -16,17 +16,23 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "invoice_line")
+@Table(name = "patient_invoice_line")
 public class InvoiceLine extends Identifiable {
 
     @ManyToOne
     private Invoice invoice;
+
     @ManyToOne
     private Product product;
-    @ManyToOne
-    private Account account;
-    @ManyToOne
-    private Period period;
-    private BigDecimal amount;
-
+    private Integer quantity;
+    private BigDecimal unitPrice;
+    private BigDecimal grossAmount;
+    private BigDecimal vat;
+    private BigDecimal discount;
+    private BigDecimal netAmount;
+    
+    /*
+    Need a place to hold sales before pushing them to the account
+    // description and reference say wh 
+    */
 }

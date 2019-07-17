@@ -1,0 +1,26 @@
+Journal Entry
+
+{
+  "effective_at": "2014-08-01T01:02:50.000Z",
+  "description" : "Opening Balance",
+  "reference"   : "http://receipt.com",
+  "lines"       : [
+    {
+      "account": "$CASH_ID",
+      "reference" : "",
+      "value"  : {
+        "type"  : "debit",
+        "amount": "100.00"
+      }
+    },
+    {
+      "account": "kVAsgmss7IaBKF3rCTToUC",
+      "value"  : {
+        "type"  : "credit",
+        "amount": "100.00"
+      }
+    }
+  ]
+}
+
+//this should be

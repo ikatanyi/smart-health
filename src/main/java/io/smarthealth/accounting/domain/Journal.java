@@ -3,12 +3,14 @@ package io.smarthealth.accounting.domain;
 import io.smarthealth.common.domain.Identifiable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
 /**
- *
+ * Map the accounts to the respective journals for eazy posting
  * @author Kelsas
  */
 @Entity
@@ -17,19 +19,25 @@ import lombok.Data;
 public class Journal extends Identifiable {
 
     public enum Type {
-        Sale,
+        Stock,
+        Sales,
         Purchase,
-        Bank,
+        Sales_Refund,
+        Purchase_Refund,
+        Miscellaneous,
+        Opening_Entries,
         Cash,
-        General
+        Bank
     }
     @Column(length = 64)
     private String name;
     //Accounts payable | cash book to their default accounts
+    @Enumerated(EnumType.STRING)
+    private Type type;
 
     @ManyToOne
     private Account defaultCreditAccount;
     @ManyToOne
     private Account defaultDebitAccount;
-
+ 
 }

@@ -1,27 +1,17 @@
 package io.smarthealth.clinical.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.io.Serializable;
+import javax.persistence.Embeddable;
 import lombok.Data;
 
 /**
- * Patient Diagnosis Record
  *
  * @author Kelsas
  */
-@Entity
+@Embeddable
 @Data
-@Table(name = "patient_diagnosis")
-public class Diagnosis extends ClinicalRecord {
+public class Diagnosis implements Serializable {
 
     private String code;
-
     private String description;
-
-    @Column(length = 25)
-    private String certainty;
-
-    @Column(length = 25)
-    private String diagnosisOrder;
 }

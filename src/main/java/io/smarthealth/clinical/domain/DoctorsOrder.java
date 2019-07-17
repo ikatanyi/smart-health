@@ -1,6 +1,7 @@
 package io.smarthealth.clinical.domain;
 
 import io.smarthealth.common.domain.Auditable;
+import io.smarthealth.organization.domain.Employee;
 import io.smarthealth.product.domain.Product;
 import io.smarthealth.patient.domain.Patient;
 import io.smarthealth.person.domain.Person;
@@ -25,7 +26,7 @@ import lombok.Data;
 @Entity
 @Table(name = "patient_doctor_request")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class DoctorRequest extends Auditable {
+public abstract class DoctorsOrder extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "patient_id")
@@ -33,12 +34,12 @@ public abstract class DoctorRequest extends Auditable {
     @ManyToOne
     @JoinColumn(name = "visit_id")
     private Visit visit;
-    
+
+    @ManyToOne
+    private Product product;
+
     @OneToOne
-    private Product product;  
-    
-    @OneToOne
-    private Person requestedBy;
+    private Employee requestedBy;
     private LocalDateTime orderDatetime;
     private String urgency;
     private String orderNumber;

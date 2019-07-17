@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToOne;
 import lombok.Data;
 
 /**
@@ -24,8 +23,8 @@ public abstract class ClinicalRecord extends Auditable {
     private Patient patient;
     @ManyToOne
     private Visit visit;
-    @OneToOne
-    private Employee healthcareProvifder;
+    @ManyToOne
+    private Employee healthcareProvider;
     private LocalDateTime dateRecorded;
     private boolean voided = false;
     private String voidedBy;

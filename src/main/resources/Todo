@@ -80,10 +80,12 @@ https://medium.com/@RobertKhou/double-entry-accounting-in-a-relational-database-
 
 http://filipmatthew.com/technology/database-schema-of-double-entry-accounting-module/
 
+https://dzone.com/articles/how-to-use-hibernate-natural-ids-in-spring-boot
+
 
 Base classes
 
-* Organization
+* Organization - Join
     - facility
     - partner
         -> Supplier 
@@ -93,12 +95,25 @@ Base classes
     - Employee
 * Product [Service & Drug] 
     - Drug
-* Invoice
+* Invoice - Table 
     - Sales Invoice [Patient Invoice]
     - Purchase Invoice [Supplier Invoice]
-* Doctor's Request
-* Visit
-* Partner - 
+* Doctor's Request [DoctorsOrder] - Join
+    - DoctorsOrder
+    - Prescription
+* Visit - Join
+   - Visit
+   - Admission
+* Partner - Single
+   - supplier
+   - insurance
+* Order
+    - Purchase Order -tosupplier
+    - Requistion - tostore
+
     ** Stock Items **
 
 Get access to the subledger api to learn on structuring
+
+
+//

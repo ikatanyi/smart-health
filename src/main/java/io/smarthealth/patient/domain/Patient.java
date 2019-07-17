@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.NaturalId;
 
 /**
  * The Patient
@@ -22,6 +23,7 @@ public class Patient extends Person {
     //Discount cards at the time of registration. 
 
     /** Unique Health Identification Number - UHID*/
+    @NaturalId
     @Column(length = 50, unique = true)
     private String patientNumber;
 

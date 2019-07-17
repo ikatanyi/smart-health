@@ -17,7 +17,7 @@ import lombok.Data;
  * relation to partner/customer and date when move was created.
  *
  * When new invoice, purchase, refund or payment is created in the system, new
- * move is created.
+ * move is created. Journal Entries
  *
  * @author Kelsas
  */
@@ -34,6 +34,7 @@ public class Move extends Identifiable {
     private String name;
     @Column(length = 64)
     private String reference;
+    private String description;
     private Status status;
     private LocalDateTime datePosted;
 

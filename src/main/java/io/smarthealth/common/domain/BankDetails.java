@@ -11,9 +11,11 @@ import lombok.Data;
 @Data
 public class BankDetails {
     //Bank details I need to save
+    private String bankName;
+    private String bankBranch;
     private String accountName;
     private String accountNumber;
     private String bankSwiftCode;
     /** BankDetails Account International BankDetails Account Number */
-    private String bankIban; //International BankDetails Account Number
+    private String bankIban;  
 }

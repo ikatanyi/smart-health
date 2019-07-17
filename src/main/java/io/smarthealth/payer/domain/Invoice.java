@@ -1,45 +1,60 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.payer.domain;
 
-import io.smarthealth.accounting.domain.Account;
-import io.smarthealth.accounting.domain.Journal;
+import io.smarthealth.accounting.domain.Period;
 import io.smarthealth.common.domain.Auditable;
 import io.smarthealth.organization.domain.Partner;
+import io.smarthealth.patient.domain.Patient;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.NaturalId;
 
 /**
- *
+ *  Patient Invoices
+ * 
  * @author Kelsas
  */
 @Entity
 @Data
-@Table(name = "invoice")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name = "patient_invoice")
 public class Invoice extends Auditable {
-
-    @OneToMany(mappedBy = "invoice")
-    private List<InvoiceLine> invoiceLines;
-
+    public enum Status{
+        Draft,
+        Cancelled,
+        Final,
+        Dispatched,
+        Paid
+    }
     @ManyToOne
-    private Journal journal;
+    private Patient patient;
+    
     @ManyToOne
-    private Partner partner;
+    private Payer payer;  
     @ManyToOne
-    private Account account;
-    @Column(length = 16)
+    private Period period;
+    @NaturalId
     private String invoiceNumber;
+    private LocalDate invoiceDate;
+    @Column(length = 32)
+    private String reference;
     private BigDecimal amount;
+    private BigDecimal balance;
+    @Enumerated(EnumType.STRING)
+    private Status status;
+    @OneToMany(mappedBy = "invoice")
+    private List<InvoiceLine> invoiceLines=new ArrayList<>();
+    
+   // we should a claim processing table
+    //track dispatch, allocations, returns
+  
 }
