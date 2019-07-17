@@ -28,8 +28,6 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     Optional<Patient> findByPatientNumber(final String patientNumber);
 
-    Page<Patient> findByCurrentStateNot(final String currentState, final Pageable pageable);
+    Page<Patient> findByStatus(final String currentStatus, final Pageable pageable);
 
-    Page<Patient> findByCurrentStateNotAndPatientNumberContainingOrGivenNameContainingOrSurnameContaining(
-            final String state, final String patientNumber, final String givenName, final String surname, final Pageable pageable);
 }

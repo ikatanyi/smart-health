@@ -8,9 +8,9 @@ package io.smarthealth.appointment.domain;
 import io.smarthealth.common.utility.APIException;
 import io.smarthealth.patient.domain.Patient;
 import io.smarthealth.patient.domain.PatientRepository;
-import io.smarthealth.person.domain.Person;
 import io.smarthealth.person.domain.PersonRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,13 +32,13 @@ public class AppointmentService {
         this.patientRepository = patientRepository;
     }
 
-    public Page<Appointment> fetchAppointmentsByPatient(final Patient patientDto) {
+    public Page<Appointment> fetchAppointmentsByPatient(final Patient patientDto, final Pageable pageable) {
         //Validate if Patient exists
         if (!this.patientRepository.existsByPatientNumber(patientDto.getPatientNumber())) {
             throw APIException.notFound("Patient with the identity {0} does not exist..", patientDto.getPatientNumber());
         }
         //if patient exists return appointments
-        return appointmentRepository.findByPatient(patientDto);
+        return appointmentRepository.findByPatient(patientDto, pageable);
     }
 
 }

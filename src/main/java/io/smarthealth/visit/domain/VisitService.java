@@ -7,10 +7,8 @@ package io.smarthealth.visit.domain;
 
 import io.smarthealth.patient.domain.Patient;
 import io.smarthealth.patient.domain.PatientRepository;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import org.junit.Test;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -28,9 +26,9 @@ public class VisitService {
         this.patientRepository = patientRepository;
     }
 
-    public Page<Visit> fetchVisitByPatientNumber(String patientNumber) {
+    public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
         Patient patient = patientRepository.findByPatientNumber(patientNumber).get();
-        Page<Visit> visits = visitRepository.findByPatient(patient);
+        Page<Visit> visits = visitRepository.findByPatient(patient, pageable);
         return visits;
     }
 

@@ -7,6 +7,7 @@ package io.smarthealth.visit.domain;
 
 import io.smarthealth.patient.domain.Patient;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -15,6 +16,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface VisitRepository extends JpaRepository<Visit, Long> {
 
-    Page<Visit> findByPatient(Patient patient);
+    Page<Visit> findByPatient(Patient patient, Pageable pageable);
 
 }
