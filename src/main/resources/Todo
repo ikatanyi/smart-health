@@ -117,3 +117,20 @@ Get access to the subledger api to learn on structuring
 
 
 //
+Patient billing happens at each department so we
+Patient Billing - this basically the invoice line 
+- line item type
+- patient
+- bill item
+- qty
+- unit price
+- debit
+- qty
+- department billing
+- department account
+- bill status
+- reference no
+- invoice no.
+- audit info
+
+on billing create a draft invoice - then add line items/

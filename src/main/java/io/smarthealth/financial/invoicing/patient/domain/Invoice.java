@@ -1,13 +1,12 @@
 package io.smarthealth.financial.invoicing.patient.domain;
 
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.partner.insurance.domain.Payer;
 import io.smarthealth.financial.accounting.domain.Period;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.organization.partner.Partner;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -22,7 +21,7 @@ import org.hibernate.annotations.NaturalId;
 
 /**
  *  Patient Invoices
- * 
+ *   First time create a draft invoice then use the line item as billing module
  * @author Kelsas
  */
 @Entity
@@ -31,12 +30,15 @@ import org.hibernate.annotations.NaturalId;
 public class Invoice extends Auditable {
     public enum Status{
         Draft,
-        Posting,
         Cancelled,
         Final
     }
+    
     @ManyToOne
     private Patient patient;
+    
+    @ManyToOne
+    private Visit visit;
     
     @ManyToOne
     private Payer payer;  
@@ -51,11 +53,18 @@ public class Invoice extends Auditable {
     private BigDecimal amount;
     private BigDecimal balance;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status=Status.Draft;
+    
     @OneToMany(mappedBy = "invoice")
     private List<InvoiceLine> invoiceLines=new ArrayList<>();
     
-   // we should a claim processing table
+   // we should a claim processing table - Invoice Processing
+    // invoice_no, status, datetime, user, amount, reference no
     //track dispatch, allocations, returns
   
+    
+    //invoice payment - payment id, invoice_no, amount, reference, datetime 
+    
+    //Payments - partner | patient | 
+    
 }

@@ -1,6 +1,8 @@
 package io.smarthealth.inventory.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.organization.facility.domain.Department;
+import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.product.domain.Product;
 import io.smarthealth.product.domain.Uom;
 import java.math.BigDecimal;
@@ -8,6 +10,8 @@ import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -20,32 +24,27 @@ import lombok.Data;
 @Table(name = "stock_movement")
 public class StockMovement extends Auditable {
 
-    public enum Origin {
-        // Prescription, Purchases, Stock Inventory - 
-        Prescription_Order,
-        Purchase_Line,
-        Stock_Inventory_Line
+    public enum TransactionType {
+        Issuing,
+        Receiving,
+        Return_Inward,
+        Return_Outward
     }
-
-    public enum State {
-        Draft,
-        Assigned,
-        Done,
-        Cancel
-    }
-
-    @Enumerated(EnumType.STRING)
-    private Origin origin;
-    private Location fromLocation;
-    private Location toLocation;
+    // issued to details
+    @ManyToOne
+    private Department store;
+    @ManyToOne
     private Product product;
-    private double quantity;
-    private BigDecimal unitPrice;
-    private BigDecimal costPrice;
+    @OneToOne
     private Uom uom;
-    @Enumerated(EnumType.STRING)
-    private State state = State.Draft;
-    private LocalDateTime effectiveDate;
+    private double receiving;
+    private double issuing;
+    private BigDecimal price;
+    private BigDecimal total;
+    private TransactionType transactionType;
+    private String transactionNo;
+    private String reference;
+    private LocalDateTime transDatetime;
+    private Employee transactingUser;
 
-    //I need a transaction information details here to track the posting.
 }

@@ -82,14 +82,4 @@ public abstract class Product extends Identifiable {
     @OneToOne
     private ReorderRule reorderRule;
 
-    @OneToOne
-    private Account incomeAccount;
-    @OneToOne
-    private Account expenseAccount;
-
-    //Todo :: Method of costing the price and it's price list 
-    //this should be linked to a gl account
-    //this product may be linked to many gla
-    ///
-    //need to know the debit and credit account that belongs to this account for me to make it
 }

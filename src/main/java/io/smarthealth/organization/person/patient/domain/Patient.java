@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.NaturalId;
 
 /**
  * The Patient

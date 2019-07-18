@@ -1,6 +1,7 @@
 package io.smarthealth.inventory.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.product.domain.Product;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
@@ -19,8 +20,8 @@ import lombok.Data;
 public class InventoryVariance extends Auditable {
 
     private LocalDateTime dateRecorded;
-    @OneToOne
-    private Location location;
+    @ManyToOne
+    private Department store;
     @ManyToOne
     private Product product;
     private double quantity;

@@ -29,6 +29,6 @@ public class Facility extends Organization {
     List<Ward> wards = new ArrayList<>();
     
     @OneToMany(mappedBy = "facility")
-    List<ServiceLocation> locations=new ArrayList<>();
+    List<Department> departments=new ArrayList<>();
      
 }

@@ -1,5 +1,6 @@
 package io.smarthealth.organization.partner;
 
+import io.smarthealth.financial.accounting.domain.Currency;
 import io.smarthealth.infrastructure.domain.BankDetails;
 import io.smarthealth.organization.domain.Organization;
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 import org.hibernate.annotations.NaturalId;
@@ -33,7 +35,8 @@ public class Partner extends Organization {
      */
     private String reference;
     private String code;
-    private String currency;
+    @OneToOne
+    private Currency currency;
     private BigDecimal creditLimit;
     private String taxNumber;
     private String creditTerms; //payment terms number of days

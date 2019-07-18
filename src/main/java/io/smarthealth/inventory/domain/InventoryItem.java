@@ -1,6 +1,7 @@
 package io.smarthealth.inventory.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.product.domain.Product;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
@@ -24,7 +25,7 @@ public class InventoryItem extends Identifiable {
         Expired
     }
     @ManyToOne
-    private Location location;
+    private Department store;
     @ManyToOne
     private Product product;
     private double quantity;

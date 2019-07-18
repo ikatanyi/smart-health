@@ -1,8 +1,5 @@
 package io.smarthealth.organization.facility.domain;
 
-import io.smarthealth.organization.facility.domain.ServiceLocation;
-import io.smarthealth.organization.facility.domain.DepartmentUnit;
-import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.auth.domain.User;
 import io.smarthealth.organization.person.domain.Person;
 import javax.persistence.Column;
@@ -10,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -32,9 +30,9 @@ public class Employee extends Person {
     }
     @Enumerated(EnumType.STRING)
     private Category employeeCategory;
+    @ManyToOne
     private Department department;
-    private DepartmentUnit departmentUnit;
-    private ServiceLocation workLocation;
+    private DepartmentUnit departmentUnit; 
 
     @OneToOne
     @JoinColumn(name = "login_account")

@@ -16,4 +16,5 @@ import lombok.Data;
 public class Period extends Identifiable{
     @ManyToOne
     private FiscalYear fiscalyear;
+    //Quant
 }
