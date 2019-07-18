@@ -5,12 +5,13 @@
  */
 package io.smarthealth.organization.domain;
 
+import io.smarthealth.organization.partner.Partner;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
  * @author Simon.waweru
  */
-public interface PartnerRepository extends JpaRepository<PartnerRepository, Long>{
+public interface PartnerRepository extends JpaRepository<Partner, Long>{
     
 }
