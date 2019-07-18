@@ -1,7 +1,7 @@
 package io.smarthealth.financial.accounting.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.organization.domain.Partner;
+import io.smarthealth.organization.partner.Partner;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;

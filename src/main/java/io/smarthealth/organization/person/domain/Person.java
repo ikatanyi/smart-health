@@ -4,6 +4,7 @@ import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -19,6 +20,7 @@ import lombok.Data;
 @Entity
 @Table(name = "person")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name="person_type")
 public class Person extends Auditable {
 
     @Column(length = 25)

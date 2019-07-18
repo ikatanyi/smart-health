@@ -1,6 +1,6 @@
 package io.smarthealth.organization.partner.supplier.domain;
 
-import io.smarthealth.organization.domain.Partner;
+import io.smarthealth.organization.partner.Partner;
 import io.smarthealth.product.domain.Product;
 import java.math.BigDecimal;
 import java.util.HashSet;

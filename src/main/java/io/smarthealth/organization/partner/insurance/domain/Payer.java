@@ -1,6 +1,6 @@
 package io.smarthealth.organization.partner.insurance.domain;
 
-import io.smarthealth.organization.domain.Partner;
+import io.smarthealth.organization.partner.Partner;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Entity;

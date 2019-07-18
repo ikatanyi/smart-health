@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.documents.domain;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.Data;

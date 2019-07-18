@@ -2,6 +2,7 @@ package io.smarthealth.organization.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.util.List;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -17,6 +18,7 @@ import lombok.Data;
 @Data
 @Table(name = "organization")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name="org_category")
 public abstract class Organization extends Auditable {
 
     private String companyName;

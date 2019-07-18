@@ -3,7 +3,7 @@ package io.smarthealth.financial.invoicing.patient.domain;
 import io.smarthealth.organization.partner.insurance.domain.Payer;
 import io.smarthealth.financial.accounting.domain.Period;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.organization.domain.Partner;
+import io.smarthealth.organization.partner.Partner;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -31,16 +31,16 @@ import org.hibernate.annotations.NaturalId;
 public class Invoice extends Auditable {
     public enum Status{
         Draft,
+        Posting,
         Cancelled,
-        Final,
-        Dispatched,
-        Paid
+        Final
     }
     @ManyToOne
     private Patient patient;
     
     @ManyToOne
     private Payer payer;  
+    
     @ManyToOne
     private Period period;
     @NaturalId

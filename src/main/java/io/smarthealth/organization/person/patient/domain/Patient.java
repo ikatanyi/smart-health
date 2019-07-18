@@ -23,7 +23,7 @@ public class Patient extends Person {
     //Discount cards at the time of registration. 
 
     /** Unique Health Identification Number - UHID*/
-    @NaturalId
+//    @NaturalId
     @Column(length = 50, unique = true)
     private String patientNumber;
 

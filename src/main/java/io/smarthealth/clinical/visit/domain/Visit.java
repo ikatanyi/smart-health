@@ -4,6 +4,7 @@ import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -25,6 +26,7 @@ import org.hibernate.annotations.NaturalId;
 @Entity
 @Table(name = "patient_visit")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name="visit_category")
 public class Visit extends Auditable {
 
     public enum Status {
