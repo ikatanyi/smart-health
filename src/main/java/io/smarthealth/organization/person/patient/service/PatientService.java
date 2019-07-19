@@ -6,10 +6,19 @@
 package io.smarthealth.organization.person.patient.service;
 
 import io.smarthealth.infrastructure.utility.APIException;
+import io.smarthealth.organization.person.domain.PersonAddress;
+import io.smarthealth.organization.person.domain.PersonAddressRepository;
+import io.smarthealth.organization.person.domain.PersonContact;
+import io.smarthealth.organization.person.domain.PersonContactRepository;
+import io.smarthealth.organization.person.mapper.AddressDTO;
+import io.smarthealth.organization.person.mapper.ContactDTO;
+import io.smarthealth.organization.person.mapper.PatientDTO;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -23,6 +32,10 @@ public class PatientService {
 
     @Autowired
     PatientRepository patientRepository;
+    @Autowired
+    PersonContactRepository personContactRepository;
+    @Autowired
+    PersonAddressRepository personAddressRepository;
 
     public List<Patient> fetchAllPatients() {
         return patientRepository.findAll();
@@ -32,8 +45,33 @@ public class PatientService {
         return patientRepository.getOne(patientId);
     }
 
-    public Patient fetchPatientByPatientNumber(String patientNumber) {
-        return patientRepository.findByPatientNumber(patientNumber).get();
+    public Optional<PatientDTO> fetchPatientByPatientNumber(final String patientNumber) {
+        return patientRepository.findByPatientNumber(patientNumber)
+                .map(patientEntity -> {
+                    final PatientDTO patient = PatientDTO.map(patientEntity);
+                    //fetch patient addresses
+                    final List<PersonAddress> personAddressEntity = personAddressRepository.findByPerson(patientEntity);
+                    if (personAddressEntity != null) {
+                        patient.setAddressDetails(
+                                personAddressEntity
+                                        .stream()
+                                        .map(AddressDTO::map)
+                                        .collect(Collectors.toList())
+                        );
+                    }
+
+                    final List<PersonContact> contactDetailEntities = this.personContactRepository.findByPerson(patientEntity);
+                    if (contactDetailEntities != null) {
+                        patient.setContactDetails(
+                                contactDetailEntities
+                                        .stream()
+                                        .map(ContactDTO::map)
+                                        .collect(Collectors.toList())
+                        );
+                    }
+
+                    return patient;
+                });
     }
 
     public Patient createPatient(final Patient patient) {

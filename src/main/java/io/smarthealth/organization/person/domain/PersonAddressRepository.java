@@ -5,10 +5,17 @@
  */
 package io.smarthealth.organization.person.domain;
 
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
 /**
  *
  * @author Simon.waweru
  */
-public interface PersonAddressRepository {
-    
+@Repository
+public interface PersonAddressRepository extends JpaRepository<PersonAddress, Long> {
+
+    List<PersonAddress> findByPerson(final Person person);
+
 }
