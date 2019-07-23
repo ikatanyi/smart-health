@@ -1,0 +1,6 @@
+Configure:
+- inventory system
+  1. Perpetual Inventory
+      If perpetual inventory system is enabled, additional costs will be booked in "Expense Included In Valuation" account.
+ 2. Periodic Inventory
+  - manual post the items to the stock ledgers

@@ -12,7 +12,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "patient_prescriptions")
-public class Prescription extends DoctorsOrder {
+public class Prescription extends DoctorRequest {
     
     private String brandName;
     private String route;

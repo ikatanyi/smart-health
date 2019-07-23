@@ -11,6 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author Simon.waweru
  */
-public interface DoctorsOrderRepository extends JpaRepository<DoctorsOrder, Long> {
+public interface DoctorsOrderRepository extends JpaRepository<DoctorRequest, Long> {
 
 }

@@ -25,7 +25,10 @@ public abstract class Identifiable implements Serializable{
 
     @Column(length = 38, unique = true)
     private String uuid;
-
+    
+    @Column(length = 38)
+    private String facilityId;
+    
     @PrePersist
     public void autofill() {
         String ids=UUID.randomUUID().toString(); 
