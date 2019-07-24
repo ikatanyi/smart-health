@@ -32,7 +32,7 @@ public class Employee extends Person {
     private Category employeeCategory;
     @ManyToOne
     private Department department;
-    private DepartmentUnit departmentUnit; 
+    private DepartmentUnit departmentUnit;
 
     @OneToOne
     @JoinColumn(name = "login_account")

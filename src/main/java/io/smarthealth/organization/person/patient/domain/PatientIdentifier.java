@@ -9,6 +9,7 @@ import lombok.Data;
 
 /**
  * Patient Identifiers
+ *
  * @author Kelsas
  */
 @Entity
@@ -18,7 +19,7 @@ public class PatientIdentifier extends Identifiable {
 
     @ManyToOne
     private Patient patient;
-    
+
     @Column(name = "a_type")
     private String type;
 

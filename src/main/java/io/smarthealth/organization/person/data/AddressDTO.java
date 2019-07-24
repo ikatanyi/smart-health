@@ -1,4 +1,4 @@
-package io.smarthealth.organization.person.mapper;
+package io.smarthealth.organization.person.data;
 
 import io.smarthealth.organization.person.domain.PersonAddress;
 import lombok.Data;

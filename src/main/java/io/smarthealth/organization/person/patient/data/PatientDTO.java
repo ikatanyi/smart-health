@@ -1,9 +1,9 @@
-package io.smarthealth.organization.person.mapper;
+package io.smarthealth.organization.person.patient.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.organization.person.data.AddressDTO;
+import io.smarthealth.organization.person.data.ContactDTO;
 import static io.smarthealth.infrastructure.utility.Constants.DATE_PATTERN;
-import io.smarthealth.organization.person.domain.PersonAddress;
-import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.enumeration.Gender;
 import io.smarthealth.organization.person.enumeration.MaritalStatus;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -69,7 +69,8 @@ public final class PatientDTO {
         patientEntity.setDateRegistered(patient.getRegistrationDate());
         patientEntity.setSurname(patient.getSurname());
         patientEntity.setTitle(patient.getTitle());
-
+        
+        
         return patientEntity;
     }
 

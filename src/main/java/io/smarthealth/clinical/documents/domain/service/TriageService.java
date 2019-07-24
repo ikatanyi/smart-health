@@ -1,10 +1,7 @@
 package io.smarthealth.clinical.documents.domain.service;
 
-import io.smarthealth.clinical.documents.domain.PatientDiagnosis;
-import io.smarthealth.clinical.documents.domain.PatientDiagnosisRepository;
 import io.smarthealth.clinical.documents.domain.TriageRepository;
 import io.smarthealth.clinical.documents.domain.VitalsRecord;
-import io.smarthealth.clinical.documents.domain.api.Diagnosis;
 import io.smarthealth.clinical.documents.domain.api.Triage;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
@@ -13,9 +10,7 @@ import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

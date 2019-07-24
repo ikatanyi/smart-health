@@ -26,7 +26,7 @@ import org.hibernate.annotations.NaturalId;
 @Entity
 @Table(name = "patient_visit")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name="visit_category")
+@DiscriminatorColumn(name = "visit_category")
 public class Visit extends Auditable {
 
     public enum Status {
@@ -51,14 +51,14 @@ public class Visit extends Auditable {
 
     private LocalDateTime startDatetime;
     private LocalDateTime stopDatetime;
-    
+
     @Column(length = 50)
     @Enumerated(EnumType.STRING)
     private VisitType visitType; //Outpatient | Hospitalization
-    
+
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private Status status;
-    
+
     private Boolean scheduled;
 }

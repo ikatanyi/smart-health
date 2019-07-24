@@ -20,7 +20,7 @@ import lombok.Data;
 @Entity
 @Table(name = "person")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name="person_type")
+@DiscriminatorColumn(name = "person_type")
 public class Person extends Auditable {
 
     @Column(length = 25)
@@ -37,13 +37,12 @@ public class Person extends Auditable {
     @Column(length = 50)
     private String maritalStatus;
     private LocalDate dateRegistered = LocalDate.now();
-    
-    
+
     @OneToMany(mappedBy = "person")
     private List<PersonAddress> addresses;
     @OneToMany(mappedBy = "person")
     private List<PersonContact> contacts;
-    
+
 //    @Formula("case when exists (select * from patient p where p.patient_id = person_id) then 1 else 0 end")
     private boolean isPatient;
 

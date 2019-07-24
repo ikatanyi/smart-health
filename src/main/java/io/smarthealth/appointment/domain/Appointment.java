@@ -15,6 +15,7 @@ import lombok.Data;
 
 /**
  * Patient Appointment
+ *
  * @author Kelsas
  */
 @Entity

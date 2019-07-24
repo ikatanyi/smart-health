@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.organization.person.mapper;
+package io.smarthealth.organization.person.data;
 
 import io.smarthealth.organization.person.domain.PersonAddress;
 import io.smarthealth.organization.person.domain.PersonContact;
