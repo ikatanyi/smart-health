@@ -21,7 +21,7 @@ public class BankAccountData {
 
     private String organizationCode;
     private String organizationName;
-    private String organizationUuid;
+    private String organizationId;
 
     private String accountName;
     private String accountNo;
@@ -46,7 +46,7 @@ public class BankAccountData {
         bankData.setGlAccountCode(bank.getGlAccount().getCode());
         bankData.setIBAN(bank.getIBAN());
         bankData.setOrganizationCode(bank.getOrganization().getCode());
-        bankData.setOrganizationUuid(bank.getOrganization().getUuid());
+        bankData.setOrganizationId(bank.getOrganization().getCompanyId());
         bankData.setOrganizationName(bank.getOrganization().getName());
         return bankData;
     }
