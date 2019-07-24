@@ -1,4 +1,4 @@
-package io.smarthealth.clinical.documents.domain.api;
+package io.smarthealth.clinical.record.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @author Kelsas
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public interface OrderRequest {
+public interface DoctorRequestData {
 
     public String getPatientNumber();
 

@@ -1,8 +1,8 @@
-package io.smarthealth.clinical.documents.domain.api;
+package io.smarthealth.clinical.record.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.smarthealth.clinical.documents.domain.VitalsRecord;
+import io.smarthealth.clinical.record.domain.VitalsRecord;
 import static io.smarthealth.infrastructure.utility.Constants.DATE_TIME_PATTERN;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -15,7 +15,7 @@ import org.smarthealth.patient.validation.constraints.ValidIdentifier;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Triage {
+public class VitalRecordData {
 
     private Long id;
     @CheckValidVisit
@@ -40,7 +40,7 @@ public class Triage {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime vitalsDatetime;
 
-    public static VitalsRecord map(Triage triage) {
+    public static VitalsRecord map(VitalRecordData triage) {
         VitalsRecord entity = new VitalsRecord();
         entity.setTemp(triage.getTemp());
         entity.setHeight(triage.getHeight());
@@ -54,8 +54,8 @@ public class Triage {
         return entity;
     }
 
-    public static Triage map(VitalsRecord entity) {
-        Triage triage = new Triage();
+    public static VitalRecordData map(VitalsRecord entity) {
+        VitalRecordData triage = new VitalRecordData();
         triage.setId(entity.getId());
         triage.setTemp(entity.getTemp());
         triage.setHeight(entity.getHeight());

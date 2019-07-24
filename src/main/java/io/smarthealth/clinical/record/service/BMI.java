@@ -1,4 +1,4 @@
-package io.smarthealth.clinical.documents.domain.service;
+package io.smarthealth.clinical.record.service;
 
 /**
  * 

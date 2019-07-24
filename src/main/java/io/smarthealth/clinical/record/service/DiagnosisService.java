@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.documents.domain.service;
+package io.smarthealth.clinical.record.service;
 
-import io.smarthealth.clinical.documents.domain.PatientDiagnosis;
-import io.smarthealth.clinical.documents.domain.PatientDiagnosisRepository;
-import io.smarthealth.clinical.documents.domain.api.Diagnosis;
+import io.smarthealth.clinical.record.domain.PatientDiagnosis;
+import io.smarthealth.clinical.record.domain.PatientDiagnosisRepository;
+import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.utility.APIException;
@@ -37,7 +37,7 @@ public class DiagnosisService {
     @Autowired
     private PatientRepository patientRepository;
 
-    public Long addDiagnosis(String visitNumber, Diagnosis diagnosis) {
+    public Long addDiagnosis(String visitNumber, DiagnosisData diagnosis) {
 
         Visit visit = findVisitOrThrow(visitNumber);
 
@@ -45,14 +45,14 @@ public class DiagnosisService {
             throw APIException.badRequest("Invalid Patient Number! mismatch in Patient Visit's patient number");
         }
 
-        PatientDiagnosis diagnosisEntity = Diagnosis.map(diagnosis);
+        PatientDiagnosis diagnosisEntity = DiagnosisData.map(diagnosis);
         diagnosisEntity.setVisit(visit);
         diagnosisEntity.setPatient(visit.getPatient());
         return diagnosisRepository.save(diagnosisEntity).getId();
     }
 
-    public ContentPage<Diagnosis> fetchDiagnosisByVisit(String visitNumber, Pageable page) {
-        final ContentPage<Diagnosis> triagePage = new ContentPage();
+    public ContentPage<DiagnosisData> fetchDiagnosisByVisit(String visitNumber, Pageable page) {
+        final ContentPage<DiagnosisData> triagePage = new ContentPage();
         Optional<Visit> visit = visitRepository.findByVisitNumber(visitNumber);
         if (visit.isPresent()) {
             Page<PatientDiagnosis> triageEntities = this.diagnosisRepository.findByPatient(visit.get().getPatient(), page);
@@ -60,22 +60,22 @@ public class DiagnosisService {
             triagePage.setTotalPages(triageEntities.getTotalPages());
             triagePage.setTotalElements(triageEntities.getTotalElements());
             if (triageEntities.getSize() > 0) {
-                final ArrayList<Diagnosis> triagelist = new ArrayList<>(triageEntities.getSize());
+                final ArrayList<DiagnosisData> triagelist = new ArrayList<>(triageEntities.getSize());
                 triagePage.setContents(triagelist);
-                triageEntities.forEach((vt) -> triagelist.add(Diagnosis.map(vt)));
+                triageEntities.forEach((vt) -> triagelist.add(DiagnosisData.map(vt)));
             }
         }
         return triagePage;
     }
 
-    public Diagnosis getDiagnosisById(String visitNumber, Long id) {
+    public DiagnosisData getDiagnosisById(String visitNumber, Long id) {
 
         Optional<PatientDiagnosis> entity = diagnosisRepository.findById(id);
 
-        return entity.map(Diagnosis::map).orElse(null);
+        return entity.map(DiagnosisData::map).orElse(null);
     }
 
-    public ContentPage<Diagnosis> fetchDiagnosis(String patientNumber, Pageable page) {
+    public ContentPage<DiagnosisData> fetchDiagnosis(String patientNumber, Pageable page) {
 
         Page<PatientDiagnosis> diagnosisEntities = Page.empty();
         if (patientNumber != null) {
@@ -87,13 +87,13 @@ public class DiagnosisService {
             diagnosisEntities = diagnosisRepository.findAll(page);
         }
 
-        final ContentPage<Diagnosis> triagePage = new ContentPage();
+        final ContentPage<DiagnosisData> triagePage = new ContentPage();
         triagePage.setTotalPages(diagnosisEntities.getTotalPages());
         triagePage.setTotalElements(diagnosisEntities.getTotalElements());
         if (diagnosisEntities.getSize() > 0) {
-            final ArrayList<Diagnosis> triagelist = new ArrayList<>(diagnosisEntities.getSize());
+            final ArrayList<DiagnosisData> triagelist = new ArrayList<>(diagnosisEntities.getSize());
             triagePage.setContents(triagelist);
-            diagnosisEntities.forEach((vt) -> triagelist.add(Diagnosis.map(vt)));
+            diagnosisEntities.forEach((vt) -> triagelist.add(DiagnosisData.map(vt)));
         }
 
         return triagePage;

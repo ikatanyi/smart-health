@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.documents.domain;
+package io.smarthealth.clinical.record.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,6 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author Simon.waweru
  */
-public interface PatientSoapNoteRepository extends JpaRepository<PatientSoapNote, Long>{
-    
+public interface DoctorsOrderRepository extends JpaRepository<DoctorRequest, Long> {
+
 }

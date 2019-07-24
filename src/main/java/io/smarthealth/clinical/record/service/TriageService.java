@@ -1,8 +1,8 @@
-package io.smarthealth.clinical.documents.domain.service;
+package io.smarthealth.clinical.record.service;
 
-import io.smarthealth.clinical.documents.domain.TriageRepository;
-import io.smarthealth.clinical.documents.domain.VitalsRecord;
-import io.smarthealth.clinical.documents.domain.api.Triage;
+import io.smarthealth.clinical.record.domain.TriageRepository;
+import io.smarthealth.clinical.record.domain.VitalsRecord;
+import io.smarthealth.clinical.record.data.VitalRecordData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.utility.APIException;
@@ -41,13 +41,13 @@ public class TriageService {
 //    @Autowired
 //    private AdminServices adminServices;
 //VITALS
-    public Long addVitalRecords(String visitNumber, Triage triage) {
+    public Long addVitalRecords(String visitNumber, VitalRecordData triage) {
         Visit visit = findVisitOrThrow(visitNumber);
         if (!StringUtils.equalsIgnoreCase(visit.getPatient().getPatientNumber(), triage.getPatientNumber())) {
             throw APIException.badRequest("Invalid Patient Number! mismatch in Patient Visit's patient number");
         }
 
-        VitalsRecord vr = Triage.map(triage);
+        VitalsRecord vr = VitalRecordData.map(triage);
 
         float bmi = (float) BMI.calculateBMI(triage.getHeight(), triage.getWeight());
         String category = BMI.getCategory(bmi);
@@ -61,8 +61,8 @@ public class TriageService {
 
     }
 
-    public ContentPage<Triage> fetchVitalRecordsByVisit(String visitNumber, Pageable page) {
-        final ContentPage<Triage> triagePage = new ContentPage();
+    public ContentPage<VitalRecordData> fetchVitalRecordsByVisit(String visitNumber, Pageable page) {
+        final ContentPage<VitalRecordData> triagePage = new ContentPage();
         Optional<Visit> visit = visitRepository.findByVisitNumber(visitNumber);
         if (visit.isPresent()) {
             Page<VitalsRecord> triageEntities = this.triageRepository.findByVisit(visit.get(), page);
@@ -70,16 +70,16 @@ public class TriageService {
             triagePage.setTotalPages(triageEntities.getTotalPages());
             triagePage.setTotalElements(triageEntities.getTotalElements());
             if (triageEntities.getSize() > 0) {
-                final ArrayList<Triage> triagelist = new ArrayList<>(triageEntities.getSize());
+                final ArrayList<VitalRecordData> triagelist = new ArrayList<>(triageEntities.getSize());
                 triagePage.setContents(triagelist);
-                triageEntities.forEach((vt) -> triagelist.add(Triage.map(vt)));
+                triageEntities.forEach((vt) -> triagelist.add(VitalRecordData.map(vt)));
             }
         }
         return triagePage;
 
     }
 
-    public ContentPage<Triage> fetchVitalRecords(String patientNumber, Pageable page) {
+    public ContentPage<VitalRecordData> fetchVitalRecords(String patientNumber, Pageable page) {
 
         Page<VitalsRecord> triageEntities;
         if (patientNumber != null) {
@@ -89,23 +89,23 @@ public class TriageService {
             triageEntities = this.triageRepository.findAll(page);
         }
 
-        final ContentPage<Triage> triagePage = new ContentPage();
+        final ContentPage<VitalRecordData> triagePage = new ContentPage();
         triagePage.setTotalPages(triageEntities.getTotalPages());
         triagePage.setTotalElements(triageEntities.getTotalElements());
         if (triageEntities.getSize() > 0) {
-            final ArrayList<Triage> triagelist = new ArrayList<>(triageEntities.getSize());
+            final ArrayList<VitalRecordData> triagelist = new ArrayList<>(triageEntities.getSize());
             triagePage.setContents(triagelist);
-            triageEntities.forEach((vt) -> triagelist.add(Triage.map(vt)));
+            triageEntities.forEach((vt) -> triagelist.add(VitalRecordData.map(vt)));
         }
 
         return triagePage;
 
     }
 
-    public Triage getVitalRecordsById(String visitNumber, Long id) {
+    public VitalRecordData getVitalRecordsById(String visitNumber, Long id) {
         Optional<VitalsRecord> entity = this.triageRepository.findById(id);
 
-        return entity.map(Triage::map).orElse(null);
+        return entity.map(VitalRecordData::map).orElse(null);
     }
 
     private Visit findVisitOrThrow(String visitNumber) {

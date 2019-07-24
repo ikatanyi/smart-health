@@ -1,4 +1,4 @@
-package io.smarthealth.clinical.documents.domain;
+package io.smarthealth.clinical.record.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;

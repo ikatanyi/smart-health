@@ -1,4 +1,4 @@
-package io.smarthealth.clinical.documents.domain;
+package io.smarthealth.clinical.record.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;

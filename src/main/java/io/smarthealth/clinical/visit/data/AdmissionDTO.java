@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.visit.data;
 
-import io.smarthealth.clinical.documents.domain.Diagnosis;
+import io.smarthealth.clinical.record.domain.Diagnosis;
 import io.smarthealth.clinical.visit.domain.Admission;
 import io.smarthealth.organization.facility.data.EmployeeDTO;
 import java.util.List;

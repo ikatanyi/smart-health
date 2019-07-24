@@ -1,8 +1,8 @@
-package io.smarthealth.clinical.documents.domain.api;
+package io.smarthealth.clinical.record.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.smarthealth.clinical.documents.domain.PatientDiagnosis;
+import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import static io.smarthealth.infrastructure.utility.Constants.DATE_TIME_PATTERN;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -18,7 +18,7 @@ import org.smarthealth.patient.validation.constraints.ValidIdentifier;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Diagnosis {
+public class DiagnosisData {
 
     public enum Certainty {
         Confirmed,
@@ -51,7 +51,7 @@ public class Diagnosis {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime recorded = LocalDateTime.now();
 
-    public static PatientDiagnosis map(Diagnosis diagnosis) {
+    public static PatientDiagnosis map(DiagnosisData diagnosis) {
         PatientDiagnosis entity = new PatientDiagnosis();
         entity.getDiagnosis().setCode(diagnosis.getCode());
         entity.getDiagnosis().setDescription(diagnosis.getDescription());
@@ -60,8 +60,8 @@ public class Diagnosis {
         return entity;
     }
 
-    public static Diagnosis map(PatientDiagnosis entity) {
-        Diagnosis diagnos = new Diagnosis();
+    public static DiagnosisData map(PatientDiagnosis entity) {
+        DiagnosisData diagnos = new DiagnosisData();
         diagnos.setId(entity.getId());
         diagnos.setPatientNumber(entity.getPatient().getPatientNumber());
         diagnos.setVisitNumber(entity.getVisit().getVisitNumber());

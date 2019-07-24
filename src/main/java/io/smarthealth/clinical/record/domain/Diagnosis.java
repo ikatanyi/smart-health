@@ -1,4 +1,4 @@
-package io.smarthealth.clinical.documents.domain;
+package io.smarthealth.clinical.record.domain;
 
 import java.io.Serializable;
 import javax.persistence.Embeddable;
