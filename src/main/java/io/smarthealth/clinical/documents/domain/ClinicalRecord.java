@@ -1,8 +1,8 @@
 package io.smarthealth.clinical.documents.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.company.facility.domain.Employee;
-import io.smarthealth.company.person.patient.domain.Patient;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.clinical.visit.domain.Visit;
 import java.time.LocalDateTime;
 import javax.persistence.FetchType;

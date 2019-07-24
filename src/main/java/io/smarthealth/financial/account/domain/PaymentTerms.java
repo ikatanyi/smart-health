@@ -5,7 +5,7 @@
  */
 package io.smarthealth.financial.account.domain;
 
-import io.smarthealth.company.domain.Organization;
+import io.smarthealth.organization.domain.Organization;
 import io.smarthealth.infrastructure.domain.Auditable;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;

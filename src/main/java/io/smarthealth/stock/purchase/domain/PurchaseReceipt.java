@@ -1,7 +1,7 @@
 package io.smarthealth.stock.purchase.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.company.facility.domain.Department;
+import io.smarthealth.organization.facility.domain.Department;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

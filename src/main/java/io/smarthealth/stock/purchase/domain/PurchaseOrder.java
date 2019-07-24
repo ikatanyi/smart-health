@@ -1,11 +1,11 @@
 package io.smarthealth.stock.purchase.domain;
 
-import io.smarthealth.company.contact.domain.Address;
-import io.smarthealth.company.contact.domain.Contact;
+import io.smarthealth.organization.contact.domain.Address;
+import io.smarthealth.organization.contact.domain.Contact;
 import io.smarthealth.financial.account.domain.PriceList;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.company.facility.domain.Department;
-import io.smarthealth.company.partner.supplier.domain.Supplier;
+import io.smarthealth.organization.facility.domain.Department;
+import io.smarthealth.organization.partner.supplier.domain.Supplier;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,9 @@
 package io.smarthealth.appointment.domain;
 
-import io.smarthealth.company.facility.domain.Department;
+import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.company.facility.domain.Employee;
-import io.smarthealth.company.person.patient.domain.Patient;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
 import java.time.LocalTime;

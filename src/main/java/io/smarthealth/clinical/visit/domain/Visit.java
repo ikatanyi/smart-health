@@ -1,7 +1,7 @@
 package io.smarthealth.clinical.visit.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.company.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
