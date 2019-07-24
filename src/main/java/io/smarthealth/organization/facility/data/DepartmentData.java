@@ -5,7 +5,7 @@
  */
 package io.smarthealth.organization.facility.data;
 
-import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.facility.domain.Department;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -15,13 +15,12 @@ import lombok.Data;
  * @author Simon.waweru
  */
 @Data
-public class EmployeeDTO {
+public class DepartmentData {
 
     @Enumerated(EnumType.STRING)
-    private Employee.Category employeeCategory;
-
+    private Department.Type type;
+    private String departmentCode;
     private String departmentName;
-    private DepartmentDTO department;
-    private DepartmentUnitDTO departmentUnit;
-
+    
+    
 }

@@ -18,7 +18,7 @@ import lombok.Data;
  * @author Simon.waweru
  */
 @Data
-public class VisitDTO {
+public class VisitData {
 
     private String visitNumber;
     private String patientNumber;
@@ -31,7 +31,7 @@ public class VisitDTO {
     private Boolean scheduled;
     private String createdBy;
 
-    public static Visit map(VisitDTO visitDTO) {
+    public static Visit map(VisitData visitDTO) {
         Visit visitEntity = new Visit();
         visitEntity.setCreatedBy(visitDTO.getCreatedBy());
         visitEntity.getPatient().setPatientNumber(visitDTO.getPatientNumber());
@@ -44,8 +44,8 @@ public class VisitDTO {
         return visitEntity;
     }
 
-    public static VisitDTO map(Visit visitEntity) {
-        VisitDTO visitDTO = new VisitDTO();
+    public static VisitData map(Visit visitEntity) {
+        VisitData visitDTO = new VisitData();
         visitDTO.setCreatedBy(visitEntity.getCreatedBy());
         visitDTO.setPatientNumber(visitEntity.getPatient().getPatientNumber());
         visitDTO.setScheduled(visitEntity.getScheduled());

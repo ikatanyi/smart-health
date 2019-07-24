@@ -9,7 +9,7 @@ import lombok.Data;
  * @author Kelsas
  */
 @Data
-public final class AddressDTO {
+public final class AddressData {
 
     private String line1;
     private String line2;
@@ -18,7 +18,7 @@ public final class AddressDTO {
     private String postalCode;
     private String Country;
 
-    public static PersonAddress map(final AddressDTO address) {
+    public static PersonAddress map(final AddressData address) {
         final PersonAddress addressEntity = new PersonAddress();
         addressEntity.setLine1(address.getLine1());
         addressEntity.setLine2(address.getLine2());
@@ -29,8 +29,8 @@ public final class AddressDTO {
         return addressEntity;
     }
 
-    public static AddressDTO map(final PersonAddress addressEntity) {
-        final AddressDTO address = new AddressDTO();
+    public static AddressData map(final PersonAddress addressEntity) {
+        final AddressData address = new AddressData();
         address.setCountry(addressEntity.getCountry());
         address.setCounty(addressEntity.getCounty());
         address.setLine1(addressEntity.getLine2());

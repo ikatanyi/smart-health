@@ -7,7 +7,7 @@ package io.smarthealth.clinical.visit.data;
 
 import io.smarthealth.clinical.record.domain.Diagnosis;
 import io.smarthealth.clinical.visit.domain.Admission;
-import io.smarthealth.organization.facility.data.EmployeeDTO;
+import io.smarthealth.organization.facility.data.EmployeeData;
 import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -18,13 +18,13 @@ import lombok.Data;
  * @author Simon.waweru
  */
 @Data
-public class AdmissionDTO {
+public class AdmissionData {
 
     @Enumerated(EnumType.STRING)
     private Admission.Type admissionType;
 
     List<Diagnosis> diagnosis;
 
-    private EmployeeDTO employee;
+    private EmployeeData employee;
 
 }

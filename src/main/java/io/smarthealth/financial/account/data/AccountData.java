@@ -3,16 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.organization.facility.data;
-
-import lombok.Data;
+package io.smarthealth.financial.account.data;
 
 /**
  *
- * @author Simon.waweru
+ * @author simon.waweru
  */
-@Data
-public class DepartmentUnitDTO {
-
-    String description;
+public class AccountData {
+    
 }

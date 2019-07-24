@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.visit.service;
 
-import io.smarthealth.clinical.visit.data.VisitDTO;
+import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.utility.APIException;
@@ -36,21 +36,21 @@ public class VisitService {
         return visits;
     }
 
-    public VisitDTO createAVisit(final VisitDTO visitDTO, final String patientNumber) {
+    public VisitData createAVisit(final VisitData visitDTO, final String patientNumber) {
         //Fetch patient entity 
         Patient patient = this.findPatientEntityOrThrow(patientNumber);
-        Visit visit = VisitDTO.map(visitDTO);
+        Visit visit = VisitData.map(visitDTO);
         visit.setPatient(patient);
         visitRepository.saveAndFlush(visit);
         return visitDTO;
     }
 
-    public String updateVisit(final String visitNumber, final VisitDTO visitDTO) {
+    public String updateVisit(final String visitNumber, final VisitData visitDTO) {
         findVisitEntityOrThrow(visitNumber);
         //validate and fetch patient
         Patient patient = findPatientEntityOrThrow(visitDTO.getPatientNumber());
 
-        Visit visitEntity = VisitDTO.map(visitDTO);
+        Visit visitEntity = VisitData.map(visitDTO);
         visitEntity.setPatient(patient);
         visitRepository.save(visitEntity);
         return visitDTO.getVisitNumber();

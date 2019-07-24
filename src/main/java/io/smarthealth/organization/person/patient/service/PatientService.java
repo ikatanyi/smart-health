@@ -10,9 +10,9 @@ import io.smarthealth.organization.person.domain.PersonAddress;
 import io.smarthealth.organization.person.domain.PersonAddressRepository;
 import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.domain.PersonContactRepository;
-import io.smarthealth.organization.person.data.AddressDTO;
-import io.smarthealth.organization.person.data.ContactDTO;
-import io.smarthealth.organization.person.patient.data.PatientDTO;
+import io.smarthealth.organization.person.data.AddressData;
+import io.smarthealth.organization.person.data.ContactData;
+import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.time.Instant;
@@ -46,28 +46,26 @@ public class PatientService {
         return patientRepository.getOne(patientId);
     }
 
-    public Optional<PatientDTO> fetchPatientByPatientNumber(final String patientNumber) {
+    public Optional<PatientData> fetchPatientByPatientNumber(final String patientNumber) {
         return patientRepository.findByPatientNumber(patientNumber)
                 .map(patientEntity -> {
-                    final PatientDTO patient = PatientDTO.map(patientEntity);
+                    final PatientData patient = PatientData.map(patientEntity);
                     //fetch patient addresses
                     final List<PersonAddress> personAddressEntity = personAddressRepository.findByPerson(patientEntity);
                     if (personAddressEntity != null) {
-                        patient.setAddressDetails(
-                                personAddressEntity
-                                        .stream()
-                                        .map(AddressDTO::map)
-                                        .collect(Collectors.toList())
+                        patient.setAddressDetails(personAddressEntity
+                                .stream()
+                                .map(AddressData::map)
+                                .collect(Collectors.toList())
                         );
                     }
 
                     final List<PersonContact> contactDetailEntities = this.personContactRepository.findByPerson(patientEntity);
                     if (contactDetailEntities != null) {
-                        patient.setContactDetails(
-                                contactDetailEntities
-                                        .stream()
-                                        .map(ContactDTO::map)
-                                        .collect(Collectors.toList())
+                        patient.setContactDetails(contactDetailEntities
+                                .stream()
+                                .map(ContactData::map)
+                                .collect(Collectors.toList())
                         );
                     }
 
@@ -80,38 +78,36 @@ public class PatientService {
 //        return patientRepository.save(patient);
 //    }
     @Transactional
-    public String createPatient(final PatientDTO patient) {
+    public String createPatient(final PatientData patient) {
 
         throwifDuplicatePatientNumber(patient.getPatientNumber());
 
-        final Patient patientEntity = PatientDTO.map(patient);
-        patientEntity.setStatus(PatientDTO.State.ACTIVE.name());
+        final Patient patientEntity = PatientData.map(patient);
+        patientEntity.setStatus(PatientData.State.ACTIVE.name());
         patientEntity.setPatientNumber(patient.getPatientNumber());
         final Patient savedPatient = this.patientRepository.save(patientEntity);
         //save patients contact details
         if (patient.getContactDetails() != null) {
-            personContactRepository.saveAll(
-                    patient.getContactDetails()
-                            .stream()
-                            .map(contact -> {
-                                final PersonContact contactDetailEntity = ContactDTO.map(contact);
-                                contactDetailEntity.setPerson(savedPatient);
-                                return contactDetailEntity;
-                            })
-                            .collect(Collectors.toList())
+            personContactRepository.saveAll(patient.getContactDetails()
+                    .stream()
+                    .map(contact -> {
+                        final PersonContact contactDetailEntity = ContactData.map(contact);
+                        contactDetailEntity.setPerson(savedPatient);
+                        return contactDetailEntity;
+                    })
+                    .collect(Collectors.toList())
             );
         }
         //save patient address details
         if (patient.getAddressDetails() != null) {
-            personAddressRepository.saveAll(
-                    patient.getAddressDetails()
-                            .stream()
-                            .map(address -> {
-                                final PersonAddress addressDetailEntity = AddressDTO.map(address);
-                                addressDetailEntity.setPerson(savedPatient);
-                                return addressDetailEntity;
-                            })
-                            .collect(Collectors.toList())
+            personAddressRepository.saveAll(patient.getAddressDetails()
+                    .stream()
+                    .map(address -> {
+                        final PersonAddress addressDetailEntity = AddressData.map(address);
+                        addressDetailEntity.setPerson(savedPatient);
+                        return addressDetailEntity;
+                    })
+                    .collect(Collectors.toList())
             );
         }
 

@@ -14,21 +14,21 @@ import lombok.Data;
  * @author Simon.waweru
  */
 @Data
-public final class ContactDTO {
+public final class ContactData {
 
     private String email;
     private String telephone;
     private String mobile;
 
-    public static ContactDTO map(PersonContact personContactEntity) {
-        ContactDTO contactDTO = new ContactDTO();
+    public static ContactData map(PersonContact personContactEntity) {
+        ContactData contactDTO = new ContactData();
         contactDTO.setEmail(personContactEntity.getEmail());
         contactDTO.setMobile(personContactEntity.getMobile());
         contactDTO.setTelephone(personContactEntity.getTelephone());
         return contactDTO;
     }
 
-    public static PersonContact map(ContactDTO personContactDto) {
+    public static PersonContact map(ContactData personContactDto) {
         PersonContact personContactEntity = new PersonContact();
         personContactEntity.setEmail(personContactDto.getEmail());
         personContactEntity.setMobile(personContactDto.getMobile());

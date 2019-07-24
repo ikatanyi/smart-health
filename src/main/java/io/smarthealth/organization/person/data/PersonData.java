@@ -17,7 +17,7 @@ import lombok.Data;
  * @author Simon.waweru
  */
 @Data
-public class PersonDTO {
+public class PersonData {
     
     private String title;
     private String givenName;
@@ -26,11 +26,11 @@ public class PersonDTO {
     private String gender;
     private boolean isPatient;
     private LocalDate dateOfBirth;
-    private List<AddressDTO> address;
-    private List<ContactDTO> contact;
+    private List<AddressData> address;
+    private List<ContactData> contact;
     private String maritalStatus;
     
-    public static Person map(final PersonDTO personDTO) {
+    public static Person map(final PersonData personDTO) {
         Person person = new Person();
         person.setTitle(personDTO.getTitle());
         person.setGivenName(personDTO.getGivenName());
@@ -42,19 +42,19 @@ public class PersonDTO {
         if (personDTO.getAddress() != null) {
             person.setAddresses(
                     personDTO.getAddress().stream()
-                            .map(AddressDTO::map)
+                            .map(AddressData::map)
                             .collect(Collectors.toList())
             );
         }
         if (personDTO.getContact() != null) {
-            person.setContacts(personDTO.getContact().stream().map(ContactDTO::map).collect(Collectors.toList()));
+            person.setContacts(personDTO.getContact().stream().map(ContactData::map).collect(Collectors.toList()));
         }
         person.setMaritalStatus(personDTO.getMaritalStatus());
         return person;
     }
     
-    public static PersonDTO map(final Person person) {
-        PersonDTO persondto = new PersonDTO();
+    public static PersonData map(final Person person) {
+        PersonData persondto = new PersonData();
         persondto.setTitle(person.getTitle());
         persondto.setGivenName(person.getGivenName());
         persondto.setMiddleName(person.getMiddleName());
@@ -65,12 +65,12 @@ public class PersonDTO {
         if (person.getAddresses() != null) {
             persondto.setAddress(
                     person.getAddresses().stream()
-                            .map(AddressDTO::map)
+                            .map(AddressData::map)
                             .collect(Collectors.toList())
             );
         }
         if (person.getContacts() != null) {
-            persondto.setContact(person.getContacts().stream().map(ContactDTO::map).collect(Collectors.toList()));
+            persondto.setContact(person.getContacts().stream().map(ContactData::map).collect(Collectors.toList()));
         }
         person.setMaritalStatus(person.getMaritalStatus());
         return persondto;

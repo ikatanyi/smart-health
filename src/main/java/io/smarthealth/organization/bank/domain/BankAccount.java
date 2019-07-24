@@ -1,6 +1,6 @@
 package io.smarthealth.organization.bank.domain;
 
-import io.smarthealth.organization.domain.Organization; 
+import io.smarthealth.organization.domain.Organization;
 import io.smarthealth.financial.account.domain.Account;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
@@ -17,7 +17,7 @@ import lombok.Data;
 @Data
 @Table(name = "organization_bank_account")
 public class BankAccount extends Identifiable {
- 
+
     @ManyToOne
     private Organization organization;
 
@@ -31,5 +31,5 @@ public class BankAccount extends Identifiable {
     private String IBAN;
     private Boolean defaultAccount; // state if this is an organization default account
     private Boolean companyAccount; // link to the company
- 
+
 }

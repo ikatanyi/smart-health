@@ -12,7 +12,7 @@ import lombok.Data;
  * @author Simon.waweru
  */
 @Data
-public class PatientIdentifierDTO {
+public class PatientIdentifierData {
 
     private String type;
     private String value;

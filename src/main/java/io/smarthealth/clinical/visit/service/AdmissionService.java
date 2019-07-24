@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.visit.service;
 
-import io.smarthealth.clinical.visit.data.AdmissionDTO;
+import io.smarthealth.clinical.visit.data.AdmissionData;
 import io.smarthealth.clinical.visit.domain.AdmissionRepository;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
@@ -26,15 +26,15 @@ public class AdmissionService {
     @Autowired
     VisitRepository visitRepository;
 
-    public AdmissionDTO fetchAdmissionHistoryByPatient(final String admissionNumber) {
+    public AdmissionData fetchAdmissionHistoryByPatient(final String admissionNumber) {
         return null;
     }
 
-    public String createAdmission(AdmissionDTO admissionDTO) {
+    public String createAdmission(AdmissionData admissionDTO) {
         return null;
     }
 
-    public String updateAdmissionDetails(String admissionNumber, AdmissionDTO admissionDTO) {
+    public String updateAdmissionDetails(String admissionNumber, AdmissionData admissionDTO) {
         return null;
     }
 

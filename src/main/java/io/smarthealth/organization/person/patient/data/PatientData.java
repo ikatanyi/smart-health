@@ -1,8 +1,8 @@
 package io.smarthealth.organization.person.patient.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.organization.person.data.AddressDTO;
-import io.smarthealth.organization.person.data.ContactDTO;
+import io.smarthealth.organization.person.data.AddressData;
+import io.smarthealth.organization.person.data.ContactData;
 import static io.smarthealth.infrastructure.utility.Constants.DATE_PATTERN;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.domain.enumeration.MaritalStatus;
@@ -21,7 +21,7 @@ import lombok.Data;
  * @author Kelsas
  */
 @Data
-public final class PatientDTO {
+public final class PatientData {
 
     public enum State {
         ACTIVE,
@@ -45,8 +45,8 @@ public final class PatientDTO {
     @Enumerated(EnumType.STRING)
     @Column(length = 25)
     private MaritalStatus maritalStatus;
-    private List<AddressDTO> addressDetails;
-    private List<ContactDTO> contactDetails;
+    private List<AddressData> addressDetails;
+    private List<ContactData> contactDetails;
 //    @Valid
 //    private List<ContactDetail> contactDetails;
 //    private List<IdentificationCard> identifications;
@@ -58,7 +58,7 @@ public final class PatientDTO {
     private String lastModifiedBy;
     private String lastModifiedOn;
 
-    public static Patient map(final PatientDTO patient) {
+    public static Patient map(final PatientData patient) {
         Patient patientEntity = new Patient();
         patientEntity.setPatientNumber(patient.getPatientNumber());
         patientEntity.setDateOfBirth(patient.getDateOfBirth());
@@ -69,13 +69,12 @@ public final class PatientDTO {
         patientEntity.setDateRegistered(patient.getRegistrationDate());
         patientEntity.setSurname(patient.getSurname());
         patientEntity.setTitle(patient.getTitle());
-        
-        
+
         return patientEntity;
     }
 
-    public static PatientDTO map(final Patient patientEntity) {
-        final PatientDTO patient = new PatientDTO();
+    public static PatientData map(final Patient patientEntity) {
+        final PatientData patient = new PatientData();
 
         patient.setPatientNumber(patientEntity.getPatientNumber());
         patient.setTitle(patientEntity.getTitle());
@@ -87,7 +86,7 @@ public final class PatientDTO {
         patient.setMaritalStatus(MaritalStatus.valueOf(patientEntity.getMaritalStatus()));
         patient.setRegistrationDate(patientEntity.getDateRegistered());
         //patient.setAddress(AddressMapper.map(patientEntity.getAddress()));       
-        patient.setCurrentState(PatientDTO.State.valueOf(patientEntity.getStatus()));
+        patient.setCurrentState(PatientData.State.valueOf(patientEntity.getStatus()));
 
         patient.setCreatedBy(patientEntity.getCreatedBy());
         patient.setCreatedOn(patientEntity.getCreatedOn().toString());
