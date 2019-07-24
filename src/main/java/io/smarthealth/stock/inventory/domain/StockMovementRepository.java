@@ -5,7 +5,6 @@
  */
 package io.smarthealth.stock.inventory.domain;
 
-import io.smarthealth.stock.inventory.domain.StockMovement;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

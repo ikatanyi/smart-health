@@ -1,7 +1,6 @@
 package io.smarthealth.auth.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.organization.person.domain.Person;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +11,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

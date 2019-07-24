@@ -8,8 +8,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
  *
  * @author Kelsas
  */
-@Configuration
-@EnableResourceServer
+//@Configuration
+//@EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
     
 }

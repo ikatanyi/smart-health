@@ -1,5 +1,6 @@
 package io.smarthealth.stock.item.domain;
 
+import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.inventory.domain.ReorderRule;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -18,7 +20,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "stock_item")
-public class Item {
+public class Item extends Identifiable{
  
     public enum Group {
         Services,
@@ -30,6 +32,7 @@ public class Item {
     private String itemName;
     @Enumerated(EnumType.STRING)
     private Group itemGroup;
+    @OneToOne
     private Uom uom;
     private BigDecimal sellingRate;
     private Boolean fixedAsset; 

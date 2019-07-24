@@ -27,9 +27,9 @@ public class Facility extends Organization {
     private Boolean parent;
     @Lob
     private byte[] logo;
-    
+     
     @OneToMany(mappedBy = "facility")
-    List<Ward> wards = new ArrayList<>();
+    private List<Ward> wards = new ArrayList<>();
     
     @OneToMany(mappedBy = "facility")
     List<Department> departments=new ArrayList<>();

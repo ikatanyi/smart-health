@@ -21,7 +21,7 @@ public class Role extends Identifiable{
     private String name;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "permission_role", joinColumns = {
+    @JoinTable(name = "auth_permission_role", joinColumns = {
         @JoinColumn(name = "role_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "permission_id", referencedColumnName = "id")})
     private List<Permission> permissions;

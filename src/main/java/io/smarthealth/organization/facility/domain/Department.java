@@ -1,15 +1,17 @@
 package io.smarthealth.organization.facility.domain;
- 
+
 import io.smarthealth.financial.account.domain.Account;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.Data; 
+import lombok.Data;
+
 /**
  *
  * @author Kelsas
@@ -25,8 +27,9 @@ public class Department extends Identifiable {
         ServicePoint
     }
 
-    @ManyToOne
+    @ManyToOne 
     private Facility facility;
+    
     @Enumerated(EnumType.STRING)
     private Type type;
     private String code;

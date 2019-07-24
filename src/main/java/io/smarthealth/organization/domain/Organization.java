@@ -5,12 +5,15 @@ import io.smarthealth.organization.contact.domain.Address;
 import io.smarthealth.organization.contact.domain.Contact;
 import io.smarthealth.financial.account.domain.PaymentTerms;
 import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.infrastructure.domain.Inheritable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.Data;
@@ -20,8 +23,9 @@ import lombok.Data;
  * @author Kelsas
  */
 @Data
-@MappedSuperclass
-public class Organization extends Identifiable {
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public class Organization extends Inheritable {
 
     public enum Type {
         Company,
@@ -41,7 +45,7 @@ public class Organization extends Identifiable {
     @OneToOne
     private PaymentTerms creditLimit;
   
-    @ManyToMany(mappedBy = "organizations")
+    @ManyToMany
     @JoinTable(name = "organization_address", joinColumns = {
         @JoinColumn(name = "organization_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "address_id", referencedColumnName = "id")})

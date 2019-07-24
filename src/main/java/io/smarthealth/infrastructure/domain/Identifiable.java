@@ -27,7 +27,7 @@ public abstract class Identifiable implements Serializable{
     private String uuid;
     
     @Column(length = 38)
-    private String facilityId;
+    private String companyId;
     
     @PrePersist
     public void autofill() {

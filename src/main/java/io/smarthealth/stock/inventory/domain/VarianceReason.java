@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "inventory_variance_reason")
+@Table(name = "stock_variance_reason")
 public class VarianceReason extends SetupMetadata{
     
 }
