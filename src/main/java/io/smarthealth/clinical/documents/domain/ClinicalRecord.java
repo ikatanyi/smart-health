@@ -26,7 +26,7 @@ public abstract class ClinicalRecord extends Auditable {
     @ManyToOne
     private Employee healthProvider;
     private LocalDateTime dateRecorded;
-    
+
     private boolean voided = false;
     private String voidedBy;
     private LocalDateTime voidedDate;

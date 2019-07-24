@@ -18,10 +18,11 @@ import lombok.Data;
 @Data
 @Table(name = "patient")
 public class Patient extends Person {
-    
-    //Discount cards at the time of registration. 
 
-    /** Unique Health Identification Number - UHID*/
+    //Discount cards at the time of registration. 
+    /**
+     * Unique Health Identification Number - UHID
+     */
 //    @NaturalId
     @Column(length = 50, unique = true)
     private String patientNumber;   //HLC-PAT-2019-00002  | UHID-PT-2019-00002 
@@ -34,11 +35,10 @@ public class Patient extends Person {
 
     @Column(length = 50)
     private String status;
-    
+
     @Column(length = 15)
     private String bloodType;
 
     private boolean isAlive = false;
- 
 
 }

@@ -3,14 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.documents.domain;
+package io.smarthealth.organization.person.patient.data;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import lombok.Data;
 
 /**
  *
  * @author Simon.waweru
  */
-public interface VitalsRecordRepository extends JpaRepository<VitalsRecord, Long> {
+@Data
+public class PatientIdentifierDTO {
 
+    private String type;
+    private String value;
+    private Boolean validated;
 }

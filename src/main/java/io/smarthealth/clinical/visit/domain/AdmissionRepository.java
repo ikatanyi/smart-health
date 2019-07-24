@@ -6,11 +6,13 @@
 package io.smarthealth.clinical.visit.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Simon.waweru
  */
+@Repository
 public interface AdmissionRepository extends JpaRepository<Admission, Long> {
 
 }

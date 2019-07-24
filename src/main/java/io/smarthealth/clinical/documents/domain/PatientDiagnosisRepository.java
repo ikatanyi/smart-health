@@ -5,12 +5,16 @@
  */
 package io.smarthealth.clinical.documents.domain;
 
+import io.smarthealth.organization.person.patient.domain.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
  * @author Simon.waweru
  */
-public interface ParentDiagnosisRepository extends JpaRepository<PatientDiagnosis, Long> {
+public interface PatientDiagnosisRepository extends JpaRepository<PatientDiagnosis, Long> {
 
+    Page<PatientDiagnosis> findByPatient(final Patient patient, Pageable page);
 }
