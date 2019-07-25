@@ -8,6 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 /**
@@ -16,7 +17,10 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "auth_role")
+@Table(name = "auth_role" , 
+            uniqueConstraints = {
+                @UniqueConstraint(name = "uk_role_uuid", columnNames= { "uuid" } )
+            } )
 public class Role extends Identifiable{
     private String name;
 

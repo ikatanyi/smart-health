@@ -8,7 +8,7 @@ package io.smarthealth.appointment.service;
 import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.appointment.domain.Appointment;
 import io.smarthealth.appointment.domain.AppointmentRepository;
-import io.smarthealth.infrastructure.utility.APIException;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;

@@ -5,7 +5,7 @@ import io.smarthealth.clinical.record.domain.VitalsRecord;
 import io.smarthealth.clinical.record.data.VitalRecordData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
-import io.smarthealth.infrastructure.utility.APIException;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;

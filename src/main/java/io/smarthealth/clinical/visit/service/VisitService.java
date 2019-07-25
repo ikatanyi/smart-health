@@ -8,7 +8,7 @@ package io.smarthealth.clinical.visit.service;
 import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
-import io.smarthealth.infrastructure.utility.APIException;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import org.springframework.data.domain.Page;

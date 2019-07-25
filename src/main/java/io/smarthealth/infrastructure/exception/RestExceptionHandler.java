@@ -1,4 +1,4 @@
-package io.smarthealth.infrastructure.utility;
+package io.smarthealth.infrastructure.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
@@ -124,8 +124,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(APIException.class)
     protected ResponseEntity<Object> handleEntityNotFound(APIException ex) {
-        ServiceError serviceError = ex.serviceError();
-        ApiError apiError = new ApiError(HttpStatus.valueOf(serviceError.getCode()));
+        ApiError apiError = ex.apiError();
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }

@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -29,10 +31,13 @@ public class TransactionLine extends Identifiable {
     @Enumerated(EnumType.STRING)
     private Type transactionType;
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_fiscal_year"))
     private FiscalYear period;
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_account_trx_line"))
     private Account account;
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_trx"))
     private Transaction transaction;
     
     private String reference;

@@ -1,4 +1,4 @@
-package io.smarthealth.infrastructure.utility;
+package io.smarthealth.infrastructure.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -57,6 +57,12 @@ public class ApiError {
         this.status = status;
         this.message = message;
         this.debugMessage = ex.getLocalizedMessage();
+    }
+    
+    ApiError(HttpStatus status, String message) {
+        this();
+        this.status = status;
+        this.message = message;
     }
 
     private void addSubError(ApiSubError subError) {

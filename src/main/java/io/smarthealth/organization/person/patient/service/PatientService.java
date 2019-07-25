@@ -5,7 +5,7 @@
  */
 package io.smarthealth.organization.person.patient.service;
 
-import io.smarthealth.infrastructure.utility.APIException;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.domain.PersonAddress;
 import io.smarthealth.organization.person.domain.PersonAddressRepository;
 import io.smarthealth.organization.person.domain.PersonContact;

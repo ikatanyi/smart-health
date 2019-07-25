@@ -6,7 +6,7 @@
 package io.smarthealth.organization.bank.service;
 
 import io.smarthealth.financial.account.domain.AccountRepository;
-import io.smarthealth.infrastructure.utility.APIException;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.bank.data.BankAccountData;
 import io.smarthealth.organization.bank.domain.BankAccount;

@@ -9,10 +9,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 /**
@@ -22,7 +24,10 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "appointments")
+@Table(name = "appointments" , 
+            uniqueConstraints = {
+                @UniqueConstraint(name = "uk_appointment_uuid", columnNames= { "uuid" } )
+            } )
 public class Appointment extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -30,14 +35,18 @@ public class Appointment extends Auditable {
     private Patient patient;
 
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_procedure_id"))
     private Item procedure;
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_practioneer_id"))
     private Employee practioneer;
 
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_department_id"))
     private Department department;
 
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_type_id"))
     private AppointmentType appointmentType;
 
     private LocalDate appointmentDate;
@@ -49,5 +58,6 @@ public class Appointment extends Auditable {
     private String urgency;
     private String status; //new followup 
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_referrer_id"))
     private Employee referredBy;
 }
