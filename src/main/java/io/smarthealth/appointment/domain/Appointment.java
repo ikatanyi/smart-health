@@ -14,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 /**
@@ -24,10 +23,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "appointments" , 
-            uniqueConstraints = {
-                @UniqueConstraint(name = "uk_appointment_uuid", columnNames= { "uuid" } )
-            } )
+@Table(name = "appointments")
 public class Appointment extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

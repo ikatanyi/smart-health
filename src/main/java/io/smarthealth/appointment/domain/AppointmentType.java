@@ -12,10 +12,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "appointment_type" , 
-            uniqueConstraints = {
-                @UniqueConstraint(name = "uk_appointment_type_uuid", columnNames= { "uuid" } )
-            } )
+@Table(name = "appointment_type")
 public class AppointmentType extends Identifiable{
     private String name;
     private Integer duration; // in minutes

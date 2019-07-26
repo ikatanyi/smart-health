@@ -1,5 +1,6 @@
 package io.smarthealth.auth.service;
- 
+
+import io.smarthealth.auth.config.ApplicationUserDetails;
 import io.smarthealth.auth.domain.User;
 import io.smarthealth.auth.domain.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
  * @author Kelsas
  */
 @Service
-public class AuthUserDetailsService  implements UserDetailsService {
+public class ApplicationUserDetailsService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -25,9 +26,10 @@ public class AuthUserDetailsService  implements UserDetailsService {
                 .orElseThrow(()
                         -> new UsernameNotFoundException("User not found with username or email : " + username)
                 );
-        new AccountStatusUserDetailsChecker().check(user);
+        ApplicationUserDetails appUser = new ApplicationUserDetails(user);
+        new AccountStatusUserDetailsChecker().check(appUser);
 
-        return user;
+        return appUser;
     }
-    
+
 }

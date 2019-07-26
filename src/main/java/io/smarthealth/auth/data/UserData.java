@@ -7,6 +7,7 @@ package io.smarthealth.auth.data;
 
 import io.smarthealth.auth.domain.User;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
@@ -30,6 +31,7 @@ public class UserData implements Serializable {
     private boolean account_expired;
     private boolean credentials_expired;
     private boolean verified;
+     private LocalDateTime lastLogin;
     private List<String> roles = new ArrayList<>();
 
     public static User map(UserData userData) {

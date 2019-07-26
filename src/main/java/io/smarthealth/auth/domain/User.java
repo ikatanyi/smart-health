@@ -24,11 +24,9 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @author Kelsas
  */
 @Entity
-@Table(name = "auth_user",
-        uniqueConstraints = {
-            @UniqueConstraint(name = "uk_user_uuid", columnNames = {"uuid"})
-        })
-public class User extends Identifiable implements UserDetails {
+@Table(name = "auth_user")
+public class User extends Identifiable {
+//        implements UserDetails {
 
     private static final long serialVersionUID = 1L;
     private String email;
@@ -49,31 +47,29 @@ public class User extends Identifiable implements UserDetails {
     private boolean verified; 
     
     private LocalDateTime lastLogin;
-    @Column(length = 38)
-    private String resetToken;
-
+     
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "auth_role_user", joinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
 
-    @Override
+//    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
-    @Override
+//    @Override
     public boolean isAccountNonExpired() {
         return !accountNonExpired;
     }
 
-    @Override
+//    @Override
     public boolean isCredentialsNonExpired() {
         return !credentialsNonExpired;
     }
 
-    @Override
+//    @Override
     public boolean isAccountNonLocked() {
         return !accountNonLocked;
     }
@@ -81,7 +77,7 @@ public class User extends Identifiable implements UserDetails {
     /*
 	 * Get roles and permissions and add them as a Set of GrantedAuthority
      */
-    @Override
+//    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
 
@@ -95,12 +91,12 @@ public class User extends Identifiable implements UserDetails {
         return authorities;
     }
 
-    @Override
+//    @Override
     public String getPassword() {
         return password;
     }
 
-    @Override
+//    @Override
     public String getUsername() {
         return username;
     }
@@ -145,12 +141,8 @@ public class User extends Identifiable implements UserDetails {
         this.lastLogin = lastLogin;
     }
 
-    public String getResetToken() {
-        return resetToken;
+    public List<Role> getRoles() {
+        return roles;
     }
-
-    public void setResetToken(String resetToken) {
-        this.resetToken = resetToken;
-    }
-
+    
 }

@@ -27,7 +27,6 @@ import org.hibernate.annotations.NaturalId;
 @Entity
 @Table(name = "patient_doctor_request")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name="order_type")
 public abstract class DoctorRequest extends Auditable {
 
     //the doctors oders

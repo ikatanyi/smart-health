@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.Async;
  *
  */
 @Slf4j
-public class SmtpMailSender implements MailSender<ApplicationMailData> {
+public class SmtpMailSender implements MailSender<EmailData> {
 
     private final JavaMailSender javaMailSender;
 
@@ -27,10 +27,11 @@ public class SmtpMailSender implements MailSender<ApplicationMailData> {
 
     /**
      * Sends a mail using a MimeMessageHelper
+     * @param mail
      */
     @Override
     @Async
-    public void send(ApplicationMailData mail) {
+    public void send(EmailData mail) {
 
         log.info("Sending SMTP mail from thread " + Thread.currentThread().getName()); // toString gives more info    	
 

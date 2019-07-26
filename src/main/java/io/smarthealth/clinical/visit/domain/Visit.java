@@ -26,7 +26,6 @@ import org.hibernate.annotations.NaturalId;
 @Entity
 @Table(name = "patient_visit")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "visit_category")
 public class Visit extends Auditable {
 
     public enum Status {

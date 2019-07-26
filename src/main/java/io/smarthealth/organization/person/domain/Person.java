@@ -19,8 +19,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "person")
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "person_type")
+@Inheritance(strategy = InheritanceType.JOINED) 
 public class Person extends Auditable {
 
     @Column(length = 25)

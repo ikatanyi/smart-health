@@ -8,14 +8,14 @@ import lombok.extern.slf4j.Slf4j;
  * @author Sanjay Patel
  */
 @Slf4j
-public class MockMailSender implements MailSender<ApplicationMailData> {
+public class MockMailSender implements MailSender<EmailData> {
 
     public MockMailSender() {
         log.info("Created");
     }
 
     @Override
-    public void send(ApplicationMailData mail) {
+    public void send(EmailData mail) {
 
         log.info("Sending mail to " + mail.getTo());
         log.info("Subject: " + mail.getSubject());

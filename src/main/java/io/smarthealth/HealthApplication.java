@@ -1,7 +1,7 @@
 package io.smarthealth;
 
 import io.smarthealth.infrastructure.mail.MailSender;
-import io.smarthealth.infrastructure.mail.ApplicationMailData;
+import io.smarthealth.infrastructure.mail.EmailData;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.common.util.impl.Log_$logger;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package io.smarthealth.auth.config;
 
-import io.smarthealth.auth.service.AuthUserDetailsService;
+import io.smarthealth.auth.service.ApplicationUserDetailsService;
 import java.util.Arrays;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     TokenStore tokenStore;
 
     @Autowired
-    private AuthUserDetailsService userDetailsService;
+    private ApplicationUserDetailsService userDetailsService;
 
     @Autowired
     @Qualifier("authenticationManagerBean")
@@ -52,9 +52,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     JwtAccessTokenConverter jwtAccessTokenConverter;
  
-    @Autowired
-    private ClientDetailsService clientDetailsService;
-
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
@@ -68,10 +65,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .checkTokenAccess("isAuthenticated()");
     }
 
-    @Autowired
-    public void setGlobalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
-    }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
@@ -84,7 +77,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .userDetailsService(userDetailsService)
                 .authorizationCodeServices(authorizationCodeServices())
                 .reuseRefreshTokens(false);
-
     }
 
     @Bean

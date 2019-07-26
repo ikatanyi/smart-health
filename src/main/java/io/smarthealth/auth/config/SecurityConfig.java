@@ -1,6 +1,6 @@
 package io.smarthealth.auth.config;
 
-import io.smarthealth.auth.service.AuthUserDetailsService;
+import io.smarthealth.auth.service.ApplicationUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +26,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private AuthUserDetailsService userDetailsService;
+    private ApplicationUserDetailsService userDetailsService;
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
