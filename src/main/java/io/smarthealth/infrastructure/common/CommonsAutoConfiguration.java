@@ -9,6 +9,7 @@ import io.smarthealth.infrastructure.mail.MailSender;
 import io.smarthealth.infrastructure.mail.MockMailSender;
 import io.smarthealth.infrastructure.mail.SmtpMailSender;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -22,9 +23,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 @Configuration
 @Slf4j
 public class CommonsAutoConfiguration {
-     /**
+
+    /**
      * Configures a MockMailSender when the property
      * <code>spring.mail.host</code> isn't defined.
+     * @return 
      */
     @Bean
     @ConditionalOnMissingBean(MailSender.class)
@@ -37,6 +40,8 @@ public class CommonsAutoConfiguration {
     /**
      * Configures an SmtpMailSender when the property
      * <code>spring.mail.host</code> is defined.
+     * @param javaMailSender
+     * @return 
      */
     @Bean
     @ConditionalOnMissingBean(MailSender.class)
@@ -44,5 +49,12 @@ public class CommonsAutoConfiguration {
     public MailSender<?> smtpMailSender(JavaMailSender javaMailSender) {
         log.info("Configuring SmtpMailSender");
         return new SmtpMailSender(javaMailSender);
+    }
+
+    /** Conversion between Applications Entities and DTO
+     * @return  */
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 }

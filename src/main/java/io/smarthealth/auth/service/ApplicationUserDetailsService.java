@@ -26,10 +26,10 @@ public class ApplicationUserDetailsService implements UserDetailsService {
                 .orElseThrow(()
                         -> new UsernameNotFoundException("User not found with username or email : " + username)
                 );
-        ApplicationUserDetails appUser = new ApplicationUserDetails(user);
-        new AccountStatusUserDetailsChecker().check(appUser);
+//        ApplicationUserDetails appUser = new ApplicationUserDetails(user);
+        new AccountStatusUserDetailsChecker().check(user);
 
-        return appUser;
+        return user;
     }
 
 }

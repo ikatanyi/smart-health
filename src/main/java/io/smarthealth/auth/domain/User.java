@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,12 +24,12 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 @Entity
 @Table(name = "auth_user")
-public class User extends Identifiable {
-//        implements UserDetails {
+public class User extends Identifiable 
+        implements UserDetails {
 
     private static final long serialVersionUID = 1L;
     private String email;
-    private String username;
+    private String username; 
     private String password;
     private String name;
     private boolean enabled;
@@ -54,22 +53,35 @@ public class User extends Identifiable {
         @JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
 
-//    @Override
+    public User() {
+    }
+
+    public User(String email, String username, String password, String name, List<Role> roles) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.roles = roles;
+        this.enabled=true;
+    }
+
+    
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
-//    @Override
+    @Override
     public boolean isAccountNonExpired() {
         return !accountNonExpired;
     }
 
-//    @Override
+    @Override
     public boolean isCredentialsNonExpired() {
         return !credentialsNonExpired;
     }
 
-//    @Override
+    @Override
     public boolean isAccountNonLocked() {
         return !accountNonLocked;
     }
@@ -77,7 +89,7 @@ public class User extends Identifiable {
     /*
 	 * Get roles and permissions and add them as a Set of GrantedAuthority
      */
-//    @Override
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
 
@@ -90,13 +102,13 @@ public class User extends Identifiable {
 
         return authorities;
     }
-
-//    @Override
+ 
+    @Override
     public String getPassword() {
         return password;
     }
 
-//    @Override
+    @Override
     public String getUsername() {
         return username;
     }
@@ -143,6 +155,10 @@ public class User extends Identifiable {
 
     public List<Role> getRoles() {
         return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
     
 }
