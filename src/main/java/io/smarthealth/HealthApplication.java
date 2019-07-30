@@ -1,6 +1,5 @@
 package io.smarthealth;
 
-import io.smarthealth.infrastructure.mail.MailSender;
 import io.smarthealth.infrastructure.mail.EmailData;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.common.util.impl.Log_$logger;
@@ -8,13 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import io.smarthealth.infrastructure.mail.MailService;
 
 @SpringBootApplication
 @Slf4j
 public class HealthApplication {
 
     @Autowired
-    MailSender mailSender;
+    MailService mailSender;
 
     public static void main(String[] args) {
         SpringApplication.run(HealthApplication.class, args);

@@ -1,8 +1,9 @@
 package io.smarthealth.auth.config;
 
+import io.smarthealth.infrastructure.exception.CustomAccessDeniedHandler;
+import io.smarthealth.infrastructure.exception.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
@@ -16,8 +17,12 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 @EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private static final String RESOURCE_ID = "smarthealth-service";
 
+    public ResourceServerConfig(CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+    }
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
@@ -25,23 +30,17 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     }
 
     @Override
-    public void configure(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeRequests()
-//                .antMatchers("/api/**").authenticated()
-//                .antMatchers("/").permitAll().
-//                and()
-//                .oauth2ResourceServer()
-//                .jwt();
-        
+    public void configure(HttpSecurity http) throws Exception { 
         http.authorizeRequests()
-                
                 .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                 .antMatchers("/api/user/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
                 .and()
                 .antMatcher("/api/**")
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/users").permitAll() //<1>
-                .anyRequest().authenticated();
+                .antMatchers(HttpMethod.GET, "/api/users","/v2/api-docs/**","/swagger-ui.html*").permitAll() //<1>
+                .anyRequest().authenticated()
+                .and()
+                .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint).accessDeniedHandler(new CustomAccessDeniedHandler());
     }
 }

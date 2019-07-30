@@ -5,7 +5,6 @@
  */
 package io.smarthealth.infrastructure.common;
 
-import io.smarthealth.infrastructure.mail.MailSender;
 import io.smarthealth.infrastructure.mail.MockMailSender;
 import io.smarthealth.infrastructure.mail.SmtpMailSender;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
+import io.smarthealth.infrastructure.mail.MailService;
 
 /**
  *
@@ -30,9 +30,9 @@ public class CommonsAutoConfiguration {
      * @return 
      */
     @Bean
-    @ConditionalOnMissingBean(MailSender.class)
+    @ConditionalOnMissingBean(MailService.class)
     @ConditionalOnProperty(name = "spring.mail.host", havingValue = "foo", matchIfMissing = true)
-    public MailSender<?> mockMailSender() {
+    public MailService<?> mockMailSender() {
         log.info("Configuring MockMailSender");
         return new MockMailSender();
     }
@@ -44,9 +44,9 @@ public class CommonsAutoConfiguration {
      * @return 
      */
     @Bean
-    @ConditionalOnMissingBean(MailSender.class)
+    @ConditionalOnMissingBean(MailService.class)
     @ConditionalOnProperty("spring.mail.host")
-    public MailSender<?> smtpMailSender(JavaMailSender javaMailSender) {
+    public MailService<?> smtpMailSender(JavaMailSender javaMailSender) {
         log.info("Configuring SmtpMailSender");
         return new SmtpMailSender(javaMailSender);
     }

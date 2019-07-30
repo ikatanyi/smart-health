@@ -20,7 +20,8 @@
         <passay.version>1.4.0</passay.version>
         <model-mapper.version>2.3.5</model-mapper.version>
         <apache-poi.version>4.1.0</apache-poi.version>
-          <guava.version>28.0-jre</guava.version>
+        <guava.version>28.0-jre</guava.version>
+        <io.springfox.version>2.9.2</io.springfox.version>
     </properties>
 
     <dependencies>
@@ -100,6 +101,18 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+        
+        <dependency>  
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${io.springfox.version}</version>
+        </dependency>
+        <dependency>  
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${io.springfox.version}</version>
+        </dependency>
+        
     </dependencies>
 
     <dependencyManagement>

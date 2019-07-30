@@ -14,13 +14,16 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 public class EmailData {
-     @Autowired
+
+    @Autowired
     private Environment env;
-     
+
     private String to;
     private String subject;
     private String body;
     private String from;
+    private boolean isMultipart;
+    private boolean isHtml;
 
     public static EmailData of(String to, String subject, String body) {
 
@@ -29,7 +32,8 @@ public class EmailData {
         data.to = to;
         data.subject = subject;
         data.body = body;
-       
+
         return data;
     }
+
 }

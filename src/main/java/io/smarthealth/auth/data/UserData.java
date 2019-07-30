@@ -7,6 +7,7 @@ package io.smarthealth.auth.data;
  
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
+import io.smarthealth.auth.validator.ValidPassword;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class UserData implements Serializable {
     private String uuid;
     private String email;
     private String username; 
+    @ValidPassword
     private String password;
     private String name;
     private boolean enabled;
