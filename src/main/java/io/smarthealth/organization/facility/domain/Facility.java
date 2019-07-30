@@ -17,21 +17,22 @@ import lombok.Data;
 @Data
 @Table(name = "facility")
 public class Facility extends Organization {
-     public enum Type{
-         Hospital, clinic, Speciality
-     }
-     
-    private String registrationNumber; 
-    private String facilityType; 
+
+    public enum Type {
+        Hospital, clinic, Speciality
+    }
+
+    private String registrationNumber;
+    private String facilityType;
     private String facilityClass; //government classifications
     private Boolean parent;
     @Lob
     private byte[] logo;
-     
+
     @OneToMany(mappedBy = "facility")
     private List<Ward> wards = new ArrayList<>();
-    
+
     @OneToMany(mappedBy = "facility")
-    List<Department> departments=new ArrayList<>();
-     
+    List<Department> departments = new ArrayList<>();
+
 }

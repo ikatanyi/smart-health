@@ -3,15 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.organization.facility.domain;
+package io.smarthealth.organization.contact.domain;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
- * @author Simon.waweru
+ * @author simon.waweru
  */
-public interface FacilityRepository extends JpaRepository<Facility, Long> {
-    Page<Facility> findAll(final boolean Pageable);
+public interface ContactRepository extends JpaRepository<Contact, Long> {
+
 }

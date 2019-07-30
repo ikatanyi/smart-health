@@ -5,12 +5,8 @@
  */
 package io.smarthealth.organization.bank.data;
 
-import io.smarthealth.financial.account.domain.Account;
-import io.smarthealth.financial.account.domain.AccountRepository;
 import io.smarthealth.organization.bank.domain.BankAccount;
-import io.smarthealth.organization.domain.OrganizationRepository;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *

@@ -20,21 +20,22 @@ import lombok.Data;
 @Data
 @Table(name = "addresses")
 public class Address extends Identifiable {
- 
+
     @ManyToMany(mappedBy = "address")
     private List<Organization> organizations;
-   public enum Type{
-       Billing,
-       Office,
-       Personal,
-       Postal,
-       Current,
-       Permanent,
-       Other
-   }
-   private String title;
-   @Enumerated(EnumType.STRING)
-   private Type type;
+
+    public enum Type {
+        Billing,
+        Office,
+        Personal,
+        Postal,
+        Current,
+        Permanent,
+        Other
+    }
+    private String title;
+    @Enumerated(EnumType.STRING)
+    private Type type;
     private String line1;
     private String line2;
     private String town;

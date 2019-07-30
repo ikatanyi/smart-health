@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author simon.waweru
  */
 @Repository
-public interface OrganizationRepository extends JpaRepository<Organization, Long> {
-    Optional<Organization> findByCode(final String organizationCode) ;
+public interface OrganizationRepository extends JpaRepository<Organization, String> {
+
+    Optional<Organization> findByCode(final String organizationCode);
 }
