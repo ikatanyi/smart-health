@@ -2,9 +2,9 @@ package io.smarthealth.infrastructure.mail;
 
 /**
  * The mail sender interface for sending mail
- * @param <MailData>
+ * @param <EmailData>
  */
-public interface MailSender<MailData> {
+public interface MailService<EmailData> {
 
-    void send(MailData mail);
+    void send(EmailData mail);    
 }

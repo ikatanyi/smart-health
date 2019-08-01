@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author Sanjay Patel
  */
 @Slf4j
-public class MockMailSender implements MailSender<EmailData> {
+public class MockMailSender implements MailService<EmailData> {
 
     public MockMailSender() {
         log.info("Created");

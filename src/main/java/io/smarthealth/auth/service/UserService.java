@@ -30,6 +30,7 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordTokenRepository passwordTokenRepository;
+   
 
     public UserService(UserRepository repository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, PasswordTokenRepository passwordTokenRepository) {
         this.userRepository = repository;
@@ -97,7 +98,9 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(auth);
         return null;
     }
-
+   public Page<Role> getAuthorities(Pageable pgbl){
+       return roleRepository.findAll(pgbl);
+   }
     //sign up { email | password | name | username | captchaResponse }
     //Resend Verification mail
     //verify user

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 public class SecurityConfiguration {
     private String webAppClientId;
     private String webAppClientSecret;
+    private int accessTokenValidity;
+    private int refreshTokenValidity;
 
     public String getWebAppClientId() {
         return webAppClientId;
@@ -28,5 +30,22 @@ public class SecurityConfiguration {
     public void setWebAppClientSecret(String webAppClientSecret) {
         this.webAppClientSecret = webAppClientSecret;
     }
+
+    public int getAccessTokenValidity() {
+        return accessTokenValidity;
+    }
+
+    public void setAccessTokenValidity(int accessTokenValidity) {
+        this.accessTokenValidity = accessTokenValidity;
+    }
+
+    public int getRefreshTokenValidity() {
+        return refreshTokenValidity;
+    }
+
+    public void setRefreshTokenValidity(int refreshTokenValidity) {
+        this.refreshTokenValidity = refreshTokenValidity;
+    }
+ 
     
 }

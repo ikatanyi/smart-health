@@ -49,25 +49,26 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Autowired
     JwtAccessTokenConverter jwtAccessTokenConverter;
- 
+
     @Autowired
-        private SecurityConfiguration securityConfiguration;
-    
-    
+    private SecurityConfiguration securityConfiguration;
+
 //    @Override
 //    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 //        clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
 //    }
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.inMemory()
+                .withClient(securityConfiguration.getWebAppClientId())
+                .authorizedGrantTypes("implicit", "refresh_token", "password", "authorization_code")
+                .accessTokenValiditySeconds(securityConfiguration.getAccessTokenValidity())
+                .refreshTokenValiditySeconds(securityConfiguration.getRefreshTokenValidity())
+                .scopes("web_app")
+                .resourceIds("smarthealth-service")
+                .secret(passwordEncoder.encode(securityConfiguration.getWebAppClientSecret()));
+    }
 
-     @Override
-        public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-            clients.inMemory()
-                   .withClient(securityConfiguration.getWebAppClientId())
-                   .authorizedGrantTypes("password", "refresh_token")
-                   .scopes("mobile_app")
-                   .resourceIds("smarthealth-service")
-                   .secret(passwordEncoder.encode(securityConfiguration.getWebAppClientSecret()));
-        }
     @Override
     public void configure(final AuthorizationServerSecurityConfigurer oauthServer) {
         oauthServer
@@ -75,7 +76,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .tokenKeyAccess("permitAll()")
                 .checkTokenAccess("isAuthenticated()");
     }
-
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {

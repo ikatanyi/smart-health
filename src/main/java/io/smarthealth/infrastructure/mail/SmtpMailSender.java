@@ -15,10 +15,10 @@ import org.springframework.scheduling.annotation.Async;
  *
  */
 @Slf4j
-public class SmtpMailSender implements MailSender<EmailData> {
+public class SmtpMailSender implements MailService<EmailData> {
 
     private final JavaMailSender javaMailSender;
-
+    // 
     public SmtpMailSender(JavaMailSender javaMailSender) {
 
         this.javaMailSender = javaMailSender;
