@@ -17,7 +17,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PartnerRepository extends JpaRepository<Partner, String> {
 
-    Page<Partner> findAll(final boolean pageable);
-
     Optional<Partner> findByCode(final String partnerCode);
 }

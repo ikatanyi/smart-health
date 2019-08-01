@@ -20,10 +20,9 @@ import io.smarthealth.organization.person.data.AddressData;
 import io.smarthealth.organization.person.data.ContactData;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.catalina.mapper.Mapper;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -48,7 +47,7 @@ public class PartnerService {
         this.dataMapper = dataMapper;
     }
 
-    public ContentPage<PartnerData> fetchAllPartners(final boolean pageable) {
+    public ContentPage<PartnerData> fetchAllPartners(final Pageable pageable) {
         ContentPage<PartnerData> partnerData = new ContentPage<>();
         Page<Partner> partners = partnerRepository.findAll(pageable);
 

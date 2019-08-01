@@ -5,12 +5,14 @@
  */
 package io.smarthealth.administration.domain;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
  * @author Simon.waweru
  */
-public interface CodeTypeRepository extends JpaRepository<CodeType, Long> {
+public interface CodeTypeRepository extends JpaRepository<CodeType, String> {
 
+    Optional<CodeType> findByCtKey(final String ctKey);
 }

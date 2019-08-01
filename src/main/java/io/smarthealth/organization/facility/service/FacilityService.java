@@ -69,4 +69,14 @@ public class FacilityService {
         return facilitiesData;
     }
 
+    public boolean deleteFacility(Facility facility) {
+        try {
+            facilityRepository.deleteById(facility.getId());
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw APIException.internalError("Error deleting facility id " + facility.getId(), e.getMessage());
+        }
+    }
+
 }

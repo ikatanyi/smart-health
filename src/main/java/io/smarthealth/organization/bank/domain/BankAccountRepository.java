@@ -18,8 +18,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BankAccountRepository extends JpaRepository<BankAccount, Long> {
 
-    @Override
-    Page<BankAccount> findAll(final Pageable pageable);
-
     Page<BankAccount> findByOrganization(final Organization o, final Pageable pageable);
 }

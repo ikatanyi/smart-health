@@ -5,6 +5,7 @@
  */
 package io.smarthealth.organization.contact.domain;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -12,5 +13,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author simon.waweru
  */
 public interface ContactRepository extends JpaRepository<Contact, Long> {
-
+    Page<Contact> findByOrganizations();
 }
