@@ -1,14 +1,24 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.financial.account.data;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.List;
+import lombok.Data;
 
 /**
  *
- * @author simon.waweru
+ * @author kelsas
  */
-public class AccountData {
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class AccountData {  
+    private Long id;
+    private String uuid;
+    private String accountCode; 
+    private String accountName;
+    private String accountType;  
+    private String parentAccount;
+    private Boolean nonTransacting;
+    private Boolean active = true;
+    private List<AccountData> children;
     
 }

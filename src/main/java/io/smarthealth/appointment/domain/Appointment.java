@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.NaturalId;
 
 /**
  * Patient Appointment
@@ -30,6 +31,8 @@ public class Appointment extends Auditable {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
+    @NaturalId
+    private String appointmentNo;
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_procedure_id"))
     private Item procedure;

@@ -1,4 +1,4 @@
-package io.smarthealth.organization.partner.payer.domain;
+package io.smarthealth.organization.payer.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;

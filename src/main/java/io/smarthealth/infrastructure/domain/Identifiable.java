@@ -21,17 +21,9 @@ public abstract class Identifiable implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(length = 38, unique = true)
-    private String uuid;
+    private Long id; 
     
     @Column(length = 38)
     private String companyId;
-    
-    @PrePersist
-    public void autofill() {
-        String ids=UUID.randomUUID().toString(); 
-        this.setUuid(ids);
-    }
+     
 }

@@ -4,8 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
- * @author kelsas
+ * @author Kelsas
  */
-public interface ModeOfPaymentRepository extends JpaRepository<ModeOfPayment, Long> {
-
+public interface FiscalYearRepository extends JpaRepository<FiscalYear, Long>{
+    
 }

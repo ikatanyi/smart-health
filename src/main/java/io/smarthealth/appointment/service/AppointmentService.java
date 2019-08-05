@@ -58,7 +58,7 @@ public class AppointmentService {
         return appointmentPage;
     }
 
-    public String createAppointment(AppointmentData appointment) {
+    public Appointment createAppointment(AppointmentData appointment) {
 
         if (!appointment.getAllDay() && appointment.getEndTime() == null) {
             throw APIException.badRequest("Appointment End Date and Time is Required. The appointment is not marked as all day event");
@@ -70,7 +70,8 @@ public class AppointmentService {
 
         Appointment savedAppointment = appointmentRepository.save(entity);
 
-        return savedAppointment.getUuid();
+        return savedAppointment;
+                
     }
 
     public AppointmentData geAppointmentById(Long id) {

@@ -3,7 +3,7 @@ package io.smarthealth.clinical.record.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.record.domain.VitalsRecord;
-import static io.smarthealth.infrastructure.utility.Constants.DATE_TIME_PATTERN;
+import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import java.time.LocalDateTime;
 import lombok.Data;
 import io.smarthealth.clinical.visit.validation.constraints.CheckValidVisit;

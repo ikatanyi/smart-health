@@ -1,7 +1,7 @@
-package io.smarthealth.organization.partner.payer.domain;
+package io.smarthealth.organization.payer.domain;
 
-import io.smarthealth.organization.partner.domain.Partner;
 import io.smarthealth.financial.account.domain.Account;
+import io.smarthealth.organization.domain.Organization;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -10,13 +10,13 @@ import javax.persistence.Table;
 import lombok.Data;
 
 /**
- *
+ * {@link  Organization} Payer - Debtor
  * @author Kelsas
  */
 @Entity
 @Data
 @Table(name = "payer")
-public class Payer extends Partner {
+public class Payer extends Organization {
 
     @Enumerated(EnumType.STRING)
     private Type payerType;

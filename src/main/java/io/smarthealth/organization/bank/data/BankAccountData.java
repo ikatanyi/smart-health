@@ -5,12 +5,8 @@
  */
 package io.smarthealth.organization.bank.data;
 
-import io.smarthealth.financial.account.domain.Account;
-import io.smarthealth.financial.account.domain.AccountRepository;
 import io.smarthealth.organization.bank.domain.BankAccount;
-import io.smarthealth.organization.domain.OrganizationRepository;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -42,16 +38,16 @@ public class BankAccountData {
         bankData.setBranchCode(bank.getBranchCode());
         bankData.setCompanyAccount(bank.getCompanyAccount());
         bankData.setDefaultAccount(bank.getDefaultAccount());
-        bankData.setGlAccountName(bank.getGlAccount().getName());
-        bankData.setGlAccountCode(bank.getGlAccount().getCode());
+        bankData.setGlAccountName(bank.getGlAccount().getAccountName());
+        bankData.setGlAccountCode(bank.getGlAccount().getAccountCode());
         bankData.setIBAN(bank.getIBAN());
         bankData.setOrganizationCode(bank.getOrganization().getCode());
-        bankData.setOrganizationId(bank.getOrganization().getCompanyId());
         bankData.setOrganizationName(bank.getOrganization().getName());
         return bankData;
     }
 
     public static BankAccount map(BankAccountData bankAccountData) {
+        
         BankAccount bank = new BankAccount();
         bank.setAccountName(bankAccountData.getAccountName());
         bank.setAccountNo(bankAccountData.getAccountNo());
@@ -59,7 +55,7 @@ public class BankAccountData {
         bank.setBranchCode(bankAccountData.getBranchCode());
         bank.setCompanyAccount(bankAccountData.getCompanyAccount());
         bank.setDefaultAccount(bankAccountData.getDefaultAccount());
-        bank.getGlAccount().setCode(bankAccountData.getGlAccountCode());
+        bank.getGlAccount().setAccountCode(bankAccountData.getGlAccountCode());
         bank.setIBAN(bankAccountData.getIBAN());
         bank.getOrganization().setCode(bankAccountData.getOrganizationCode());
         return bank;

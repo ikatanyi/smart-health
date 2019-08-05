@@ -1,10 +1,9 @@
 package io.smarthealth.organization.facility.domain;
 
-import io.smarthealth.infrastructure.domain.BaseMetadata;
+import io.smarthealth.infrastructure.domain.Identifiable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -17,8 +16,8 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "facility_ward")
-public class Ward extends BaseMetadata {
-
+public class Ward extends Identifiable {
+    private String wardName;
     @ManyToOne 
     private Facility facility;
   

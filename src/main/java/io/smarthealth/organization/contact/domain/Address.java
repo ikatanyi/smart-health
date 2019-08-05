@@ -1,14 +1,12 @@
 package io.smarthealth.organization.contact.domain;
 
-import io.smarthealth.organization.domain.Organization;
-import io.smarthealth.organization.partner.domain.Partner;
+import io.smarthealth.organization.domain.Organization; 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany; 
 import javax.persistence.Table;
 import lombok.Data;
 

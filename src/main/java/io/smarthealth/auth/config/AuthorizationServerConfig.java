@@ -64,7 +64,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .authorizedGrantTypes("implicit", "refresh_token", "password", "authorization_code")
                 .accessTokenValiditySeconds(securityConfiguration.getAccessTokenValidity())
                 .refreshTokenValiditySeconds(securityConfiguration.getRefreshTokenValidity())
-                .scopes("web_app")
+                .scopes("read", "write")
                 .resourceIds("smarthealth-service")
                 .secret(passwordEncoder.encode(securityConfiguration.getWebAppClientSecret()));
     }

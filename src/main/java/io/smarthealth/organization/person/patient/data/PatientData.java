@@ -3,7 +3,7 @@ package io.smarthealth.organization.person.patient.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.organization.person.data.AddressData;
 import io.smarthealth.organization.person.data.ContactData;
-import static io.smarthealth.infrastructure.utility.Constants.DATE_PATTERN;
+import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.domain.enumeration.MaritalStatus;
 import io.smarthealth.organization.person.patient.domain.Patient;

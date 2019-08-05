@@ -1,6 +1,6 @@
 package io.smarthealth.organization.facility.domain;
 
-import io.smarthealth.infrastructure.domain.BaseMetadata;
+import io.smarthealth.infrastructure.domain.Identifiable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
@@ -16,8 +16,8 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "facility_room")
-public class Room extends BaseMetadata {
-
+public class Room extends Identifiable {
+    private String roomName;
     private String roomType; // enum Male|Female|Mix|Unknown
 
     @ManyToOne

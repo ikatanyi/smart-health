@@ -1,4 +1,4 @@
-package io.smarthealth.organization.partner.supplier.domain;
+package io.smarthealth.organization.supplier.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;

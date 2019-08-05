@@ -15,6 +15,7 @@ import java.text.MessageFormat;
  */
 public final class PaginationUtil {
 
+    private static final String API_VERSION="V1.0";
     private static final String HEADER_X_TOTAL_COUNT = "X-Total-Count";
     private static final String HEADER_LINK_FORMAT = "<{0}>; rel=\"{1}\"";
 
@@ -31,6 +32,7 @@ public final class PaginationUtil {
      */
     public static <T> HttpHeaders generatePaginationHttpHeaders(UriComponentsBuilder uriBuilder, Page<T> page) {
         HttpHeaders headers = new HttpHeaders();
+        headers.add("X-API-VERSION", API_VERSION);
         headers.add(HEADER_X_TOTAL_COUNT, Long.toString(page.getTotalElements()));
         int pageNumber = page.getNumber();
         int pageSize = page.getSize();

@@ -1,7 +1,7 @@
 package io.smarthealth.stock.purchase.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.organization.partner.supplier.domain.Supplier;
+import io.smarthealth.organization.supplier.domain.Supplier;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -4,7 +4,10 @@ import io.smarthealth.appointment.domain.Appointment;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
+import org.modelmapper.ModelMapper;
 
 /**
  *
@@ -30,39 +33,29 @@ public class AppointmentData implements Serializable {
     }
 
     private String patientNumber;
-
+    private String procedureCode;
+    private Long practionerId;
+    private Long departmentId;
+    private Long appointmentType;
     private LocalDate appointmentDate;
     private LocalTime startTime;
     private LocalTime endTime;
-
-    private String reason;
     private Boolean allDay;
-    private String visitType;
-    private String appointmentWith;
-    private String urgency;
-    private String status; //new followup 
-
-    public static Appointment map(AppointmentData appointmentDto) {
-        Appointment appointment = new Appointment();
-        appointment.setAllDay(appointmentDto.getAllDay());
-        appointment.setAppointmentDate(appointmentDto.appointmentDate); 
-        appointment.setStatus(appointmentDto.getStatus());
-        appointment.setUrgency(appointmentDto.getStatus()); 
-        appointment.getPatient().setPatientNumber(appointmentDto.getPatientNumber());
-        appointment.setEndTime(appointmentDto.getEndTime());
-        appointment.setStartTime(appointmentDto.getStartTime());
+    @Enumerated(EnumType.STRING)
+    private Urgency urgency;
+    @Enumerated(EnumType.STRING)
+    private Status status; //new followup  
+    private Long referredBy;
+    
+    public static Appointment map(AppointmentData data){
+        ModelMapper mapper=new ModelMapper();
+        Appointment appointment =mapper.map(data, Appointment.class);
         return appointment;
     }
-
-    public static AppointmentData map(Appointment appointmentEntity) {
-        AppointmentData ap = new AppointmentData();
-        ap.setAllDay(appointmentEntity.getAllDay());
-        ap.setAppointmentDate(appointmentEntity.getAppointmentDate()); 
-        ap.setEndTime(appointmentEntity.getEndTime());
-        ap.setStartTime(appointmentEntity.getStartTime());
-        ap.setPatientNumber(appointmentEntity.getPatient().getPatientNumber()); 
-        ap.setStatus(appointmentEntity.getStatus());
-        ap.setUrgency(appointmentEntity.getUrgency()); 
-        return ap;
+    
+     public static AppointmentData map(Appointment appointment){
+        ModelMapper mapper=new ModelMapper();
+        AppointmentData data =mapper.map(appointment, AppointmentData.class);
+        return data;
     }
 }
