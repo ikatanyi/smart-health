@@ -7,6 +7,7 @@ package io.smarthealth.financial.account.domain;
 
 import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.domain.Organization;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -15,9 +16,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Simon.waweru
  */
 public interface PaymentTermsRepository extends JpaRepository<PaymentTerms, Long> {
-    
-    ContentPage<PaymentTerms> findByOrganization(final Organization organization,final Pageable pageable);
-    
-    
+
+    Page<PaymentTerms> findByOrganization(final Organization organization, final Pageable pageable);
 
 }

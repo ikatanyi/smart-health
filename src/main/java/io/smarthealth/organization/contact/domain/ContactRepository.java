@@ -14,5 +14,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author simon.waweru
  */
 public interface ContactRepository extends JpaRepository<Contact, Long> {
-    Page<Contact> findByOrganizations(Pageable page);
+    Page<Contact> findByOrganizations(final Pageable pageable);
 }

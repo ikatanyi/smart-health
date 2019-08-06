@@ -19,6 +19,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +42,9 @@ public class PatientService {
     @Autowired
     PersonAddressRepository personAddressRepository;
 
+    @Autowired
+    ModelMapper modelMapper;
+
     public Page<Patient> fetchAllPatients(final Pageable pageable) {
         return patientRepository.findAll(pageable);
     }
@@ -51,7 +56,7 @@ public class PatientService {
     public Optional<PatientData> fetchPatientByPatientNumber(final String patientNumber) {
         return patientRepository.findByPatientNumber(patientNumber)
                 .map(patientEntity -> {
-                    final PatientData patient = PatientData.map(patientEntity);
+                    final PatientData patient = modelMapper.map(patientEntity, PatientData.class);
                     //fetch patient addresses
                     final List<PersonAddress> personAddressEntity = personAddressRepository.findByPerson(patientEntity);
                     if (personAddressEntity != null) {
@@ -80,13 +85,18 @@ public class PatientService {
 //        return patientRepository.save(patient);
 //    }
     @Transactional
-    public String createPatient(final PatientData patient) {
+    public Patient createPatient(final PatientData patient) {
 
         throwifDuplicatePatientNumber(patient.getPatientNumber());
 
-        final Patient patientEntity = PatientData.map(patient);
-        patientEntity.setStatus(PatientData.State.ACTIVE.name());
-        patientEntity.setPatientNumber(patient.getPatientNumber());
+        // use strict to prevent over eager matching (happens with ID fields)
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        // modelMapper.addMapping(PatientData::getPatientNumber, Patient::setPatientNumber);
+        final Patient patientEntity = modelMapper.map(patient, Patient.class);
+        patientEntity.setAlive(true);
+        patientEntity.setPatient(true);
+//        patientEntity.setPatientNumber(patient.getPatientNumber());
+        System.out.println("patientEntity " + patientEntity.toString());
         final Patient savedPatient = this.patientRepository.save(patientEntity);
         //save patients contact details
         if (patient.getContactDetails() != null) {
@@ -113,7 +123,7 @@ public class PatientService {
             );
         }
 
-        return patient.getPatientNumber();
+        return savedPatient;
     }
 
     public String updatePatient(String patientNumber, Patient patient) {
