@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.accounting.data;
+package io.smarthealth.financial.account.domain;
 
-/**
- *
+/** 
+ *  Asset, Liability, Equity, Income, Expense
  * @author Kelsas
  */
 public enum AccountType {

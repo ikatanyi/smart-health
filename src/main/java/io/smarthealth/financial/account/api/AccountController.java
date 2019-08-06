@@ -56,7 +56,7 @@ public class AccountController {
     
      @GetMapping("/accounts/{account_code}")
      public AccountData getAccounts(@PathVariable(value = "account_code") String code){
-         Account user = service.findAccountByCode(code)
+         Account user = service.findAccount(code)
                 .orElseThrow(() -> APIException.notFound("No account found for reference {0}", code));
         return convertToData(user);
      }

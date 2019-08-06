@@ -37,7 +37,7 @@ public class BankService {
     public Long createBank(final BankAccountData bankData) {
         BankAccount bank = BankAccountData.map(bankData);
 
-        bank.setGlAccount(accountRepository.findByCode(bankData.getGlAccountCode()).get());
+        bank.setGlAccount(accountRepository.findByAccountCode(bankData.getGlAccountCode()).get());
         bank.setOrganization(organizationRepository.findByCode(bankData.getOrganizationCode()).get());
 
         bankAccountRepository.save(bank);
@@ -63,8 +63,7 @@ public class BankService {
             bank.setBank(bankAccountData.getBank());
             bank.setBranchCode(bankAccountData.getBranchCode());
             bank.setCompanyAccount(bankAccountData.getCompanyAccount());
-            bank.setDefaultAccount(bankAccountData.getDefaultAccount());
-            bank.setGlAccount(accountRepository.findByCode(bankAccountData.getGlAccountCode()).get());
+            bank.setDefaultAccount(bankAccountData.getDefaultAccount()); 
             bank.setIBAN(bankAccountData.getIBAN());
             bank.setOrganization(organizationRepository.findByCode(bankAccountData.getGlAccountCode()).get());
             bank.setSwiftNumber(bankAccountData.getSwiftNumber());

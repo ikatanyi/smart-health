@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 import org.hibernate.annotations.NaturalId;
 
@@ -22,10 +23,7 @@ import org.hibernate.annotations.NaturalId;
  */
 @Entity
 @Data
-@Table(name = "account_account",
-        uniqueConstraints = {
-            @UniqueConstraint(name = "uk_account_uuid", columnNames = {"uuid"})
-        })
+@Table(name = "account_account")
 public class Account extends Identifiable {
 
     public enum State {
@@ -33,11 +31,9 @@ public class Account extends Identifiable {
         LOCKED,
         CLOSED
     }
-
-    public enum Type {
-        Asset, Liability, Equity, Income, Expense
-    }
+ 
     @NaturalId
+    @NotBlank(message = "A Unique Account Number is Required")
     @Column(nullable = false, updatable = false, unique = true, length = 30)
     private String accountCode;
 
@@ -45,7 +41,7 @@ public class Account extends Identifiable {
     private String accountName;
 
     @Enumerated(EnumType.STRING)
-    private Type accountType; //defines the root account
+    private AccountType accountType; //defines the root account
 
     @JoinColumn(name = "account_parent", foreignKey = @ForeignKey(name = "fk_account_parent"))
     @ManyToOne

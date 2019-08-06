@@ -20,7 +20,4 @@ public class PersonService {
     @Autowired
     PersonRepository personRepository;
 
-    public Person fetchPersonByUUID(String personUUID) {
-        return personRepository.findByUuid(personUUID).get();
-    }
 }

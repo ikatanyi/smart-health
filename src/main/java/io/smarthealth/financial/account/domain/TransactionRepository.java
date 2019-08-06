@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    Page<Transaction> findByAccountAndTransactionDateBetween(final Account account, final LocalDateTime dateFrom, final LocalDateTime dateTo,final Pageable pageable);
-    Page<Transaction> findByAccountAndTransactionDateBetweenAndMessageEquals(final Account account, final LocalDateTime dateFrom, final LocalDateTime dateTo, final String message, final Pageable pageable);
+    Page<Transaction> findByReferenceNoAndTransactionDateBetween(final String refNumber, final LocalDateTime dateFrom, final LocalDateTime dateTo,final Pageable pageable);
+    
+    Page<Transaction> findByReferenceNoAndTransactionDateBetweenAndDescriptionContaining(final String refNumber, final LocalDateTime dateFrom, final LocalDateTime dateTo, final String message, final Pageable pageable);
 }

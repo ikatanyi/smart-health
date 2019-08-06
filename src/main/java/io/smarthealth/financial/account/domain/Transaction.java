@@ -23,11 +23,11 @@ public class Transaction extends Identifiable {
     private String referenceNo;
     private String description;
     private LocalDate documentDate;
-    private LocalDateTime postingDate;
+    private LocalDateTime transactionDate;
     private String paymentReference;
     @ManyToOne
     private FiscalYear fiscalYear;
-    private Boolean reconciled; 
+    private Boolean reconciled;
     @OneToMany(mappedBy = "transaction")
     private List<TransactionLine> transactionLines;
 
