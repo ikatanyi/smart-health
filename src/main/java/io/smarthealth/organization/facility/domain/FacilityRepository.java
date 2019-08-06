@@ -6,6 +6,7 @@
 package io.smarthealth.organization.facility.domain;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -13,5 +14,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Simon.waweru
  */
 public interface FacilityRepository extends JpaRepository<Facility, String> {
-    Page<Facility> findAll(final boolean Pageable);
+    Page<Facility> findAll(final Pageable Pageable);
 }
