@@ -1,24 +1,20 @@
 package io.smarthealth.infrastructure.api;
 
-import io.smarthealth.auth.config.SecurityConfiguration;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import static org.springframework.security.oauth2.provider.token.AccessTokenConverter.CLIENT_ID;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger.web.SecurityConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  *
  * @author Kelsas
  */
-@Configuration
+
 @EnableSwagger2
 public class SwaggerConfig {
 
@@ -46,7 +42,7 @@ public class SwaggerConfig {
                 "Smarthealth Healthcare Information Management System",
                 "Version 2.0",
                 "",
-                new Contact("Kelsas", "www.smartapplicationsgroup.com", "kelsas@smartapplicationsgroup.com"),
+                new Contact("", "www.smartapplicationsgroup.com", "api.developer@smartapplicationsgroup.com"),
                 "License of API", "API license URL", Collections.emptyList());
     }
 

@@ -11,8 +11,7 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AccountData {  
-    private Long id;
-    private String uuid;
+    private Long id; 
     private String accountCode; 
     private String accountName;
     private String accountType;  

@@ -4,14 +4,12 @@
  * and open the template in the editor.
  */
 package io.smarthealth.organization.facility.domain;
-
-import org.springframework.data.domain.Page;
+ 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
  * @author Simon.waweru
  */
-public interface FacilityRepository extends JpaRepository<Facility, String> {
-    Page<Facility> findAll(final boolean Pageable);
+public interface FacilityRepository extends JpaRepository<Facility, String> { 
 }
