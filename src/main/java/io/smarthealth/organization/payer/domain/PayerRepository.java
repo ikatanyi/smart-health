@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.organization.partner.payer.domain;
+package io.smarthealth.organization.payer.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
  * @author Simon.waweru
  */
 @Repository
-public interface SchemeRepository extends JpaRepository<Scheme, Long> {
-    
+public interface PayerRepository extends JpaRepository<Payer, String> {
+
 }

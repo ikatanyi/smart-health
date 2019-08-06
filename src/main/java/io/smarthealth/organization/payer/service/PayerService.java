@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.organization.partner.payer.service;
+package io.smarthealth.organization.payer.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.partner.payer.domain.Payer;
-import io.smarthealth.organization.partner.payer.domain.PayerRepository;
+import io.smarthealth.organization.payer.domain.Payer;
+import io.smarthealth.organization.payer.domain.PayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
