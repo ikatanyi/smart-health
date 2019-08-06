@@ -5,6 +5,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.text.MessageFormat;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * Utility class for handling pagination.
@@ -31,8 +33,7 @@ public final class PaginationUtil {
      * @return http header.
      */
     public static <T> HttpHeaders generatePaginationHttpHeaders(UriComponentsBuilder uriBuilder, Page<T> page) {
-        System.err.println(uriBuilder.toUriString());
-       ;
+        
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-API-Version", API_VERSION);
         headers.add(HEADER_X_TOTAL_COUNT, Long.toString(page.getTotalElements()));
@@ -64,5 +65,31 @@ public final class PaginationUtil {
             .toUriString()
             .replace(",", "%2C")
             .replace(";", "%3B");
+    }
+    
+    public static <T> HttpHeaders generatePaginationHttpHeaders(MultiValueMap<String, String> param, Page<T> page, String path) {
+        
+        UriComponentsBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentContextPath().path(path);
+        uriBuilder=uriBuilder.queryParams(param);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-API-Version", API_VERSION);
+        headers.add(HEADER_X_TOTAL_COUNT, Long.toString(page.getTotalElements()));
+        int pageNumber = page.getNumber();
+        int pageSize = page.getSize();
+        StringBuilder link = new StringBuilder();
+        if (pageNumber < page.getTotalPages() - 1) {
+            link.append(prepareLink(uriBuilder, pageNumber + 1, pageSize, "next"))
+                .append(",");
+        }
+        if (pageNumber > 0) {
+            link.append(prepareLink(uriBuilder, pageNumber - 1, pageSize, "prev"))
+                .append(",");
+        }
+        link.append(prepareLink(uriBuilder, page.getTotalPages() - 1, pageSize, "last"))
+            .append(",")
+            .append(prepareLink(uriBuilder, 0, pageSize, "first"));
+        headers.add(HttpHeaders.LINK, link.toString());
+        return headers;
     }
 }

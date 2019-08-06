@@ -1,6 +1,7 @@
 package io.smarthealth.financial.account.domain.specification;
 
 import io.smarthealth.financial.account.domain.Account;
+import io.smarthealth.financial.account.domain.AccountType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import org.springframework.data.jpa.domain.Specification;
@@ -33,7 +34,8 @@ public class AccountSpecification {
                 );
             }
             if (type != null) {
-                predicates.add(cb.equal(root.get("accountType"), type));
+                
+                predicates.add(cb.equal(root.get("accountType"), AccountType.valueOf(type)));
             }
             
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

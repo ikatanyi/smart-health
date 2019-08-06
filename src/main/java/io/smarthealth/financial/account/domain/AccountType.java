@@ -9,7 +9,7 @@ package io.smarthealth.financial.account.domain;
  *  Asset, Liability, Equity, Income, Expense
  * @author Kelsas
  */
-public enum AccountType {
+public enum AccountType { 
     ASSET,
     LIABILITY,
     EQUITY,
