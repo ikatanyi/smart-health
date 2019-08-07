@@ -63,8 +63,7 @@ public class UserController {
 
     @GetMapping("/users/me")
     public UserData currentUser(Authentication authentication) {
-        String username = authentication.getName();
-        System.err.println("current user ... " + authentication.getName());
+        String username = authentication.getName(); 
         Optional<User> user = service.findUserByUsernameOrEmail(username);
         if (user.isPresent()) {
             return convertToData(user.get());

@@ -1,6 +1,7 @@
 package io.smarthealth.infrastructure.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -25,66 +26,75 @@ import org.springframework.validation.ObjectError;
  * @author Kelsas
  */
 @Data
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.CUSTOM, property = "error", visible = true)
-@JsonTypeIdResolver(LowerCaseClassNameResolver.class)
+//@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.CUSTOM, property = "error", visible = true)
+//@JsonTypeIdResolver(LowerCaseClassNameResolver.class)
 @JsonInclude(Include.NON_NULL)
 public class ApiError {
-     private HttpStatus status;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
-    private LocalDateTime timestamp;
-    private String message;
+    private String title;
+    private int status;
+    @JsonIgnore
+     private HttpStatus httpStatus;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
+//    private LocalDateTime timestamp;
+    private String details;
     private String debugMessage;
-    private List<ApiSubError> subErrors;
+    private List<ApiSubError> errors;
 
     private ApiError() {
-        timestamp = LocalDateTime.now();
+//        timestamp = LocalDateTime.now();
     }
 
     ApiError(HttpStatus status) {
         this();
-        this.status = status;
+        this.httpStatus = status;
+        this.status=status.value();
+        this.title=status.getReasonPhrase();
     }
 
     ApiError(HttpStatus status, Throwable ex) {
         this();
-        this.status = status;
-        this.message = "Unexpected error";
+        this.httpStatus = status;
+        this.details = "Unexpected error";
         this.debugMessage = ex.getLocalizedMessage();
+         this.status=status.value();
+        this.title=status.getReasonPhrase();
     }
 
     ApiError(HttpStatus status, String message, Throwable ex) {
         this();
-        this.status = status;
-        this.message = message;
+        this.httpStatus = status;
+        this.details = message;
         this.debugMessage = ex.getLocalizedMessage();
+         this.status=status.value();
+        this.title=status.getReasonPhrase();
     }
     
     ApiError(HttpStatus status, String message) {
         this();
-        this.status = status;
-        this.message = message;
+        this.httpStatus = status;
+        this.details = message;
+         this.status=status.value();
+        this.title=status.getReasonPhrase();
     }
 
     private void addSubError(ApiSubError subError) {
-        if (subErrors == null) {
-            subErrors = new ArrayList<>();
+        if (errors == null) {
+            errors = new ArrayList<>();
         }
-        subErrors.add(subError);
+        errors.add(subError);
     }
 
-    private void addValidationError(String object, String field, Object rejectedValue, String message) {
-        addSubError(new ApiValidationError(object, field, rejectedValue, message));
+    private void addValidationError(String field, String message) {
+        addSubError(new ApiValidationError(field, message));
     }
 
-    private void addValidationError(String object, String message) {
-        addSubError(new ApiValidationError(object, message));
+    private void addValidationError(String message) {
+        addSubError(new ApiValidationError(message));
     }
 
     private void addValidationError(FieldError fieldError) {
-        this.addValidationError(
-                fieldError.getObjectName(),
-                fieldError.getField(),
-                fieldError.getRejectedValue(),
+        this.addValidationError( 
+                fieldError.getField(), 
                 fieldError.getDefaultMessage());
     }
 
@@ -108,10 +118,8 @@ public class ApiError {
      * @param cv the ConstraintViolation
      */
     private void addValidationError(ConstraintViolation<?> cv) {
-        this.addValidationError(
-                cv.getRootBeanClass().getSimpleName(),
-                ((PathImpl) cv.getPropertyPath()).getLeafNode().asString(),
-                cv.getInvalidValue(),
+        this.addValidationError( 
+                ((PathImpl) cv.getPropertyPath()).getLeafNode().asString(), 
                 cv.getMessage());
     }
 
@@ -128,13 +136,13 @@ public class ApiError {
     @EqualsAndHashCode(callSuper = false)
     @AllArgsConstructor
     class ApiValidationError extends ApiSubError {
-        private String object;
+//        private String object;
         private String field;
-        private Object rejectedValue;
+//        private Object rejectedValue;
         private String message;
 
-        ApiValidationError(String object, String message) {
-            this.object = object;
+        ApiValidationError(String message) {
+//            this.object = object;
             this.message = message;
         }
     }

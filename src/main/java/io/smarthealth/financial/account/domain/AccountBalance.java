@@ -6,6 +6,7 @@
 package io.smarthealth.financial.account.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
+import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -35,4 +36,9 @@ public class AccountBalance extends Identifiable {
     private Double monthTen;
     private Double monthEleven;
     private Double monthTwelve;
+    
+    public Double getBalance(){
+        return monthOne
+                +monthTwo+monthThree;
+    }
 }

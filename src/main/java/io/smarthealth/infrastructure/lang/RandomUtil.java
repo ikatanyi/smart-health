@@ -1,4 +1,4 @@
-package io.smarthealth.infrastructure.utility;
+package io.smarthealth.infrastructure.lang;
 
 import org.apache.commons.lang3.RandomStringUtils;
 

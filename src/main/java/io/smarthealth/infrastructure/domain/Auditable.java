@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 @Data
 @MappedSuperclass
+//@Audited
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Auditable extends Identifiable {
 

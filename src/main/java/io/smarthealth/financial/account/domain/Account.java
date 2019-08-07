@@ -1,6 +1,7 @@
 package io.smarthealth.financial.account.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
+import java.math.BigDecimal;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,4 +57,5 @@ public class Account extends Identifiable {
 
     @OneToOne(mappedBy = "account")
     private AccountBalance accountBalance;
+    
 }

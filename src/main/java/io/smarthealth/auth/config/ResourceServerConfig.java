@@ -1,7 +1,5 @@
 package io.smarthealth.auth.config;
-
-import io.smarthealth.infrastructure.exception.CustomAccessDeniedHandler;
-import io.smarthealth.infrastructure.exception.CustomAuthenticationEntryPoint;
+ 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,14 +14,9 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 @Configuration
 @EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
-
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+ 
     private static final String RESOURCE_ID = "smarthealth-service";
-
-    public ResourceServerConfig(CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
-        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
-    }
-
+ 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
         resources.resourceId(RESOURCE_ID);
@@ -39,8 +32,6 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/users").permitAll() //<1>
                 .antMatchers(HttpMethod.GET, "/api/users","/v2/api-docs/**","/swagger-ui.html*").permitAll() //<1>
-                .anyRequest().authenticated()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint).accessDeniedHandler(new CustomAccessDeniedHandler());
+                .anyRequest().authenticated();
     }
 }
