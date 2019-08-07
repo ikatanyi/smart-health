@@ -14,6 +14,7 @@ import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -36,13 +37,14 @@ public class VisitService {
         return visits;
     }
 
-    public VisitData createAVisit(final VisitData visitDTO, final String patientNumber) {
-        //Fetch patient entity 
-        Patient patient = this.findPatientEntityOrThrow(patientNumber);
-        Visit visit = VisitData.map(visitDTO);
-        visit.setPatient(patient);
-        visitRepository.saveAndFlush(visit);
-        return visitDTO;
+    @Transactional
+    public Visit createAVisit(final Visit visit) {
+        try {
+        return visitRepository.saveAndFlush(visit);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw APIException.internalError("There was an error creating visit", e.getMessage());
+        }
     }
 
     public String updateVisit(final String visitNumber, final VisitData visitDTO) {

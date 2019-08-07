@@ -5,16 +5,21 @@
  */
 package io.smarthealth.organization.person.data;
 
-import io.smarthealth.organization.person.domain.PersonAddress;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.organization.person.domain.PersonContact;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
  *
  * @author Simon.waweru
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public final class ContactData {
+
+    @ApiModelProperty(required = false, hidden = true)
+    private Long id;
 
     private String email;
     private String telephone;

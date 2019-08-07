@@ -24,5 +24,7 @@ public class Portrait extends Identifiable{
     private byte[] image;
     private Long size;
     private String contentType;
+    private String imageUrl;
+    private String imageName;
  
 }

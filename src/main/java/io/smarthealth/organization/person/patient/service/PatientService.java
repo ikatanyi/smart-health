@@ -12,21 +12,31 @@ import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.domain.PersonContactRepository;
 import io.smarthealth.organization.person.data.AddressData;
 import io.smarthealth.organization.person.data.ContactData;
+import io.smarthealth.organization.person.domain.Person;
+import io.smarthealth.organization.person.domain.Portrait;
+import io.smarthealth.organization.person.domain.PortraitRepository;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
-import java.time.Instant;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -44,6 +54,19 @@ public class PatientService {
 
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    PortraitRepository portraitRepository;
+
+    private final File patientImageDirRoot;
+
+    @Value("${patientimage.upload.dir}")
+    private String uploadDir;
+
+    @Autowired
+    PatientService(@Value("${patientimage.upload.dir}") String uploadDir) {
+        this.patientImageDirRoot = new File(uploadDir);
+    }
 
     public Page<Patient> fetchAllPatients(final Pageable pageable) {
         return patientRepository.findAll(pageable);
@@ -80,10 +103,55 @@ public class PatientService {
                 });
     }
 
-//    public Patient createPatient(final PatientDTO patientDTO) {
-//        Patient patient = PatientDTO.map(patientDTO);
-//        return patientRepository.save(patient);
-//    }
+    /**
+     * Delete patient's photo
+     */
+    public String deletePortrait(String patientNumber) throws IOException {
+        final Person person = findPatientOrThrow(patientNumber);
+        Portrait portrait = portraitRepository.findByPerson(person);
+        //remove file if exists on folder
+        /*Delete patient file*/
+        System.out.println("-------------Deleting patient portrait--------------");
+        File file = new File(this.patientImageDirRoot, portrait.getImageName());
+        if (file.exists()) {
+            if (file.delete()) {
+                System.out.println("File deleted successfully");
+            } else {
+                System.out.println("Fail to delete file");
+            }
+        }
+        this.portraitRepository.delete(portrait);
+        //delete from directory
+
+        return patientNumber;
+    }
+
+    @Transactional
+    public Portrait createPortrait(Person person, MultipartFile file) throws IOException {
+        if (file == null) {
+            return null;
+        }
+
+        File fileForPatient = patientFileOnFolder(file);
+
+        try (
+                InputStream in = file.getInputStream();
+                OutputStream out = new FileOutputStream(fileForPatient)) {
+            FileCopyUtils.copy(in, out);
+            Portrait portrait = new Portrait();
+            portrait.setContentType(file.getContentType());
+            portrait.setImage(file.getBytes());
+            portrait.setSize(file.getSize());
+            portrait.setPerson(person);
+            portrait.setImageUrl(uploadDir);
+            portrait.setImageName(file.getOriginalFilename());
+            portraitRepository.save(portrait);
+            return portrait;
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     @Transactional
     public Patient createPatient(final PatientData patient) {
 
@@ -126,35 +194,34 @@ public class PatientService {
         return savedPatient;
     }
 
-    public String updatePatient(String patientNumber, Patient patient) {
+    @Transactional
+    public Patient updatePatient(String patientNumber, Patient patient) {
         try {
-            final Patient patientEntity = findPatientOrThrow(patient.getPatientNumber());
-
-            patientEntity.setGivenName(patient.getGivenName());
-            patientEntity.setMiddleName(patient.getMiddleName());
-            patientEntity.setSurname(patient.getSurname());
-            patientEntity.setDateOfBirth(patient.getDateOfBirth());
-
-            patientEntity.setLastModifiedOn(Instant.now());
-
-            this.patientRepository.save(patientEntity);
-
-            return patient.getPatientNumber();
+            this.patientRepository.save(patient);
+            return patient;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RestClientException("Error updating patient number" + patientNumber);
         }
     }
 
-    private Patient findPatientOrThrow(String patientNumber) {
+    private File patientFileOnFolder(MultipartFile f) {
+        return new File(this.patientImageDirRoot, f.getOriginalFilename());
+    }
+
+    public Patient findPatientOrThrow(String patientNumber) {
         return this.patientRepository.findByPatientNumber(patientNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Number {0} not found.", patientNumber));
     }
 
-    private void throwifDuplicatePatientNumber(String patientNumber) {
+    public void throwifDuplicatePatientNumber(String patientNumber) {
         if (patientRepository.existsByPatientNumber(patientNumber)) {
             throw APIException.conflict("Duplicate Patient Number {0}", patientNumber);
         }
+    }
+
+    public boolean patientExists(String patientNumber) {
+        return patientRepository.existsByPatientNumber(patientNumber);
     }
 
 }

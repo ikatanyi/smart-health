@@ -1,6 +1,8 @@
 package io.smarthealth.organization.person.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.organization.person.domain.PersonAddress;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 //import org.smarthealth.patient.domain.Address;
 
@@ -8,8 +10,12 @@ import lombok.Data;
  *
  * @author Kelsas
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public final class AddressData {
+
+    @ApiModelProperty(required = false, hidden = true)
+    private Long id;
 
     private String line1;
     private String line2;
@@ -37,6 +43,7 @@ public final class AddressData {
         address.setLine2(addressEntity.getLine2());
         address.setPostalCode(addressEntity.getPostalCode());
         address.setTown(addressEntity.getTown());
+        address.setId(addressEntity.getId());
         return address;
     }
 

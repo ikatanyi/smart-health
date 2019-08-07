@@ -40,6 +40,6 @@ public class Patient extends Person {
     @Column(length = 15)
     private String bloodType;
 
-    private boolean isAlive = false;
+    private boolean isAlive = true;
 
 }

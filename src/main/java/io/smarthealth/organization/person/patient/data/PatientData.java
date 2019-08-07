@@ -25,13 +25,8 @@ import lombok.Data;
 @Data
 public final class PatientData {
 
-//    public enum State {
-//        ACTIVE,
-//        LOCKED,
-//        CLOSED
-//    }
     @ApiModelProperty(required = false, hidden = true)
-    private Long patientId;
+    private Long id;
     
     @NotNull(message = "Patient number is a required field")
     private String patientNumber;  
@@ -57,6 +52,7 @@ public final class PatientData {
     private String status;
     private String bloodType;
     private String allergyStatus;
+    private boolean isAlive;
     
     
 
