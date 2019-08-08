@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 /**
  * Filters for searching the data and filtering for the user
+ *
  * @author Kelsas
  */
 public class AccountSpecification {
@@ -34,10 +35,9 @@ public class AccountSpecification {
                 );
             }
             if (type != null) {
-                
                 predicates.add(cb.equal(root.get("accountType"), AccountType.valueOf(type)));
             }
-            
+
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

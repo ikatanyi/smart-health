@@ -1,13 +1,11 @@
 package io.smarthealth.organization.person.patient.api;
 
-import io.smarthealth.auth.data.UserData;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.data.AddressData;
 import io.smarthealth.organization.person.data.ContactData;
 import io.smarthealth.organization.person.data.PortraitData;
-import io.smarthealth.organization.person.domain.Person;
 import io.smarthealth.organization.person.domain.PersonAddress;
 import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.domain.Portrait;
@@ -22,8 +20,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

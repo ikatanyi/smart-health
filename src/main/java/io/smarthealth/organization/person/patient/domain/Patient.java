@@ -17,7 +17,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "patient") 
+@Table(name = "patient")
 public class Patient extends Person {
 
     //Discount cards at the time of registration. 

@@ -9,6 +9,7 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
+import io.smarthealth.organization.person.patient.service.PatientService;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
@@ -29,8 +30,12 @@ public class TriageService {
 
     @Autowired
     private VisitRepository visitRepository;
+
     @Autowired
     private PatientRepository patientRepository;
+
+    @Autowired
+    private PatientService patientService;
 
 //    @Autowired
 //    private OrderRepository orderRepository;
@@ -41,7 +46,7 @@ public class TriageService {
 //    @Autowired
 //    private AdminServices adminServices;
 //VITALS
-    public Long addVitalRecords(String visitNumber, VitalRecordData triage) {
+    public VitalsRecord addVitalRecords(String visitNumber, VitalRecordData triage) {
         Visit visit = findVisitOrThrow(visitNumber);
         if (!StringUtils.equalsIgnoreCase(visit.getPatient().getPatientNumber(), triage.getPatientNumber())) {
             throw APIException.badRequest("Invalid Patient Number! mismatch in Patient Visit's patient number");
@@ -57,26 +62,22 @@ public class TriageService {
         vr.setBmi(bmi);
         vr.setCategory(category);
 
-        return triageRepository.save(vr).getId();
+        return triageRepository.save(vr);
 
     }
 
-    public ContentPage<VitalRecordData> fetchVitalRecordsByVisit(String visitNumber, Pageable page) {
-        final ContentPage<VitalRecordData> triagePage = new ContentPage();
+    public Page<VitalsRecord> fetchVitalRecordsByVisit(String visitNumber, Pageable page) {
         Optional<Visit> visit = visitRepository.findByVisitNumber(visitNumber);
         if (visit.isPresent()) {
-            Page<VitalsRecord> triageEntities = this.triageRepository.findByVisit(visit.get(), page);
-
-            triagePage.setTotalPages(triageEntities.getTotalPages());
-            triagePage.setTotalElements(triageEntities.getTotalElements());
-            if (triageEntities.getSize() > 0) {
-                final ArrayList<VitalRecordData> triagelist = new ArrayList<>(triageEntities.getSize());
-                triagePage.setContents(triagelist);
-                triageEntities.forEach((vt) -> triagelist.add(VitalRecordData.map(vt)));
-            }
+            return this.triageRepository.findByVisit(visit.get(), page);
+        } else {
+            throw APIException.notFound("Visit identified by : {0} not found.", visitNumber);
         }
-        return triagePage;
+    }
 
+    public Page<VitalsRecord> fetchVitalRecordsByPatient(String patientNumber, Pageable page) {
+        Patient patient = this.patientService.findPatientOrThrow(patientNumber);
+        return this.triageRepository.findByPatient(patient, page);
     }
 
     public ContentPage<VitalRecordData> fetchVitalRecords(String patientNumber, Pageable page) {
