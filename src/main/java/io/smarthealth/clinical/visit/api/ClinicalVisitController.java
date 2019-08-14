@@ -20,7 +20,6 @@ import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -148,7 +147,7 @@ public class ClinicalVisitController {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-
+    
     private VisitData convertToVisitData(Visit visit) {
         return modelMapper.map(visit, VisitData.class);
     }

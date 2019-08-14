@@ -40,4 +40,7 @@ public class Employee extends Person {
 
     @Column(length = 50)
     private String status;
+    
+    @Column(length = 25)
+    private String staffNumber;
 }

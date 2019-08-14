@@ -71,13 +71,13 @@ public class PatientController {
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestBody @Valid final PatientData patientData) {
         Patient patient = this.patientService.createPatient(patientData);
-
-        modelMapper.map(patient, patientData);
+        
+        PatientData savedpatientData = convertToPatientData(patient);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
 
-        return ResponseEntity.created(location).body(patientData);
+        return ResponseEntity.created(location).body(savedpatientData);
     }
 
     @GetMapping("/patients/{id}")
@@ -211,25 +211,30 @@ public class PatientController {
     }
 
     private PatientData convertToPatientData(Patient patient) {
-        PatientData patientData = modelMapper.map(patient, PatientData.class);
-        if (!patient.getAddresses().isEmpty()) {
-            List<AddressData> addresses = new ArrayList<>();
+        try {
+            PatientData patientData = modelMapper.map(patient, PatientData.class);
+            if (patient.getAddresses()!=null) {
+                List<AddressData> addresses = new ArrayList<>();
 
-            patient.getAddresses().forEach((address) -> {
-                AddressData addressData = modelMapper.map(address, AddressData.class);
-                addresses.add(addressData);
-            });
-            patientData.setAddressDetails(addresses);
+                patient.getAddresses().forEach((address) -> {
+                    AddressData addressData = modelMapper.map(address, AddressData.class);
+                    addresses.add(addressData);
+                });
+                patientData.setAddress(addresses);
+            }
+            if (patient.getContacts()!=null) {
+                List<ContactData> contacts = new ArrayList<>();
+                patient.getContacts().forEach((contact) -> {
+                    ContactData contactData = modelMapper.map(contact, ContactData.class);
+                    contacts.add(contactData);
+                });
+                patientData.setContact(contacts);
+            }
+            return patientData;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw APIException.internalError("An error occured while converting patient data ", e.getMessage());
         }
-        if (!patient.getContacts().isEmpty()) {
-            List<ContactData> contacts = new ArrayList<>();
-            patient.getContacts().forEach((contact) -> {
-                ContactData contactData = modelMapper.map(contact, ContactData.class);
-                contacts.add(contactData);
-            });
-            patientData.setContactDetails(contacts);
-        }
-        return patientData;
     }
 
     private void throwIfInvalidSize(final Long size) {

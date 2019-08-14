@@ -5,6 +5,7 @@
  */
 package io.smarthealth.organization.person.service;
 
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.domain.Person;
 import io.smarthealth.organization.person.domain.PersonAddress;
 import io.smarthealth.organization.person.domain.PersonAddressRepository;
@@ -43,8 +44,12 @@ public class PersonService {
     }
 
     public Person fetchPersonById(Long personId) {
-        return personRepository.getOne(personId);
+        return personRepository.findById(personId).orElseThrow(() -> APIException.notFound("Person id {0} not found.", personId));
     }
+//
+//    public Person fetchPersonByPersonNumber(final String personNumber) {
+//        return personRepository.findByPersonNumber(personNumber).orElseThrow(() -> APIException.notFound("Person number {0} not found.", personNumber));
+//    }
 
     List<PersonContact> fetchContactsByPerson(final Person person) {
         return personContactRepository.findByPerson(person);

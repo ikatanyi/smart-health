@@ -19,8 +19,13 @@ public class DepartmentData {
 
     @Enumerated(EnumType.STRING)
     private Department.Type type;
-    private String departmentCode;
-    private String departmentName;
-    
-    
+    private String code;
+    private String name;
+    private Long facilityId;
+    private Long parentId;
+    private Long incomeAccountId;
+    private Long expenseAccountId;
+    private boolean isStore;
+    private boolean active;
+
 }

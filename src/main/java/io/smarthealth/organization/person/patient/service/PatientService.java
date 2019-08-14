@@ -6,6 +6,7 @@
 package io.smarthealth.organization.person.patient.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.organization.contact.domain.Address;
 import io.smarthealth.organization.person.domain.PersonAddress;
 import io.smarthealth.organization.person.domain.PersonAddressRepository;
 import io.smarthealth.organization.person.domain.PersonContact;
@@ -23,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,61 +46,62 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Service
 public class PatientService {
-
+    
     @Autowired
     PatientRepository patientRepository;
     @Autowired
     PersonContactRepository personContactRepository;
     @Autowired
     PersonAddressRepository personAddressRepository;
-
+    
     @Autowired
     ModelMapper modelMapper;
-
+    
     @Autowired
     PortraitRepository portraitRepository;
-
+    
     private final File patientImageDirRoot;
-
+    
     @Value("${patientimage.upload.dir}")
     private String uploadDir;
-
+    
     @Autowired
     PatientService(@Value("${patientimage.upload.dir}") String uploadDir) {
         this.patientImageDirRoot = new File(uploadDir);
     }
-
+    
     public Page<Patient> fetchAllPatients(final Pageable pageable) {
         return patientRepository.findAll(pageable);
     }
-
+    
     public Patient fetchPatientByIdentityNumber(Long patientId) {
         return patientRepository.getOne(patientId);
     }
-
+    
     public Optional<PatientData> fetchPatientByPatientNumber(final String patientNumber) {
+        
         return patientRepository.findByPatientNumber(patientNumber)
                 .map(patientEntity -> {
                     final PatientData patient = modelMapper.map(patientEntity, PatientData.class);
                     //fetch patient addresses
                     final List<PersonAddress> personAddressEntity = personAddressRepository.findByPerson(patientEntity);
                     if (personAddressEntity != null) {
-                        patient.setAddressDetails(personAddressEntity
+                        patient.setAddress(personAddressEntity
                                 .stream()
                                 .map(AddressData::map)
                                 .collect(Collectors.toList())
                         );
                     }
-
+                    
                     final List<PersonContact> contactDetailEntities = this.personContactRepository.findByPerson(patientEntity);
                     if (contactDetailEntities != null) {
-                        patient.setContactDetails(contactDetailEntities
+                        patient.setContact(contactDetailEntities
                                 .stream()
                                 .map(ContactData::map)
                                 .collect(Collectors.toList())
                         );
                     }
-
+                    
                     return patient;
                 });
     }
@@ -125,15 +128,15 @@ public class PatientService {
 
         return patientNumber;
     }
-
+    
     @Transactional
     public Portrait createPortrait(Person person, MultipartFile file) throws IOException {
         if (file == null) {
             return null;
         }
-
+        
         File fileForPatient = patientFileOnFolder(file);
-
+        
         try (
                 InputStream in = file.getInputStream();
                 OutputStream out = new FileOutputStream(fileForPatient)) {
@@ -151,10 +154,10 @@ public class PatientService {
             throw new RuntimeException(ex);
         }
     }
-
+    
     @Transactional
     public Patient createPatient(final PatientData patient) {
-
+        
         throwifDuplicatePatientNumber(patient.getPatientNumber());
 
         // use strict to prevent over eager matching (happens with ID fields)
@@ -163,37 +166,42 @@ public class PatientService {
         final Patient patientEntity = modelMapper.map(patient, Patient.class);
         patientEntity.setAlive(true);
         patientEntity.setPatient(true);
-//        patientEntity.setPatientNumber(patient.getPatientNumber());
-        System.out.println("patientEntity " + patientEntity.toString());
+        
         final Patient savedPatient = this.patientRepository.save(patientEntity);
         //save patients contact details
-        if (patient.getContactDetails() != null) {
-            personContactRepository.saveAll(patient.getContactDetails()
+        if (patient.getContact() != null) {
+            List<PersonContact> personContacts = new ArrayList<>();
+            personContactRepository.saveAll(patient.getContact()
                     .stream()
                     .map(contact -> {
                         final PersonContact contactDetailEntity = ContactData.map(contact);
+                        personContacts.add(contactDetailEntity);
                         contactDetailEntity.setPerson(savedPatient);
                         return contactDetailEntity;
                     })
                     .collect(Collectors.toList())
             );
+            savedPatient.setContacts(personContacts);
         }
         //save patient address details
-        if (patient.getAddressDetails() != null) {
-            personAddressRepository.saveAll(patient.getAddressDetails()
+        if (patient.getAddress() != null) {
+            List<PersonAddress> addresses = new ArrayList<>();
+            personAddressRepository.saveAll(patient.getAddress()
                     .stream()
                     .map(address -> {
                         final PersonAddress addressDetailEntity = AddressData.map(address);
+                        addresses.add(addressDetailEntity);
                         addressDetailEntity.setPerson(savedPatient);
                         return addressDetailEntity;
                     })
                     .collect(Collectors.toList())
             );
+            savedPatient.setAddresses(addresses);
         }
-
+        
         return savedPatient;
     }
-
+    
     @Transactional
     public Patient updatePatient(String patientNumber, Patient patient) {
         try {
@@ -204,24 +212,24 @@ public class PatientService {
             throw new RestClientException("Error updating patient number" + patientNumber);
         }
     }
-
+    
     private File patientFileOnFolder(MultipartFile f) {
         return new File(this.patientImageDirRoot, f.getOriginalFilename());
     }
-
+    
     public Patient findPatientOrThrow(String patientNumber) {
         return this.patientRepository.findByPatientNumber(patientNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Number {0} not found.", patientNumber));
     }
-
+    
     public void throwifDuplicatePatientNumber(String patientNumber) {
         if (patientRepository.existsByPatientNumber(patientNumber)) {
             throw APIException.conflict("Duplicate Patient Number {0}", patientNumber);
         }
     }
-
+    
     public boolean patientExists(String patientNumber) {
         return patientRepository.existsByPatientNumber(patientNumber);
     }
-
+    
 }

@@ -37,14 +37,6 @@ public class TriageService {
     @Autowired
     private PatientService patientService;
 
-//    @Autowired
-//    private OrderRepository orderRepository;
-//
-//    @Autowired
-//    private IDService idService;
-//
-//    @Autowired
-//    private AdminServices adminServices;
 //VITALS
     public VitalsRecord addVitalRecords(String visitNumber, VitalRecordData triage) {
         Visit visit = findVisitOrThrow(visitNumber);
