@@ -23,5 +23,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     Optional<Employee> findByStaffNumber(final String staffNumber);
 
-    Page<Employee> findByCategory(final String categoryName, final Pageable pg);
+    Page<Employee> findByEmployeeCategory(final String categoryName, final Pageable pg);
 }

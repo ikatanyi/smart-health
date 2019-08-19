@@ -52,7 +52,7 @@ public class EmployeeService {
     }
     
     Page<Employee> fetchEmployeeByCategory(final String categoryName, final Pageable pg) {
-        return employeeRepository.findByCategory(categoryName, pg);
+        return employeeRepository.findByEmployeeCategory(categoryName, pg);
     }
     
     public Employee fetchEmployeeByNumberOrThrow(final String staffNumber) {

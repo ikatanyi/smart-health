@@ -63,7 +63,7 @@ public class AppointmentService {
         if (!appointment.getAllDay() && appointment.getEndTime() == null) {
             throw APIException.badRequest("Appointment End Date and Time is Required. The appointment is not marked as all day event");
         }
-
+        //Verify patient number
         Patient patient = findPatientOrThrow(appointment.getPatientNumber());
         Appointment entity = AppointmentData.map(appointment);
         entity.setPatient(patient);
@@ -71,7 +71,11 @@ public class AppointmentService {
         Appointment savedAppointment = appointmentRepository.save(entity);
 
         return savedAppointment;
-                
+
+    }
+
+    public Page<Appointment> fetchAllAppointments(final Pageable pageable) {
+        return appointmentRepository.findAll(pageable);
     }
 
     public AppointmentData geAppointmentById(Long id) {
