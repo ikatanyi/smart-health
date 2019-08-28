@@ -7,7 +7,6 @@ package io.smarthealth.appointment.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModelProperty;
-import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -21,9 +20,9 @@ public class AppointmentTypeData {
     @ApiModelProperty(required = false, hidden = true)
     private Long id;
 
-    @NotNull
+   // @NotNull
     private String name;
-    @NotNull
+    //@NotNull
     private Integer duration; // in minutes
     private String color; // calendar display color
 }

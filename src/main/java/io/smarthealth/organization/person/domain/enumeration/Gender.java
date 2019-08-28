@@ -11,12 +11,17 @@ public enum Gender {
      *
      */
     M,
+
     /**
      * Female
      *
      */
-    F;
-
+    F,
+    /**
+     * Other
+     *
+     */
+    O;
     public String value() {
         return name();
     }

@@ -20,9 +20,9 @@ public final class AddressData {
     private String line1;
     private String line2;
     private String town;
-    private String County;
+    private String county;
     private String postalCode;
-    private String Country;
+    private String country;
 
     public static PersonAddress map(final AddressData address) {
         final PersonAddress addressEntity = new PersonAddress();

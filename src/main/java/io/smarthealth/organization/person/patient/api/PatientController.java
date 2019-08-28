@@ -17,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -70,6 +71,8 @@ public class PatientController {
     @PostMapping("/patients")
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestBody @Valid final PatientData patientData) {
+        LocalDate dateOfBirth = LocalDate.now().minusDays(Long.valueOf(patientData.getAge()));
+        patientData.setDateOfBirth(dateOfBirth);
         Patient patient = this.patientService.createPatient(patientData);
         
         PatientData savedpatientData = convertToPatientData(patient);

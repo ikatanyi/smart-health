@@ -34,7 +34,6 @@ public class PersonData {
     private String middleName;
     @NotBlank
     private String surname;
-    @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate dateOfBirth;
     @Enumerated(EnumType.STRING)
