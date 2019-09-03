@@ -1,12 +1,10 @@
 package io.smarthealth.financial.account.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.smarthealth.financial.account.domain.AccountType;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import io.smarthealth.financial.account.domain.enumeration.AccountType;
+import javax.validation.constraints.NotEmpty;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 /**
  *
@@ -14,16 +12,21 @@ import lombok.Data;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AccountData {  
-    private Long id; 
-    private String accountCode; 
-    private String accountName;
-    @Enumerated(EnumType.STRING)
-    private AccountType accountType;  
-    private String parentAccount;
-    private Boolean nonTransacting;
-    private Boolean active = true;
-    private List<ChildAccount> children=new ArrayList<>();
-    
-    
+public class AccountData {
+
+    public enum State {
+        OPEN,
+        LOCKED,
+        CLOSED
+    }
+    private AccountType type;
+    private String identifier; //accountCode
+    @NotEmpty
+    @Length(max = 256)
+    private String name; //accountName
+    private Double balance=0.00D;
+    private String referenceAccount;
+    private String ledger;
+    private State state;
+     
 }

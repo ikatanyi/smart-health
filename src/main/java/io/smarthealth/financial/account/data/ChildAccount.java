@@ -5,7 +5,7 @@
  */
 package io.smarthealth.financial.account.data;
 
-import io.smarthealth.financial.account.domain.AccountType;
+import io.smarthealth.financial.account.domain.enumeration.AccountType;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.AllArgsConstructor;

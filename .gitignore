@@ -33,3 +33,4 @@ build/
 /src/main/resources/design-todos
 /src/main/java/io/smarthealth/clinical/visit/domain/Visit
 /src/main/resources/notes/
+/src/main/java/io/smarthealth/financial/account/domain/definations

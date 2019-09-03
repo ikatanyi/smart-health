@@ -3,3 +3,27 @@ Account Type
 * Accounts receivable (also called A/R, Debtors, or Trade and other receivables) tracks money that customers owe you for products or services, and payments customers make.
 * Current Assets
     - Allowance for bad debts to estimate the part of Accounts Receivable that you think you might not collect.
+
+Account Type
+
+
+{
+    "transaction_date": "2018-08-17",
+    "transaction_type": "Bank Transfer",
+    "document_date": "2018-08-17",
+    "activity": "Inter Account Transfer",
+    "descriptions": "Petty cash replenshing",
+    "reference_number": "201808001",
+    "credit": [
+        {
+            "account_number": "7311",
+            "amount": "1000"
+        }
+    ],
+    "debit": [
+        {
+            "account_number": "7312",
+            "amount": "1000"
+        }
+    ]
+}

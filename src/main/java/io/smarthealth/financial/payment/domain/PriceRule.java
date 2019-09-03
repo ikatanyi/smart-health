@@ -1,4 +1,4 @@
-package io.smarthealth.financial.account.domain;
+package io.smarthealth.financial.payment.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;

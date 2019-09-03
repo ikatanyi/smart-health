@@ -3,16 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.financial.account.domain;
+package io.smarthealth.financial.payment.domain;
 
-/** 
- *  Asset, Liability, Equity, Income, Expense
+import org.springframework.data.jpa.repository.JpaRepository;
+
+/**
+ *
  * @author Kelsas
  */
-public enum AccountType { 
-    ASSET,
-    LIABILITY,
-    EQUITY,
-    REVENUE,
-    EXPENSE
+public interface PriceRuleRepository extends JpaRepository<PriceRule, Long>{
+    
 }

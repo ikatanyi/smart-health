@@ -3,15 +3,15 @@ package io.smarthealth.financial.account.service;
 import io.smarthealth.financial.account.data.AccountData;
 import io.smarthealth.financial.account.domain.Account;
 import io.smarthealth.financial.account.domain.AccountRepository;
-import io.smarthealth.financial.account.domain.AccountType;
-import io.smarthealth.financial.account.domain.Transaction;
-import io.smarthealth.financial.account.domain.TransactionRepository;
+import io.smarthealth.financial.account.domain.enumeration.AccountType;
+import io.smarthealth.financial.account.domain.Ledger;
+import io.smarthealth.financial.account.domain.LedgerRepository;
+import io.smarthealth.financial.account.domain.TransactionTypeRepository; 
 import io.smarthealth.financial.account.domain.specification.AccountSpecification;
-import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.lang.DateRange;
-import java.util.Optional;
-import javax.annotation.Nullable;
+import io.smarthealth.infrastructure.exception.APIException; 
+import java.util.Optional; 
 import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,16 +25,31 @@ import org.springframework.stereotype.Service;
 public class AccountService {
 
     private final AccountRepository accountRepository;
-    private final TransactionRepository transactionRepository;
+    private final LedgerRepository ledgerRepository;
+    private final ModelMapper modelMapper;
+    private final TransactionTypeRepository transactionTypeRepository;
 
     public AccountService(AccountRepository accountRepository,
-            TransactionRepository transactionRepository) {
+            ModelMapper modelMapper,
+            LedgerRepository ledgerRepository,
+            TransactionTypeRepository transactionRepository) {
         this.accountRepository = accountRepository;
-        this.transactionRepository = transactionRepository;
+        this.ledgerRepository = ledgerRepository;
+        this.transactionTypeRepository = transactionRepository;
+        this.modelMapper = modelMapper;
     }
 
-    public Account createAccount(Account account) {
-        return accountRepository.save(account);
+    public AccountData createAccount(AccountData accountData) {
+        Account account = convertToEntity(accountData);
+        if (accountData.getReferenceAccount() != null) {
+            account.setReferenceAccount(
+                    findAccount(accountData.getReferenceAccount())
+                            .orElseThrow(() -> APIException.notFound("Reference parent account {0} not available.", accountData.getReferenceAccount()))
+            );
+        }
+        Ledger ledger = ledgerRepository.findByIdentifier(accountData.getLedger()).get();
+        account.setLedger(ledger);
+        return convertToData(accountRepository.save(account));
     }
 
     public Page<Account> findAllAccount(Pageable page) {
@@ -42,32 +57,32 @@ public class AccountService {
     }
 
     public Optional<Account> findAccount(String accountCode) {
-        return accountRepository.findByAccountCode(accountCode);
+        return accountRepository.findByIdentifier(accountCode);
     }
 
     public String modifyAccount(AccountData accountData) {
-        Account account = accountRepository.findByAccountCode(accountData.getAccountCode()).get();
-        if (accountData.getAccountCode() != null) {
-            account.setAccountCode(accountData.getAccountCode());
+        Account account = accountRepository.findByIdentifier(accountData.getIdentifier()).get();
+        if (accountData.getIdentifier() != null) {
+            account.setIdentifier(accountData.getIdentifier());
         }
-        if (accountData.getAccountName() != null) {
-            account.setAccountName(accountData.getAccountName());
+        if (accountData.getName() != null) {
+            account.setName(accountData.getName());
         }
-        if (accountData.getAccountType() != null) {
-            account.setAccountType(accountData.getAccountType());
+        if (accountData.getType() != null) {
+            account.setType(accountData.getType().name());
         }
 
         Account referenceAccount = null;
-        if (accountData.getParentAccount() != null) {
-            if (!accountData.getParentAccount().equals(account.getParent().getAccountCode())) {
-                referenceAccount = this.accountRepository.findByAccountCode(accountData.getParentAccount()).get();
-                account.setParent(referenceAccount);
+        if (accountData.getReferenceAccount() != null) {
+            if (!accountData.getReferenceAccount().equals(account.getReferenceAccount().getIdentifier())) {
+                referenceAccount = this.accountRepository.findByIdentifier(accountData.getReferenceAccount()).get();
+                account.setReferenceAccount(referenceAccount);
             }
         } else {
-            account.setParent(null);
+            account.setReferenceAccount(null);
         }
         Account updated = accountRepository.save(account);
-        return updated.getAccountCode();
+        return updated.getIdentifier();
     }
 
     public Page<Account> fetchAccounts(final boolean includeClosed, String term, final String type, Pageable pageable) {
@@ -76,16 +91,6 @@ public class AccountService {
         Specification<Account> spec = AccountSpecification.createSpecification(includeClosed, term, type);
         Page<Account> accounts = accountRepository.findAll(spec, pageable);
         return accounts;
-    }
-
-    public Page<Transaction> fetchTransactions(String refNumber, DateRange range, @Nullable String narration, Pageable pageable) {
-        Page<Transaction> transactions;
-        if (narration != null) {
-            transactions = transactionRepository.findByReferenceNoAndTransactionDateBetweenAndDescriptionContaining(refNumber, range.getStartDateTime(), range.getEndDateTime(), narration, pageable);
-        } else {
-            transactions = transactionRepository.findByReferenceNoAndTransactionDateBetween(refNumber, range.getStartDateTime(), range.getEndDateTime(), pageable);
-        }
-        return transactions;
     }
 
     private void throwIfAccountTypeNotValid(String type) {
@@ -98,5 +103,23 @@ public class AccountService {
         } catch (Exception ex) {
             throw APIException.badRequest("Account Type : {0} is not supported .. ", type);
         }
+    }
+
+    //
+    public AccountData convertToData(Account account) {
+        AccountData accdata=new AccountData();
+        accdata.setType(AccountType.valueOf(account.getType()));
+//        accdata.setBalance(account.getBalance());
+        accdata.setIdentifier(account.getIdentifier());
+        accdata.setLedger(account.getLedger()!=null ? account.getLedger().getIdentifier() : null);
+        accdata.setName(account.getName());
+        accdata.setReferenceAccount(account.getReferenceAccount()!=null ? account.getReferenceAccount().getIdentifier() : null);
+          
+        return accdata;
+    }
+
+    public Account convertToEntity(AccountData data) {
+        Account account = modelMapper.map(data, Account.class); 
+        return account;
     }
 }

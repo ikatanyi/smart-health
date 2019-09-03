@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.infrastructure.common;
 
 import io.smarthealth.infrastructure.mail.MockMailSender;
@@ -15,6 +10,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import io.smarthealth.infrastructure.mail.MailService;
+import javax.sql.DataSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  *
@@ -22,8 +20,10 @@ import io.smarthealth.infrastructure.mail.MailService;
  */
 @Configuration
 @Slf4j
-public class CommonsAutoConfiguration {
+public class ApplicationAutoConfig {
 
+    @Autowired
+    private DataSource dataSource;
     /**
      * Configures a MockMailSender when the property
      * <code>spring.mail.host</code> isn't defined.
@@ -56,5 +56,10 @@ public class CommonsAutoConfiguration {
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
+    }
+    
+    @Bean
+    public JdbcTemplate jdbcTemplate(){
+        return new JdbcTemplate(dataSource);
     }
 }

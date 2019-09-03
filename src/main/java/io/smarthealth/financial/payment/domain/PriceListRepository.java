@@ -3,15 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.financial.account.domain;
+package io.smarthealth.financial.payment.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- *  Account Mapper Class to Internal Implementation
- * 
+ *
  * @author Kelsas
  */
-public interface AccountRuleMapRepository extends JpaRepository<AccountRuleMap, Long>{
+public interface PriceListRepository extends JpaRepository<PriceList, Long>{
     
 }

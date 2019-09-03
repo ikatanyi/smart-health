@@ -1,6 +1,6 @@
 package io.smarthealth.stock.item.domain;
 
-import io.smarthealth.financial.account.domain.PriceList;
+import io.smarthealth.financial.payment.domain.PriceList;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.math.BigDecimal;
 import javax.persistence.Entity;

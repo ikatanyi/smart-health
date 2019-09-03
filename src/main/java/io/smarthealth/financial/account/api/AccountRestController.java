@@ -4,12 +4,13 @@ import io.smarthealth.financial.account.data.AccountCommand;
 import static io.smarthealth.financial.account.data.AccountCommand.Action.CLOSE;
 import static io.smarthealth.financial.account.data.AccountCommand.Action.REOPEN;
 import io.smarthealth.financial.account.data.AccountData;
-import io.smarthealth.financial.account.data.ChildAccount;
+import io.smarthealth.financial.account.data.ChartOfAccountEntry; 
 import io.smarthealth.financial.account.domain.Account;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.smarthealth.financial.account.service.AccountService;
+import io.smarthealth.financial.account.service.ChartOfAccountsService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.net.URI;
@@ -41,37 +42,30 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @Slf4j
 @RequestMapping("/api")
-public class AccountController {
+public class AccountRestController {
 
-    private final AccountService service;
-    private final ModelMapper modelMapper;
+    private final AccountService service; 
+    private final ChartOfAccountsService chartOfAccountsService;
 
-    public AccountController(AccountService accountService, ModelMapper modelMapper) {
-        this.service = accountService;
-        this.modelMapper = modelMapper;
+    public AccountRestController(AccountService accountService, ChartOfAccountsService chartOfAccountsService) {
+        this.service = accountService; 
+        this.chartOfAccountsService = chartOfAccountsService;
     }
 
     @PostMapping("/accounts")
     public ResponseEntity<?> createAccount(@Valid @RequestBody AccountData accountData) {
-
-        if (service.findAccount(accountData.getAccountCode()).isPresent()) {
-            throw APIException.conflict("Account {0} already exists.", accountData.getAccountCode());
+        if (service.findAccount(accountData.getIdentifier()).isPresent()) {
+            throw APIException.conflict("Account {0} already exists.", accountData.getIdentifier());
         }
-        Account account = convertToEntity(accountData);
-        if (accountData.getParentAccount() != null) {
-            account.setParent(
-                    service.findAccount(accountData.getParentAccount())
-                            .orElseThrow(() -> APIException.notFound("Reference parent account {0} not available.", accountData.getParentAccount()))
-            );
-        }
-
-        Account result = service.createAccount(account);
+        
+       
+        AccountData result = service.createAccount(accountData);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/accounts/{code}")
-                .buildAndExpand(result.getAccountCode()).toUri();
+                .buildAndExpand(result.getIdentifier()).toUri();
 
-        return ResponseEntity.created(location).body(convertToData(result));
+        return ResponseEntity.created(location).body(result);
 
     }
 
@@ -79,23 +73,23 @@ public class AccountController {
     public AccountData getAccounts(@PathVariable(value = "code") String code) {
         Account user = service.findAccount(code)
                 .orElseThrow(() -> APIException.notFound("Account {0} not found.", code));
-        return convertToData(user);
+        return service.convertToData(user);
     }
 
     @PutMapping("/accounts/{code}")
     @ResponseBody
-    public ResponseEntity<Void> modifyAccount(@PathVariable("code") final String accountCode, @RequestBody @Valid final AccountData account) {
-        if (!accountCode.equals(account.getAccountCode())) {
-            throw APIException.badRequest("Addressed resource {0} does not match account {1}", accountCode, account.getAccountCode());
+    public ResponseEntity<Void> modifyAccount(@PathVariable("code") final String accountCode, @RequestBody @Valid final AccountData accountData) {
+        if (!accountCode.equals(accountData.getIdentifier())) {
+            throw APIException.badRequest("Addressed resource {0} does not match account {1}", accountCode, accountData.getIdentifier());
         }
         if (!this.service.findAccount(accountCode).isPresent()) {
             throw APIException.notFound("Account {0} not found.", accountCode);
         }
-        if (account.getParentAccount() != null
-                && !this.service.findAccount(account.getParentAccount()).isPresent()) {
-            throw APIException.badRequest("Reference Parent account {0} not available.", account.getParentAccount());
+        if (accountData.getReferenceAccount() != null
+                && !this.service.findAccount(accountData.getReferenceAccount()).isPresent()) {
+            throw APIException.badRequest("Reference Parent account {0} not available.", accountData.getReferenceAccount());
         }
-        service.modifyAccount(account);
+        service.modifyAccount(accountData);
         return ResponseEntity.accepted().build();
     }
 
@@ -103,9 +97,10 @@ public class AccountController {
     public ResponseEntity<List<AccountData>> getAllAccounts(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "q", required = false) final String term,
+            @RequestParam(value = "fetchRunningBalance", required = false) final boolean runningBalance,
             @RequestParam(value = "type", required = false) final String type, Pageable pageable) {
 
-        Page<AccountData> page = service.fetchAccounts(includeClosed, term, type, pageable).map(u -> convertToData(u));
+        Page<AccountData> page = service.fetchAccounts(includeClosed, term, type, pageable).map(u -> service.convertToData(u));
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("size", String.valueOf(page.getSize()));
@@ -130,7 +125,7 @@ public class AccountController {
 
             switch (accountCommand.getAction()) {
                 case CLOSE:
-                    if (account.getAccountBalance().getBalance() != 0.00D) {
+                    if (account.getBalance() != 0.00D) {
                         throw APIException.conflict("Account {0} has remaining balance.", identifier);
                     }
                     System.err.println("Closing an account... ");
@@ -147,22 +142,11 @@ public class AccountController {
         }
     }
 
-    public AccountData convertToData(Account account) {
-        modelMapper.getConfiguration().setAmbiguityIgnored(true);
-        AccountData data = modelMapper.map(account, AccountData.class);
-        List<ChildAccount> childrenAccounts = new ArrayList<>();
-        account.getChildren().forEach((child) -> {
-            childrenAccounts.add(
-                    new ChildAccount(child.getAccountCode(), child.getAccountName(), child.getAccountType())
-            );
-        });
-
-        data.setChildren(childrenAccounts);
-        return data;
+    @GetMapping("/chartofaccounts")
+    @ResponseBody
+    public ResponseEntity<List<ChartOfAccountEntry>> getChartOfAccounts() {
+        return ResponseEntity.ok(this.chartOfAccountsService.getChartOfAccounts());
     }
 
-    public Account convertToEntity(AccountData data) {
-        Account account = modelMapper.map(data, Account.class);
-        return account;
-    }
+    
 }

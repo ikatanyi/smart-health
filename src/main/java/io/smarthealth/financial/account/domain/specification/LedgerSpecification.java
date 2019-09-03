@@ -1,33 +1,35 @@
 package io.smarthealth.financial.account.domain.specification;
 
-import io.smarthealth.financial.account.data.AccountData;
-import io.smarthealth.financial.account.domain.Account;
-import io.smarthealth.financial.account.domain.enumeration.AccountType;
-import javax.persistence.criteria.Predicate;
+import io.smarthealth.financial.account.domain.Ledger;
 import java.util.ArrayList;
+import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * Filters for searching the data and filtering for the user
  *
  * @author Kelsas
  */
-public class AccountSpecification {
+public class LedgerSpecification {
 
-    public AccountSpecification() {
+    private LedgerSpecification() {
         super();
     }
 
-    public static Specification<Account> createSpecification(final boolean includeClosed, final String term, final String type) {
+    public static Specification<Ledger> createSpecification(
+            final boolean includeSubLedger, final String term, final String type) {
         return (root, query, cb) -> {
+
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
-            if (!includeClosed) {
-                predicates.add(cb.equal(root.get("disabled"), false));
+            if (!includeSubLedger) {
+                predicates.add(
+                        cb.isNull(root.get("parentLedger"))
+                );
             }
 
             if (term != null) {
                 final String likeExpression = "%" + term + "%";
+
                 predicates.add(
                         cb.or(
                                 cb.like(root.get("identifier"), likeExpression),
@@ -35,8 +37,9 @@ public class AccountSpecification {
                         )
                 );
             }
+
             if (type != null) {
-                predicates.add(cb.equal(root.get("type"), AccountType.valueOf(type)));
+                predicates.add(cb.equal(root.get("type"), type));
             }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

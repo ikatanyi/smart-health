@@ -3,14 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.financial.account.domain;
+package io.smarthealth.financial.account.data;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import lombok.Value;
 
 /**
  *
  * @author Kelsas
  */
-public interface AccountBalanceRepository extends JpaRepository<AccountBalance, Long>{
-    
+@Value
+public class ActivityAccount {
+
+    private Integer financialActivityId;
+    private String accountIdentifier;
 }

@@ -37,7 +37,7 @@ public class BankService {
     public Long createBank(final BankAccountData bankData) {
         BankAccount bank = BankAccountData.map(bankData);
 
-        bank.setGlAccount(accountRepository.findByAccountCode(bankData.getGlAccountCode()).get());
+        bank.setGlAccount(accountRepository.findByIdentifier(bankData.getGlAccountCode()).get());
         bank.setOrganization(organizationRepository.findByCode(bankData.getOrganizationCode()).get());
 
         bankAccountRepository.save(bank);

@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package io.smarthealth.financial.account.domain;
+package io.smarthealth.financial.payment.domain;
 
 import io.smarthealth.organization.domain.Organization;
 import io.smarthealth.infrastructure.domain.Auditable;

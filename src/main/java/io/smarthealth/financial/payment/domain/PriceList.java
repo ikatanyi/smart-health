@@ -1,4 +1,4 @@
-package io.smarthealth.financial.account.domain;
+package io.smarthealth.financial.payment.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.util.Currency;
@@ -13,7 +13,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "facility_price_list")
+@Table(name = "account_price_list")
 public class PriceList extends Identifiable {
 
     private String name;
