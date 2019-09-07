@@ -44,6 +44,7 @@ public class PersonData {
     private MaritalStatus  maritalStatus;
     private List<AddressData> address;
     private List<ContactData> contact;
+    private String fullName;
 
     private boolean isPatient;
 

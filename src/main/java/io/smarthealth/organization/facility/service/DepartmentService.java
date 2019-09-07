@@ -6,8 +6,11 @@
 package io.smarthealth.organization.facility.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.organization.facility.data.DepartmentData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
+import io.smarthealth.organization.facility.domain.Facility;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +27,9 @@ public class DepartmentService {
     @Autowired
     DepartmentRepository departmentRepository;
 
+    @Autowired
+    ModelMapper modelMapper;
+
     /*
     a. Create a new department
     b. Read all departments 
@@ -39,8 +45,17 @@ public class DepartmentService {
         return departmentRepository.findAll(pgbl);
     }
 
+    public Page<Department> fetchDepartmentByFacility(Facility facility, Pageable pgbl) {
+        return departmentRepository.findByFacility(facility, pgbl);
+    }
+
     public Department fetchDepartmentById(Long id) {
-        return departmentRepository.findById(id).orElseThrow(() -> APIException.notFound("Department Id {0} not found.", id));
+        return departmentRepository.findById(id).orElseThrow(() -> APIException.notFound("Department identified by {0} not found.", id));
+    }
+
+    public DepartmentData convertDepartmentToData(Department department) {
+        DepartmentData departmentData = modelMapper.map(department, DepartmentData.class);
+        return departmentData;
     }
 
 }

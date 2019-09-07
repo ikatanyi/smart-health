@@ -11,10 +11,15 @@ import io.smarthealth.appointment.domain.Appointment;
 import io.smarthealth.appointment.domain.AppointmentType;
 import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.appointment.service.AppointmentTypeService;
+import io.smarthealth.infrastructure.common.APISuccess;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.swagger.annotations.Api;
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +29,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -64,19 +72,6 @@ public class AppointmentController {
         
         return ResponseEntity.created(location).body(savedAppointmentTypeData);
     }
-    
-    @PostMapping("/appointments")
-    public @ResponseBody
-    ResponseEntity<?> createAppointment(@RequestBody @Valid final AppointmentData appointmentData) {
-        Appointment appointment = this.appointmentService.createAppointment(appointmentData);
-        
-        AppointmentData savedAppointmentData = convertAppointment(appointment);
-        
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/appointments/{id}")
-                .buildAndExpand(appointment.getId()).toUri();
-        
-        return ResponseEntity.created(location).body(savedAppointmentData);
-    }
 
     //fetchAllAppointmentTypes
     @GetMapping("/appointmentTypes")
@@ -84,6 +79,36 @@ public class AppointmentController {
         Page<AppointmentTypeData> page = appointmentTypeService.fetchAllAppointmentTypes(pageable).map(a -> convertDataToAppTypeData(a));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+    
+    @GetMapping("/appointmentTypes/{id}")
+    public ResponseEntity<AppointmentTypeData> fetchAppTypeById(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable, @PathVariable("id") final Long id) {
+        System.out.println("Id of app type "+id);
+        AppointmentTypeData appointmentTypeData = convertDataToAppTypeData(appointmentTypeService.fetchAppointmentTypeById(id));
+        return ResponseEntity.ok(appointmentTypeData);
+    }
+    
+    @PutMapping("/appointmentTypes/{id}")
+    public ResponseEntity<AppointmentTypeData> fetchAppTypeById(@RequestBody @Valid final AppointmentTypeData appointmentTypeD, @PathVariable("id") final Long id) {
+        AppointmentType appointmentType = appointmentTypeService.fetchAppointmentTypeById(id);
+        appointmentType.setColor(appointmentTypeD.getColor());
+        appointmentType.setDuration(appointmentTypeD.getDuration());
+        appointmentType.setName(appointmentTypeD.getName());
+        AppointmentTypeData appointmentTypeData = convertDataToAppTypeData(appointmentTypeService.createAppointmentType(appointmentType));
+        return ResponseEntity.ok(appointmentTypeData);
+    }
+    
+    @DeleteMapping("/appointmentTypes/{id}")
+    public @ResponseBody
+    ResponseEntity<APISuccess> deleteAppointmentType(@PathVariable("id") final Long appId) {
+        try {
+            this.appointmentTypeService.removeAppointmentTypeById(appId);
+            return ResponseEntity.accepted().body(APISuccess.successMessage("Appointment type was successfully deleted", ""));
+        } catch (Exception ex) {
+            Logger.getLogger(AppointmentController.class.getName()).log(Level.SEVERE, null, ex);
+            throw APIException.internalError("Error occured when deleting appointment type identifed by " + appId, ex.getMessage());
+        }
+        
     }
     
     @GetMapping("/appointments")

@@ -11,10 +11,12 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.Visit.Status;
 import io.smarthealth.clinical.visit.domain.Visit.VisitType;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
+import io.smarthealth.organization.person.patient.data.PatientData;
 import java.time.LocalDateTime;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -25,7 +27,6 @@ import lombok.Data;
 @Data
 public class VisitData {
 
-    @NotBlank
     private String visitNumber;
     @NotBlank
     private String patientNumber;
@@ -38,6 +39,10 @@ public class VisitData {
     @Enumerated(EnumType.STRING)
     private VisitType visitType;
     private Boolean scheduled;
+    @NotNull
+    private Long departmentId;
+    
+    private PatientData patientData;
 
     public static Visit map(VisitData visitDTO) {
         Visit visitEntity = new Visit();

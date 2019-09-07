@@ -7,6 +7,8 @@ package io.smarthealth.appointment.service;
 
 import io.smarthealth.appointment.domain.AppointmentType;
 import io.smarthealth.appointment.domain.AppointmentTypeRepository;
+import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.infrastructure.exception.APIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +32,18 @@ public class AppointmentTypeService {
 
     public Page<AppointmentType> fetchAllAppointmentTypes(final Pageable pageable) {
         return appointmentTypeRepository.findAll(pageable);
+    }
+
+    public AppointmentType fetchAppointmentTypeById(final Long appId) {
+        return appointmentTypeRepository.findById(appId).orElseThrow(() -> APIException.notFound("Appointment type identified by " + appId + " not found ", appId));
+    }
+
+    public void removeAppointmentTypeById(final Long appId) {
+        try {
+            appointmentTypeRepository.deleteById(appId);
+        } catch (Exception e) {
+            throw APIException.internalError("There was an error deleting appointment type identified by " + appId, e.getMessage());
+        }
     }
 
 }

@@ -18,7 +18,11 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import static java.time.temporal.ChronoUnit.DAYS;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -72,10 +76,11 @@ public class PatientController {
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestBody @Valid final PatientData patientData) {
         LocalDate dateOfBirth = LocalDate.now().minusDays(Long.valueOf(patientData.getAge()));
+        System.out.println("dateOfBirth " + dateOfBirth);
         patientData.setDateOfBirth(dateOfBirth);
         Patient patient = this.patientService.createPatient(patientData);
-        
-        PatientData savedpatientData = convertToPatientData(patient);
+
+        PatientData savedpatientData = patientService.convertToPatientData(patient);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
@@ -97,8 +102,9 @@ public class PatientController {
     @GetMapping("/patients")
     public ResponseEntity<List<PatientData>> fetchAllPatients(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
 
-        Page<PatientData> page = patientService.fetchAllPatients(pageable).map(p -> convertToPatientData(p));
+        Page<PatientData> page = patientService.fetchAllPatients(pageable).map(p -> patientService.convertToPatientData(p));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
@@ -130,7 +136,7 @@ public class PatientController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
 
-        return ResponseEntity.created(location).body(convertToPatientData(patient));
+        return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
     }
 
     @PutMapping("/patients/{patientid}/contacts/{contactid}")
@@ -155,7 +161,7 @@ public class PatientController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
-        return ResponseEntity.created(location).body(convertToPatientData(patient));
+        return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
     }
 
     @PutMapping("/patients/{patientid}/address/{addressid}")
@@ -182,7 +188,7 @@ public class PatientController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
 
-        return ResponseEntity.created(location).body(convertToPatientData(patient));
+        return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
     }
 
     @PostMapping("/patients/{id}/image")
@@ -211,33 +217,6 @@ public class PatientController {
             throw APIException.internalError("Error saving patient's image ", ex.getMessage());
         }
 
-    }
-
-    private PatientData convertToPatientData(Patient patient) {
-        try {
-            PatientData patientData = modelMapper.map(patient, PatientData.class);
-            if (patient.getAddresses()!=null) {
-                List<AddressData> addresses = new ArrayList<>();
-
-                patient.getAddresses().forEach((address) -> {
-                    AddressData addressData = modelMapper.map(address, AddressData.class);
-                    addresses.add(addressData);
-                });
-                patientData.setAddress(addresses);
-            }
-            if (patient.getContacts()!=null) {
-                List<ContactData> contacts = new ArrayList<>();
-                patient.getContacts().forEach((contact) -> {
-                    ContactData contactData = modelMapper.map(contact, ContactData.class);
-                    contacts.add(contactData);
-                });
-                patientData.setContact(contacts);
-            }
-            return patientData;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("An error occured while converting patient data ", e.getMessage());
-        }
     }
 
     private void throwIfInvalidSize(final Long size) {

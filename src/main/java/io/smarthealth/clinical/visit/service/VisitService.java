@@ -25,7 +25,7 @@ public class VisitService {
 
     private final VisitRepository visitRepository;
     private final PatientRepository patientRepository;
-    
+
     public VisitService(VisitRepository visitRepository, PatientRepository patientRepository) {
         this.visitRepository = visitRepository;
         this.patientRepository = patientRepository;
@@ -61,6 +61,10 @@ public class VisitService {
         visitEntity.setPatient(patient);
         visitRepository.save(visitEntity);
         return visitDTO.getVisitNumber();
+    }
+
+    public int generateVisitNumber() {
+        return visitRepository.maxVisitId()+1;
     }
 
     private Patient findPatientEntityOrThrow(String patientNumber) {

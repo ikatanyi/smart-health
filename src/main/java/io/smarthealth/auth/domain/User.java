@@ -56,6 +56,7 @@ public class User extends Identifiable
     public User() {
     }
 
+
     public User(String email, String username, String password, String name, List<Role> roles) {
         this.email = email;
         this.username = username;
@@ -64,7 +65,6 @@ public class User extends Identifiable
         this.roles = roles;
         this.enabled=true;
     }
-
     
     @Override
     public boolean isEnabled() {

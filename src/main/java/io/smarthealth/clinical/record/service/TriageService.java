@@ -38,7 +38,7 @@ public class TriageService {
     private PatientService patientService;
 
 //VITALS
-    public VitalsRecord addVitalRecords(String visitNumber, VitalRecordData triage) {
+    public VitalsRecord addVitalRecordsByVisit(String visitNumber, VitalRecordData triage) {
         Visit visit = findVisitOrThrow(visitNumber);
         if (!StringUtils.equalsIgnoreCase(visit.getPatient().getPatientNumber(), triage.getPatientNumber())) {
             throw APIException.badRequest("Invalid Patient Number! mismatch in Patient Visit's patient number");
@@ -55,7 +55,21 @@ public class TriageService {
         vr.setCategory(category);
 
         return triageRepository.save(vr);
+    }
 
+    public VitalsRecord addVitalRecordsByPatient(String patientNo, VitalRecordData triage) {
+        Patient patient = patientService.findPatientOrThrow(patientNo);
+
+        VitalsRecord vr = VitalRecordData.map(triage);
+
+        float bmi = (float) BMI.calculateBMI(triage.getHeight(), triage.getWeight());
+        String category = BMI.getCategory(bmi);
+
+        vr.setPatient(patient);
+        vr.setBmi(bmi);
+        vr.setCategory(category);
+
+        return triageRepository.save(vr);
     }
 
     public Page<VitalsRecord> fetchVitalRecordsByVisit(String visitNumber, Pageable page) {

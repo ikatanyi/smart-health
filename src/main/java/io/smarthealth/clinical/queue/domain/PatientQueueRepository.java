@@ -3,19 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.organization.facility.domain;
+package io.smarthealth.clinical.queue.domain;
 
-import java.util.Optional;
+import io.smarthealth.organization.facility.domain.Department;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Simon.waweru
  */
-public interface DepartmentRepository extends JpaRepository<Department, Long> {
-
-    Optional<Department> findById(final Long id);
-    Page<Department> findByFacility(Facility  facility, Pageable pageable);
+@Repository
+public interface PatientQueueRepository extends JpaRepository<PatientQueue, Long> {
+    public Page<PatientQueue> findByDepartment(Department department, Pageable pageable);
 }
