@@ -5,7 +5,7 @@
  */
 package io.smarthealth.organization.bank.service;
 
-import io.smarthealth.financial.account.domain.AccountRepository;
+import io.smarthealth.accounting.account.domain.AccountRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.bank.data.BankAccountData;
@@ -37,7 +37,7 @@ public class BankService {
     public Long createBank(final BankAccountData bankData) {
         BankAccount bank = BankAccountData.map(bankData);
 
-        bank.setGlAccount(accountRepository.findByIdentifier(bankData.getGlAccountCode()).get());
+        bank.setGlAccount(accountRepository.findByAccountNumber(bankData.getGlAccountCode()).get());
         bank.setOrganization(organizationRepository.findByCode(bankData.getOrganizationCode()).get());
 
         bankAccountRepository.save(bank);

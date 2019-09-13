@@ -3,7 +3,7 @@ package io.smarthealth.organization.domain;
 import io.smarthealth.organization.bank.domain.BankAccount;
 import io.smarthealth.organization.contact.domain.Address;
 import io.smarthealth.organization.contact.domain.Contact;
-import io.smarthealth.financial.payment.domain.PaymentTerms;
+import io.smarthealth.accounting.payment.domain.PaymentTerms;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;

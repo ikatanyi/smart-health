@@ -38,8 +38,8 @@ public class BankAccountData {
         bankData.setBranchCode(bank.getBranchCode());
         bankData.setCompanyAccount(bank.getCompanyAccount());
         bankData.setDefaultAccount(bank.getDefaultAccount());
-        bankData.setGlAccountName(bank.getGlAccount().getName());
-        bankData.setGlAccountCode(bank.getGlAccount().getIdentifier());
+        bankData.setGlAccountName(bank.getGlAccount().getAccountName());
+        bankData.setGlAccountCode(bank.getGlAccount().getAccountNumber());
         bankData.setIBAN(bank.getIBAN());
         bankData.setOrganizationCode(bank.getOrganization().getCode());
         bankData.setOrganizationName(bank.getOrganization().getName());
@@ -55,7 +55,7 @@ public class BankAccountData {
         bank.setBranchCode(bankAccountData.getBranchCode());
         bank.setCompanyAccount(bankAccountData.getCompanyAccount());
         bank.setDefaultAccount(bankAccountData.getDefaultAccount());
-        bank.getGlAccount().setIdentifier(bankAccountData.getGlAccountCode());
+        bank.getGlAccount().setAccountNumber(bankAccountData.getGlAccountCode());
         bank.setIBAN(bankAccountData.getIBAN());
         bank.getOrganization().setCode(bankAccountData.getOrganizationCode());
         return bank;
