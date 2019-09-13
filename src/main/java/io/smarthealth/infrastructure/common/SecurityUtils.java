@@ -1,5 +1,6 @@
 package io.smarthealth.infrastructure.common;
 
+import io.smarthealth.auth.domain.User;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,8 +32,7 @@ public final class SecurityUtils {
                 }
                 return null;
             });
-    }
-
+    } 
     /**
      * Check if a user is authenticated.
      *
@@ -61,4 +61,16 @@ public final class SecurityUtils {
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authority)))
             .orElse(false);
     }
+     public static Optional<Long> getCurrentLoggedUserId() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        return Optional.ofNullable(securityContext.getAuthentication())
+            .map(authentication -> {
+                if (authentication.getPrincipal() instanceof UserDetails) {
+                    UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
+                    User user=(User)springSecurityUser;
+                    return user.getId();
+                }  
+                return 1L;
+            });
+    } 
 }

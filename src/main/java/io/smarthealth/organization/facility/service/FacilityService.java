@@ -5,7 +5,7 @@
  */
 package io.smarthealth.organization.facility.service;
 
-import io.smarthealth.financial.account.domain.AccountRepository;
+import io.smarthealth.accounting.account.domain.AccountRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.domain.OrganizationRepository;

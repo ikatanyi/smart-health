@@ -1,6 +1,6 @@
 package io.smarthealth.organization.payer.domain;
 
-import io.smarthealth.financial.account.domain.Account;
+import io.smarthealth.accounting.account.domain.Account;
 import io.smarthealth.organization.domain.Organization;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

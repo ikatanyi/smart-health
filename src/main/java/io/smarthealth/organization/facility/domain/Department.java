@@ -1,6 +1,6 @@
 package io.smarthealth.organization.facility.domain;
 
-import io.smarthealth.financial.account.domain.Account;
+import io.smarthealth.accounting.account.domain.Account;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Column;
 import javax.persistence.Entity;

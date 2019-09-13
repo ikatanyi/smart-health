@@ -2,7 +2,7 @@ package io.smarthealth.stock.purchase.domain;
 
 import io.smarthealth.organization.contact.domain.Address;
 import io.smarthealth.organization.contact.domain.Contact;
-import io.smarthealth.financial.account.domain.PriceList;
+import io.smarthealth.accounting.payment.domain.PriceList;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.supplier.domain.Supplier;

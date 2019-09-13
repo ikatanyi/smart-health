@@ -1,9 +1,10 @@
 package io.smarthealth.organization.bank.domain;
 
 import io.smarthealth.organization.domain.Organization;
-import io.smarthealth.financial.account.domain.Account;
+import io.smarthealth.accounting.account.domain.Account;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -24,6 +25,7 @@ public class BankAccount extends Identifiable {
     private String accountName;
     private String accountNo;
     @OneToOne
+    @JoinColumn(name = "gl_account" )
     private Account glAccount;
     private String bank;
     private String branchCode;
