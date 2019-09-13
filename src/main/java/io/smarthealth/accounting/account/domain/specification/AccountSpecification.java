@@ -40,7 +40,7 @@ public class AccountSpecification {
             }
             
             if (category != null) {
-                predicates.add(cb.equal(root.get("accountType").get("glAccountType"), AccountCategory.valueOf(category.toUpperCase())));
+                predicates.add(cb.equal(root.get("accountType").get("glAccountType"), AccountCategory.valueOf(category)));
             }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
