@@ -5,6 +5,11 @@
  */
 package io.smarthealth.clinical.record.domain;
 
+import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.person.patient.domain.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -13,4 +18,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface PatientNotesRepository extends JpaRepository<PatientNotes, Long> {
 
+    Page<PatientNotes> findByHealthProviderAndPatient(final Employee employee, Patient patient, final Pageable pageable);
+
+    Page<PatientNotes> findByPatient(Patient patient, final Pageable pageable);
+
+    Page<PatientNotes> findByVisit(Visit visit, final Pageable pageable);
 }

@@ -6,6 +6,7 @@
 package io.smarthealth.clinical.visit.domain;
 
 import io.smarthealth.organization.person.patient.domain.Patient;
+import java.math.BigInteger;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,5 +35,8 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
 
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN 'true' ELSE 'false' END FROM Visit c WHERE c.status='RUNNING' and c.visitNumber=:visitNumber")
     Boolean isVisitRunning(@Param("visitNumber") String visitNumber);
+
+    @Query(value = "SELECT max(id) FROM Visit")
+    public Integer maxVisitId();
 
 }

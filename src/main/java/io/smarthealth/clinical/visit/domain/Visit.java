@@ -40,6 +40,7 @@ public class Visit extends Auditable {
         Outpatient,
         Inpatient
     }
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "patient_id")
     private Patient patient;
@@ -60,4 +61,5 @@ public class Visit extends Auditable {
     private Status status;
 
     private Boolean scheduled;
+
 }

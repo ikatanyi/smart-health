@@ -8,6 +8,8 @@ package io.smarthealth.organization.facility.data;
 import io.smarthealth.organization.facility.domain.Department;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -19,8 +21,16 @@ public class DepartmentData {
 
     @Enumerated(EnumType.STRING)
     private Department.Type type;
-    private String departmentCode;
-    private String departmentName;
-    
-    
+    @NotBlank
+    @NotNull
+    private String code;
+    @NotBlank
+    @NotNull
+    private String name;
+//    private Long facilityId;
+//    private Long parentId;
+//    private Long incomeAccountId;
+//    private Long expenseAccountId;
+    private boolean isStore;
+    private boolean active;
 }

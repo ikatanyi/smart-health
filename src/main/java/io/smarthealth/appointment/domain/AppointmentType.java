@@ -14,6 +14,7 @@ import lombok.Data;
 @Data
 @Table(name = "appointment_type")
 public class AppointmentType extends Identifiable{
+    
     private String name;
     private Integer duration; // in minutes
     private String color; // calendar display color

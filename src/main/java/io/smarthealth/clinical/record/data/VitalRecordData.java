@@ -7,6 +7,7 @@ import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import java.time.LocalDateTime;
 import lombok.Data;
 import io.smarthealth.clinical.visit.validation.constraints.CheckValidVisit;
+import io.swagger.annotations.ApiModelProperty;
 import org.smarthealth.patient.validation.constraints.ValidIdentifier;
 
 /**
@@ -17,19 +18,19 @@ import org.smarthealth.patient.validation.constraints.ValidIdentifier;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VitalRecordData {
 
+    @ApiModelProperty(required = false, hidden = true)
     private Long id;
     @CheckValidVisit
     private String visitNumber;
-    private String visitType;
 
     @ValidIdentifier
     private String patientNumber;
 
-    private String patientName;
     private Float temp;
     private Float height;
     private Float weight;
     private Float bmi;
+    @ApiModelProperty(required = false, hidden = true)
     private String category;
     private Float systolic;
     private Float diastolic;
@@ -38,7 +39,7 @@ public class VitalRecordData {
     private Float spo2;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
-    private LocalDateTime vitalsDatetime;
+    private LocalDateTime dateRecorded;
 
     public static VitalsRecord map(VitalRecordData triage) {
         VitalsRecord entity = new VitalsRecord();
@@ -50,7 +51,7 @@ public class VitalRecordData {
         entity.setPulse(triage.getPulse());
         entity.setRespiretory(triage.getRespiretory());
         entity.setSpo2(triage.getSpo2());
-        entity.setDateRecorded(triage.getVitalsDatetime());
+        entity.setDateRecorded(triage.getDateRecorded());
         return entity;
     }
 
@@ -65,13 +66,11 @@ public class VitalRecordData {
         triage.setPulse(entity.getPulse());
         triage.setRespiretory(entity.getRespiretory());
         triage.setSpo2(entity.getSpo2());
-        triage.setVitalsDatetime(entity.getDateRecorded());
+        triage.setDateRecorded(entity.getDateRecorded());
         triage.setPatientNumber(entity.getPatient().getPatientNumber());
         triage.setVisitNumber(entity.getVisit().getVisitNumber());
-        triage.setVisitType(entity.getVisit().getVisitType().name());
         triage.setCategory(entity.getCategory());
         triage.setBmi(entity.getBmi());
-        triage.setPatientName(entity.getPatient().getSurname() + " " + entity.getPatient().getGivenName());
         return triage;
     }
 

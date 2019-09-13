@@ -6,6 +6,8 @@
 package io.smarthealth.organization.person.domain;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -13,6 +15,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Simon.waweru
  */
 public interface PersonContactRepository extends JpaRepository<PersonContact, Long> {
+
+    Page<PersonContact> findByPerson(final Person person, final Pageable pageable);
 
     List<PersonContact> findByPerson(final Person person);
 }

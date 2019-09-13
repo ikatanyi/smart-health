@@ -14,6 +14,7 @@ import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -31,18 +32,24 @@ public class VisitService {
     }
 
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
-        Patient patient = patientRepository.findByPatientNumber(patientNumber).get();
+        Patient patient = this.findPatientEntityOrThrow(patientNumber);
         Page<Visit> visits = visitRepository.findByPatient(patient, pageable);
         return visits;
     }
 
-    public VisitData createAVisit(final VisitData visitDTO, final String patientNumber) {
-        //Fetch patient entity 
-        Patient patient = this.findPatientEntityOrThrow(patientNumber);
-        Visit visit = VisitData.map(visitDTO);
-        visit.setPatient(patient);
-        visitRepository.saveAndFlush(visit);
-        return visitDTO;
+    public Page<Visit> fetchAllVisits(final Pageable pageable) {
+        Page<Visit> visits = visitRepository.findAll(pageable);
+        return visits;
+    }
+
+    @Transactional
+    public Visit createAVisit(final Visit visit) {
+        try {
+            return visitRepository.saveAndFlush(visit);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw APIException.internalError("There was an error creating visit", e.getMessage());
+        }
     }
 
     public String updateVisit(final String visitNumber, final VisitData visitDTO) {
@@ -56,12 +63,16 @@ public class VisitService {
         return visitDTO.getVisitNumber();
     }
 
+    public int generateVisitNumber() {
+        return visitRepository.maxVisitId()+1;
+    }
+
     private Patient findPatientEntityOrThrow(String patientNumber) {
         return this.patientRepository.findByPatientNumber(patientNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Number {0} not found.", patientNumber));
     }
 
-    private Visit findVisitEntityOrThrow(String visitNumber) {
+    public Visit findVisitEntityOrThrow(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
     }
