@@ -29,7 +29,7 @@ public final class PatientData extends PersonData {
     @ApiModelProperty(required = false, hidden = true)
     private Long id;
 
-    @NotNull(message = "Patient number is a required field")
+    //@NotNull(message = "Patient number is a required field")
     private String patientNumber;
 
     private String status;

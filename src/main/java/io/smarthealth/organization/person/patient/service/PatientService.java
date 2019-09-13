@@ -80,6 +80,11 @@ public class PatientService {
         return patientRepository.getOne(patientId);
     }
 
+    public String generatePatientNumber() {
+        int nextPatient = patientRepository.maxId() + 1;
+        return String.valueOf("PAT"+nextPatient);
+    }
+
     public Optional<PatientData> fetchPatientByPatientNumber(final String patientNumber) {
 
         return patientRepository.findByPatientNumber(patientNumber)
@@ -233,14 +238,13 @@ public class PatientService {
     public boolean patientExists(String patientNumber) {
         return patientRepository.existsByPatientNumber(patientNumber);
     }
-    
-    
+
     public PatientData convertToPatientData(Patient patient) {
         try {
             PatientData patientData = modelMapper.map(patient, PatientData.class);
             if (patient.getAddresses() != null) {
                 List<AddressData> addresses = new ArrayList<>();
-                
+
                 patient.getAddresses().forEach((address) -> {
                     AddressData addressData = modelMapper.map(address, AddressData.class);
                     addresses.add(addressData);
@@ -265,6 +269,5 @@ public class PatientService {
             throw APIException.internalError("An error occured while converting patient data ", e.getMessage());
         }
     }
-    
 
 }
