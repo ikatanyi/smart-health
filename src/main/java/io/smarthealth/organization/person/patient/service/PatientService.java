@@ -6,7 +6,6 @@
 package io.smarthealth.organization.person.patient.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.contact.domain.Address;
 import io.smarthealth.organization.person.domain.PersonAddress;
 import io.smarthealth.organization.person.domain.PersonAddressRepository;
 import io.smarthealth.organization.person.domain.PersonContact;
@@ -17,7 +16,10 @@ import io.smarthealth.organization.person.domain.Person;
 import io.smarthealth.organization.person.domain.Portrait;
 import io.smarthealth.organization.person.domain.PortraitRepository;
 import io.smarthealth.organization.person.patient.data.PatientData;
+import io.smarthealth.organization.person.patient.data.PatientIdentifierData;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.domain.PatientIdentifier;
+import io.smarthealth.organization.person.patient.domain.PatientIdentifierRepository;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -55,12 +57,17 @@ public class PatientService {
     PersonContactRepository personContactRepository;
     @Autowired
     PersonAddressRepository personAddressRepository;
+    @Autowired
+    PatientIdentifierRepository patientIdentifierRepository;
 
     @Autowired
     ModelMapper modelMapper;
 
     @Autowired
     PortraitRepository portraitRepository;
+
+    @Autowired
+    PatientIdentifierService patientIdentifierService;
 
     private final File patientImageDirRoot;
 
@@ -82,7 +89,7 @@ public class PatientService {
 
     public String generatePatientNumber() {
         int nextPatient = patientRepository.maxId() + 1;
-        return String.valueOf("PAT"+nextPatient);
+        return String.valueOf("PAT" + nextPatient);
     }
 
     public Optional<PatientData> fetchPatientByPatientNumber(final String patientNumber) {
@@ -108,6 +115,17 @@ public class PatientService {
                                 .collect(Collectors.toList())
                         );
                     }
+
+                    final List<PatientIdentifier> patientIdentifiers = this.patientIdentifierService.fetchPatientIdentifiers(patientEntity);
+
+                    if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
+                        List<PatientIdentifierData> ids = new ArrayList<>();
+                        for (PatientIdentifier id : patientIdentifiers) {
+                            ids.add(patientIdentifierService.convertIdentifierEntityToData(id));
+                        }
+                        patient.setIdentifiers(ids);
+                    }
+
                     patient.setFullName((patient.getGivenName() != null ? patient.getGivenName() : "") + " " + (patient.getMiddleName() != null ? patient.getMiddleName() : "").concat(" ").concat(patient.getSurname() != null ? patient.getSurname() : " "));
                     return patient;
                 });
@@ -169,7 +187,7 @@ public class PatientService {
 
         // use strict to prevent over eager matching (happens with ID fields)
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        // modelMapper.addMapping(PatientData::getPatientNumber, Patient::setPatientNumber);
+
         final Patient patientEntity = modelMapper.map(patient, Patient.class);
         patientEntity.setAlive(true);
         patientEntity.setPatient(true);
@@ -204,6 +222,21 @@ public class PatientService {
                     .collect(Collectors.toList())
             );
             savedPatient.setAddresses(addresses);
+        }
+        //save patient identifier
+        if (patient.getIdentifiers() != null) {
+            List<PatientIdentifier> patientIdentifiersList = new ArrayList<>();
+            patientIdentifierRepository.saveAll(patient.getIdentifiers()
+                    .stream()
+                    .map(identity -> {
+                        final PatientIdentifier patientIdentifier = patientIdentifierService.convertIdentifierDataToEntity(identity) /*modelMapper.map(identity, PatientIdentifier.class)*/;
+                        patientIdentifiersList.add(patientIdentifier);
+                        patientIdentifier.setPatient(savedPatient);
+                        return patientIdentifier;
+                    })
+                    .collect(Collectors.toList())
+            );
+            savedPatient.setIdentifications(patientIdentifiersList);
         }
 
         return savedPatient;
@@ -259,6 +292,17 @@ public class PatientService {
                 });
                 patientData.setContact(contacts);
             }
+
+            final List<PatientIdentifier> patientIdentifiers = this.patientIdentifierService.fetchPatientIdentifiers(patient);
+
+            if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
+                List<PatientIdentifierData> ids = new ArrayList<>();
+                for (PatientIdentifier id : patientIdentifiers) {
+                    ids.add(patientIdentifierService.convertIdentifierEntityToData(id));
+                }
+                patientData.setIdentifiers(ids);
+            }
+
             patientData.setFullName((patient.getGivenName() != null ? patient.getGivenName() : "") + " " + (patient.getMiddleName() != null ? patient.getMiddleName() : "").concat(" ").concat(patient.getSurname() != null ? patient.getSurname() : " "));
             if (patient.getDateOfBirth() != null) {
                 patientData.setAge(String.valueOf(ChronoUnit.YEARS.between(patient.getDateOfBirth(), LocalDate.now())));

@@ -1,6 +1,7 @@
 package io.smarthealth.organization.person.patient.api;
 
 import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.data.AddressData;
@@ -11,6 +12,8 @@ import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.domain.Portrait;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.domain.PatientIdentificationType;
+import io.smarthealth.organization.person.patient.service.PatientIdentificationTypeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.organization.person.service.PersonService;
 import io.swagger.annotations.Api;
@@ -18,11 +21,6 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import static java.time.temporal.ChronoUnit.DAYS;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -58,20 +56,23 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
 @RequestMapping("/api")
 @Api(value = "Patient Controller", description = "Operations pertaining to patient entity")
 public class PatientController {
-    
+
     @Value("${upload.image.max-size:524288}")
     Long maxSize;
     @Autowired
     private PatientService patientService;
     @Autowired
     private PersonService personService;
-    
+
     @Autowired
     private VisitService visitService;
-    
+
+    @Autowired
+    private PatientIdentificationTypeService patientIdentificationTypeService;
+
     @Autowired
     ModelMapper modelMapper;
-    
+
     @PostMapping("/patients")
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestBody @Valid final PatientData patientData) {
@@ -80,18 +81,18 @@ public class PatientController {
         patientData.setDateOfBirth(dateOfBirth);
         patientData.setPatientNumber(patientService.generatePatientNumber());
         Patient patient = this.patientService.createPatient(patientData);
-        
+
         PatientData savedpatientData = patientService.convertToPatientData(patient);
-        
+
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
-        
-        return ResponseEntity.created(location).body(savedpatientData);
+
+        return ResponseEntity.created(location).body(APIResponse.successMessage("Patient successfuly created", HttpStatus.CREATED, savedpatientData));
     }
-    
+
     @GetMapping("/patients/{id}")
     public @ResponseBody
-    ResponseEntity<PatientData> findPatient(@PathVariable("id") final String patientNumber) {
+    ResponseEntity<PatientData> findPatientByPatientNumber(@PathVariable("id") final String patientNumber) {
         final Optional<PatientData> patient = this.patientService.fetchPatientByPatientNumber(patientNumber);
         if (patient.isPresent()) {
             return ResponseEntity.ok(patient.get());
@@ -99,16 +100,16 @@ public class PatientController {
             throw APIException.notFound("Patient Number {0} not found.", patientNumber);
         }
     }
-    
+
     @GetMapping("/patients")
     public ResponseEntity<List<PatientData>> fetchAllPatients(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-        
+
         Page<PatientData> page = patientService.fetchAllPatients(pageable).map(p -> patientService.convertToPatientData(p));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
-        
+
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-    
+
     @PutMapping("/patients/{id}")
     public @ResponseBody
     ResponseEntity<PatientData> updatePatient(@PathVariable("id") final String patientNumber,
@@ -116,7 +117,7 @@ public class PatientController {
         final Patient patient;
         if (this.patientService.patientExists(patientNumber)) {
             patient = patientService.findPatientOrThrow(patientNumber);
-            
+
             patient.setAlive(patientData.isAlive());
             patient.setAllergyStatus(patientData.getAllergyStatus());
             patient.setBloodType(patientData.getBloodType());
@@ -129,17 +130,17 @@ public class PatientController {
             patient.setSurname(patientData.getSurname());
             patient.setTitle(patientData.getTitle());
             patient.setDateOfBirth(patientData.getDateOfBirth());
-            
+
             this.patientService.updatePatient(patientNumber, patient);
         } else {
             throw APIException.notFound("Patient {0} not found.", patientNumber);
         }
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
-        
+
         return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
     }
-    
+
     @PutMapping("/patients/{patientid}/contacts/{contactid}")
     @ApiOperation(value = "Update a patient's contact details", response = PatientData.class)
     public @ResponseBody
@@ -158,13 +159,13 @@ public class PatientController {
         } else {
             throw APIException.notFound("Contact {0} not found.", contactid);
         }
-        
+
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
         return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
     }
-    
+
     @PutMapping("/patients/{patientid}/address/{addressid}")
     @ApiOperation(value = "Update a patient's address details", response = PatientData.class)
     public @ResponseBody
@@ -188,10 +189,10 @@ public class PatientController {
         }
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
-        
+
         return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
     }
-    
+
     @PostMapping("/patients/{id}/image")
     @ApiOperation(value = "Update a patient's image details", response = Portrait.class)
     public @ResponseBody
@@ -201,11 +202,11 @@ public class PatientController {
         if (image == null) {
             throw APIException.badRequest("Image not found");
         }
-        
+
         Patient patient = patientService.findPatientOrThrow(patientNumber);
         this.throwIfInvalidSize(image.getSize());
         this.throwIfInvalidContentType(image.getContentType());
-        
+
         try {
             //delete if any existing
             this.patientService.deletePortrait(patientNumber);
@@ -217,21 +218,54 @@ public class PatientController {
             ex.printStackTrace();
             throw APIException.internalError("Error saving patient's image ", ex.getMessage());
         }
-        
+
     }
-    
+
+    @PostMapping("/patient_identification_type")
+    public @ResponseBody
+    ResponseEntity<?> createPatientIdtype(@RequestBody @Valid final PatientIdentificationType patientIdentificationType) {
+
+        PatientIdentificationType patientIdtype = this.patientIdentificationTypeService.creatIdentificationType(patientIdentificationType);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patient_identification_type/{id}")
+                .buildAndExpand(patientIdtype.getId()).toUri();
+
+        return ResponseEntity.created(location).body(APIResponse.successMessage("Identity type was successfully created", HttpStatus.CREATED, patientIdtype));
+    }
+
+    /*
+    @GetMapping("/patient_identification_type")
+    public ResponseEntity<List<PatientIdentificationType>> fetchAllPatientIdTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+
+//        return new ResponseEntity<List<PatientIdentificationType>>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
+        return new ResponseEntity<>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
+    }
+     */
+    @GetMapping("/patient_identification_type")
+    public ResponseEntity<List<PatientIdentificationType>> fetchAllPatientIdTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+
+//        return new ResponseEntity<List<PatientIdentificationType>>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
+        return new ResponseEntity<>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
+    }
+
+    @GetMapping("/patient_identification_type/{id}")
+    public PatientIdentificationType fetchAllPatientIdTypes(@PathVariable("id") final String patientIdType) {
+        System.out.println("patientIdType " + patientIdType);
+        return patientIdentificationTypeService.fetchIdType(Long.valueOf(patientIdType));
+    }
+
     private void throwIfInvalidSize(final Long size) {
-        
+
         if (size > maxSize) {
             throw APIException.badRequest("Image can''t exceed size of {0}", maxSize);
         }
     }
-    
+
     private void throwIfInvalidContentType(final String contentType) {
         if (!contentType.contains(MediaType.IMAGE_JPEG_VALUE)
                 && !contentType.contains(MediaType.IMAGE_PNG_VALUE)) {
             throw APIException.badRequest("Only content type {0} and {1} allowed", MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE);
         }
     }
-    
+
 }
