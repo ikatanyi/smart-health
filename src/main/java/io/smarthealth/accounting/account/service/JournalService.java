@@ -168,6 +168,7 @@ public class JournalService {
     }
 
     public static String generateTransactionId(final Long companyId) {
+        //journal format : ACC-JV-2019-00001
 //        Long id = SecurityUtils.getCurrentLoggedUserId().get();
         final Long time = System.currentTimeMillis();
         final String uniqueVal = String.valueOf(time) + 120L + companyId;

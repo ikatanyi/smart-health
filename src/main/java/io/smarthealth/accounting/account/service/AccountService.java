@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.account.service;
 
 import io.smarthealth.accounting.account.data.AccountData;
+import io.smarthealth.accounting.account.data.JournalData;
 import io.smarthealth.accounting.account.domain.Account;
 import io.smarthealth.accounting.account.domain.AccountRepository;
 import io.smarthealth.accounting.account.domain.AccountType;
@@ -111,6 +112,10 @@ public class AccountService {
         //determin the rule of posting opening balances
         if(accountData.getOpeningBalance()!=null && accountData.getBalanceDate()!=null){
              Journal journal=new Journal();
+             journal.setTransactionId(generateTransactionId(2L));
+             journal.setReversed(false);
+             journal.setState(JournalData.State.DRAFT);
+             journal.setReferenceNumber(UUID.randomUUID().toString());
              journal.setTransactionDate(accountData.getBalanceDate());
              journal.setDescriptions("Opening Balance as at "+accountData.getBalanceDate().toString()); 
              
@@ -157,6 +162,14 @@ public class AccountService {
         } catch (Exception ex) {
             throw APIException.badRequest("Account Category : {0} is not supported .. ", category);
         }
+    }
+    public static String generateTransactionId(final Long companyId) {
+        //journal format : ACC-JV-2019-00001
+//        Long id = SecurityUtils.getCurrentLoggedUserId().get();
+        final Long time = System.currentTimeMillis();
+        final String uniqueVal = String.valueOf(time) + 120L + companyId;
+        final String transactionId = Long.toHexString(Long.parseLong(uniqueVal));
+        return transactionId;
     }
 
 }
