@@ -30,4 +30,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     Page<Patient> findByStatus(final String currentStatus, final Pageable pageable);
 
+    @Query(value = "SELECT max(id) FROM Patient")
+    public Integer maxId();
+
 }

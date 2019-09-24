@@ -10,7 +10,8 @@ import javax.persistence.Table;
 import lombok.Data;
 
 /**
- *  Patient Allergy Record
+ * Patient Allergy Record
+ *
  * @author Kelsas
  */
 @Entity
@@ -22,9 +23,10 @@ public class Allergy extends Auditable {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
-    private String allergy;  
-    private String reaction;  
-    private String severiity; //Critical | Mild | Danger
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private Allergy allergy;
+    private String reaction;
+    private String severity; //Critical | Mild | Danger
     private String notes;
     private LocalDateTime dateRecorded = LocalDateTime.now();
 

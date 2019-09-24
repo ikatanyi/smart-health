@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class PatientIdentifierData {
 
-    private String type;
-    private String value;
-    private Boolean validated;
+    private String id_type;
+    private String identification_value;
+    private Boolean validated = false;
 }

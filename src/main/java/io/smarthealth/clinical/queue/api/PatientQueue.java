@@ -7,7 +7,6 @@ package io.smarthealth.clinical.queue.api;
 
 import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
-import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.service.DepartmentService;
@@ -45,9 +44,8 @@ public class PatientQueue {
 
     @Autowired
     private DepartmentService departmentService;
- //  /api/visit/queue?department=2&date=2019-09-16&status=checked%in
-           
-    @GetMapping("/patientqueue/{deptId}")
+
+    @GetMapping("/patientqueue/department/{deptId}")
     public ResponseEntity<List<PatientQueueData>> fetchQueuesByDepartment(@PathVariable("deptId") final Long deptId, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Department department = departmentService.fetchDepartmentById(deptId);
         Page<PatientQueueData> page = patientQueueService.fetchQueueByDept(department, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));

@@ -1,6 +1,7 @@
 package io.smarthealth.organization.person.patient.domain;
 
 import io.smarthealth.organization.person.domain.Person;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,7 +32,7 @@ public class Patient extends Person {
     private String allergyStatus = "Unknown";
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PatientIdentifier> identifications;
+    private List<PatientIdentifier> identifications;
 
     @Column(length = 50)
     private String status;
@@ -40,5 +41,8 @@ public class Patient extends Person {
     private String bloodType;
 
     private boolean isAlive = true;
+
+    private String criticalInformation;
+    private String basicNotes;
 
 }

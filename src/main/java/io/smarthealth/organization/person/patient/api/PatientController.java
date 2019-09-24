@@ -1,6 +1,7 @@
 package io.smarthealth.organization.person.patient.api;
 
 import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.data.AddressData;
@@ -11,6 +12,8 @@ import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.domain.Portrait;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.domain.PatientIdentificationType;
+import io.smarthealth.organization.person.patient.service.PatientIdentificationTypeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.organization.person.service.PersonService;
 import io.swagger.annotations.Api;
@@ -18,11 +21,6 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import static java.time.temporal.ChronoUnit.DAYS;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -70,6 +68,9 @@ public class PatientController {
     private VisitService visitService;
 
     @Autowired
+    private PatientIdentificationTypeService patientIdentificationTypeService;
+
+    @Autowired
     ModelMapper modelMapper;
 
     @PostMapping("/patients")
@@ -78,6 +79,7 @@ public class PatientController {
         LocalDate dateOfBirth = LocalDate.now().minusDays(Long.valueOf(patientData.getAge()));
         System.out.println("dateOfBirth " + dateOfBirth);
         patientData.setDateOfBirth(dateOfBirth);
+        patientData.setPatientNumber(patientService.generatePatientNumber());
         Patient patient = this.patientService.createPatient(patientData);
 
         PatientData savedpatientData = patientService.convertToPatientData(patient);
@@ -85,12 +87,12 @@ public class PatientController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
 
-        return ResponseEntity.created(location).body(savedpatientData);
+        return ResponseEntity.created(location).body(APIResponse.successMessage("Patient successfuly created", HttpStatus.CREATED, savedpatientData));
     }
 
     @GetMapping("/patients/{id}")
     public @ResponseBody
-    ResponseEntity<PatientData> findPatient(@PathVariable("id") final String patientNumber) {
+    ResponseEntity<PatientData> findPatientByPatientNumber(@PathVariable("id") final String patientNumber) {
         final Optional<PatientData> patient = this.patientService.fetchPatientByPatientNumber(patientNumber);
         if (patient.isPresent()) {
             return ResponseEntity.ok(patient.get());
@@ -217,6 +219,39 @@ public class PatientController {
             throw APIException.internalError("Error saving patient's image ", ex.getMessage());
         }
 
+    }
+
+    @PostMapping("/patient_identification_type")
+    public @ResponseBody
+    ResponseEntity<?> createPatientIdtype(@RequestBody @Valid final PatientIdentificationType patientIdentificationType) {
+
+        PatientIdentificationType patientIdtype = this.patientIdentificationTypeService.creatIdentificationType(patientIdentificationType);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patient_identification_type/{id}")
+                .buildAndExpand(patientIdtype.getId()).toUri();
+
+        return ResponseEntity.created(location).body(APIResponse.successMessage("Identity type was successfully created", HttpStatus.CREATED, patientIdtype));
+    }
+
+    /*
+    @GetMapping("/patient_identification_type")
+    public ResponseEntity<List<PatientIdentificationType>> fetchAllPatientIdTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+
+//        return new ResponseEntity<List<PatientIdentificationType>>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
+        return new ResponseEntity<>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
+    }
+     */
+    @GetMapping("/patient_identification_type")
+    public ResponseEntity<List<PatientIdentificationType>> fetchAllPatientIdTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+
+//        return new ResponseEntity<List<PatientIdentificationType>>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
+        return new ResponseEntity<>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
+    }
+
+    @GetMapping("/patient_identification_type/{id}")
+    public PatientIdentificationType fetchAllPatientIdTypes(@PathVariable("id") final String patientIdType) {
+        System.out.println("patientIdType " + patientIdType);
+        return patientIdentificationTypeService.fetchIdType(Long.valueOf(patientIdType));
     }
 
     private void throwIfInvalidSize(final Long size) {
