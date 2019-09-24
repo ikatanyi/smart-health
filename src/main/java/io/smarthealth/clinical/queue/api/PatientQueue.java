@@ -45,7 +45,8 @@ public class PatientQueue {
 
     @Autowired
     private DepartmentService departmentService;
-
+ //  /api/visit/queue?department=2&date=2019-09-16&status=checked%in
+           
     @GetMapping("/patientqueue/{deptId}")
     public ResponseEntity<List<PatientQueueData>> fetchQueuesByDepartment(@PathVariable("deptId") final Long deptId, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Department department = departmentService.fetchDepartmentById(deptId);
