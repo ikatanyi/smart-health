@@ -11,7 +11,6 @@ import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.FacilityService;
-import io.smarthealth.organization.person.patient.data.PatientData;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.List;

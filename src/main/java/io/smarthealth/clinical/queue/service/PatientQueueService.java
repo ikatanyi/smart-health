@@ -11,6 +11,7 @@ import io.smarthealth.clinical.queue.domain.PatientQueueRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.service.DepartmentService;
+import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,25 +25,33 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class PatientQueueService {
-    
+
     @Autowired
     PatientQueueRepository patientQueueRepository;
-    
+
     @Autowired
     DepartmentService departmentService;
-    
+
     @Autowired
     PatientService patientService;
-    
+
     @Transactional
     public PatientQueue createPatientQueue(PatientQueue patientQueue) {
         return patientQueueRepository.save(patientQueue);
     }
-    
+
     public Page<PatientQueue> fetchQueueByDept(Department department, Pageable pageable) {
         return patientQueueRepository.findByDepartment(department, pageable);
     }
+
+    public Page<PatientQueue> fetchQueueByPatient(Patient patient, Pageable pageable) {
+        return patientQueueRepository.findByPatient(patient, pageable);
+    }
     
+    public Page<PatientQueue> fetchQueue(Pageable pageable) {
+        return patientQueueRepository.findAll(pageable);
+    }
+
     public PatientQueueData convertToPatientQueueData(PatientQueue patientQueue) {
         PatientQueueData patientQueueData = new PatientQueueData();
         patientQueueData.setVisitNumber(patientQueue.getVisit().getVisitNumber());

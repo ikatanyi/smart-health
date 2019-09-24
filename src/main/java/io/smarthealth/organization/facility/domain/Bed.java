@@ -16,12 +16,13 @@ import lombok.Data;
 @Data
 @Table(name = "facility_bed")
 public class Bed extends Identifiable {
-    public enum State{
+
+    public enum State {
         Occupied,
         Available
     }
     private String bedName;
-     @ManyToOne
+    @ManyToOne
     private Room room;
     private Boolean available;
     @Enumerated(EnumType.STRING)
