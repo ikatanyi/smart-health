@@ -9,12 +9,12 @@ stages:
 test:
   stage: test
   script:  
-    - mvn verify
+    - mvn verify -DskipTests
 
 build:
   stage: build
   script:  
-    - mvn clean package
+    - mvn clean package -DskipTests
   artifacts:
     paths:
       - target/*.jar
