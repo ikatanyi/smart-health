@@ -10,6 +10,7 @@ import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.service.DepartmentService;
+import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.swagger.annotations.Api;
 import java.util.List;
@@ -45,10 +46,25 @@ public class PatientQueue {
     @Autowired
     private DepartmentService departmentService;
 
-    @GetMapping("/patientqueue/department/{deptId}")
+    @GetMapping("/department/{deptId}/queue")
     public ResponseEntity<List<PatientQueueData>> fetchQueuesByDepartment(@PathVariable("deptId") final Long deptId, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Department department = departmentService.fetchDepartmentById(deptId);
         Page<PatientQueueData> page = patientQueueService.fetchQueueByDept(department, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/patient/{patientNo}/queue")
+    public ResponseEntity<List<PatientQueueData>> fetchQueuesBPatient(@PathVariable("patientNo") String patientNumber, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+        Patient patient = patientService.findPatientOrThrow(patientNumber);
+        Page<PatientQueueData> page = patientQueueService.fetchQueueByPatient(patient, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/queue")
+    public ResponseEntity<List<PatientQueueData>> fetchQueue(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+        Page<PatientQueueData> page = patientQueueService.fetchQueue(pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }

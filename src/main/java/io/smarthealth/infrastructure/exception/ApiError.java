@@ -1,14 +1,10 @@
 package io.smarthealth.infrastructure.exception;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase;
-import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +35,7 @@ public class ApiError {
     private String details;
     private String debugMessage;
     private List<ApiSubError> errors;
+    private boolean success = false;
 
     private ApiError() {
 //        timestamp = LocalDateTime.now();

@@ -41,6 +41,8 @@ public class Admission extends Visit {
     private Diagnosis provisionDiagnosis;
     @OneToOne
     private Employee admittingDoctor;
+    private LocalDate admissionDate;
     private LocalDate expectedDischarge;
+    private String specialComments;
 
 }
