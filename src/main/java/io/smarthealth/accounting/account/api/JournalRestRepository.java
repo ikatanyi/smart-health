@@ -57,7 +57,8 @@ public class JournalRestRepository {
     @PostMapping("/journals")
     @ResponseBody
     public ResponseEntity<?> createJournalEntry(@RequestBody @Valid final JournalData journalData) {
-        if (journalService.findJournalEntry(journalData.getTransactionId()).isPresent()) {
+        System.err.println(journalData.toString());
+        if (journalData.getTransactionId()!=null && journalService.findJournalEntry(journalData.getTransactionId()).isPresent()) {
             throw APIException.conflict("Journal entry {0} already exists.", journalData.getTransactionId());
         }
         if (journalData.getDebit().isEmpty()) {
@@ -72,7 +73,7 @@ public class JournalRestRepository {
                 .peek(debtor -> {
                     final Optional<Account> accountOptional = this.accountService.findAccount(debtor.getAccountNumber());
                     if (!accountOptional.isPresent()) {
-                        throw APIException.badRequest("Unknown debtor account{0}.", debtor.getAccountNumber());
+                        throw APIException.badRequest("Unknown debtor account {0}.", debtor.getAccountNumber());
                     }
                     if (!accountOptional.get().getEnabled()) {
                         throw APIException.conflict("Debtor account {0} must be enabled for Transaction", debtor.getAccountNumber());

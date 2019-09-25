@@ -14,11 +14,21 @@ import lombok.Value;
  *
  * @author Kelsas
  */
-@Value
+@Data
 public class Debit {
   private String accountNumber;
   @NotNull
   @DecimalMin(value = "0.00", inclusive = false)
   private String amount;  
   private String description;
+
+    public Debit() {
+    }
+
+    public Debit(String accountNumber, String amount, String description) {
+        this.accountNumber = accountNumber;
+        this.amount = amount;
+        this.description = description;
+    }
+  
 }
