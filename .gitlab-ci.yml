@@ -47,7 +47,7 @@ deploy_prod:
   stage: deploy
   script:
     - echo "Stop running jar and start a new one"
-    - - rsync -azP --append-verify target/smart-health-1.0.0.jar smart@192.180.4.102:/opt/smarthealth/prod
+    - rsync -azP --append-verify target/smart-health-1.0.0.jar smart@192.180.4.102:/opt/smarthealth/prod
   environment:
     name: production
     url: https://192.180.4.102
