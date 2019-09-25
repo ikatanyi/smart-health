@@ -20,7 +20,7 @@ public class VitalRecordData {
 
     @ApiModelProperty(required = false, hidden = true)
     private Long id;
-    @CheckValidVisit
+    //@CheckValidVisit
     private String visitNumber;
 
     @ValidIdentifier
