@@ -47,5 +47,7 @@ public class Item extends Identifiable{
     //reorder levels'
     @OneToMany(mappedBy = "stockItem")
     private List<ReorderRule> reorderRules=new ArrayList<>();
+    
+    //this account needs to be linked to accounting systems
 
 }
