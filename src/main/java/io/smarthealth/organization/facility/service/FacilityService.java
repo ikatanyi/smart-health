@@ -56,6 +56,9 @@ public class FacilityService {
     public Facility fetchFacilityById(String facilityId) {
         return facilityRepository.findById(facilityId).orElseThrow(() -> APIException.notFound("Facility identified by {0} not found", facilityId));
     }
+    public Facility fetchFacilityCode(String facilityCode) {
+        return facilityRepository.findByCode(facilityCode).orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", facilityCode));
+    }
 
     public ContentPage<FacilityData> fetchAllFacilities(Pageable pageable) {
         ContentPage<FacilityData> facilitiesData = new ContentPage<>();

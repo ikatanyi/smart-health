@@ -52,10 +52,10 @@ public class DepartmentController {
     @Autowired
     ModelMapper modelMapper;
 
-    @PostMapping("/facility/{id}/department")
+    @PostMapping("/department")
     public @ResponseBody
-    ResponseEntity<?> createFacilityEmployee(@PathVariable("id") final String facilityId, @RequestBody @Valid final DepartmentData departmentData) {
-        Facility facility = facilityService.fetchFacilityById(facilityId);
+    ResponseEntity<?> createFacilityDepartment(@RequestBody @Valid final DepartmentData departmentData) {
+        Facility facility = facilityService.fetchFacilityCode(departmentData.getFacilityCode());
 
         Department department = convertDeptDataToDepartment(departmentData);
         department.setFacility(facility);
@@ -63,17 +63,23 @@ public class DepartmentController {
 
         DepartmentData savedDeptData = convertToDeptData(departmentSaved);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/facility/" + facilityId + "/department/{deptId}")
-                .buildAndExpand(departmentSaved.getId()).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/facility/" + departmentData.getFacilityCode() + "/department/{code}")
+                .buildAndExpand(departmentSaved.getCode()).toUri();
 
         return ResponseEntity.created(location).body(savedDeptData);
     }
 
-    @GetMapping("/facility/{id}/department")
-    public ResponseEntity<List<DepartmentData>> fetchDepartmentsByFacility(@PathVariable("id") final String facilityId, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+    @GetMapping("/department")
+    public ResponseEntity<List<DepartmentData>> fetchAllDepartments(@PathVariable("code") final String facilityCode, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
 
-        Facility facility = facilityService.fetchFacilityById(facilityId);
+        Page<DepartmentData> page = departmentService.fetchAllDepartments(pageable).map(d -> convertToDeptData(d));
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
 
+    @GetMapping("/facility/{code}/department")
+    public ResponseEntity<List<DepartmentData>> fetchDepartmentsByFacility(@PathVariable("code") final String facilityCode, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+        Facility facility = facilityService.fetchFacilityCode(facilityCode);
         Page<DepartmentData> page = departmentService.fetchDepartmentByFacility(facility, pageable).map(d -> convertToDeptData(d));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);

@@ -41,7 +41,7 @@ public class DepartmentService {
         return departmentRepository.save(department);
     }
 
-    Page<Department> fetchAllDepartments(Pageable pgbl) {
+    public Page<Department> fetchAllDepartments(Pageable pgbl) {
         return departmentRepository.findAll(pgbl);
     }
 
@@ -51,6 +51,10 @@ public class DepartmentService {
 
     public Department fetchDepartmentById(Long id) {
         return departmentRepository.findById(id).orElseThrow(() -> APIException.notFound("Department identified by {0} not found.", id));
+    }
+
+    public Department fetchDepartmentByCode(String code) {
+        return departmentRepository.findByCode(code).orElseThrow(() -> APIException.notFound("Department identified by code {0} not found.", code));
     }
 
     public DepartmentData convertDepartmentToData(Department department) {

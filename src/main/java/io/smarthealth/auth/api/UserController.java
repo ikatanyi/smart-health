@@ -63,7 +63,7 @@ public class UserController {
 
     @GetMapping("/users/me")
     public UserData currentUser(Authentication authentication) {
-        String username = authentication.getName(); 
+        String username = authentication.getName();
         Optional<User> user = service.findUserByUsernameOrEmail(username);
         if (user.isPresent()) {
             return convertToData(user.get());
@@ -168,17 +168,18 @@ public class UserController {
         return new GenericResponse("Password updated successfully");
     }
 
-     /**
+    /**
      * {@code GET /users} : get all users.
      *
      * @param queryParams a {@link MultiValueMap} query parameters.
      * @param uriBuilder a {@link UriComponentsBuilder} URI builder.
      * @param pageable the pagination information.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body all users.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with
+     * body all users.
      */
     @GetMapping("/users")
     public ResponseEntity<List<UserData>> getAllUsers(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-         
+
         Page<UserData> page = service.findAllUsers(pageable).map(u -> convertToData(u));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);

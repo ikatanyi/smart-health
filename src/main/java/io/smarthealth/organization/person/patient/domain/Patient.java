@@ -2,7 +2,6 @@ package io.smarthealth.organization.person.patient.domain;
 
 import io.smarthealth.organization.person.domain.Person;
 import java.util.List;
-import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;

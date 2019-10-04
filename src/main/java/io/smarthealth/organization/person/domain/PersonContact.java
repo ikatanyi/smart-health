@@ -18,7 +18,8 @@ public class PersonContact extends Identifiable {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Person person;
-     private String email;
+    private String email;
     private String telephone;
     private String mobile;
+    private boolean isPrimary = false;
 }

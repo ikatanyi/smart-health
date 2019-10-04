@@ -10,16 +10,17 @@ import lombok.Data;
  * @author Kelsas
  */
 @Entity
-@Data 
+@Data
 public class PersonAddress extends Identifiable {
-  
+
     @ManyToOne
-    private Person person;  
+    private Person person;
     private String line1;
     private String line2;
     private String town;
     private String County;
     private String Country;
     private String postalCode;
-    
+    private boolean isPrimary = false;
+
 }

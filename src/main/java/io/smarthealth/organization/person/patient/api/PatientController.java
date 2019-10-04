@@ -103,8 +103,7 @@ public class PatientController {
 
     @GetMapping("/patients")
     public ResponseEntity<List<PatientData>> fetchAllPatients(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-
-        Page<PatientData> page = patientService.fetchAllPatients(pageable).map(p -> patientService.convertToPatientData(p));
+        Page<PatientData> page = patientService.fetchAllPatients(queryParams, pageable).map(p -> patientService.convertToPatientData(p));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
 
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
@@ -133,6 +132,7 @@ public class PatientController {
 
             this.patientService.updatePatient(patientNumber, patient);
         } else {
+            //entDa
             throw APIException.notFound("Patient {0} not found.", patientNumber);
         }
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")

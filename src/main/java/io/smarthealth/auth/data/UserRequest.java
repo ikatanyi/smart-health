@@ -7,7 +7,7 @@ import java.util.List;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import lombok.Data; 
+import lombok.Data;
 
 /**
  *
@@ -32,7 +32,7 @@ public class UserRequest {
 
     @ValidPassword
     private String password;
-    
-      private List<String> roles = new ArrayList<>();
- 
+
+    private List<String> roles = new ArrayList<>();
+
 }

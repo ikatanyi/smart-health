@@ -4,12 +4,15 @@
  * and open the template in the editor.
  */
 package io.smarthealth.organization.facility.domain;
- 
+
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
  * @author Simon.waweru
  */
-public interface FacilityRepository extends JpaRepository<Facility, String> { 
+public interface FacilityRepository extends JpaRepository<Facility, String> {
+
+    Optional<Facility> findByCode(String facilityCode);
 }
