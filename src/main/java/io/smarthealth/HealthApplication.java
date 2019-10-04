@@ -32,6 +32,8 @@ public class HealthApplication {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
+//        config.setAllowedOrigins(Arrays.asList("http://localhost:7000","http://localhost:3000", "http://localhost:8000","http://localhost:80","http://localhost:8"));
+        config.setAllowedOrigins(Collections.singletonList("*"));
         config.setAllowedOrigins(Arrays.asList("http://localhost:7000", "http://localhost:3000", "http://localhost:8000"));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
