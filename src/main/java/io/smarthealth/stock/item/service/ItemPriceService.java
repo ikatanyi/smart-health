@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kelsas
  */
 @Service
 public class ItemPriceService {
