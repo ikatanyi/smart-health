@@ -11,6 +11,7 @@ import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemRepository;
 import io.smarthealth.stock.item.domain.Uom;
 import io.smarthealth.stock.item.domain.UomRepository;
+import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kelsas
  */
 @Service
 public class ItemService {
@@ -35,8 +36,7 @@ public class ItemService {
     ModelMapper modelMapper;
 
     @Transactional
-    public Item createItem(ItemData itemData) {
-        try {
+    public Item createItem(ItemData itemData) { 
             //look up barcode, if exists, throw exists error
             if (itemRepository.existsByBarcode(itemData.getBarcode())) {
                 throw APIException.conflict("Duplicate Item Barcode {0}", itemData.getBarcode());
@@ -46,30 +46,15 @@ public class ItemService {
             item.setUom(uom);
 
             item = itemRepository.saveAndFlush(item);
-
-            return item;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("Error creating item object ", e.getMessage());
-        }
+            return item; 
     }
 
-    public Item fetchItemById(final Long itemId) {
-        try {
-            return itemRepository.findById(itemId).orElseThrow(() -> APIException.notFound("Item identified by {0} not found", itemId));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("Error fetching item id " + itemId, e.getMessage());
-        }
+    public Optional<Item> findById(final Long itemId) { 
+            return itemRepository.findById(itemId); 
     }
 
-    public Item fetchItemByCode(final String itemCode) {
-        try {
-            return itemRepository.findByItemCode(itemCode).orElseThrow(() -> APIException.notFound("Item identified by code {0} not found", itemCode));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("Error fetching item code " + itemCode, e.getMessage());
-        }
+    public Optional<Item> findByItemCode(final String itemCode) { 
+            return itemRepository.findByItemCode(itemCode); 
     }
 
     @Transactional

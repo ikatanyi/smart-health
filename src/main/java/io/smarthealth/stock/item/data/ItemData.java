@@ -5,12 +5,13 @@
  */
 package io.smarthealth.stock.item.data;
 
+import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
 import lombok.Data;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kelsas
  */
 @Data
 public class ItemData {
@@ -25,4 +26,10 @@ public class ItemData {
     private String barcode;
     private Integer shelfLife;
     private Boolean enabled;
+    
+   public ItemData map(Item item){
+        ItemData itemData =new ItemData();
+        
+        return itemData;
+    }
 }

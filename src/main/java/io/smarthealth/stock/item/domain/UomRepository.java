@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kelsas
  */
 @Repository
 public interface UomRepository extends JpaRepository<Uom, Long>{

@@ -13,6 +13,8 @@ import io.smarthealth.infrastructure.mail.MailService;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  *
@@ -24,10 +26,12 @@ public class ApplicationAutoConfig {
 
     @Autowired
     private DataSource dataSource;
+
     /**
      * Configures a MockMailSender when the property
      * <code>spring.mail.host</code> isn't defined.
-     * @return 
+     *
+     * @return
      */
     @Bean
     @ConditionalOnMissingBean(MailService.class)
@@ -40,8 +44,9 @@ public class ApplicationAutoConfig {
     /**
      * Configures an SmtpMailSender when the property
      * <code>spring.mail.host</code> is defined.
+     *
      * @param javaMailSender
-     * @return 
+     * @return
      */
     @Bean
     @ConditionalOnMissingBean(MailService.class)
@@ -51,15 +56,19 @@ public class ApplicationAutoConfig {
         return new SmtpMailSender(javaMailSender);
     }
 
-    /** Conversion between Applications Entities and DTO
-     * @return  */
+    /**
+     * Conversion between Applications Entities and DTO
+     *
+     * @return
+     */
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
-    
+
     @Bean
-    public JdbcTemplate jdbcTemplate(){
+    public JdbcTemplate jdbcTemplate() {
         return new JdbcTemplate(dataSource);
     }
+ 
 }

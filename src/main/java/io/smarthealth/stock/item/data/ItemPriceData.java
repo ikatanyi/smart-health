@@ -10,7 +10,7 @@ import lombok.Data;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kelsas
  */
 @Data
 public class ItemPriceData {
