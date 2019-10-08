@@ -53,7 +53,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Service
 public class PatientService {
-    
+
     @Autowired
     PatientRepository patientRepository;
     @Autowired
@@ -62,45 +62,49 @@ public class PatientService {
     PersonAddressRepository personAddressRepository;
     @Autowired
     PatientIdentifierRepository patientIdentifierRepository;
-    
+
     @Autowired
     ModelMapper modelMapper;
-    
+
     @Autowired
     PortraitRepository portraitRepository;
-    
+
     @Autowired
     PatientIdentifierService patientIdentifierService;
-    
+
     private final File patientImageDirRoot;
-    
+
     @Value("${patientimage.upload.dir}")
     private String uploadDir;
-    
+
     @Autowired
     PatientService(@Value("${patientimage.upload.dir}") String uploadDir) {
         this.patientImageDirRoot = new File(uploadDir);
     }
-    
+
     public Page<Patient> fetchAllPatients(MultiValueMap<String, String> queryParams, final Pageable pageable) {
-                System.out.println("Query Param " + queryParams.getFirst("patientNumber"));
+        System.out.println("Query Param " + queryParams.getFirst("patientNumber"));
 
         Specification<Patient> spec = PatientSpecification.createSpecification(queryParams.getFirst("term"));
-        return patientRepository.findAll(spec,pageable);
-       // return patientRepository.findAll(pageable);
+        return patientRepository.findAll(spec, pageable);
+        // return patientRepository.findAll(pageable);
     }
-    
+
     public Patient fetchPatientByIdentityNumber(Long patientId) {
         return patientRepository.getOne(patientId);
     }
-    
+
+    public Patient fetchPatientByPersonId(Long id) {
+        return patientRepository.findById(id).orElseThrow(()->APIException.notFound("Person identified by id {0} no found", id));
+    }
+
     public String generatePatientNumber() {
         int nextPatient = patientRepository.maxId() + 1;
         return String.valueOf("PAT" + nextPatient);
     }
-    
+
     public Optional<PatientData> fetchPatientByPatientNumber(final String patientNumber) {
-        
+
         return patientRepository.findByPatientNumber(patientNumber)
                 .map(patientEntity -> {
                     final PatientData patient = modelMapper.map(patientEntity, PatientData.class);
@@ -113,7 +117,7 @@ public class PatientService {
                                 .collect(Collectors.toList())
                         );
                     }
-                    
+
                     final List<PersonContact> contactDetailEntities = this.personContactRepository.findByPerson(patientEntity);
                     if (contactDetailEntities != null) {
                         patient.setContact(contactDetailEntities
@@ -122,9 +126,9 @@ public class PatientService {
                                 .collect(Collectors.toList())
                         );
                     }
-                    
+
                     final List<PatientIdentifier> patientIdentifiers = this.patientIdentifierService.fetchPatientIdentifiers(patientEntity);
-                    
+
                     if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
                         List<PatientIdentifierData> ids = new ArrayList<>();
                         for (PatientIdentifier id : patientIdentifiers) {
@@ -132,7 +136,7 @@ public class PatientService {
                         }
                         patient.setIdentifiers(ids);
                     }
-                    
+
                     patient.setFullName((patient.getGivenName() != null ? patient.getGivenName() : "") + " " + (patient.getMiddleName() != null ? patient.getMiddleName() : "").concat(" ").concat(patient.getSurname() != null ? patient.getSurname() : " "));
                     return patient;
                 });
@@ -160,15 +164,15 @@ public class PatientService {
 
         return patientNumber;
     }
-    
+
     @Transactional
     public Portrait createPortrait(Person person, MultipartFile file) throws IOException {
         if (file == null) {
             return null;
         }
-        
+
         File fileForPatient = patientFileOnFolder(file);
-        
+
         try (
                 InputStream in = file.getInputStream();
                 OutputStream out = new FileOutputStream(fileForPatient)) {
@@ -186,19 +190,19 @@ public class PatientService {
             throw new RuntimeException(ex);
         }
     }
-    
+
     @Transactional
     public Patient createPatient(final PatientData patient) {
-        
+
         throwifDuplicatePatientNumber(patient.getPatientNumber());
 
         // use strict to prevent over eager matching (happens with ID fields)
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        
+
         final Patient patientEntity = modelMapper.map(patient, Patient.class);
         patientEntity.setAlive(true);
         patientEntity.setPatient(true);
-        
+
         final Patient savedPatient = this.patientRepository.save(patientEntity);
         //save patients contact details
         if (patient.getContact() != null) {
@@ -245,10 +249,10 @@ public class PatientService {
             );
             savedPatient.setIdentifications(patientIdentifiersList);
         }
-        
+
         return savedPatient;
     }
-    
+
     @Transactional
     public Patient updatePatient(String patientNumber, Patient patient) {
         try {
@@ -259,32 +263,32 @@ public class PatientService {
             throw new RestClientException("Error updating patient number" + patientNumber);
         }
     }
-    
+
     private File patientFileOnFolder(MultipartFile f) {
         return new File(this.patientImageDirRoot, f.getOriginalFilename());
     }
-    
+
     public Patient findPatientOrThrow(String patientNumber) {
         return this.patientRepository.findByPatientNumber(patientNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Number {0} not found.", patientNumber));
     }
-    
+
     public void throwifDuplicatePatientNumber(String patientNumber) {
         if (patientRepository.existsByPatientNumber(patientNumber)) {
             throw APIException.conflict("Duplicate Patient Number {0}", patientNumber);
         }
     }
-    
+
     public boolean patientExists(String patientNumber) {
         return patientRepository.existsByPatientNumber(patientNumber);
     }
-    
+
     public PatientData convertToPatientData(Patient patient) {
         try {
             PatientData patientData = modelMapper.map(patient, PatientData.class);
             if (patient.getAddresses() != null) {
                 List<AddressData> addresses = new ArrayList<>();
-                
+
                 patient.getAddresses().forEach((address) -> {
                     AddressData addressData = modelMapper.map(address, AddressData.class);
                     addresses.add(addressData);
@@ -299,9 +303,9 @@ public class PatientService {
                 });
                 patientData.setContact(contacts);
             }
-            
+
             final List<PatientIdentifier> patientIdentifiers = this.patientIdentifierService.fetchPatientIdentifiers(patient);
-            
+
             if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
                 List<PatientIdentifierData> ids = new ArrayList<>();
                 for (PatientIdentifier id : patientIdentifiers) {
@@ -309,7 +313,7 @@ public class PatientService {
                 }
                 patientData.setIdentifiers(ids);
             }
-            
+
             patientData.setFullName((patient.getGivenName() != null ? patient.getGivenName() : "") + " " + (patient.getMiddleName() != null ? patient.getMiddleName() : "").concat(" ").concat(patient.getSurname() != null ? patient.getSurname() : " "));
             if (patient.getDateOfBirth() != null) {
                 patientData.setAge(String.valueOf(ChronoUnit.YEARS.between(patient.getDateOfBirth(), LocalDate.now())));
@@ -320,5 +324,5 @@ public class PatientService {
             throw APIException.internalError("An error occured while converting patient data ", e.getMessage());
         }
     }
-    
+
 }
