@@ -1,15 +1,16 @@
 package io.smarthealth.appointment.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.appointment.domain.Appointment;
+import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
+import static io.smarthealth.infrastructure.lang.Constants.TIME_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
 
@@ -37,14 +38,15 @@ public class AppointmentData implements Serializable {
         Medical_Emergency
     }
     private String patientNumber;
-    private Long practionerId;
-    private Long departmentId;
-    @NotNull
-    @NotBlank
+    private String practitionerCode;
     private String typeOfAppointment;
     private Long appointmentTypeId;
+    private String appointmentNo;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate appointmentDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = TIME_PATTERN)
     private LocalTime startTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = TIME_PATTERN)
     private LocalTime endTime;
     private Boolean allDay;
     @Enumerated(EnumType.STRING)
@@ -53,7 +55,7 @@ public class AppointmentData implements Serializable {
     private Urgency urgency;
     @Enumerated(EnumType.STRING)
     private Status status; //new followup  
-    private Long referredBy;
+    private String comments;
 
     public static Appointment map(AppointmentData data) {
         ModelMapper mapper = new ModelMapper();

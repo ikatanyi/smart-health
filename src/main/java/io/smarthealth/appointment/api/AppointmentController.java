@@ -14,8 +14,9 @@ import io.smarthealth.appointment.service.AppointmentTypeService;
 import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.facility.service.EmployeeService;
 import io.swagger.annotations.Api;
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.logging.Level;
@@ -60,6 +61,9 @@ public class AppointmentController {
     @Autowired
     AppointmentService appointmentService;
 
+    @Autowired
+    EmployeeService employeeService;
+
     @PostMapping("/appointmentTypes")
     public @ResponseBody
     ResponseEntity<?> createAppointmentType(@RequestBody @Valid final AppointmentTypeData appointmentTypeData) {
@@ -72,6 +76,52 @@ public class AppointmentController {
 
         //return ResponseEntity.created(location).body(savedAppointmentTypeData);
         return ResponseEntity.created(location).body(APIResponse.successMessage("Appointment type was successfully created", HttpStatus.CREATED, savedAppointmentTypeData));
+    }
+
+    @PostMapping("/appointment")
+    public @ResponseBody
+    ResponseEntity<?> createAppointment(@RequestBody @Valid final AppointmentData appointmentData) {
+
+        appointmentData.setStatus(AppointmentData.Status.Scheduled);
+        Appointment appointment = this.appointmentService.createAppointment(appointmentData);
+
+        AppointmentData savedAppointmentData = appointmentService.convertAppointment(appointment);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/appointment/{no}")
+                .buildAndExpand(appointment.getAppointmentNo()).toUri();
+
+        return ResponseEntity.created(location).body(APIResponse.successMessage("Appointment was successfully created", HttpStatus.CREATED, savedAppointmentData));
+
+    }
+
+    @GetMapping("/employee/{no}/appointment")
+    public @ResponseBody
+    ResponseEntity<?> fetchAppointmentsByServiceProvider(@PathVariable("no") final String staffNo, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+
+        Employee employee = employeeService.fetchEmployeeByNumberOrThrow(staffNo);
+        Page<Appointment> page = appointmentService.fetchAllAppointmentsByPractioneer(employee, pageable);
+
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/appointment")
+    public @ResponseBody
+    ResponseEntity<?> fetchAllAppointments(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+
+        Page<Appointment> page = appointmentService.fetchAllAppointments(pageable);
+
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/appointment/{appointmentNo}")
+    public @ResponseBody
+    ResponseEntity<?> fetchAppointmentByappointmentNo(@PathVariable("appointmentNo") final String appointmentNo) {
+
+        Appointment appointment = appointmentService.fetchAppointmentByNo(appointmentNo);
+
+        return new ResponseEntity<>(appointmentService.convertAppointment(appointment), HttpStatus.OK);
     }
 
     //fetchAllAppointmentTypes
@@ -99,6 +149,12 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentTypeData);
     }
 
+//    @GetMapping("/appointments")
+//    public ResponseEntity<List<AppointmentData>> fetchAllAppointments(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+//        Page<AppointmentData> page = appointmentService.fetchAllAppointments(pageable).map(a -> appointmentService.convertAppointment(a));
+//        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+//        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+//    }
     @DeleteMapping("/appointmentTypes/{id}")
     public @ResponseBody
     ResponseEntity<APIResponse> deleteAppointmentType(@PathVariable("id") final Long appId) {
@@ -110,22 +166,6 @@ public class AppointmentController {
             throw APIException.internalError("Error occured when deleting appointment type identifed by " + appId, ex.getMessage());
         }
 
-    }
-
-    @GetMapping("/appointments")
-    public ResponseEntity<List<AppointmentData>> fetchAllAppointments(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-        Page<AppointmentData> page = appointmentService.fetchAllAppointments(pageable).map(a -> convertAppointment(a));
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
-    }
-
-    private AppointmentData convertAppointment(Appointment appointment) {
-        AppointmentData appData = modelMapper.map(appointment, AppointmentData.class);
-        if (appointment.getAppointmentType() != null) {
-            appData.setTypeOfAppointment(appointment.getAppointmentType().getName());
-            appData.setAppointmentTypeId(appointment.getAppointmentType().getId());
-        }
-        return appData;
     }
 
     private AppointmentType convertDataToAppType(AppointmentTypeData appointmentTypeData) {

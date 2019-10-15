@@ -70,7 +70,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/department")
-    public ResponseEntity<List<DepartmentData>> fetchAllDepartments(@PathVariable("code") final String facilityCode, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+    public ResponseEntity<List<DepartmentData>> fetchAllDepartments(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
 
         Page<DepartmentData> page = departmentService.fetchAllDepartments(pageable).map(d -> convertToDeptData(d));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
