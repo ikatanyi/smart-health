@@ -55,6 +55,7 @@ public class Appointment extends Auditable {
 
     private Boolean allDay;
     private String urgency;
+    private String comments;
     private String status; //new followup 
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_referrer_id"))

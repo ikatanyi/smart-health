@@ -57,6 +57,10 @@ public class DepartmentService {
         return departmentRepository.findByCode(code).orElseThrow(() -> APIException.notFound("Department identified by code {0} not found.", code));
     }
 
+    public boolean departmentCodeExists(String code) {
+        return departmentRepository.existsByCode(code);
+    }
+
     public DepartmentData convertDepartmentToData(Department department) {
         DepartmentData departmentData = modelMapper.map(department, DepartmentData.class);
         return departmentData;

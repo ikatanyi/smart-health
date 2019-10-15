@@ -15,6 +15,7 @@ import io.smarthealth.organization.facility.domain.FacilityRepository;
 import io.smarthealth.organization.service.OrganizationService;
 import java.util.ArrayList;
 import java.util.List;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,13 +41,15 @@ public class FacilityService {
     @Autowired
     OrganizationService organizationService;
 
+    @Autowired
+    ModelMapper modelMapper;
+
     @Transactional
-    public String createFacility(FacilityData facilityData) {
+    public Facility createFacility(FacilityData facilityData) {
         try {
             Facility facility = FacilityData.map(facilityData);
 
-            facilityRepository.save(facility);
-            return facility.getCode();
+           return  facilityRepository.save(facility);
         } catch (Exception e) {
             e.printStackTrace();
             throw APIException.internalError("Error occured while creating facility ", e.getMessage());
@@ -56,6 +59,7 @@ public class FacilityService {
     public Facility fetchFacilityById(String facilityId) {
         return facilityRepository.findById(facilityId).orElseThrow(() -> APIException.notFound("Facility identified by {0} not found", facilityId));
     }
+
     public Facility fetchFacilityCode(String facilityCode) {
         return facilityRepository.findByCode(facilityCode).orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", facilityCode));
     }
@@ -84,6 +88,17 @@ public class FacilityService {
             e.printStackTrace();
             throw APIException.internalError("Error deleting facility id " + facility.getId(), e.getMessage());
         }
+    }
+
+    public Facility convertFacilityDataToEntity(FacilityData facilityData) {
+        Facility facility = modelMapper.map(facilityData, Facility.class);
+        return facility;
+    }
+
+    public FacilityData convertFacilityEntityToData(Facility facility) {
+        FacilityData facilityData = modelMapper.map(facility, FacilityData.class);
+
+        return facilityData;
     }
 
 }
