@@ -55,8 +55,8 @@ public class DiagnosisData {
         PatientDiagnosis entity = new PatientDiagnosis();
         entity.getDiagnosis().setCode(diagnosis.getCode());
         entity.getDiagnosis().setDescription(diagnosis.getDescription());
-        entity.setCertainty(diagnosis.getCertainty()!=null ? diagnosis.getCertainty().name(): null);
-        entity.setDiagnosisOrder(diagnosis.getDiagnosisOrder()!=null ? diagnosis.getDiagnosisOrder().name(): null);
+        entity.setCertainty(diagnosis.getDiagnosisCertainty());
+        entity.setDiagnosisOrder(diagnosis.getDiagnosisOrder());
         return entity;
     }
 
@@ -72,11 +72,11 @@ public class DiagnosisData {
         return diagnos;
     }
 
-//    public String getDiagnosisCertainty() {
-//        return certainty != null ? certainty.name() : "";
-//    }
-//
-//    public String getDiagnosisOrder() {
-//        return diagnosisOrder != null ? diagnosisOrder.name() : "";
-//    }
+    public String getDiagnosisCertainty() {
+        return certainty != null ? certainty.name() : "";
+    }
+
+    public String getDiagnosisOrder() {
+        return diagnosisOrder != null ? diagnosisOrder.name() : "";
+    }
 }

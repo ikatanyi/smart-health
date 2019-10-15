@@ -7,7 +7,7 @@ package io.smarthealth.clinical.record.service;
 
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosisRepository;
-import io.smarthealth.clinical.record.data.DiagnosisData;
+import io.smarthealth.clinical.record.data.PatientTestsData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -37,7 +37,7 @@ public class DiagnosisService {
     @Autowired
     private PatientRepository patientRepository;
 
-    public Long addDiagnosis(String visitNumber, DiagnosisData diagnosis) {
+    public Long addDiagnosis(String visitNumber, PatientTestsData diagnosis) {
 
         Visit visit = findVisitOrThrow(visitNumber);
 
@@ -45,14 +45,14 @@ public class DiagnosisService {
             throw APIException.badRequest("Invalid Patient Number! mismatch in Patient Visit's patient number");
         }
 
-        PatientDiagnosis diagnosisEntity = DiagnosisData.map(diagnosis);
+        PatientDiagnosis diagnosisEntity = PatientTestsData.map(diagnosis);
         diagnosisEntity.setVisit(visit);
         diagnosisEntity.setPatient(visit.getPatient());
         return diagnosisRepository.save(diagnosisEntity).getId();
     }
 
-    public ContentPage<DiagnosisData> fetchDiagnosisByVisit(String visitNumber, Pageable page) {
-        final ContentPage<DiagnosisData> triagePage = new ContentPage();
+    public ContentPage<PatientTestsData> fetchDiagnosisByVisit(String visitNumber, Pageable page) {
+        final ContentPage<PatientTestsData> triagePage = new ContentPage();
         Optional<Visit> visit = visitRepository.findByVisitNumber(visitNumber);
         if (visit.isPresent()) {
             Page<PatientDiagnosis> triageEntities = this.diagnosisRepository.findByPatient(visit.get().getPatient(), page);
@@ -60,22 +60,22 @@ public class DiagnosisService {
             triagePage.setTotalPages(triageEntities.getTotalPages());
             triagePage.setTotalElements(triageEntities.getTotalElements());
             if (triageEntities.getSize() > 0) {
-                final ArrayList<DiagnosisData> triagelist = new ArrayList<>(triageEntities.getSize());
+                final ArrayList<PatientTestsData> triagelist = new ArrayList<>(triageEntities.getSize());
                 triagePage.setContents(triagelist);
-                triageEntities.forEach((vt) -> triagelist.add(DiagnosisData.map(vt)));
+                triageEntities.forEach((vt) -> triagelist.add(PatientTestsData.map(vt)));
             }
         }
         return triagePage;
     }
 
-    public DiagnosisData getDiagnosisById(String visitNumber, Long id) {
+    public PatientTestsData getDiagnosisById(String visitNumber, Long id) {
 
         Optional<PatientDiagnosis> entity = diagnosisRepository.findById(id);
 
-        return entity.map(DiagnosisData::map).orElse(null);
+        return entity.map(PatientTestsData::map).orElse(null);
     }
 
-    public ContentPage<DiagnosisData> fetchDiagnosis(String patientNumber, Pageable page) {
+    public ContentPage<PatientTestsData> fetchDiagnosis(String patientNumber, Pageable page) {
 
         Page<PatientDiagnosis> diagnosisEntities = Page.empty();
         if (patientNumber != null) {
@@ -87,13 +87,13 @@ public class DiagnosisService {
             diagnosisEntities = diagnosisRepository.findAll(page);
         }
 
-        final ContentPage<DiagnosisData> triagePage = new ContentPage();
+        final ContentPage<PatientTestsData> triagePage = new ContentPage();
         triagePage.setTotalPages(diagnosisEntities.getTotalPages());
         triagePage.setTotalElements(diagnosisEntities.getTotalElements());
         if (diagnosisEntities.getSize() > 0) {
-            final ArrayList<DiagnosisData> triagelist = new ArrayList<>(diagnosisEntities.getSize());
+            final ArrayList<PatientTestsData> triagelist = new ArrayList<>(diagnosisEntities.getSize());
             triagePage.setContents(triagelist);
-            diagnosisEntities.forEach((vt) -> triagelist.add(DiagnosisData.map(vt)));
+            diagnosisEntities.forEach((vt) -> triagelist.add(PatientTestsData.map(vt)));
         }
 
         return triagePage;

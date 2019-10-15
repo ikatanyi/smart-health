@@ -18,7 +18,7 @@ import org.smarthealth.patient.validation.constraints.ValidIdentifier;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DiagnosisData {
+public class PatientTestsData {
 
     public enum Certainty {
         Confirmed,
@@ -51,7 +51,7 @@ public class DiagnosisData {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime recorded = LocalDateTime.now();
 
-    public static PatientDiagnosis map(DiagnosisData diagnosis) {
+    public static PatientDiagnosis map(PatientTestsData diagnosis) {
         PatientDiagnosis entity = new PatientDiagnosis();
         entity.getDiagnosis().setCode(diagnosis.getCode());
         entity.getDiagnosis().setDescription(diagnosis.getDescription());
@@ -60,8 +60,8 @@ public class DiagnosisData {
         return entity;
     }
 
-    public static DiagnosisData map(PatientDiagnosis entity) {
-        DiagnosisData diagnos = new DiagnosisData();
+    public static PatientTestsData map(PatientDiagnosis entity) {
+        PatientTestsData diagnos = new PatientTestsData();
         diagnos.setId(entity.getId());
         diagnos.setPatientNumber(entity.getPatient().getPatientNumber());
         diagnos.setVisitNumber(entity.getVisit().getVisitNumber());

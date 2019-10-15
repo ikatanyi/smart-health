@@ -44,11 +44,11 @@ public class DepartmentService {
     public Page<Department> fetchAllDepartments(Pageable pgbl) {
         return departmentRepository.findAll(pgbl);
     }
-
+    
     public Page<Department> fetchDepartmentByFacility(Facility facility, Pageable pgbl) {
         return departmentRepository.findByFacility(facility, pgbl);
     }
-
+    
     public Department fetchDepartmentById(Long id) {
         return departmentRepository.findById(id).orElseThrow(() -> APIException.notFound("Department identified by {0} not found.", id));
     }
