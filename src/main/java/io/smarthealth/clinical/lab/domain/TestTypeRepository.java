@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kennedy.Imbenzi
  */
 public interface TestTypeRepository extends JpaRepository<Testtype, Long> {
 

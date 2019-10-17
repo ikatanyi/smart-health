@@ -16,7 +16,7 @@ import org.modelmapper.ModelMapper;
 
 /**
  *
- * @author Kelsas
+ * @author Kennedy.Imbenzi
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -14,7 +14,7 @@ import org.springframework.data.repository.query.Param;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kennedy.Imbenzi
  */
 public interface SpecimenRepository extends JpaRepository<Specimen, Long> {
         

@@ -9,6 +9,6 @@ package io.smarthealth.clinical.lab.data;
  *
  * @author kent
  */
-class resultsData {
+class ResultsData {
     
 }

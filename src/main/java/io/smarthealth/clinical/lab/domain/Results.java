@@ -17,7 +17,7 @@ import lombok.Data;
 @Data  
 @Entity
 @Table(name = "lab_results")
-public class results extends Identifiable {
+public class Results extends Identifiable {
     private String test_code;
     private String testType;
     private String testName;

@@ -8,7 +8,7 @@ import lombok.Data;
 
 /**
  *
- * @author Kelsas
+ * @author Kennedy.Imbenzi
  */
 @Data
 public class DisciplineData  {

@@ -19,7 +19,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 /**
  *
- * @author Kent
+ * @author Kennedy.Imbenzi
  */
 @Data  
 @Entity
@@ -35,6 +35,6 @@ public class PatientTests extends ClinicalRecord {
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade={javax.persistence.CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name = "request_Id", nullable = false)
-    private List<results> results;
+    private List<Results> results;
     
 }

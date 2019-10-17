@@ -7,7 +7,9 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-public class ContainerData {
+public class SpecimenData  {
+    
     private Long id;
-    private String container;
+    private String specimen;
+    private String abbreviation;
 }

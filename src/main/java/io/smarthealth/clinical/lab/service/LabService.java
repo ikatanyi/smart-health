@@ -41,7 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kennedy.Imbenzi
  */
 @Service
 public class LabService {

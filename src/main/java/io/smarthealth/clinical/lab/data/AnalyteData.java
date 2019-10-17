@@ -9,7 +9,7 @@ import lombok.Data;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kennedy.Imbenzi
  */
 @Data
 public class AnalyteData {

@@ -14,7 +14,6 @@ import io.smarthealth.infrastructure.exception.APIException;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,19 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kennedy.Imbenzi
  */
 @Service
 public class LabResultsService {
 
-    @Autowired
-    PatientTestResultsRepository PtestsRepository;
+    private final PatientTestResultsRepository PtestsRepository;
 
-    @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
     
-    @Autowired
-    VisitRepository visitRepository;
+    private final VisitRepository visitRepository;
 
     /*
     a. Create a new department
@@ -42,6 +38,14 @@ public class LabResultsService {
     c. Read department by Id
     c. Update department
      */
+
+    public LabResultsService(PatientTestResultsRepository PtestsRepository, ModelMapper modelMapper, VisitRepository visitRepository) {
+        this.PtestsRepository = PtestsRepository;
+        this.modelMapper = modelMapper;
+        this.visitRepository = visitRepository;
+    }
+    
+    
     @Transactional
     public PatientTestData savePatientResults(PatientTestData testResults) {
          Visit visit = visitRepository.findByVisitNumber(testResults.getVisitNumber())

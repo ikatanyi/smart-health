@@ -8,7 +8,7 @@ import org.smarthealth.patient.validation.constraints.ValidIdentifier;
 
 /**
  *
- * @author Kelsas
+ * @author Kennedy.Imbenzi
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -31,6 +31,6 @@ public class PatientTestData {
     private String physicianId;
     private String physicianName;
     
-    private List<resultsData> resultData;
+    private List<ResultsData> resultData;
     
 }

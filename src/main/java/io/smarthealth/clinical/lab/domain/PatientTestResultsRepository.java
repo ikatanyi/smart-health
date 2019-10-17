@@ -13,7 +13,7 @@ import org.springframework.data.repository.query.Param;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kennedy.Imbenzi
  */
 public interface PatientTestResultsRepository extends JpaRepository<PatientTests, Long> {
 

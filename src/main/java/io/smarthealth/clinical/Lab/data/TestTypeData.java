@@ -1,82 +1,67 @@
-package io.smarthealth.clinical.record.data;
+package io.smarthealth.clinical.lab.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.smarthealth.clinical.record.domain.PatientDiagnosis;
+import io.smarthealth.clinical.lab.domain.Analyte;
+import io.smarthealth.clinical.lab.domain.Testtype;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import lombok.Data;
-import io.smarthealth.clinical.visit.validation.constraints.CheckValidVisit;
-import org.smarthealth.patient.validation.constraints.ValidIdentifier;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
+import org.modelmapper.ModelMapper;
 
 /**
  *
- * @author Kelsas
+ * @author Kennedy.Imbenzi
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DiagnosisData {
+public class TestTypeData {
 
-    public enum Certainty {
-        Confirmed,
-        Presumed
-    }
-
-    public enum Order {
-        Primary,
-        Secondary
-    }
     private Long id;
-
-    @ValidIdentifier
-    private String patientNumber;
-    @CheckValidVisit
-    private String visitNumber;
-
+    @NotNull
+    @Column(length = 25)
     private String code;
-
-    private String description;
-
-    @Enumerated(EnumType.STRING)
+    @NotNull
     @Column(length = 25)
-    private Certainty certainty;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 25)
-    private Order diagnosisOrder;
+    private String testType;  
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
-    private LocalDateTime recorded = LocalDateTime.now();
+    private LocalDateTime recorded = LocalDateTime.now();    
+    
+    private List<AnalyteData> analytes;
 
-    public static PatientDiagnosis map(DiagnosisData diagnosis) {
-        PatientDiagnosis entity = new PatientDiagnosis();
-        entity.getDiagnosis().setCode(diagnosis.getCode());
-        entity.getDiagnosis().setDescription(diagnosis.getDescription());
-        entity.setCertainty(diagnosis.getDiagnosisCertainty());
-        entity.setDiagnosisOrder(diagnosis.getDiagnosisOrder());
+    public static Testtype map(TestTypeData testtype) {
+        Testtype entity = new Testtype();
+        entity.setServiceCode(testtype.getCode());
+        entity.setTestType(testtype.getTestType());        
         return entity;
     }
 
-    public static DiagnosisData map(PatientDiagnosis entity) {
-        DiagnosisData diagnos = new DiagnosisData();
-        diagnos.setId(entity.getId());
-        diagnos.setPatientNumber(entity.getPatient().getPatientNumber());
-        diagnos.setVisitNumber(entity.getVisit().getVisitNumber());
-        diagnos.setCode(entity.getDiagnosis().getCode());
-        diagnos.setDescription(entity.getDiagnosis().getDescription());
-        diagnos.setCertainty(Certainty.valueOf(entity.getCertainty()));
-        diagnos.setDiagnosisOrder(Order.valueOf(entity.getDiagnosisOrder()));
-        return diagnos;
+    public static TestTypeData map(Testtype entity) {
+        ModelMapper modelMapper = new ModelMapper();
+        TestTypeData test = new TestTypeData();
+        test.setId(entity.getId());
+        test.setCode(entity.getServiceCode());
+        test.setTestType(entity.getTestType());    
+        for(Analyte analyte:entity.getAnalytes()){
+            AnalyteData analytedata = modelMapper.map(analyte,AnalyteData.class);
+            if(!test.getAnalytes().isEmpty())
+               test.getAnalytes().add(analytedata);
+            else{
+                test.setAnalytes(new ArrayList());
+                test.getAnalytes().add(analytedata);
+            }
+        }
+        return test;
     }
-
-    public String getDiagnosisCertainty() {
-        return certainty != null ? certainty.name() : "";
-    }
-
-    public String getDiagnosisOrder() {
-        return diagnosisOrder != null ? diagnosisOrder.name() : "";
-    }
+    
+//     public AnalyteData convertAnalyteToData(Analyte analyte) {
+//        AnalyteData analyteData = modelMapper.map(analyte, AnalyteData.class);
+//        return analyteData;
+//    }
 }
