@@ -5,23 +5,12 @@
  */
 package io.smarthealth.clinical.lab.service;
 
-import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.PatientTestData;
-import io.smarthealth.clinical.lab.domain.Analyte;
-import io.smarthealth.clinical.lab.domain.AnalyteRepository;
 import io.smarthealth.clinical.lab.domain.PatientTestResultsRepository;
 import io.smarthealth.clinical.lab.domain.PatientTests;
-import io.smarthealth.clinical.lab.domain.Testtype;
-import io.smarthealth.clinical.record.data.PatientTestsData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
-import io.smarthealth.organization.facility.service.*;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.facility.data.DepartmentData;
-import io.smarthealth.organization.facility.domain.Department;
-import io.smarthealth.organization.facility.domain.DepartmentRepository;
-import io.smarthealth.organization.facility.domain.Facility;
-import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -54,9 +43,9 @@ public class LabResultsService {
     c. Update department
      */
     @Transactional
-    public Long savePatientResults(String visitNumber, PatientTestData testResults) {
-         Visit visit = visitRepository.findByVisitNumber(visitNumber)
-                .orElseThrow(() -> APIException.notFound("Patient Session with Visit Number : {0} not found.", visitNumber));;
+    public PatientTestData savePatientResults(PatientTestData testResults) {
+         Visit visit = visitRepository.findByVisitNumber(testResults.getVisitNumber())
+                .orElseThrow(() -> APIException.notFound("Patient Session with Visit Number : {0} not found.", testResults.getVisitNumber()));
 
         if (!StringUtils.equalsIgnoreCase(visit.getPatient().getPatientNumber(), testResults.getPatientNumber())) {
             throw APIException.badRequest("Invalid Patient Number! mismatch in Patient Visit's patient number");
@@ -66,19 +55,20 @@ public class LabResultsService {
         PatientTests patienttestsEntity = convertDataToPatientTestsData(testResults);
         patienttestsEntity.setVisit(visit);
         patienttestsEntity.setPatient(visit.getPatient());
-        return PtestsRepository.save(patienttestsEntity).getId();
+        PatientTests patientTests = PtestsRepository.save(patienttestsEntity);
+        return convertPatientTestToData(patientTests);
     }
     
     
     
     
-    public Page<PatientTestsData> fetchAllPatientTests(String patientNumber, String visitNumber, String status, Pageable pgbl) {
-        Page<PatientTestsData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(patientNumber,status,pgbl).map(p -> convertPatientTestsToData(p));
+    public Page<PatientTestData> fetchAllPatientTests(String patientNumber, String visitNumber, String status, Pageable pgbl) {
+        Page<PatientTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(patientNumber,status,pgbl).map(p -> convertPatientTestToData(p));
         return ptests;
     }
     
-    public Optional<PatientTestsData> fetchPatientTestsById(Long id) {
-        return PtestsRepository.findById(id).map(p->convertPatientTestsToData(p));
+    public Optional<PatientTestData> fetchPatientTestsById(Long id) {
+        return PtestsRepository.findById(id).map(p->convertPatientTestToData(p));
     }
     
 
@@ -86,8 +76,8 @@ public class LabResultsService {
         PtestsRepository.deleteById(id);
     }
 
-    public PatientTestsData convertPatientTestsToData(PatientTests patientTests) {
-        PatientTestsData patientsdata = modelMapper.map(patientTests, PatientTestsData.class);
+    public PatientTestData convertPatientTestToData(PatientTests patientTests) {
+        PatientTestData patientsdata = modelMapper.map(patientTests, PatientTestData.class);
         return patientsdata;
     }
     

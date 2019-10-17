@@ -25,7 +25,6 @@ import org.hibernate.annotations.LazyCollectionOption;
 @Entity
 @Table(name = "patient_tests")
 public class PatientTests extends ClinicalRecord {
-    private Long id;
     private String state;
     private String testName;
     private String code;
@@ -37,33 +36,5 @@ public class PatientTests extends ClinicalRecord {
     @OneToMany(cascade={javax.persistence.CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name = "request_Id", nullable = false)
     private List<results> results;
-
-    public PatientTests() {
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof PatientTests)) {
-            return false;
-        }
-        PatientTests other = (PatientTests) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "entity.DtTestTable[ id=" + id + " ]";
-    }
     
 }

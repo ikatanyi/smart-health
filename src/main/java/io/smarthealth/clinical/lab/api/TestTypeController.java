@@ -9,24 +9,16 @@ import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.TestTypeData;
 import io.smarthealth.clinical.lab.domain.Analyte;
 import io.smarthealth.clinical.lab.domain.Testtype;
-import io.smarthealth.clinical.lab.service.AnalyteService;
-import io.smarthealth.clinical.lab.service.TestTypeService;
+import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.infrastructure.common.APIResponse;
-import io.smarthealth.organization.facility.api.*;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.facility.data.DepartmentData;
-import io.smarthealth.organization.facility.domain.Department;
-import io.smarthealth.organization.facility.domain.Facility;
-import io.smarthealth.organization.facility.service.DepartmentService;
-import io.smarthealth.organization.facility.service.FacilityService;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
-import jdk.nashorn.internal.runtime.arrays.ArrayLikeIterator;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,6 +27,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,15 +44,12 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Simon.waweru
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/lab")
 @Api(value = "Test Type Controller", description = "Operations pertaining to TestTypes maintenance")
 public class TestTypeController {
 
     @Autowired
-    TestTypeService ttypeService;
-
-    @Autowired
-    AnalyteService analyteService;
+    LabService labService;
 
     @Autowired
     ModelMapper modelMapper;
@@ -67,27 +57,26 @@ public class TestTypeController {
     @PostMapping("/testtype")
     public @ResponseBody
     ResponseEntity<?> createTestType(@RequestBody @Valid final TestTypeData testtypeData) {
-        Long id = ttypeService.createTestType(testtypeData);
+        Long id = labService.createTestType(testtypeData);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/testtype" + id)
                 .buildAndExpand(id).toUri();
         return ResponseEntity.created(location).body(APIResponse.successMessage("TestType successfuly created", HttpStatus.CREATED, testtypeData));
      
+    }    
+    
+    @GetMapping("/testtype/{id}")
+    public ResponseEntity<?> fetchAllTestTypes(@PathVariable("id") final Long id) {
+        Optional<TestTypeData> testType = labService.getById(id);
+        if (testType.isPresent()) {
+            return ResponseEntity.ok(testType.get());
+        } else {
+            throw APIException.notFound("TestType Number {0} not found.", id);
+        }
     }
     
-    
-//    @GetMapping("/testtype/{id}")
-//    public ResponseEntity<?> fetchAllTestTypes(@PathVariable("id") final Long id) {
-//        Optional<TestTypeData> testType = ttypeService.getById(id);
-//        if (testType.isPresent()) {
-//            return ResponseEntity.ok(testType.get());
-//        } else {
-//            throw APIException.notFound("TestType Number {0} not found.", id);
-//        }
-//    }
-    
-    @GetMapping("/testtype/{code}")
+    @GetMapping("/analyte/{code}")
     public ResponseEntity<?> fetchAllTestTypes(@PathVariable("code") final String code) {
-        TestTypeData testType = convertToTestTypeData(ttypeService.fetchTestTypeByCode(code));
+        TestTypeData testType = convertToTestTypeData(labService.fetchTestTypeByCode(code));
         if (testType!=null) {
             return ResponseEntity.ok(testType);
         } else {
@@ -98,7 +87,7 @@ public class TestTypeController {
     @GetMapping("/testtype")
     public ResponseEntity<List<TestTypeData>> fetchAllTestTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,Pageable pageable) {
 
-        Page<TestTypeData> page = ttypeService.fetchAllTestTypes(pageable).map(d -> convertToTestTypeData(d));
+        Page<TestTypeData> page = labService.fetchAllTestTypes(pageable).map(d -> convertToTestTypeData(d));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -107,7 +96,7 @@ public class TestTypeController {
     public @ResponseBody
     ResponseEntity<?> createAnalytes(@RequestBody @Valid final TestTypeData testtypeData) {
         Testtype ttype = convertTestTTypeDataToTestType(testtypeData);
-        Testtype testtype = ttypeService.fetchTestTypeById(ttype.getId());
+        Testtype testtype = labService.fetchTestTypeById(ttype.getId());
         
         ArrayList<Analyte> lists=new ArrayList<>();
         for(Analyte analyte:ttype.getAnalytes()){
@@ -117,11 +106,23 @@ public class TestTypeController {
             lists.add(analyte);
         }
         
-        List<AnalyteData> analytedata = ttypeService.saveAnalytes(lists);
+        List<AnalyteData> analytedata = labService.saveAnalytes(lists);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/testtype" + ttype.getServiceCode())
                 .buildAndExpand(ttype.getServiceCode()).toUri();
 
         return ResponseEntity.created(location).body(APIResponse.successMessage("Analytes successfuly created", HttpStatus.CREATED, analytedata));
+    }
+    
+    @DeleteMapping("/analyte/(id)")
+    public ResponseEntity<?> deleteTestAnalyte(@PathVariable("id") final Long id) {
+        labService.deleteAnalyteById(id);
+        return ResponseEntity.ok("200");
+    }
+    
+    @DeleteMapping("/testtype/(id)")
+    public ResponseEntity<?> deleteTestType(@PathVariable("id") final Long id) {
+        labService.deleteById(id);
+        return ResponseEntity.ok("200");
     }
 
     private Testtype convertTestTTypeDataToTestType(TestTypeData testtypeData) {

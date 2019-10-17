@@ -14,8 +14,5 @@ import lombok.Data;
 //@NamedQuery(name="tets",query = "SELECT e FROM Analyte e WHERE e.testType = :testType AND e.sex = :gender AND :age BETWEEN e.startAge and e.endAge ")
 @Table(name = "lab_discipline")
 public class Discipline extends Identifiable {
-    
-    private Long id;
-    private String code;
     private String discipline;
 }
