@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.AnalyteData;
@@ -41,7 +36,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kennedy.Imbenzi
  */
 @RestController
 @RequestMapping("/api/lab")

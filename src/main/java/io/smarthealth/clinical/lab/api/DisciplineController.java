@@ -1,13 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package io.smarthealth.clinical.lab.api;
+ package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.DisciplineData;
-import io.smarthealth.clinical.lab.data.DisciplineData;
-import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;

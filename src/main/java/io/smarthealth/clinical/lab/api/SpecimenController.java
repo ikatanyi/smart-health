@@ -1,17 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.SpecimenData;
 import io.smarthealth.clinical.lab.service.LabService;
-import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.swagger.annotations.Api;
-import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -31,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
