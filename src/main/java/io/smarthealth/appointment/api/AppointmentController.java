@@ -81,6 +81,7 @@ public class AppointmentController {
     @PostMapping("/appointment")
     public @ResponseBody
     ResponseEntity<?> createAppointment(@RequestBody @Valid final AppointmentData appointmentData) {
+        System.out.println("appointmentData " + appointmentData);
 
         appointmentData.setStatus(AppointmentData.Status.Scheduled);
         Appointment appointment = this.appointmentService.createAppointment(appointmentData);
@@ -91,7 +92,6 @@ public class AppointmentController {
                 .buildAndExpand(appointment.getAppointmentNo()).toUri();
 
         return ResponseEntity.created(location).body(APIResponse.successMessage("Appointment was successfully created", HttpStatus.CREATED, savedAppointmentData));
-
     }
 
     @GetMapping("/employee/{no}/appointment")

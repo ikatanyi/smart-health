@@ -8,7 +8,6 @@ package io.smarthealth.clinical.queue.service;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.domain.PatientQueueRepository;
-import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.person.patient.domain.Patient;
