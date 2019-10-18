@@ -12,7 +12,7 @@ import org.smarthealth.patient.validation.constraints.ValidIdentifier;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PatientTestData {
+public class LabTestData {
 
     public enum State {
         Pending,

@@ -1,7 +1,7 @@
 package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.AnalyteData;
-import io.smarthealth.clinical.lab.data.TestTypeData;
+import io.smarthealth.clinical.lab.data.LabTestTypeData;
 import io.smarthealth.clinical.lab.domain.Analyte;
 import io.smarthealth.clinical.lab.domain.Testtype;
 import io.smarthealth.clinical.lab.service.LabService;
@@ -51,7 +51,7 @@ public class TestTypeController {
 
     @PostMapping("/testtype")
     public @ResponseBody
-    ResponseEntity<?> createTestType(@RequestBody @Valid final TestTypeData testtypeData) {
+    ResponseEntity<?> createTestType(@RequestBody @Valid final LabTestTypeData testtypeData) {
         Long id = labService.createTestType(testtypeData);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/testtype" + id)
                 .buildAndExpand(id).toUri();
@@ -61,7 +61,7 @@ public class TestTypeController {
     
     @GetMapping("/testtype/{id}")
     public ResponseEntity<?> fetchAllTestTypes(@PathVariable("id") final Long id) {
-        Optional<TestTypeData> testType = labService.getById(id);
+        Optional<LabTestTypeData> testType = labService.getById(id);
         if (testType.isPresent()) {
             return ResponseEntity.ok(testType.get());
         } else {
@@ -71,7 +71,7 @@ public class TestTypeController {
     
     @GetMapping("/analyte/{code}")
     public ResponseEntity<?> fetchAllTestTypes(@PathVariable("code") final String code) {
-        TestTypeData testType = convertToTestTypeData(labService.fetchTestTypeByCode(code));
+        LabTestTypeData testType = convertToTestTypeData(labService.fetchTestTypeByCode(code));
         if (testType!=null) {
             return ResponseEntity.ok(testType);
         } else {
@@ -80,16 +80,16 @@ public class TestTypeController {
     }
 
     @GetMapping("/testtype")
-    public ResponseEntity<List<TestTypeData>> fetchAllTestTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,Pageable pageable) {
+    public ResponseEntity<List<LabTestTypeData>> fetchAllTestTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,Pageable pageable) {
 
-        Page<TestTypeData> page = labService.fetchAllTestTypes(pageable).map(d -> convertToTestTypeData(d));
+        Page<LabTestTypeData> page = labService.fetchAllTestTypes(pageable).map(d -> convertToTestTypeData(d));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
     
     @PostMapping("/analyte")
     public @ResponseBody
-    ResponseEntity<?> createAnalytes(@RequestBody @Valid final TestTypeData testtypeData) {
+    ResponseEntity<?> createAnalytes(@RequestBody @Valid final LabTestTypeData testtypeData) {
         Testtype ttype = convertTestTTypeDataToTestType(testtypeData);
         Testtype testtype = labService.fetchTestTypeById(ttype.getId());
         
@@ -120,13 +120,13 @@ public class TestTypeController {
         return ResponseEntity.ok("200");
     }
 
-    private Testtype convertTestTTypeDataToTestType(TestTypeData testtypeData) {
+    private Testtype convertTestTTypeDataToTestType(LabTestTypeData testtypeData) {
         Testtype ttype = modelMapper.map(testtypeData, Testtype.class);
         return ttype;
     }
 
-    private TestTypeData convertToTestTypeData(Testtype Testtype) {
-        TestTypeData testTypeData = modelMapper.map(Testtype, TestTypeData.class);
+    private LabTestTypeData convertToTestTypeData(Testtype Testtype) {
+        LabTestTypeData testTypeData = modelMapper.map(Testtype, LabTestTypeData.class);
         return testTypeData;
     }
     

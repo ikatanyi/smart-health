@@ -1,6 +1,6 @@
 package io.smarthealth.clinical.lab.api;
 
-import io.smarthealth.clinical.lab.data.PatientTestData;
+import io.smarthealth.clinical.lab.data.LabTestData;
 import io.smarthealth.clinical.lab.service.LabResultsService;
 import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -47,8 +47,8 @@ public class PatientTestsController {
 
     @PostMapping("/PatientTest")
     public @ResponseBody
-    ResponseEntity<?> createPatientTest(@RequestBody @Valid final PatientTestData PatientTestData) {
-        PatientTestData Patienttests = resultService.savePatientResults(PatientTestData);
+    ResponseEntity<?> createPatientTest(@RequestBody @Valid final LabTestData PatientTestData) {
+        LabTestData Patienttests = resultService.savePatientResults(PatientTestData);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/PatientTest/" + Patienttests.getId())
                 .buildAndExpand(Patienttests.getId()).toUri();
         return ResponseEntity.created(location).body(APIResponse.successMessage("TestType successfuly created", HttpStatus.CREATED, Patienttests));
@@ -68,7 +68,7 @@ public class PatientTestsController {
     
     @GetMapping("/PatientTest/{id}")
     public ResponseEntity<?> fetchPatientTestById(@PathVariable("id") final Long id) {
-        Optional<PatientTestData> result = resultService.fetchPatientTestsById(id);
+        Optional<LabTestData> result = resultService.fetchPatientTestsById(id);
         if (result!=null) {
             return ResponseEntity.ok(result);
         } else {
@@ -77,11 +77,11 @@ public class PatientTestsController {
     }
 
     @GetMapping("/result")
-    public ResponseEntity<List<PatientTestData>> fetchAllPatientTests(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,Pageable pageable) {
+    public ResponseEntity<List<LabTestData>> fetchAllPatientTests(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,Pageable pageable) {
         String patientNumber = queryParams.getFirst("patientNumber");
         String visitNumber = queryParams.getFirst("visitNumber");
         String status = queryParams.getFirst("status");
-        Page<PatientTestData> page = resultService.fetchAllPatientTests(patientNumber,visitNumber,status,pageable);
+        Page<LabTestData> page = resultService.fetchAllPatientTests(patientNumber,visitNumber,status,pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
