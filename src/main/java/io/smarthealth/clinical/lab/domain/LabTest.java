@@ -23,13 +23,15 @@ import org.hibernate.annotations.LazyCollectionOption;
  */
 @Data  
 @Entity
-@Table(name = "patient_tests")
-public class PatientTests extends ClinicalRecord {
+@Table(name = "lab_test")
+public class LabTest extends ClinicalRecord {
     private String state;
     private String testName;
     private String code;
     private String clinicalDetails;
     private String priority;   
+    private String specimen;   
+    private String specimenCollectionTime;   
     
     @Setter(AccessLevel.NONE)
     @LazyCollection(LazyCollectionOption.FALSE)

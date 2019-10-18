@@ -8,17 +8,16 @@ package io.smarthealth.clinical.lab.service;
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.ContainerData;
 import io.smarthealth.clinical.lab.data.DisciplineData;
-import io.smarthealth.clinical.lab.data.PatientTestData;
+import io.smarthealth.clinical.lab.data.LabTestData;
 import io.smarthealth.clinical.lab.data.SpecimenData;
-import io.smarthealth.clinical.lab.data.TestTypeData;
+import io.smarthealth.clinical.lab.data.LabTestTypeData;
 import io.smarthealth.clinical.lab.domain.Analyte;
 import io.smarthealth.clinical.lab.domain.AnalyteRepository;
 import io.smarthealth.clinical.lab.domain.Container;
 import io.smarthealth.clinical.lab.domain.ContainerRepository;
 import io.smarthealth.clinical.lab.domain.Discipline;
 import io.smarthealth.clinical.lab.domain.DisciplineRepository;
-import io.smarthealth.clinical.lab.domain.PatientTestResultsRepository;
-import io.smarthealth.clinical.lab.domain.PatientTests;
+import io.smarthealth.clinical.lab.domain.LabTest;
 import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.SpecimenRepository;
 import io.smarthealth.clinical.lab.domain.TestTypeRepository;
@@ -38,6 +37,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import io.smarthealth.clinical.lab.domain.LabTestRepository;
 
 /**
  *
@@ -62,7 +62,7 @@ public class LabService {
     TestTypeRepository ttypeRepository;
 
     @Autowired
-    PatientTestResultsRepository PtestsRepository;
+    LabTestRepository PtestsRepository;
 
     @Autowired
     VisitRepository visitRepository;
@@ -71,9 +71,9 @@ public class LabService {
     SpecimenRepository specimenRepository;
 
     @Transactional
-    public Long createTestType(TestTypeData testtypeData) {
+    public Long createTestType(LabTestTypeData testtypeData) {
         try {
-            Testtype testtype = TestTypeData.map(testtypeData);
+            Testtype testtype = LabTestTypeData.map(testtypeData);
             ttypeRepository.save(testtype);
             return testtype.getId();
         } catch (Exception e) {
@@ -83,7 +83,7 @@ public class LabService {
     }
 
     @Transactional
-    public Optional<TestTypeData> getById(Long id) {
+    public Optional<LabTestTypeData> getById(Long id) {
         try {
             return ttypeRepository.findById(id).map(d -> convertToTestTypeData(d));
         } catch (Exception e) {
@@ -129,20 +129,20 @@ public class LabService {
 //    }
     public Page<Testtype> fetchAllTestTypes(Pageable pageable) {
 //        ContentPage<TestTypeData> testTypeData = new ContentPage<>();
-        List<TestTypeData> testtypeDataList = new ArrayList<>();
+        List<LabTestTypeData> testtypeDataList = new ArrayList<>();
 
         Page<Testtype> testtypes = ttypeRepository.findAll(pageable);
 //        testTypeData.setTotalElements(testtypes.getTotalElements());
 //        testTypeData.setTotalPages(testtypes.getTotalPages());
 //        if (testtypes.getSize() > 0) {            
 //            for (Testtype testtype : testtypes)
-//                testtypeDataList.add(TestTypeData.map(testtype));
+//                testtypeDataList.add(LabTestTypeData.map(testtype));
 //            testTypeData.setContents(testtypeDataList);
 //        }
         return testtypes;
     }
 
-    public boolean deleteFacility(TestTypeData testtype) {
+    public boolean deleteFacility(LabTestTypeData testtype) {
         try {
             ttypeRepository.deleteById(testtype.getId());
             return true;
@@ -152,8 +152,8 @@ public class LabService {
         }
     }
 
-    public TestTypeData convertToTestTypeData(Testtype testtype) {
-        TestTypeData testtypeData = modelMapper.map(testtype, TestTypeData.class);
+    public LabTestTypeData convertToTestTypeData(Testtype testtype) {
+        LabTestTypeData testtypeData = modelMapper.map(testtype, LabTestTypeData.class);
         return testtypeData;
     }
 
@@ -253,7 +253,7 @@ public class LabService {
     c. Update PatientResults
      */
     @Transactional
-    public PatientTestData savePatientResults(PatientTestData testResults) {
+    public LabTestData savePatientResults(LabTestData testResults) {
         Visit visit = visitRepository.findByVisitNumber(testResults.getVisitNumber())
                 .orElseThrow(() -> APIException.notFound("Patient Session with Visit Number : {0} not found.", testResults.getVisitNumber()));
 
@@ -261,19 +261,19 @@ public class LabService {
             throw APIException.badRequest("Invalid Patient Number! mismatch in Patient Visit's patient number");
         }
 
-        PatientTests patienttestsEntity = convertDataToPatientTestsData(testResults);
+        LabTest patienttestsEntity = convertDataToPatientTestsData(testResults);
         patienttestsEntity.setVisit(visit);
         patienttestsEntity.setPatient(visit.getPatient());
-        PatientTests patientTests = PtestsRepository.save(patienttestsEntity);
+        LabTest patientTests = PtestsRepository.save(patienttestsEntity);
         return convertPatientTestToData(patientTests);
     }
 
-    public Page<PatientTestData> fetchAllPatientTests(String patientNumber, String visitNumber, String status, Pageable pgbl) {
-        Page<PatientTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(patientNumber, status, pgbl).map(p -> convertPatientTestToData(p));
+    public Page<LabTestData> fetchAllPatientTests(String patientNumber, String visitNumber, String status, Pageable pgbl) {
+        Page<LabTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(patientNumber, status, pgbl).map(p -> convertPatientTestToData(p));
         return ptests;
     }
 
-    public Optional<PatientTestData> fetchPatientTestsById(Long id) {
+    public Optional<LabTestData> fetchPatientTestsById(Long id) {
         return PtestsRepository.findById(id).map(p -> convertPatientTestToData(p));
     }
 
@@ -281,13 +281,13 @@ public class LabService {
         PtestsRepository.deleteById(id);
     }
 
-    public PatientTestData convertPatientTestToData(PatientTests patientTests) {
-        PatientTestData patientsdata = modelMapper.map(patientTests, PatientTestData.class);
+    public LabTestData convertPatientTestToData(LabTest patientTests) {
+        LabTestData patientsdata = modelMapper.map(patientTests, LabTestData.class);
         return patientsdata;
     }
 
-    public PatientTests convertDataToPatientTestsData(PatientTestData patientTestsData) {
-        PatientTests patienttests = modelMapper.map(patientTestsData, PatientTests.class);
+    public LabTest convertDataToPatientTestsData(LabTestData patientTestsData) {
+        LabTest patienttests = modelMapper.map(patientTestsData, LabTest.class);
         return patienttests;
     }
 
