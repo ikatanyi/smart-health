@@ -5,8 +5,9 @@
  */
 package io.smarthealth.clinical.lab.service;
 
-import io.smarthealth.clinical.lab.data.LabTestData;
+import io.smarthealth.clinical.lab.data.LabTestData;  
 import io.smarthealth.clinical.lab.domain.LabTest;
+import io.smarthealth.clinical.lab.domain.LabTestRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -17,7 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import io.smarthealth.clinical.lab.domain.LabTestRepository;
 
 /**
  *
