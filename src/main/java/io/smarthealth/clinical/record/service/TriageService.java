@@ -58,18 +58,24 @@ public class TriageService {
     }
 
     public VitalsRecord addVitalRecordsByPatient(String patientNo, VitalRecordData triage) {
-        Patient patient = patientService.findPatientOrThrow(patientNo);
-
+        //validate visit
+        Optional<Visit> visit = visitRepository.findByVisitNumber(triage.getVisitNumber());
         VitalsRecord vr = VitalRecordData.map(triage);
-
+        if (visit.isPresent()) {
+            vr.setVisit(visit.get());
+        }
+        Patient patient = patientService.findPatientOrThrow(patientNo);
         float bmi = (float) BMI.calculateBMI(triage.getHeight(), triage.getWeight());
         String category = BMI.getCategory(bmi);
-
         vr.setPatient(patient);
         vr.setBmi(bmi);
         vr.setCategory(category);
 
         return triageRepository.save(vr);
+//        } else {
+//            throw APIException.notFound("Visit identified by : {0} not found.", triage.getVisitNumber());
+//        }
+
     }
 
     public Page<VitalsRecord> fetchVitalRecordsByVisit(String visitNumber, Pageable page) {

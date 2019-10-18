@@ -17,6 +17,7 @@ import io.smarthealth.organization.person.domain.PersonRepository;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -65,13 +66,16 @@ public class AppointmentService {
     }
 
     public Appointment createAppointment(AppointmentData appointment) {
+        modelMapper.getConfiguration()
+                .setMatchingStrategy(MatchingStrategies.STRICT);
 
-        if (!appointment.getAllDay() && appointment.getEndTime() == null) {
-            throw APIException.badRequest("Appointment End Date and Time is Required. The appointment is not marked as all day event");
-        }
+//        if (!appointment.getAllDay() && appointment.getEndTime() == null) {
+//            throw APIException.badRequest("Appointment End Date and Time is Required. The appointment is not marked as all day event");
+//        }
         //Verify patient number
         Patient patient = findPatientOrThrow(appointment.getPatientNumber());
-        Appointment entity = AppointmentData.map(appointment);
+        Appointment entity = modelMapper.map(appointment, Appointment.class);
+        //Appointment entity = AppointmentData.map(appointment);
         entity.setPatient(patient);
 
         Appointment savedAppointment = appointmentRepository.save(entity);
