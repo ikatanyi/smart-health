@@ -5,6 +5,7 @@
  */
 package io.smarthealth.organization.person.patient.domain;
 
+import io.smarthealth.organization.person.domain.Person;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,8 @@ public interface PatientRepository extends JpaRepository<Patient, Long>, JpaSpec
             final String patientNumber, final String givenName, final String surname, final Pageable pageable);
 
     Optional<Patient> findByPatientNumber(final String patientNumber);
+
+    Optional<Patient> findById(final int id);
 
     Page<Patient> findByStatus(final String currentStatus, final Pageable pageable);
 

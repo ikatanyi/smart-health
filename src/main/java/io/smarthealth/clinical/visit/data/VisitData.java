@@ -40,7 +40,7 @@ public class VisitData {
     private VisitType visitType;
     private Boolean scheduled;
     @NotNull
-    private Long departmentId;
+    private String departmentCode;
     
     private PatientData patientData;
 

@@ -30,5 +30,4 @@ public class EmployeeData extends PersonData {
     private String email;
     private String mobile;
     private String telephone;
-
 }

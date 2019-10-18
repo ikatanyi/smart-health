@@ -44,17 +44,21 @@ public class DepartmentService {
     public Page<Department> fetchAllDepartments(Pageable pgbl) {
         return departmentRepository.findAll(pgbl);
     }
-
+    
     public Page<Department> fetchDepartmentByFacility(Facility facility, Pageable pgbl) {
         return departmentRepository.findByFacility(facility, pgbl);
     }
-
+    
     public Department fetchDepartmentById(Long id) {
         return departmentRepository.findById(id).orElseThrow(() -> APIException.notFound("Department identified by {0} not found.", id));
     }
 
     public Department fetchDepartmentByCode(String code) {
         return departmentRepository.findByCode(code).orElseThrow(() -> APIException.notFound("Department identified by code {0} not found.", code));
+    }
+
+    public boolean departmentCodeExists(String code) {
+        return departmentRepository.existsByCode(code);
     }
 
     public DepartmentData convertDepartmentToData(Department department) {

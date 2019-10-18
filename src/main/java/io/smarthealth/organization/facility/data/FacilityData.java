@@ -5,8 +5,6 @@
  */
 package io.smarthealth.organization.facility.data;
 
-import io.smarthealth.organization.data.OrganizationData;
-import io.smarthealth.organization.domain.Organization;
 import io.smarthealth.organization.facility.domain.Facility;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -39,10 +37,10 @@ public class FacilityData {
         FacilityData facilityData = new FacilityData();
         facilityData.setCode(facility.getCode());
         facilityData.setCountry(facility.getCountry());
-        facilityData.setCreditLimitId(facility.getCreditLimit().getId());
+//        facilityData.setCreditLimitId(facility.getCreditLimit().getId());
         facilityData.setEnabled(facility.getEnabled());
         facilityData.setFacilityClass(facility.getFacilityClass());
-        facilityData.setFacilityType(Facility.Type.valueOf(facility.getFacilityType()));
+//        facilityData.setFacilityType(Facility.Type.valueOf(facility.getFacilityType()));
         facilityData.setName(facility.getName());
         facilityData.setParent(Boolean.TRUE);
         facilityData.setRegistration_number(facility.getRegistrationNumber());

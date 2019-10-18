@@ -83,15 +83,17 @@ public class PatientService {
     }
     
     public Page<Patient> fetchAllPatients(MultiValueMap<String, String> queryParams, final Pageable pageable) {
-                System.out.println("Query Param " + queryParams.getFirst("patientNumber"));
-
         Specification<Patient> spec = PatientSpecification.createSpecification(queryParams.getFirst("term"));
-        return patientRepository.findAll(spec,pageable);
-       // return patientRepository.findAll(pageable);
+        return patientRepository.findAll(spec, pageable);
+        // return patientRepository.findAll(pageable);
     }
     
     public Patient fetchPatientByIdentityNumber(Long patientId) {
         return patientRepository.getOne(patientId);
+    }
+    
+    public Patient fetchPatientByPersonId(Long id) {
+        return patientRepository.findById(id).orElseThrow(() -> APIException.notFound("Person identified by id {0} no found", id));
     }
     
     public String generatePatientNumber() {
@@ -198,6 +200,7 @@ public class PatientService {
         final Patient patientEntity = modelMapper.map(patient, Patient.class);
         patientEntity.setAlive(true);
         patientEntity.setPatient(true);
+        patientEntity.setStatus("Active");
         
         final Patient savedPatient = this.patientRepository.save(patientEntity);
         //save patients contact details

@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
  * @author Kelsas
  */
 @Repository
-public interface InventoryVarianceRepository extends JpaRepository<InventoryVariance, Long>{
-    
+public interface InventoryVarianceRepository extends JpaRepository<InventoryVariance, Long> {
+
 }

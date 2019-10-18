@@ -14,6 +14,7 @@ import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.domain.PersonContact;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +52,7 @@ public class EmployeeController {
     @PostMapping("/employee")
     public @ResponseBody
     ResponseEntity<?> createEmployee(@RequestBody @Valid final EmployeeData employeeData) {
+
         Department department = departmentService.fetchDepartmentByCode(employeeData.getDepartmentCode());
 
         Employee employee = employeeService.convertEmployeeDataToEntity(employeeData);
@@ -77,5 +80,31 @@ public class EmployeeController {
         Page<EmployeeData> page = employeeService.fetchAllEmployees(queryParams, pageable).map(p -> employeeService.convertEmployeeEntityToEmployeeData(p));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/department/{code}/employee")
+    public ResponseEntity<List<EmployeeData>> fetchEmployeesByDepartment(@PathVariable("code") final String departmentCode, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+        Department department = departmentService.fetchDepartmentByCode(departmentCode);
+        List<Employee> employeeList = employeeService.findEmployeeByDepartment(queryParams, department, pageable);
+        List<EmployeeData> employeeDataList = new ArrayList<>();
+
+        for (Employee employee : employeeList) {
+            employeeDataList.add(employeeService.convertEmployeeEntityToEmployeeData(employee));
+        }
+
+        return new ResponseEntity<>(employeeDataList, HttpStatus.OK);
+    }
+
+    @GetMapping("/employee/{category}")
+    public ResponseEntity<List<EmployeeData>> fetchEmployeesByCategory(@PathVariable("category") final String category, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+
+        List<Employee> employeeList = employeeService.findEmployeeByCategory(queryParams, category, pageable);
+        List<EmployeeData> employeeDataList = new ArrayList<>();
+
+        for (Employee employee : employeeList) {
+            employeeDataList.add(employeeService.convertEmployeeEntityToEmployeeData(employee));
+        }
+
+        return new ResponseEntity<>(employeeDataList, HttpStatus.OK);
     }
 }

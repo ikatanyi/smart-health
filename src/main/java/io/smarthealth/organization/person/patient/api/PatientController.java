@@ -28,7 +28,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -77,7 +79,6 @@ public class PatientController {
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestBody @Valid final PatientData patientData) {
         LocalDate dateOfBirth = LocalDate.now().minusDays(Long.valueOf(patientData.getAge()));
-        System.out.println("dateOfBirth " + dateOfBirth);
         patientData.setDateOfBirth(dateOfBirth);
         patientData.setPatientNumber(patientService.generatePatientNumber());
         Patient patient = this.patientService.createPatient(patientData);
@@ -102,7 +103,11 @@ public class PatientController {
     }
 
     @GetMapping("/patients")
-    public ResponseEntity<List<PatientData>> fetchAllPatients(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+    public ResponseEntity<List<PatientData>> fetchAllPatients(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder) {
+//        if (!pageable.isPaged()) {
+        Pageable pageable = new PageRequest(0, 1000, new Sort(Sort.Direction.DESC, "id"));
+//        }
+
         Page<PatientData> page = patientService.fetchAllPatients(queryParams, pageable).map(p -> patientService.convertToPatientData(p));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
 

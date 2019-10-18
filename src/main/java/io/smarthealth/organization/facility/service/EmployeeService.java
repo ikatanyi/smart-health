@@ -14,6 +14,7 @@ import io.smarthealth.infrastructure.mail.EmailData;
 import io.smarthealth.infrastructure.mail.MailService;
 import io.smarthealth.infrastructure.utility.PassayPassword;
 import io.smarthealth.organization.facility.data.EmployeeData;
+import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.domain.EmployeeRepository;
@@ -22,6 +23,7 @@ import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.patient.service.PersonContactService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +113,14 @@ public class EmployeeService {
 
     public Page<Employee> fetchAllEmployees(final MultiValueMap<String, String> queryParams, final Pageable pg) {
         return employeeRepository.findAll(pg);
+    }
+
+    public List<Employee> findEmployeeByDepartment(final MultiValueMap<String, String> queryParams, final Department department, final Pageable pg) {
+        return employeeRepository.findAllByDepartment(department, pg);
+    }
+
+    public List<Employee> findEmployeeByCategory(final MultiValueMap<String, String> queryParams, final String category, final Pageable pg) {
+        return employeeRepository.findAllByEmployeeCategory(Employee.Category.valueOf(category), pg);
     }
 
     Page<Employee> fetchEmployeeByCategory(final String categoryName, final Pageable pg) {

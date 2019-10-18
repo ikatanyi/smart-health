@@ -123,6 +123,12 @@
             <version>${io.springfox.version}</version>
         </dependency>
         
+        <dependency>
+            <groupId>com.machinezoo.sourceafis</groupId>
+            <artifactId>sourceafis</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+        
     </dependencies>
 
     <dependencyManagement>
