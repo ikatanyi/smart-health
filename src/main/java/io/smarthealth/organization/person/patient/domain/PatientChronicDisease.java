@@ -7,6 +7,8 @@ package io.smarthealth.organization.person.patient.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.Data;
 
@@ -19,6 +21,7 @@ import lombok.Data;
 public class PatientChronicDisease extends Identifiable {
 
     @ManyToOne
+    @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_cdisease_patient_id"))
     private Patient patient;
 
     @ManyToOne

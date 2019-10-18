@@ -5,6 +5,8 @@ import io.smarthealth.organization.domain.Organization;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -22,6 +24,7 @@ public class Payer extends Organization {
     private Type payerType;
     private boolean insurance;
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_payer_account_id"))
     private Account debitAccount;
 
 }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -24,9 +26,11 @@ public class Room extends Identifiable {
     private String roomName;
 
     @OneToOne
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_room_room_type_id"))
     private RoomType roomType;
 
     @ManyToOne
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_room_ward_id"))
     private Ward ward;//this is a locations
 
     @OneToMany(mappedBy = "room")

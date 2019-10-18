@@ -9,7 +9,7 @@ public final class APIException extends RuntimeException {
     private final ApiError apiError;
 
     public APIException(final ApiError apiError) {
-        super(apiError.getDetails());
+        super(apiError.getMessage());
         this.apiError = apiError;
     }
 
@@ -48,4 +48,5 @@ public final class APIException extends RuntimeException {
                 + "apiError=" + apiError
                 + '}';
     }
+    
 }

@@ -95,7 +95,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatus status,
             WebRequest request) {
         ApiError apiError = new ApiError(BAD_REQUEST);
-        apiError.setDetails("Validation error");
+        apiError.setMessage("Validation error! provide valid field values");
         apiError.addValidationErrors(ex.getBindingResult().getFieldErrors());
         apiError.addValidationError(ex.getBindingResult().getGlobalErrors());
         return buildResponseEntity(apiError);
@@ -113,7 +113,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleConstraintViolation(
             javax.validation.ConstraintViolationException ex) {
         ApiError apiError = new ApiError(BAD_REQUEST);
-        apiError.setDetails("Validation error");
+        apiError.setMessage("Validation error! provide valid values");
         apiError.addValidationErrors(ex.getConstraintViolations());
         return buildResponseEntity(apiError);
     }
@@ -127,7 +127,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(APIException.class)
     protected ResponseEntity<Object> handleEntityNotFound(APIException ex) {
         ApiError apiError = ex.apiError();
-        apiError.setDetails(ex.getMessage());
+        apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
 
@@ -177,7 +177,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleNoHandlerFoundException(
             NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         ApiError apiError = new ApiError(BAD_REQUEST);
-        apiError.setDetails(String.format("Could not find the %s method for URL %s", ex.getHttpMethod(), ex.getRequestURL()));
+        apiError.setMessage(String.format("Could not find the %s method for URL %s", ex.getHttpMethod(), ex.getRequestURL()));
         apiError.setDebugMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
@@ -187,7 +187,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.info("{} for given url: {} ", ex.getMessage(), request.getContextPath());
         ApiError error = new ApiError(status);
-        error.setDetails(ex.getLocalizedMessage());
+        error.setMessage(ex.getLocalizedMessage());
 
         return buildResponseEntity(error);
     }
@@ -226,7 +226,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
             WebRequest request) {
         ApiError apiError = new ApiError(BAD_REQUEST);
-        apiError.setDetails(String.format("The parameter '%s' of value '%s' could not be converted to type '%s'", ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName()));
+        apiError.setMessage(String.format("The parameter '%s' of value '%s' could not be converted to type '%s'", ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName()));
         apiError.setDebugMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
@@ -234,7 +234,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(AccessDeniedException ex, WebRequest request) {
         ApiError apiError = new ApiError(UNAUTHORIZED);
-        apiError.setDetails(ex.getMessage());
+        apiError.setMessage(ex.getMessage());
         apiError.setDebugMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }

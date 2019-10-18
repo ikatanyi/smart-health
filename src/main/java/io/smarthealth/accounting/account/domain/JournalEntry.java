@@ -4,6 +4,7 @@ import io.smarthealth.infrastructure.domain.Auditable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -20,12 +21,14 @@ import lombok.EqualsAndHashCode;
 @Table(name = "account_journal_entry")
 public class JournalEntry extends Auditable {
 
-    @ManyToOne
-    @JoinColumn(name = "journal_id")
+    @ManyToOne 
+    @JoinColumn(name = "journal_id", foreignKey = @ForeignKey(name = "fk_journal_journal_id"))
     private Journal journal;
+    
     @ManyToOne
-    @JoinColumn(name = "account_id")
+   @JoinColumn(name = "account_id", foreignKey = @ForeignKey(name = "fk_journal_account_id"))
     private Account account;
+    
     private Double credit;
     private Double debit;
     private String description;//optional comments about the entry

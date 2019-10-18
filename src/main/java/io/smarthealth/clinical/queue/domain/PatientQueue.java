@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -32,17 +33,17 @@ import lombok.Data;
 public class PatientQueue extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "patient_id")
+    @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_que_patient_id"))
     private Patient patient;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "visit_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) 
+    @JoinColumn(name = "visit_id", foreignKey = @ForeignKey(name = "fk_que_visit_id"))
     private Visit visit;
 
     private boolean status;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "department_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) 
+     @JoinColumn(name = "department_id", foreignKey = @ForeignKey(name = "fk_que_dept_id"))
     private Department department;
 
 }

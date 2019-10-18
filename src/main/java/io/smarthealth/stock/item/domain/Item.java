@@ -1,53 +1,46 @@
 package io.smarthealth.stock.item.domain;
 
+import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.stock.inventory.domain.ReorderRule;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
 /**
- *  An Item is a product or a service offered by the company.
+ * Product or Service representation
+ *
  * @author Kelsas
  */
 @Entity
 @Data
-@Table(name = "stock_item")
-public class Item extends Identifiable{
- 
-    public enum Group {
-        Services,
-        Consumable,
-        Drug,
-        Stock
-    }
-    private String itemCode;
+@Table(name = "st_stock_items")
+public class Item extends Identifiable {
+
+    private String itemType;
+    private String category; // is this a consumable, service, procedure, inventory
     private String itemName;
-    @Enumerated(EnumType.STRING)
-    private Group itemGroup;
-    @OneToOne
+    private String itemCode;//sku;
+    private double rate;
+    private double costRate;
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_item_uom"))
     private Uom uom;
-    private BigDecimal sellingRate;
-    private Boolean fixedAsset; 
-    private String description; 
-    private String barcode;
-    private Integer shelfLife; 
-    private Boolean enabled;
-    
-    @OneToMany(mappedBy = "item")
-    private List<ItemPrice> itemPrice;
-    
-    //reorder levels'
+    private String description;
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_item_tax_id"))
+    private Tax tax;
+   
+    //this should be populated if it's a stock item
     @OneToMany(mappedBy = "stockItem")
-    private List<ReorderRule> reorderRules=new ArrayList<>();
+    private List<ReorderRule> reorderRules;
+    //sales, purchase, inventory accounts to be linked via the store
     
-    //this account needs to be linked to accounting systems
+    private Boolean active;
 
 }

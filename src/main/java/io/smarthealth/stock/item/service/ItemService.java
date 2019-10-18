@@ -1,21 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.stock.item.service;
 
-import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.accounting.taxes.domain.Tax;
+import io.smarthealth.accounting.taxes.domain.TaxRepository;
+import io.smarthealth.stock.item.data.CreateItem;
+import io.smarthealth.stock.item.data.ItemData;
 import io.smarthealth.stock.item.data.ItemData;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemRepository;
+import io.smarthealth.stock.item.domain.ReorderRule;
 import io.smarthealth.stock.item.domain.Uom;
 import io.smarthealth.stock.item.domain.UomRepository;
+import io.smarthealth.stock.item.domain.specification.ItemSpecification;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,61 +26,74 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class ItemService {
+ 
+    private final TaxRepository taxRepository;
+     private final ItemRepository itemRepository; 
+     private final UomRepository uomRepository; 
+     private final ModelMapper modelMapper;
 
-    @Autowired
-    ItemRepository itemRepository;
-
-    @Autowired
-    UomRepository uomRepository;
-
-    @Autowired
-    ModelMapper modelMapper;
-
+    public ItemService(TaxRepository taxRepository, ItemRepository itemRepository, UomRepository uomRepository, ModelMapper modelMapper) {
+        this.taxRepository = taxRepository;
+        this.itemRepository = itemRepository;
+        this.uomRepository = uomRepository;
+        this.modelMapper = modelMapper;
+    }
+      
     @Transactional
-    public Item createItem(ItemData itemData) { 
-            //look up barcode, if exists, throw exists error
-            if (itemRepository.existsByBarcode(itemData.getBarcode())) {
-                throw APIException.conflict("Duplicate Item Barcode {0}", itemData.getBarcode());
+    public ItemData createItem(CreateItem createItem) {
+       Item item=new Item();
+       item.setActive(Boolean.TRUE);
+       item.setCategory(createItem.getCategory());
+       item.setCostRate(createItem.getPurchaseRate());
+       item.setDescription(createItem.getDescription());
+       item.setItemCode(createItem.getSku());
+       item.setItemName(createItem.getItemName());
+       item.setItemType(createItem.getItemType());
+       item.setRate(createItem.getRate());
+       //check the category
+       if(createItem.getItemUnit()!=null){
+           Optional<Uom> uom = uomRepository.findById(Long.valueOf(createItem.getItemUnit()));
+           if(uom.isPresent()){
+                item.setUom(uom.get());
+           }
+       }
+        if(createItem.getTaxId()!=null){
+           Optional<Tax> tax=  taxRepository.findById(createItem.getTaxId());
+           if(tax.isPresent()){
+                item.setTax(tax.get());
+           }
+       }  
+         if(createItem.getCategory().equals("Drugs")){
+                //then we create a drug item here
+                //define the items that belong to drugs
+               
             }
-            Item item = modelMapper.map(itemData, Item.class);
-            Uom uom = uomRepository.findById(itemData.getUomId()).orElseThrow(() -> APIException.notFound("", ""));
-            item.setUom(uom);
-
-            item = itemRepository.saveAndFlush(item);
-            return item; 
-    }
-
-    public Optional<Item> findById(final Long itemId) { 
-            return itemRepository.findById(itemId); 
-    }
-
-    public Optional<Item> findByItemCode(final String itemCode) { 
-            return itemRepository.findByItemCode(itemCode); 
-    }
-
-    @Transactional
-    public Item updateItem(final Long itemId, ItemData itemData) {
-        try {
-            Item itemExisting = itemRepository.findById(itemId).orElseThrow(() -> APIException.notFound("Item identified by {0} not found", itemId));
-            modelMapper.map(itemData, itemExisting);
-            Uom uom = uomRepository.findById(itemData.getUomId()).orElseThrow(() -> APIException.notFound("", ""));
-            itemExisting.setUom(uom);
-            itemRepository.saveAndFlush(itemExisting);
-            return itemExisting;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("Error updating item id " + itemId, e.getMessage());
+          if(createItem.getCategory().equals("Procedure")){
+                //then we create a drug item here
+                //define the items that belong to drugs
+                
+            }
+        if(createItem.getItemType().equals("Inventory")){
+           
+            if(createItem.getInitialStock()>0){
+                ReorderRule rule=new ReorderRule();
+//       item.setReorderRules(reorderRules);
+            }
         }
+        Item savedItem= itemRepository.save(item);
+        return ItemData.map(savedItem);
     }
 
-    public Page<Item> fetchAllItems(final Pageable pageable) {
-        try {
-
-            return itemRepository.findAll(pageable);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("Error fetching all items ", e.getMessage());
-        }
+    public Optional<Item> findById(final Long itemId) {
+        return itemRepository.findById(itemId);
     }
+
+    public Optional<Item> findByItemCode(final String itemCode) {
+        return itemRepository.findByItemCode(itemCode);
+    }
+  public Page<Item> fetchItems(final boolean includeClosed, String term,Pageable pageable) { 
+        Specification<Item> spec = ItemSpecification.createSpecification(includeClosed, term);
+        Page<Item> items = itemRepository.findAll(spec, pageable);
+        return items;
+    } 
 }

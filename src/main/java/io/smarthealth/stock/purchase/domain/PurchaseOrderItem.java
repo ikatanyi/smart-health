@@ -4,6 +4,8 @@ import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -21,6 +23,7 @@ public class PurchaseOrderItem extends Identifiable {
     private PurchaseOrder purchaseOrder;
 
     @ManyToOne
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_purchase_item_id"))
     private Item item;
     private double quantity;
     private BigDecimal price; //this can be linked to the pricelist and be defined in the values that

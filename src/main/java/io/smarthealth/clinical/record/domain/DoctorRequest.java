@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -31,17 +32,19 @@ public abstract class DoctorRequest extends Auditable {
 
     //the doctors oders
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "patient_id")
+    @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_doc_request_patient_id"))
     private Patient patient;
     
     @ManyToOne
-    @JoinColumn(name = "visit_id")
+    @JoinColumn(name = "visit_id", foreignKey = @ForeignKey(name = "fk_doc_request_visit_id"))
     private Visit visit;
 
     @ManyToOne
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_doc_request_item_id"))
     private Item item;
 
-    @OneToOne
+    @ManyToOne
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_doc_request_empoyee_id"))
     private Employee requestedBy;
     private LocalDateTime orderDatetime;
     private String urgency;

@@ -26,52 +26,42 @@ import org.springframework.validation.ObjectError;
 //@JsonTypeIdResolver(LowerCaseClassNameResolver.class)
 @JsonInclude(Include.NON_NULL)
 public class ApiError {
-    private String title;
-    private int status;
+//    private String title;
+    private String code;
     @JsonIgnore
-     private HttpStatus httpStatus;
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
-//    private LocalDateTime timestamp;
-    private String details;
+     private HttpStatus httpStatus; 
+    private String message;
     private String debugMessage;
-    private List<ApiSubError> errors;
-    private boolean success = false;
-
-    private ApiError() {
-//        timestamp = LocalDateTime.now();
+    private List<ApiSubError> errors; 
+    private ApiError() { 
     }
 
     ApiError(HttpStatus status) {
         this();
         this.httpStatus = status;
-        this.status=status.value();
-        this.title=status.getReasonPhrase();
+        this.code=String.valueOf(status.value());
+        this.message=status.getReasonPhrase();
     }
 
     ApiError(HttpStatus status, Throwable ex) {
         this();
         this.httpStatus = status;
-        this.details = "Unexpected error";
-        this.debugMessage = ex.getLocalizedMessage();
-         this.status=status.value();
-        this.title=status.getReasonPhrase();
+        this.code=String.valueOf(status.value());
+        this.message=ex.getLocalizedMessage();
     }
 
     ApiError(HttpStatus status, String message, Throwable ex) {
         this();
+         this.code=String.valueOf(status.value());
+        this.message=message;
         this.httpStatus = status;
-        this.details = message;
-        this.debugMessage = ex.getLocalizedMessage();
-         this.status=status.value();
-        this.title=status.getReasonPhrase();
     }
     
     ApiError(HttpStatus status, String message) {
         this();
         this.httpStatus = status;
-        this.details = message;
-         this.status=status.value();
-        this.title=status.getReasonPhrase();
+         this.code=String.valueOf(status.value());
+        this.message=message;
     }
 
     private void addSubError(ApiSubError subError) {

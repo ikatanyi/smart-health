@@ -27,25 +27,25 @@ import org.hibernate.annotations.NaturalId;
 @Table(name = "appointments")
 public class Appointment extends Auditable {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "patient_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) 
+     @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_appt_patient_id"))
     private Patient patient;
 
     @NaturalId
     private String appointmentNo;
     @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_procedure_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appt_item_id"))
     private Item procedure;
     @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_practioneer_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appt_employee_id"))
     private Employee practioneer;
 
     @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_department_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appt_department_id"))
     private Department department;
 
     @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_type_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appt_appointment_type_id"))
     private AppointmentType appointmentType;
 
     private LocalDate appointmentDate;
@@ -57,6 +57,6 @@ public class Appointment extends Auditable {
     private String urgency;
     private String status; //new followup 
     @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_referrer_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appt_referrer_id"))
     private Employee referredBy;
 }

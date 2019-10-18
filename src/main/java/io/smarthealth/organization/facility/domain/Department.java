@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -28,6 +29,7 @@ public class Department extends Identifiable {
     }
 
     @ManyToOne 
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_facility_id"))
     private Facility facility;
     
     @Enumerated(EnumType.STRING)
@@ -36,10 +38,13 @@ public class Department extends Identifiable {
     @Column(name = "dept_name")
     private String name;
     @ManyToOne
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_parent_id"))
     private Department parent;
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_income_account_id"))
     private Account incomeAccount;
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_expense_account_id"))
     private Account expenseAccount;
 
     private Boolean isStore; // the department can be store location

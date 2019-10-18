@@ -30,12 +30,7 @@ public class UomService {
     ModelMapper modelMapper;
 
     public Uom fetchUomById(final Long uomId) {
-        try {
-            return uomRepository.findById(uomId).orElseThrow(() -> APIException.notFound("Uom identified by  {0} not found", uomId));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("Uom identified by " + uomId + " not found", e.getMessage());
-        }
+        return uomRepository.findById(uomId).orElseThrow(() -> APIException.notFound("Uom identified by  {0} not found", uomId));
     }
 
     @Transactional

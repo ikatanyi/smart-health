@@ -1,13 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.stock.item.data;
 
+import io.smarthealth.infrastructure.utility.AppHelper;
 import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
 import lombok.Data;
+import org.modelmapper.ModelMapper;
+import org.springframework.format.annotation.NumberFormat;
 
 /**
  *
@@ -16,20 +14,54 @@ import lombok.Data;
 @Data
 public class ItemData {
 
-    private String itemCode;
+    private Long itemId;
+    private String itemType;
     private String itemName;
-    private String itemGroupName;
+    private String sku;
     private Long uomId;
-    private BigDecimal sellingRate;
-    private Boolean fixedAsset;
+    private String unit;
     private String description;
-    private String barcode;
-    private Integer shelfLife;
-    private Boolean enabled;
-    
-   public ItemData map(Item item){
-        ItemData itemData =new ItemData();
+    private double rate; 
+    private String rateFormatted;
+    private String brand;
+    private String manufacturer;
+    private Long taxId;
+    private String taxName;
+    private double taxPercentage;
+    private String accountName;
+    private Long purchaseAccountId;
+    private String purchaseAccountName;
+    private String purchaseDescription;
+    private double purchaseRate;
+    private String purchaseRateFormatted;
+    private String ean;
+    private double stockOnHand;
+    private double availableStock;
+    private double actualAvailableStock;
+    private Integer reorderLevel;
+    private String status;
+    private String createdTime;
+    private String lastModifiedTime;
+
+    public static ItemData map(Item item){
+        ModelMapper modelMapper=new ModelMapper();
+        ItemData itemsdata = modelMapper.map(item, ItemData.class); 
+        itemsdata.setItemId(item.getId());
+        itemsdata.setSku(item.getItemCode());
+        if(item.getUom()!=null){
+            itemsdata.setUnit(item.getUom().getName());
+            itemsdata.setUomId(item.getId());
+        }
+        itemsdata.setRateFormatted(AppHelper.toFormattedDecimal(item.getRate())); 
         
-        return itemData;
+        if(item.getTax()!=null){
+            itemsdata.setTaxId(item.getTax().getId());
+            itemsdata.setTaxName(item.getTax().getTaxName());
+            itemsdata.setTaxPercentage(item.getTax().getRate());
+        }
+        itemsdata.setStatus(item.getActive() ? "Active" : "Inactive");
+         
+        return itemsdata;
     }
+      
 }
