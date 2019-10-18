@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -27,8 +28,8 @@ public class FinancialActivityAccount extends Identifiable {
     @Column(name = "financial_activity_account_type")
     private Integer activityType;
 
-    @ManyToOne
-    @JoinColumn(name = "account_id")
+    @ManyToOne 
+    @JoinColumn(name = "account_id", foreignKey = @ForeignKey(name = "fk_activity_account_id"))
     private Account account;
 
     public FinancialActivityAccount() {

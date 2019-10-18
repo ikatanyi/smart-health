@@ -4,6 +4,8 @@ import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.Uom;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -20,6 +22,7 @@ public class RequisitionItem extends Identifiable {
     @ManyToOne
     private Requisition requistion;
     @ManyToOne
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_requistion_item_id"))
     private Item item;
     private double quantity;
     @ManyToOne

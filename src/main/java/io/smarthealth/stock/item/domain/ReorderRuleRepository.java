@@ -1,4 +1,4 @@
-package io.smarthealth.stock.inventory.domain;
+package io.smarthealth.stock.item.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

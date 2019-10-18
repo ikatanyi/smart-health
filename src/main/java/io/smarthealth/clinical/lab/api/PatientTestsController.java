@@ -47,8 +47,8 @@ public class PatientTestsController {
 
     @PostMapping("/PatientTest")
     public @ResponseBody
-    ResponseEntity<?> createPatientTest(@RequestBody @Valid final LabTestData PatientTestData) {
-        LabTestData Patienttests = resultService.savePatientResults(PatientTestData);
+    ResponseEntity<?> createPatientTest(@RequestBody @Valid final LabTestData labTestData) {
+        LabTestData Patienttests = resultService.savePatientResults(labTestData);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/PatientTest/" + Patienttests.getId())
                 .buildAndExpand(Patienttests.getId()).toUri();
         return ResponseEntity.created(location).body(APIResponse.successMessage("TestType successfuly created", HttpStatus.CREATED, Patienttests));

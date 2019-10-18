@@ -4,6 +4,7 @@ import io.smarthealth.organization.domain.Organization;
 import io.smarthealth.accounting.account.domain.Account;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -24,8 +25,8 @@ public class BankAccount extends Identifiable {
 
     private String accountName;
     private String accountNo;
-    @OneToOne
-    @JoinColumn(name = "gl_account" )
+    @ManyToOne 
+    @JoinColumn(name = "gl_account_id", foreignKey = @ForeignKey(name = "fk_bank_account_id"))
     private Account glAccount;
     private String bank;
     private String branchCode;

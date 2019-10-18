@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -50,7 +51,7 @@ public class User extends Identifiable
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "auth_role_user", joinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "role_id", referencedColumnName = "id")})
+        @JoinColumn(name = "role_id", referencedColumnName = "id")}, foreignKey = @ForeignKey(name = "fk_user_roles_id"))
     private List<Role> roles;
 
     public User() {

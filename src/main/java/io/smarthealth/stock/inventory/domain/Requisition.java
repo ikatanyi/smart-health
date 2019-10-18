@@ -2,15 +2,12 @@ package io.smarthealth.stock.inventory.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Department;
-import io.smarthealth.organization.facility.domain.Employee;
-import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;

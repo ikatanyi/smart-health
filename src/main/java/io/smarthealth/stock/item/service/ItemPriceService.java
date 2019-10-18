@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.stock.item.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.data.ItemPriceData;
-import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.domain.Item; 
 import io.smarthealth.stock.item.domain.ItemPrice;
 import io.smarthealth.stock.item.domain.ItemPriceRepository;
 import io.smarthealth.stock.item.domain.ItemRepository;
@@ -44,7 +39,6 @@ public class ItemPriceService {
             itemPriceRepository.save(itemPrice);
             return itemPrice;
         } catch (Exception e) {
-            e.printStackTrace();
             throw APIException.internalError("Error creating item price", e.getMessage());
         }
     }

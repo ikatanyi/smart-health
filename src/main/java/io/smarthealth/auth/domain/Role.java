@@ -4,6 +4,7 @@ import io.smarthealth.infrastructure.domain.Identifiable;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -23,6 +24,6 @@ public class Role extends Identifiable{
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "auth_permission_role", joinColumns = {
         @JoinColumn(name = "role_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "permission_id", referencedColumnName = "id")})
+        @JoinColumn(name = "permission_id", referencedColumnName = "id")}, foreignKey = @ForeignKey(name = "fk_role_permission_id"))
     private List<Permission> permissions;
 }

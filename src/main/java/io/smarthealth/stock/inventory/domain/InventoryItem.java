@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -29,6 +31,7 @@ public class InventoryItem extends Identifiable {
     @ManyToOne
     private Department store;
     @ManyToOne
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_inventory_item_id"))
     private Item item;
     private double quantity;
     @Enumerated(EnumType.STRING)

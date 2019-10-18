@@ -13,6 +13,8 @@ import io.smarthealth.accounting.payment.domain.PaymentDetail;
 import io.smarthealth.accounting.payment.domain.PaymentDetailRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.sequence.SequenceService;
+import io.smarthealth.infrastructure.sequence.SequenceType;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -32,16 +34,20 @@ public class JournalService {
     private final JournalRepository journalRepository;
     private final PaymentDetailRepository paymentDetailRepository;
     private final AccountRepository accountRepository;
+    private final SequenceService sequenceService;
 
-    public JournalService(JournalRepository journalRepository, PaymentDetailRepository paymentDetailRepository, AccountRepository accountRepository) {
+    public JournalService(JournalRepository journalRepository, PaymentDetailRepository paymentDetailRepository, AccountRepository accountRepository,  SequenceService sequenceService) {
         this.journalRepository = journalRepository;
         this.paymentDetailRepository = paymentDetailRepository;
         this.accountRepository = accountRepository;
+        this.sequenceService=sequenceService;
     }
 
     public String createJournalEntry(JournalData journalData) {
         Journal journal = convertToEntity(journalData);
-        journal.setTransactionId(generateTransactionId(2L));
+//        journal.setTransactionId(generateTransactionId(2L));
+           journal.setTransactionId(sequenceService.nextNumber(SequenceType.JournalNumber));
+           
         Journal savedJournal = journalRepository.save(journal);
         return savedJournal.getTransactionId();
     }
@@ -94,7 +100,7 @@ public class JournalService {
 
     public String revertJournalEntry(String transactionId, String reversalComment) {
         
-        final String reversalTransactionId = generateTransactionId(2L);
+        final String reversalTransactionId =  sequenceService.nextNumber(SequenceType.JournalNumber);//generateTransactionId(2L);
         final boolean manualEntry = true;
         final boolean useDefaultComment = StringUtils.isBlank(reversalComment);
 

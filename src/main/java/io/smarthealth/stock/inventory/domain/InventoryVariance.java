@@ -5,6 +5,7 @@ import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -24,6 +25,7 @@ public class InventoryVariance extends Auditable {
     @ManyToOne
     private Department store;
     @ManyToOne
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_variance_item_id"))
     private Item item;
     private double quantity;
     private String comments;

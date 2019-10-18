@@ -4,6 +4,7 @@ import io.smarthealth.infrastructure.domain.Identifiable;
 import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -23,11 +24,11 @@ public class Account extends Identifiable {
     private String accountNumber;
     private String accountName;
     @OneToOne
-    @JoinColumn(name = "account_type")
+    @JoinColumn(name = "account_type",foreignKey = @ForeignKey(name = "fk_account_account_type_id"))
     private AccountType accountType;
     private String description;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_account_id")
+    @OneToOne(fetch = FetchType.LAZY) 
+    @JoinColumn(name = "parent_account_id", foreignKey = @ForeignKey(name = "fk_account_account_id"))
     private Account parentAccount;
     private Boolean showAccountsInChart = true;
     private Boolean enabled = true;
