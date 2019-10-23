@@ -77,4 +77,8 @@ public class VisitService {
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
     }
 
+    public VisitData convertVisitEntityToData(Visit visit) {
+        return VisitData.map(visit);
+    }
+
 }

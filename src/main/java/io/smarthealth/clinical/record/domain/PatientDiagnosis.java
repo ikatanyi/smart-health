@@ -5,6 +5,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.Type;
 
 /**
  * Patient PatientDiagnosis Record
@@ -24,4 +25,7 @@ public class PatientDiagnosis extends ClinicalRecord {
 
     @Column(length = 25)
     private String diagnosisOrder;
+    
+    @Type(type = "text")
+    private String notes;
 }

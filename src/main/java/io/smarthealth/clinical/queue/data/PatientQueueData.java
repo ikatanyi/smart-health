@@ -24,5 +24,9 @@ public class PatientQueueData {
     private DepartmentData departmentData;
     private VisitData visitData;
     private PatientData patientData;
+    private Long id;
+    private String urgency;
+    private String specialNotes;
+    
 
 }

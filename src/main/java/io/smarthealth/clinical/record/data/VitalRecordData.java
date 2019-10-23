@@ -41,6 +41,11 @@ public class VitalRecordData {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime dateRecorded;
 
+    private String sendTo;
+    private String departmentCode;
+    private String staffNumber;
+    private String urgency;
+
     public static VitalsRecord map(VitalRecordData triage) {
         VitalsRecord entity = new VitalsRecord();
         entity.setTemp(triage.getTemp());
