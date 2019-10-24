@@ -8,6 +8,8 @@ import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDateTime;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.Inheritance;
@@ -16,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Data;
 import org.hibernate.annotations.NaturalId;
 
@@ -29,6 +32,15 @@ import org.hibernate.annotations.NaturalId;
 @Table(name = "patient_doctor_request")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class DoctorRequest extends Auditable {
+    
+    public enum RequestType {
+        Lab,
+        Radiology,
+        Pharmacy,
+        Procedure
+    }
+    @Enumerated(EnumType.STRING)
+    private RequestType requestType;
 
     //the doctors oders
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -55,4 +67,9 @@ public abstract class DoctorRequest extends Auditable {
     private String fulfillerStatus;  //this is the va
     private String fulfillerComment;
     private Boolean drug;
+    
+    @Transient
+    private String patientNumber;
+    @Transient
+    private String visitNumber;
 }

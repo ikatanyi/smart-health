@@ -3,6 +3,8 @@ package io.smarthealth.clinical.lab.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.lab.domain.Analyte;
+import io.smarthealth.clinical.lab.domain.Discipline;
+import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.Testtype;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import java.time.LocalDateTime;
@@ -19,25 +21,53 @@ import org.modelmapper.ModelMapper;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LabTestTypeData {
+public class LabTestTypeData {  
+    
+    public enum Gender {
+        Male,
+        Female,
+        Both
+    }
+    
+    private Boolean consent; 
+    private Boolean withRef; 
+    private Boolean refOut; 
+    private Long duration;
+    private String durationDesc;
+    private String notes;
+    private Boolean supervisorConfirmation;
+    private Discipline discipline;
+    
+    private List<Long> specimenId;
+    
+    private Long disciplineId;
+    private Gender gender;
 
     private Long id;
     @NotNull
     @Column(length = 25)
     private String code;
     @NotNull
-    @Column(length = 25)
+    @Column(length = 50)
     private String testType;  
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime recorded = LocalDateTime.now();    
     
     private List<AnalyteData> analytes;
+    private List<SpecimenData>specimens;
 
     public static Testtype map(LabTestTypeData testtype) {
+        System.out.println("Test type received "+testtype.toString());
         Testtype entity = new Testtype();
         entity.setServiceCode(testtype.getCode());
-        entity.setTestType(testtype.getTestType());        
+        entity.setTestType(testtype.getTestType());
+        entity.setConsent(testtype.getConsent());
+        entity.setWithRef(testtype.getWithRef());
+        entity.setRefOut(testtype.getRefOut());
+        entity.setDuration(testtype.getDuration());
+        entity.setDurationDesc(testtype.getDurationDesc());
+        entity.setDiscipline(testtype.getDiscipline());
         return entity;
     }
 
@@ -46,7 +76,13 @@ public class LabTestTypeData {
         LabTestTypeData test = new LabTestTypeData();
         test.setId(entity.getId());
         test.setCode(entity.getServiceCode());
-        test.setTestType(entity.getTestType());    
+        test.setTestType(entity.getTestType());  
+        test.setConsent(entity.getConsent());
+        test.setDuration(entity.getDuration());
+        test.setDurationDesc(entity.getDurationDesc());
+        test.setNotes(entity.getNotes());
+        test.setRefOut(entity.getRefOut());
+        test.setTestType(entity.getTestType());
         for(Analyte analyte:entity.getAnalytes()){
             AnalyteData analytedata = modelMapper.map(analyte,AnalyteData.class);
             if(!test.getAnalytes().isEmpty())
@@ -54,6 +90,15 @@ public class LabTestTypeData {
             else{
                 test.setAnalytes(new ArrayList());
                 test.getAnalytes().add(analytedata);
+            }
+        }
+        for(Specimen specimen:entity.getSpecimens()){
+            SpecimenData specimendata = modelMapper.map(specimen,SpecimenData.class);
+            if(!test.getSpecimens().isEmpty())
+               test.getSpecimens().add(specimendata);
+            else{
+                test.setSpecimens(new ArrayList());
+                test.getSpecimens().add(specimendata);
             }
         }
         return test;
