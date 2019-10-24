@@ -3,7 +3,6 @@ package io.smarthealth.clinical.visit.domain;
 import io.smarthealth.clinical.record.domain.Diagnosis;
 import io.smarthealth.organization.facility.domain.Bed;
 import io.smarthealth.organization.facility.domain.Employee;
-import io.smarthealth.clinical.visit.domain.Visit;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Embedded;

@@ -21,7 +21,7 @@ public class Facility extends Organization {
     public enum Type {
         Hospital, clinic, Speciality
     }
-    
+
     private String registrationNumber;
     private String facilityType;
     private String facilityClass; //government classifications

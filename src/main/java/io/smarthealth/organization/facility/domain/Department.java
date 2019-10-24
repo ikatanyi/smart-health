@@ -9,7 +9,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -34,6 +33,7 @@ public class Department extends Identifiable {
     
     @Enumerated(EnumType.STRING)
     private Type type;
+    @Column(unique = true)
     private String code;
     @Column(name = "dept_name")
     private String name;
