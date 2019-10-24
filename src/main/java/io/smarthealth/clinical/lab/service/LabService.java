@@ -76,16 +76,17 @@ public class LabService {
             System.out.println("Line 76");
             Testtype testtype = LabTestTypeData.map(testtypeData);
             System.out.println("Line 78");
-            for(Long id:testtypeData.getSpecimenId()){
+            for (Long id : testtypeData.getSpecimenId()) {
                 Optional<Specimen> specimen = specimenRepository.findById(id);
-                if(specimen.isPresent()){
-                   specimen.get().getTestType().add(testtype);
-                   testtype.getSpecimens().add(specimen.get());
+                if (specimen.isPresent()) {
+                    specimen.get().getTestType().add(testtype);
+                    testtype.getSpecimens().add(specimen.get());
                 }
             }
-            Optional<Discipline> discipline = disciplineRepository.findById(testtypeData.getDisciplineId());            
-            if(discipline.isPresent())
+            Optional<Discipline> discipline = disciplineRepository.findById(testtypeData.getDisciplineId());
+            if (discipline.isPresent()) {
                 testtype.setDiscipline(discipline.get());
+            }
             ttypeRepository.save(testtype);
             return testtype.getId();
         } catch (Exception e) {
@@ -133,7 +134,6 @@ public class LabService {
         return ttype;
     }
 
-
     public Page<Testtype> fetchAllTestTypes(Pageable pageable) {
         List<LabTestTypeData> testtypeDataList = new ArrayList<>();
 
@@ -171,13 +171,16 @@ public class LabService {
     public List<SpecimenData> createSpecimens(List<SpecimenData> specimenData) {
         Type listType = new TypeToken<List<Specimen>>() {}.getType();
         List<Specimen> specs = new ArrayList();
-        for(SpecimenData specData:specimenData){
-            Specimen spec1 = SpecimenData.map(specData);            
+        for (SpecimenData specData : specimenData) {
+            Specimen spec1 = SpecimenData.map(specData);      
+            System.out.println("About to update spec1 ");        
+            System.out.println("Spec 1 has been updated");
             Optional<Container> container = containerRepository.findById(specData.getContainerId());
-            if(container.isPresent())
-               spec1.setContainer(container.get());
+            if (container.isPresent()) {
+                container.get().setSpecimen(spec1);
+                spec1.setContainer(container.get());
+            }
             specs.add(spec1);
-                    
         }
 //        Optional<Testtype> ttype = ttypeRepository.findById(specimenId);
 //        if (ttype.isPresent()) {
@@ -209,7 +212,7 @@ public class LabService {
 
     public Specimen convertDataToSpecimen(SpecimenData specimenData) {
         Specimen specimen = modelMapper.map(specimenData, Specimen.class);
-        
+
         return specimen;
     }
 
@@ -310,7 +313,8 @@ public class LabService {
         List<Container> containers = modelMapper.map(containerData, listType);
 
         List<Container> containerList = containerRepository.saveAll(containers);
-        return modelMapper.map(containerList, new TypeToken<List<DisciplineData>>() {}.getType());
+        return modelMapper.map(containerList, new TypeToken<List<DisciplineData>>() {
+        }.getType());
     }
 
     public Page<ContainerData> fetchAllContainers(Pageable pgbl) {

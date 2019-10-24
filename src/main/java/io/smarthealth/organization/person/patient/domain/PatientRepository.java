@@ -5,7 +5,6 @@
  */
 package io.smarthealth.organization.person.patient.domain;
 
-import io.smarthealth.organization.person.domain.Person;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

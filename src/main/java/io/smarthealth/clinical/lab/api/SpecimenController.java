@@ -49,10 +49,10 @@ public class SpecimenController {
     ResponseEntity<?> createSpecimen(@RequestBody @Valid final List<SpecimenData> specimenData) {
         List<SpecimenData> specimenList = specimenService.createSpecimens(specimenData);
          if (specimenList!=null) {
-             URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/specimen" + ttype.getServiceCode())
-                .buildAndExpand(ttype.getServiceCode()).toUri();
+             URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/specimen" )
+                .buildAndExpand().toUri();
 
-            return ResponseEntity.created(location).body(APIResponse.successMessage("Analytes successfuly created", HttpStatus.CREATED, analytedata));
+            return ResponseEntity.created(location).body(APIResponse.successMessage("Specimen successfuly created", HttpStatus.CREATED, specimenList));
         } else {
             throw APIException.notFound("TestType Number {0} not found.", "");
         }

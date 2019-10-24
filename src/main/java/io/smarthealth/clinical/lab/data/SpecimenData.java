@@ -20,7 +20,7 @@ public class SpecimenData  {
     private ContainerData container;
     
     public static Specimen map(SpecimenData specimenData) {
-        System.out.println("SpecimenData received "+specimenData.toString());
+//        System.out.println("SpecimenData received "+specimenData.toString());
         Specimen entity = new Specimen();
         entity.setAbbreviation(specimenData.getAbbreviation());
         entity.setId(specimenData.getId());

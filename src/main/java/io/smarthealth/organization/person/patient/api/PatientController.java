@@ -1,6 +1,5 @@
 package io.smarthealth.organization.person.patient.api;
 
-import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -10,9 +9,14 @@ import io.smarthealth.organization.person.data.PortraitData;
 import io.smarthealth.organization.person.domain.PersonAddress;
 import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.domain.Portrait;
+import io.smarthealth.organization.person.patient.data.AllergyTypeData;
+import io.smarthealth.organization.person.patient.data.PatientAllergiesData;
 import io.smarthealth.organization.person.patient.data.PatientData;
+import io.smarthealth.organization.person.patient.domain.Allergy;
+import io.smarthealth.organization.person.patient.domain.AllergyType;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientIdentificationType;
+import io.smarthealth.organization.person.patient.service.AllergiesService;
 import io.smarthealth.organization.person.patient.service.PatientIdentificationTypeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.organization.person.service.PersonService;
@@ -21,6 +25,7 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -67,7 +72,7 @@ public class PatientController {
     private PersonService personService;
 
     @Autowired
-    private VisitService visitService;
+    private AllergiesService allergiesService;
 
     @Autowired
     private PatientIdentificationTypeService patientIdentificationTypeService;
@@ -257,6 +262,51 @@ public class PatientController {
     public PatientIdentificationType fetchAllPatientIdTypes(@PathVariable("id") final String patientIdType) {
         System.out.println("patientIdType " + patientIdType);
         return patientIdentificationTypeService.fetchIdType(Long.valueOf(patientIdType));
+    }
+
+    /* Functions pertaining patient allergies */
+    @PostMapping("/allergy")
+    public @ResponseBody
+    ResponseEntity<?> createPatientAllergy(@RequestBody @Valid final PatientAllergiesData patientAllergiesData) {
+
+        Allergy allergy = allergiesService.createPatientAllergy(allergiesService.convertAllergyDataToEntity(patientAllergiesData));
+        PatientAllergiesData savedData = allergiesService.convertPatientAllergiesToData(allergy);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/allergy/{id}")
+                .buildAndExpand(allergy.getId()).toUri();
+
+        return ResponseEntity.created(location).body(savedData);
+    }
+
+    @PostMapping("/allergy-type")
+    public @ResponseBody
+    ResponseEntity<?> createAllergyType(@RequestBody @Valid final AllergyTypeData allergyTypeData) {
+        AllergyType allergyType = allergiesService.createAllergyType(allergiesService.convertAllergyTypeDataToEntity(allergyTypeData));
+        AllergyTypeData savedData = allergiesService.convertAllergyTypEntityToData(allergyType);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/allergy-type/{id}")
+                .buildAndExpand(allergyType.getId()).toUri();
+        return ResponseEntity.created(location).body(savedData);
+    }
+
+    @GetMapping("/patient/{patientNumber}/allergy")
+    public ResponseEntity<?> fetchAllPatientsAllergy(@PathVariable("patientNumber") final String patientNumber, @RequestParam MultiValueMap<String, String> queryParams, Pageable pageable) {
+        Patient patient = patientService.findPatientOrThrow(patientNumber);
+        Page<PatientAllergiesData> page = allergiesService.fetchPatientAllergies(patient, pageable).map(p -> allergiesService.convertPatientAllergiesToData(p));
+        return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
+    }
+
+    @GetMapping("/allergy-type")
+    public ResponseEntity<List<AllergyTypeData>> fetchAllAllergyTypes(@PathVariable("id") final String patientIdType) {
+        List<AllergyTypeData> data = new ArrayList<>();
+        allergiesService.findAllAllergyTypes().stream().map((at) -> {
+            AllergyTypeData atd = new AllergyTypeData();
+            atd.setCode(at.getCode());
+            atd.setName(at.getName());
+            return atd;
+        }).forEachOrdered((atd) -> {
+            data.add(atd);
+        });
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     private void throwIfInvalidSize(final Long size) {

@@ -7,6 +7,8 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.ContentPage;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.organization.person.patient.service.PatientService;
@@ -15,7 +17,9 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,6 +40,9 @@ public class TriageService {
 
     @Autowired
     private PatientService patientService;
+
+    @Autowired
+    private EmployeeService employeeService;
 
 //VITALS
     public VitalsRecord addVitalRecordsByVisit(String visitNumber, VitalRecordData triage) {
@@ -64,6 +71,7 @@ public class TriageService {
         if (visit.isPresent()) {
             vr.setVisit(visit.get());
         }
+
         Patient patient = patientService.findPatientOrThrow(patientNo);
         float bmi = (float) BMI.calculateBMI(triage.getHeight(), triage.getWeight());
         String category = BMI.getCategory(bmi);
@@ -72,10 +80,6 @@ public class TriageService {
         vr.setCategory(category);
 
         return triageRepository.save(vr);
-//        } else {
-//            throw APIException.notFound("Visit identified by : {0} not found.", triage.getVisitNumber());
-//        }
-
     }
 
     public Page<VitalsRecord> fetchVitalRecordsByVisit(String visitNumber, Pageable page) {
@@ -89,7 +93,9 @@ public class TriageService {
 
     public Page<VitalsRecord> fetchVitalRecordsByPatient(String patientNumber, Pageable page) {
         Patient patient = this.patientService.findPatientOrThrow(patientNumber);
-        return this.triageRepository.findByPatient(patient, page);
+        //Sort.by(Sort.Direction.ASC, "dateRecorded")
+        Pageable paging = PageRequest.of(page.getPageNumber(), page.getPageSize(), Sort.by(Sort.Direction.DESC, "dateRecorded"));
+        return this.triageRepository.findByPatient(patient, paging);
     }
 
     public ContentPage<VitalRecordData> fetchVitalRecords(String patientNumber, Pageable page) {

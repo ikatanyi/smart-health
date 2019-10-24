@@ -16,7 +16,9 @@ import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.organization.facility.domain.Department;
+import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.DepartmentService;
+import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.swagger.annotations.Api;
@@ -69,15 +71,15 @@ public class ClinicalVisitController {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    private EmployeeService employeeService;
+
     @PostMapping("/visits")
     @ApiOperation(value = "Submit a new patient visit", response = VisitData.class)
     public @ResponseBody
     ResponseEntity<?> addVisitRecord(@RequestBody @Valid final VisitData visitData) {
         Patient patient = patientService.findPatientOrThrow(visitData.getPatientNumber());
         Department department = departmentService.fetchDepartmentByCode(visitData.getDepartmentCode());
-
-        System.out.println("visitData.getStartDatetime() "+visitData.getStartDatetime());
-        
         Visit visit = VisitData.map(visitData);
         //generate visit number
         visit.setVisitNumber(String.valueOf(visitService.generateVisitNumber()));
@@ -145,7 +147,7 @@ public class ClinicalVisitController {
     @PostMapping("/visits/{visitNumber}/vitals")
     @ApiOperation(value = "Create/Add a new patient vital by visit number", response = VitalRecordData.class)
     public @ResponseBody
-    ResponseEntity<VitalRecordData> addVitalRecord(@PathVariable("visitNumber") String visitNumber, @RequestBody @Valid final VitalRecordData vital) {
+    ResponseEntity<VitalRecordData> addVitalRecordByVisit(@PathVariable("visitNumber") String visitNumber, @RequestBody @Valid final VitalRecordData vital) {
         VitalsRecord vitalR = this.triageService.addVitalRecordsByVisit(visitNumber, vital);
 
         VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
@@ -163,6 +165,22 @@ public class ClinicalVisitController {
     ResponseEntity<VitalRecordData> addVitalRecordByPatient(@PathVariable("patientNo") String patientNo, @RequestBody @Valid final VitalRecordData vital) {
         VitalsRecord vitalR = this.triageService.addVitalRecordsByPatient(patientNo, vital);
 
+        //Update queue
+        PatientQueue patientQueue = patientQueueService.fetchQueueByVisitNumber(vitalR.getVisit());
+        patientQueue.setUrgency(PatientQueue.QueueUrgency.valueOf(vital.getUrgency()));
+        if (vital.getSendTo().equals("specialist")) {
+            Employee employee = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());
+            patientQueue.setStaffNumber(employee);
+            patientQueue.setDepartment(employee.getDepartment());
+            patientQueue.setSpecialNotes("Sent from triage");
+        } else if (vital.getSendTo().equals("department")) {
+            Department department = departmentService.fetchDepartmentByCode(vital.getDepartmentCode());
+            patientQueue.setDepartment(department);
+            patientQueue.setSpecialNotes("Sent from triage");
+        } else {
+            //patientQueue.setStatus(false);
+        }
+        patientQueueService.createPatientQueue(patientQueue);
         VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
 
         URI location = ServletUriComponentsBuilder
@@ -183,6 +201,7 @@ public class ClinicalVisitController {
     @GetMapping("/patients/{patientNumber}/vitals")
     @ApiOperation(value = "Fetch all patient vitals by patient", response = VitalRecordData.class)
     public ResponseEntity<List<VitalRecordData>> fetchAllVitalsByPatient(@PathVariable("patientNumber") final String patientNumber, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+
         Page<VitalRecordData> page = triageService.fetchVitalRecordsByPatient(patientNumber, pageable).map(v -> convertToVitalsData(v));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);

@@ -42,7 +42,7 @@ public class ContainerController {
 
     @Autowired
     LabService labService;
-    
+
     @Autowired
     ModelMapper modelMapper;
 
@@ -54,8 +54,7 @@ public class ContainerController {
         return new ResponseEntity<>(conatinerList, headers, HttpStatus.OK);
      
     }
-    
-    
+
 //    @GetMapping("/testtype/{id}")
 //    public ResponseEntity<?> fetchAllTestTypes(@PathVariable("id") final Long id) {
 //        Optional<TestTypeData> testType = ttypeService.getById(id);
@@ -65,11 +64,10 @@ public class ContainerController {
 //            throw APIException.notFound("TestType Number {0} not found.", id);
 //        }
 //    }
-    
     @GetMapping("/container/{id}")
     public ResponseEntity<?> fetchContainerById(@PathVariable("id") final Long id) {
         ContainerData container = labService.fetchContainerById(id);
-        if (container!=null) {
+        if (container != null) {
             return ResponseEntity.ok(container);
         } else {
             throw APIException.notFound("container Number {0} not found.", id);
@@ -77,13 +75,13 @@ public class ContainerController {
     }
 
     @GetMapping("/container")
-    public ResponseEntity<List<ContainerData>> fetchAllContainers(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,Pageable pageable) {
+    public ResponseEntity<List<ContainerData>> fetchAllContainers(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
 
         Page<ContainerData> page = labService.fetchAllContainers(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-    
+
     @DeleteMapping("/container/{id}")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
         labService.deleteById(id);

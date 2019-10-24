@@ -53,7 +53,7 @@ public class TestTypeController {
     public @ResponseBody
     ResponseEntity<?> createTestType(@RequestBody @Valid final LabTestTypeData testtypeData) {
         Long id = labService.createTestType(testtypeData);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/testtype" + id)
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/testtype/" + id)
                 .buildAndExpand(id).toUri();
         return ResponseEntity.created(location).body(APIResponse.successMessage("TestType successfuly created", HttpStatus.CREATED, testtypeData));
      
