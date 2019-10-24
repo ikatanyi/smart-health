@@ -73,7 +73,19 @@ public class LabService {
     @Transactional
     public Long createTestType(LabTestTypeData testtypeData) {
         try {
+            System.out.println("Line 76");
             Testtype testtype = LabTestTypeData.map(testtypeData);
+            System.out.println("Line 78");
+            for(Long id:testtypeData.getSpecimenId()){
+                Optional<Specimen> specimen = specimenRepository.findById(id);
+                if(specimen.isPresent()){
+                   specimen.get().getTestType().add(testtype);
+                   testtype.getSpecimens().add(specimen.get());
+                }
+            }
+            Optional<Discipline> discipline = disciplineRepository.findById(testtypeData.getDisciplineId());            
+            if(discipline.isPresent())
+                testtype.setDiscipline(discipline.get());
             ttypeRepository.save(testtype);
             return testtype.getId();
         } catch (Exception e) {
@@ -118,27 +130,14 @@ public class LabService {
 
     public Testtype fetchTestTypeByCode(String testTypeCode) {
         Testtype ttype = ttypeRepository.findByServiceCode(testTypeCode).orElseThrow(() -> APIException.notFound("TestType identified by code {0} not found", testTypeCode));
-//        List analytes = analyteRepository.findByTestType(ttype, PageRequest.of(0, 50)).getContent();
-//        if(ttype!=null)
-//            ttype.setAnalytes(analytes);
         return ttype;
     }
 
-//    public Testtype fetchTestTypeByCodeAndPatient(String testTypeCode, String patientId) {
-//        return ttypeRepository.findByServiceCode(testTypeCode).orElseThrow(() -> APIException.notFound("TestType identified by code {0} not found", testTypeCode));
-//    }
+
     public Page<Testtype> fetchAllTestTypes(Pageable pageable) {
-//        ContentPage<TestTypeData> testTypeData = new ContentPage<>();
         List<LabTestTypeData> testtypeDataList = new ArrayList<>();
 
         Page<Testtype> testtypes = ttypeRepository.findAll(pageable);
-//        testTypeData.setTotalElements(testtypes.getTotalElements());
-//        testTypeData.setTotalPages(testtypes.getTotalPages());
-//        if (testtypes.getSize() > 0) {            
-//            for (Testtype testtype : testtypes)
-//                testtypeDataList.add(LabTestTypeData.map(testtype));
-//            testTypeData.setContents(testtypeDataList);
-//        }
         return testtypes;
     }
 
@@ -170,10 +169,16 @@ public class LabService {
      */
     @Transactional
     public List<SpecimenData> createSpecimens(List<SpecimenData> specimenData) {
-        Type listType = new TypeToken<List<Specimen>>() {
-        }.getType();
-        List<Specimen> specs = modelMapper.map(specimenData, listType);
-
+        Type listType = new TypeToken<List<Specimen>>() {}.getType();
+        List<Specimen> specs = new ArrayList();
+        for(SpecimenData specData:specimenData){
+            Specimen spec1 = SpecimenData.map(specData);            
+            Optional<Container> container = containerRepository.findById(specData.getContainerId());
+            if(container.isPresent())
+               spec1.setContainer(container.get());
+            specs.add(spec1);
+                    
+        }
 //        Optional<Testtype> ttype = ttypeRepository.findById(specimenId);
 //        if (ttype.isPresent()) {
 //            for (Specimen spec : specs) {
@@ -204,6 +209,7 @@ public class LabService {
 
     public Specimen convertDataToSpecimen(SpecimenData specimenData) {
         Specimen specimen = modelMapper.map(specimenData, Specimen.class);
+        
         return specimen;
     }
 
@@ -304,8 +310,7 @@ public class LabService {
         List<Container> containers = modelMapper.map(containerData, listType);
 
         List<Container> containerList = containerRepository.saveAll(containers);
-        return modelMapper.map(containerList, new TypeToken<List<DisciplineData>>() {
-        }.getType());
+        return modelMapper.map(containerList, new TypeToken<List<DisciplineData>>() {}.getType());
     }
 
     public Page<ContainerData> fetchAllContainers(Pageable pgbl) {

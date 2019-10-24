@@ -45,7 +45,8 @@ public class DisciplineController {
     public @ResponseBody
     ResponseEntity<?> createDiscipline(@RequestBody @Valid final List<DisciplineData> disciplineData) {
         List<DisciplineData> disciplineList = labService.createDisciplines(disciplineData);
-        return ResponseEntity.ok(disciplineList);
+       HttpHeaders headers = null;//PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+       return new ResponseEntity<>(disciplineList, headers, HttpStatus.OK);
      
     }
     

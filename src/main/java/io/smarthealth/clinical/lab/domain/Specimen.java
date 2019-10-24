@@ -4,8 +4,11 @@ import io.smarthealth.infrastructure.domain.Identifiable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -22,9 +25,13 @@ public class Specimen extends Identifiable {
     private String specimen;
     private String abbreviation;
 
-    @OneToMany(mappedBy = "specimen")
-    private List<Container> container = new ArrayList<>();
+    @OneToOne(mappedBy = "specimen",cascade = {javax.persistence.CascadeType.ALL}, orphanRemoval = true)
+    private Container container;
 
-    @ManyToOne
-    private Testtype testType;
+    @ManyToMany
+    @JoinTable(
+            name = "lab_test_specimen",
+            joinColumns = @JoinColumn(name = "test_id"),
+            inverseJoinColumns = @JoinColumn(name = "specimen_id"))
+    private List<Testtype> testType;
 }

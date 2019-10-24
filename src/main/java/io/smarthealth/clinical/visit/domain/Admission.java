@@ -1,15 +1,18 @@
 package io.smarthealth.clinical.visit.domain;
 
 import io.smarthealth.clinical.record.domain.Diagnosis;
+import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.organization.facility.domain.Bed;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.clinical.visit.domain.Visit;
 import java.time.LocalDate;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -37,12 +40,13 @@ public class Admission extends Visit {
     @Column(length = 50)
     @Enumerated(EnumType.STRING)
     private Type admissionType;
-    @Embedded
-    private Diagnosis provisionDiagnosis;
+    @OneToMany
+    private List<PatientDiagnosis> provisionDiagnosis;
     @OneToOne
     private Employee admittingDoctor;
     private LocalDate admissionDate;
     private LocalDate expectedDischarge;
     private String specialComments;
+    private String admissionNumber;
 
 }

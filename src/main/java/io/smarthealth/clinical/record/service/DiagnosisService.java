@@ -15,6 +15,7 @@ import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +75,7 @@ public class DiagnosisService {
 
         return entity.map(PatientTestsData::map).orElse(null);
     }
-
+    
     public ContentPage<PatientTestsData> fetchDiagnosis(String patientNumber, Pageable page) {
 
         Page<PatientDiagnosis> diagnosisEntities = Page.empty();

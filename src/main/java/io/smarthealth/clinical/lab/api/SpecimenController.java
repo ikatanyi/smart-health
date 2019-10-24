@@ -2,9 +2,11 @@ package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.SpecimenData;
 import io.smarthealth.clinical.lab.service.LabService;
+import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.swagger.annotations.Api;
+import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -46,7 +49,10 @@ public class SpecimenController {
     ResponseEntity<?> createSpecimen(@RequestBody @Valid final List<SpecimenData> specimenData) {
         List<SpecimenData> specimenList = specimenService.createSpecimens(specimenData);
          if (specimenList!=null) {
-            return ResponseEntity.ok(specimenList);
+             URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/specimen" + ttype.getServiceCode())
+                .buildAndExpand(ttype.getServiceCode()).toUri();
+
+            return ResponseEntity.created(location).body(APIResponse.successMessage("Analytes successfuly created", HttpStatus.CREATED, analytedata));
         } else {
             throw APIException.notFound("TestType Number {0} not found.", "");
         }

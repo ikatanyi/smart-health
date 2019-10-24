@@ -63,7 +63,9 @@ public class TestTypeController {
     public ResponseEntity<?> fetchAllTestTypes(@PathVariable("id") final Long id) {
         Optional<LabTestTypeData> testType = labService.getById(id);
         if (testType.isPresent()) {
-            return ResponseEntity.ok(testType.get());
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/testtype" + id)
+                .buildAndExpand(id).toUri();
+            return ResponseEntity.created(location).body(APIResponse.successMessage("TestType successfuly created", HttpStatus.CREATED, testType));
         } else {
             throw APIException.notFound("TestType Number {0} not found.", id);
         }
@@ -73,18 +75,21 @@ public class TestTypeController {
     public ResponseEntity<?> fetchAllTestTypes(@PathVariable("code") final String code) {
         LabTestTypeData testType = convertToTestTypeData(labService.fetchTestTypeByCode(code));
         if (testType!=null) {
-            return ResponseEntity.ok(testType);
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/analyte" + code)
+                .buildAndExpand(code).toUri();
+            return ResponseEntity.created(location).body(APIResponse.successMessage("TestType successfuly created", HttpStatus.OK, testType));
         } else {
             throw APIException.notFound("TestType Number {0} not found.", code);
         }
     }
 
     @GetMapping("/testtype")
-    public ResponseEntity<List<LabTestTypeData>> fetchAllTestTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,Pageable pageable) {
+    public ResponseEntity<?> fetchAllTestTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,Pageable pageable) {
 
         Page<LabTestTypeData> page = labService.fetchAllTestTypes(pageable).map(d -> convertToTestTypeData(d));
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/testtype")
+                .buildAndExpand().toUri();
+            return ResponseEntity.created(location).body(APIResponse.successMessage("TestType successfuly created", HttpStatus.OK, page.getContent()));//new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
     
     @PostMapping("/analyte")
@@ -102,19 +107,19 @@ public class TestTypeController {
         }
         
         List<AnalyteData> analytedata = labService.saveAnalytes(lists);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/testtype" + ttype.getServiceCode())
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/testtype" + ttype.getServiceCode())
                 .buildAndExpand(ttype.getServiceCode()).toUri();
 
         return ResponseEntity.created(location).body(APIResponse.successMessage("Analytes successfuly created", HttpStatus.CREATED, analytedata));
     }
     
-    @DeleteMapping("/analyte/(id)")
+    @DeleteMapping("/analyte/{id}")
     public ResponseEntity<?> deleteTestAnalyte(@PathVariable("id") final Long id) {
         labService.deleteAnalyteById(id);
         return ResponseEntity.ok("200");
     }
     
-    @DeleteMapping("/testtype/(id)")
+    @DeleteMapping("/testtype/{id}")
     public ResponseEntity<?> deleteTestType(@PathVariable("id") final Long id) {
         labService.deleteById(id);
         return ResponseEntity.ok("200");
@@ -129,6 +134,5 @@ public class TestTypeController {
         LabTestTypeData testTypeData = modelMapper.map(Testtype, LabTestTypeData.class);
         return testTypeData;
     }
-    //Hope this one works out for now
-    
+    //Hope this one works out for now    
 }
