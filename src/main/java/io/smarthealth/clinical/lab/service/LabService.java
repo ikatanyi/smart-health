@@ -169,17 +169,18 @@ public class LabService {
      */
     @Transactional
     public List<SpecimenData> createSpecimens(List<SpecimenData> specimenData) {
-        Type listType = new TypeToken<List<Specimen>>() {}.getType();
+        Type listType = new TypeToken<List<Specimen>>() {
+        }.getType();
         List<Specimen> specs = new ArrayList();
+        List<SpecimenData> specs2 = new ArrayList();
+//        List<Specimen> specs = modelMapper.map(specimenData, new TypeToken<List<Specimen>>() {}.getType());
         for (SpecimenData specData : specimenData) {
-            Specimen spec1 = SpecimenData.map(specData);      
-            System.out.println("About to update spec1 ");        
-            System.out.println("Spec 1 has been updated");
-            Optional<Container> container = containerRepository.findById(specData.getContainerId());
-            if (container.isPresent()) {
-                container.get().setSpecimen(spec1);
-                spec1.setContainer(container.get());
-            }
+            Specimen spec1 = SpecimenData.map(specData);
+//            Optional<Container> container = containerRepository.findById(specData.getContainerId());
+//            if (container.isPresent()) {
+//                container.get().setSpecimen(spec1);
+//                spec1.setContainer(container.get());
+//            }
             specs.add(spec1);
         }
 //        Optional<Testtype> ttype = ttypeRepository.findById(specimenId);
@@ -189,8 +190,16 @@ public class LabService {
 //            }
 //        }
         List<Specimen> specimens = specimenRepository.saveAll(specs);
-        return modelMapper.map(specimens, new TypeToken<List<SpecimenData>>() {
-        }.getType());
+        for (Specimen spec : specimens) {
+            Optional<Container> container = containerRepository.findById(spec.getContainerId());
+            if (container.isPresent()) {
+                SpecimenData spec1 = SpecimenData.map(spec);
+                spec1.setContainer(modelMapper.map(container.get(), ContainerData.class));
+                specs2.add(spec1);
+            }
+        }
+
+        return specs2;
     }
 
     public Page<SpecimenData> fetchAllSpecimens(Pageable pgbl) {
@@ -207,6 +216,9 @@ public class LabService {
 
     public SpecimenData convertSpecimenToData(Specimen specimen) {
         SpecimenData specimenData = modelMapper.map(specimen, SpecimenData.class);
+        Optional<Container> container = containerRepository.findById(specimen.getContainerId());
+        if (container.isPresent())
+            specimenData.setContainer(modelMapper.map(container.get(), ContainerData.class));
         return specimenData;
     }
 
