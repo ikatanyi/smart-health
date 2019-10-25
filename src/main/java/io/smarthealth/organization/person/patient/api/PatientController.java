@@ -268,13 +268,15 @@ public class PatientController {
     @PostMapping("/allergy")
     public @ResponseBody
     ResponseEntity<?> createPatientAllergy(@RequestBody @Valid final PatientAllergiesData patientAllergiesData) {
-
-        Allergy allergy = allergiesService.createPatientAllergy(allergiesService.convertAllergyDataToEntity(patientAllergiesData));
+        Patient patient = patientService.findPatientOrThrow(patientAllergiesData.getPatientNumber());
+        Allergy toSave = allergiesService.convertAllergyDataToEntity(patientAllergiesData);
+        AllergyType allergyType = allergiesService.findAllergyTypeByCode(patientAllergiesData.getAllergyType());
+        toSave.setPatient(patient);
+        toSave.setAllergyType(allergyType);
+        Allergy allergy = allergiesService.createPatientAllergy(toSave);
         PatientAllergiesData savedData = allergiesService.convertPatientAllergiesToData(allergy);
-
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/allergy/{id}")
                 .buildAndExpand(allergy.getId()).toUri();
-
         return ResponseEntity.created(location).body(savedData);
     }
 
@@ -296,7 +298,7 @@ public class PatientController {
     }
 
     @GetMapping("/allergy-type")
-    public ResponseEntity<List<AllergyTypeData>> fetchAllAllergyTypes(@PathVariable("id") final String patientIdType) {
+    public ResponseEntity<List<AllergyTypeData>> fetchAllAllergyTypes() {
         List<AllergyTypeData> data = new ArrayList<>();
         allergiesService.findAllAllergyTypes().stream().map((at) -> {
             AllergyTypeData atd = new AllergyTypeData();

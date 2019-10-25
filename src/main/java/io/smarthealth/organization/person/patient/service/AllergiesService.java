@@ -5,6 +5,7 @@
  */
 package io.smarthealth.organization.person.patient.service;
 
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.patient.data.AllergyTypeData;
 import io.smarthealth.organization.person.patient.data.PatientAllergiesData;
 import io.smarthealth.organization.person.patient.domain.Allergy;
@@ -56,6 +57,10 @@ public class AllergiesService {
 
     public Page<Allergy> fetchPatientAllergies(Patient patient, Pageable pageable) {
         return allergyRepository.findByPatient(patient, pageable);
+    }
+
+    public AllergyType findAllergyTypeByCode(String code) {
+        return allergyTypeRepository.findByCode(code).orElseThrow(() -> APIException.notFound("Allergy type identified by {0} was not found", code));
     }
 
     public AllergyType convertAllergyTypeDataToEntity(AllergyTypeData allergyTypeData) {

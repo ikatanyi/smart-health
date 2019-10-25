@@ -17,11 +17,15 @@ import lombok.Data;
 @Data
 public class PatientAllergiesData {
 
+    private Long id;
     private PatientData patientData;
+    private String patientNumber;
+    private String allergyType;
     private AllergyTypeData allergyTypeData;
     private String reaction;
     private String severity; //Critical | Mild | Danger
     private String notes;
+    private String status;
     private String allergen;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime observedDate;

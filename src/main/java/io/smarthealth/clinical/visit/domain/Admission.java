@@ -4,7 +4,6 @@ import io.smarthealth.clinical.record.domain.Diagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.organization.facility.domain.Bed;
 import io.smarthealth.organization.facility.domain.Employee;
-import io.smarthealth.clinical.visit.domain.Visit;
 import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.Column;
