@@ -50,15 +50,6 @@ public class ContainerController {
      
     }
 
-//    @GetMapping("/testtype/{id}")
-//    public ResponseEntity<?> fetchAllTestTypes(@PathVariable("id") final Long id) {
-//        Optional<TestTypeData> testType = ttypeService.getById(id);
-//        if (testType.isPresent()) {
-//            return ResponseEntity.ok(testType.get());
-//        } else {
-//            throw APIException.notFound("TestType Number {0} not found.", id);
-//        }
-//    }
     @GetMapping("/container/{id}")
     public ResponseEntity<?> fetchContainerById(@PathVariable("id") final Long id) {
         ContainerData container = labService.fetchContainerById(id);

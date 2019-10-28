@@ -47,6 +47,8 @@ public class SpecimenController {
     @PostMapping("/specimen")
     public @ResponseBody
     ResponseEntity<?> createSpecimen(@RequestBody @Valid final List<SpecimenData> specimenData) {
+        
+        
         List<SpecimenData> specimenList = specimenService.createSpecimens(specimenData);
          if (specimenList!=null) {
              URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/specimen" )
@@ -54,7 +56,7 @@ public class SpecimenController {
 
             return ResponseEntity.created(location).body(APIResponse.successMessage("Specimen successfuly created", HttpStatus.CREATED, specimenList));
         } else {
-            throw APIException.notFound("TestType Number {0} not found.", "");
+            throw APIException.notFound("Specimen Number {0} not found.", "");
         }
      
     }

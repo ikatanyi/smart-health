@@ -168,60 +168,70 @@ public class LabService {
     c. Update Specimens
      */
     @Transactional
-    public List<SpecimenData> createSpecimens(List<SpecimenData> specimenData) {
-        Type listType = new TypeToken<List<Specimen>>() {
-        }.getType();
+    public List<SpecimenData> createSpecimens(List<SpecimenData> specimenDatalist) {
+
         List<Specimen> specs = new ArrayList();
-        List<SpecimenData> specs2 = new ArrayList();
-//        List<Specimen> specs = modelMapper.map(specimenData, new TypeToken<List<Specimen>>() {}.getType());
-        for (SpecimenData specData : specimenData) {
-            Specimen spec1 = SpecimenData.map(specData);
-//            Optional<Container> container = containerRepository.findById(specData.getContainerId());
-//            if (container.isPresent()) {
-//                container.get().setSpecimen(spec1);
-//                spec1.setContainer(container.get());
-//            }
-            specs.add(spec1);
-        }
-//        Optional<Testtype> ttype = ttypeRepository.findById(specimenId);
-//        if (ttype.isPresent()) {
-//            for (Specimen spec : specs) {
-//                spec.setTestType(ttype.get());
-//            }
-//        }
-        List<Specimen> specimens = specimenRepository.saveAll(specs);
-        for (Specimen spec : specimens) {
-            Optional<Container> container = containerRepository.findById(spec.getContainerId());
-            if (container.isPresent()) {
-                SpecimenData spec1 = SpecimenData.map(spec);
-                spec1.setContainer(modelMapper.map(container.get(), ContainerData.class));
-                specs2.add(spec1);
+        for (SpecimenData specData : specimenDatalist) {
+            Specimen specimen = SpecimenData.map(specData);
+            Optional<Container> cont = containerRepository.findById(specData.getContainerId());
+
+            if (cont.isPresent()) {
+                specimen.setContainer(cont.get());
             }
+            specs.add(specimen);
         }
 
-        return specs2;
+        List<Specimen> saved = specimenRepository.saveAll(specs);
+
+        List<SpecimenData> savedlist = new ArrayList<>();
+        saved.forEach((s) -> {
+            savedlist.add(SpecimenData.map(s));
+        });
+        return savedlist;
+
+//        List<SpecimenData> specs2 = new ArrayList();
+////        List<Specimen> specs = mList<Specimen>lMapper.map(specimenData, new TypeToken<List<Specimen>>() {}.getType());
+//        specimenDatalist.stream()
+//                .map((specData) -> SpecimenData.map(specData)
+//                ).forEachOrdered((spec1) -> {
+//            specs.add(spec1);
+//        });
+//
+//        List<Specimen> specimens = specimenRepository.saveAll(specs);
+//        //
+//        
+//        for (Specimen spec : specimens) {
+//            Optional<Container> container = containerRepository.findById(spec.getContainerId());
+//            if (container.isPresent()) {
+//                SpecimenData spec1 = SpecimenData.map(spec);
+//                spec1.setContainer(modelMapper.map(container.get(), ContainerData.class));
+//                specs2.add(spec1);
+//            }
+//        }
+//
+//        return specs2;
     }
 
     public Page<SpecimenData> fetchAllSpecimens(Pageable pgbl) {
-        return specimenRepository.findAll(pgbl).map(p -> convertSpecimenToData(p));
+        return specimenRepository.findAll(pgbl).map(p -> SpecimenData.map(p));
     }
 
     public SpecimenData fetchSpecimenById(Long id) {
-        return specimenRepository.findById(id).map(p -> convertSpecimenToData(p)).orElseThrow(() -> APIException.notFound("Specimen identified by {0} not found.", id));
+        return specimenRepository.findById(id).map(p -> SpecimenData.map(p)).orElseThrow(() -> APIException.notFound("Specimen identified by {0} not found.", id));
     }
 
     public void deleteById(Long id) {
         specimenRepository.deleteById(id);
     }
 
-    public SpecimenData convertSpecimenToData(Specimen specimen) {
-        SpecimenData specimenData = modelMapper.map(specimen, SpecimenData.class);
-        Optional<Container> container = containerRepository.findById(specimen.getContainerId());
-        if (container.isPresent())
-            specimenData.setContainer(modelMapper.map(container.get(), ContainerData.class));
-        return specimenData;
-    }
-
+//    public SpecimenData convertSpecimenToData(Specimen specimen) {
+//        SpecimenData specimenData = modelMapper.map(specimen, SpecimenData.class);
+//        Optional<Container> container = containerRepository.findById(specimen.getContainerId());
+//        if (container.isPresent()) {
+//            specimenData.setContainer(modelMapper.map(container.get(), ContainerData.class));
+//        }
+//        return specimenData;
+//    }
     public Specimen convertDataToSpecimen(SpecimenData specimenData) {
         Specimen specimen = modelMapper.map(specimenData, Specimen.class);
 
@@ -325,7 +335,7 @@ public class LabService {
         List<Container> containers = modelMapper.map(containerData, listType);
 
         List<Container> containerList = containerRepository.saveAll(containers);
-        return modelMapper.map(containerList, new TypeToken<List<DisciplineData>>() {
+        return modelMapper.map(containerList, new TypeToken<List<ContainerData>>() {
         }.getType());
     }
 
