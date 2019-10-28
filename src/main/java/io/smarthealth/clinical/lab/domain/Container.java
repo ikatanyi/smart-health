@@ -17,7 +17,5 @@ import lombok.Data;
 public class Container extends Identifiable {
     private String code;
     private String container;
-    
-    @OneToOne
-    private Specimen specimen;
+
 }

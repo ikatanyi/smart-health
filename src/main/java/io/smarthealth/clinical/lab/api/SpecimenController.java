@@ -47,6 +47,8 @@ public class SpecimenController {
     @PostMapping("/specimen")
     public @ResponseBody
     ResponseEntity<?> createSpecimen(@RequestBody @Valid final List<SpecimenData> specimenData) {
+        
+        
         List<SpecimenData> specimenList = specimenService.createSpecimens(specimenData);
          if (specimenList!=null) {
              URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/specimen" )

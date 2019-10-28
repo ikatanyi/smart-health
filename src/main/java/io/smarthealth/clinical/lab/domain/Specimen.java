@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -23,10 +24,10 @@ import lombok.Data;
 public class Specimen extends Identifiable {
 
     private String specimen;
-    private String abbreviation;
-    private Long containerId;
+    private String abbreviation; 
 //    @OneToOne(mappedBy = "specimen",cascade = {javax.persistence.CascadeType.ALL}, orphanRemoval = true)
-//    private Container container;
+    @ManyToOne
+    private Container container;
 
     @ManyToMany
     @JoinTable(
