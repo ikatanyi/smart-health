@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.organization.supplier.service;
+package io.smarthealth.stock.supplier.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.supplier.domain.Supplier;
-import io.smarthealth.organization.supplier.domain.SupplierRepository;
+import io.smarthealth.stock.supplier.domain.Supplier;
+import io.smarthealth.stock.supplier.domain.SupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 /**
  *
- * @author Simon.waweru
+ * @author Kelsas
  */
 @Service
 public class SupplierService {
@@ -39,12 +39,8 @@ public class SupplierService {
         }
     }
 
-    public Supplier fetchSupplierById(String supplierId) {
-        try {
-            return supplierRepository.findById(supplierId).orElseThrow(() -> APIException.notFound("Supplier ID {0} not found.", supplierId));
-        } catch (Exception e) {
-            throw APIException.internalError("Error fetching supplier id " + supplierId, e.getMessage());
-        }
+    public Supplier fetchSupplierById(String supplierId) { 
+            return supplierRepository.findById(supplierId).orElseThrow(() -> APIException.notFound("Supplier ID {0} not found.", supplierId)); 
     }
 
 }

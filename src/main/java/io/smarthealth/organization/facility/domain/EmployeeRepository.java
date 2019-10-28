@@ -5,6 +5,7 @@
  */
 package io.smarthealth.organization.facility.domain;
 
+import io.smarthealth.auth.domain.User;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -27,5 +28,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Page<Employee> findByEmployeeCategory(final String categoryName, final Pageable pg);
 
     List<Employee> findAllByDepartment(Department department, Pageable pageable);
+
     List<Employee> findAllByEmployeeCategory(Employee.Category employeeCategory, Pageable pageable);
+
+    Optional<Employee> findByLoginAccount(User user);
 }

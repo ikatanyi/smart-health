@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.ContainerData;
@@ -76,6 +71,6 @@ public class ContainerController {
     @DeleteMapping("/container/{id}")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
         labService.deleteById(id);
-        return ResponseEntity.ok("200");
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 }

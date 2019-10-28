@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.organization.supplier.domain;
+package io.smarthealth.stock.supplier.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

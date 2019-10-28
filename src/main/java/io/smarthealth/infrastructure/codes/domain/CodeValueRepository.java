@@ -1,0 +1,12 @@
+package io.smarthealth.infrastructure.codes.domain;
+
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+public interface CodeValueRepository extends JpaRepository<CodeValue, Long>, JpaSpecificationExecutor<CodeValue> {
+
+    Optional<CodeValue> findByCodeNameAndId(String codeName, Long id);
+    
+    Optional<CodeValue> findByCodeNameAndLabel (String codeName, String label);
+}

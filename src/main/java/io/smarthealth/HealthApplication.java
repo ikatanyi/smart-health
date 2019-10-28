@@ -8,6 +8,7 @@ import io.smarthealth.infrastructure.mail.MailService;
 import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.web.cors.CorsConfiguration;
@@ -15,10 +16,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication
-@Slf4j
-@EnableSwagger2
 
+@Slf4j
+@SpringBootApplication
 public class HealthApplication {
 
     @Autowired
@@ -33,7 +33,7 @@ public class HealthApplication {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:7000","http://localhost:3000", "http://localhost:8000","http://localhost:80","http://localhost:8","http://localhost:8080","http://localhost","http://192.180.4.102","http://192.180.4.102:7000")); 
+        config.setAllowedOrigins(Arrays.asList("http://localhost:7000", "http://localhost:3000", "http://localhost:8000", "http://localhost:80", "http://localhost:8", "http://localhost:8080", "http://localhost", "http://192.180.4.102", "http://192.180.4.102:7000", "http://localhost:3003"));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         source.registerCorsConfiguration("/**", config);

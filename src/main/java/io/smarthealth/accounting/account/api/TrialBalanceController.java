@@ -7,6 +7,7 @@ package io.smarthealth.accounting.account.api;
 
 import io.smarthealth.accounting.account.data.TrialBalance;
 import io.smarthealth.accounting.account.service.TrialBalanceService;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Kelsas
  */ 
+@Api
 @Slf4j
 @RestController
 @RequestMapping("/api/trialbalance")

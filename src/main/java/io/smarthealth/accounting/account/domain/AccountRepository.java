@@ -31,6 +31,9 @@ public interface AccountRepository extends JpaRepository<Account, Long>, JpaSpec
     
     @Query("SELECT a FROM Account a WHERE a.parentAccount IS NULL and a.accountType.glAccountType=:glcategory")
      List<Account> findParentAccountIsNullAndAccountCategory(@Param(value = "glcategory") AccountCategory accountCategory);
+     
+     @Query("SELECT a FROM Account a WHERE  a.accountType.glAccountType=:glcategory")
+     List<Account> findByAccountsCategory(@Param(value = "glcategory") AccountCategory accountCategory);
     
     List<Account> findByAccountType(final AccountType type);
 

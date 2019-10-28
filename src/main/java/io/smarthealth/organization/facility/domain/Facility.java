@@ -19,7 +19,7 @@ import lombok.Data;
 public class Facility extends Organization {
 
     public enum Type {
-        Hospital, clinic, Speciality
+        Hospital, Clinic, Speciality
     }
 
     private String registrationNumber;

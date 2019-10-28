@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 /**
  *
- * @author simz
+ * @author Simon.Waweru
  */
 @Service
 public class PatientIdentifierService {

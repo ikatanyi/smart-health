@@ -22,9 +22,11 @@ public class ReorderRule extends Identifiable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_reorder_store_id"))
     private Store store;  
+    
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_reorder_item_id"))
     private Item stockItem;
+    
     private double reorderLevel;
     private double reorderQty;
     private boolean active;

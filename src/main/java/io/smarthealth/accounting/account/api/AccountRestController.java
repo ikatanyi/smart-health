@@ -14,6 +14,7 @@ import io.smarthealth.accounting.account.service.ChartOfAccountsService;
 import io.smarthealth.infrastructure.common.ContentPage;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.swagger.annotations.Api;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  *
  * @author Kelsas
  */
+@Api
 @RestController
 @Slf4j
 @RequestMapping("/api")

@@ -9,6 +9,7 @@ import io.smarthealth.accounting.account.service.JournalService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.swagger.annotations.Api;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Kelsas
  */
+@Api
 @RestController
 @Slf4j
 @RequestMapping("/api")

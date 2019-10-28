@@ -3,6 +3,7 @@ package io.smarthealth.accounting.account.api;
 import io.smarthealth.accounting.account.domain.AccountType;
 import io.smarthealth.accounting.account.domain.AccountTypeRepository;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  *
  * @author Kelsas
  */
+@Api
 @RestController
 @Slf4j
 @RequestMapping("/api")

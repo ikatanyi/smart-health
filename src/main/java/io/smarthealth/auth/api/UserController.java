@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import io.smarthealth.infrastructure.mail.MailService;
+import io.swagger.annotations.Api;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,6 +47,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  *
  * @author Kelsas
  */
+@Api
 @RestController
 @Slf4j
 @RequestMapping("/api")

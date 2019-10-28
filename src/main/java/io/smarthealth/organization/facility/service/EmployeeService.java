@@ -105,6 +105,10 @@ public class EmployeeService {
 
         User userSaved = service.saveUser(user);
 
+        savedEmployee.setLoginAccount(userSaved);
+
+        employeeRepository.save(savedEmployee);
+
         //send welcome message to the new system user
         mailSender.send(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + savedContact.getEmail() + "<br/> password : " + password)));
 
@@ -125,6 +129,10 @@ public class EmployeeService {
 
     Page<Employee> fetchEmployeeByCategory(final String categoryName, final Pageable pg) {
         return employeeRepository.findByEmployeeCategory(categoryName, pg);
+    }
+
+    public Employee fetchEmployeeByUser(final User user) {
+        return employeeRepository.findByLoginAccount(user).orElseThrow(() -> APIException.notFound("Employee identified by user {0} was not found ", user.getEmail()));
     }
 
     public Employee fetchEmployeeByNumberOrThrow(final String staffNumber) {

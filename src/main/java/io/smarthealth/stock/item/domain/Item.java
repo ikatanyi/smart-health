@@ -42,5 +42,5 @@ public class Item extends Identifiable {
     //sales, purchase, inventory accounts to be linked via the store
     
     private Boolean active;
-
+     
 }
