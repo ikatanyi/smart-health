@@ -82,7 +82,7 @@ public class PharmacyController {
 
     @DeleteMapping("/patientDrug/{id}")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
-//        pharmService.;
+        pharmService.deletePatientDrug(id);
         return ResponseEntity.ok("200");
     }
 

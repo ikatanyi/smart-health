@@ -5,6 +5,8 @@ import io.smarthealth.clinical.lab.service.LabResultsService;
 import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.utility.PageDetails;
+import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.List;
@@ -77,13 +79,25 @@ public class PatientTestsController {
     }
 
     @GetMapping("/result")
-    public ResponseEntity<List<LabTestData>> fetchAllPatientTests(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,Pageable pageable) {
-        String patientNumber = queryParams.getFirst("patientNumber");
-        String visitNumber = queryParams.getFirst("visitNumber");
-        String status = queryParams.getFirst("status");
-        Page<LabTestData> page = resultService.fetchAllPatientTests(patientNumber,visitNumber,status,pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    public ResponseEntity<?> fetchAllPatientTests(
+             @RequestParam(value = "patientNumber", defaultValue = "") String patientNumber,
+             @RequestParam(value = "visitNumber", defaultValue = "") String visitNumber,
+             @RequestParam(value = "status", defaultValue = "") String status,
+             Pageable pageable
+        ) {
+        
+        Page<LabTestData> pag = resultService.fetchAllPatientTests(patientNumber,visitNumber,status,pageable);
+        Pager page = new Pager();
+        page.setCode("200");
+        page.setContent(pag.getContent());
+        page.setMessage("Patient Tests fetched successfully");
+        PageDetails details = new PageDetails();
+        details.setPage(1);
+        details.setPerPage(25);
+        details.setReportName("Patient Labtests");
+        details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
+        page.setPageDetails(details);
+        return ResponseEntity.ok(page);
     }
     
     @DeleteMapping("/result/{id}")

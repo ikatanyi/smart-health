@@ -8,6 +8,8 @@ package io.smarthealth.clinical.pharmacy.service;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.domain.PatientDrugs;
 import io.smarthealth.clinical.pharmacy.domain.PatientDrugsRepository;
+import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.smarthealth.clinical.record.domain.DoctorRequest.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.domain.PrescriptionRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -57,9 +59,11 @@ public class PharmacyService {
                 if (!Objects.equals(saveddrug.getDurationUnits(), saveddrug.getIssuedQuantity())) {
                     presc.setDurationUnits(saveddrug.getDurationUnits() - saveddrug.getIssuedQuantity());
                     presc.setIssuedQuantity(presc.getIssuedQuantity() + saveddrug.getIssuedQuantity());
+                    presc.setFulfillerStatus(FullFillerStatusType.PartiallyFullfilled);
                 } else {
-                    prescriptionRepository.save(presc);
+                    presc.setFulfillerStatus(FullFillerStatusType.Fulfilled);
                 }
+                prescriptionRepository.save(presc);
             }
             return savedDrugsList;
         } catch (Exception e) {
@@ -78,6 +82,16 @@ public class PharmacyService {
     @Transactional
     public PatientDrugsData getById(Long id) {
         return patientDrugsRepository.findById(id).map(p -> convertPatientDrugsToData(p)).orElseThrow(() -> APIException.notFound("Patient Drug identified by {0} not found.", id));
+    }
+    
+    public boolean deletePatientDrug(Long id) {
+        try {
+            patientRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw APIException.internalError("Error deleting Patient drugs with id " + id, e.getMessage());
+        }
     }
 
     public PatientDrugsData convertPatientDrugsToData(PatientDrugs patientDrugs) {

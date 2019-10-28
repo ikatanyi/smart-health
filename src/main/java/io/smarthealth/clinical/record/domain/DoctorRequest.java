@@ -33,6 +33,13 @@ import org.hibernate.annotations.NaturalId;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class DoctorRequest extends Auditable {
     
+    public enum FullFillerStatusType {
+        Fulfilled,
+        Unfullfilled,
+        Cancelled,
+        PartiallyFullfilled
+    }
+    
     public enum RequestType {
         Lab,
         Radiology,
@@ -64,7 +71,8 @@ public abstract class DoctorRequest extends Auditable {
     private String orderNumber;
     private String action;
     private String notes;
-    private String fulfillerStatus;  //this is the va
+    @Enumerated(EnumType.STRING)
+    private FullFillerStatusType fulfillerStatus;  //this is the va
     private String fulfillerComment;
     private Boolean drug;
     

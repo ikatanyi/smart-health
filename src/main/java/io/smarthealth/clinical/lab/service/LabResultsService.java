@@ -67,7 +67,7 @@ public class LabResultsService {
     
     
     public Page<LabTestData> fetchAllPatientTests(String patientNumber, String visitNumber, String status, Pageable pgbl) {
-        Page<LabTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(patientNumber,status,pgbl).map(p -> convertPatientTestToData(p));
+        Page<LabTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(patientNumber, visitNumber, status,pgbl).map(p -> convertPatientTestToData(p));
         return ptests;
     }
     

@@ -68,6 +68,7 @@ public class LabTestTypeData {
         entity.setDuration(testtype.getDuration());
         entity.setDurationDesc(testtype.getDurationDesc());
         entity.setDiscipline(testtype.getDiscipline());
+        entity.setGender(testtype.getGender());
         return entity;
     }
 
@@ -83,6 +84,7 @@ public class LabTestTypeData {
         test.setNotes(entity.getNotes());
         test.setRefOut(entity.getRefOut());
         test.setTestType(entity.getTestType());
+        test.setGender(entity.getGender());
         for(Analyte analyte:entity.getAnalytes()){
             AnalyteData analytedata = modelMapper.map(analyte,AnalyteData.class);
             if(!test.getAnalytes().isEmpty())

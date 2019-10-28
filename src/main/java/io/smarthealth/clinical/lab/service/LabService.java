@@ -141,7 +141,7 @@ public class LabService {
         return testtypes;
     }
 
-    public boolean deleteFacility(LabTestTypeData testtype) {
+    public boolean deleteTest(LabTestTypeData testtype) {
         try {
             ttypeRepository.deleteById(testtype.getId());
             return true;
@@ -290,7 +290,7 @@ public class LabService {
     }
 
     public Page<LabTestData> fetchAllPatientTests(String patientNumber, String visitNumber, String status, Pageable pgbl) {
-        Page<LabTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(patientNumber, status, pgbl).map(p -> convertPatientTestToData(p));
+        Page<LabTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(visitNumber, patientNumber, status, pgbl).map(p -> convertPatientTestToData(p));
         return ptests;
     }
 
