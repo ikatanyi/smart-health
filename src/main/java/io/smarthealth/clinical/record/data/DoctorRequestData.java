@@ -6,6 +6,8 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDateTime;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -15,6 +17,13 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DoctorRequestData {
+    
+    public enum FullFillerStatusType {
+        Fulfilled,
+        Unfullfilled,
+        Cancelled,
+        PartiallyFullfilled
+    }
 
     private String requestType;
     private String patientNumber;
@@ -26,7 +35,8 @@ public class DoctorRequestData {
     private String orderNumber;
     private String action;
     private String notes;
-    private String fulfillerStatus;  //this is the va
+    @Enumerated(EnumType.STRING)
+    private FullFillerStatusType fulfillerStatus;  //this is the va
     private String fulfillerComment;
     private Boolean drug;
      

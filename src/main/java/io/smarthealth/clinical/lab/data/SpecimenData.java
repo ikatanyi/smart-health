@@ -13,8 +13,7 @@ public class SpecimenData  {
     
     private Long id;
     private String specimen;
-    private String abbreviation;
-    
+    private String abbreviation;    
     private Long containerId;
     
     private ContainerData container;
@@ -32,10 +31,10 @@ public class SpecimenData  {
         SpecimenData entity = new SpecimenData();
         entity.setAbbreviation(specimen.getAbbreviation());
         entity.setId(specimen.getId());
-        if(specimen.getContainer()!=null){
-            entity.getContainer().setContainer(specimen.getContainer().getContainer());
-            entity.getContainer().setId(specimen.getContainer().getId());
-        }
+//        if(specimen.getContainer()!=null){
+//            entity.getContainer().setContainer(specimen.getContainer().getContainer());
+//            entity.getContainer().setId(specimen.getContainer().getId());
+//        }
         return entity;
     }
 }

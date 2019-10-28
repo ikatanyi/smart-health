@@ -1,18 +1,24 @@
-package io.smarthealth.clinical.record.domain;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package io.smarthealth.clinical.pharmacy.domain;
 
+import io.smarthealth.clinical.record.domain.ClinicalRecord;
+import io.smarthealth.clinical.record.domain.DoctorRequest;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.Data;
 
 /**
  *
- * @author Kelsas
+ * @author Kennedy.Imbenzi
  */
 @Entity
 @Data
-@Table(name = "patient_prescriptions")
-public class Prescription extends DoctorRequest {
-    
+@Table(name = "pharmacy_patient_drugs")
+public class PatientDrugs extends ClinicalRecord {    
     private String brandName;
     private String route;
     private Double dose;
@@ -21,14 +27,10 @@ public class Prescription extends DoctorRequest {
     private Double durationUnits;
     private Double frequency;
     private Double quantity;
+    private Double issuedQuantity;
     private String quantityUnits; //TODO:: create an entity for quantity unit
     private String dosingInstructions;
     private Boolean asNeeded = false;
     private String asNeededCondition;
     private Integer numRefills;
-    private Double issuedQuantity;
-    public Prescription() {
-        this.setDrug(true);
-    }
-
 }
