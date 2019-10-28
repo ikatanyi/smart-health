@@ -54,7 +54,7 @@ public class SpecimenController {
 
             return ResponseEntity.created(location).body(APIResponse.successMessage("Specimen successfuly created", HttpStatus.CREATED, specimenList));
         } else {
-            throw APIException.notFound("TestType Number {0} not found.", "");
+            throw APIException.notFound("Specimen Number {0} not found.", "");
         }
      
     }
