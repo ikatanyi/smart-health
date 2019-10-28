@@ -34,7 +34,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 /**
  *
  * @author Kennedy.Ikatanyi
- */
+ */ 
 @RestController
 @RequestMapping("/api/lab")
 @Api(value = "specimen Controller", description = "Operations pertaining to Specimen maintenance")

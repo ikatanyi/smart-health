@@ -1,15 +1,20 @@
 package io.smarthealth.stock.item.api;
 
+import io.smarthealth.infrastructure.common.ContentPage;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.item.data.UomData;
 import io.smarthealth.stock.item.domain.Item;
-import io.smarthealth.stock.item.domain.ItemMetadata;
+import io.smarthealth.stock.item.domain.Uom;
 import io.smarthealth.stock.item.service.ItemService;
+import io.smarthealth.stock.item.service.UomService;
 import io.swagger.annotations.Api;
+import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -24,48 +29,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  *
  * @author Kelsas
  */
+@Api
 @RestController
 @Slf4j
-@Api
-@RequestMapping("/api/v1")
-public class ItemRestController {
+@RequestMapping("/api")
+public class UomRestController {
 
-    private final ItemService service;
+    private final UomService service;
 
-    public ItemRestController(ItemService itemService) {
+    public UomRestController(UomService itemService) {
         this.service = itemService;
+    } 
+     
+    @GetMapping("/settings/uom/{id}")
+    public Uom getItem(@PathVariable(value = "id") Long code) {
+        Uom uom = service.fetchUomById(code);
+        return  uom;
     }
 
-    @PostMapping("/items")
-    public ResponseEntity<?> createItems(@Valid @RequestBody CreateItem itemData) {
-        if (service.findByItemCode(itemData.getSku()).isPresent()) {
-            throw APIException.conflict("Item with code {0} already exists.", itemData.getSku());
-        }
-
-        ItemData result = service.createItem(itemData);
-
-        Pager<ItemData> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Item created successful");
-        pagers.setContent(result);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
-
-    }
-
-    @GetMapping("/items/{code}")
-    public ItemData getItem(@PathVariable(value = "code") String code) {
-        Item item = service.findByItemCode(code)
-                .orElseThrow(() -> APIException.notFound("Account {0} not found.", code));
-        return ItemData.map(item);
-    }
-
-    @GetMapping("/items")
+    @GetMapping("/settings/uom")
     public ResponseEntity<?> getAllItems(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "q", required = false) final String term,
@@ -74,28 +62,36 @@ public class ItemRestController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<ItemData> list = service.fetchItems(includeClosed, term, pageable).map(u -> ItemData.map(u));
-
-        Pager<List<ItemData>> pagers = new Pager();
+        Page<UomData> list = service.fetchAllUom(pageable).map(u -> UomData.map(u));
+        
+        
+        Pager<List<UomData>> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());
-        PageDetails details = new PageDetails();
-        details.setPage(list.getNumber() + 1);
+        PageDetails details=new PageDetails();
+        details.setPage(list.getNumber()+1);
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Items");
+        details.setReportName("Unit of Measure");
         pagers.setPageDetails(details);
-
+         
         return ResponseEntity.ok(pagers);
     }
+    
+     @PostMapping("/settings/uom")
+    public ResponseEntity<?> createUom(@Valid @RequestBody UomData uomData) {
+        
+        UomData result = UomData.map(service.createUom(uomData));
+        
+        Pager<UomData> pagers=new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Uom created successful");
+        pagers.setContent(result); 
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
-    //generate a single api that returns all the setup required for this object
-    @GetMapping("/items/$metadata")
-    public ResponseEntity<?> getItemMetadata() {
-        ItemMetadata metadata = service.getItemMetadata();
-        return ResponseEntity.ok(metadata);
     }
-
+    
 }

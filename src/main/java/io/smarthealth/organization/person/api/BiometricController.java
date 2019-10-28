@@ -17,6 +17,7 @@ import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.organization.person.service.BiometricService;
+import io.swagger.annotations.Api;
 import java.util.UUID;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author kelvin.sasaka
  */
+@Api
 @Slf4j
 @RestController
 @RequestMapping("/api/biometrics")

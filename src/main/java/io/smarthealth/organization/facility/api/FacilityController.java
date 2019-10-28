@@ -12,6 +12,7 @@ import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.data.FacilityData;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.FacilityService;
+import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
@@ -37,6 +38,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  *
  * @author simz
  */
+@Api
 @RestController
 @RequestMapping("/api")
 public class FacilityController {

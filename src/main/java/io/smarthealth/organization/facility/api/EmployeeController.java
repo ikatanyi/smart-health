@@ -13,6 +13,7 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.domain.PersonContact;
+import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  *
  * @author Simon.waweru
  */
+@Api
 @RestController
 @RequestMapping("/api")
 public class EmployeeController {

@@ -45,7 +45,7 @@ public interface DateConverter {
     }
 
     @Nonnull
-    static LocalDate dateFromIsoString(@Nonnull final String isoDateString) {
+    static LocalDate dateFromIsoString(@Nonnull final String isoDateString) {  //2019-02-01
         Assert.notNull(isoDateString, "ISO date time must be given.");
         final int zIndex = isoDateString.indexOf("Z");
         final String shortenedString = isoDateString.substring(0, zIndex);

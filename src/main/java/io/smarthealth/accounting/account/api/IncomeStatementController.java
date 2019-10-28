@@ -2,6 +2,7 @@ package io.smarthealth.accounting.account.api;
 
 import io.smarthealth.accounting.account.data.IncomeStatement;
 import io.smarthealth.accounting.account.service.IncomeStatementService;
+import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Kelsas
  */
+@Api
 @RestController
 @RequestMapping("/api/incomestatement")
 public class IncomeStatementController {

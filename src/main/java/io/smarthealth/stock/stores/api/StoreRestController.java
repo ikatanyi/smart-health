@@ -4,8 +4,10 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
+import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -25,42 +27,44 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Kelsas
  */
+@Api
 @RestController
 @Slf4j
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class StoreRestController {
     private final StoreService service;
 
     public StoreRestController(StoreService service) {
         this.service = service;
     }
-    @PostMapping("/inventory/stores")
-    public ResponseEntity<?> createStore(@Valid @RequestBody Store store) {
+    @PostMapping("/stores")
+    public ResponseEntity<?> createStore(@Valid @RequestBody StoreData data) {
         
-        Store result = service.createStore(store);
+        Store result = service.createStore(data);
         
-        Pager<Store> pagers=new Pager();
+        Pager<StoreData> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("Store created success");
-        pagers.setContent(result); 
+        pagers.setContent(StoreData.map(result)); 
         
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-    @GetMapping("/inventory/stores/{id}")
+    @GetMapping("/stores/{id}")
     public ResponseEntity<?> getStore(@PathVariable(value = "id") Long code) {
-        Store tax = service.getStore(code)
+        Store store = service.getStore(code)
                 .orElseThrow(() -> APIException.notFound("Store with id  {0} not found.", code));
-        return ResponseEntity.ok(tax);
+        return ResponseEntity.ok(StoreData.map(store));
+        
     }
-    @GetMapping("/inventory/stores")
+    @GetMapping("/stores")
     public ResponseEntity<?> getAllStorees( 
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<Store> list = service.fetchAllStores(pageable); 
-        Pager<List<Store>> pagers=new Pager();
+        Page<StoreData> list = service.fetchAllStores(pageable).map(store -> StoreData.map(store)); 
+        Pager<List<StoreData>> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());
@@ -69,9 +73,14 @@ public class StoreRestController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Storees");
+        details.setReportName("Stores");
         pagers.setPageDetails(details);
          
         return ResponseEntity.ok(pagers);
+    }
+    
+     @GetMapping("/stores/$metadata")
+    public ResponseEntity<?> getLookUps(){
+        return ResponseEntity.ok(service.getStoreMetadata());
     }
 }

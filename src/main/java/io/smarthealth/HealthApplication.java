@@ -8,14 +8,16 @@ import io.smarthealth.infrastructure.mail.MailService;
 import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-@SpringBootApplication
+
 @Slf4j
+@SpringBootApplication
 public class HealthApplication {
 
     @Autowired

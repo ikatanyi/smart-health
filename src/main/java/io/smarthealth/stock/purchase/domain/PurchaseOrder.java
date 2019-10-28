@@ -5,7 +5,7 @@ import io.smarthealth.organization.contact.domain.Contact;
 import io.smarthealth.accounting.payment.domain.PriceList;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Department;
-import io.smarthealth.organization.supplier.domain.Supplier;
+import io.smarthealth.stock.supplier.domain.Supplier;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
