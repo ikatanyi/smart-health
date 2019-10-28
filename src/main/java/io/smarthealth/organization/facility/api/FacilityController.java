@@ -30,7 +30,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  *
- * @author simz
+ * @author Simon.Waweru
  */
 @RestController
 @RequestMapping("/api")

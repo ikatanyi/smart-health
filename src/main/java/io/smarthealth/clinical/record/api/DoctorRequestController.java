@@ -7,14 +7,12 @@ package io.smarthealth.clinical.record.api;
 
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.service.DoctorRequestService;
-import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -52,9 +50,7 @@ public class DoctorRequestController {
         } else {
             throw APIException.notFound("TestType Number {0} not found.", "");
         }
-     
     }
-    
     
 //    @GetMapping("/testtype/{id}")
 //    public ResponseEntity<?> fetchAllTestTypes(@PathVariable("id") final Long id) {

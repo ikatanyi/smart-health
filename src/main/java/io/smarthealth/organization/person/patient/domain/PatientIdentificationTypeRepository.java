@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
- * @author simz
+ * @author Simon.Waweru
  */
 public interface PatientIdentificationTypeRepository extends JpaRepository<PatientIdentificationType, Long> {
 

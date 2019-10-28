@@ -31,7 +31,8 @@ import org.springframework.stereotype.Service;
  * @author Kennedy.Imbenzi
  */
 @Service
-public class DoctorRequestService implements DateConverter{
+public class DoctorRequestService implements DateConverter {
+
     @Autowired
     private final DoctorsRequestRepository doctorRequestRepository;
     @Autowired
@@ -69,7 +70,7 @@ public class DoctorRequestService implements DateConverter{
 
     public List<DoctorRequestData> findAll(final String visitNumber, final String status, final String requestType, String from, String to, Pageable page) {
         Date from1 = new Date();
-        Date to1 =  new Date();
+        Date to1 = new Date();
         Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, status, requestType, from1, to1);
         List<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, page).getContent();
         List<DoctorRequestData> docReqData = modelMapper.map(docReqs, new TypeToken<List<DoctorRequestData>>() {

@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
- * @author simz
+ * @author Simon.Waweru
  */
 public interface RoomTypeRepository extends JpaRepository<RoomType, Object> {
     Optional<RoomType> findByTypeCode(String code );

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.organization.person.data;
+package io.smarthealth.clinical.record.data;
 
 import lombok.Data;
 
@@ -12,7 +12,7 @@ import lombok.Data;
  * @author Simon.Waweru
  */
 @Data
-public class PatientBiometricVerification {
+public class DiseaseData {
 
-    private String fingerData;
+    private String code, name, codeType;
 }
