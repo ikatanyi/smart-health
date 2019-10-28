@@ -5,6 +5,8 @@
  */
 package io.smarthealth.organization.person.patient.domain;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -13,4 +15,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface AllergyRepository extends JpaRepository<Allergy, Long> {
 
+    Page<Allergy> findByPatient(Patient patient, Pageable pageable);
 }

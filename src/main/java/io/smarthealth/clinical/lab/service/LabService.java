@@ -73,7 +73,20 @@ public class LabService {
     @Transactional
     public Long createTestType(LabTestTypeData testtypeData) {
         try {
+            System.out.println("Line 76");
             Testtype testtype = LabTestTypeData.map(testtypeData);
+            System.out.println("Line 78");
+            for (Long id : testtypeData.getSpecimenId()) {
+                Optional<Specimen> specimen = specimenRepository.findById(id);
+                if (specimen.isPresent()) {
+                    specimen.get().getTestType().add(testtype);
+                    testtype.getSpecimens().add(specimen.get());
+                }
+            }
+            Optional<Discipline> discipline = disciplineRepository.findById(testtypeData.getDisciplineId());
+            if (discipline.isPresent()) {
+                testtype.setDiscipline(discipline.get());
+            }
             ttypeRepository.save(testtype);
             return testtype.getId();
         } catch (Exception e) {
@@ -118,31 +131,17 @@ public class LabService {
 
     public Testtype fetchTestTypeByCode(String testTypeCode) {
         Testtype ttype = ttypeRepository.findByServiceCode(testTypeCode).orElseThrow(() -> APIException.notFound("TestType identified by code {0} not found", testTypeCode));
-//        List analytes = analyteRepository.findByTestType(ttype, PageRequest.of(0, 50)).getContent();
-//        if(ttype!=null)
-//            ttype.setAnalytes(analytes);
         return ttype;
     }
 
-//    public Testtype fetchTestTypeByCodeAndPatient(String testTypeCode, String patientId) {
-//        return ttypeRepository.findByServiceCode(testTypeCode).orElseThrow(() -> APIException.notFound("TestType identified by code {0} not found", testTypeCode));
-//    }
     public Page<Testtype> fetchAllTestTypes(Pageable pageable) {
-//        ContentPage<TestTypeData> testTypeData = new ContentPage<>();
         List<LabTestTypeData> testtypeDataList = new ArrayList<>();
 
         Page<Testtype> testtypes = ttypeRepository.findAll(pageable);
-//        testTypeData.setTotalElements(testtypes.getTotalElements());
-//        testTypeData.setTotalPages(testtypes.getTotalPages());
-//        if (testtypes.getSize() > 0) {            
-//            for (Testtype testtype : testtypes)
-//                testtypeDataList.add(LabTestTypeData.map(testtype));
-//            testTypeData.setContents(testtypeDataList);
-//        }
         return testtypes;
     }
 
-    public boolean deleteFacility(LabTestTypeData testtype) {
+    public boolean deleteTest(LabTestTypeData testtype) {
         try {
             ttypeRepository.deleteById(testtype.getId());
             return true;
@@ -172,8 +171,18 @@ public class LabService {
     public List<SpecimenData> createSpecimens(List<SpecimenData> specimenData) {
         Type listType = new TypeToken<List<Specimen>>() {
         }.getType();
-        List<Specimen> specs = modelMapper.map(specimenData, listType);
-
+        List<Specimen> specs = new ArrayList();
+        List<SpecimenData> specs2 = new ArrayList();
+//        List<Specimen> specs = modelMapper.map(specimenData, new TypeToken<List<Specimen>>() {}.getType());
+        for (SpecimenData specData : specimenData) {
+            Specimen spec1 = SpecimenData.map(specData);
+//            Optional<Container> container = containerRepository.findById(specData.getContainerId());
+//            if (container.isPresent()) {
+//                container.get().setSpecimen(spec1);
+//                spec1.setContainer(container.get());
+//            }
+            specs.add(spec1);
+        }
 //        Optional<Testtype> ttype = ttypeRepository.findById(specimenId);
 //        if (ttype.isPresent()) {
 //            for (Specimen spec : specs) {
@@ -181,8 +190,16 @@ public class LabService {
 //            }
 //        }
         List<Specimen> specimens = specimenRepository.saveAll(specs);
-        return modelMapper.map(specimens, new TypeToken<List<SpecimenData>>() {
-        }.getType());
+        for (Specimen spec : specimens) {
+            Optional<Container> container = containerRepository.findById(spec.getContainerId());
+            if (container.isPresent()) {
+                SpecimenData spec1 = SpecimenData.map(spec);
+                spec1.setContainer(modelMapper.map(container.get(), ContainerData.class));
+                specs2.add(spec1);
+            }
+        }
+
+        return specs2;
     }
 
     public Page<SpecimenData> fetchAllSpecimens(Pageable pgbl) {
@@ -199,11 +216,15 @@ public class LabService {
 
     public SpecimenData convertSpecimenToData(Specimen specimen) {
         SpecimenData specimenData = modelMapper.map(specimen, SpecimenData.class);
+        Optional<Container> container = containerRepository.findById(specimen.getContainerId());
+        if (container.isPresent())
+            specimenData.setContainer(modelMapper.map(container.get(), ContainerData.class));
         return specimenData;
     }
 
     public Specimen convertDataToSpecimen(SpecimenData specimenData) {
         Specimen specimen = modelMapper.map(specimenData, Specimen.class);
+
         return specimen;
     }
 
@@ -269,7 +290,7 @@ public class LabService {
     }
 
     public Page<LabTestData> fetchAllPatientTests(String patientNumber, String visitNumber, String status, Pageable pgbl) {
-        Page<LabTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(patientNumber, status, pgbl).map(p -> convertPatientTestToData(p));
+        Page<LabTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(visitNumber, patientNumber, status, pgbl).map(p -> convertPatientTestToData(p));
         return ptests;
     }
 

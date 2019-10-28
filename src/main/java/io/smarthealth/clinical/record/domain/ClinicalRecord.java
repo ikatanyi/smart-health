@@ -6,8 +6,6 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.clinical.visit.domain.Visit;
 import java.time.LocalDateTime;
 import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import lombok.Data;
@@ -27,7 +25,7 @@ public abstract class ClinicalRecord extends Auditable {
     @ManyToOne
 //    @JoinColumn(name = "visit_id", foreignKey = @ForeignKey(name = "fk_clinical_record_visit_id"))
     private Visit visit;
-    @ManyToOne 
+    @ManyToOne
     private Employee healthProvider;
     private LocalDateTime dateRecorded;
 

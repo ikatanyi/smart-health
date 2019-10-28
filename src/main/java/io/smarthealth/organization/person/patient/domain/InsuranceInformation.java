@@ -17,7 +17,7 @@ import lombok.Data;
 
 /**
  *
- * @author simz
+ * @author Simon.Waweru
  */
 @Data
 @Entity

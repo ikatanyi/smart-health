@@ -2,7 +2,7 @@ package io.smarthealth.clinical.lab.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -18,6 +18,6 @@ public class Container extends Identifiable {
     private String code;
     private String container;
     
-    @ManyToOne
+    @OneToOne
     private Specimen specimen;
 }

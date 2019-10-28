@@ -18,7 +18,7 @@ public class Prescription extends DoctorRequest {
     private Double dose;
     private String doseUnits; //TODO:: create an entity for dose unit
     private Integer duration;
-    private String durationUnits;
+    private Double durationUnits;
     private Double frequency;
     private Double quantity;
     private String quantityUnits; //TODO:: create an entity for quantity unit
@@ -26,7 +26,7 @@ public class Prescription extends DoctorRequest {
     private Boolean asNeeded = false;
     private String asNeededCondition;
     private Integer numRefills;
-
+    private Double issuedQuantity;
     public Prescription() {
         this.setDrug(true);
     }

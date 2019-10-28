@@ -15,12 +15,14 @@ import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -66,6 +68,11 @@ public class DiagnosisService {
             }
         }
         return triagePage;
+    }
+
+    @Transactional
+    public List<PatientDiagnosis> createListOfPatientDiagnosis(List<PatientDiagnosis> patientDiagnosises) {
+        return diagnosisRepository.saveAll(patientDiagnosises);
     }
 
     public PatientTestsData getDiagnosisById(String visitNumber, Long id) {

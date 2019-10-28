@@ -9,7 +9,7 @@ import lombok.Data;
 
 /**
  *
- * @author simz
+ * @author Simon.Waweru
  */
 @Data
 public class PatientBiometricVerification {

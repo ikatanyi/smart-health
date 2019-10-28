@@ -6,7 +6,6 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDateTime;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -16,8 +15,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Data;
 import org.hibernate.annotations.NaturalId;
 
@@ -31,7 +30,14 @@ import org.hibernate.annotations.NaturalId;
 @Table(name = "patient_doctor_request")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class DoctorRequest extends Auditable {
-
+    
+    public enum FullFillerStatusType {
+        Fulfilled,
+        Unfullfilled,
+        Cancelled,
+        PartiallyFullfilled
+    }
+    
     public enum RequestType {
         Lab,
         Radiology,
@@ -40,6 +46,7 @@ public abstract class DoctorRequest extends Auditable {
     }
     @Enumerated(EnumType.STRING)
     private RequestType requestType;
+    
     //the doctors oders
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_doc_request_patient_id"))
@@ -62,7 +69,13 @@ public abstract class DoctorRequest extends Auditable {
     private String orderNumber;
     private String action;
     private String notes;
-    private String fulfillerStatus;  //this is the va
+    @Enumerated(EnumType.STRING)
+    private FullFillerStatusType fulfillerStatus;  //this is the va
     private String fulfillerComment;
     private Boolean drug;
+    
+    @Transient
+    private String patientNumber;
+    @Transient
+    private String visitNumber;
 }

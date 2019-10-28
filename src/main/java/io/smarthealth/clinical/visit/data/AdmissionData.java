@@ -22,9 +22,17 @@ public class AdmissionData {
 
     @Enumerated(EnumType.STRING)
     private Admission.Type admissionType;
-
+    
+    private Long diagnosisId;
+    
+    private Long employeeId;
+    
+    private String visitNumber;
+    
     List<Diagnosis> diagnosis;
 
     private EmployeeData employee;
+    
+    private VisitData visit;
 
 }

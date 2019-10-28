@@ -31,7 +31,6 @@ public class FacilityData {
     private Boolean enabled;
     private byte[] logo;
     
-    private Long creditLimitId;
     
     public static FacilityData map(Facility facility) {
         FacilityData facilityData = new FacilityData();

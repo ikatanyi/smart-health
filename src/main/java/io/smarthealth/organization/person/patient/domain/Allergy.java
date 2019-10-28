@@ -24,11 +24,11 @@ public class Allergy extends Auditable {
     @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_allergy_patient_id"))
     private Patient patient;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false) 
-    private Allergy allergy;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private AllergyType allergyType;
     private String reaction;
     private String severity; //Critical | Mild | Danger
-    private String notes;
-    private LocalDateTime dateRecorded = LocalDateTime.now();
-
+    private String allergen;
+    private String status;
+    private LocalDateTime observedDate = LocalDateTime.now();
 }

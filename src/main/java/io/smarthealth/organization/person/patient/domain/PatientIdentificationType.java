@@ -13,7 +13,7 @@ import lombok.Data;
 
 /**
  *
- * @author simz
+ * @author Simon.Waweru
  */
 @Entity
 @Data
