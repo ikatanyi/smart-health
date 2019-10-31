@@ -2,6 +2,8 @@ package io.smarthealth.clinical.lab.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -16,10 +18,16 @@ import lombok.Data;
 @Table(name = "test_analyte")
 public class Analyte extends Identifiable {
     
+     public enum Gender {
+        Male,
+        Female
+    }
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+    
     private Long id;
     private String testCode;
     private String testName;
-    private String gender;
     private String startAge;
     private String endAge;
     private Double lowerRange;

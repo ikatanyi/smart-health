@@ -2,15 +2,12 @@ package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.AnalyteData; 
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
-import io.smarthealth.clinical.lab.domain.Analyte;
 import io.smarthealth.clinical.lab.domain.Testtype;
 import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.infrastructure.common.APIResponse;
-import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.swagger.annotations.Api;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -18,7 +15,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -94,21 +90,11 @@ public class TestTypeController {
     
     @PostMapping("/analyte")
     public @ResponseBody
-    ResponseEntity<?> createAnalytes(@RequestBody @Valid final LabTestTypeData testtypeData) {
-        Testtype ttype = convertTestTTypeDataToTestType(testtypeData);
-        Testtype testtype = labService.fetchTestTypeById(ttype.getId());
+    ResponseEntity<?> createAnalytes(@RequestBody @Valid final List<AnalyteData> analyteData) {      
         
-        ArrayList<Analyte> lists=new ArrayList<>();
-        for(Analyte analyte:ttype.getAnalytes()){
-            analyte.setTestType(testtype);
-            analyte.setTestCode(testtype.getServiceCode());
-            analyte.setTestType(testtype); 
-            lists.add(analyte);
-        }
-        
-        List<AnalyteData> analytedata = labService.saveAnalytes(lists);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/testtype" + ttype.getServiceCode())
-                .buildAndExpand(ttype.getServiceCode()).toUri();
+        List<AnalyteData> analytedata = labService.saveAnalytes(analyteData);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/testtype")
+                .buildAndExpand().toUri();
 
         return ResponseEntity.created(location).body(APIResponse.successMessage("Analytes successfuly created", HttpStatus.CREATED, analytedata));
     }
@@ -124,7 +110,7 @@ public class TestTypeController {
         labService.deleteById(id);
         return ResponseEntity.ok("200");
     }
-
+    
     private Testtype convertTestTTypeDataToTestType(LabTestTypeData testtypeData) {
         Testtype ttype = modelMapper.map(testtypeData, Testtype.class);
         return ttype;
