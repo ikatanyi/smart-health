@@ -164,7 +164,7 @@ public class ClinicalVisitController {
     public @ResponseBody
     ResponseEntity<VitalRecordData> addVitalRecordByPatient(@PathVariable("patientNo") String patientNo, @RequestBody @Valid final VitalRecordData vital) {
         VitalsRecord vitalR = this.triageService.addVitalRecordsByPatient(patientNo, vital);
-
+        System.out.println("vital.getUrgency() "+vital.getUrgency());
         //Update queue
         PatientQueue patientQueue = patientQueueService.fetchQueueByVisitNumber(vitalR.getVisit());
         patientQueue.setUrgency(PatientQueue.QueueUrgency.valueOf(vital.getUrgency()));

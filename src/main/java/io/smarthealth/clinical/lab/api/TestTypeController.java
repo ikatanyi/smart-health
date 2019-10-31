@@ -1,6 +1,6 @@
 package io.smarthealth.clinical.lab.api;
 
-import io.smarthealth.clinical.lab.data.AnalyteData; 
+import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
 import io.smarthealth.clinical.lab.domain.Testtype;
 import io.smarthealth.clinical.lab.service.LabService;

@@ -75,6 +75,10 @@ public class DiagnosisService {
         return diagnosisRepository.saveAll(patientDiagnosises);
     }
 
+    public Page<PatientDiagnosis> fetchAllDiagnosisByVisit(Visit visit, Pageable pageable) {
+        return diagnosisRepository.findByVisit(visit, pageable);
+    }
+
     public PatientTestsData getDiagnosisById(String visitNumber, Long id) {
 
         Optional<PatientDiagnosis> entity = diagnosisRepository.findById(id);
