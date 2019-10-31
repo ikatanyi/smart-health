@@ -59,16 +59,7 @@ public class SpecimenController {
      
     }
     
-    
-//    @GetMapping("/testtype/{id}")
-//    public ResponseEntity<?> fetchAllTestTypes(@PathVariable("id") final Long id) {
-//        Optional<TestTypeData> testType = ttypeService.getById(id);
-//        if (testType.isPresent()) {
-//            return ResponseEntity.ok(testType.get());
-//        } else {
-//            throw APIException.notFound("TestType Number {0} not found.", id);
-//        }
-//    }
+
     
     @GetMapping("/specimen/{id}")
     public ResponseEntity<?> fetchSpecimenById(@PathVariable("id") final Long id) {

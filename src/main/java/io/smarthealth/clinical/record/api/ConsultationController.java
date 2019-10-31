@@ -86,7 +86,7 @@ public class ConsultationController {
     ResponseEntity<?> savePatientNotes(Authentication authentication, @Valid @RequestBody PatientNotesData patientNotesData) {
         Visit visit = visitService.findVisitEntityOrThrow(patientNotesData.getVisitNumber());
         User user = userService.findUserByUsernameOrEmail(authentication.getName())
-                .orElseThrow(() -> APIException.badRequest("Employee login account provided is not valid"));
+                .orElseThrow(() -> APIException.notFound("Employee login account provided is not valid"));
         Patient patient = patientService.findPatientOrThrow(patientNotesData.getPatientNumber());
         PatientNotes patientNotes = patientNotesService.convertDataToEntity(patientNotesData);
         patientNotes.setVisit(visit);
@@ -112,7 +112,7 @@ public class ConsultationController {
         return ResponseEntity.ok().body(APIResponse.successMessage("History and examination notes saved successfully", HttpStatus.CREATED, savedData));
     }
 
-    @GetMapping("/patient-notes/visit/{visitNumber}")
+    @GetMapping("/visit/{visitNumber}/patient-notes")
     public @ResponseBody
     ResponseEntity<?> fetchPatientNotesByVisit(@PathVariable("visitNumber") final String visitNumber) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
@@ -155,16 +155,49 @@ public class ConsultationController {
         return ResponseEntity.ok(pagers);
     }
 
+    @GetMapping("/visit/{visitNumber}/diagnosis")
+    public ResponseEntity<?> fetchAllDiagnosisByVisit(
+            @PathVariable("visitNumber") final String visitNumber,
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        DiagnosisData diagnosisData = new DiagnosisData();
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        Page<PatientDiagnosis> pdList = diagnosisService.fetchAllDiagnosisByVisit(visit, pageable);
+
+        Page<DiagnosisData> list = pdList.map(pd -> {
+            DiagnosisData d = diagnosisData.map(pd);
+            d.setPatientData(patientService.convertToPatientData(pd.getPatient()));
+            return d;
+        });
+
+        Pager<List<DiagnosisData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Patient diagnosis");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
+
     @PostMapping("/diagnosis")
     public @ResponseBody
     ResponseEntity<?> savePatientDiagnosis(@Valid @RequestBody List<DiagnosisData> diagnosisData) {
         List<PatientDiagnosis> patientDiagnosises = new ArrayList<>();
+        DiagnosisData diagnosisDataService = new DiagnosisData();
 
         for (DiagnosisData data : diagnosisData) {
             PatientDiagnosis patientDiagnosis = new PatientDiagnosis();
             Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
             Patient patient = patientService.findPatientOrThrow(data.getPatientNumber());
-            patientDiagnosis = DiagnosisData.map(data);
+            patientDiagnosis = diagnosisDataService.map(data);
             patientDiagnosis.setVisit(visit);
             patientDiagnosis.setPatient(patient);
             patientDiagnosises.add(patientDiagnosis);
@@ -174,10 +207,16 @@ public class ConsultationController {
 
         Page<PatientDiagnosis> page = new PageImpl<>(savedDiagnosisList);
 
-        Pager<List<PatientDiagnosis>> pagers = new Pager();
+        Pager<List<DiagnosisData>> pagers = new Pager();
+
+        List<DiagnosisData> ddList = new ArrayList<>();
+        for (PatientDiagnosis data : savedDiagnosisList) {
+            DiagnosisData data1 = diagnosisDataService.map(data);
+            ddList.add(data1);
+        }
         pagers.setCode("0");
         pagers.setMessage("Success");
-        pagers.setContent(page.getContent());
+        pagers.setContent(ddList);
         PageDetails details = new PageDetails();
         details.setPage(page.getNumber() + 1);
         details.setPerPage(page.getSize());
@@ -186,7 +225,8 @@ public class ConsultationController {
         details.setReportName("Patient Diagnosis");
         pagers.setPageDetails(details);
 
-        return ResponseEntity.ok(pagers);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(pagers);
     }
 
 }

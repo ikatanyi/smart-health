@@ -37,35 +37,26 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api/consultation")
 @Api(value = "Doctor Request Controller", description = "Operations pertaining to Doctor Requests/Orders maintenance")
 public class DoctorRequestController {
+
     @Autowired
     DoctorRequestService requestService;
-    
-    
-    @PostMapping("/doctorRequest")
+
+    @PostMapping("/doctor-request")
     public @ResponseBody
     ResponseEntity<?> createRequest(@RequestBody @Valid final List<DoctorRequestData> docRequestData) {
         List<DoctorRequestData> requestList = requestService.createRequest(docRequestData);
-         if (requestList!=null) {
-            return ResponseEntity.ok(requestList);
+        if (requestList != null) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(requestList);
         } else {
             throw APIException.notFound("TestType Number {0} not found.", "");
         }
     }
-    
-//    @GetMapping("/testtype/{id}")
-//    public ResponseEntity<?> fetchAllTestTypes(@PathVariable("id") final Long id) {
-//        Optional<TestTypeData> testType = ttypeService.getById(id);
-//        if (testType.isPresent()) {
-//            return ResponseEntity.ok(testType.get());
-//        } else {
-//            throw APIException.notFound("TestType Number {0} not found.", id);
-//        }
-//    }
-    
+
     @GetMapping("/doctorRequest/{id}")
     public ResponseEntity<?> fetchRequestById(@PathVariable("id") final Long id) {
         Optional<DoctorRequestData> specimens = requestService.getDocRequestById(id);
-        if (specimens!=null) {
+        if (specimens != null) {
             return ResponseEntity.ok(specimens);
         } else {
             throw APIException.notFound("Request Number {0} not found.", id);
@@ -73,7 +64,7 @@ public class DoctorRequestController {
     }
 
     @GetMapping("/docRequest")
-    public ResponseEntity<List<DoctorRequestData>> fetchAllSpecimens(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,Pageable pageable) {
+    public ResponseEntity<List<DoctorRequestData>> fetchAllSpecimens(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         String visitNumber = queryParams.getFirst("visitNumber");
         String status = queryParams.getFirst("status");
         String requestType = queryParams.getFirst("requestType");
@@ -83,10 +74,10 @@ public class DoctorRequestController {
         HttpHeaders headers = null;//PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page.);
         return new ResponseEntity<>(page, headers, HttpStatus.OK);
     }
-    
+
     @DeleteMapping("/docRequest/{id}")
     public ResponseEntity<?> deleteRequest(@PathVariable("id") final Long id) {
         return requestService.deleteById(id);
     }
-    
+
 }

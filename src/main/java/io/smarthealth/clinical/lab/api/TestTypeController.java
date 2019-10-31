@@ -1,12 +1,11 @@
 package io.smarthealth.clinical.lab.api;
 
-import io.smarthealth.clinical.lab.data.AnalyteData; 
+import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
 import io.smarthealth.clinical.lab.domain.Analyte;
 import io.smarthealth.clinical.lab.domain.Testtype;
 import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.infrastructure.common.APIResponse;
-import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.swagger.annotations.Api;
 import java.net.URI;
@@ -18,7 +17,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;

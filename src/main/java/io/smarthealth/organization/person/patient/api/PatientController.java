@@ -151,6 +151,17 @@ public class PatientController {
         return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
     }
 
+    @GetMapping("/identifier/{identifier}/patient/{no}")
+    public @ResponseBody
+    ResponseEntity<PatientData> getPatientByIdentifier(@PathVariable("identifier") /*Identifier type*/ final String patientNumber, @PathVariable("no") final String patientNo) {
+        final Optional<PatientData> patient = this.patientService.fetchPatientByPatientNumber(patientNumber);
+        if (patient.isPresent()) {
+            return ResponseEntity.ok(patient.get());
+        } else {
+            throw APIException.notFound("Patient Number {0} not found.", patientNumber);
+        }
+    }
+
     @PutMapping("/patients/{patientid}/contacts/{contactid}")
     @ApiOperation(value = "Update a patient's contact details", response = PatientData.class)
     public @ResponseBody

@@ -67,7 +67,7 @@ public abstract class DoctorRequest extends Auditable {
     private String urgency;
     @NaturalId// lab no| prescription no.
     private String orderNumber;
-    private String action;
+    //private String action;
     private String notes;
     @Enumerated(EnumType.STRING)
     private FullFillerStatusType fulfillerStatus;  //this is the va

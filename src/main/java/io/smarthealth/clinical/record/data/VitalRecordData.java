@@ -17,15 +17,15 @@ import org.smarthealth.patient.validation.constraints.ValidIdentifier;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VitalRecordData {
-
+    
     @ApiModelProperty(required = false, hidden = true)
     private Long id;
     //@CheckValidVisit
     private String visitNumber;
-
+    
     @ValidIdentifier
     private String patientNumber;
-
+    
     private Float temp;
     private Float height;
     private Float weight;
@@ -37,15 +37,16 @@ public class VitalRecordData {
     private Float pulse;
     private Float respiretory;
     private Float spo2;
-
+    
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime dateRecorded;
-
+    
     private String sendTo;
     private String departmentCode;
     private String staffNumber;
     private String urgency;
-
+    private String comments;
+    
     public static VitalsRecord map(VitalRecordData triage) {
         VitalsRecord entity = new VitalsRecord();
         entity.setTemp(triage.getTemp());
@@ -57,9 +58,10 @@ public class VitalRecordData {
         entity.setRespiretory(triage.getRespiretory());
         entity.setSpo2(triage.getSpo2());
         entity.setDateRecorded(triage.getDateRecorded());
+        entity.setComments(triage.getComments());
         return entity;
     }
-
+    
     public static VitalRecordData map(VitalsRecord entity) {
         VitalRecordData triage = new VitalRecordData();
         triage.setId(entity.getId());
@@ -76,7 +78,8 @@ public class VitalRecordData {
         triage.setVisitNumber(entity.getVisit().getVisitNumber());
         triage.setCategory(entity.getCategory());
         triage.setBmi(entity.getBmi());
+        triage.setComments(entity.getComments());
         return triage;
     }
-
+    
 }
