@@ -50,7 +50,6 @@ public class ContainerController {
      
     }
 
-
     @GetMapping("/container/{id}")
     public ResponseEntity<?> fetchContainerById(@PathVariable("id") final Long id) {
         ContainerData container = labService.fetchContainerById(id);
