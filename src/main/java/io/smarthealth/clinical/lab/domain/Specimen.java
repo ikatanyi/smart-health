@@ -25,6 +25,7 @@ public class Specimen extends Identifiable {
 
     private String specimen;
     private String abbreviation; 
+    
 //    @OneToOne(mappedBy = "specimen",cascade = {javax.persistence.CascadeType.ALL}, orphanRemoval = true)
     @ManyToOne
     private Container container;

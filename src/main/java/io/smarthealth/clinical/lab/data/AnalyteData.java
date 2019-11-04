@@ -5,6 +5,8 @@
  */
 package io.smarthealth.clinical.lab.data;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -13,10 +15,17 @@ import lombok.Data;
  */
 @Data
 public class AnalyteData {
+    public enum Gender {
+        Male,
+        Female,
+        Both
+    }   
     private Long id;
+    private Long testTypeId;
     private String testCode;
     private String testName;
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     private String startAge;
     private String category;
     private String endAge;
@@ -24,4 +33,6 @@ public class AnalyteData {
     private Double upperRange;
     private String units;
     private String description;   
+    
+    
 }

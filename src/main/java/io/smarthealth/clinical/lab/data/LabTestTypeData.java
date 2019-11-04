@@ -69,6 +69,7 @@ public class LabTestTypeData {
         entity.setDurationDesc(testtype.getDurationDesc());
         entity.setDiscipline(testtype.getDiscipline());
         entity.setGender(testtype.getGender());
+        entity.setId(testtype.getId());
         return entity;
     }
 

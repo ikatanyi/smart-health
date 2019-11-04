@@ -33,6 +33,8 @@ public class LabTest extends ClinicalRecord {
     private String specimen;   
     private String specimenCollectionTime;   
     
+    
+    
     @Setter(AccessLevel.NONE)
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade={javax.persistence.CascadeType.ALL}, orphanRemoval = true)
