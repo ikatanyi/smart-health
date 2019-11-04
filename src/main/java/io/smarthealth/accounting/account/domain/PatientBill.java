@@ -5,19 +5,15 @@
  */
 package io.smarthealth.accounting.account.domain;
 
-import io.smarthealth.accounting.account.domain.enumeration.BillStatus;
-import io.smarthealth.auth.domain.User;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -35,19 +31,28 @@ public class PatientBill extends Auditable {
     @ManyToOne
     private Visit visit;
     private String paymentMode;
-    @OneToOne
-    private Item item;
-    private LocalDate billingDate;
-    private Double quantity;
-    private Double price;
-    private Double amount;
-    @OneToOne
-    private User user;
-    @ManyToOne
-    private Department departrment;
+    private String billNumber; //can also be an invoice
+    private String referenceNumber;
     private Double balance;
+    private Double Amount;
+    private LocalDate billingDate;
 
-    @Enumerated(EnumType.STRING)
-    private BillStatus status;
+    @OneToMany(mappedBy = "patientBill")
+    private List<PatientBillLine> billLines = new ArrayList<>();
+    //
+
+    public void addPatientBillLine(PatientBillLine billLine) {
+        billLine.setPatientBill(this);
+        billLines.add(billLine);
+    }
+
+    public void addPatientBillLine(List<PatientBillLine> billLine) {
+        billLine.stream().map((bill) -> {
+            bill.setPatientBill(this);
+            return bill;
+        }).forEachOrdered((bill) -> {
+            billLines.add(bill);
+        });
+    }
 
 }
