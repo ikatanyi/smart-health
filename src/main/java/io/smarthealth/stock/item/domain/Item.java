@@ -8,7 +8,6 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -35,12 +34,12 @@ public class Item extends Identifiable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_item_tax_id"))
     private Tax tax;
-   
+
     //this should be populated if it's a stock item
     @OneToMany(mappedBy = "stockItem")
     private List<ReorderRule> reorderRules;
     //sales, purchase, inventory accounts to be linked via the store
-    
+
     private Boolean active;
-     
+
 }

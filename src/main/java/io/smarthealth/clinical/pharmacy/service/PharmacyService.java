@@ -39,12 +39,12 @@ public class PharmacyService {
 
     @Autowired
     PrescriptionRepository prescriptionRepository;
-    
+
     @Autowired
-    VisitRepository visitRepository;  
-    
+    VisitRepository visitRepository;
+
     @Autowired
-    PatientRepository patientRepository; 
+    PatientRepository patientRepository;
     ModelMapper modelMapper;
 
     @Transactional
@@ -59,9 +59,9 @@ public class PharmacyService {
                 if (!Objects.equals(saveddrug.getDurationUnits(), saveddrug.getIssuedQuantity())) {
                     presc.setDurationUnits(saveddrug.getDurationUnits() - saveddrug.getIssuedQuantity());
                     presc.setIssuedQuantity(presc.getIssuedQuantity() + saveddrug.getIssuedQuantity());
-                    presc.setFulfillerStatus(FullFillerStatusType.PartiallyFullfilled);
+                    presc.setFulfillerStatus(FullFillerStatusType.PartiallyFullfilled.name());
                 } else {
-                    presc.setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                    presc.setFulfillerStatus(FullFillerStatusType.Fulfilled.name());
                 }
                 prescriptionRepository.save(presc);
             }
@@ -71,9 +71,9 @@ public class PharmacyService {
             throw APIException.internalError("Error occured while creating testType ", e.getMessage());
         }
     }
-    
+
     @Transactional
-    public List<PatientDrugsData> getByVisitIdAndPatientId(String visitNumber, String patientNumber) {        
+    public List<PatientDrugsData> getByVisitIdAndPatientId(String visitNumber, String patientNumber) {
         Visit visit = visitRepository.findByVisitNumber(visitNumber).orElse(null);
         Patient patient = patientRepository.findByPatientNumber(patientNumber).orElse(null);
         return convertPatientDrugsToDataList(patientDrugsRepository.findByVisitOrPatient(visit, patient));//.map(p -> convertPatientDrugsToData(p)).orElseThrow(() -> APIException.notFound("Patient Drug identified by {0} not found.", id));
@@ -83,7 +83,7 @@ public class PharmacyService {
     public PatientDrugsData getById(Long id) {
         return patientDrugsRepository.findById(id).map(p -> convertPatientDrugsToData(p)).orElseThrow(() -> APIException.notFound("Patient Drug identified by {0} not found.", id));
     }
-    
+
     public boolean deletePatientDrug(Long id) {
         try {
             patientRepository.deleteById(id);
@@ -101,14 +101,16 @@ public class PharmacyService {
     public PatientDrugs convertDataToPatientDrugs(PatientDrugsData patientDrugsData) {
         return modelMapper.map(patientDrugsData, PatientDrugs.class);
     }
-    
-     public List<PatientDrugsData> convertPatientDrugsToDataList(List<PatientDrugs> patientDrugs) {
-          Type listType = new TypeToken<List<PatientDrugsData>>() {}.getType();
+
+    public List<PatientDrugsData> convertPatientDrugsToDataList(List<PatientDrugs> patientDrugs) {
+        Type listType = new TypeToken<List<PatientDrugsData>>() {
+        }.getType();
         return modelMapper.map(patientDrugs, listType);
     }
 
     public List<PatientDrugs> convertDataToPatientDrugsList(List<PatientDrugsData> patientDrugsData) {
-        Type listType = new TypeToken<List<PatientDrugs>>() {}.getType();
+        Type listType = new TypeToken<List<PatientDrugs>>() {
+        }.getType();
         return modelMapper.map(patientDrugsData, listType);
     }
 

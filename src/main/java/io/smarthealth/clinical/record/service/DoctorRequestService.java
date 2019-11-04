@@ -17,12 +17,14 @@ import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
@@ -34,19 +36,19 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DoctorRequestService implements DateConverter {
-    
+
     @Autowired
     private final DoctorsRequestRepository doctorRequestRepository;
     @Autowired
     private final VisitRepository visitRepository;
     @Autowired
     private final PatientRepository patientRepository;
-    
+
     @Autowired
     ModelMapper modelMapper;
-    
+
     private final SequenceService sequenceService;
-    
+
     public DoctorRequestService(DoctorsRequestRepository doctorRequestRepository, VisitRepository visitRepository, PatientRepository patientRepository, SequenceService sequenceService
     ) {
         this.doctorRequestRepository = doctorRequestRepository;
@@ -54,28 +56,13 @@ public class DoctorRequestService implements DateConverter {
         this.patientRepository = patientRepository;
         this.sequenceService = sequenceService;
     }
-    
-    public List<DoctorRequestData> createRequest(List<DoctorRequestData> requestData) {
-        
-        Type listType = new TypeToken<List<DoctorRequest>>() {
-        }.getType();
-        List<DoctorRequest> docRequests = modelMapper.map(requestData, new TypeToken<List<DoctorRequest>>() {
-        }.getType());
-        
-        for (DoctorRequest req : docRequests) {
-            Visit visit = visitRepository.findByVisitNumber(req.getPatientNumber()).get();
-            Optional<Patient> patient = patientRepository.findByPatientNumber(req.getPatientNumber());
-            req.setPatient(patient.get());
-            req.setVisit(visit);
-            req.setOrderNumber(sequenceService.nextNumber(SequenceType.DoctorRequestNumber));
-            req.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfullfilled);
-            req.setFulfillerComment("Request unfullfilled");
-        }
+
+    public List<DoctorRequestData> createRequest(List<DoctorRequest> docRequests) {
         List<DoctorRequest> docReqs = doctorRequestRepository.saveAll(docRequests);
         return modelMapper.map(docReqs, new TypeToken<List<DoctorRequest>>() {
         }.getType());
     }
-    
+
     public List<DoctorRequestData> findAll(final String visitNumber, final String status, final String requestType, String from, String to, Pageable page) {
         Date from1 = new Date();
         Date to1 = new Date();
@@ -85,12 +72,17 @@ public class DoctorRequestService implements DateConverter {
         }.getType());
         return docReqData;
     }
-    
+
+    public Page<DoctorRequest> findAllByVisit(final Visit visit, final String requestType, Pageable pageable) {
+        Page<DoctorRequest> docReqs = doctorRequestRepository.findByVisitAndRequestType(visit, requestType, pageable);
+        return docReqs;
+    }
+
     public Optional<DoctorRequestData> getDocRequestById(Long id) {
         Optional<DoctorRequestData> entity = doctorRequestRepository.findById(id).map(p -> DoctorRequestToData(p));
         return entity;
     }
-    
+
     public DoctorRequestData UpdateDocRequest(DoctorRequestData requestData) {
         DoctorRequest docReq = convertDoctorRequestData(requestData);
         Optional<DoctorRequest> entity = doctorRequestRepository.findById(docReq.getId());
@@ -99,7 +91,7 @@ public class DoctorRequestService implements DateConverter {
         }
         return DoctorRequestToData(docReq);
     }
-    
+
     public ResponseEntity<?> deleteById(long Id) {
         try {
             doctorRequestRepository.deleteById(Id);
@@ -108,12 +100,12 @@ public class DoctorRequestService implements DateConverter {
             return ResponseEntity.notFound().build();
         }
     }
-    
+
     public DoctorRequestData DoctorRequestToData(DoctorRequest docRequest) {
         DoctorRequestData docReqData = modelMapper.map(docRequest, DoctorRequestData.class);
         return docReqData;
     }
-    
+
     public DoctorRequest convertDoctorRequestData(DoctorRequestData docRequestData) {
         DoctorRequest docReqData = modelMapper.map(docRequestData, DoctorRequest.class);
         return docReqData;
