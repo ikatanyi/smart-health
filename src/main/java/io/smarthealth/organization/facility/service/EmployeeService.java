@@ -58,7 +58,7 @@ public class EmployeeService {
     ModelMapper modelMapper;
 
     @Autowired
-    UserService service;
+    UserService userService;
 
     @Autowired
     PersonContactService personContactService;
@@ -84,7 +84,7 @@ public class EmployeeService {
         //find roles by employee category/ employee group from the database
         List<String> employeeRoles = new ArrayList<>();
         for (String roleData : employeeRoles) {
-            Role role = service.findRoleByName(roleData)
+            Role role = userService.findRoleByName(roleData)
                     .orElseThrow(
                             () -> APIException.notFound("No Role exisit with the name {0}", roleData)
                     );
@@ -103,7 +103,7 @@ public class EmployeeService {
                 roles
         );
 
-        User userSaved = service.saveUser(user);
+        User userSaved = userService.saveUser(user);
 
         savedEmployee.setLoginAccount(userSaved);
 
@@ -135,6 +135,11 @@ public class EmployeeService {
         return employeeRepository.findByLoginAccount(user).orElseThrow(() -> APIException.notFound("Employee identified by user {0} was not found ", user.getEmail()));
     }
 
+    public Employee fetchEmployeeByAccountUsername(final String username) {
+        final User user = userService.findUserByUsernameOrEmail(username).orElseThrow(() -> APIException.notFound("Account identified by username {0} was not found", username));
+        return employeeRepository.findByLoginAccount(user).orElseThrow(() -> APIException.notFound("Employee identified by account username  {0} was not found ", username));
+    }
+
     public Employee fetchEmployeeByNumberOrThrow(final String staffNumber) {
         return employeeRepository.findByStaffNumber(staffNumber).orElseThrow(() -> APIException.notFound("Employee identified by number {0} was not found ", staffNumber));
     }
@@ -144,7 +149,6 @@ public class EmployeeService {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         Employee employee = modelMapper.map(employeeData, Employee.class);
         System.out.println("employee " + employee.toString());
-
         return employee;
     }
 

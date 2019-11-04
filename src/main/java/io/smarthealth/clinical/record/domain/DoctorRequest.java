@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.record.domain;
 
+import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -29,24 +30,23 @@ import org.hibernate.annotations.NaturalId;
 @Entity
 @Table(name = "patient_doctor_request")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class DoctorRequest extends Auditable {
-    
+public class DoctorRequest extends Auditable {
+
     public enum FullFillerStatusType {
         Fulfilled,
         Unfullfilled,
         Cancelled,
         PartiallyFullfilled
     }
-    
+
     public enum RequestType {
         Lab,
         Radiology,
         Pharmacy,
         Procedure
     }
-    @Enumerated(EnumType.STRING)
-    private RequestType requestType;
-    
+    private String requestType;
+
     //the doctors oders
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_doc_request_patient_id"))
@@ -69,13 +69,13 @@ public abstract class DoctorRequest extends Auditable {
     private String orderNumber;
     //private String action;
     private String notes;
-    @Enumerated(EnumType.STRING)
-    private FullFillerStatusType fulfillerStatus;  //this is the va
+    private String fulfillerStatus;  //this is the va
     private String fulfillerComment;
     private Boolean drug;
-    
+
     @Transient
     private String patientNumber;
     @Transient
     private String visitNumber;
+
 }
