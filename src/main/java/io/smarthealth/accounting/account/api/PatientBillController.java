@@ -74,11 +74,11 @@ public class PatientBillController {
         PatientBill patientbill = PatientBillData.map(patientBillData);
         Optional<Visit> visit = visitRepository.findByVisitNumber(patientBillData.getVisitNumber());
                 //.orElseThrow(() -> APIException.notFound("Visit {0} not found.", patientBillData.getVisitNumber()));
-        if(visit.isPresent())
+        if(visit.isPresent()){
             patientbill.setVisit(visit.get());
-        Optional<Patient>patient = patientRepository.findByPatientNumber(patientBillData.getPatientNumber());
-        if(patient.isPresent())
-            patientbill.setPatient(patient.get());
+            patientbill.setPatient(visit.get().getPatient());
+        }
+            
         for(PatientBillLineData billline:patientBillData.getBillLines()){
             billLines.add(PatientBillLineData.map(billline));
         }        
@@ -103,7 +103,11 @@ public class PatientBillController {
             @RequestParam(value = "billNumber", required = false) String billNumber,
             Pageable pageable
     ) {
-        Page<PatientBill> pages = billService.findBill(billNumber, visitNumber, paymentMode, referenceNumber, pageable);
+       Visit visit1=null; 
+       Optional<Visit> visit = visitRepository.findByVisitNumber(visitNumber);
+       if(visit.isPresent())
+           visit1=visit.get();
+       Page<PatientBill> pages = billService.findBill(billNumber, visit1, paymentMode, referenceNumber, pageable);
        List<PatientBillData> billLines = new ArrayList();
        Pager<List<PatientBillData>> page = new Pager();
        page.setCode("0");

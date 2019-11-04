@@ -76,13 +76,13 @@ public class LabService {
             System.out.println("Line 76");
             Testtype testtype = LabTestTypeData.map(testtypeData);
             System.out.println("Line 78");
-            for (Long id : testtypeData.getSpecimenId()) {
-                Optional<Specimen> specimen = specimenRepository.findById(id);
-                if (specimen.isPresent()) {
-                    specimen.get().getTestType().add(testtype);
-                    testtype.getSpecimens().add(specimen.get());
-                }
-            }
+            testtypeData.getSpecimenId()
+                    .stream()
+                    .map((id) -> specimenRepository.findById(id))
+                    .filter((specimen) -> (specimen.isPresent()))
+                    .forEachOrdered((specimen) -> {
+                testtype.addSpecimen(specimen.get());
+            });
             Optional<Discipline> discipline = disciplineRepository.findById(testtypeData.getDisciplineId());
             if (discipline.isPresent()) {
                 testtype.setDiscipline(discipline.get());
@@ -216,8 +216,8 @@ public class LabService {
         return specimenRepository.findById(id).map(p -> SpecimenData.map(p)).orElseThrow(() -> APIException.notFound("Specimen identified by {0} not found.", id));
     }
 
-    public void deleteById(Long id) {
-        specimenRepository.deleteById(id);
+    public void deleteTestById(Long id) {
+        ttypeRepository.deleteById(id);
     }
 
 //    public SpecimenData convertSpecimenToData(Specimen specimen) {

@@ -9,6 +9,7 @@ import io.smarthealth.accounting.account.domain.PatientBill;
 import io.smarthealth.accounting.account.domain.PatientBillLine;
 import io.smarthealth.accounting.account.domain.PatientBillLineRepository;
 import io.smarthealth.accounting.account.domain.PatientBillRepository;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.sequence.SequenceService;
 import io.smarthealth.infrastructure.sequence.SequenceType;
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PatientBillService {
-
+    
     private final PatientBillRepository patientBillRepository;
     private final PatientBillLineRepository patientBillLineRepository;
     private final PatientRepository patientRepository;
@@ -66,8 +67,8 @@ public class PatientBillService {
         return patientBillRepository.findByBillNumber(billNumber);
     }
     
-    public Page<PatientBill> findBill(final String billNumber, String visitNumber,String paymentMode, String referenceNumber, Pageable page) {
-        return patientBillRepository.findBill(billNumber, visitNumber, paymentMode, referenceNumber,page);
+    public Page<PatientBill> findBill(final String billNumber, Visit visit,String paymentMode, String referenceNumber, Pageable page) {
+        return patientBillRepository.findBill(billNumber, visit, paymentMode, referenceNumber,page);
     }
     
     public void deleteBillById(Long id){

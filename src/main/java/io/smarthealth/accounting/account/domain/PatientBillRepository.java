@@ -5,6 +5,7 @@
  */
 package io.smarthealth.accounting.account.domain;
 
+import io.smarthealth.clinical.visit.domain.Visit;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,6 @@ public interface PatientBillRepository extends JpaRepository<PatientBill, Long> 
     
     Optional<PatientBill> findByBillNumber(final String identifier);
     
-    @Query("SELECT c FROM PatientBill c WHERE (:billNumber is null or c.billNumber = :billNumber) AND (:visitNumber is null or c.visitNumber = :visitNumber) AND (:paymentMode is null or c.paymentMode = :paymentMode) AND (:referenceNumber is null or c.referenceNumber = :referenceNumber)")
-    Page<PatientBill> findBill(@Param("billNumber") String billNumber, @Param("visitNumber") String visitNumber, @Param("paymentMode") String paymentMode, @Param("referenceNumber") String referenceNumber, Pageable page);
+    @Query("SELECT c FROM PatientBill c WHERE (:billNumber is null or c.billNumber = :billNumber) AND (:visit is null or c.visit = :visitNumber) AND (:paymentMode is null or c.paymentMode = :paymentMode) AND (:referenceNumber is null or c.referenceNumber = :referenceNumber)")
+    Page<PatientBill> findBill(@Param("billNumber") String billNumber, @Param("visit") Visit visit, @Param("paymentMode") String paymentMode, @Param("referenceNumber") String referenceNumber, Pageable page);
 }

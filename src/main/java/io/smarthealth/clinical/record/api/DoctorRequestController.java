@@ -130,7 +130,7 @@ public class DoctorRequestController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Diseases");
+        details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
         
         return ResponseEntity.ok(pagers);
