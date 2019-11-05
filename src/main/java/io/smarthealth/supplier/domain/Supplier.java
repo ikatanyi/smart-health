@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -45,12 +46,15 @@ public class Supplier extends Auditable {
     private BankAccount bankAccount;
 
     @ManyToOne
+    @JoinColumn(name = "pricelist_id", foreignKey = @ForeignKey(name = "fk_supplier_pricelist_id"))
     private PriceBook pricelist;
-    
+
     @OneToOne
+    @JoinColumn(name = "currency_id", foreignKey = @ForeignKey(name = "fk_supplier_currency_id"))
     private Currency currency;
 
     @OneToOne
+    @JoinColumn(name = "payment_terms_id", foreignKey = @ForeignKey(name = "fk_supplier_payment_terms_id"))
     private PaymentTerms paymentTerms;
 
     @ManyToMany
