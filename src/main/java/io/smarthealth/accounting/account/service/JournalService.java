@@ -8,9 +8,8 @@ import io.smarthealth.accounting.account.domain.AccountRepository;
 import io.smarthealth.accounting.account.domain.Journal;
 import io.smarthealth.accounting.account.domain.JournalEntry;
 import io.smarthealth.accounting.account.domain.JournalRepository;
+import io.smarthealth.accounting.account.domain.enumeration.JournalState;
 import io.smarthealth.accounting.account.domain.specification.JournalSpecification;
-import io.smarthealth.accounting.payment.domain.PaymentDetail;
-import io.smarthealth.accounting.payment.domain.PaymentDetailRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.sequence.SequenceService;
@@ -32,16 +31,16 @@ import org.springframework.stereotype.Service;
 public class JournalService {
 
     private final JournalRepository journalRepository;
-    private final PaymentDetailRepository paymentDetailRepository;
     private final AccountRepository accountRepository;
     private final SequenceService sequenceService;
 
-    public JournalService(JournalRepository journalRepository, PaymentDetailRepository paymentDetailRepository, AccountRepository accountRepository,  SequenceService sequenceService) {
+    public JournalService(JournalRepository journalRepository, AccountRepository accountRepository, SequenceService sequenceService) {
         this.journalRepository = journalRepository;
-        this.paymentDetailRepository = paymentDetailRepository;
         this.accountRepository = accountRepository;
-        this.sequenceService=sequenceService;
+        this.sequenceService = sequenceService;
     }
+
+    
 
     public String createJournalEntry(JournalData journalData) {
         Journal journal = convertToEntity(journalData);
@@ -60,25 +59,22 @@ public class JournalService {
         Journal journal = findJournalEntry(transactionIdentifier)
                 .orElseThrow(() -> APIException.notFound("Journal {0} not found.", transactionIdentifier));
 
-        return convertToData(journal);
+        return JournalData.map(journal);
     }
 
     public Page<JournalData> fetchJournalEntries(String referenceNumber, String transactionId, String transactionType, DateRange range, Pageable pageable) {
         Specification<Journal> spec = JournalSpecification.createSpecification(referenceNumber, transactionId, transactionType, range);
         Page<Journal> journals = journalRepository.findAll(spec, pageable);
-        return journals.map(journal -> convertToData(journal));
+        return journals.map(journal -> JournalData.map(journal));
     }
 
     private Journal convertToEntity(JournalData journalData) {
         Journal journal = new Journal();
-        Optional<PaymentDetail> paymentdetail = paymentDetailRepository.findById(journalData.getPaymentDetail());
+        
         journal.setActivity(journalData.getActivity());
         journal.setDescriptions(journalData.getDescriptions());
         journal.setDocumentDate(journalData.getDocumentDate());
         journal.setManualEntry(journalData.isManualEntry());
-        if (paymentdetail.isPresent()) {
-            journal.setPaymentDetail(paymentdetail.get());
-        }
         journal.setReferenceNumber(journalData.getReferenceNumber());
         journal.setState(journalData.getState());
         journal.setTransactionDate(journalData.getTransactionDate());
@@ -119,7 +115,6 @@ public class JournalService {
         reversalJournal.setActivity(journalEntry.getActivity());
         reversalJournal.setDocumentDate(journalEntry.getDocumentDate());
         reversalJournal.setManualEntry(manualEntry);
-        reversalJournal.setPaymentDetail(journalEntry.getPaymentDetail());
         reversalJournal.setReferenceNumber(journalEntry.getReferenceNumber());
         reversalJournal.setTransactionDate(journalEntry.getTransactionDate());
         reversalJournal.setTransactionId(reversalTransactionId);
@@ -135,44 +130,13 @@ public class JournalService {
          Journal savedJournal = journalRepository.save(reversalJournal);
          
         journalEntry.setReversed(true);
-        journalEntry.setState(JournalData.State.REVERSED);
+        journalEntry.setState(JournalState.REVERSED);
         journalEntry.setReversalJournal(savedJournal);
         
         journalRepository.save(journalEntry);
         return reversalTransactionId;
     }
-
-    private JournalData convertToData(Journal journal) {
-        JournalData journalData = new JournalData();
-        journalData.setActivity(journal.getActivity());
-        journalData.setDescriptions(journal.getDescriptions());
-        journalData.setDocumentDate(journal.getDocumentDate());
-        journalData.setManualEntry(journal.isManualEntry());
-        if (journal.getPaymentDetail() != null) {
-            journalData.setPaymentDetail(journal.getPaymentDetail().getId());
-        }
-        journalData.setReferenceNumber(journal.getReferenceNumber());
-        journalData.setState(journal.getState());
-        journalData.setTransactionDate(journal.getTransactionDate());
-        journalData.setTransactionId(journal.getTransactionId());
-        journalData.setTransactionType(journal.getTransactionType());
-
-        Set<Debit> debits = new HashSet<>();
-        Set<Credit> credit = new HashSet<>();
-        journal.getJournalEntries()
-                .stream()
-                .forEach(je -> {
-                    if (je.isDebit()) {
-                        debits.add(new Debit(je.getAccount().getAccountNumber(), String.valueOf(je.getDebit()),je.getDescription()));
-                    } else {
-                        credit.add(new Credit(je.getAccount().getAccountNumber(), String.valueOf(je.getCredit()),je.getDescription()));
-                    }
-                });
-        journalData.setCredit(credit);
-        journalData.setDebit(debits);
-        return journalData;
-    }
-
+ 
     public static String generateTransactionId(final Long companyId) {
         //journal format : ACC-JV-2019-00001
 //        Long id = SecurityUtils.getCurrentLoggedUserId().get();

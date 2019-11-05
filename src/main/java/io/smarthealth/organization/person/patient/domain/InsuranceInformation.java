@@ -6,7 +6,7 @@
 package io.smarthealth.organization.person.patient.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.organization.payer.domain.Payer;
+import io.smarthealth.debtor.payer.domain.Payer;
 import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;

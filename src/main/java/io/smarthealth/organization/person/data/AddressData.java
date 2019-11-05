@@ -13,8 +13,6 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public final class AddressData {
-
-    @ApiModelProperty(required = false, hidden = true)
     private Long id;
 
     private String line1;

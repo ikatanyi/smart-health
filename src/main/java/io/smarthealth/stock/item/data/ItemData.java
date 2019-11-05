@@ -2,10 +2,8 @@ package io.smarthealth.stock.item.data;
 
 import io.smarthealth.infrastructure.utility.AppHelper;
 import io.smarthealth.stock.item.domain.Item;
-import java.math.BigDecimal;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
-import org.springframework.format.annotation.NumberFormat;
 
 /**
  *
@@ -32,8 +30,8 @@ public class ItemData {
     private Long purchaseAccountId;
     private String purchaseAccountName;
     private String purchaseDescription;
-    private double purchaseRate;
-    private String purchaseRateFormatted;
+    private double purchaseRate; //1000
+    private String purchaseRateFormatted; // KES 1,000
     private String ean;
     private double stockOnHand;
     private double availableStock;

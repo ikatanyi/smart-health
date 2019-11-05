@@ -110,9 +110,9 @@ public class PatientController {
     @GetMapping("/patients")
     public ResponseEntity<List<PatientData>> fetchAllPatients(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder) {
 //        if (!pageable.isPaged()) {
-        Pageable pageable = new PageRequest(0, 1000, new Sort(Sort.Direction.DESC, "id"));
-//        }
+        Pageable pageable = PageRequest.of(0, 1000, Sort.by("id").descending());
 
+//        }
         Page<PatientData> page = patientService.fetchAllPatients(queryParams, pageable).map(p -> patientService.convertToPatientData(p));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
 

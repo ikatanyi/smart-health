@@ -69,12 +69,14 @@ public class ItemRestController {
     public ResponseEntity<?> getAllItems(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "q", required = false) final String term,
+            @RequestParam(value = "category", required = false) final String category,
+            @RequestParam(value = "type", required = false) final String type,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<ItemData> list = service.fetchItems(includeClosed, term, pageable).map(u -> ItemData.map(u));
+        Page<ItemData> list = service.fetchItems(category, type, includeClosed, term, pageable).map(u -> ItemData.map(u));
 
         Pager<List<ItemData>> pagers = new Pager();
         pagers.setCode("0");
