@@ -83,7 +83,6 @@ public class DoctorRequestController {
         List<DoctorRequest> docRequests = new ArrayList<>();
         for (DoctorRequestData data : docRequestData) {
             DoctorRequest doctorRequest = DoctorRequestData.map(data);
-            System.out.println("data.getItemCode()"+data.getItemCode());
             Item item = itemService.findById(Long.valueOf(data.getItemCode())).get();
             System.out.println("item "+item.getItemName());
             doctorRequest.setItem(item);
@@ -130,7 +129,7 @@ public class DoctorRequestController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Diseases");
+        details.setReportName("Requests");
         pagers.setPageDetails(details);
         
         return ResponseEntity.ok(pagers);
