@@ -9,6 +9,7 @@ import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.PrescriptionData;
+import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.service.PrescriptionService;
@@ -54,21 +55,21 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/api/pharmacy")
 @Api(value = "Pharmacy Controller", description = "Operations pertaining to Pharmacy maintenance")
 public class PharmacyController {
-
+    
     final PharmacyService pharmService;
-
+    
     final ModelMapper modelMapper;
-
+    
     final VisitService visitService;
-
+    
     final PrescriptionService prescriptionService;
-
+    
     final ItemService itemService;
-
+    
     final SequenceService sequenceService;
-
+    
     final EmployeeService employeeService;
-
+    
     public PharmacyController(PharmacyService pharmService, ModelMapper modelMapper, VisitService visitService, PrescriptionService prescriptionService, ItemService itemService, SequenceService sequenceService, EmployeeService employeeService) {
         this.pharmService = pharmService;
         this.modelMapper = modelMapper;
@@ -78,7 +79,7 @@ public class PharmacyController {
         this.sequenceService = sequenceService;
         this.employeeService = employeeService;
     }
-
+    
     @PostMapping("/prescription/{prescriptionNo}/patient-drug")
     public @ResponseBody
     ResponseEntity<?> savePatientDrugs(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<PatientDrugsData> patientdrugsData) {
@@ -87,7 +88,7 @@ public class PharmacyController {
         List<PatientDrugsData> patientDrugList = pharmService.savePatientDrugs(patientdrugsData);
         return new ResponseEntity<>(patientDrugList, HttpStatus.CREATED);
     }
-
+    
     @PostMapping("/visit/{visitNo}/prescription")
     public @ResponseBody
     ResponseEntity<?> savePatientPrescriptions(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<PrescriptionData> prescriptionData) {
@@ -95,7 +96,7 @@ public class PharmacyController {
         Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
         List<Prescription> prescriptions = new ArrayList<>();
         String prescriptionNo = sequenceService.nextNumber(SequenceType.PrescriptionNo);
-
+        
         for (PrescriptionData pd : prescriptionData) {
             Prescription p = PrescriptionData.map(pd);
             p.setPatient(visit.getPatient());
@@ -103,9 +104,10 @@ public class PharmacyController {
             p.setVisit(visit);
             p.setOrderNumber(prescriptionNo);
             p.setRequestedBy(employee);
+            p.setRequestType("Pharmacy");
             prescriptions.add(p);
         }
-
+        
         List<Prescription> saved = prescriptionService.createPrescription(prescriptions);
         List<PrescriptionData> savedlist = new ArrayList<>();
         saved.forEach((p) -> {
@@ -113,16 +115,16 @@ public class PharmacyController {
         });
         return new ResponseEntity<>(savedlist, HttpStatus.CREATED);
     }
-
+    
     @GetMapping("/visit/{visitNo}/prescription")
     public @ResponseBody
     ResponseEntity<?> fetchPatientPrescriptionsByVisit(@PathVariable("visitNo") final String visitNumber, Pageable pageable) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-
+        
         Page<Prescription> prescriptionsPage = prescriptionService.fetchAllPrescriptionsByVisit(visit, pageable);
-
+        
         Pager<List<PrescriptionData>> pagers = new Pager();
-
+        
         List<PrescriptionData> pdList = new ArrayList<>();
         for (Prescription p : prescriptionsPage) {
             PrescriptionData data1 = PrescriptionData.map(p);
@@ -138,11 +140,11 @@ public class PharmacyController {
         details.setTotalPage(prescriptionsPage.getTotalPages());
         details.setReportName("Patient prescriptions");
         pagers.setPageDetails(details);
-
+        
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pagers);
     }
-
+    
     @GetMapping("/patientDrug/{id}")
     public ResponseEntity<?> fetchPatientDrugsById(@PathVariable("id") final Long id) {
         PatientDrugsData patientdrugsdata = pharmService.getById(id);
@@ -152,23 +154,23 @@ public class PharmacyController {
             throw APIException.notFound("container Number {0} not found.", id);
         }
     }
-
+    
     @GetMapping("/patientDrug")
     public ResponseEntity<?> fetchAllPatientDrugs(
             @RequestParam(value = "visitNumber", defaultValue = "") String visitNumber,
             @RequestParam(value = "patientNumber", defaultValue = "") String patientNumber,
             Pageable pageable) {
-
+        
         List<PatientDrugsData> patientDrugs = pharmService.getByVisitIdAndPatientId(visitNumber, patientNumber);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/patientDrug/")
                 .buildAndExpand().toUri();
         return ResponseEntity.created(location).body(APIResponse.successMessage("PatientDrugsData returned successfuly", HttpStatus.OK, patientDrugs));
     }
-
+    
     @DeleteMapping("/patientDrug/{id}")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
         pharmService.deletePatientDrug(id);
         return ResponseEntity.ok("200");
     }
-
+    
 }

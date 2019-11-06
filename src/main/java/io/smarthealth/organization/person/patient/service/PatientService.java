@@ -96,10 +96,10 @@ public class PatientService {
         return patientRepository.findById(id).orElseThrow(() -> APIException.notFound("Person identified by id {0} no found", id));
     }
 
-    public String generatePatientNumber() {
-        int nextPatient = patientRepository.maxId() + 1;
-        return String.valueOf("PAT" + nextPatient);
-    }
+//    public String generatePatientNumber() {
+//        int nextPatient = patientRepository.maxId() + 1;
+//        return String.valueOf("PAT" + nextPatient);
+//    }
 
     public Optional<PatientData> fetchPatientByPatientNumber(final String patientNumber) {
 

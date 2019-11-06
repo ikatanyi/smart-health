@@ -15,21 +15,22 @@ import lombok.Data;
  */
 @Data
 public class PrescriptionData extends DoctorRequestData {
+    //For example .. Panadol , 2*3 for a week
 
-    private String brandName;
-    private String route;
-    private Double dose;
-    private String doseUnits; //TODO:: create an entity for dose unit
-    private Integer duration;
-    private Double durationUnits;
-    private Double frequency;
-    private Double quantity;
-    private String quantityUnits; //TODO:: create an entity for quantity unit
-    private String dosingInstructions;
-    private Boolean asNeeded = false;
-    private String asNeededCondition;
-    private Integer numRefills;
-    private Double issuedQuantity;
+    private String brandName;//Panadol
+    private String route;//Oral
+    private Double dose;//2
+    private String doseUnits; //TODO:: create an entity for dose unit//tablets
+    private Integer duration;//1
+    private Double durationUnits;//Week
+    private Double frequency;//3
+    private Double quantity;//42
+    private String quantityUnits; //TODO:: create an entity for quantity unit//tablets
+    private String dosingInstructions;//After Meal
+    private Boolean asNeeded = false;//Pharmacist Asichange instructions as prescribed by the doctor
+    private String asNeededCondition;//notes additional info
+    private Integer numRefills;//number of installments
+    private Double issuedQuantity;//number of issued quantity
 
     @ApiModelProperty(required = false, hidden = true)
     private Long id;

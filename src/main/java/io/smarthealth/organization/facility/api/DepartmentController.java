@@ -56,7 +56,6 @@ public class DepartmentController {
     public @ResponseBody
     ResponseEntity<?> createFacilityDepartment(@RequestBody @Valid final DepartmentData departmentData) {
         Facility facility = facilityService.findFacility(departmentData.getFacilityId());
-
         Department department = convertDeptDataToDepartment(departmentData);
         department.setFacility(facility);
         Department departmentSaved = this.departmentService.createDepartment(department);
@@ -87,6 +86,10 @@ public class DepartmentController {
 
     private Department convertDeptDataToDepartment(DepartmentData departmentData) {
         Department dept = modelMapper.map(departmentData, Department.class);
+
+        //if (EnumExists.isInEnum("Open", Department.ServicePointType.class)) {
+        dept.setServicePointType(departmentData.getServicePointType().name());
+        //}
         return dept;
     }
 
@@ -94,4 +97,5 @@ public class DepartmentController {
         DepartmentData deptData = modelMapper.map(department, DepartmentData.class);
         return deptData;
     }
+
 }
