@@ -17,7 +17,7 @@ import lombok.Data;
 public class Specimen extends Identifiable {
 
     @ManyToOne
-    private Testtype testtype;
+    private TestType testtype;
 
     private String specimen;
     private String abbreviation; 

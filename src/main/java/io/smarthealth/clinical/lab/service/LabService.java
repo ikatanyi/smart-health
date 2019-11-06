@@ -21,7 +21,7 @@ import io.smarthealth.clinical.lab.domain.LabTest;
 import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.SpecimenRepository;
 import io.smarthealth.clinical.lab.domain.TestTypeRepository;
-import io.smarthealth.clinical.lab.domain.Testtype;
+import io.smarthealth.clinical.lab.domain.TestType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -74,7 +74,7 @@ public class LabService {
     public Long createTestType(LabTestTypeData testtypeData) {
         try {
             System.out.println("Line 76");
-            Testtype testtype = LabTestTypeData.map(testtypeData);
+            TestType testtype = LabTestTypeData.map(testtypeData);
             System.out.println("Line 78");
             testtypeData.getSpecimenId()
                     .stream()
@@ -106,7 +106,7 @@ public class LabService {
     }
 
     @Transactional
-    public String saveTestType(Testtype testtype) {
+    public String saveTestType(TestType testtype) {
         try {
             ttypeRepository.save(testtype);
             return testtype.getServiceCode();
@@ -116,7 +116,7 @@ public class LabService {
         }
     }
 
-    public Optional<Testtype> fetchTestTypeById(Long testtypeId) {
+    public Optional<TestType> fetchTestTypeById(Long testtypeId) {
         return ttypeRepository.findById(testtypeId);//.orElseThrow(() -> APIException.notFound("TestType identified by {0} not found", testtypeId));
     }
 
@@ -125,7 +125,7 @@ public class LabService {
         List<Analyte> analytes = new ArrayList();
         for (AnalyteData analytedata : analyteData) {
             Analyte analyte = convertDataToAnalyte(analytedata);
-            Optional<Testtype> ttype = ttypeRepository.findById(analytedata.getTestTypeId());
+            Optional<TestType> ttype = ttypeRepository.findById(analytedata.getTestTypeId());
 
             if (ttype.isPresent()) {
                 analyte.setTestType(ttype.get());
@@ -142,15 +142,15 @@ public class LabService {
         
     }
 
-    public Testtype fetchTestTypeByCode(String testTypeCode) {
-        Testtype ttype = ttypeRepository.findByServiceCode(testTypeCode).orElseThrow(() -> APIException.notFound("TestType identified by code {0} not found", testTypeCode));
+    public TestType fetchTestTypeByCode(String testTypeCode) {
+        TestType ttype = ttypeRepository.findByServiceCode(testTypeCode).orElseThrow(() -> APIException.notFound("TestType identified by code {0} not found", testTypeCode));
         return ttype;
     }
 
-    public Page<Testtype> fetchAllTestTypes(Pageable pageable) {
+    public Page<TestType> fetchAllTestTypes(Pageable pageable) {
         List<LabTestTypeData> testtypeDataList = new ArrayList<>();
 
-        Page<Testtype> testtypes = ttypeRepository.findAll(pageable);
+        Page<TestType> testtypes = ttypeRepository.findAll(pageable);
         return testtypes;
     }
 
@@ -164,7 +164,7 @@ public class LabService {
         }
     }
 
-    public LabTestTypeData convertToTestTypeData(Testtype testtype) {
+    public LabTestTypeData convertToTestTypeData(TestType testtype) {
         LabTestTypeData testtypeData = modelMapper.map(testtype, LabTestTypeData.class);
         return testtypeData;
     }
@@ -366,7 +366,7 @@ public class LabService {
         return analyteRepository.findAll(pgbl);
     }
 
-    public Page<AnalyteData> fetchAnalyteByTestType(Testtype testtype, Pageable pgbl) {
+    public Page<AnalyteData> fetchAnalyteByTestType(TestType testtype, Pageable pgbl) {
         return analyteRepository.findByTestType(testtype, pgbl).map(p -> convertAnalyteToData(p));
     }
 

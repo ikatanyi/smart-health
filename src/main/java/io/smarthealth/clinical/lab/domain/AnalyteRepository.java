@@ -17,10 +17,10 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface AnalyteRepository extends JpaRepository<Analyte, Long> {
     
-    Page<Analyte> findByTestType(Testtype testtype, Pageable pageable);
+    Page<Analyte> findByTestType(TestType testtype, Pageable pageable);
     
     @Query("SELECT e FROM Analyte e WHERE e.testType = :testType AND e.gender = :gender AND :age BETWEEN e.startAge and e.endAge")
-    List<Analyte> findAnalytebyage(Testtype testType, String gender, Integer age);
+    List<Analyte> findAnalytebyage(TestType testType, String gender, Integer age);
     
     
 }

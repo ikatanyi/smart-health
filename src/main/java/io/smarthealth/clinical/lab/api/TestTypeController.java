@@ -2,7 +2,7 @@ package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
-import io.smarthealth.clinical.lab.domain.Testtype;
+import io.smarthealth.clinical.lab.domain.TestType;
 import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -111,12 +111,12 @@ public class TestTypeController {
         return ResponseEntity.ok("200");
     }
     
-    private Testtype convertTestTTypeDataToTestType(LabTestTypeData testtypeData) {
-        Testtype ttype = modelMapper.map(testtypeData, Testtype.class);
+    private TestType convertTestTTypeDataToTestType(LabTestTypeData testtypeData) {
+        TestType ttype = modelMapper.map(testtypeData, TestType.class);
         return ttype;
     }
 
-    private LabTestTypeData convertToTestTypeData(Testtype Testtype) {
+    private LabTestTypeData convertToTestTypeData(TestType Testtype) {
         LabTestTypeData testTypeData = modelMapper.map(Testtype, LabTestTypeData.class);
         return testTypeData;
     }

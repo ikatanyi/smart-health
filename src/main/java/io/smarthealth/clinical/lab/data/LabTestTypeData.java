@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.lab.domain.Analyte;
 import io.smarthealth.clinical.lab.domain.Discipline;
 import io.smarthealth.clinical.lab.domain.Specimen;
-import io.smarthealth.clinical.lab.domain.Testtype;
+import io.smarthealth.clinical.lab.domain.TestType;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -57,9 +57,9 @@ public class LabTestTypeData {
     private List<AnalyteData> analytes;
     private List<SpecimenData>specimens;
 
-    public static Testtype map(LabTestTypeData testtype) {
+    public static TestType map(LabTestTypeData testtype) {
         System.out.println("Test type received "+testtype.toString());
-        Testtype entity = new Testtype();
+        TestType entity = new TestType();
         entity.setServiceCode(testtype.getCode());
         entity.setTestType(testtype.getTestType());
         entity.setConsent(testtype.getConsent());
@@ -73,7 +73,7 @@ public class LabTestTypeData {
         return entity;
     }
 
-    public static LabTestTypeData map(Testtype entity) {
+    public static LabTestTypeData map(TestType entity) {
         ModelMapper modelMapper = new ModelMapper();
         LabTestTypeData test = new LabTestTypeData();
         test.setId(entity.getId());
