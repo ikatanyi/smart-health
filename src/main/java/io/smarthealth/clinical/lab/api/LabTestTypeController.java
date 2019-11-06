@@ -2,7 +2,7 @@ package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
-import io.smarthealth.clinical.lab.domain.TestType;
+import io.smarthealth.clinical.lab.domain.LabTestType;
 import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -37,7 +37,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/api/lab")
 @Api(value = "Test Type Controller", description = "Operations pertaining to TestTypes maintenance")
-public class TestTypeController {
+public class LabTestTypeController {
 
     @Autowired
     LabService labService;
@@ -111,12 +111,12 @@ public class TestTypeController {
         return ResponseEntity.ok("200");
     }
     
-    private TestType convertTestTTypeDataToTestType(LabTestTypeData testtypeData) {
-        TestType ttype = modelMapper.map(testtypeData, TestType.class);
+    private LabTestType convertTestTTypeDataToTestType(LabTestTypeData testtypeData) {
+        LabTestType ttype = modelMapper.map(testtypeData, LabTestType.class);
         return ttype;
     }
 
-    private LabTestTypeData convertToTestTypeData(TestType Testtype) {
+    private LabTestTypeData convertToTestTypeData(LabTestType Testtype) {
         LabTestTypeData testTypeData = modelMapper.map(Testtype, LabTestTypeData.class);
         return testTypeData;
     }

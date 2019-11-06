@@ -65,7 +65,7 @@ public class PatientTestsController {
 
     @GetMapping("/result")
     public ResponseEntity<?> fetchAllPatientTests(
-             @RequestParam(value = "patientNumber", defaultValue = "") String patientNumber,
+             @RequestParam(value = "patientNumber", required = false) String patientNumber,
              @RequestParam(value = "visitNumber", defaultValue = "") String visitNumber,
              @RequestParam(value = "status", defaultValue = "") String status,
              Pageable pageable

@@ -37,5 +37,5 @@ public class Analyte extends Identifiable {
     private String description;   
     
     @ManyToOne                           
-    private TestType testType;
+    private LabTestType testType;
 }

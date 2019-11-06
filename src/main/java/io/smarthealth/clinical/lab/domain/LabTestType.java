@@ -13,13 +13,14 @@ import javax.persistence.Table;
 import lombok.Data;
 
 /**
- *
+ *  Defines Lab Test service for the laboratory
+ * 
  * @author Kennedy.Imbenzi
  */
 @Entity
 @Data
 @Table(name = "lab_test_type")
-public class TestType extends Identifiable {
+public class LabTestType extends Identifiable {
     private String serviceCode;
     private String testType; //government classifications
     private Boolean consent; 
