@@ -5,9 +5,9 @@
  */
 package io.smarthealth.clinical.lab.service;
 
-import io.smarthealth.clinical.lab.data.LabTestData;
-import io.smarthealth.clinical.lab.domain.LabTest;
+import io.smarthealth.clinical.lab.data.PatientTestData;
 import io.smarthealth.clinical.lab.domain.LabTestRepository;
+import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -47,31 +47,31 @@ public class LabResultsService {
     
     
     @Transactional
-    public LabTestData savePatientResults(LabTestData testResults) {
+    public PatientTestData savePatientResults(PatientTestData testResults) {
          Visit visit = visitRepository.findByVisitNumber(testResults.getVisitNumber())
                 .orElseThrow(() -> APIException.notFound("Patient Session with Visit Number : {0} not found.", testResults.getVisitNumber()));
 
-        if (!StringUtils.equalsIgnoreCase(visit.getPatient().getPatientNumber(), testResults.getPatientNumber())) {
-            throw APIException.badRequest("Invalid Patient Number! mismatch in Patient Visit's patient number");
-        }
+//        if (!StringUtils.equalsIgnoreCase(visit.getPatient().getPatientNumber(), testResults.getPatientNumber())) {
+//            throw APIException.badRequest("Invalid Patient Number! mismatch in Patient Visit's patient number");
+//        }
         
         
-        LabTest patienttestsEntity = convertDataToPatientTestsData(testResults);
+        PatientLabTest patienttestsEntity = convertDataToPatientTestsData(testResults);
         patienttestsEntity.setVisit(visit);
         patienttestsEntity.setPatient(visit.getPatient());
-        LabTest patientTests = PtestsRepository.save(patienttestsEntity);
+        PatientLabTest patientTests = PtestsRepository.save(patienttestsEntity);
         return convertPatientTestToData(patientTests);
     }
     
     
     
     
-    public Page<LabTestData> fetchAllPatientTests(String patientNumber, String visitNumber, String status, Pageable pgbl) {
-        Page<LabTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(patientNumber, visitNumber, status,pgbl).map(p -> convertPatientTestToData(p));
+    public Page<PatientTestData> fetchAllPatientTests(String patientNumber, String visitNumber, String status, Pageable pgbl) {
+        Page<PatientTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(patientNumber, visitNumber, status,pgbl).map(p -> convertPatientTestToData(p));
         return ptests;
     }
     
-    public Optional<LabTestData> fetchPatientTestsById(Long id) {
+    public Optional<PatientTestData> fetchPatientTestsById(Long id) {
         return PtestsRepository.findById(id).map(p->convertPatientTestToData(p));
     }
     
@@ -80,13 +80,13 @@ public class LabResultsService {
         PtestsRepository.deleteById(id);
     }
 
-    public LabTestData convertPatientTestToData(LabTest patientTests) {
-        LabTestData patientsdata = modelMapper.map(patientTests, LabTestData.class);
+    public PatientTestData convertPatientTestToData(PatientLabTest patientTests) {
+        PatientTestData patientsdata = modelMapper.map(patientTests, PatientTestData.class);
         return patientsdata;
     }
     
-    public LabTest convertDataToPatientTestsData(LabTestData patientTestsData) {
-        LabTest patienttests = modelMapper.map(patientTestsData, LabTest.class);
+    public PatientLabTest convertDataToPatientTestsData(PatientTestData patientTestsData) {
+        PatientLabTest patienttests = modelMapper.map(patientTestsData, PatientLabTest.class);
         return patienttests;
     }
 

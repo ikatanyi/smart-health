@@ -2,7 +2,7 @@ package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
-import io.smarthealth.clinical.lab.domain.Testtype;
+import io.smarthealth.clinical.lab.domain.LabTestType;
 import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -45,7 +45,7 @@ public class TestTypeController {
     @Autowired
     ModelMapper modelMapper;
 
-    @PostMapping("/testtype")
+    @PostMapping("/test-type")
     public @ResponseBody
     ResponseEntity<?> createTestType(@RequestBody @Valid final LabTestTypeData testtypeData) {
         Long id = labService.createTestType(testtypeData);
@@ -55,7 +55,7 @@ public class TestTypeController {
      
     }    
     
-    @GetMapping("/testtype/{id}")
+    @GetMapping("/test-type/{id}")
     public ResponseEntity<?> fetchAllTestTypes(@PathVariable("id") final Long id) {
         Optional<LabTestTypeData> testType = labService.getById(id);
         if (testType.isPresent()) {
@@ -79,7 +79,7 @@ public class TestTypeController {
         }
     }
 
-    @GetMapping("/testtype")
+    @GetMapping("/test-type")
     public ResponseEntity<?> fetchAllTestTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,Pageable pageable) {
 
         Page<LabTestTypeData> page = labService.fetchAllTestTypes(pageable).map(d -> convertToTestTypeData(d));
@@ -105,18 +105,18 @@ public class TestTypeController {
         return ResponseEntity.ok("200");
     }
     
-    @DeleteMapping("/testtype/{id}")
+    @DeleteMapping("/test-type/{id}")
     public ResponseEntity<?> deleteTestType(@PathVariable("id") final Long id) {
         labService.deleteTestById(id);
         return ResponseEntity.ok("200");
     }
     
-    private Testtype convertTestTTypeDataToTestType(LabTestTypeData testtypeData) {
-        Testtype ttype = modelMapper.map(testtypeData, Testtype.class);
+    private LabTestType convertTestTTypeDataToTestType(LabTestTypeData testtypeData) {
+        LabTestType ttype = modelMapper.map(testtypeData, LabTestType.class);
         return ttype;
     }
 
-    private LabTestTypeData convertToTestTypeData(Testtype Testtype) {
+    private LabTestTypeData convertToTestTypeData(LabTestType Testtype) {
         LabTestTypeData testTypeData = modelMapper.map(Testtype, LabTestTypeData.class);
         return testTypeData;
     }

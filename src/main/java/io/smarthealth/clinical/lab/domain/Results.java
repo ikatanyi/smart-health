@@ -16,9 +16,10 @@ import lombok.Data;
  */
 @Data  
 @Entity
-@Table(name = "lab_results")
+@Table(name = "patient_results")
 public class Results extends Identifiable {
-    private String test_code;
+    private Long id;
+    private String testCode;
     private String testType;
     private String testName;
     private String normalRange;

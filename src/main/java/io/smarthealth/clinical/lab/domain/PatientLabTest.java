@@ -5,11 +5,17 @@
  */
 package io.smarthealth.clinical.lab.domain;
 
+import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
+import io.smarthealth.clinical.record.domain.DoctorRequest;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -21,24 +27,25 @@ import org.hibernate.annotations.LazyCollectionOption;
  *
  * @author Kennedy.Imbenzi
  */
-@Data  
+@Data
 @Entity
-@Table(name = "lab_test")
-public class LabTest extends ClinicalRecord {
-    private String state;
-    private String testName;
-    private String code;
+@Table(name = "patient_lab_test")
+public class PatientLabTest extends ClinicalRecord {
+
+    @Enumerated(EnumType.STRING)
+    private LabTestState state;
+    private String labNumber;
     private String clinicalDetails;
-    private String priority;   
-    private String specimen;   
-    private String specimenCollectionTime;   
-    
-    
-    
+    private String specimen;
+    private String specimenCollectionTime;
+    private String requestNumber;
+    @OneToOne
+    private LabTestType testtype;
+
     @Setter(AccessLevel.NONE)
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(cascade={javax.persistence.CascadeType.ALL}, orphanRemoval = true)
-    @JoinColumn(name = "request_Id", nullable = false)
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, orphanRemoval = true)
+    @JoinColumn(name = "request_id", nullable = false)
     private List<Results> results;
-    
+
 }

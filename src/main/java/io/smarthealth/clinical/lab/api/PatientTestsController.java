@@ -1,6 +1,6 @@
 package io.smarthealth.clinical.lab.api;
 
-import io.smarthealth.clinical.lab.data.LabTestData;
+import io.smarthealth.clinical.lab.data.PatientTestData;
 import io.smarthealth.clinical.lab.service.LabResultsService;
 import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -42,10 +42,10 @@ public class PatientTestsController {
     @Autowired
     ModelMapper modelMapper;
 
-    @PostMapping("/PatientTest")
+    @PostMapping("/Patient-Test")
     public @ResponseBody
-    ResponseEntity<?> createPatientTest(@RequestBody @Valid final LabTestData labTestData) {
-        LabTestData Patienttests = resultService.savePatientResults(labTestData);
+    ResponseEntity<?> createPatientTest(@RequestBody @Valid final PatientTestData patientTestData) {
+        PatientTestData Patienttests = resultService.savePatientResults(patientTestData);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/PatientTest/" + Patienttests.getId())
                 .buildAndExpand(Patienttests.getId()).toUri();
         return ResponseEntity.created(location).body(APIResponse.successMessage("TestType successfuly created", HttpStatus.CREATED, Patienttests));
@@ -53,9 +53,9 @@ public class PatientTestsController {
     }
     
 
-    @GetMapping("/PatientTest/{id}")
+    @GetMapping("/Patient-Test/{id}")
     public ResponseEntity<?> fetchPatientTestById(@PathVariable("id") final Long id) {
-        Optional<LabTestData> result = resultService.fetchPatientTestsById(id);
+        Optional<PatientTestData> result = resultService.fetchPatientTestsById(id);
         if (result!=null) {
             return ResponseEntity.ok(result);
         } else {
@@ -63,7 +63,7 @@ public class PatientTestsController {
         }
     }
 
-    @GetMapping("/result")
+    @GetMapping("/Patient-Test/result")
     public ResponseEntity<?> fetchAllPatientTests(
              @RequestParam(value = "patientNumber", defaultValue = "") String patientNumber,
              @RequestParam(value = "visitNumber", defaultValue = "") String visitNumber,
@@ -71,7 +71,7 @@ public class PatientTestsController {
              Pageable pageable
         ) {
         
-        Page<LabTestData> pag = resultService.fetchAllPatientTests(patientNumber,visitNumber,status,pageable);
+        Page<PatientTestData> pag = resultService.fetchAllPatientTests(patientNumber,visitNumber,status,pageable);
         Pager page = new Pager();
         page.setCode("200");
         page.setContent(pag.getContent());
@@ -85,7 +85,7 @@ public class PatientTestsController {
         return ResponseEntity.ok(page);
     }
     
-    @DeleteMapping("/result/{id}")
+    @DeleteMapping("/Patient-Test/result/{id}")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
         resultService.deleteById(id);
         return ResponseEntity.ok("200");

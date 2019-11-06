@@ -19,7 +19,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "lab_test_type")
-public class Testtype extends Identifiable {
+public class LabTestType extends Identifiable {
     private String serviceCode;
     private String testType; //government classifications
     private Boolean consent; 
