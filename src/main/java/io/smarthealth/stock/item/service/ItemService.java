@@ -47,7 +47,7 @@ public class ItemService {
 
     private final TaxRepository taxRepository;
     private final ItemRepository itemRepository;
-    private final UomService uomService; 
+    private final UomService uomService;
     private final StoreService storeService;
     private final ReorderRuleRepository reorderRuleRepository;
     private final DrugRepository drugRepository;
@@ -55,13 +55,13 @@ public class ItemService {
     public ItemService(
             TaxRepository taxRepository,
             ItemRepository itemRepository,
-            UomService uomService, 
+            UomService uomService,
             StoreService storeService,
             ReorderRuleRepository reorderRuleRepository,
             DrugRepository drugRepository) {
         this.taxRepository = taxRepository;
         this.itemRepository = itemRepository;
-        this.uomService =uomService; 
+        this.uomService = uomService;
         this.storeService = storeService;
         this.reorderRuleRepository = reorderRuleRepository;
         this.drugRepository = drugRepository;
@@ -104,7 +104,7 @@ public class ItemService {
             drugRepository.save(drug);
         }
 
-        if (createItem.getItemType().equals("Inventory")) { 
+        if (createItem.getItemType().equals("Inventory")) {
             Store store = storeService.getStore(createItem.getInventoryStore())
                     .orElseThrow(() -> APIException.notFound("Store with Identifier {0} not found ", createItem.getInventoryStore()));
 
@@ -132,19 +132,23 @@ public class ItemService {
         return itemRepository.findByItemCode(itemCode);
     }
 
+    public Item findByItemCodeOrThrow(final String itemCode) {
+        return itemRepository.findByItemCode(itemCode).orElseThrow(() -> APIException.notFound("Item identified by code {0} not found", itemCode));
+    }
+
     public Page<Item> fetchItems(final boolean includeClosed, String term, Pageable pageable) {
         Specification<Item> spec = ItemSpecification.createSpecification(includeClosed, term);
         Page<Item> items = itemRepository.findAll(spec, pageable);
         return items;
     }
-    
+
     //this should be cached
-    public ItemMetadata getItemMetadata(){
-        List<StoreData> stores=storeService.getAllStores();
-        List<Tax> tax=taxRepository.findAll(); 
-        List<Uoms> uoms=uomService.getAllUnitofMeasure();
-        
-        ItemMetadata data=new ItemMetadata();
+    public ItemMetadata getItemMetadata() {
+        List<StoreData> stores = storeService.getAllStores();
+        List<Tax> tax = taxRepository.findAll();
+        List<Uoms> uoms = uomService.getAllUnitofMeasure();
+
+        ItemMetadata data = new ItemMetadata();
         data.setCode("0");
         data.setMessage("success");
         data.setStores(stores);

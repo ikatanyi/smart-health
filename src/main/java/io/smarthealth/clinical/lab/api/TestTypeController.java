@@ -107,7 +107,7 @@ public class TestTypeController {
     
     @DeleteMapping("/testtype/{id}")
     public ResponseEntity<?> deleteTestType(@PathVariable("id") final Long id) {
-        labService.deleteById(id);
+        labService.deleteTestById(id);
         return ResponseEntity.ok("200");
     }
     

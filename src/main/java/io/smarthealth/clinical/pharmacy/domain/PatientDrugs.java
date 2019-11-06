@@ -7,7 +7,9 @@ package io.smarthealth.clinical.pharmacy.domain;
 
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.smarthealth.clinical.record.domain.Prescription;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -17,8 +19,9 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "pharmacy_patient_drugs")
-public class PatientDrugs extends ClinicalRecord {    
+@Table(name = "patient_drugs")
+public class PatientDrugs extends ClinicalRecord {
+
     private String brandName;
     private String route;
     private Double dose;
@@ -33,4 +36,6 @@ public class PatientDrugs extends ClinicalRecord {
     private Boolean asNeeded = false;
     private String asNeededCondition;
     private Integer numRefills;
+    @ManyToOne
+    private Prescription prescription;
 }

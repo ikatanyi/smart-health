@@ -7,7 +7,6 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -19,7 +18,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "test_type")
+@Table(name = "lab_test_type")
 public class Testtype extends Identifiable {
     private String serviceCode;
     private String testType; //government classifications
@@ -35,11 +34,16 @@ public class Testtype extends Identifiable {
     
     @OneToMany(mappedBy = "testType",cascade = {javax.persistence.CascadeType.ALL}, orphanRemoval = true)
     private List<Analyte> analytes = new ArrayList<>();
-    
-    @ManyToMany(mappedBy = "testType")
+     
+    @OneToMany(mappedBy = "testtype")
     private List<Specimen> specimens = new ArrayList<>();
     
     @OneToOne
     private Discipline discipline;
+    
+    public void addSpecimen(Specimen specimen){
+        specimen.setTesttype(this);
+        specimens.add(specimen);
+    }
     
 }

@@ -83,7 +83,7 @@ public class SpecimenController {
     
     @DeleteMapping("/specimen/{id}")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
-        specimenService.deleteById(id);
+        specimenService.deleteTestById(id);
         return ResponseEntity.ok("200");
     }
 }

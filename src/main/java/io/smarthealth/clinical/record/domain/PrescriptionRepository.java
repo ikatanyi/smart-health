@@ -5,6 +5,9 @@
  */
 package io.smarthealth.clinical.record.domain;
 
+import io.smarthealth.clinical.visit.domain.Visit;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -12,5 +15,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Simon.waweru
  */
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
-
+    Page<Prescription> findByVisit(final Visit visit, final Pageable pageable);
 }

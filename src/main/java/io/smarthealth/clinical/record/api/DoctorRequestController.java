@@ -6,7 +6,6 @@
 package io.smarthealth.clinical.record.api;
 
 import io.smarthealth.clinical.record.data.DoctorRequestData;
-import io.smarthealth.clinical.record.domain.Disease;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.service.DoctorRequestService;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -53,19 +51,19 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api")
 @Api(value = "Doctor Request Controller", description = "Operations pertaining to Doctor Requests/Orders maintenance")
 public class DoctorRequestController {
-    
+
     final DoctorRequestService requestService;
-    
+
     final VisitService visitService;
-    
+
     final ModelMapper modelMapper;
-    
+
     final EmployeeService employeeService;
-    
+
     final SequenceService sequenceService;
-    
+
     final ItemService itemService;
-    
+
     public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, SequenceService sequenceService, ItemService itemService) {
         this.requestService = requestService;
         this.visitService = visitService;
@@ -74,22 +72,22 @@ public class DoctorRequestController {
         this.sequenceService = sequenceService;
         this.itemService = itemService;
     }
-    
+
     @PostMapping("/visit/{visitNo}/doctor-request/{requestType}")
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @PathVariable("requestType") final String requestType, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
         List<DoctorRequest> docRequests = new ArrayList<>();
+        String orderNo = sequenceService.nextNumber(SequenceType.DoctorRequestNumber);
         for (DoctorRequestData data : docRequestData) {
             DoctorRequest doctorRequest = DoctorRequestData.map(data);
             Item item = itemService.findById(Long.valueOf(data.getItemCode())).get();
-            System.out.println("item "+item.getItemName());
             doctorRequest.setItem(item);
             doctorRequest.setPatient(visit.getPatient());
             doctorRequest.setVisit(visit);
             doctorRequest.setRequestedBy(employee);
-            doctorRequest.setOrderNumber(sequenceService.nextNumber(SequenceType.DoctorRequestNumber));
+            doctorRequest.setOrderNumber(orderNo);
             doctorRequest.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfullfilled.name());
             doctorRequest.setFulfillerComment("Request unfullfilled");
             doctorRequest.setRequestType(requestType);
@@ -103,8 +101,8 @@ public class DoctorRequestController {
             throw APIException.notFound("TestType Number {0} not found.", "");
         }
     }
-    
-    @GetMapping("/doctorRequest/{id}")
+
+    @GetMapping("/doctor-request/{id}")
     public ResponseEntity<?> fetchRequestById(@PathVariable("id") final Long id) {
         Optional<DoctorRequestData> specimens = requestService.getDocRequestById(id);
         if (specimens != null) {
@@ -113,13 +111,22 @@ public class DoctorRequestController {
             throw APIException.notFound("Request Number {0} not found.", id);
         }
     }
-    
+
     @GetMapping("/visit/{visitNo}/doctor-request/{requestType}")
     public ResponseEntity<?> fetchAllRequestsByVisit(@PathVariable("visitNo") final String visitNo, @PathVariable("requestType") final String requestType, Pageable pageable) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
         Page<DoctorRequest> page = requestService.findAllByVisit(visit, requestType, pageable);
-        
-        Page<DoctorRequestData> list = page.map(r -> DoctorRequestData.map(r));
+
+        Page<DoctorRequestData> list = page.map(r -> {
+            DoctorRequestData dd = DoctorRequestData.map(r);
+            dd.setEmployeeData(employeeService.convertEmployeeEntityToEmployeeData(r.getRequestedBy()));
+            dd.setPatientNumber(r.getPatient().getPatientNumber());
+            dd.setVisitNumber(visit.getVisitNumber());
+            if (r.getItem() != null) {
+                dd.setItemCode(r.getItem().getItemCode());
+            }
+            return dd;
+        });
         Pager<List<DoctorRequestData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -129,12 +136,12 @@ public class DoctorRequestController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Requests");
+        details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
-        
+
         return ResponseEntity.ok(pagers);
     }
-    
+
     @GetMapping("/docRequest")
     public ResponseEntity<List<DoctorRequestData>> fetchAllSpecimens(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         String visitNumber = queryParams.getFirst("visitNumber");
@@ -146,10 +153,10 @@ public class DoctorRequestController {
         HttpHeaders headers = null;//PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page.);
         return new ResponseEntity<>(page, headers, HttpStatus.OK);
     }
-    
+
     @DeleteMapping("/docRequest/{id}")
     public ResponseEntity<?> deleteRequest(@PathVariable("id") final Long id) {
         return requestService.deleteById(id);
     }
-    
+
 }

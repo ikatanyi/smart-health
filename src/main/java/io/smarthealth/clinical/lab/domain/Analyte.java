@@ -15,7 +15,7 @@ import lombok.Data;
 @Entity
 @Data
 //@NamedQuery(name="tets",query = "SELECT e FROM Analyte e WHERE e.testType = :testType AND e.sex = :gender AND :age BETWEEN e.startAge and e.endAge ")
-@Table(name = "test_analyte")
+@Table(name = "lab_test_analyte")
 public class Analyte extends Identifiable {
     
      public enum Gender {

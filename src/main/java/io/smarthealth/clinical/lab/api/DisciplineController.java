@@ -73,7 +73,7 @@ public class DisciplineController {
     
     @DeleteMapping("/discipline/{id}")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
-        labService.deleteById(id);
+        labService.deleteTestById(id);
         return ResponseEntity.ok("200");
     }
 }
