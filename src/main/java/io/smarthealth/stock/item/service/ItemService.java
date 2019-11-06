@@ -91,10 +91,11 @@ public class ItemService {
                 item.setTax(tax.get());
             }
         }
+        System.err.println(item);
 
         Item savedItem = itemRepository.save(item);
 
-        if (createItem.getStockCategory().equals("Drugs")) {
+        if (createItem.getStockCategory() != null && createItem.getStockCategory().equals("drug")) {
             Drug drug = new Drug();
             drug.setItem(savedItem);
             drug.setDrugCategory(createItem.getDrugCategory());
@@ -136,8 +137,8 @@ public class ItemService {
         return itemRepository.findByItemCode(itemCode).orElseThrow(() -> APIException.notFound("Item identified by code {0} not found", itemCode));
     }
 
-    public Page<Item> fetchItems(final boolean includeClosed, String term, Pageable pageable) {
-        Specification<Item> spec = ItemSpecification.createSpecification(includeClosed, term);
+    public Page<Item> fetchItems(String category, String type, boolean includeClosed, String term, Pageable pageable) {
+        Specification<Item> spec = ItemSpecification.createSpecification(category, type, includeClosed, term);
         Page<Item> items = itemRepository.findAll(spec, pageable);
         return items;
     }

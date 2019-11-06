@@ -14,7 +14,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "product_uom")
+@Table(name = "stock_uom")
 public class Uom extends Identifiable {
 
     public enum Category {

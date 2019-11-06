@@ -55,7 +55,8 @@ public class AdmissionService {
 
         Visit visit = visitRepository.findByVisitNumber(admissionDTO.getVisitNumber())
                 .orElseThrow(() -> APIException.notFound("Visit with id {0} is not found", admissionDTO.getVisitNumber()));
-        Pageable pageable = new PageRequest(0, 1000, new Sort(Sort.Direction.ASC, "id"));
+//        Pageable pageable = new PageRequest(0, 1000, new Sort(Sort.Direction.ASC, "id"));
+        Pageable pageable = PageRequest.of(0, 1000, Sort.by("id").descending());
         Page<PatientDiagnosis> diagnosisProv = diagnosisRepository.findByVisit(visit, pageable);
 
         Optional<Employee> admittingDoctor = employeeRepository.findById(admissionDTO.getEmployeeId());

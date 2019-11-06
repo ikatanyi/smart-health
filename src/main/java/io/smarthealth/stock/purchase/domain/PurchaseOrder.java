@@ -1,11 +1,11 @@
 package io.smarthealth.stock.purchase.domain;
-
-import io.smarthealth.organization.contact.domain.Address;
-import io.smarthealth.organization.contact.domain.Contact;
-import io.smarthealth.accounting.payment.domain.PriceList;
+  
+import io.smarthealth.accounting.pricebook.domain.PriceBook;
+import io.smarthealth.administration.app.domain.Address;
+import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Department;
-import io.smarthealth.stock.supplier.domain.Supplier;
+import io.smarthealth.supplier.domain.Supplier;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,13 +43,12 @@ public class PurchaseOrder extends Auditable {
     private Address address;
     @OneToOne
     private Contact contact;
-    @OneToOne
+    @ManyToOne
     private Department store;
-    @OneToOne
-    private PriceList priceList;
+    @ManyToOne
+    private PriceBook priceList;
     @Enumerated(EnumType.STRING)
     private Status status;
-
     //payment details that can be defined here that contains the terms and conditions for this and the rest will have to made
     @OneToMany(mappedBy = "purchaseOrder")
     private List<PurchaseOrderItem> purchaseOrderLines = new ArrayList<>();

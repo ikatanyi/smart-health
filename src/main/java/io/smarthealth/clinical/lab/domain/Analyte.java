@@ -20,12 +20,12 @@ public class Analyte extends Identifiable {
     
      public enum Gender {
         Male,
-        Female
+        Female,
+        Both
     }
     @Enumerated(EnumType.STRING)
     private Gender gender;
     
-    private Long id;
     private String testCode;
     private String testName;
     private String startAge;
@@ -37,5 +37,5 @@ public class Analyte extends Identifiable {
     private String description;   
     
     @ManyToOne                           
-    private Testtype testType;
+    private LabTestType testType;
 }

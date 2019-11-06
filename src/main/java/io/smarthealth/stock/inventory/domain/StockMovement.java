@@ -23,7 +23,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "stock_movement")
+@Table(name = "stock_stock_movement")
 public class StockMovement extends Auditable {
 
     public enum Purpose {

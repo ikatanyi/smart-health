@@ -27,7 +27,8 @@ public class DepartmentData {
     @NotBlank
     @NotNull
     private String name;
-    private String facilityCode;
+    private String facilityCode; 
+    private Long facilityId;
 //    private Long parentId;
 //    private Long incomeAccountId;
 //    private Long expenseAccountId;

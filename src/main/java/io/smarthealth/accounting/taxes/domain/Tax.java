@@ -11,8 +11,9 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "account_taxes")
-public class Tax extends Identifiable{
+@Table(name = "config_taxes")
+public class Tax extends Identifiable {
+
     private String taxName;
     private double rate;
 }

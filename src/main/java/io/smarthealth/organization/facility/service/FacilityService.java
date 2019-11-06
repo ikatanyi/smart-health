@@ -1,22 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.organization.facility.service;
 
-import io.smarthealth.accounting.account.domain.AccountRepository;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.utility.ContentPage;
-import io.smarthealth.organization.domain.OrganizationRepository;
 import io.smarthealth.organization.facility.data.FacilityData;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.domain.FacilityRepository;
-import io.smarthealth.organization.service.OrganizationService;
-import java.util.ArrayList;
+import io.smarthealth.organization.org.domain.Organization;
+import io.smarthealth.organization.org.service.OrganizationService;
 import java.util.List;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,81 +15,63 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
- * @author simon.waweru
+ * @author Kelsas
  */
 @Service
 public class FacilityService {
 
-    @Autowired
-    OrganizationRepository organizationRepository;
-
-    @Autowired
-    AccountRepository accountRepository;
-
-    @Autowired
-    FacilityRepository facilityRepository;
-
-    @Autowired
-    OrganizationService organizationService;
-
-    @Autowired
-    ModelMapper modelMapper;
+    private FacilityRepository facilityRepository;
+    private OrganizationService orgService;
 
     @Transactional
-    public Facility createFacility(FacilityData facilityData) {
-        try {
-            Facility facility = FacilityData.map(facilityData);
+    public Facility createFacility(String id, FacilityData facilityData) {
+        Organization org = orgService.getOrganization(id);
+        Facility facility = new Facility();
 
-           return  facilityRepository.save(facility);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("Error occured while creating facility ", e.getMessage());
-        }
-    }
-
-    public Facility fetchFacilityById(String facilityId) {
-        return facilityRepository.findById(facilityId).orElseThrow(() -> APIException.notFound("Facility identified by {0} not found", facilityId));
-    }
-
-    public Facility fetchFacilityCode(String facilityCode) {
-        return facilityRepository.findByCode(facilityCode).orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", facilityCode));
-    }
-
-    public ContentPage<FacilityData> fetchAllFacilities(Pageable pageable) {
-        ContentPage<FacilityData> facilitiesData = new ContentPage<>();
-        Page<Facility> facilities = facilityRepository.findAll(pageable);
-        facilitiesData.setTotalElements(facilities.getTotalElements());
-        facilitiesData.setTotalPages(facilities.getTotalPages());
-        if (facilities.getSize() > 0) {
-            List<FacilityData> facilityDataList = new ArrayList<>();
-            for (Facility facility : facilities) {
-                FacilityData facilityData = FacilityData.map(facility);
-                facilityDataList.add(facilityData);
+        if (facilityData.getParentFacilityId() != null) {
+            Optional<Facility> pf = getFacility(facilityData.getParentFacilityId());
+            if (pf.isPresent()) {
+                facility.setParentFacility(pf.get());
             }
-            facilitiesData.setContents(facilityDataList);
         }
-        return facilitiesData;
+        facility.setFacilityType(facilityData.getFacilityType());
+        facility.setTaxNumber(facilityData.getTaxNumber());
+        facility.setFacilityClass(facilityData.getFacilityClass());
+        facility.setFacilityName(facilityData.getFacilityName());
+        facility.setEnabled(facilityData.isEnabled());
+        facility.setLogo(facilityData.getLogo());
+        facility.setOrganization(org);
+
+        return facilityRepository.save(facility);
     }
 
-    public boolean deleteFacility(Facility facility) {
-        try {
-            facilityRepository.deleteById(facility.getId());
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("Error deleting facility id " + facility.getId(), e.getMessage());
-        }
+    public Optional<Facility> getFacility(Long id) {
+
+        return facilityRepository.findById(id);
+    }
+    public Facility findFacility(Long id){
+        return getFacility(id)
+                .orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", id));
     }
 
-    public Facility convertFacilityDataToEntity(FacilityData facilityData) {
-        Facility facility = modelMapper.map(facilityData, Facility.class);
+    public Page<Facility> getAllFacilities(Pageable page) {
+        return facilityRepository.findAll(page);
+    }
+
+//    public Facility fetchFacilityCode(String facilityCode) {
+//        return facilityRepository.findByCode(facilityCode).orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", facilityCode));
+//    }
+
+    public Facility findFacility(String orgId, Long id) {
+        orgService.getOrganization(orgId);
+        Facility facility = getFacility(id).orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", id));
         return facility;
     }
 
-    public FacilityData convertFacilityEntityToData(Facility facility) {
-        FacilityData facilityData = modelMapper.map(facility, FacilityData.class);
+    public List<Facility> findByOrganization(String orgId) {
+        Organization org = orgService.getOrganization(orgId);
 
-        return facilityData;
+        return org.getFacilities();
     }
 
 }

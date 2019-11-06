@@ -5,18 +5,14 @@
  */
 package io.smarthealth.auth.domain;
 
-import io.smarthealth.organization.person.patient.domain.Patient;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.PrePersist;
 //import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import lombok.Data;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  *

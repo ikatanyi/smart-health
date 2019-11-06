@@ -1,7 +1,6 @@
 package io.smarthealth.accounting.account.service;
 
 import io.smarthealth.accounting.account.data.AccountData;
-import io.smarthealth.accounting.account.data.JournalData;
 import io.smarthealth.accounting.account.domain.Account;
 import io.smarthealth.accounting.account.domain.AccountRepository;
 import io.smarthealth.accounting.account.domain.AccountType;
@@ -10,6 +9,7 @@ import io.smarthealth.accounting.account.domain.Journal;
 import io.smarthealth.accounting.account.domain.JournalEntry;
 import io.smarthealth.accounting.account.domain.JournalRepository;
 import io.smarthealth.accounting.account.domain.enumeration.AccountCategory;
+import io.smarthealth.accounting.account.domain.enumeration.JournalState;
 import io.smarthealth.accounting.account.domain.specification.AccountSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.Optional;
@@ -114,7 +114,7 @@ public class AccountService {
              Journal journal=new Journal();
              journal.setTransactionId(generateTransactionId(2L));
              journal.setReversed(false);
-             journal.setState(JournalData.State.DRAFT);
+             journal.setState(JournalState.DRAFT);
              journal.setReferenceNumber(UUID.randomUUID().toString());
              journal.setTransactionDate(accountData.getBalanceDate());
              journal.setDescriptions("Opening Balance as at "+accountData.getBalanceDate().toString()); 

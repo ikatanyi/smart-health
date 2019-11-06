@@ -70,7 +70,7 @@ public class ContainerController {
 
     @DeleteMapping("/container/{id}")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
-        labService.deleteTestById(id);
+        labService.deleteContainerById(id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 }
