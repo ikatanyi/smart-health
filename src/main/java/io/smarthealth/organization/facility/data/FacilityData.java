@@ -6,11 +6,7 @@
 package io.smarthealth.organization.facility.data;
 
 import io.smarthealth.organization.facility.domain.Facility;
-import io.smarthealth.organization.org.domain.Organization;
-import javax.persistence.Enumerated;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import lombok.Data;
 
 /**

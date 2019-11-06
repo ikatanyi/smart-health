@@ -52,17 +52,7 @@ public class PatientTestsController {
      
     }
     
-    
-//    @GetMapping("/testtype/{id}")
-//    public ResponseEntity<?> fetchAllTestTypes(@PathVariable("id") final Long id) {
-//        Optional<TestTypeData> testType = ttypeService.getById(id);
-//        if (testType.isPresent()) {
-//            return ResponseEntity.ok(testType.get());
-//        } else {
-//            throw APIException.notFound("TestType Number {0} not found.", id);
-//        }
-//    }
-    
+
     @GetMapping("/PatientTest/{id}")
     public ResponseEntity<?> fetchPatientTestById(@PathVariable("id") final Long id) {
         Optional<LabTestData> result = resultService.fetchPatientTestsById(id);

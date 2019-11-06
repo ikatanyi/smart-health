@@ -47,7 +47,7 @@ import io.smarthealth.clinical.lab.domain.LabTestRepository;
 public class LabService {
 
     @Autowired
-    AnalyteRepository AnalyteRepository;
+    AnalyteRepository analyteRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -76,13 +76,13 @@ public class LabService {
             System.out.println("Line 76");
             Testtype testtype = LabTestTypeData.map(testtypeData);
             System.out.println("Line 78");
-            for (Long id : testtypeData.getSpecimenId()) {
-                Optional<Specimen> specimen = specimenRepository.findById(id);
-                if (specimen.isPresent()) {
-                    specimen.get().getTestType().add(testtype);
-                    testtype.getSpecimens().add(specimen.get());
-                }
-            }
+            testtypeData.getSpecimenId()
+                    .stream()
+                    .map((id) -> specimenRepository.findById(id))
+                    .filter((specimen) -> (specimen.isPresent()))
+                    .forEachOrdered((specimen) -> {
+                testtype.addSpecimen(specimen.get());
+            });
             Optional<Discipline> discipline = disciplineRepository.findById(testtypeData.getDisciplineId());
             if (discipline.isPresent()) {
                 testtype.setDiscipline(discipline.get());
@@ -116,17 +116,30 @@ public class LabService {
         }
     }
 
-    public Testtype fetchTestTypeById(Long testtypeId) {
-        return ttypeRepository.findById(testtypeId).orElseThrow(() -> APIException.notFound("TestType identified by {0} not found", testtypeId));
+    public Optional<Testtype> fetchTestTypeById(Long testtypeId) {
+        return ttypeRepository.findById(testtypeId);//.orElseThrow(() -> APIException.notFound("TestType identified by {0} not found", testtypeId));
     }
 
-    public List<AnalyteData> saveAnalytes(ArrayList<Analyte> analyte) {
+    public List<AnalyteData> saveAnalytes(List<AnalyteData> analyteData) {
         List<AnalyteData> analyteArray = new ArrayList();
-        List<Analyte> analytes = AnalyteRepository.saveAll(analyte);
-        for (Analyte analyt : analytes) {
-            analyteArray.add(convertToAnalyteData(analyt));
+        List<Analyte> analytes = new ArrayList();
+        for (AnalyteData analytedata : analyteData) {
+            Analyte analyte = convertDataToAnalyte(analytedata);
+            Optional<Testtype> ttype = ttypeRepository.findById(analytedata.getTestTypeId());
+
+            if (ttype.isPresent()) {
+                analyte.setTestType(ttype.get());
+            }
+            analytes.add(analyte);
         }
-        return analyteArray;
+        
+        List<Analyte> savedAnalytes = analyteRepository.saveAll(analytes);
+        
+        for (Analyte analyt : analytes) {
+            analyteArray.add(convertAnalyteToData(analyt));
+        }
+        return analyteArray;       
+        
     }
 
     public Testtype fetchTestTypeByCode(String testTypeCode) {
@@ -156,9 +169,14 @@ public class LabService {
         return testtypeData;
     }
 
-    public AnalyteData convertToAnalyteData(Analyte analyte) {
+    public AnalyteData convertAnalyteToData(Analyte analyte) {
         AnalyteData analyteData = modelMapper.map(analyte, AnalyteData.class);
         return analyteData;
+    }
+    
+     public Analyte convertDataToAnalyte(AnalyteData analyteData) {
+        Analyte analyte = modelMapper.map(analyteData, Analyte.class);
+        return analyte;
     }
 
     /*
@@ -188,28 +206,6 @@ public class LabService {
             savedlist.add(SpecimenData.map(s));
         });
         return savedlist;
-
-//        List<SpecimenData> specs2 = new ArrayList();
-////        List<Specimen> specs = mList<Specimen>lMapper.map(specimenData, new TypeToken<List<Specimen>>() {}.getType());
-//        specimenDatalist.stream()
-//                .map((specData) -> SpecimenData.map(specData)
-//                ).forEachOrdered((spec1) -> {
-//            specs.add(spec1);
-//        });
-//
-//        List<Specimen> specimens = specimenRepository.saveAll(specs);
-//        //
-//        
-//        for (Specimen spec : specimens) {
-//            Optional<Container> container = containerRepository.findById(spec.getContainerId());
-//            if (container.isPresent()) {
-//                SpecimenData spec1 = SpecimenData.map(spec);
-//                spec1.setContainer(modelMapper.map(container.get(), ContainerData.class));
-//                specs2.add(spec1);
-//            }
-//        }
-//
-//        return specs2;
     }
 
     public Page<SpecimenData> fetchAllSpecimens(Pageable pgbl) {
@@ -220,8 +216,8 @@ public class LabService {
         return specimenRepository.findById(id).map(p -> SpecimenData.map(p)).orElseThrow(() -> APIException.notFound("Specimen identified by {0} not found.", id));
     }
 
-    public void deleteById(Long id) {
-        specimenRepository.deleteById(id);
+    public void deleteTestById(Long id) {
+        ttypeRepository.deleteById(id);
     }
 
 //    public SpecimenData convertSpecimenToData(Specimen specimen) {
@@ -363,28 +359,25 @@ public class LabService {
 
     @Transactional
     public Analyte createAnalyte(Analyte analyte) {
-        return AnalyteRepository.save(analyte);
+        return analyteRepository.save(analyte);
     }
 
     public Page<Analyte> fetchAllAnalytes(Pageable pgbl) {
-        return AnalyteRepository.findAll(pgbl);
+        return analyteRepository.findAll(pgbl);
     }
 
     public Page<AnalyteData> fetchAnalyteByTestType(Testtype testtype, Pageable pgbl) {
-        return AnalyteRepository.findByTestType(testtype, pgbl).map(p -> convertAnalyteToData(p));
+        return analyteRepository.findByTestType(testtype, pgbl).map(p -> convertAnalyteToData(p));
     }
 
     public Analyte fetchAnalyteById(Long id) {
-        return AnalyteRepository.findById(id).orElseThrow(() -> APIException.notFound("Analyte identified by {0} not found.", id));
+        return analyteRepository.findById(id).orElseThrow(() -> APIException.notFound("Analyte identified by {0} not found.", id));
     }
 
     public void deleteAnalyteById(Long id) {
-        AnalyteRepository.deleteById(id);
+        analyteRepository.deleteById(id);
     }
 
-    public AnalyteData convertAnalyteToData(Analyte analyte) {
-        AnalyteData analyteData = modelMapper.map(analyte, AnalyteData.class);
-        return analyteData;
-    }
+   
 
 }

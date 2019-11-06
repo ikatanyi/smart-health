@@ -12,15 +12,19 @@ import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecific
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.lang.DateConverter;
+import io.smarthealth.infrastructure.sequence.SequenceService;
+import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
@@ -43,26 +47,17 @@ public class DoctorRequestService implements DateConverter {
     @Autowired
     ModelMapper modelMapper;
 
-    public DoctorRequestService(DoctorsRequestRepository doctorRequestRepository, VisitRepository visitRepository, PatientRepository patientRepository) {
+    private final SequenceService sequenceService;
+
+    public DoctorRequestService(DoctorsRequestRepository doctorRequestRepository, VisitRepository visitRepository, PatientRepository patientRepository, SequenceService sequenceService
+    ) {
         this.doctorRequestRepository = doctorRequestRepository;
         this.visitRepository = visitRepository;
         this.patientRepository = patientRepository;
-
+        this.sequenceService = sequenceService;
     }
 
-    public List<DoctorRequestData> createRequest(List<DoctorRequestData> requestData) {
-
-        Type listType = new TypeToken<List<DoctorRequest>>() {
-        }.getType();
-        List<DoctorRequest> docRequests = modelMapper.map(requestData, new TypeToken<List<DoctorRequest>>() {
-        }.getType());
-
-        for (DoctorRequest req : docRequests) {
-            Visit visit = visitRepository.findByVisitNumber(req.getPatientNumber()).get();
-            Optional<Patient> patient = patientRepository.findByPatientNumber(req.getPatientNumber());
-            req.setPatient(patient.get());
-            req.setVisit(visit);
-        }
+    public List<DoctorRequestData> createRequest(List<DoctorRequest> docRequests) {
         List<DoctorRequest> docReqs = doctorRequestRepository.saveAll(docRequests);
         return modelMapper.map(docReqs, new TypeToken<List<DoctorRequest>>() {
         }.getType());
@@ -76,6 +71,11 @@ public class DoctorRequestService implements DateConverter {
         List<DoctorRequestData> docReqData = modelMapper.map(docReqs, new TypeToken<List<DoctorRequestData>>() {
         }.getType());
         return docReqData;
+    }
+
+    public Page<DoctorRequest> findAllByVisit(final Visit visit, final String requestType, Pageable pageable) {
+        Page<DoctorRequest> docReqs = doctorRequestRepository.findByVisitAndRequestType(visit, requestType, pageable);
+        return docReqs;
     }
 
     public Optional<DoctorRequestData> getDocRequestById(Long id) {

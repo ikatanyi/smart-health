@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 /**
@@ -51,14 +55,14 @@ public class AdmissionService {
 
         Visit visit = visitRepository.findByVisitNumber(admissionDTO.getVisitNumber())
                 .orElseThrow(() -> APIException.notFound("Visit with id {0} is not found", admissionDTO.getVisitNumber()));
-        
-        
-        List<PatientDiagnosis> diagnosisProv = diagnosisRepository.findByVisit(visit);
+//        Pageable pageable = new PageRequest(0, 1000, new Sort(Sort.Direction.ASC, "id"));
+        Pageable pageable = PageRequest.of(0, 1000, Sort.by("id").descending());
+        Page<PatientDiagnosis> diagnosisProv = diagnosisRepository.findByVisit(visit, pageable);
 
         Optional<Employee> admittingDoctor = employeeRepository.findById(admissionDTO.getEmployeeId());
         Admission admission = convertAdmissionDataToAdmission(admissionDTO);
         if (!diagnosisProv.isEmpty()) {
-            admission.setProvisionDiagnosis(diagnosisProv);
+            admission.setProvisionDiagnosis(diagnosisProv.getContent());
         }
         if (admittingDoctor.isPresent()) {
             admission.setAdmittingDoctor(admittingDoctor.get());

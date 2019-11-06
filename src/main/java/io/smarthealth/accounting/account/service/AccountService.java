@@ -1,7 +1,6 @@
 package io.smarthealth.accounting.account.service;
 
 import io.smarthealth.accounting.account.data.AccountData;
-import io.smarthealth.accounting.account.data.JournalData;
 import io.smarthealth.accounting.account.domain.Account;
 import io.smarthealth.accounting.account.domain.AccountRepository;
 import io.smarthealth.accounting.account.domain.AccountType;
