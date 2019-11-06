@@ -1,11 +1,13 @@
 package io.smarthealth.stock.item.domain;
 
+import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -18,7 +20,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "st_stock_items")
+@Table(name = "stock_item_service")
 public class Item extends Identifiable {
 
     private String itemType;
@@ -39,7 +41,8 @@ public class Item extends Identifiable {
     @OneToMany(mappedBy = "stockItem")
     private List<ReorderRule> reorderRules;
     //sales, purchase, inventory accounts to be linked via the store
-
+    @ManyToMany(mappedBy = "priceBookItems")
+    private List<PriceBook> priceBooks;
     private Boolean active;
 
 }

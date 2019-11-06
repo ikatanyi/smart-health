@@ -1,9 +1,5 @@
 package io.smarthealth.stock.item.domain.specification;
 
-import io.smarthealth.accounting.account.domain.specification.*;
-import io.smarthealth.accounting.account.domain.Account;
-import io.smarthealth.accounting.account.domain.AccountType;
-import io.smarthealth.accounting.account.domain.enumeration.AccountCategory;
 import io.smarthealth.stock.item.domain.Item;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -20,12 +16,19 @@ public class ItemSpecification {
         super();
     }
 
-    public static Specification<Item> createSpecification(final boolean includeClosed, final String term) {
+    public static Specification<Item> createSpecification(String category, String type, final boolean includeClosed, final String term) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
             if (!includeClosed) {
                 predicates.add(cb.equal(root.get("active"), true));
+            }
+
+            if (type != null) {
+                predicates.add(cb.equal(root.get("itemType"), type));
+            }
+            if (category != null) {
+                predicates.add(cb.equal(root.get("category"), category));
             }
 
             if (term != null) {
@@ -36,7 +39,7 @@ public class ItemSpecification {
                                 cb.like(root.get("itemCode"), likeExpression)
                         )
                 );
-            } 
+            }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

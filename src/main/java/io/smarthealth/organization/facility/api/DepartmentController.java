@@ -55,7 +55,7 @@ public class DepartmentController {
     @PostMapping("/department")
     public @ResponseBody
     ResponseEntity<?> createFacilityDepartment(@RequestBody @Valid final DepartmentData departmentData) {
-        Facility facility = facilityService.fetchFacilityCode(departmentData.getFacilityCode());
+        Facility facility = facilityService.findFacility(departmentData.getFacilityId());
 
         Department department = convertDeptDataToDepartment(departmentData);
         department.setFacility(facility);
@@ -79,7 +79,7 @@ public class DepartmentController {
 
     @GetMapping("/facility/{code}/department")
     public ResponseEntity<List<DepartmentData>> fetchDepartmentsByFacility(@PathVariable("code") final String facilityCode, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-        Facility facility = facilityService.fetchFacilityCode(facilityCode);
+        Facility facility = facilityService.findFacility(Long.valueOf(facilityCode));
         Page<DepartmentData> page = departmentService.fetchDepartmentByFacility(facility, pageable).map(d -> convertToDeptData(d));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);

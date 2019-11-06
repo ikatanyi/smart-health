@@ -6,7 +6,7 @@
 package io.smarthealth.organization.facility.data;
 
 import io.smarthealth.organization.facility.domain.Facility;
-import javax.persistence.Enumerated;
+import javax.persistence.Lob;
 import lombok.Data;
 
 /**
@@ -15,54 +15,38 @@ import lombok.Data;
  */
 @Data
 public class FacilityData {
-    
-    @Enumerated
-    private Facility.Type facilityType;
-    
-    private Boolean parent;
-    private String registration_number;
-    private String facilityClass;
-    
-    private String code;
-    private String name;
-    private String taxId;
-    private String website;
-    private String country;
-    private Boolean enabled;
+
+    private String organizationId;
+    private String organizationName;
+    private String registrationNumber;
+    private String facilityType;
+    private String taxNumber;
+    private String facilityClass; //government classifications
+    private String facilityName;
+    private Long parentFacilityId;
+    private String parentFacility;
+    @Lob
     private byte[] logo;
-    
-    
+    private boolean enabled;
+
     public static FacilityData map(Facility facility) {
         FacilityData facilityData = new FacilityData();
-        facilityData.setCode(facility.getCode());
-        facilityData.setCountry(facility.getCountry());
-//        facilityData.setCreditLimitId(facility.getCreditLimit().getId());
-        facilityData.setEnabled(facility.getEnabled());
+        if(facility.getOrganization()!=null){
+            facilityData.setOrganizationId(facility.getOrganization().getId());
+            facilityData.setOrganizationName(facilityData.getOrganizationName());
+        }
+        if(facility.getParentFacility()!=null){
+            facilityData.setParentFacility(facility.getParentFacility().getFacilityName());
+            facilityData.setParentFacilityId(facility.getParentFacility().getId());
+        } 
+        facilityData.setFacilityType(facility.getFacilityType());
+        facilityData.setTaxNumber(facility.getTaxNumber());
         facilityData.setFacilityClass(facility.getFacilityClass());
-//        facilityData.setFacilityType(Facility.Type.valueOf(facility.getFacilityType()));
-        facilityData.setName(facility.getName());
-        facilityData.setParent(Boolean.TRUE);
-        facilityData.setRegistration_number(facility.getRegistrationNumber());
-        facilityData.setTaxId(facility.getTaxId());
-        facilityData.setWebsite(facility.getWebsite());
+        facilityData.setFacilityName(facility.getFacilityName());
+        facilityData.setEnabled(facility.isEnabled());
         facilityData.setLogo(facility.getLogo());
+        
         return facilityData;
     }
-    
-    public static Facility map(FacilityData facilityData) {
-        Facility facility = new Facility();
-        facility.setCode(facilityData.getCode());
-        facility.setCountry(facilityData.getCountry());
-        facility.setEnabled(facilityData.getEnabled());
-        facility.setFacilityClass(facilityData.getFacilityClass());
-        facility.setFacilityType(facilityData.getFacilityType().name());
-        facility.setName(facilityData.getName());
-        facility.setParent(facilityData.getParent());
-        facility.setRegistrationNumber(facilityData.getRegistration_number());
-        facility.setTaxId(facilityData.getTaxId());
-        facility.setWebsite(facilityData.getWebsite());
-        facility.setLogo(facilityData.getLogo());
-        return facility;
-    }
-    
+
 }

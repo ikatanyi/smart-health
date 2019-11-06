@@ -19,7 +19,6 @@ import io.smarthealth.clinical.lab.domain.Discipline;
 import io.smarthealth.clinical.lab.domain.DisciplineRepository;
 import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.SpecimenRepository;
-import io.smarthealth.clinical.lab.domain.TestTypeRepository;
 import io.smarthealth.clinical.lab.domain.LabTestType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
@@ -28,7 +27,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +35,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.lab.domain.LabTestRepository;
+import io.smarthealth.clinical.lab.domain.LabTestTypeRepository;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
@@ -61,7 +60,7 @@ public class LabService {
     private final DisciplineRepository disciplineRepository;
 
     @Autowired
-    private final TestTypeRepository ttypeRepository;
+    private final LabTestTypeRepository ttypeRepository;
 
     @Autowired
     private final LabTestRepository PtestsRepository;
@@ -75,7 +74,7 @@ public class LabService {
     @Autowired
     private final DoctorsRequestRepository doctorRequestRepository;
 
-    public LabService(AnalyteRepository analyteRepository, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, TestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, VisitRepository visitRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository) {
+    public LabService(AnalyteRepository analyteRepository, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, VisitRepository visitRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository) {
         this.analyteRepository = analyteRepository;
         this.containerRepository = containerRepository;
         this.disciplineRepository = disciplineRepository;

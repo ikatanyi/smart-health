@@ -14,4 +14,5 @@ import lombok.Data;
 @Table(name = "auth_permission")
 public class Permission extends Identifiable{
     private String name; 
+   
 }

@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "st_drugs")
+@Table(name = "stock_drugs")
 public class Drug extends Identifiable{
     @OneToOne
     private Item item;

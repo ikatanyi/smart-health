@@ -24,13 +24,12 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @author Kelsas
  */
 @Entity
-@Table(name = "auth_user")
-public class User extends Identifiable 
-        implements UserDetails {
+@Table(name = "auth_user") 
+public class User extends Identifiable implements UserDetails {
 
     private static final long serialVersionUID = 1L;
     private String email;
-    private String username; 
+    private String username;
     private String password;
     private String name;
     private boolean enabled;
@@ -44,10 +43,10 @@ public class User extends Identifiable
     @Column(name = "credentials_expired")
     private boolean credentialsNonExpired;
 
-    private boolean verified; 
-    
+    private boolean verified;
+
     private LocalDateTime lastLogin;
-     
+ 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "auth_role_user", joinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
@@ -57,16 +56,15 @@ public class User extends Identifiable
     public User() {
     }
 
-
     public User(String email, String username, String password, String name, List<Role> roles) {
         this.email = email;
         this.username = username;
         this.password = password;
         this.name = name;
         this.roles = roles;
-        this.enabled=true;
+        this.enabled = true;
     }
-    
+
     @Override
     public boolean isEnabled() {
         return enabled;
@@ -103,7 +101,7 @@ public class User extends Identifiable
 
         return authorities;
     }
- 
+
     @Override
     public String getPassword() {
         return password;
@@ -161,5 +159,5 @@ public class User extends Identifiable
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
-    
+
 }
