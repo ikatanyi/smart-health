@@ -39,6 +39,7 @@ import io.smarthealth.clinical.lab.domain.LabTestTypeRepository;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
+import io.smarthealth.infrastructure.sequence.SequenceRepository;
 
 /**
  *
@@ -70,11 +71,14 @@ public class LabService {
 
     @Autowired
     private final SpecimenRepository specimenRepository;
-    
+
     @Autowired
     private final DoctorsRequestRepository doctorRequestRepository;
 
-    public LabService(AnalyteRepository analyteRepository, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, VisitRepository visitRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository) {
+    @Autowired
+    private final SequenceRepository seqRepository;
+
+    public LabService(AnalyteRepository analyteRepository, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, VisitRepository visitRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, SequenceRepository seqRepository) {
         this.analyteRepository = analyteRepository;
         this.containerRepository = containerRepository;
         this.disciplineRepository = disciplineRepository;
@@ -83,14 +87,14 @@ public class LabService {
         this.visitRepository = visitRepository;
         this.specimenRepository = specimenRepository;
         this.doctorRequestRepository = doctorRequestRepository;
+        this.seqRepository = seqRepository;
     }
-    
-    
 
     @Transactional
     public Long createTestType(LabTestTypeData testtypeData) {
         try {
             System.out.println("Line 76");
+
             LabTestType testtype = LabTestTypeData.map(testtypeData);
             System.out.println("Line 78");
             testtypeData.getSpecimenId()
@@ -98,8 +102,8 @@ public class LabService {
                     .map((id) -> specimenRepository.findById(id))
                     .filter((specimen) -> (specimen.isPresent()))
                     .forEachOrdered((specimen) -> {
-                testtype.addSpecimen(specimen.get());
-            });
+                        testtype.addSpecimen(specimen.get());
+                    });
             Optional<Discipline> discipline = disciplineRepository.findById(testtypeData.getDisciplineId());
             if (discipline.isPresent()) {
                 testtype.setDiscipline(discipline.get());
@@ -149,14 +153,14 @@ public class LabService {
             }
             analytes.add(analyte);
         }
-        
+
         List<Analyte> savedAnalytes = analyteRepository.saveAll(analytes);
-        
+
         for (Analyte analyt : analytes) {
             analyteArray.add(convertAnalyteToData(analyt));
         }
-        return analyteArray;       
-        
+        return analyteArray;
+
     }
 
     public LabTestType fetchTestTypeByCode(String testTypeCode) {
@@ -190,8 +194,8 @@ public class LabService {
         AnalyteData analyteData = modelMapper.map(analyte, AnalyteData.class);
         return analyteData;
     }
-    
-     public Analyte convertDataToAnalyte(AnalyteData analyteData) {
+
+    public Analyte convertDataToAnalyte(AnalyteData analyteData) {
         Analyte analyte = modelMapper.map(analyteData, Analyte.class);
         return analyte;
     }
@@ -236,13 +240,13 @@ public class LabService {
     public void deleteTestById(Long id) {
         ttypeRepository.deleteById(id);
     }
-    
+
     public void deleteContainerById(Long id) {
-       containerRepository.deleteById(id);
+        containerRepository.deleteById(id);
     }
-    
+
     public void deleteDisciplineById(Long id) {
-       disciplineRepository.deleteById(id);
+        disciplineRepository.deleteById(id);
     }
 
 //    public SpecimenData convertSpecimenToData(Specimen specimen) {
@@ -302,18 +306,23 @@ public class LabService {
      */
     @Transactional
     public PatientTestData savePatientResults(PatientTestData patienttestdata) {
+        String labNumber = String.valueOf(seqRepository.nextSequence("LabTestNumber", "1"));
         Visit visit = visitRepository.findByVisitNumber(patienttestdata.getVisitNumber())
                 .orElseThrow(() -> APIException.notFound("Patient Session with Visit Number : {0} not found.", patienttestdata.getVisitNumber()));
+        PatientLabTest patienttestsEntity = PatientTestData.map(patienttestdata);
+
         Optional<DoctorRequest> docReq = doctorRequestRepository.findById(patienttestdata.getRequestId());
-         PatientLabTest patienttestsEntity = PatientTestData.map(patienttestdata);;
-        if(docReq.isPresent()){
-            String code = docReq.get().getItem().getItemCode();
-            Optional<LabTestType> ttype = ttypeRepository.findByServiceCode(code);
+
+        if (docReq.isPresent()) {
             
-            if(ttype.isPresent())
-               patienttestsEntity.setTesttype(ttype.get());
+        }        
+        Optional<LabTestType> ttype = ttypeRepository.findByServiceCode(patienttestdata.getTestCode());
+
+        if (ttype.isPresent()) {
+            patienttestsEntity.setTesttype(ttype.get());
         }
-       
+
+        patienttestsEntity.setLabTestNumber(labNumber);
         patienttestsEntity.setVisit(visit);
         patienttestsEntity.setPatient(visit.getPatient());
         PatientLabTest patientTests = PtestsRepository.save(patienttestsEntity);
@@ -398,7 +407,5 @@ public class LabService {
     public void deleteAnalyteById(Long id) {
         analyteRepository.deleteById(id);
     }
-
-   
 
 }

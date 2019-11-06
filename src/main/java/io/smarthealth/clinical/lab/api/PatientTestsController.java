@@ -42,7 +42,7 @@ public class PatientTestsController {
     @Autowired
     ModelMapper modelMapper;
 
-    @PostMapping("/Patient-Test")
+    @PostMapping("/patient-test")
     public @ResponseBody
     ResponseEntity<?> createPatientTest(@RequestBody @Valid final PatientTestData patientTestData) {
         PatientTestData Patienttests = resultService.savePatientResults(patientTestData);
@@ -53,7 +53,7 @@ public class PatientTestsController {
     }
     
 
-    @GetMapping("/Patient-Test/{id}")
+    @GetMapping("/patient-test/{id}")
     public ResponseEntity<?> fetchPatientTestById(@PathVariable("id") final Long id) {
         Optional<PatientTestData> result = resultService.fetchPatientTestsById(id);
         if (result!=null) {
@@ -63,7 +63,7 @@ public class PatientTestsController {
         }
     }
 
-    @GetMapping("/Patient-Test/result")
+    @GetMapping("/patient-test/result")
     public ResponseEntity<?> fetchAllPatientTests(
              @RequestParam(value = "patientNumber", required = false) String patientNumber,
              @RequestParam(value = "visitNumber", defaultValue = "") String visitNumber,
@@ -85,7 +85,7 @@ public class PatientTestsController {
         return ResponseEntity.ok(page);
     }
     
-    @DeleteMapping("/Patient-Test/result/{id}")
+    @DeleteMapping("/patient-test/result/{id}")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
         resultService.deleteById(id);
         return ResponseEntity.ok("200");

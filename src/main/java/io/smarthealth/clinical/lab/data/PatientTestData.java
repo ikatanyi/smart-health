@@ -23,10 +23,11 @@ public class PatientTestData {
     private Long id;
     private String visitNumber;
     private Long requestId;
+    private String testCode;
     private String clinicalDetails;
     private String physicianId;
     private String physicianName;
-    private String requestNumber;
+    private String LabTestNumber;
     
     @Enumerated(EnumType.STRING)
     private LabTestState state;
@@ -35,7 +36,7 @@ public class PatientTestData {
     public static PatientLabTest map(PatientTestData ptestdata) {
         PatientLabTest entity = new PatientLabTest();
         entity.setClinicalDetails(ptestdata.getClinicalDetails());
-        entity.setRequestNumber(ptestdata.getRequestNumber());
+        entity.setLabTestNumber(ptestdata.getLabTestNumber());
         return entity;
     }
 

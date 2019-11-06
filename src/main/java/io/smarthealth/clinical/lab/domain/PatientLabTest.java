@@ -34,11 +34,12 @@ public class PatientLabTest extends ClinicalRecord {
 
     @Enumerated(EnumType.STRING)
     private LabTestState state;
-    private String labNumber;
+    private String requestId;
     private String clinicalDetails;
     private String specimen;
     private String specimenCollectionTime;
-    private String requestNumber;
+    private String LabTestNumber;
+    
     @OneToOne
     private LabTestType testtype;
 
