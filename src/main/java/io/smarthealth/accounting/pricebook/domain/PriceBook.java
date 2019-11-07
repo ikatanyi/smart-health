@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -36,6 +37,7 @@ public class PriceBook extends Auditable {
     private String name;
     private String description;
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_pricebook_currency_id"))
     private Currency currency;
     @Enumerated(EnumType.STRING)
     private PriceBookType priceBookType;

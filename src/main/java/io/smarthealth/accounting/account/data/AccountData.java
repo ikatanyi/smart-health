@@ -39,6 +39,7 @@ public class AccountData {
         accdata.setDescription(account.getDescription());
         accdata.setAccountNumber(account.getAccountNumber()); 
         accdata.setAccountName(account.getAccountName());
+        accdata.setBalance(account.getBalance());
         accdata.setParentAccount(account.getParentAccount()!=null ? account.getParentAccount().getAccountNumber() : null);
         accdata.setParentAccountName(account.getParentAccount()!=null ? account.getParentAccount().getAccountName(): null);
         accdata.setEnabled(account.getEnabled());

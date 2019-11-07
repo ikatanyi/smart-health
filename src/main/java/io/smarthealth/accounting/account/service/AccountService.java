@@ -12,6 +12,9 @@ import io.smarthealth.accounting.account.domain.enumeration.AccountCategory;
 import io.smarthealth.accounting.account.domain.enumeration.JournalState;
 import io.smarthealth.accounting.account.domain.specification.AccountSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +39,7 @@ public class AccountService {
             JournalRepository journalRepository) {
         this.accountRepository = accountRepository;
         this.accountTypeRepository = accountTypeRepository;
-        this.journalRepository=journalRepository;
+        this.journalRepository = journalRepository;
     }
 
     public AccountData createAccount(AccountData accountData) {
@@ -51,11 +54,21 @@ public class AccountService {
                 .orElseThrow(() -> APIException.notFound("Account Type with Id {0} not found.", accountData.getParentAccount()));
         account.setAccountType(accountType);
 
-        Account savedAccount=accountRepository.save(account);
-                
+        Account savedAccount = accountRepository.save(account);
+
         postOpeningBalance(savedAccount, accountData);
-        
+
         return AccountData.map(savedAccount);
+    }
+
+    public Account findOneWithNotFoundDetection(Long id) {
+        return accountRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Account with id {0} not found", id));
+    }
+
+    public Account findOneWithNotFoundDetection(String id) {
+        return accountRepository.findByAccountNumber(id)
+                .orElseThrow(() -> APIException.notFound("Account with Account Number {0} not found", id));
     }
 
     public Page<Account> findAllAccount(Pageable page) {
@@ -95,63 +108,72 @@ public class AccountService {
         return updated.getAccountNumber();
     }
 
-    public Page<Account> fetchAccounts(final boolean includeClosed, String term, final String type, final String category, Pageable pageable) {
+    public Page<Account> fetchAccounts(final boolean includeClosed, String term, final String type, final String category, boolean fetchRunningBalance, Pageable pageable) {
         AccountType accountType = null;
         if (type != null) {
             accountType = accountTypeRepository.findById(Long.valueOf(type))
                     .orElseThrow(() -> APIException.notFound("Account Type {0} not found.", type));
         }
         throwIfAccountCategoryNotValid(category);
-        
+
         Specification<Account> spec = AccountSpecification.createSpecification(includeClosed, term, accountType, category);
         Page<Account> accounts = accountRepository.findAll(spec, pageable);
+
+        if (fetchRunningBalance) {
+            accounts.map(
+                    acc -> {
+                        acc.setBalance(BigDecimal.valueOf(732.90));
+                        return acc;
+                    });
+        }
         return accounts;
     }
 
     private void postOpeningBalance(Account account, AccountData accountData) {
         //determin the rule of posting opening balances
-        if(accountData.getOpeningBalance()!=null && accountData.getBalanceDate()!=null){
-             Journal journal=new Journal();
-             journal.setTransactionId(generateTransactionId(2L));
-             journal.setReversed(false);
-             journal.setState(JournalState.DRAFT);
-             journal.setReferenceNumber(UUID.randomUUID().toString());
-             journal.setTransactionDate(accountData.getBalanceDate());
-             journal.setDescriptions("Opening Balance as at "+accountData.getBalanceDate().toString()); 
-             
-             AccountType  accountType = accountTypeRepository.findById(accountData.getAccountType()).get();
-             AccountCategory category=accountType.getGlAccountType();
-             JournalEntry entry;
-             String desc="Opening Balance";
-             Double amount=accountData.getOpeningBalance().doubleValue();
-             String entryType="debit";
-              switch (category) {
-            case ASSET:  
-                entryType="debit";
-                break;
-            case EQUITY: 
-                 entryType="credit";
-                break;
-            case EXPENSE: 
-                 entryType="debit";
-                break;
-            case REVENUE:
-                 entryType="credit";
-                break;
-            case LIABILITY:
-                 entryType="credit";
-                break;
-        }
-             if(entryType.equals("debit")){
-                 entry=new JournalEntry(account,0.0D,amount,accountData.getBalanceDate(),desc);
-             }else{
-                 entry=new JournalEntry(account,amount,0.0D,accountData.getBalanceDate(),desc);
-             }
-             
-             journal.addJournalEntry(entry);
-             journalRepository.save(journal);
+        if (accountData.getOpeningBalance() != null && accountData.getBalanceDate() != null) {
+            Journal journal = new Journal();
+            journal.setTransactionId(generateTransactionId(2L));
+            journal.setReversed(false);
+            journal.setState(JournalState.DRAFT);
+            journal.setReferenceNumber(UUID.randomUUID().toString());
+            journal.setTransactionDate(accountData.getBalanceDate());
+            journal.setDescriptions("Opening Balance as at " + accountData.getBalanceDate().toString());
+
+            AccountType accountType = accountTypeRepository.findById(accountData.getAccountType()).get();
+            AccountCategory category = accountType.getGlAccountType();
+            JournalEntry entry;
+            String desc = "Opening Balance";
+            Double amount = accountData.getOpeningBalance().doubleValue();
+            String entryType = "debit";
+            switch (category) {
+                case ASSET:
+                    entryType = "debit";
+                    break;
+                case EQUITY:
+                    entryType = "credit";
+                    break;
+                case EXPENSE:
+                    entryType = "debit";
+                    break;
+                case REVENUE:
+                    entryType = "credit";
+                    break;
+                case LIABILITY:
+                    entryType = "credit";
+                    break;
+            }
+            if (entryType.equals("debit")) {
+                entry = new JournalEntry(account, 0.0D, amount, accountData.getBalanceDate(), desc);
+            } else {
+                entry = new JournalEntry(account, amount, 0.0D, accountData.getBalanceDate(), desc);
+            }
+
+            journal.addJournalEntry(entry);
+            journalRepository.save(journal);
         }
     }
+
     private void throwIfAccountCategoryNotValid(String category) {
         if (category == null) {
             return;
@@ -163,6 +185,7 @@ public class AccountService {
             throw APIException.badRequest("Account Category : {0} is not supported .. ", category);
         }
     }
+
     public static String generateTransactionId(final Long companyId) {
         //journal format : ACC-JV-2019-00001
 //        Long id = SecurityUtils.getCurrentLoggedUserId().get();
@@ -181,4 +204,4 @@ Liabilities -Credit
 Equity - Credit
 Revenues/Income - Credit
 Expenses - Debit
-*/
+ */

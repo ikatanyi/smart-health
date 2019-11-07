@@ -10,6 +10,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.Formula;
 
 /**
  *
@@ -36,6 +37,9 @@ public class Person extends Auditable {
     private String maritalStatus;
     private LocalDate dateRegistered = LocalDate.now();
 
+    @Formula(value = " concat(given_name, ' ', surname) ")
+    private String fullName;
+    
     @OneToMany(mappedBy = "person")
     private List<PersonAddress> addresses;
     @OneToMany(mappedBy = "person")
@@ -43,7 +47,7 @@ public class Person extends Auditable {
 
 //    @Formula("case when exists (select * from patient p where p.patient_id = person_id) then 1 else 0 end")
     private boolean isPatient;
-    
+
     private String contactPerson;
 
 //    @OneToMany(mappedBy = "person")

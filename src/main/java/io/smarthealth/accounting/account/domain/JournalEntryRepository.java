@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author Kelsas
  */
-public interface JournalEntryRepository extends JpaRepository<JournalEntry, Long>{
+public interface JournalEntryRepository extends JpaRepository<JournalEntry, Long> {
+
     List<JournalEntry> findByEntryDate(LocalDate entryDate);
 }

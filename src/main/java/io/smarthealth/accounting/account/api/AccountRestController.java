@@ -95,7 +95,7 @@ public class AccountRestController {
     public ResponseEntity<ContentPage<AccountData>> getAllAccounts(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "q", required = false) final String term,
-            @RequestParam(value = "showBalance", required = false) final boolean runningBalance,
+            @RequestParam(value = "fetchRunningBalance", required = false) final boolean runningBalance,
             @RequestParam(value = "type", required = false) final String type,
             @RequestParam(value = "category", required = false) final String category,
             @RequestParam(value = "page", required = false) Integer page,
@@ -103,7 +103,7 @@ public class AccountRestController {
 
         Pageable pageable = PaginationUtil.createPage(page, size); 
 
-        Page<AccountData> list = service.fetchAccounts(includeClosed, term, type,category, pageable).map(u -> AccountData.map(u));
+        Page<AccountData> list = service.fetchAccounts(includeClosed, term, type,category,runningBalance, pageable ).map(u -> AccountData.map(u));
 
         return ResponseEntity.ok(ContentPage.createPage(list));
 //        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
@@ -151,5 +151,5 @@ public class AccountRestController {
     public ResponseEntity<List<ChartOfAccountEntry>> getChartOfAccounts() {
         return ResponseEntity.ok(this.chartOfAccountsService.getChartOfAccounts());
     }
-
+   //file:///D:/dev/projects/Fineract-folder/api-docs/apiLive.htm#glaccounts
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.accounting.pricebook.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -65,7 +60,7 @@ public class PriceBookData {
             data.setPriceBookType(pricebook.getPriceBookType().name());
         }
 
-        if (pricebook.getPriceBookItems() != null) {
+        if (pricebook.getPriceBookItems() != null && pricebook.getPriceBookItems().size()>0) {
             List<ItemSimpleData> list = pricebook.getPriceBookItems().stream().map(item -> ItemSimpleData.map(item)).collect(Collectors.toList());
             data.setPricebookItems(list);
         } 

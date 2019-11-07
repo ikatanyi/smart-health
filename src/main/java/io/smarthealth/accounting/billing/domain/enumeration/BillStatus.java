@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.accounting.billing.domain;
-
-import org.springframework.data.jpa.repository.JpaRepository;
+package io.smarthealth.accounting.billing.domain.enumeration;
 
 /**
  *
  * @author Kennedy.Imbenzi
  */
-public interface PatientBillLineRepository extends JpaRepository<PatientBillLine, Long>{
-    
+public enum BillStatus {
+    Draft,
+    Interim,
+    Final,
+    Cancelled
 }
