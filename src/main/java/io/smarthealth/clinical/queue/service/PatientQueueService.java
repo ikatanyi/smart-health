@@ -28,37 +28,37 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class PatientQueueService {
-    
+
     @Autowired
     PatientQueueRepository patientQueueRepository;
-    
+
     @Autowired
     DepartmentService departmentService;
-    
+
     @Autowired
     PatientService patientService;
-    
+
     @Transactional
     public PatientQueue createPatientQueue(PatientQueue patientQueue) {
         return patientQueueRepository.save(patientQueue);
     }
-    
+
     public Page<PatientQueue> fetchQueueByDept(Department department, Pageable pageable) {
         return patientQueueRepository.findByDepartment(department, pageable);
     }
-    
+
     public Page<PatientQueue> fetchQueueByPatient(Patient patient, Pageable pageable) {
         return patientQueueRepository.findByPatient(patient, pageable);
     }
-    
+
     public PatientQueue fetchQueueByVisitNumber(Visit visit) {
         return patientQueueRepository.findByVisit(visit).orElseThrow(() -> APIException.notFound("Queue identified by visit number {0} is not available", visit.getVisitNumber()));
     }
-    
+
     public Page<PatientQueue> fetchQueue(Pageable pageable) {
         return patientQueueRepository.findAll(pageable);
     }
-    
+
     public PatientQueueData convertToPatientQueueData(PatientQueue patientQueue) {
         PatientQueueData patientQueueData = new PatientQueueData();
         patientQueueData.setVisitNumber(patientQueue.getVisit().getVisitNumber());
