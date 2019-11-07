@@ -63,9 +63,9 @@ public class VisitService {
         return visitDTO.getVisitNumber();
     }
 
-    public int generateVisitNumber() {
-        return visitRepository.maxVisitId() + 1;
-    }
+//    public int generateVisitNumber() {
+//        return visitRepository.maxVisitId() + 1;
+//    }
 
     private Patient findPatientEntityOrThrow(String patientNumber) {
         return this.patientRepository.findByPatientNumber(patientNumber)

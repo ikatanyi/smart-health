@@ -49,6 +49,10 @@ public class DepartmentService {
         return departmentRepository.findByFacility(facility, pgbl);
     }
 
+    public Department findByServicePointTypeAndfacility(String servicePointType, Facility facility) {
+        return departmentRepository.findByServicePointTypeAndFacility(servicePointType, facility).orElseThrow(() -> APIException.notFound("Department not found.", servicePointType));
+    }
+
     public Department fetchDepartmentById(Long id) {
         return departmentRepository.findById(id).orElseThrow(() -> APIException.notFound("Department identified by {0} not found.", id));
     }

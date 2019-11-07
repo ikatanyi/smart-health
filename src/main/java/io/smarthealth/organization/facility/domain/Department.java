@@ -27,10 +27,19 @@ public class Department extends Identifiable {
         ServicePoint
     }
 
-    @ManyToOne 
-     @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_facility_id"))
+    public enum ServicePointType {
+        Triage,
+        Consultation,
+        Pharmacy,
+        Laboratory,
+        Radiology,
+        Open
+    }
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_facility_id"))
     private Facility facility;
-    
+
     @Enumerated(EnumType.STRING)
     private Type type;
     @Column(unique = true)
@@ -38,7 +47,7 @@ public class Department extends Identifiable {
     @Column(name = "dept_name")
     private String name;
     @ManyToOne
-     @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_parent_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_parent_id"))
     private Department parent;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_income_account_id"))
@@ -50,5 +59,6 @@ public class Department extends Identifiable {
     private Boolean isStore; // the department can be store location
 
     private Boolean active;
+    private String servicePointType;
 
 }

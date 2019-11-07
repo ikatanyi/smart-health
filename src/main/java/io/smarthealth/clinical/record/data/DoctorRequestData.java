@@ -2,9 +2,11 @@ package io.smarthealth.clinical.record.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.stock.item.data.ItemData;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -40,15 +42,24 @@ public class DoctorRequestData {
         High
     }
     private RequestType requestType;
+    @ApiModelProperty(required = false, hidden = true)
     private String patientNumber;
+    @ApiModelProperty(required = false, hidden = true)
     private String visitNumber;
     @NotBlank
     @NotNull
     private String itemCode;
+
+    @ApiModelProperty(required = false, hidden = true)
     private ItemData item;
-    private Employee requestedBy;
+
+    @ApiModelProperty(required = false, hidden = true)
+    private EmployeeData employeeData;
+
+    @ApiModelProperty(required = false, hidden = true)
     private LocalDateTime orderDatetime;
     private Urgency urgency;
+    @ApiModelProperty(required = false, hidden = true)
     private String orderNumber;
     //private String action;
     private String notes;
@@ -57,6 +68,7 @@ public class DoctorRequestData {
     private String fulfillerComment;
     private Boolean drug;
 
+    @ApiModelProperty(required = false, hidden = true)
     private PatientData patientData;
 
     public static DoctorRequest map(DoctorRequestData doctorRequestData) {

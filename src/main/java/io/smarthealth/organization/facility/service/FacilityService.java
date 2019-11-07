@@ -19,15 +19,20 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class FacilityService {
-
+    
     private FacilityRepository facilityRepository;
     private OrganizationService orgService;
-
+    
+    public FacilityService(FacilityRepository facilityRepository, OrganizationService orgService) {
+        this.facilityRepository = facilityRepository;
+        this.orgService = orgService;
+    }
+    
     @Transactional
     public Facility createFacility(String id, FacilityData facilityData) {
         Organization org = orgService.getOrganization(id);
         Facility facility = new Facility();
-
+        
         if (facilityData.getParentFacilityId() != null) {
             Optional<Facility> pf = getFacility(facilityData.getParentFacilityId());
             if (pf.isPresent()) {
@@ -41,19 +46,21 @@ public class FacilityService {
         facility.setEnabled(facilityData.isEnabled());
         facility.setLogo(facilityData.getLogo());
         facility.setOrganization(org);
-
+        facility.setRegistrationNumber(facilityData.getRegistrationNumber());
+        
         return facilityRepository.save(facility);
     }
-
+    
     public Optional<Facility> getFacility(Long id) {
-
+        
         return facilityRepository.findById(id);
     }
-    public Facility findFacility(Long id){
+    
+    public Facility findFacility(Long id) {
         return getFacility(id)
                 .orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", id));
     }
-
+    
     public Page<Facility> getAllFacilities(Pageable page) {
         return facilityRepository.findAll(page);
     }
@@ -61,17 +68,16 @@ public class FacilityService {
 //    public Facility fetchFacilityCode(String facilityCode) {
 //        return facilityRepository.findByCode(facilityCode).orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", facilityCode));
 //    }
-
     public Facility findFacility(String orgId, Long id) {
         orgService.getOrganization(orgId);
         Facility facility = getFacility(id).orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", id));
         return facility;
     }
-
+    
     public List<Facility> findByOrganization(String orgId) {
         Organization org = orgService.getOrganization(orgId);
-
+        
         return org.getFacilities();
     }
-
+    
 }

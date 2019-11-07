@@ -71,7 +71,7 @@ public class EmployeeController {
 
         EmployeeData employeeData1 = employeeService.convertEmployeeEntityToEmployeeData(savedEmployee);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/facility/" + employeeData1.getDepartment().getFacilityCode() + "/department/{code}")
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/facility/" + employeeData1.getDepartment().getFacilityId() + "/department/{code}")
                 .buildAndExpand(employeeData1.getDepartmentCode()).toUri();
 
         return ResponseEntity.created(location).body(APIResponse.successMessage("Employee was successfully created", HttpStatus.CREATED, employeeData1));

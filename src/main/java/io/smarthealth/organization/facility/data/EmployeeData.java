@@ -10,6 +10,8 @@ import io.smarthealth.organization.person.data.PersonData;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -17,6 +19,9 @@ import lombok.Data;
  */
 @Data
 public class EmployeeData extends PersonData {
+
+    @Autowired
+    ModelMapper modelMapper;
 
     @Enumerated(EnumType.STRING)
     private Employee.Category employeeCategory;
@@ -30,4 +35,10 @@ public class EmployeeData extends PersonData {
     private String email;
     private String mobile;
     private String telephone;
+//    
+//    public EmployeeData convertEmployeeEntityToEmployeeData(Employee employee) {
+//        EmployeeData employeeData = modelMapper.map(employee, EmployeeData.class);
+//        employeeData.setDepartmentCode(employee.getDepartment().getCode());
+//        return employeeData;
+//    }
 }

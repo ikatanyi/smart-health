@@ -9,7 +9,9 @@ import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.organization.facility.domain.Department;
+import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.DepartmentService;
+import io.smarthealth.organization.facility.service.FacilityService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.swagger.annotations.Api;
@@ -36,23 +38,35 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api")
 @Api(value = "Patient Queue", description = "End points pertaining to patient departmental queue")
 public class PatientQueue {
-
+    
     @Autowired
     PatientService patientService;
-
+    
     @Autowired
     PatientQueueService patientQueueService;
-
+    
     @Autowired
     private DepartmentService departmentService;
-
-    @GetMapping("/department/{deptId}/queue")
-    public ResponseEntity<List<PatientQueueData>> fetchQueuesByDepartment(@PathVariable("deptId") final Long deptId, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-        Department department = departmentService.fetchDepartmentById(deptId);
+    
+    @Autowired
+    private FacilityService facilityService;
+    
+    @GetMapping("/department/{servicePoint}/queue")
+    public ResponseEntity<List<PatientQueueData>> fetchQueuesByDepartment(@PathVariable("servicePoint") final String servicePoint, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+        Facility facility = facilityService.findFacility(Long.valueOf("1"));
+        Department department = departmentService.findByServicePointTypeAndfacility(servicePoint, facility);
         Page<PatientQueueData> page = patientQueueService.fetchQueueByDept(department, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
+//    @GetMapping("/facility/{fId}/department/{deptId}/queue")
+//    public ResponseEntity<List<PatientQueueData>> fetchQueuesByDepartment(@PathVariable("fId") final Long fId, @PathVariable("deptId") final Long deptId, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+//        Facility facility = facilityService.findFacility(fId);
+//        Department department = departmentService.fetchDepartmentById(deptId);
+//        Page<PatientQueueData> page = patientQueueService.fetchQueueByDept(department, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
+//        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+//        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+//    }
 
     @GetMapping("/patient/{patientNo}/queue")
     public ResponseEntity<List<PatientQueueData>> fetchQueuesBPatient(@PathVariable("patientNo") String patientNumber, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
@@ -61,7 +75,7 @@ public class PatientQueue {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-
+    
     @GetMapping("/queue")
     public ResponseEntity<List<PatientQueueData>> fetchQueue(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Page<PatientQueueData> page = patientQueueService.fetchQueue(pageable).map(q -> patientQueueService.convertToPatientQueueData(q));

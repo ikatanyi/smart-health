@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 @Table(name = "patient_prescriptions")
 public class Prescription extends DoctorRequest {
-    
+
     private String brandName;
     private String route;
     private Double dose;
@@ -27,6 +27,7 @@ public class Prescription extends DoctorRequest {
     private String asNeededCondition;
     private Integer numRefills;
     private Double issuedQuantity;
+
     public Prescription() {
         this.setDrug(true);
     }

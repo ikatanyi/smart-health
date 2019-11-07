@@ -15,7 +15,7 @@ import lombok.Data;
  */
 @Data
 public class FacilityData {
-
+    
     private String organizationId;
     private String organizationName;
     private String registrationNumber;
@@ -28,25 +28,27 @@ public class FacilityData {
     @Lob
     private byte[] logo;
     private boolean enabled;
-
+    
     public static FacilityData map(Facility facility) {
         FacilityData facilityData = new FacilityData();
-        if(facility.getOrganization()!=null){
+        if (facility.getOrganization() != null) {
             facilityData.setOrganizationId(facility.getOrganization().getId());
             facilityData.setOrganizationName(facilityData.getOrganizationName());
         }
-        if(facility.getParentFacility()!=null){
+        if (facility.getParentFacility() != null) {
             facilityData.setParentFacility(facility.getParentFacility().getFacilityName());
             facilityData.setParentFacilityId(facility.getParentFacility().getId());
-        } 
+        }        
         facilityData.setFacilityType(facility.getFacilityType());
         facilityData.setTaxNumber(facility.getTaxNumber());
         facilityData.setFacilityClass(facility.getFacilityClass());
         facilityData.setFacilityName(facility.getFacilityName());
         facilityData.setEnabled(facility.isEnabled());
         facilityData.setLogo(facility.getLogo());
+        facilityData.setOrganizationName(facility.getOrganization().getOrganizationName());
+        facilityData.setRegistrationNumber(facility.getRegistrationNumber());
         
         return facilityData;
     }
-
+    
 }

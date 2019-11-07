@@ -53,9 +53,13 @@ public class PharmacyService {
             List<PatientDrugsData> savedDrugsList = new ArrayList();
             for (PatientDrugsData patientdrugsdata : patientdrugsData) {
                 PatientDrugs pd = modelMapper.map(patientdrugsdata, PatientDrugs.class);
+                Prescription presc = prescriptionRepository.findById(patientdrugsdata.getPrescriptionId()).get();
+                pd.setPrescription(presc);
+                pd.setVisit(presc.getVisit());
+                pd.setPatient(presc.getVisit().getPatient());
                 PatientDrugs saveddrug = patientDrugsRepository.save(pd);
                 savedDrugsList.add(modelMapper.map(saveddrug, PatientDrugsData.class));
-                Prescription presc = prescriptionRepository.findById(patientdrugsdata.getPrescriptionId()).get();
+
                 if (!Objects.equals(saveddrug.getDurationUnits(), saveddrug.getIssuedQuantity())) {
                     presc.setDurationUnits(saveddrug.getDurationUnits() - saveddrug.getIssuedQuantity());
                     presc.setIssuedQuantity(presc.getIssuedQuantity() + saveddrug.getIssuedQuantity());

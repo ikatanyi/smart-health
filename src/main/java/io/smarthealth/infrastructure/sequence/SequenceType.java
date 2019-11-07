@@ -10,6 +10,7 @@ public enum SequenceType {
     VisitNumber("visit_number_seq"),
     JournalNumber("journal_seq"),
     DoctorRequestNumber("doctor_request_seq"),
+    PrescriptionNo("patient_prescription_seq"),
     BillNumber("patient_bill_seq");
 
     public final String sequenceName;
