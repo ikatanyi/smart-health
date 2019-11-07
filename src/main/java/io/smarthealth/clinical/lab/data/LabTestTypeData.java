@@ -54,8 +54,8 @@ public class LabTestTypeData {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime recorded = LocalDateTime.now();    
     
-    private List<AnalyteData> analytes;
-    private List<SpecimenData>specimens;
+    private List<AnalyteData> analytes = new ArrayList();
+    private List<SpecimenData>specimens = new ArrayList();
 
     public static LabTestType map(LabTestTypeData testtype) {
         System.out.println("Test type received "+testtype.toString());
@@ -88,7 +88,7 @@ public class LabTestTypeData {
         test.setGender(entity.getGender());
         for(Analyte analyte:entity.getAnalytes()){
             AnalyteData analytedata = modelMapper.map(analyte,AnalyteData.class);
-            if(!test.getAnalytes().isEmpty())
+            if(test.getAnalytes()!=null)
                test.getAnalytes().add(analytedata);
             else{
                 test.setAnalytes(new ArrayList());

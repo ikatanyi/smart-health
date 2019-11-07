@@ -1,8 +1,10 @@
 package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.PatientTestData;
-import io.smarthealth.clinical.lab.service.LabResultsService;
+import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
+import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.infrastructure.common.APIResponse;
+import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -37,7 +39,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class PatientTestsController {
 
     @Autowired
-    LabResultsService resultService;
+    LabService resultService;
     
     @Autowired
     ModelMapper modelMapper;
@@ -66,11 +68,12 @@ public class PatientTestsController {
     @GetMapping("/patient-test/result")
     public ResponseEntity<?> fetchAllPatientTests(
              @RequestParam(value = "patientNumber", required = false) String patientNumber,
-             @RequestParam(value = "visitNumber", defaultValue = "") String visitNumber,
-             @RequestParam(value = "status", defaultValue = "") String status,
-             Pageable pageable
+             @RequestParam(value = "visitNumber", required = false) String visitNumber,
+             @RequestParam(value = "state", required = false) LabTestState status,
+             @RequestParam(value = "page", required = false) Integer page1,
+             @RequestParam(value = "pageSize", required = false) Integer size
         ) {
-        
+        Pageable pageable = PaginationUtil.createPage(page1, size);
         Page<PatientTestData> pag = resultService.fetchAllPatientTests(patientNumber,visitNumber,status,pageable);
         Pager page = new Pager();
         page.setCode("200");
@@ -87,7 +90,7 @@ public class PatientTestsController {
     
     @DeleteMapping("/patient-test/result/{id}")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
-        resultService.deleteById(id);
+        resultService.deletePatientTestsById(id);
         return ResponseEntity.ok("200");
     }
 }

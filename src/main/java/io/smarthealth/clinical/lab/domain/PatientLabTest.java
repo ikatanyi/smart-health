@@ -8,6 +8,7 @@ package io.smarthealth.clinical.lab.domain;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -17,9 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -34,19 +33,23 @@ public class PatientLabTest extends ClinicalRecord {
 
     @Enumerated(EnumType.STRING)
     private LabTestState state;
-    private String requestId;
     private String clinicalDetails;
     private String specimen;
-    private String specimenCollectionTime;
-    private String LabTestNumber;
-    
+    private LocalDateTime specimenCollectionTime;
+    private String LabTestNumber;    
+    @ManyToOne
+    private DoctorRequest request;    
     @OneToOne
     private LabTestType testtype;
 
-    @Setter(AccessLevel.NONE)
+   // @Setter(AccessLevel.NONE)
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name = "request_id", nullable = false)
     private List<Results> results;
+
+//    public void setResults(List<Results> results) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
 }

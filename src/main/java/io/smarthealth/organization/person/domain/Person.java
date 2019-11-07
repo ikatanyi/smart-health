@@ -10,6 +10,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.Formula;
 
 /**
  *
@@ -35,6 +36,9 @@ public class Person extends Auditable {
     @Column(length = 50)
     private String maritalStatus;
     private LocalDate dateRegistered = LocalDate.now();
+    
+    @Formula("YEAR(CURDATE()) - YEAR(date_of_birth)")
+    private int age;
 
     @OneToMany(mappedBy = "person")
     private List<PersonAddress> addresses;

@@ -37,9 +37,15 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.lab.domain.LabTestRepository;
 import io.smarthealth.clinical.lab.domain.LabTestTypeRepository;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
+import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
-import io.smarthealth.infrastructure.sequence.SequenceRepository;
+import io.smarthealth.infrastructure.sequence.SequenceService;
+import io.smarthealth.infrastructure.sequence.SequenceType;
+import io.smarthealth.clinical.lab.data.ResultsData;
+import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
+import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.service.PatientService;
 
 /**
  *
@@ -76,9 +82,11 @@ public class LabService {
     private final DoctorsRequestRepository doctorRequestRepository;
 
     @Autowired
-    private final SequenceRepository seqRepository;
+    private final SequenceService seqService;
+    
+    private PatientService patientservice;
 
-    public LabService(AnalyteRepository analyteRepository, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, VisitRepository visitRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, SequenceRepository seqRepository) {
+    public LabService(AnalyteRepository analyteRepository, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, VisitRepository visitRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, SequenceService seqService) {
         this.analyteRepository = analyteRepository;
         this.containerRepository = containerRepository;
         this.disciplineRepository = disciplineRepository;
@@ -87,7 +95,7 @@ public class LabService {
         this.visitRepository = visitRepository;
         this.specimenRepository = specimenRepository;
         this.doctorRequestRepository = doctorRequestRepository;
-        this.seqRepository = seqRepository;
+        this.seqService = seqService;
     }
 
     @Transactional
@@ -306,22 +314,43 @@ public class LabService {
      */
     @Transactional
     public PatientTestData savePatientResults(PatientTestData patienttestdata) {
-        String labNumber = String.valueOf(seqRepository.nextSequence("LabTestNumber", "1"));
+        Pageable page = Pageable.unpaged();
+        List<Results> results = new ArrayList();
+        String labNumber = seqService.nextNumber(SequenceType.LabTestNumber);
         Visit visit = visitRepository.findByVisitNumber(patienttestdata.getVisitNumber())
                 .orElseThrow(() -> APIException.notFound("Patient Session with Visit Number : {0} not found.", patienttestdata.getVisitNumber()));
         PatientLabTest patienttestsEntity = PatientTestData.map(patienttestdata);
 
-        Optional<DoctorRequest> docReq = doctorRequestRepository.findById(patienttestdata.getRequestId());
-
-        if (docReq.isPresent()) {
-            
+        Optional<DoctorRequest> request = doctorRequestRepository.findById(Long.parseLong(patienttestdata.getRequestId()!=null?patienttestdata.getRequestId():"0"));
+        if (request.isPresent()) {
+            patienttestsEntity.setRequest(request.get());
         }        
         Optional<LabTestType> ttype = ttypeRepository.findByServiceCode(patienttestdata.getTestCode());
-
         if (ttype.isPresent()) {
             patienttestsEntity.setTesttype(ttype.get());
+            if(patienttestdata.getState().equals(LabTestState.Accepted)){
+                List<AnalyteData> analytedata = this.fetchAnalytesByAgeAndGender(ttype.get().getServiceCode(), visit.getPatient().getPatientNumber(), Pageable.unpaged()).getContent();
+                for(AnalyteData anlytdata:analytedata){
+                    Results rsltData = new Results();
+                    rsltData.setCategory(anlytdata.getCategory());
+                    rsltData.setLowerRange(anlytdata.getLowerRange());
+                    rsltData.setTestCode(anlytdata.getTestCode());
+                    rsltData.setTestName(anlytdata.getTestName());
+                    rsltData.setTestType(String.valueOf(anlytdata.getTestTypeId()));
+                    rsltData.setUnits(anlytdata.getUnits());
+                    rsltData.setUpperRange(anlytdata.getUpperRange());
+                    results.add(rsltData);
+                }
+                
+                //billing
+            }            
+            for(ResultsData analyte:patienttestdata.getResultData()){
+                Results rslt = ResultsData.map(analyte);
+                results.add(rslt);
+            }
+           patienttestsEntity.setResults(results);
         }
-
+       
         patienttestsEntity.setLabTestNumber(labNumber);
         patienttestsEntity.setVisit(visit);
         patienttestsEntity.setPatient(visit.getPatient());
@@ -329,10 +358,17 @@ public class LabService {
         return PatientTestData.map(patientTests);
     }
 
-    public Page<PatientTestData> fetchAllPatientTests(String patientNumber, String visitNumber, String status, Pageable pgbl) {
+    public Page<PatientTestData> fetchAllPatientTests(String patientNumber, String visitNumber, LabTestState status, Pageable pgbl) {
         Page<PatientTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(visitNumber, patientNumber, status, pgbl).map(p -> PatientTestData.map(p));
         return ptests;
     }
+    
+//    public Page<PatientTestData> fetchPatientTestByReqId(String patientNumber, String RequestId, String status, Pageable pgbl) {
+//        Optional<DoctorRequest> request = doctorRequestRepository.findById(Long.parseLong(RequestId));
+//        if()
+//        Page<PatientTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(visitNumber, patientNumber, status, pgbl).map(p -> PatientTestData.map(p));
+//        return ptests;
+//    }
 
     public Optional<PatientTestData> fetchPatientTestsById(Long id) {
         return PtestsRepository.findById(id).map(p -> PatientTestData.map(p));
@@ -398,6 +434,12 @@ public class LabService {
 
     public Page<AnalyteData> fetchAnalyteByTestType(LabTestType testtype, Pageable pgbl) {
         return analyteRepository.findByTestType(testtype, pgbl).map(p -> convertAnalyteToData(p));
+    }
+    
+    public Page<AnalyteData> fetchAnalytesByAgeAndGender(String testCode, String patientNumber, Pageable pgbl) {
+        LabTestType ttype = this.fetchTestTypeByCode(testCode);
+        Patient patient= patientservice.findPatientOrThrow(patientNumber);        
+        return analyteRepository.findAnalytesByGenderAndAge(ttype, patient.getGender(), patient.getAge(), pgbl).map(p -> convertAnalyteToData(p));
     }
 
     public Analyte fetchAnalyteById(Long id) {
