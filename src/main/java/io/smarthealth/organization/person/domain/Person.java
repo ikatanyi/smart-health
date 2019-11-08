@@ -45,6 +45,9 @@ public class Person extends Auditable {
     private String maritalStatus;
     private LocalDate dateRegistered = LocalDate.now();
 
+    @Formula(value = " concat(given_name, ' ', surname) ")
+    private String fullName;
+    
     @OneToMany(mappedBy = "person")
     private List<PersonAddress> addresses;
     @OneToMany(mappedBy = "person")

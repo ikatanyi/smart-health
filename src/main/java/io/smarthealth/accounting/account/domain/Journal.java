@@ -38,8 +38,10 @@ public class Journal extends Auditable {
     @JoinColumn(name = "reversal_id",foreignKey = @ForeignKey(name = "fk_journal_reversal_id"))
     private Journal reversalJournal;
     private boolean reversed;
+    
     @Enumerated(EnumType.STRING)
     private JournalState state;
+    
     @OneToMany(mappedBy = "journal", cascade = CascadeType.ALL)
     private List<JournalEntry> journalEntries = new ArrayList<>();
  
@@ -47,6 +49,17 @@ public class Journal extends Auditable {
         journalEntries.add(journalEntry);
         journalEntry.setJournal(this);
     }
+    
+    //this is the values that can be defined and n
+    //I have a transactions
 }
 
-//
+/*
+- transaction id
+- transaction date
+- transaction description
+- transaction type
+- referenceNumber
+- journal status
+- 
+*/

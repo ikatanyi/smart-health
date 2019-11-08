@@ -31,24 +31,66 @@ import org.springframework.stereotype.Service;
 public class JournalService {
 
     private final JournalRepository journalRepository;
-    private final AccountRepository accountRepository;
+     private final JournalBalanceUpdateService balanceUpdateService;
+    private final AccountService accountService;
     private final SequenceService sequenceService;
 
-    public JournalService(JournalRepository journalRepository, AccountRepository accountRepository, SequenceService sequenceService) {
+    public JournalService(JournalRepository journalRepository, JournalBalanceUpdateService balanceUpdateService, AccountService accountService, SequenceService sequenceService) {
         this.journalRepository = journalRepository;
-        this.accountRepository = accountRepository;
+        this.balanceUpdateService = balanceUpdateService;
+        this.accountService = accountService;
         this.sequenceService = sequenceService;
     }
+ 
+    public Journal createJournalEntry(JournalData journalData) {
+        
+        if (journalData.getTransactionId()!=null && findJournalEntry(journalData.getTransactionId()).isPresent()) {
+            throw APIException.conflict("Journal entry {0} already exists.", journalData.getTransactionId());
+        }
+        if (journalData.getDebit().isEmpty()) {
+            throw APIException.badRequest("Debtors must be given.");
+        }
+        if (journalData.getCredit().isEmpty()) {
+            throw APIException.badRequest("Creditors must be given.");
+        }
 
-    
+        final Double debtorAmountSum = journalData.getDebit()
+                .stream()
+                .peek(debtor -> {
+                    final Optional<Account> accountOptional = accountService.findAccount(debtor.getAccountNumber());
+                    if (!accountOptional.isPresent()) {
+                        throw APIException.badRequest("Unknown debtor account {0}.", debtor.getAccountNumber());
+                    }
+                    if (!accountOptional.get().getEnabled()) {
+                        throw APIException.badRequest("Debtor account {0} must be enabled for Transaction", debtor.getAccountNumber());
+                    }
+                })
+                .map(debtor -> Double.valueOf(debtor.getAmount()))
+                .reduce(0.0D, (x, y) -> x + y);
 
-    public String createJournalEntry(JournalData journalData) {
+        final Double creditorAmountSum = journalData.getCredit()
+                .stream()
+                .peek(creditor -> {
+                    final Optional<Account> accountOptional = accountService.findAccount(creditor.getAccountNumber());
+                    if (!accountOptional.isPresent()) {
+                        throw APIException.badRequest("Unknown creditor account{0}.", creditor.getAccountNumber());
+                    }
+                    if (!accountOptional.get().getEnabled()) {
+                        throw APIException.badRequest("Creditor account {0} must be enabled for Transaction.", creditor.getAccountNumber());
+                    }
+                })
+                .map(creditor -> Double.valueOf(creditor.getAmount()))
+                .reduce(0.0D, (x, y) -> x + y);
+
+        if (!debtorAmountSum.equals(creditorAmountSum)) {
+            throw APIException.badRequest("Sum of debtor and sum of creditor amounts must be equals.");
+        }
+        
         Journal journal = convertToEntity(journalData);
-//        journal.setTransactionId(generateTransactionId(2L));
-           journal.setTransactionId(sequenceService.nextNumber(SequenceType.JournalNumber));
-           
+        journal.setTransactionId(generateTransactionId(2L));
+//           journal.setTransactionId(sequenceService.nextNumber(SequenceType.JournalNumber));       
         Journal savedJournal = journalRepository.save(journal);
-        return savedJournal.getTransactionId();
+        return savedJournal;
     }
 
     public Optional<Journal> findJournalEntry(final String transactionIdentifier) {
@@ -57,7 +99,7 @@ public class JournalService {
 
     public JournalData findJournalDataEntry(final String transactionIdentifier) {
         Journal journal = findJournalEntry(transactionIdentifier)
-                .orElseThrow(() -> APIException.notFound("Journal {0} not found.", transactionIdentifier));
+                .orElseThrow(() -> APIException.notFound("Journal number {0} not found.", transactionIdentifier));
 
         return JournalData.map(journal);
     }
@@ -96,7 +138,7 @@ public class JournalService {
 
     public String revertJournalEntry(String transactionId, String reversalComment) {
         
-        final String reversalTransactionId =  sequenceService.nextNumber(SequenceType.JournalNumber);//generateTransactionId(2L);
+        final String reversalTransactionId = generateTransactionId(2L);// sequenceService.nextNumber(SequenceType.JournalNumber);//generateTransactionId(2L);
         final boolean manualEntry = true;
         final boolean useDefaultComment = StringUtils.isBlank(reversalComment);
 
@@ -147,7 +189,10 @@ public class JournalService {
     }
 
     private Account getAccount(String accountNo) {
-        return accountRepository.findByAccountNumber(accountNo).get();
+        return  accountService.findOneWithNotFoundDetection(accountNo);
+    }
+    public void doJournalBalances(){
+        balanceUpdateService.updateRunningBalance();
     }
     
     private void validateAccountForTransaction(final Account account) {

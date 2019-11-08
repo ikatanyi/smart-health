@@ -3,6 +3,7 @@ package io.smarthealth.accounting.account.api;
 import io.smarthealth.accounting.account.data.AccountData;
 import io.smarthealth.accounting.account.data.JournalData;
 import io.smarthealth.accounting.account.domain.Account;
+import io.smarthealth.accounting.account.domain.Journal;
 import io.smarthealth.accounting.account.service.AccountService;
 import io.smarthealth.accounting.account.service.JournalBalanceUpdateService;
 import io.smarthealth.accounting.account.service.JournalService;
@@ -45,66 +46,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class JournalRestRepository {
 
-    private final JournalService journalService;
-    private final AccountService accountService;
-    private final JournalBalanceUpdateService balanceUpdateService;
+    private final JournalService journalService; 
 
-    public JournalRestRepository(JournalService journalService, AccountService accountService, JournalBalanceUpdateService balanceUpdateService) {
+    public JournalRestRepository(JournalService journalService) {
         this.journalService = journalService;
-        this.accountService = accountService;
-        this.balanceUpdateService = balanceUpdateService;
     }
-
+   
     //the accounting transactions
     @PostMapping("/journals")
     @ResponseBody
     public ResponseEntity<?> createJournalEntry(@RequestBody @Valid final JournalData journalData) {
-        System.err.println(journalData.toString());
-        if (journalData.getTransactionId()!=null && journalService.findJournalEntry(journalData.getTransactionId()).isPresent()) {
-            throw APIException.conflict("Journal entry {0} already exists.", journalData.getTransactionId());
-        }
-        if (journalData.getDebit().isEmpty()) {
-            throw APIException.badRequest("Debtors must be given.");
-        }
-        if (journalData.getCredit().isEmpty()) {
-            throw APIException.badRequest("Creditors must be given.");
-        }
-
-        final Double debtorAmountSum = journalData.getDebit()
-                .stream()
-                .peek(debtor -> {
-                    final Optional<Account> accountOptional = this.accountService.findAccount(debtor.getAccountNumber());
-                    if (!accountOptional.isPresent()) {
-                        throw APIException.badRequest("Unknown debtor account {0}.", debtor.getAccountNumber());
-                    }
-                    if (!accountOptional.get().getEnabled()) {
-                        throw APIException.conflict("Debtor account {0} must be enabled for Transaction", debtor.getAccountNumber());
-                    }
-                })
-                .map(debtor -> Double.valueOf(debtor.getAmount()))
-                .reduce(0.0D, (x, y) -> x + y);
-
-        final Double creditorAmountSum = journalData.getCredit()
-                .stream()
-                .peek(creditor -> {
-                    final Optional<Account> accountOptional = this.accountService.findAccount(creditor.getAccountNumber());
-                    if (!accountOptional.isPresent()) {
-                        throw APIException.badRequest("Unknown creditor account{0}.", creditor.getAccountNumber());
-                    }
-                    if (!accountOptional.get().getEnabled()) {
-                        throw APIException.conflict("Creditor account {0} must be enabled for Transaction.", creditor.getAccountNumber());
-                    }
-                })
-                .map(creditor -> Double.valueOf(creditor.getAmount()))
-                .reduce(0.0D, (x, y) -> x + y);
-
-        if (!debtorAmountSum.equals(creditorAmountSum)) {
-            throw APIException.conflict("Sum of debtor and sum of creditor amounts must be equals.");
-        }
-
-        String trxId = journalService.createJournalEntry(journalData);
-
-        return ResponseEntity.ok(new JournalResponse(trxId));
+        
+        journalData.setManualEntry(true);
+        journalData.setTransactionType("Journal Entry");
+         
+        Journal journal =journalService.createJournalEntry(journalData); 
+        return ResponseEntity.ok(new JournalResponse(journal.getTransactionId()));
     }
 
     @GetMapping("/journals/{transactionId}")
@@ -114,27 +71,20 @@ public class JournalRestRepository {
     //journals/{transactionsId}/reverse
     @PostMapping("/journals/{transactionId}")
     @ResponseBody
-    public ResponseEntity<?> reverseJournal(@PathVariable(value = "transactionId") String transactionId, @RequestParam(value = "command", required = false) String command, String comment) {
+    public ResponseEntity<?> reverseJournal(@PathVariable(value = "transactionId") String transactionId, @RequestParam(value = "command", required = true) String command, String comment) {
         String trxid = null;
         if (is(command, "reverse")) {
             trxid = journalService.revertJournalEntry(transactionId, comment);
+           
         } else {
             throw APIException.badRequest("Unrecognized Query Parameter {0} ", command);
         }
         return ResponseEntity.ok(new JournalResponse(trxid));
     }
 
-    @PostMapping("/journals/update")
-    public ResponseEntity<Void> updateRunningBalance(@RequestParam(value = "command", required = true) String command) {
-        if (command.equals("balances")) {
-            balanceUpdateService.updateRunningBalance();
-        }
-        if (command.equals("defineOpeningBalance")) {
-
-        }
-        if (command.equals("reverse")) {
-
-        }
+    @PostMapping("/journals?command=updateRunningBalance")
+    public ResponseEntity<?> updateRunningBalance() {
+         journalService.doJournalBalances();
         return ResponseEntity.accepted().build();
     }
 

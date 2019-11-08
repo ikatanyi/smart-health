@@ -7,10 +7,7 @@ package io.smarthealth.clinical.pharmacy.api;
 
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
-import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.PrescriptionData;
-import io.smarthealth.clinical.record.domain.DoctorRequest;
-import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -32,7 +29,6 @@ import java.util.List;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -100,7 +96,7 @@ public class PharmacyController {
         for (PrescriptionData pd : prescriptionData) {
             Prescription p = PrescriptionData.map(pd);
             p.setPatient(visit.getPatient());
-            p.setItem(itemService.findByItemCodeOrThrow(pd.getItemCode()));
+            p.setItem(itemService.findItemWithNoFoundDetection(pd.getItemCode()));
             p.setVisit(visit);
             p.setOrderNumber(prescriptionNo);
             p.setRequestedBy(employee);
