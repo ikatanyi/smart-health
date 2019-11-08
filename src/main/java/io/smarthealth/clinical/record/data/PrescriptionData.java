@@ -52,6 +52,7 @@ public class PrescriptionData extends DoctorRequestData {
         pd.setId(p.getId());
         pd.setIssuedQuantity(p.getIssuedQuantity());
         pd.setItemCode(p.getItem().getItemCode());
+        pd.setItemName(p.getItem().getItemName());
         pd.setNotes(p.getNotes());
         pd.setNumRefills(p.getNumRefills());
         pd.setOrderDatetime(p.getOrderDatetime());

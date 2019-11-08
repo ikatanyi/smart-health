@@ -92,8 +92,8 @@ public class DoctorRequestController {
             doctorRequest.setVisit(visit);
             doctorRequest.setRequestedBy(employee);
             doctorRequest.setOrderNumber(orderNo);
-            doctorRequest.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfullfilled.name());
-            doctorRequest.setFulfillerComment(DoctorRequest.FullFillerStatusType.Unfullfilled.name());
+            doctorRequest.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
+            doctorRequest.setFulfillerComment(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
             doctorRequest.setRequestType(data.getRequestType().name());
             docRequests.add(doctorRequest);
         }
@@ -126,6 +126,35 @@ public class DoctorRequestController {
             dd.setEmployeeData(employeeService.convertEmployeeEntityToEmployeeData(r.getRequestedBy()));
             dd.setPatientNumber(r.getPatient().getPatientNumber());
             dd.setVisitNumber(visit.getVisitNumber());
+            if (r.getItem() != null) {
+                dd.setItemCode(r.getItem().getItemCode());
+            }
+            return dd;
+        });
+        Pager<List<DoctorRequestData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Doctor Requests");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/doctor-request/{orderNo}/request-type/{requestType}")
+    public ResponseEntity<?> findAllRequestsByOrderNoAndRequestType(@PathVariable("orderNo") final String orderNo, final String requestType, Pageable pageable) {
+        Page<DoctorRequest> page = requestService.findAllRequestsByOrderNoAndRequestType(orderNo, requestType, pageable);
+
+        Page<DoctorRequestData> list = page.map(r -> {
+            DoctorRequestData dd = DoctorRequestData.map(r);
+            dd.setEmployeeData(employeeService.convertEmployeeEntityToEmployeeData(r.getRequestedBy()));
+            dd.setPatientNumber(r.getPatient().getPatientNumber());
+            dd.setVisitNumber(r.getVisitNumber());
             if (r.getItem() != null) {
                 dd.setItemCode(r.getItem().getItemCode());
             }

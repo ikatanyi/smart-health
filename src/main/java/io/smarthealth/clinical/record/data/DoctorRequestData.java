@@ -24,7 +24,7 @@ public class DoctorRequestData {
     
     public enum FullFillerStatusType {
         Fulfilled,
-        Unfullfilled,
+        Unfulfilled,
         Cancelled,
         PartiallyFullfilled
     }

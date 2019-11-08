@@ -34,7 +34,7 @@ public class DoctorRequest extends Auditable {
 
     public enum FullFillerStatusType {
         Fulfilled,
-        Unfullfilled,
+        Unfulfilled,
         Cancelled,
         PartiallyFullfilled
     }
