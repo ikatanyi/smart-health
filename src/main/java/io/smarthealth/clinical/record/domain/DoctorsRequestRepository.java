@@ -13,4 +13,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface DoctorsRequestRepository extends JpaRepository<DoctorRequest, Long>, JpaSpecificationExecutor<DoctorRequest> {
 
     Page<DoctorRequest> findByVisitAndRequestType(final Visit visit, final String requestType,final Pageable pageable);
+    Page<DoctorRequest> findByVisit(final Visit visit,final Pageable pageable);
 }

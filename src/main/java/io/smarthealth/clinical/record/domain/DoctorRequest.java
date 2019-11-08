@@ -40,7 +40,7 @@ public class DoctorRequest extends Auditable {
     }
 
     public enum RequestType {
-        Lab,
+        Laboratory,
         Radiology,
         Pharmacy,
         Procedure
@@ -65,7 +65,6 @@ public class DoctorRequest extends Auditable {
     private Employee requestedBy;
     private LocalDateTime orderDatetime;
     private String urgency;
-    @NaturalId// lab no| prescription no.
     private String orderNumber;
     //private String action;
     private String notes;

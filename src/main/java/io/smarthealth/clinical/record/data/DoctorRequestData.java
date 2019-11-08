@@ -21,21 +21,21 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DoctorRequestData {
-
+    
     public enum FullFillerStatusType {
         Fulfilled,
         Unfullfilled,
         Cancelled,
         PartiallyFullfilled
     }
-
+    
     public enum RequestType {
-        Lab,
+        Laboratory,
         Pharmacy,
         Radiology,
         Procedure
     }
-
+    
     public enum Urgency {
         Low,
         Medium,
@@ -49,13 +49,14 @@ public class DoctorRequestData {
     @NotBlank
     @NotNull
     private String itemCode;
-
+    private String itemName;
+    
     @ApiModelProperty(required = false, hidden = true)
     private ItemData item;
-
+    
     @ApiModelProperty(required = false, hidden = true)
     private EmployeeData employeeData;
-
+    
     @ApiModelProperty(required = false, hidden = true)
     private LocalDateTime orderDatetime;
     private Urgency urgency;
@@ -67,10 +68,11 @@ public class DoctorRequestData {
     private FullFillerStatusType fulfillerStatus;  //this is the va
     private String fulfillerComment;
     private Boolean drug;
-
+    private Long requestId;
+    
     @ApiModelProperty(required = false, hidden = true)
     private PatientData patientData;
-
+    
     public static DoctorRequest map(DoctorRequestData doctorRequestData) {
         DoctorRequest doctorRequest = new DoctorRequest();
         doctorRequest.setNotes(doctorRequestData.getNotes());
@@ -83,7 +85,7 @@ public class DoctorRequestData {
         doctorRequest.setRequestType(doctorRequestData.requestType.name());
         return doctorRequest;
     }
-
+    
     public static DoctorRequestData map(DoctorRequest doctorRequest) {
         DoctorRequestData doctorRequestData = new DoctorRequestData();
         doctorRequestData.setDrug(doctorRequest.getDrug());
@@ -94,6 +96,8 @@ public class DoctorRequestData {
         doctorRequestData.setOrderNumber(doctorRequest.getOrderNumber());
         doctorRequestData.setRequestType(RequestType.valueOf(doctorRequest.getRequestType()));
         doctorRequestData.setUrgency(Urgency.valueOf(doctorRequest.getUrgency()));
+        doctorRequestData.setRequestId(doctorRequest.getId());
+        doctorRequestData.setItemName(doctorRequest.getItem().getItemName());
         return doctorRequestData;
     }
 }

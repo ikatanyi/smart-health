@@ -34,7 +34,6 @@ public class DoctorRequestService implements DateConverter {
 
     @Autowired
     private final DoctorsRequestRepository doctorRequestRepository;
-    
 
     @Autowired
     ModelMapper modelMapper;
@@ -60,8 +59,13 @@ public class DoctorRequestService implements DateConverter {
         return docReqData;
     }
 
-    public Page<DoctorRequest> findAllByVisit(final Visit visit, final String requestType, Pageable pageable) {
+    public Page<DoctorRequest> findAllRequestsByVisitAndRequestType(final Visit visit, final String requestType, Pageable pageable) {
         Page<DoctorRequest> docReqs = doctorRequestRepository.findByVisitAndRequestType(visit, requestType, pageable);
+        return docReqs;
+    }
+
+    public Page<DoctorRequest> findAllRequestsByVisit(final Visit visit, Pageable pageable) {
+        Page<DoctorRequest> docReqs = doctorRequestRepository.findByVisit(visit, pageable);
         return docReqs;
     }
 
