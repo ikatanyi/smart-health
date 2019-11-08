@@ -9,7 +9,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Data;
+import org.hibernate.annotations.Formula;
 
 /**
  *
@@ -32,6 +34,13 @@ public class Person extends Auditable {
     @Column(length = 1)
     private String gender;
     private LocalDate dateOfBirth;
+
+    //@Transient
+    @Formula("YEAR(CURDATE()) - YEAR(date_of_birth)")
+//    private int age;
+//    @Formula("(TIMESTAMPDIFF(YEAR,date_of_birth,CURDATE()))")
+    private String age;
+
     @Column(length = 50)
     private String maritalStatus;
     private LocalDate dateRegistered = LocalDate.now();
@@ -43,7 +52,7 @@ public class Person extends Auditable {
 
 //    @Formula("case when exists (select * from patient p where p.patient_id = person_id) then 1 else 0 end")
     private boolean isPatient;
-    
+
     private String contactPerson;
 
 //    @OneToMany(mappedBy = "person")

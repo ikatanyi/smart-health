@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +101,6 @@ public class PatientService {
 //        int nextPatient = patientRepository.maxId() + 1;
 //        return String.valueOf("PAT" + nextPatient);
 //    }
-
     public Optional<PatientData> fetchPatientByPatientNumber(final String patientNumber) {
 
         return patientRepository.findByPatientNumber(patientNumber)
@@ -239,6 +239,9 @@ public class PatientService {
             patientIdentifierRepository.saveAll(patient.getIdentifiers()
                     .stream()
                     .map(identity -> {
+                        if (identity.getId_type().equals("")) {
+                            return new PatientIdentifier();
+                        }
                         final PatientIdentifier patientIdentifier = patientIdentifierService.convertIdentifierDataToEntity(identity) /*modelMapper.map(identity, PatientIdentifier.class)*/;
                         patientIdentifiersList.add(patientIdentifier);
                         patientIdentifier.setPatient(savedPatient);
@@ -315,7 +318,8 @@ public class PatientService {
 
             patientData.setFullName((patient.getGivenName() != null ? patient.getGivenName() : "") + " " + (patient.getMiddleName() != null ? patient.getMiddleName() : "").concat(" ").concat(patient.getSurname() != null ? patient.getSurname() : " "));
             if (patient.getDateOfBirth() != null) {
-                patientData.setAge(String.valueOf(ChronoUnit.YEARS.between(patient.getDateOfBirth(), LocalDate.now())));
+                //patientData.setAge(String.valueOf(ChronoUnit.YEARS.between(patient.getDateOfBirth(), LocalDate.now())));
+                patientData.setAge(patient.getAge());
             }
             return patientData;
         } catch (Exception e) {

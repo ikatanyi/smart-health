@@ -7,7 +7,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Data;
+import org.hibernate.annotations.Formula;
 
 /**
  * The Patient
@@ -43,5 +45,6 @@ public class Patient extends Person {
 
     private String criticalInformation;
     private String basicNotes;
+   
 
 }
