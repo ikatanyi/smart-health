@@ -105,7 +105,7 @@ public class ItemService {
             drugRepository.save(drug);
         }
 
-        if (createItem.getItemType().equals("Inventory")) { 
+        if (createItem.getItemType().equals("Inventory") && createItem.getInventoryStore()!=null) { 
             Store store = storeService.getStore(createItem.getInventoryStore())
                     .orElseThrow(() -> APIException.notFound("Store with Identifier {0} not found ", createItem.getInventoryStore()));
 
@@ -139,6 +139,14 @@ public class ItemService {
         return items;
     }
     
+    public Item findItemEntityOrThrow(Long id) {
+        return this.itemRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Item id {0} not found.", id));
+    }
+     public Item findItemWithNoFoundDetection(String code) {
+        return this.itemRepository.findByItemCode(code)
+                .orElseThrow(() -> APIException.notFound("Item id {0} not found.", code));
+    }
     //this should be cached
     public ItemMetadata getItemMetadata(){
         List<StoreData> stores=storeService.getAllStores();

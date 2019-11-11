@@ -27,11 +27,14 @@ public class DepartmentData {
     @NotBlank
     @NotNull
     private String name;
-    private String facilityCode; 
+    private String facilityName;
     private Long facilityId;
 //    private Long parentId;
 //    private Long incomeAccountId;
 //    private Long expenseAccountId;
     private boolean isStore;
     private boolean active;
+
+    @Enumerated(EnumType.STRING)
+    private Department.ServicePointType servicePointType;
 }

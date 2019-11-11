@@ -12,12 +12,7 @@ import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecific
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.lang.DateConverter;
-import io.smarthealth.infrastructure.sequence.SequenceService;
-import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -39,22 +34,14 @@ public class DoctorRequestService implements DateConverter {
 
     @Autowired
     private final DoctorsRequestRepository doctorRequestRepository;
-    @Autowired
-    private final VisitRepository visitRepository;
-    @Autowired
-    private final PatientRepository patientRepository;
+    
 
     @Autowired
     ModelMapper modelMapper;
 
-    private final SequenceService sequenceService;
-
-    public DoctorRequestService(DoctorsRequestRepository doctorRequestRepository, VisitRepository visitRepository, PatientRepository patientRepository, SequenceService sequenceService
+    public DoctorRequestService(DoctorsRequestRepository doctorRequestRepository, VisitRepository visitRepository, PatientRepository patientRepository
     ) {
         this.doctorRequestRepository = doctorRequestRepository;
-        this.visitRepository = visitRepository;
-        this.patientRepository = patientRepository;
-        this.sequenceService = sequenceService;
     }
 
     public List<DoctorRequestData> createRequest(List<DoctorRequest> docRequests) {

@@ -27,11 +27,9 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.swagger.annotations.Api;
 import java.util.ArrayList;
-import static java.util.Collections.list;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
-import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -169,9 +167,10 @@ public class ConsultationController {
         Page<DiagnosisData> list = pdList.map(pd -> {
             DiagnosisData d = diagnosisData.map(pd);
             d.setPatientData(patientService.convertToPatientData(pd.getPatient()));
+            d.setPatientNumber(pd.getPatient().getPatientNumber());
+            d.setVisitNumber(visit.getVisitNumber());
             return d;
         });
-
         Pager<List<DiagnosisData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -183,7 +182,6 @@ public class ConsultationController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Patient diagnosis");
         pagers.setPageDetails(details);
-
         return ResponseEntity.ok(pagers);
     }
 

@@ -14,7 +14,6 @@ public enum LabTestState {
         AwaitingSpecimen,
         Accepted,
         Rejected,
-        AawitingReview,
         Completed,
         Cancelled,
         AwaitingReview 

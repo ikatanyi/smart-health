@@ -65,7 +65,7 @@ public class SpecimenController {
     
     @GetMapping("/specimen/{id}")
     public ResponseEntity<?> fetchSpecimenById(@PathVariable("id") final Long id) {
-        SpecimenData specimens = specimenService.fetchSpecimenById(id);
+        SpecimenData specimens = SpecimenData.map(specimenService.fetchSpecimenById(id));
         if (specimens!=null) {
             return ResponseEntity.ok(specimens);
         } else {

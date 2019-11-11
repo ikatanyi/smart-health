@@ -33,9 +33,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 @Data
 @Entity
-@EntityListeners(AuditingEntityListener.class) 
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "org_organization")
-public class Organization implements Serializable { 
+public class Organization implements Serializable {
+
     public enum Type {
         Business,
         Individual
@@ -76,8 +77,8 @@ public class Organization implements Serializable {
     @JoinTable(name = "org_address", joinColumns = {
         @JoinColumn(name = "organization_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "address_id", referencedColumnName = "id")})
-    private List<Address> address = new ArrayList<>(); 
-    
-   @OneToMany(mappedBy = "organization")
+    private List<Address> address = new ArrayList<>();
+
+    @OneToMany(mappedBy = "organization")
     private List<Facility> facilities;
 }

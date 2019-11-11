@@ -40,6 +40,9 @@ public class Person extends Auditable {
     @Formula("YEAR(CURDATE()) - YEAR(date_of_birth)")
     private int age;
 
+    @Formula(value = " concat(given_name, ' ', surname) ")
+    private String fullName;
+    
     @OneToMany(mappedBy = "person")
     private List<PersonAddress> addresses;
     @OneToMany(mappedBy = "person")
@@ -47,7 +50,7 @@ public class Person extends Auditable {
 
 //    @Formula("case when exists (select * from patient p where p.patient_id = person_id) then 1 else 0 end")
     private boolean isPatient;
-    
+
     private String contactPerson;
 
 //    @OneToMany(mappedBy = "person")

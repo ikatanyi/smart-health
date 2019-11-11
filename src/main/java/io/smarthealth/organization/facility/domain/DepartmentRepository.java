@@ -22,6 +22,8 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
     Optional<Department> findByCode(String code);
 
+    Optional<Department> findByServicePointTypeAndFacility(String servicePointType, Facility facility);
+
     @Query("SELECT CASE WHEN COUNT(d) > 0 THEN 'true' ELSE 'false' END FROM Department d WHERE d.code = :code")
     Boolean existsByCode(@Param("code") final String code);
 }

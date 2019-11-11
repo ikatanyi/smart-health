@@ -1,12 +1,11 @@
 package io.smarthealth.clinical.lab.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.smarthealth.clinical.lab.domain.LabTestType;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.lab.domain.Results;
+import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
-import io.smarthealth.clinical.visit.domain.Visit;
 import java.time.LocalDateTime;
 import lombok.Data;
 import java.util.ArrayList;
@@ -22,22 +21,17 @@ import org.modelmapper.ModelMapper;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PatientTestData {
-
     private Long id;
-    private String visitNumber;
-    private String requestId;
-    private String testCode;
-    private String clinicalDetails;
-    private String physicianId;
-    private String physicianName;
-    private String LabTestNumber;
-    private String specimen;
+    
+    
+    private Long specimenId;
+    private SpecimenData specimenData;
     private LocalDateTime specimenCollectionTime;
     private LabTestTypeData testTypeData;
+    private String testCode;
+    private String patientNumber;
     
 //    private Visit visit;
-    private DoctorRequest request;
-
     @Enumerated(EnumType.STRING)
     private LabTestState state;
     private List<ResultsData> resultData=new ArrayList();
@@ -45,38 +39,25 @@ public class PatientTestData {
     public static PatientLabTest map(PatientTestData ptestdata) {
         PatientLabTest entity = new PatientLabTest();
         entity.setId(ptestdata.getId());
-        entity.setClinicalDetails(ptestdata.getClinicalDetails());
-        entity.setLabTestNumber(ptestdata.getLabTestNumber());
-        entity.setSpecimen(ptestdata.getSpecimen());
         entity.setState(ptestdata.getState());
         return entity;
     }
 
     public static PatientTestData map(PatientLabTest patientTest) {
-        ModelMapper modelMapper = new ModelMapper();
         PatientTestData test = new PatientTestData();
         test.setId(patientTest.getId());
         test.setSpecimenCollectionTime(patientTest.getSpecimenCollectionTime());
-        if(patientTest.getVisit()!=null){
-           test.setVisitNumber(patientTest.getVisit().getVisitNumber());
-        }
-        if(patientTest.getRequest()!=null){
-            test.setRequestId(String.valueOf(patientTest.getRequest().getId()));
-            test.setPhysicianId(patientTest.getRequest().getRequestedBy().getStaffNumber());
-            test.setPhysicianName(patientTest.getRequest().getCreatedBy());            
+        if(patientTest.getSpecimen()!=null){
+            SpecimenData spdata = SpecimenData.map(patientTest.getSpecimen());
+            test.setSpecimenData(spdata);
         }
         test.setTestCode(patientTest.getTesttype()!=null?patientTest.getTesttype().getServiceCode():"");
-        test.setClinicalDetails(patientTest.getClinicalDetails());
         test.setState(patientTest.getState());
-        if(patientTest.getRequest()!=null){
-            test.setPhysicianId(patientTest.getRequest().getRequestedBy().getStaffNumber());
-            test.setPhysicianName(patientTest.getRequest().getRequestedBy().getGivenName());
-        }
-        test.setLabTestNumber(patientTest.getLabTestNumber());
+        
         test.setResultData(new ArrayList());
         if (patientTest.getResults() != null) {
             for (Results result : patientTest.getResults()) {
-                ResultsData resultdata = modelMapper.map(result, ResultsData.class);
+                ResultsData resultdata = ResultsData.map(result);
                 if (!test.getResultData().isEmpty()) {
                     test.getResultData().add(resultdata);
                 } else {                    

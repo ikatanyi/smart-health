@@ -3,6 +3,8 @@ package io.smarthealth.organization.person.patient.api;
 import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.sequence.SequenceService;
+import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.organization.person.data.AddressData;
 import io.smarthealth.organization.person.data.ContactData;
 import io.smarthealth.organization.person.data.PortraitData;
@@ -79,13 +81,16 @@ public class PatientController {
 
     @Autowired
     ModelMapper modelMapper;
+    
+    @Autowired
+    SequenceService sequenceService;
 
     @PostMapping("/patients")
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestBody @Valid final PatientData patientData) {
         LocalDate dateOfBirth = LocalDate.now().minusDays(Long.valueOf(patientData.getAge()));
         patientData.setDateOfBirth(dateOfBirth);
-        patientData.setPatientNumber(patientService.generatePatientNumber());
+        patientData.setPatientNumber(sequenceService.nextNumber(SequenceType.PatientNumber));
         Patient patient = this.patientService.createPatient(patientData);
 
         PatientData savedpatientData = patientService.convertToPatientData(patient);
