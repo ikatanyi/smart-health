@@ -34,6 +34,7 @@ public class Person extends Auditable {
     @Column(length = 1)
     private String gender;
     private LocalDate dateOfBirth;
+  
 
     //@Transient
     @Formula("YEAR(CURDATE()) - YEAR(date_of_birth)")
@@ -62,4 +63,7 @@ public class Person extends Auditable {
 //    private List<Biometrics> biometrics =new ArrayList<>();
 //    @OneToMany(mappedBy = "person")
 //    private List<ContactDetail> contactDetails=new ArrayList<>();
+    
+    
+
 }
