@@ -28,7 +28,7 @@ public final class PatientData extends PersonData {
     //Additional patient data
     private String criticalInformation;
     private String basicNotes;
-    private String age;
+    private Integer age;
     private List<PatientIdentifierData> identifiers;
 
 }

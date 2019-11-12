@@ -1,10 +1,10 @@
 package io.smarthealth.clinical.visit.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -49,6 +49,10 @@ public class Visit extends Auditable {
     @NaturalId
     @Column(length = 38, unique = true)
     private String visitNumber;
+
+    @ManyToOne(fetch = FetchType.LAZY/*, optional = false*/)
+    @JoinColumn(name = "department_id", foreignKey = @ForeignKey(name = "fk_visit_department_id"))
+    private Department department;
 
     private LocalDateTime startDatetime;
     private LocalDateTime stopDatetime;

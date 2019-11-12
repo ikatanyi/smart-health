@@ -5,9 +5,6 @@
  */
 package io.smarthealth.appointment.domain;
 
-import io.smarthealth.organization.person.patient.domain.Patient;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

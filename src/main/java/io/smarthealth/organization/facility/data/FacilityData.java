@@ -23,6 +23,7 @@ public class FacilityData {
     private String taxNumber;
     private String facilityClass; //government classifications
     private String facilityName;
+    private Long facilityId;
     private Long parentFacilityId;
     private String parentFacility;
     @Lob
@@ -47,6 +48,7 @@ public class FacilityData {
         facilityData.setLogo(facility.getLogo());
         facilityData.setOrganizationName(facility.getOrganization().getOrganizationName());
         facilityData.setRegistrationNumber(facility.getRegistrationNumber());
+        facilityData.setFacilityId(facility.getId());
         
         return facilityData;
     }

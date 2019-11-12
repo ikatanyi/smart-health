@@ -68,7 +68,7 @@ public class PatientBillService {
                         billLine.setItem(item);
 
                     }
-                    
+
                     billLine.setPrice(lineData.getPrice());
                     billLine.setQuantity(lineData.getQuantity());
                     billLine.setAmount(lineData.getAmount());
@@ -76,7 +76,7 @@ public class PatientBillService {
                     billLine.setServicePointId(lineData.getServicePointId());
                     billLine.setServicePoint(lineData.getServicePoint());
                     billLine.setStatus(BillStatus.Draft);
-                    
+
                     return billLine;
                 })
                 .collect(Collectors.toList());

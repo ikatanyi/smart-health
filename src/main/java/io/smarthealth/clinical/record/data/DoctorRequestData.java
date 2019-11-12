@@ -3,7 +3,6 @@ package io.smarthealth.clinical.record.data;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.organization.facility.data.EmployeeData;
-import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.stock.item.data.ItemData;
 import io.swagger.annotations.ApiModelProperty;
@@ -21,26 +20,27 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DoctorRequestData {
-
+     
     public enum FullFillerStatusType {
         Fulfilled,
-        Unfullfilled,
+        Unfulfilled,
         Cancelled,
         PartiallyFullfilled
     }
-
+    
     public enum RequestType {
-        Lab,
+        Laboratory,
         Pharmacy,
         Radiology,
         Procedure
     }
-
+    
     public enum Urgency {
         Low,
         Medium,
         High
     }
+    private Long requestId;
     private RequestType requestType;
     @ApiModelProperty(required = false, hidden = true)
     private String patientNumber;
@@ -49,13 +49,14 @@ public class DoctorRequestData {
     @NotBlank
     @NotNull
     private String itemCode;
-
+    private String itemName;
+    
     @ApiModelProperty(required = false, hidden = true)
     private ItemData item;
-
+    
     @ApiModelProperty(required = false, hidden = true)
     private EmployeeData employeeData;
-
+    
     @ApiModelProperty(required = false, hidden = true)
     private LocalDateTime orderDatetime;
     private Urgency urgency;
@@ -67,10 +68,9 @@ public class DoctorRequestData {
     private FullFillerStatusType fulfillerStatus;  //this is the va
     private String fulfillerComment;
     private Boolean drug;
-
     @ApiModelProperty(required = false, hidden = true)
     private PatientData patientData;
-
+    
     public static DoctorRequest map(DoctorRequestData doctorRequestData) {
         DoctorRequest doctorRequest = new DoctorRequest();
         doctorRequest.setNotes(doctorRequestData.getNotes());
@@ -83,7 +83,7 @@ public class DoctorRequestData {
         doctorRequest.setRequestType(doctorRequestData.requestType.name());
         return doctorRequest;
     }
-
+    
     public static DoctorRequestData map(DoctorRequest doctorRequest) {
         DoctorRequestData doctorRequestData = new DoctorRequestData();
         doctorRequestData.setDrug(doctorRequest.getDrug());
@@ -94,6 +94,10 @@ public class DoctorRequestData {
         doctorRequestData.setOrderNumber(doctorRequest.getOrderNumber());
         doctorRequestData.setRequestType(RequestType.valueOf(doctorRequest.getRequestType()));
         doctorRequestData.setUrgency(Urgency.valueOf(doctorRequest.getUrgency()));
+        doctorRequestData.setRequestId(doctorRequest.getId());
+        doctorRequestData.setItemName(doctorRequest.getItem().getItemName());
         return doctorRequestData;
     }
 }
+   
+    

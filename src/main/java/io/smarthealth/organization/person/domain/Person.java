@@ -9,6 +9,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Data;
 import org.hibernate.annotations.Formula;
 
@@ -33,6 +34,9 @@ public class Person extends Auditable {
     @Column(length = 1)
     private String gender;
     private LocalDate dateOfBirth;
+
+    //@Transient
+  
     @Column(length = 50)
     private String maritalStatus;
     private LocalDate dateRegistered = LocalDate.now();

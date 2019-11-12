@@ -141,7 +141,7 @@ public class PharmacyController {
                 .body(pagers);
     }
     
-    @GetMapping("/patient-drug/{id}")
+    @GetMapping("/patientDrug/{id}")
     public ResponseEntity<?> fetchPatientDrugsById(@PathVariable("id") final Long id) {
         PatientDrugsData patientdrugsdata = pharmService.getById(id);
         if (patientdrugsdata != null) {
@@ -151,19 +151,19 @@ public class PharmacyController {
         }
     }
     
-    @GetMapping("/patient-drug")
+    @GetMapping("/patientDrug")
     public ResponseEntity<?> fetchAllPatientDrugs(
             @RequestParam(value = "visitNumber", defaultValue = "") String visitNumber,
             @RequestParam(value = "patientNumber", defaultValue = "") String patientNumber,
             Pageable pageable) {
         
         List<PatientDrugsData> patientDrugs = pharmService.getByVisitIdAndPatientId(visitNumber, patientNumber);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/patient-drug")
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/patientDrug/")
                 .buildAndExpand().toUri();
         return ResponseEntity.created(location).body(APIResponse.successMessage("PatientDrugsData returned successfuly", HttpStatus.OK, patientDrugs));
     }
     
-    @DeleteMapping("/patient-drug/{id}")
+    @DeleteMapping("/patientDrug/{id}")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
         pharmService.deletePatientDrug(id);
         return ResponseEntity.ok("200");

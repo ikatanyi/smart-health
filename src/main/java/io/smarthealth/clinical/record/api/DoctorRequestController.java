@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.record.api;
 
+import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.service.DoctorRequestService;
@@ -64,18 +65,21 @@ public class DoctorRequestController {
 
     final ItemService itemService;
 
-    public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, SequenceService sequenceService, ItemService itemService) {
+    final PatientQueueService patientQueueService;
+
+    public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, SequenceService sequenceService, ItemService itemService, PatientQueueService patientQueueService) {
         this.requestService = requestService;
         this.visitService = visitService;
         this.modelMapper = modelMapper;
         this.employeeService = employeeService;
         this.sequenceService = sequenceService;
         this.itemService = itemService;
+        this.patientQueueService = patientQueueService;
     }
 
-    @PostMapping("/visit/{visitNo}/doctor-request/{requestType}")
+    @PostMapping("/visit/{visitNo}/doctor-request")
     public @ResponseBody
-    ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @PathVariable("requestType") final String requestType, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
+    ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
         List<DoctorRequest> docRequests = new ArrayList<>();
@@ -88,9 +92,9 @@ public class DoctorRequestController {
             doctorRequest.setVisit(visit);
             doctorRequest.setRequestedBy(employee);
             doctorRequest.setOrderNumber(orderNo);
-            doctorRequest.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfullfilled.name());
-            doctorRequest.setFulfillerComment("Request unfullfilled");
-            doctorRequest.setRequestType(requestType);
+            doctorRequest.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
+            doctorRequest.setFulfillerComment(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
+            doctorRequest.setRequestType(data.getRequestType().name());
             docRequests.add(doctorRequest);
         }
         List<DoctorRequestData> requestList = requestService.createRequest(docRequests);
@@ -115,7 +119,7 @@ public class DoctorRequestController {
     @GetMapping("/visit/{visitNo}/doctor-request/{requestType}")
     public ResponseEntity<?> fetchAllRequestsByVisit(@PathVariable("visitNo") final String visitNo, @PathVariable("requestType") final String requestType, Pageable pageable) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
-        Page<DoctorRequest> page = requestService.findAllByVisit(visit, requestType, pageable);
+        Page<DoctorRequest> page = requestService.findAllRequestsByOrderNoAndRequestType(visitNo, requestType, pageable);
 
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);

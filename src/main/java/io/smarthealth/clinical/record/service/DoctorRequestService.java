@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.record.service;
 
+import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
@@ -34,7 +35,6 @@ public class DoctorRequestService implements DateConverter {
 
     @Autowired
     private final DoctorsRequestRepository doctorRequestRepository;
-    
 
     @Autowired
     ModelMapper modelMapper;
@@ -46,6 +46,11 @@ public class DoctorRequestService implements DateConverter {
 
     public List<DoctorRequestData> createRequest(List<DoctorRequest> docRequests) {
         List<DoctorRequest> docReqs = doctorRequestRepository.saveAll(docRequests);
+        //Send patient to queue
+        for (DoctorRequest docRequest : docReqs) {
+            PatientQueue patientQueue = new PatientQueue();
+
+        }
         return modelMapper.map(docReqs, new TypeToken<List<DoctorRequest>>() {
         }.getType());
     }
@@ -60,8 +65,18 @@ public class DoctorRequestService implements DateConverter {
         return docReqData;
     }
 
-    public Page<DoctorRequest> findAllByVisit(final Visit visit, final String requestType, Pageable pageable) {
+    public Page<DoctorRequest> findAllRequestsByVisitAndRequestType(final Visit visit, final String requestType, Pageable pageable) {
         Page<DoctorRequest> docReqs = doctorRequestRepository.findByVisitAndRequestType(visit, requestType, pageable);
+        return docReqs;
+    }
+
+    public Page<DoctorRequest> findAllRequestsByVisit(final Visit visit, Pageable pageable) {
+        Page<DoctorRequest> docReqs = doctorRequestRepository.findByVisit(visit, pageable);
+        return docReqs;
+    }
+
+    public Page<DoctorRequest> findAllRequestsByOrderNoAndRequestType(final String orderNo, String requestType, Pageable pageable) {
+        Page<DoctorRequest> docReqs = doctorRequestRepository.findByOrderNumberAndRequestType(orderNo, requestType, pageable);
         return docReqs;
     }
 
