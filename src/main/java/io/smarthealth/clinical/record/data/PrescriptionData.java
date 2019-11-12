@@ -17,6 +17,7 @@ import lombok.Data;
 public class PrescriptionData extends DoctorRequestData {
     //For example .. Panadol , 2*3 for a week
 
+    private String prescriptionNo;
     private String brandName;//Panadol
     private String route;//Oral
     private Double dose;//2
@@ -34,7 +35,7 @@ public class PrescriptionData extends DoctorRequestData {
 
     @ApiModelProperty(required = false, hidden = true)
     private Long id;
-
+    
     public static PrescriptionData map(Prescription p) {
         PrescriptionData pd = new PrescriptionData();
         pd.setAsNeeded(p.getAsNeeded());
@@ -63,9 +64,10 @@ public class PrescriptionData extends DoctorRequestData {
         pd.setRoute(p.getRoute());
         pd.setUrgency(Urgency.valueOf(p.getUrgency()));
         pd.setVisitNumber(p.getVisitNumber());
+        pd.setPrescriptionNo(p.getOrderNumber());
         return pd;
     }
-
+    
     public static Prescription map(PrescriptionData p) {
         Prescription pd = new Prescription();
         pd.setAsNeeded(p.getAsNeeded());

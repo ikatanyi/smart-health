@@ -35,7 +35,7 @@ public class EmployeeData extends PersonData {
     private String email;
     private String mobile;
     private String telephone;
-//    
+
 //    public EmployeeData convertEmployeeEntityToEmployeeData(Employee employee) {
 //        EmployeeData employeeData = modelMapper.map(employee, EmployeeData.class);
 //        employeeData.setDepartmentCode(employee.getDepartment().getCode());
