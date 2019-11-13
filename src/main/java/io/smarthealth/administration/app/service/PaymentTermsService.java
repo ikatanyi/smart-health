@@ -1,7 +1,8 @@
-package io.smarthealth.accounting.account.service;
+package io.smarthealth.administration.app.service;
 
 import io.smarthealth.administration.app.domain.PaymentTerms;
 import io.smarthealth.administration.app.domain.PaymentTermsRepository;
+import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -29,10 +30,10 @@ public class PaymentTermsService {
     public Optional<PaymentTerms> getPaymentTerm(Long id) {
         return paymentTermsRepository.findById(id);
     }
-       public Optional<PaymentTerms> getPaymentTermByName(String term) {
+
+    public Optional<PaymentTerms> getPaymentTermByName(String term) {
         return paymentTermsRepository.findByTermsName(term);
     }
-    
 
     public Page<PaymentTerms> getPaymentTerms(Pageable page, boolean includeClosed) {
 
@@ -40,5 +41,9 @@ public class PaymentTermsService {
             return paymentTermsRepository.findAll(page);
         }
         return paymentTermsRepository.findByActiveTrue(page);
+    }
+
+    public List<PaymentTerms> getPaymentTerms() {
+        return paymentTermsRepository.findAll();
     }
 }

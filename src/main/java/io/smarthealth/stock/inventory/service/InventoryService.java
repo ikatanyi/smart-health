@@ -6,9 +6,9 @@
 package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.stock.inventory.domain.InventoryItemRepository;
-import io.smarthealth.stock.inventory.domain.StockMovement;
+import io.smarthealth.stock.inventory.domain.InventoryVariance;
+import io.smarthealth.stock.inventory.domain.InventoryVarianceRepository;
 import io.smarthealth.stock.inventory.domain.StockMovementRepository;
-import io.smarthealth.stock.item.domain.Item;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,12 +17,20 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class InventoryService {
+
     private final InventoryItemRepository inventoryItemRepository;
     private final StockMovementRepository stockMovementRepository;
+    private final InventoryVarianceRepository inventoryVarianceRepository;
 
-    public InventoryService(InventoryItemRepository inventoryItemRepository, StockMovementRepository stockMovementRepository) {
+    public InventoryService(InventoryItemRepository inventoryItemRepository, 
+            StockMovementRepository stockMovementRepository, 
+            InventoryVarianceRepository inventoryVarianceRepository) {
         this.inventoryItemRepository = inventoryItemRepository;
         this.stockMovementRepository = stockMovementRepository;
+        this.inventoryVarianceRepository = inventoryVarianceRepository;
     }
-   
+
+    public InventoryVariance saveStockVariance(InventoryVariance variance) {
+        return inventoryVarianceRepository.save(variance);
+    }
 }

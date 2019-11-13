@@ -64,6 +64,10 @@ public class StoreService {
     public Optional<Store> getStore(Long id) {
         return storeRepository.findById(id);
     }
+    public Store getStoreWithNoFoundDetection(Long id){
+        return getStore(id)
+                .orElseThrow(()-> APIException.notFound("Store with id {0} not found", id));
+    }
 
     public List<StoreData> getAllStores() {
         Page<StoreData> stores = storeRepository.findAll(Pageable.unpaged()).map(store -> StoreData.map(store));

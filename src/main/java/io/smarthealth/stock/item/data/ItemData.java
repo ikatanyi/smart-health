@@ -15,6 +15,7 @@ public class ItemData {
     private Long itemId;
     private String itemType;
     private String itemName;
+    private String itemCategory;
     private String sku;
     private Long uomId;
     private String unit;
@@ -46,6 +47,7 @@ public class ItemData {
         ItemData itemsdata = modelMapper.map(item, ItemData.class); 
         itemsdata.setItemId(item.getId());
         itemsdata.setSku(item.getItemCode());
+        itemsdata.setItemCategory(item.getCategory());
         if(item.getUom()!=null){
             itemsdata.setUnit(item.getUom().getName());
             itemsdata.setUomId(item.getId());

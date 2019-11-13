@@ -38,6 +38,10 @@ public class UomService {
     public Optional<Uom> findUomById(Long id){
         return uomRepository.findById(id);
     }
+    public Uom getUomWithNoFoundDetection(Long id){
+        return uomRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Uom identified by  {0} not found", id));
+    }
 
     @Transactional
     public Uom createUom(final UomData uomData) {
@@ -48,7 +52,7 @@ public class UomService {
 
     @Transactional
     public Uom updateUom(final Long uomId, final UomData uomData) {
-        Uom uom = uomRepository.findById(uomId).orElseThrow(() -> APIException.notFound("Uom identified by  {0} not found", uomId));
+        Uom uom = getUomWithNoFoundDetection(uomId);
         modelMapper.map(uomData, uom);
         uomRepository.save(uom);
         return uom;

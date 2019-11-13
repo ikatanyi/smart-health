@@ -8,6 +8,7 @@ import io.smarthealth.administration.codes.domain.CodeValue;
 import io.smarthealth.administration.codes.domain.CodeValueRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -108,14 +109,14 @@ public class CodesService {
         cv.setMandatory(data.isMandatory());
         cv.setDescription(data.getDescription());
         cv.setLabel(data.getName());
-        cv.setPosition(data.getPosition()); 
+        cv.setPosition(data.getPosition());
         CodeValue saved = codeValueRepository.save(cv);
         return CodeValueData.map(saved);
     }
 
     public Long deleteCodeValue(Long codeId, Long codeValueId) {
-       getWithNotFoundDetection(codeId);
-        CodeValue cv = getCodeValueWithNotFoundDetection(codeValueId); 
+        getWithNotFoundDetection(codeId);
+        CodeValue cv = getCodeValueWithNotFoundDetection(codeValueId);
         codeValueRepository.delete(cv);
         return codeValueId;
     }
@@ -123,5 +124,14 @@ public class CodesService {
     public Page<CodeValueData> getCodeValues(Pageable page) {
         Page<CodeValueData> lists = codeValueRepository.findAll(page).map(c -> CodeValueData.map(c));
         return lists;
+    }
+
+    public List<CodeValueData> getCodeValues(Long codeId) {
+        Code code = getWithNotFoundDetection(codeId);
+        List<CodeValueData> codes = codeValueRepository.findByCode(code)
+                .stream()
+                .map(cv -> CodeValueData.map(cv))
+                .collect(Collectors.toList());
+        return codes;
     }
 }

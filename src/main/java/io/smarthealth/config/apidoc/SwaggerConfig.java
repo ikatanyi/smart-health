@@ -1,4 +1,4 @@
-package io.smarthealth.infrastructure.api;
+package io.smarthealth.config.apidoc;
 
 import io.swagger.annotations.Api;
 import java.util.Arrays;

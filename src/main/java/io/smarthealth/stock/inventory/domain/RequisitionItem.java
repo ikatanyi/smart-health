@@ -20,12 +20,15 @@ import lombok.Data;
 public class RequisitionItem extends Identifiable {
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_requisition_item_requistion_id"))
     private Requisition requistion;
     @ManyToOne
-     @JoinColumn(foreignKey = @ForeignKey(name = "fk_requistion_item_id"))
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_requisition_item_item_id"))
     private Item item;
     private double quantity;
+    private double receivedQuantity;
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_requisition_item_uom_id"))
     private Uom uom;
 
 }

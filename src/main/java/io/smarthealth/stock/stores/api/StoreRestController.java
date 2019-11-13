@@ -80,7 +80,7 @@ public class StoreRestController {
     }
     
      @GetMapping("/stores/$metadata")
-    public ResponseEntity<?> getLookUps(){
+    public ResponseEntity<?> getStoresMetadata(){
         return ResponseEntity.ok(service.getStoreMetadata());
     }
 }

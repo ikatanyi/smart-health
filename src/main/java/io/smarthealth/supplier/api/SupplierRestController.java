@@ -6,6 +6,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
+import io.smarthealth.supplier.domain.SupplierMetadata;
 import io.smarthealth.supplier.service.SupplierService;
 import io.swagger.annotations.Api;
 import java.util.List;
@@ -57,12 +58,12 @@ public class SupplierRestController {
     }
 
     @GetMapping("/suppliers/{id}")
-    public SupplierData getItem(@PathVariable(value = "id") Long code) {
+    public SupplierData getSupplier(@PathVariable(value = "id") Long code) {
         Supplier supplier = service.getSupplierById(code)
-                .orElseThrow(() -> APIException.notFound("Account {0} not found.", code));
+                .orElseThrow(() -> APIException.notFound("Supplier with id {0} not found.", code));
         return SupplierData.map(supplier);
     }
-    
+
     @GetMapping("/suppliers")
     public ResponseEntity<?> getAllSuppliers(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
@@ -91,10 +92,10 @@ public class SupplierRestController {
     }
 
     //generate a single api that returns all the setup required for this object
-//    @GetMapping("/suppliers/$metadata")
-//    public ResponseEntity<?> getItemMetadata() {
-//        ItemMetadata metadata = service.getItemMetadata();
-//        return ResponseEntity.ok(metadata);
-//    }
+    @GetMapping("/suppliers/$metadata")
+    public ResponseEntity<?> getSupplierMetadata() {
+        SupplierMetadata metadata = service.getSupplierMetadata();
+        return ResponseEntity.ok(metadata);
+    }
 
 }

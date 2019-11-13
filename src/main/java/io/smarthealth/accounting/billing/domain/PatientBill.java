@@ -46,13 +46,13 @@ public class PatientBill extends Auditable {
     private List<PatientBillItem> billLines = new ArrayList<>();
     //
 
-    public void addPatientBillLine(PatientBillItem billLine) {
-        billLine.setPatientBill(this);
-        billLines.add(billLine);
+    public void addBillItem(PatientBillItem billItem) {
+        billItem.setPatientBill(this);
+        billLines.add(billItem);
     }
 
-    public void addPatientBillLine(List<PatientBillItem> billLine) {
-        billLine.stream().map((bill) -> {
+    public void addBillItems(List<PatientBillItem> billItems) {
+        billItems.stream().map((bill) -> {
             bill.setPatientBill(this);
             return bill;
         }).forEachOrdered((bill) -> {

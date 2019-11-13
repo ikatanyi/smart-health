@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import lombok.Data;
 
 /**
- *  Defines Lab Test service for the laboratory
+ *  Defines Lab Test service for the laboratory 
  * 
  * @author Kennedy.Imbenzi
  */

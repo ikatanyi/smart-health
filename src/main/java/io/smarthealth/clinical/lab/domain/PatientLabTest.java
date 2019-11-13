@@ -24,7 +24,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 /**
- *
+ *  Patient Lab Request
  * @author Kennedy.Imbenzi
  */
 @Data
@@ -40,7 +40,7 @@ public class PatientLabTest extends ClinicalRecord {
     private String specimenCollectionTime;
     private String requestNumber;
     @OneToOne
-    private LabTestType testtype;
+    private LabTestType testtype; // ref to request item/ test
 
     @Setter(AccessLevel.NONE)
     @LazyCollection(LazyCollectionOption.FALSE)

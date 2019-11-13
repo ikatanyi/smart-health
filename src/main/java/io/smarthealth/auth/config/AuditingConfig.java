@@ -1,4 +1,4 @@
-package io.smarthealth.infrastructure.auditor;
+package io.smarthealth.auth.config;
  
 import lombok.extern.slf4j.Slf4j; 
 import org.springframework.context.annotation.Bean;

@@ -14,6 +14,7 @@ import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,13 +43,14 @@ public class PatientBillService {
     public PatientBill createPatientBill(PatientBillData data) {
         //check the validity of the patient visit
         Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
-
+           String billNo=UUID.randomUUID().toString();
+                   ;
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
         patientbill.setPatient(visit.getPatient());
         patientbill.setAmount(data.getAmount());
         patientbill.setBalance(data.getAmount());
-        patientbill.setBillNumber(data.getBillNumber());
+        patientbill.setBillNumber(billNo);
         patientbill.setBillingDate(data.getBillingDate());
         patientbill.setJournalNumber(data.getJournalNumber());
         patientbill.setPaymentMode(data.getPaymentMode());
@@ -80,13 +82,13 @@ public class PatientBillService {
                     return billLine;
                 })
                 .collect(Collectors.toList());
-        patientbill.addPatientBillLine(lineItems);
+        patientbill.addBillItems(lineItems);
 
         PatientBill savedBill = patientBillRepository.save(patientbill);
         return savedBill;
     }
 
-    public Optional<PatientBill> findBillByBillNumber(final String billNumber) {
+    public Optional<PatientBill> findByBillNumber(final String billNumber) {
         return patientBillRepository.findByBillNumber(billNumber);
     }
    public PatientBill findOneWithNoFoundDetection(Long id){

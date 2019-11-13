@@ -11,6 +11,7 @@ import io.smarthealth.stock.item.service.ItemService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
@@ -92,5 +93,11 @@ public class PricebookService {
         return priceBookRepository.findAll(spec, page);
     }
 
+    public List<PriceBookData> getPricebooks() {
+        return priceBookRepository.findAll()
+                .stream()
+                .map(price -> PriceBookData.map(price))
+                .collect(Collectors.toList());
+    }
     //
 }

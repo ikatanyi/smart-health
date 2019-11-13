@@ -7,10 +7,13 @@ import io.smarthealth.administration.app.domain.BankAccount;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.domain.Currency;
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.supplier.domain.enumeration.SupplierType;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -30,11 +33,8 @@ import lombok.Data;
 @Table(name = "supplier")
 public class Supplier extends Auditable {
 
-    public enum Type {
-        Business,
-        Individual
-    }
-    private Type supplierType;
+    @Enumerated(EnumType.STRING)
+    private SupplierType supplierType;
     private String supplierName;
     private String legalName;
     private String taxNumber;
@@ -57,15 +57,23 @@ public class Supplier extends Auditable {
     @JoinColumn(name = "payment_terms_id", foreignKey = @ForeignKey(name = "fk_supplier_payment_terms_id"))
     private PaymentTerms paymentTerms;
 
-    @ManyToMany
-    @JoinTable(name = "supplier_address", joinColumns = {
-        @JoinColumn(name = "supplier_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "address_id", referencedColumnName = "id")})
-    private List<Address> address = new ArrayList<>(); // this can be a shared addresses
+    @ManyToOne
+    @JoinColumn
+    private Address address;
+    
+    @OneToOne
+    @JoinColumn
+    private Contact contact;
+    
+//    @ManyToMany
+//    @JoinTable(name = "supplier_address", joinColumns = {
+//        @JoinColumn(name = "supplier_id", referencedColumnName = "id")}, inverseJoinColumns = {
+//        @JoinColumn(name = "address_id", referencedColumnName = "id")})
+//    private List<Address> address = new ArrayList<>(); // this can be a shared addresses
 
-    @ManyToMany
-    @JoinTable(name = "supplier_contacts", joinColumns = {
-        @JoinColumn(name = "supplier_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "contact_id", referencedColumnName = "id")})
-    private List<Contact> contacts = new ArrayList<>();
+//    @ManyToMany
+//    @JoinTable(name = "supplier_contacts", joinColumns = {
+//        @JoinColumn(name = "supplier_id", referencedColumnName = "id")}, inverseJoinColumns = {
+//        @JoinColumn(name = "contact_id", referencedColumnName = "id")})
+//    private List<Contact> contacts = new ArrayList<>();
 }

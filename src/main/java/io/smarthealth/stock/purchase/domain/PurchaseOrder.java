@@ -1,10 +1,11 @@
 package io.smarthealth.stock.purchase.domain;
-  
+
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.organization.facility.domain.Department;
+import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
+import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.supplier.domain.Supplier;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,9 +13,10 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 import org.hibernate.annotations.NaturalId;
@@ -28,29 +30,43 @@ import org.hibernate.annotations.NaturalId;
 @Table(name = "purchase_order")
 public class PurchaseOrder extends Auditable {
 
-    public enum Status {
-        Draft,
-        Approved,
-        To_Receive_And_Bill
-    }
     @NaturalId
     private String orderNumber; //PUR-ORD-2019-00001
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_purch_order_supplier_id"))
     private Supplier supplier;
     private LocalDate transactionDate;
     private LocalDate requiredDate;
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_purch_order_address_id"))
     private Address address;
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_purch_order_contact_id"))
     private Contact contact;
     @ManyToOne
-    private Department store;
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_purch_order_store_id"))
+    private Store store;
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_purch_order_pricelist_id"))
     private PriceBook priceList;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private PurchaseOrderStatus status;
     //payment details that can be defined here that contains the terms and conditions for this and the rest will have to made
     @OneToMany(mappedBy = "purchaseOrder")
     private List<PurchaseOrderItem> purchaseOrderLines = new ArrayList<>();
+    
+      public void addOrderItem(PurchaseOrderItem item) {
+        item.setPurchaseOrder(this);
+        purchaseOrderLines.add(item);
+    }
+
+    public void addOrderItems(List<PurchaseOrderItem> items) {
+        items.stream().map((item) -> {
+            item.setPurchaseOrder(this);
+            return item;
+        }).forEachOrdered((bill) -> {
+            purchaseOrderLines.add(bill);
+        });
+    }
 
 }
