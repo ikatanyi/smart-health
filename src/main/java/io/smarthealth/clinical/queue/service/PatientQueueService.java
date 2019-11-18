@@ -15,7 +15,6 @@ import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,12 +42,16 @@ public class PatientQueueService {
         return patientQueueRepository.save(patientQueue);
     }
 
-    public Page<PatientQueue> fetchQueueByDept(Department department, Pageable pageable) {
-        return patientQueueRepository.findByDepartment(department, pageable);
+    public Page<PatientQueue> fetchQueueByDept(final Department department, final boolean status, Pageable pageable) {
+        return patientQueueRepository.findByDepartmentAndStatus(department, status, pageable);
     }
 
     public Page<PatientQueue> fetchQueueByPatient(Patient patient, Pageable pageable) {
         return patientQueueRepository.findByPatient(patient, pageable);
+    }
+
+    public PatientQueue fetchQueueByID(Long id) {
+        return patientQueueRepository.findById(id).orElseThrow(() -> APIException.notFound("Queue identified by id {0} is not available", id));
     }
 
     public PatientQueue fetchQueueByVisitNumber(Visit visit) {
@@ -57,6 +60,10 @@ public class PatientQueueService {
 
     public Page<PatientQueue> fetchQueue(Pageable pageable) {
         return patientQueueRepository.findAll(pageable);
+    }
+
+    public boolean patientIsQueued(final Department department, final Patient patient) {
+        return patientQueueRepository.findByPatientAndDepartmentAndStatus(patient, department, true).isPresent();
     }
 
     public PatientQueueData convertToPatientQueueData(PatientQueue patientQueue) {

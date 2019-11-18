@@ -33,6 +33,8 @@ public class Department extends Identifiable {
         Pharmacy,
         Laboratory,
         Radiology,
+        Accounts,
+        Procedure,
         Open
     }
 

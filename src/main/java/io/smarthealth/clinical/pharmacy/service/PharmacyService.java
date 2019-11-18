@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,15 +46,20 @@ public class PharmacyService {
 
     @Autowired
     PatientRepository patientRepository;
+
+    @Autowired
     ModelMapper modelMapper;
 
     @Transactional
     public List<PatientDrugsData> savePatientDrugs(List<PatientDrugsData> patientdrugsData) {
         try {
             List<PatientDrugsData> savedDrugsList = new ArrayList();
+            modelMapper.getConfiguration()
+                    .setMatchingStrategy(MatchingStrategies.STRICT);
             for (PatientDrugsData patientdrugsdata : patientdrugsData) {
-                PatientDrugs pd = modelMapper.map(patientdrugsdata, PatientDrugs.class);
-                Prescription presc = prescriptionRepository.findById(patientdrugsdata.getPrescriptionId()).get();
+                PatientDrugs pd = PatientDrugsData.map(patientdrugsdata);
+                Prescription presc = prescriptionRepository.findById(patientdrugsdata.getPrescriptionId()).orElseThrow(() -> APIException.notFound("No prescription identified by {0}", patientdrugsdata.getPrescriptionId()));
+
                 pd.setPrescription(presc);
                 pd.setVisit(presc.getVisit());
                 pd.setPatient(presc.getVisit().getPatient());
@@ -61,6 +67,8 @@ public class PharmacyService {
                 savedDrugsList.add(modelMapper.map(saveddrug, PatientDrugsData.class));
 
                 if (!Objects.equals(saveddrug.getDurationUnits(), saveddrug.getIssuedQuantity())) {
+                    System.out.println("saveddrug.getDurationUnits()  "+saveddrug.getDurationUnits() );
+                    System.out.println("saveddrug.getIssuedQuantity()  "+saveddrug.getIssuedQuantity());
                     presc.setDurationUnits(saveddrug.getDurationUnits() - saveddrug.getIssuedQuantity());
                     presc.setIssuedQuantity(presc.getIssuedQuantity() + saveddrug.getIssuedQuantity());
                     presc.setFulfillerStatus(FullFillerStatusType.PartiallyFullfilled.name());
@@ -72,7 +80,7 @@ public class PharmacyService {
             return savedDrugsList;
         } catch (Exception e) {
             e.printStackTrace();
-            throw APIException.internalError("Error occured while creating testType ", e.getMessage());
+            throw APIException.internalError("Error occured while creating while sving patient drugs ", e.getMessage());
         }
     }
 

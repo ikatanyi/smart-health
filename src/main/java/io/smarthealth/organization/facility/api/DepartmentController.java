@@ -27,6 +27,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -59,14 +60,40 @@ public class DepartmentController {
         Facility facility = facilityService.findFacility(departmentData.getFacilityId());
         Department department = convertDeptDataToDepartment(departmentData);
         department.setFacility(facility);
+        if (departmentData.getParentId() != null) {
+            department.setParent(departmentService.fetchDepartmentById(departmentData.getParentId()));
+        }
+        department.setType(Department.Type.valueOf(departmentData.getType().name()));
         Department departmentSaved = this.departmentService.createDepartment(department);
 
         DepartmentData savedDeptData = convertToDeptData(departmentSaved);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/facility/" + departmentData.getFacilityId() + "/department/{code}")
                 .buildAndExpand(departmentSaved.getCode()).toUri();
+        return new ResponseEntity<>(savedDeptData, HttpStatus.CREATED);
+    }
 
-        return ResponseEntity.created(location).body(savedDeptData);
+    @PutMapping("/department/{id}")
+    public @ResponseBody
+    ResponseEntity<?> updateFacilityDepartment(@PathVariable("id") final Long id, @RequestBody @Valid final DepartmentData departmentData) {
+        Department department = departmentService.fetchDepartmentById(id);
+        Facility facility = facilityService.findFacility(departmentData.getFacilityId());
+        department.setFacility(facility);
+        department.setCode(departmentData.getCode());
+        department.setActive(departmentData.isActive());
+        department.setFacility(facility);
+        department.setIsStore(departmentData.isStore());
+        department.setName(departmentData.getName());
+        if (departmentData.getParentId() != null) {
+            department.setParent(departmentService.fetchDepartmentById(departmentData.getParentId()));
+        }
+        department.setServicePointType(departmentData.getServicePointType().name());
+        department.setType(Department.Type.valueOf(departmentData.getType().name()));
+        Department departmentSaved = this.departmentService.createDepartment(department);
+
+        DepartmentData savedDeptData = convertToDeptData(departmentSaved);
+
+        return new ResponseEntity<>(savedDeptData, HttpStatus.CREATED);
     }
 
     @GetMapping("/department")
@@ -80,6 +107,14 @@ public class DepartmentController {
     @GetMapping("/facility/{id}/department")
     public ResponseEntity<List<DepartmentData>> fetchDepartmentsByFacility(@PathVariable("id") final String facilityId, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Facility facility = facilityService.findFacility(Long.valueOf(facilityId));
+        Page<DepartmentData> page = departmentService.fetchDepartmentByFacility(facility, pageable).map(d -> convertToDeptData(d));
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/logged-in-facility/department")
+    public ResponseEntity<List<DepartmentData>> fetchDepartmentsByLoggedFacility(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+        Facility facility = facilityService.loggedFacility();
         Page<DepartmentData> page = departmentService.fetchDepartmentByFacility(facility, pageable).map(d -> convertToDeptData(d));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
@@ -99,6 +134,11 @@ public class DepartmentController {
         DepartmentData d = modelMapper.map(department, DepartmentData.class);
         d.setFacilityId(department.getFacility().getId());
         d.setFacilityName(department.getFacility().getFacilityName());
+        if (department.getParent() != null) {
+            d.setParentId(department.getParent().getId());
+            d.setParentName(department.getParent().getName());
+        }
+        d.setType(department.getType());
         return d;
     }
 

@@ -18,6 +18,7 @@ public class PrescriptionData extends DoctorRequestData {
     //For example .. Panadol , 2*3 for a week
 
     private String prescriptionNo;
+    private Long prescriptionId;
     private String brandName;//Panadol
     private String route;//Oral
     private Double dose;//2
@@ -65,6 +66,7 @@ public class PrescriptionData extends DoctorRequestData {
         pd.setUrgency(Urgency.valueOf(p.getUrgency()));
         pd.setVisitNumber(p.getVisitNumber());
         pd.setPrescriptionNo(p.getOrderNumber());
+        pd.setPrescriptionId(p.getId());
         return pd;
     }
     

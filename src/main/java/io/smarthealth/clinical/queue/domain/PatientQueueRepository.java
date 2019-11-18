@@ -21,9 +21,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PatientQueueRepository extends JpaRepository<PatientQueue, Long> {
 
-    public Page<PatientQueue> findByDepartment(Department department, Pageable pageable);
+    public Page<PatientQueue> findByDepartmentAndStatus(final Department department, final boolean status, final Pageable pageable);
 
     public Page<PatientQueue> findByPatient(Patient patient, Pageable pageable);
+
+    Optional<PatientQueue> findByPatientAndDepartmentAndStatus(final Patient patient, final Department department, final boolean status);
 
     Optional<PatientQueue> findByVisit(Visit visit);
 }

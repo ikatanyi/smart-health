@@ -2,6 +2,7 @@ package io.smarthealth.administration.app.service;
 
 import io.smarthealth.administration.app.domain.PaymentTerms;
 import io.smarthealth.administration.app.domain.PaymentTermsRepository;
+import io.smarthealth.infrastructure.exception.APIException;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
@@ -25,6 +26,9 @@ public class PaymentTermsService {
     @Transactional
     public PaymentTerms createPaymentTerm(PaymentTerms terms) {
         return paymentTermsRepository.save(terms);
+    }
+    public PaymentTerms getPaymentTermByIdWithFailDetection(Long id) {
+        return paymentTermsRepository.findById(id).orElseThrow(() -> APIException.notFound("Payment terms identified by id {0} not found ", id));
     }
 
     public Optional<PaymentTerms> getPaymentTerm(Long id) {
