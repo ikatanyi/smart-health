@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -29,27 +30,23 @@ public class PayerService {
     @Autowired
     PayerRepository payerRepository;
 
+    @Transactional
     public Payer createPayer(Payer payer) {
         try {
-            return payerRepository.saveAndFlush(payer);
+            return payerRepository.save(payer);
         } catch (Exception e) {
             e.printStackTrace();
             throw APIException.internalError("An error occured while creating payer", e.getMessage());
         }
     }
 
-    public Page<Payer> fetchPayers(final String payerId, final Pageable pageable) {
-        try {
-            return payerRepository.findAll(pageable);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("An error occured while fetching payer identified by " + payerId, e.getMessage());
-        }
+    public Page<Payer> fetchPayers(final Pageable pageable) {
+        return payerRepository.findAll(pageable);
     }
 
     public Payer updatePayer(Payer payer) {
         try {
-            return payerRepository.saveAndFlush(payer);
+            return payerRepository.save(payer);
         } catch (Exception e) {
             e.printStackTrace();
             throw APIException.internalError("There was an error while updating payer id " + payer, e.getMessage());

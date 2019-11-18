@@ -6,20 +6,21 @@
 package io.smarthealth.clinical.record.service;
 
 import io.smarthealth.clinical.queue.domain.PatientQueue;
+import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
-import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.lang.DateConverter;
-import io.smarthealth.organization.person.patient.domain.PatientRepository;
+import io.smarthealth.organization.facility.domain.Department;
+import io.smarthealth.organization.facility.service.DepartmentService;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -33,24 +34,44 @@ import org.springframework.stereotype.Service;
 @Service
 public class DoctorRequestService implements DateConverter {
 
-    @Autowired
+    // @Autowired
     private final DoctorsRequestRepository doctorRequestRepository;
 
-    @Autowired
-    ModelMapper modelMapper;
+    //@Autowired
+    private final PatientQueueService patientQueueService;
 
-    public DoctorRequestService(DoctorsRequestRepository doctorRequestRepository, VisitRepository visitRepository, PatientRepository patientRepository
-    ) {
+    // @Autowired
+    private final ModelMapper modelMapper;
+
+    private final DepartmentService departmentService;
+
+    public DoctorRequestService(DoctorsRequestRepository doctorRequestRepository, PatientQueueService patientQueueService, ModelMapper modelMapper, DepartmentService departmentService) {
         this.doctorRequestRepository = doctorRequestRepository;
+        this.patientQueueService = patientQueueService;
+        this.modelMapper = modelMapper;
+        this.departmentService = departmentService;
     }
 
+    @Transactional
     public List<DoctorRequestData> createRequest(List<DoctorRequest> docRequests) {
         List<DoctorRequest> docReqs = doctorRequestRepository.saveAll(docRequests);
         //Send patient to queue
         for (DoctorRequest docRequest : docReqs) {
             PatientQueue patientQueue = new PatientQueue();
-
+            System.out.println("Service point to use " + docRequest.getRequestType());
+            Department department = departmentService.findByServicePointTypeAndloggedFacility(docRequest.getRequestType());             //check if patient is already queued
+            if (patientQueueService.patientIsQueued(department, docRequest.getPatient())) {
+                continue;
+            }
+            patientQueue.setDepartment(department);
+            patientQueue.setPatient(docRequest.getPatient());
+            patientQueue.setSpecialNotes("");
+            patientQueue.setStatus(true);
+            patientQueue.setUrgency(PatientQueue.QueueUrgency.Medium);
+            patientQueue.setVisit(docRequest.getVisit());
+            PatientQueue savedQueue = patientQueueService.createPatientQueue(patientQueue);
         }
+
         return modelMapper.map(docReqs, new TypeToken<List<DoctorRequest>>() {
         }.getType());
     }

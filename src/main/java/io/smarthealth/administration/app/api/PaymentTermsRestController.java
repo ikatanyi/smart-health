@@ -56,9 +56,8 @@ public class PaymentTermsRestController {
     }
 
     @GetMapping("/payment-terms/{id}")
-    public PaymentTerms getPaymentterm(@PathVariable(value = "id") Long code) {
-        PaymentTerms paymentTerms = service.getPaymentTerm(code)
-                .orElseThrow(() -> APIException.notFound("Payment Terms with id {0} not found.", code));
+    public PaymentTerms getPaymentterm(@PathVariable(value = "id") Long id) {
+        PaymentTerms paymentTerms = service.getPaymentTermByIdWithFailDetection(id);
         return paymentTerms;
     }
 

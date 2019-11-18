@@ -6,6 +6,7 @@
 package io.smarthealth.clinical.queue.api;
 
 import io.smarthealth.clinical.queue.data.PatientQueueData;
+import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.organization.facility.domain.Department;
@@ -25,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,25 +39,30 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/api")
 @Api(value = "Patient Queue", description = "End points pertaining to patient departmental queue")
-public class PatientQueue {
-    
+public class PatientQueueController {
+
     @Autowired
     PatientService patientService;
-    
+
     @Autowired
     PatientQueueService patientQueueService;
-    
+
     @Autowired
     private DepartmentService departmentService;
-    
+
     @Autowired
     private FacilityService facilityService;
-    
+
     @GetMapping("/department/{servicePoint}/queue")
     public ResponseEntity<List<PatientQueueData>> fetchQueuesByDepartment(@PathVariable("servicePoint") final String servicePoint, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-        Facility facility = facilityService.findFacility(Long.valueOf("1"));
-        Department department = departmentService.findByServicePointTypeAndfacility(servicePoint, facility);
-        Page<PatientQueueData> page = patientQueueService.fetchQueueByDept(department, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
+        boolean status = true;
+        if (queryParams.getFirst("status") != null) {
+            status = Boolean.valueOf(queryParams.getFirst("status"));
+        }
+        System.out.println("status " + status);
+        //Facility facility = facilityService.findFacility(Long.valueOf("1"));
+        Department department = departmentService.findByServicePointTypeAndfacility(servicePoint, facilityService.loggedFacility());
+        Page<PatientQueueData> page = patientQueueService.fetchQueueByDept(department, status, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -75,11 +82,20 @@ public class PatientQueue {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-    
+
     @GetMapping("/queue")
     public ResponseEntity<List<PatientQueueData>> fetchQueue(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Page<PatientQueueData> page = patientQueueService.fetchQueue(pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
+
+    @PostMapping("/queue/{queueNo}/deactivate-queue")
+    public ResponseEntity<?> deactivateFromQueue(@PathVariable("queueNo") final Long queueNo) {
+        PatientQueue pq = patientQueueService.fetchQueueByID(queueNo);
+        pq.setStatus(false);
+        patientQueueService.createPatientQueue(pq);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

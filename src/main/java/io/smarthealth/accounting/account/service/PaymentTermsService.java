@@ -2,6 +2,7 @@ package io.smarthealth.accounting.account.service;
 
 import io.smarthealth.administration.app.domain.PaymentTerms;
 import io.smarthealth.administration.app.domain.PaymentTermsRepository;
+import io.smarthealth.infrastructure.exception.APIException;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -26,13 +27,13 @@ public class PaymentTermsService {
         return paymentTermsRepository.save(terms);
     }
 
-    public Optional<PaymentTerms> getPaymentTerm(Long id) {
-        return paymentTermsRepository.findById(id);
+    public PaymentTerms getPaymentTermByIdWithFailDetection(Long id) {
+        return paymentTermsRepository.findById(id).orElseThrow(() -> APIException.notFound("Payment terms identified by id {0} not found ", id));
     }
-       public Optional<PaymentTerms> getPaymentTermByName(String term) {
+
+    public Optional<PaymentTerms> getPaymentTermByName(String term) {
         return paymentTermsRepository.findByTermsName(term);
     }
-    
 
     public Page<PaymentTerms> getPaymentTerms(Pageable page, boolean includeClosed) {
 

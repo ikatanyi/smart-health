@@ -28,6 +28,9 @@ public class DepartmentService {
     DepartmentRepository departmentRepository;
 
     @Autowired
+    FacilityService facilityService;
+
+    @Autowired
     ModelMapper modelMapper;
 
     /*
@@ -50,6 +53,12 @@ public class DepartmentService {
     }
 
     public Department findByServicePointTypeAndfacility(String servicePointType, Facility facility) {
+        return departmentRepository.findByServicePointTypeAndFacility(servicePointType, facility).orElseThrow(() -> APIException.notFound("Department not found.", servicePointType));
+    }
+
+    public Department findByServicePointTypeAndloggedFacility(String servicePointType) {
+        Facility facility  = facilityService.loggedFacility();
+        System.out.println("Facility name logged in"+facility.getFacilityName());
         return departmentRepository.findByServicePointTypeAndFacility(servicePointType, facility).orElseThrow(() -> APIException.notFound("Department not found.", servicePointType));
     }
 

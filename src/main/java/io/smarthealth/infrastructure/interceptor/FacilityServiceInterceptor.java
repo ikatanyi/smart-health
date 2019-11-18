@@ -5,12 +5,10 @@
  */
 package io.smarthealth.infrastructure.interceptor;
 
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -23,7 +21,7 @@ public class FacilityServiceInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        System.out.println("Pre Handle method is Calling");
+       // System.out.println("Pre Handle method is Calling");
 //        final Map<String, String> pathVariables = (Map<String, String>) request
 //                .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 //
@@ -41,7 +39,7 @@ public class FacilityServiceInterceptor implements HandlerInterceptor {
 //                .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 //        final String facilityid = String.valueOf(pathVariables.get("facilityid"));
 //        System.out.println("facilityid " + facilityid);
-        System.out.println("Post Handle method is Calling");
+       // System.out.println("Post Handle method is Calling");
     }
 
     @Override
@@ -50,6 +48,6 @@ public class FacilityServiceInterceptor implements HandlerInterceptor {
 //                .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 //        final String facilityid = String.valueOf(pathVariables.get("facilityid"));
 //        System.out.println("facilityid " + facilityid);
-        System.out.println("Request and Response is completed");
+        //System.out.println("Request and Response is completed");
     }
 }

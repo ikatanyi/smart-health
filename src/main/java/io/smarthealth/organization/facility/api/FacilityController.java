@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -53,6 +54,23 @@ public class FacilityController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
+    @PutMapping("/facility/{id}")
+    public @ResponseBody
+    ResponseEntity<?> updateFacility(@PathVariable(name = "id") Long id, @RequestBody @Valid final FacilityData facilityData) {
+
+        Facility facility = service.findFacility(id);
+
+        Facility result = service.updateFacility(facility, facilityData);
+        Pager<FacilityData> pagers = new Pager();
+
+        FacilityData savedData = FacilityData.map(result);
+
+        pagers.setCode("0");
+        pagers.setMessage("Facility updated successful");
+        pagers.setContent(savedData);
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+
     @GetMapping("/organization/{orgId}/facility/{code}")
     public FacilityData getFacility(@PathVariable(value = "orgId") String orgId, @PathVariable(value = "code") Long code) {
         Facility facility = service.findFacility(orgId, code);
@@ -69,4 +87,5 @@ public class FacilityController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(list);
     }
+
 }

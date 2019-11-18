@@ -32,7 +32,6 @@ public class FacilityService {
     public Facility createFacility(String id, FacilityData facilityData) {
         Organization org = orgService.getOrganization(id);
         Facility facility = new Facility();
-
         if (facilityData.getParentFacilityId() != null) {
             Optional<Facility> pf = getFacility(facilityData.getParentFacilityId());
             if (pf.isPresent()) {
@@ -47,12 +46,27 @@ public class FacilityService {
         facility.setLogo(facilityData.getLogo());
         facility.setOrganization(org);
         facility.setRegistrationNumber(facilityData.getRegistrationNumber());
+        return facilityRepository.save(facility);
+    }
 
+    public Facility updateFacility(Facility facility, FacilityData facilityData) {
+        if (facilityData.getParentFacilityId() != null) {
+            Optional<Facility> pf = getFacility(facilityData.getParentFacilityId());
+            if (pf.isPresent()) {
+                facility.setParentFacility(pf.get());
+            }
+        }
+        facility.setFacilityType(facilityData.getFacilityType());
+        facility.setTaxNumber(facilityData.getTaxNumber());
+        facility.setFacilityClass(facilityData.getFacilityClass());
+        facility.setFacilityName(facilityData.getFacilityName());
+        facility.setEnabled(facilityData.isEnabled());
+        facility.setLogo(facilityData.getLogo());
+        facility.setRegistrationNumber(facilityData.getRegistrationNumber());
         return facilityRepository.save(facility);
     }
 
     public Optional<Facility> getFacility(Long id) {
-
         return facilityRepository.findById(id);
     }
 
