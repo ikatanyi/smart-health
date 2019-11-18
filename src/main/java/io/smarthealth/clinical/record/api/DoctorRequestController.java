@@ -116,8 +116,38 @@ public class DoctorRequestController {
         }
     }
 
+    @GetMapping("/visit/{visitNo}/doctor-request")
+    public ResponseEntity<?> fetchAllRequestsByVisit(@PathVariable("visitNo") final String visitNo, Pageable pageable) {
+        Visit visit = visitService.findVisitEntityOrThrow(visitNo);
+        Page<DoctorRequest> page = requestService.findAllRequestsByVisit(visit, pageable);
+
+        Page<DoctorRequestData> list = page.map(r -> {
+            DoctorRequestData dd = DoctorRequestData.map(r);
+            dd.setEmployeeData(employeeService.convertEmployeeEntityToEmployeeData(r.getRequestedBy()));
+            dd.setPatientNumber(r.getPatient().getPatientNumber());
+            dd.setVisitNumber(visit.getVisitNumber());
+            if (r.getItem() != null) {
+                dd.setItemCode(r.getItem().getItemCode());
+            }
+            return dd;
+        });
+        Pager<List<DoctorRequestData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Doctor Requests");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
+
     @GetMapping("/visit/{visitNo}/doctor-request/{requestType}")
-    public ResponseEntity<?> fetchAllRequestsByVisit(@PathVariable("visitNo") final String visitNo, @PathVariable("requestType") final String requestType, Pageable pageable) {
+    public ResponseEntity<?> fetchAllRequestsByVisitAndRequestType(@PathVariable("visitNo") final String visitNo, @PathVariable("requestType") final String requestType, Pageable pageable) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
         Page<DoctorRequest> page = requestService.findAllRequestsByOrderNoAndRequestType(visitNo, requestType, pageable);
 

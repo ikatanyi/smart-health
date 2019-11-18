@@ -57,7 +57,7 @@ public class PayerController {
 
         Payer payer = PayerData.map(payerData);
         BankBranch bankBranch = adminService.fetchBankBranchById(payerData.getBranchId());
-        Account debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountId());
+        Account debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
         PaymentTerms paymentTerms = paymentTermsService.getPaymentTermByIdWithFailDetection(payerData.getPaymentTermId());
         payer.setBankBranch(bankBranch);
         payer.setDebitAccount(debitAccount);

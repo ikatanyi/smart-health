@@ -17,6 +17,7 @@ public class BankData {
 
     private Long bankId;
     private String bankName;
+    private String bankCode;
     private String bankShortName;
     private List<BankBranchData> branch;
 

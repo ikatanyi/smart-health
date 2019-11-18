@@ -28,14 +28,16 @@ public class PayerData {
     private Long branchId;
     private Long paymentTermId;
     private boolean insurance;
-    private Long debitAccountId;
+    private String debitAccountNo;
     private List<AddressData> address;
     private List<ContactData> contact;
 
     public static PayerData map(final Payer payer) {
         PayerData payerData = new PayerData();
         payerData.setBranchId(payer.getBankBranch().getId());
-        payerData.setDebitAccountId(payer.getDebitAccount().getId());
+        if (payer.getDebitAccount() != null) {
+            payerData.setDebitAccountNo(payer.getDebitAccount().getAccountNumber());
+        }
         payerData.setInsurance(payer.isInsurance());
         payerData.setLegalName(payer.getLegalName());
         payerData.setPayerName(payer.getPayerName());
