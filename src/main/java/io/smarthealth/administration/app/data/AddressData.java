@@ -26,7 +26,9 @@ public class AddressData {
         AddressData data = new AddressData();
         data.setId(address.getId());
         data.setTitle(address.getTitle());
+        if(address.getType()!=null){
         data.setType(address.getType().name());
+        }
         data.setLine1(address.getLine1());
         data.setLine2(address.getLine2());
         data.setTown(address.getTown());

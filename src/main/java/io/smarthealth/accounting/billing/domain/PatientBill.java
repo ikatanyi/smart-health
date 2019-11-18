@@ -1,5 +1,7 @@
 package io.smarthealth.accounting.billing.domain;
 
+import io.smarthealth.accounting.billing.data.PatientBillData;
+import io.smarthealth.accounting.billing.data.PatientBillItemData;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -7,6 +9,7 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -39,7 +42,7 @@ public class PatientBill extends Auditable {
     private Double Amount;
     private LocalDate billingDate;
     private String journalNumber;
-     @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private BillStatus status;
 
     @OneToMany(mappedBy = "patientBill")
@@ -60,5 +63,32 @@ public class PatientBill extends Auditable {
         });
     }
     //
+
+    public PatientBillData toData() {
+        PatientBillData data = new PatientBillData();
+        data.setId(this.getId());
+        data.setBillNumber(this.getBillNumber());
+        data.setBillingDate(this.getBillingDate());
+        data.setJournalNumber(this.getJournalNumber());
+        data.setReferenceNumber(this.getReferenceNumber());
+        data.setAmount(this.getAmount());
+        data.setBalance(this.getBalance());
+        data.setPaymentMode(this.getPaymentMode());
+        data.setStatus(this.getStatus());
+
+        if (this.getVisit() != null) {
+            data.setVisitNumber(this.getVisit().getVisitNumber());
+            data.setPatientNumber(this.getVisit().getPatient().getPatientNumber());
+            data.setPatientName(this.getPatient().getFullName());
+        }
+
+        List<PatientBillItemData> billItems = this.getBillLines().stream()
+                .map(b -> b.toData())
+                .collect(Collectors.toList());
+
+        data.setBillItems(billItems);
+
+        return data;
+    }
 
 }

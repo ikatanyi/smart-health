@@ -1,4 +1,6 @@
-package io.smarthealth.infrastructure.sequence;
+package io.smarthealth.infrastructure.sequence.service;
+
+import io.smarthealth.infrastructure.sequence.SequenceType;
 
 /**
  *

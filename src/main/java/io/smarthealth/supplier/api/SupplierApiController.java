@@ -32,11 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Api
 @RequestMapping("/api/v1")
-public class SupplierRestController {
+public class SupplierApiController {
 
     private final SupplierService service;
 
-    public SupplierRestController(SupplierService supplierService) {
+    public SupplierApiController(SupplierService supplierService) {
         this.service = supplierService;
     }
 
@@ -61,7 +61,7 @@ public class SupplierRestController {
     public SupplierData getSupplier(@PathVariable(value = "id") Long code) {
         Supplier supplier = service.getSupplierById(code)
                 .orElseThrow(() -> APIException.notFound("Supplier with id {0} not found.", code));
-        return SupplierData.map(supplier);
+        return supplier.toData();
     }
 
     @GetMapping("/suppliers")
@@ -74,7 +74,7 @@ public class SupplierRestController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<SupplierData> list = service.getSuppliers(type, includeClosed, term, pageable).map(u -> SupplierData.map(u));
+        Page<SupplierData> list = service.getSuppliers(type, includeClosed, term, pageable).map(u -> u.toData());
 
         Pager<List<SupplierData>> pagers = new Pager();
         pagers.setCode("0");

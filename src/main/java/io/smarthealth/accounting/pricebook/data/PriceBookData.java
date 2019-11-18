@@ -3,6 +3,8 @@ package io.smarthealth.accounting.pricebook.data;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
+import io.smarthealth.accounting.pricebook.domain.enumeration.PriceCategory;
+import io.smarthealth.accounting.pricebook.domain.enumeration.PriceType;
 import io.smarthealth.stock.item.data.ItemSimpleData;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,17 +23,17 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @NoArgsConstructor
 @ToString
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
+//@JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PriceBookData {
 
     private Long id;
-    private String type;
+    private PriceCategory priceCategory;
     private String name;
     private String description;
     private Long currencyId;
     private String currency;
-    private String priceBookType;
+    private PriceType priceType;
     private Double percentage;
     private Boolean isIncrease; //mark down or mark up
     private Double decimalPlace;
@@ -43,27 +45,24 @@ public class PriceBookData {
     public static PriceBookData map(PriceBook pricebook) {
         PriceBookData data = new PriceBookData();
         data.setId(pricebook.getId());
-        data.setType(pricebook.getType().name());
+        data.setPriceCategory(pricebook.getPriceCategory());
+        data.setPriceType(pricebook.getPriceType());
         data.setName(pricebook.getName());
         data.setDescription(pricebook.getDescription());
         data.setPercentage(pricebook.getPercentage());
         data.setIsIncrease(pricebook.getIncrease());
         data.setDecimalPlace(pricebook.getDecimalPlace());
         data.setStatus(pricebook.isActive() ? "active" : "inactive");
-        
+
         if (pricebook.getCurrency() != null) {
             data.setCurrency(pricebook.getCurrency().getName());
             data.setCurrencyId(pricebook.getCurrency().getId());
         }
 
-        if (pricebook.getPriceBookType() != null) {
-            data.setPriceBookType(pricebook.getPriceBookType().name());
-        }
-
-        if (pricebook.getPriceBookItems() != null && pricebook.getPriceBookItems().size()>0) {
+        if (pricebook.getPriceBookItems() != null && pricebook.getPriceBookItems().size() > 0) {
             List<ItemSimpleData> list = pricebook.getPriceBookItems().stream().map(item -> ItemSimpleData.map(item)).collect(Collectors.toList());
             data.setPricebookItems(list);
-        } 
+        }
         return data;
     }
 }

@@ -21,14 +21,14 @@ import lombok.EqualsAndHashCode;
 @Table(name = "account_journal_entry")
 public class JournalEntry extends Auditable {
 
-    @ManyToOne 
+    @ManyToOne
     @JoinColumn(name = "journal_id", foreignKey = @ForeignKey(name = "fk_journal_journal_id"))
     private Journal journal;
-    
+
     @ManyToOne
-   @JoinColumn(name = "account_id", foreignKey = @ForeignKey(name = "fk_journal_account_id"))
+    @JoinColumn(name = "account_id", foreignKey = @ForeignKey(name = "fk_journal_account_id"))
     private Account account;
-    
+
     private Double credit;
     private Double debit;
     private String description;//optional comments about the entry
@@ -45,11 +45,15 @@ public class JournalEntry extends Auditable {
         this.credit = credit;
         this.debit = debit;
         this.entryDate = entryDate;
-        this.description=description;
+        this.description = description;
     }
 
     public boolean isDebit() {
         return debit > 0;
+    }
+
+    public JournalEntry getRevertedJournalEntry() {
+        return new JournalEntry(this.getAccount(), this.getDebit(), this.getCredit(), this.getEntryDate(), this.getDescription());
     }
 
     public BigDecimal getAmount() {

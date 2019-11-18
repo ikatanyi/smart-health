@@ -10,8 +10,11 @@ package io.smarthealth.clinical.lab.domain.enumeration;
  * @author Kennedy.Imbenzi
  */
 public enum LabTestState { 
-        Pending,
+        Scheduled,
+        AwaitingSpecimen,
+        Accepted,
+        Rejected,
         Completed,
         Cancelled,
-        AwaitingSpecimen 
+        AwaitingReview 
 }

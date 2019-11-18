@@ -14,7 +14,7 @@ import lombok.Data;
 
 /**
  *
- * @author Kennedy.Imbenzi
+ * @author Kelsas
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -35,32 +35,34 @@ public class PatientBillData {
     @Enumerated(EnumType.STRING)
     private BillStatus status;
     
-    List<PatientBillItemData>billLines; 
+    private List<PatientBillItemData>billItems; 
     
-    public static PatientBillData map(PatientBill bill){
-        PatientBillData data=new PatientBillData();      
-        data.setId(bill.getId()); 
-        data.setBillNumber(bill.getBillNumber()); 
-        data.setBillingDate(bill.getBillingDate());
-        data.setJournalNumber(bill.getJournalNumber());
-        data.setReferenceNumber(bill.getReferenceNumber());
-        data.setAmount(bill.getAmount());
-        data.setBalance(bill.getBalance());
-        data.setPaymentMode(bill.getPaymentMode());
-        data.setStatus(bill.getStatus());
-        
-        if(bill.getVisit()!=null){ 
-            data.setVisitNumber(bill.getVisit().getVisitNumber());
-            data.setPatientNumber(bill.getVisit().getPatient().getPatientNumber());
-            data.setPatientName(bill.getPatient().getFullName());
-        }
-        
-        List<PatientBillItemData> billItems=bill.getBillLines().stream()
-                .map(b -> PatientBillItemData.map(b))
-                .collect(Collectors.toList());
-        data.setBillLines(billItems);
-        
-        return data;    
-    }
+//    public static PatientBillData map(PatientBill bill){
+//        PatientBillData data=new PatientBillData();      
+//        data.setId(bill.getId()); 
+//        data.setBillNumber(bill.getBillNumber()); 
+//        data.setBillingDate(bill.getBillingDate());
+//        data.setJournalNumber(bill.getJournalNumber());
+//        data.setReferenceNumber(bill.getReferenceNumber());
+//        data.setAmount(bill.getAmount());
+//        data.setBalance(bill.getBalance());
+//        data.setPaymentMode(bill.getPaymentMode());
+//        data.setStatus(bill.getStatus());
+//        
+//        if(bill.getVisit()!=null){ 
+//            data.setVisitNumber(bill.getVisit().getVisitNumber());
+//            data.setPatientNumber(bill.getVisit().getPatient().getPatientNumber());
+//            data.setPatientName(bill.getPatient().getFullName());
+//        }
+//        
+//        List<PatientBillItemData> billItems=bill.getBillLines().stream()
+//                .map(b -> PatientBillItemData.map(b))
+//                .collect(Collectors.toList());
+//        
+//        data.setBillItems(billItems);
+//       
+//        
+//        return data;    
+//    }
      
 }

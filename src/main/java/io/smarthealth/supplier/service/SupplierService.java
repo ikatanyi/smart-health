@@ -82,15 +82,10 @@ public class SupplierService {
             supplier.setBankAccount(BankAccountData.map(supplierData.getBank()));
         }
 
-        if (supplierData.getAddresses() != null) {
+        if (supplierData.getAddresses() != null && supplierData.getAddresses() .getPhone()!=null) {
             Address addresses = adminService.createAddress(supplierData.getAddresses());
-//            List<Address> addresses = adminService.createAddresses(supplierData.getAddresses());
-////                    supplierData.getAddresses()
-////                    .stream()
-////                    .map(adds -> AddressData.map(adds))
-////                    .collect(Collectors.toList());
-//            //save the address
-//            supplier.setAddress(addresses);
+            addresses.setType(Address.Type.Office);
+            addresses.setTitle("Office");
             supplier.setAddress(addresses);
         }
         
@@ -99,17 +94,8 @@ public class SupplierService {
             supplier.setContact(contact);
         }
 
-//        if (supplierData.getContacts() != null) {
-//
-//            List<Contact> contacts = adminService.createContacts(supplierData.getContacts());
-////                    supplierData.getContacts()
-////                    .stream()
-////                    .map(contc -> ContactData.map(contc))
-////                    .collect(Collectors.toList());
-//            supplier.setContacts(contacts);
-//        }
         Supplier savedSupplier = supplierRepository.save(supplier);
-        return SupplierData.map(savedSupplier);
+        return savedSupplier.toData();
     }
 
     public Supplier findOneWithNoFoundDetection(Long id) {

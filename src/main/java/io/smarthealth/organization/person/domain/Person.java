@@ -9,6 +9,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Data;
 import org.hibernate.annotations.Formula;
 
@@ -33,9 +34,16 @@ public class Person extends Auditable {
     @Column(length = 1)
     private String gender;
     private LocalDate dateOfBirth;
+  
+
+    //@Transient
+  
     @Column(length = 50)
     private String maritalStatus;
     private LocalDate dateRegistered = LocalDate.now();
+    
+    @Formula("YEAR(CURDATE()) - YEAR(date_of_birth)")
+    private int age;
 
     @Formula(value = " concat(given_name, ' ', surname) ")
     private String fullName;
@@ -54,4 +62,7 @@ public class Person extends Auditable {
 //    private List<Biometrics> biometrics =new ArrayList<>();
 //    @OneToMany(mappedBy = "person")
 //    private List<ContactDetail> contactDetails=new ArrayList<>();
+    
+    
+
 }

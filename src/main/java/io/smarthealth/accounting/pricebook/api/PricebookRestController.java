@@ -7,9 +7,6 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.stock.item.data.CreateItem;
-import io.smarthealth.stock.item.data.ItemData;
-import io.smarthealth.stock.item.domain.Item;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -69,15 +66,14 @@ public class PricebookRestController {
     @GetMapping("/pricebooks")
     public ResponseEntity<?> getAllPricebook(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
-            @RequestParam(value = "q", required = false) final String term,
-            @RequestParam(value = "book-type", required = false) final String bookType,
             @RequestParam(value = "type", required = false) final String type,
+            @RequestParam(value = "category", required = false) final String category,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<PriceBookData> list = service.getPricebooks(type, bookType, pageable,includeClosed).map(u -> PriceBookData.map(u));
+        Page<PriceBookData> list = service.getPricebooks(category, type, pageable,includeClosed).map(u -> PriceBookData.map(u));
 
         Pager<List<PriceBookData>> pagers = new Pager();
         pagers.setCode("0");

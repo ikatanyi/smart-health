@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.infrastructure.sequence;
+package io.smarthealth.infrastructure.sequence.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.infrastructure.sequence.SequenceType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,15 +19,16 @@ import lombok.Data;
  */
 @Entity
 @Data
-public class SequenceFormat extends Identifiable{
+public class SequenceFormat extends Identifiable {
+
     @Enumerated(EnumType.STRING)
     private SequenceType idType;
-    
+
     @Column(length = 10)
     private String prefix;
-    
+
     @Column(length = 10)
     private String suffix;
-   
+
     private int maxLength;
 }

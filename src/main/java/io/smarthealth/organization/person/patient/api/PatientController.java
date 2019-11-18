@@ -1,10 +1,11 @@
 package io.smarthealth.organization.person.patient.api;
 
 import io.smarthealth.infrastructure.common.APIResponse;
-import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.SequenceService;
+import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.sequence.SequenceType;
+import io.smarthealth.infrastructure.utility.PageDetails;
+import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.data.AddressData;
 import io.smarthealth.organization.person.data.ContactData;
 import io.smarthealth.organization.person.data.PortraitData;
@@ -38,7 +39,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -85,10 +85,11 @@ public class PatientController {
     @Autowired
     SequenceService sequenceService;
 
+
     @PostMapping("/patients")
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestBody @Valid final PatientData patientData) {
-        LocalDate dateOfBirth = LocalDate.now().minusDays(Long.valueOf(patientData.getAge()));
+        LocalDate dateOfBirth = LocalDate.now().minusYears(Long.valueOf(patientData.getAge()));
         patientData.setDateOfBirth(dateOfBirth);
         patientData.setPatientNumber(sequenceService.nextNumber(SequenceType.PatientNumber));
         Patient patient = this.patientService.createPatient(patientData);
@@ -113,14 +114,31 @@ public class PatientController {
     }
 
     @GetMapping("/patients")
-    public ResponseEntity<List<PatientData>> fetchAllPatients(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder) {
-//        if (!pageable.isPaged()) {
-        Pageable pageable = PageRequest.of(0, 1000, Sort.by("id").descending());
-
-//        }
+    public ResponseEntity<?> fetchAllPatients(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+        int pageNo = 1;
+        int size = 10;
+        if (queryParams.getFirst("page") != null) {
+            pageNo = Integer.valueOf(queryParams.getFirst("page"));
+        }
+        if (queryParams.getFirst("results") != null) {
+            size = Integer.valueOf(queryParams.getFirst("results"));
+        }
+        pageNo = pageNo - 1;
+        pageable = PageRequest.of(pageNo, size, Sort.by("id").descending());
         Page<PatientData> page = patientService.fetchAllPatients(queryParams, pageable).map(p -> patientService.convertToPatientData(p));
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+        Pager<List<PatientData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(page.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(page.getNumber());
+        details.setPerPage(page.getSize());
+        details.setTotalElements(page.getTotalElements());
+        details.setTotalPage(page.getTotalPages());
+        details.setReportName("Patient Register");
+        pagers.setPageDetails(details);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(pagers);
     }
 
     @PutMapping("/patients/{id}")
@@ -223,7 +241,6 @@ public class PatientController {
     public @ResponseBody
     ResponseEntity<PortraitData> postPatientImage(@PathVariable("id") final String patientNumber,
             @RequestParam final MultipartFile image) {
-        System.out.println("image " + image.getName());
         if (image == null) {
             throw APIException.badRequest("Image not found");
         }
@@ -275,7 +292,6 @@ public class PatientController {
 
     @GetMapping("/patient_identification_type/{id}")
     public PatientIdentificationType fetchAllPatientIdTypes(@PathVariable("id") final String patientIdType) {
-        System.out.println("patientIdType " + patientIdType);
         return patientIdentificationTypeService.fetchIdType(Long.valueOf(patientIdType));
     }
 

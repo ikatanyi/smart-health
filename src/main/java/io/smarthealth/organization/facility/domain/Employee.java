@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.Formula;
 
 /**
  *
@@ -42,4 +43,6 @@ public class Employee extends Person {
 
     @Column(length = 25, unique = true)
     private String staffNumber;
+    
+   
 }

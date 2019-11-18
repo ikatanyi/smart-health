@@ -1,6 +1,8 @@
 package io.smarthealth.accounting.pricebook.domain.specification;
 
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
+import io.smarthealth.accounting.pricebook.domain.enumeration.PriceCategory;
+import io.smarthealth.accounting.pricebook.domain.enumeration.PriceType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,7 +18,7 @@ public class PriceBookSpecification {
         super();
     }
 
-    public static Specification<PriceBook> createSpecification(PriceBook.Type type, PriceBook.PriceBookType booktype, boolean includeClosed) {
+    public static Specification<PriceBook> createSpecification(PriceCategory category, PriceType type, boolean includeClosed) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
@@ -24,10 +26,10 @@ public class PriceBookSpecification {
                 predicates.add(cb.equal(root.get("active"), true));
             }
             if (type != null) {
-                predicates.add(cb.equal(root.get("type"), type));
+                predicates.add(cb.equal(root.get("priceType"), type));
             }
-            if (booktype != null) {
-                predicates.add(cb.equal(root.get("priceBookType"), booktype));
+            if (category != null) {
+                predicates.add(cb.equal(root.get("priceCategory"), category));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };

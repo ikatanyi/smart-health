@@ -1,5 +1,7 @@
 package io.smarthealth.accounting.pricebook.domain;
 
+import io.smarthealth.accounting.pricebook.domain.enumeration.PriceCategory;
+import io.smarthealth.accounting.pricebook.domain.enumeration.PriceType;
 import io.smarthealth.administration.app.domain.Currency;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
@@ -23,32 +25,23 @@ import lombok.Data;
 @Data
 public class PriceBook extends Auditable {
 
-    public enum Type {
-        Sales,
-        Purchases
-    }
-
-    public enum PriceBookType {
-        fixed_percentage,
-        per_item
-    }
     @Enumerated(EnumType.STRING)
-    private Type type;
+    private PriceCategory priceCategory;
     private String name;
     private String description;
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pricebook_currency_id"))
     private Currency currency;
     @Enumerated(EnumType.STRING)
-    private PriceBookType priceBookType;
+    private PriceType priceType;
     private Double percentage;
     @Column(name = "is_increase")
     private Boolean increase; //mark down or mark up
     private Double decimalPlace;
     @ManyToMany
-    @JoinTable(name = "item_pricebook", joinColumns = {
-        @JoinColumn(name = "pricebook_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "item_id", referencedColumnName = "id")})
+    @JoinTable(name = "pricebook_items", joinColumns = {
+        @JoinColumn(name = "pricebook_id", referencedColumnName = "id", foreignKey = @ForeignKey(name="fk_pricebook_items_pricebook_id"))}, inverseJoinColumns = {
+        @JoinColumn(name = "item_id", referencedColumnName = "id",foreignKey = @ForeignKey(name="fk_pricebook_items_pricebook_item_id"))})
     private List<Item> priceBookItems;
 
     private boolean active;

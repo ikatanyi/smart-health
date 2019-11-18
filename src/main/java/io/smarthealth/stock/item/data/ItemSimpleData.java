@@ -18,12 +18,14 @@ public class ItemSimpleData {
     private Long itemId;
     private String itemType;
     private String itemName;
+    private String itemCode;
 
     public static ItemSimpleData map(Item item) {
         ItemSimpleData data = new ItemSimpleData();
         data.setItemId(item.getId());
         data.setItemName(item.getItemName());
         data.setItemType(item.getItemType());
+        data.setItemCode(item.getItemCode());
         return data;
     }
 }

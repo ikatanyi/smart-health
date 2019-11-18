@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.account.domain.specification;
 
 import io.smarthealth.accounting.account.domain.Journal;
+import io.smarthealth.accounting.account.domain.enumeration.TransactionType;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
@@ -22,7 +23,7 @@ public class JournalSpecification {
                 predicates.add(cb.equal(root.get("transactionId"), transactionId));
             }
              if (transactionType != null) {
-                predicates.add(cb.equal(root.get("transactionType"), transactionType));
+                predicates.add(cb.equal(root.get("transactionType"), TransactionType.valueOf(transactionType)));
             }
               if (referenceNumber != null) {
                 predicates.add(cb.equal(root.get("referenceNumber"), referenceNumber));
