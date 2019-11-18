@@ -1,5 +1,6 @@
 package io.smarthealth.stock.stores.service;
 
+import io.smarthealth.accounting.account.data.AccountData;
 import io.smarthealth.accounting.account.domain.Account;
 import io.smarthealth.accounting.account.domain.AccountRepository;
 import io.smarthealth.accounting.account.domain.AccountType;
@@ -11,6 +12,7 @@ import io.smarthealth.stock.stores.domain.StoreMetadata;
 import io.smarthealth.stock.stores.domain.StoreRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,18 +42,24 @@ public class StoreService {
         toSave.setStoreName(store.getStoreName());
         toSave.setPatientStore(store.isPatientStore());
 
-        Optional< Account> sales = accountRepository.findById(store.getSalesAccountId());
-        Optional< Account> purchase = accountRepository.findById(store.getPurchaseAccountId());
-        Optional< Account> inventory = accountRepository.findById(store.getInventoryAccountId());
-        if (sales.isPresent()) {
-            toSave.setSalesAccount(sales.get());
-        }
-        if (purchase.isPresent()) {
-            toSave.setPurchaseAccount(purchase.get());
+        if (store.getSalesAccountId() != null) {
+            Optional< Account> sales = accountRepository.findByAccountNumber(store.getSalesAccountId());
+            if (sales.isPresent()) {
+                toSave.setSalesAccount(sales.get());
+            }
         }
 
-        if (inventory.isPresent()) {
-            toSave.setInventoryAccount(inventory.get());
+        if (store.getSalesAccountId() != null) {
+            Optional< Account> purchase = accountRepository.findByAccountNumber(store.getPurchaseAccountId());
+            if (purchase.isPresent()) {
+                toSave.setPurchaseAccount(purchase.get());
+            }
+        }
+        if (store.getSalesAccountId() != null) {
+            Optional< Account> inventory = accountRepository.findByAccountNumber(store.getInventoryAccountId());
+            if (inventory.isPresent()) {
+                toSave.setInventoryAccount(inventory.get());
+            }
         }
 
         return storeRepository.save(toSave);
@@ -64,9 +72,10 @@ public class StoreService {
     public Optional<Store> getStore(Long id) {
         return storeRepository.findById(id);
     }
-    public Store getStoreWithNoFoundDetection(Long id){
+
+    public Store getStoreWithNoFoundDetection(Long id) {
         return getStore(id)
-                .orElseThrow(()-> APIException.notFound("Store with id {0} not found", id));
+                .orElseThrow(() -> APIException.notFound("Store with id {0} not found", id));
     }
 
     public List<StoreData> getAllStores() {
@@ -75,13 +84,18 @@ public class StoreService {
     }
 
     public StoreMetadata getStoreMetadata() {
-        StoreMetadata lookup = new StoreMetadata();
-        List<Account> income = accountRepository.findByAccountsCategory(AccountCategory.REVENUE);
-        List<Account> expenses = accountRepository.findByAccountsCategory(AccountCategory.EXPENSE);
+        StoreMetadata metadata = new StoreMetadata();
+        List<AccountData> income = accountRepository.findParentAccountIsNullAndAccountCategory(AccountCategory.REVENUE)
+                .stream()
+                .map(acc -> AccountData.map(acc))
+                .collect(Collectors.toList());
+        List<AccountData> expenses = accountRepository.findParentAccountIsNullAndAccountCategory(AccountCategory.EXPENSE)
+                .stream()
+                .map(acc -> AccountData.map(acc))
+                .collect(Collectors.toList());
+        metadata.setIncomeAccounts(income);
+        metadata.setExpensesAccounts(expenses);
 
-        lookup.setSalesAccount(income);
-        lookup.setInventoryAccount(expenses);
-        lookup.setPurchaseAccount(expenses);
-        return lookup;
+        return metadata;
     }
 }
