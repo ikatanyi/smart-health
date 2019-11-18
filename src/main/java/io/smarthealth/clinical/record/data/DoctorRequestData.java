@@ -3,7 +3,6 @@ package io.smarthealth.clinical.record.data;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.organization.facility.data.EmployeeData;
-import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.stock.item.data.ItemData;
 import io.swagger.annotations.ApiModelProperty;
@@ -21,7 +20,7 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DoctorRequestData {
-    
+     
     public enum FullFillerStatusType {
         Fulfilled,
         Unfulfilled,
@@ -41,6 +40,7 @@ public class DoctorRequestData {
         Medium,
         High
     }
+    private Long requestId;
     private RequestType requestType;
     @ApiModelProperty(required = false, hidden = true)
     private String patientNumber;
@@ -68,8 +68,6 @@ public class DoctorRequestData {
     private FullFillerStatusType fulfillerStatus;  //this is the va
     private String fulfillerComment;
     private Boolean drug;
-    private Long requestId;
-    
     @ApiModelProperty(required = false, hidden = true)
     private PatientData patientData;
     
@@ -101,3 +99,5 @@ public class DoctorRequestData {
         return doctorRequestData;
     }
 }
+   
+    

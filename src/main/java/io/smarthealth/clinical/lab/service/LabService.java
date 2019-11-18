@@ -5,12 +5,17 @@
  */
 package io.smarthealth.clinical.lab.service;
 
+import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.accounting.billing.service.PatientBillService;
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.ContainerData;
 import io.smarthealth.clinical.lab.data.DisciplineData;
 import io.smarthealth.clinical.lab.data.SpecimenData;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
 import io.smarthealth.clinical.lab.data.PatientTestData;
+import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
 import io.smarthealth.clinical.lab.domain.Analyte;
 import io.smarthealth.clinical.lab.domain.AnalyteRepository;
 import io.smarthealth.clinical.lab.domain.Container;
@@ -37,8 +42,24 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.lab.domain.LabTestRepository;
 import io.smarthealth.clinical.lab.domain.LabTestTypeRepository;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
+import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
+import io.smarthealth.infrastructure.sequence.SequenceService;
+import io.smarthealth.infrastructure.sequence.SequenceType;
+import io.smarthealth.clinical.lab.data.ResultsData;
+import io.smarthealth.clinical.lab.domain.PatientTestRegister;
+import io.smarthealth.clinical.lab.domain.PatientTestRegisterRepository;
+import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
+import io.smarthealth.organization.facility.domain.Department;
+import io.smarthealth.organization.facility.domain.Department.ServicePointType;
+import io.smarthealth.organization.person.patient.data.PatientData;
+import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.service.ItemService;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -70,11 +91,21 @@ public class LabService {
 
     @Autowired
     private final SpecimenRepository specimenRepository;
-    
+
     @Autowired
     private final DoctorsRequestRepository doctorRequestRepository;
 
-    public LabService(AnalyteRepository analyteRepository, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, VisitRepository visitRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository) {
+    @Autowired
+    PatientTestRegisterRepository patientRegRepository;
+
+    @Autowired
+    private final SequenceService seqService;
+
+    private PatientService patientservice;
+    private PatientBillService billService;
+    private ItemService itemService;
+
+    public LabService(AnalyteRepository analyteRepository, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, VisitRepository visitRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, SequenceService seqService) {
         this.analyteRepository = analyteRepository;
         this.containerRepository = containerRepository;
         this.disciplineRepository = disciplineRepository;
@@ -83,14 +114,14 @@ public class LabService {
         this.visitRepository = visitRepository;
         this.specimenRepository = specimenRepository;
         this.doctorRequestRepository = doctorRequestRepository;
+        this.seqService = seqService;
     }
-    
-    
 
     @Transactional
     public Long createTestType(LabTestTypeData testtypeData) {
         try {
             System.out.println("Line 76");
+
             LabTestType testtype = LabTestTypeData.map(testtypeData);
             System.out.println("Line 78");
             testtypeData.getSpecimenId()
@@ -98,8 +129,8 @@ public class LabService {
                     .map((id) -> specimenRepository.findById(id))
                     .filter((specimen) -> (specimen.isPresent()))
                     .forEachOrdered((specimen) -> {
-                testtype.addSpecimen(specimen.get());
-            });
+                        testtype.addSpecimen(specimen.get());
+                    });
             Optional<Discipline> discipline = disciplineRepository.findById(testtypeData.getDisciplineId());
             if (discipline.isPresent()) {
                 testtype.setDiscipline(discipline.get());
@@ -149,14 +180,14 @@ public class LabService {
             }
             analytes.add(analyte);
         }
-        
+
         List<Analyte> savedAnalytes = analyteRepository.saveAll(analytes);
-        
+
         for (Analyte analyt : analytes) {
             analyteArray.add(convertAnalyteToData(analyt));
         }
-        return analyteArray;       
-        
+        return analyteArray;
+
     }
 
     public LabTestType fetchTestTypeByCode(String testTypeCode) {
@@ -190,8 +221,8 @@ public class LabService {
         AnalyteData analyteData = modelMapper.map(analyte, AnalyteData.class);
         return analyteData;
     }
-    
-     public Analyte convertDataToAnalyte(AnalyteData analyteData) {
+
+    public Analyte convertDataToAnalyte(AnalyteData analyteData) {
         Analyte analyte = modelMapper.map(analyteData, Analyte.class);
         return analyte;
     }
@@ -229,20 +260,21 @@ public class LabService {
         return specimenRepository.findAll(pgbl).map(p -> SpecimenData.map(p));
     }
 
-    public SpecimenData fetchSpecimenById(Long id) {
-        return specimenRepository.findById(id).map(p -> SpecimenData.map(p)).orElseThrow(() -> APIException.notFound("Specimen identified by {0} not found.", id));
+    public Specimen fetchSpecimenById(Long id) {
+        return specimenRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Specimen identified by {0} not found.", id));//.map(p -> SpecimenData.map(p)).orElseThrow(() -> APIException.notFound("Specimen identified by {0} not found.", id));
     }
 
     public void deleteTestById(Long id) {
         ttypeRepository.deleteById(id);
     }
-    
+
     public void deleteContainerById(Long id) {
-       containerRepository.deleteById(id);
+        containerRepository.deleteById(id);
     }
-    
+
     public void deleteDisciplineById(Long id) {
-       disciplineRepository.deleteById(id);
+        disciplineRepository.deleteById(id);
     }
 
 //    public SpecimenData convertSpecimenToData(Specimen specimen) {
@@ -301,32 +333,120 @@ public class LabService {
     c. Update PatientResults
      */
     @Transactional
-    public PatientTestData savePatientResults(PatientTestData patienttestdata) {
-        Visit visit = visitRepository.findByVisitNumber(patienttestdata.getVisitNumber())
-                .orElseThrow(() -> APIException.notFound("Patient Session with Visit Number : {0} not found.", patienttestdata.getVisitNumber()));
-        Optional<DoctorRequest> docReq = doctorRequestRepository.findById(patienttestdata.getRequestId());
-         PatientLabTest patienttestsEntity = PatientTestData.map(patienttestdata);;
-        if(docReq.isPresent()){
-            String code = docReq.get().getItem().getItemCode();
-            Optional<LabTestType> ttype = ttypeRepository.findByServiceCode(code);
-            
-            if(ttype.isPresent())
-               patienttestsEntity.setTesttype(ttype.get());
+    public PatientTestRegister savePatientResults(PatientTestRegisterData patientRegData) {
+//        List<PatientLabTest> patienTests = new ArrayList();
+//        PatientBillData data = new PatientBillData();
+//        List<PatientBillItemData> billItemArray = new ArrayList();
+
+        Visit visit = visitRepository.findByVisitNumber(patientRegData.getVisitNumber())
+                .orElseThrow(() -> APIException.notFound("Patient Session with Visit Number : {0} not found.", patientRegData.getVisitNumber()));
+        PatientTestRegister patientTestReg = PatientTestRegisterData.map(patientRegData);
+        patientTestReg.setVisit(visit);
+        patientTestReg.setPatient(visit.getPatient());
+
+        Optional<DoctorRequest> request = doctorRequestRepository.findById(Long.parseLong(patientRegData.getRequestId() != null ? patientRegData.getRequestId() : "0"));
+        if (request.isPresent()) {
+            patientTestReg.setRequest(request.get());
         }
-       
-        patienttestsEntity.setVisit(visit);
-        patienttestsEntity.setPatient(visit.getPatient());
-        PatientLabTest patientTests = PtestsRepository.save(patienttestsEntity);
-        return PatientTestData.map(patientTests);
+
+        if (patientRegData.getLabTestNumber() == null) {
+            patientTestReg.setLabTestNumber(seqService.nextNumber(SequenceType.LabTestNumber));
+        }
+
+        patientRegData.getTestData().stream().map((patienttestdata) -> {
+            PatientLabTest patienttestsEntity = PatientTestData.map(patienttestdata);
+            if (patienttestdata.getSpecimenId() != null) {
+                Specimen spec = fetchSpecimenById(patienttestdata.getSpecimenId());
+                patienttestsEntity.setSpecimen(spec);
+            }
+            return patienttestsEntity;
+        }).forEachOrdered((PatientLabTest patienttestsEntity) -> {
+            patientTestReg.addLabTest(patienttestsEntity);
+        });
+
+        if (patientRegData.getBillData() == null) {
+            PatientBill bill = new PatientBill();
+            bill.setAmount(0.0);
+            bill.setBalance(0.0);
+            bill.setBillLines(new ArrayList());
+            bill.setBillNumber(seqService.nextNumber(SequenceType.BillNumber));
+            bill.setPatient(visit.getPatient());
+            bill.setStatus(BillStatus.Draft);
+            bill.setVisit(visit);
+            patientTestReg.setBill(bill);
+        }
+
+        PatientTestRegister patientTestsList = patientRegRepository.save(patientTestReg);
+        return patientTestsList;
     }
 
-    public Page<PatientTestData> fetchAllPatientTests(String patientNumber, String visitNumber, String status, Pageable pgbl) {
-        Page<PatientTestData> ptests = PtestsRepository.findByPatientNumberAndVisitNumberAndStatus(visitNumber, patientNumber, status, pgbl).map(p -> PatientTestData.map(p));
+    public Page<PatientTestData> fetchAllPatientTests(String patientNumber, String visitNumber, LabTestState status, Pageable pgbl) {
+        Patient patient = null;
+        Visit visit = visitRepository.findByVisitNumber(visitNumber).orElse(null);
+        Optional<PatientData>pat = patientservice.fetchPatientByPatientNumber(patientNumber);
+        if(pat.isPresent())
+           patient= patientservice.createPatient(pat.get());
+        Page<PatientTestData> ptests = PtestsRepository.findByPatientAndVisitAndStatus(patient, visit, status, pgbl).map(p -> PatientTestData.map(p));
         return ptests;
     }
 
-    public Optional<PatientTestData> fetchPatientTestsById(Long id) {
-        return PtestsRepository.findById(id).map(p -> PatientTestData.map(p));
+    public PatientLabTest UpdatePatientTest(PatientTestData testData, Pageable pgbl) {
+        List<Results> results = new ArrayList();
+        PatientLabTest test = this.fetchPatientTestsById(testData.getId());
+
+        PatientLabTest test2 = PatientTestData.map(testData);
+
+        if (testData.getState() == LabTestState.Accepted) {
+            Page<AnalyteData> analytedata = this.fetchAnalytesByAgeAndGender(test.getTesttype().getServiceCode(), testData.getPatientNumber(), pgbl);
+            for (AnalyteData anlytdata : analytedata) {
+                Results rsltData = new Results();
+                rsltData.setCategory(anlytdata.getCategory());
+                rsltData.setLowerRange(anlytdata.getLowerRange());
+                rsltData.setTestCode(anlytdata.getTestCode());
+                rsltData.setTestName(anlytdata.getTestName());
+                rsltData.setTestType(String.valueOf(anlytdata.getTestTypeId()));
+                rsltData.setUnits(anlytdata.getUnits());
+                rsltData.setUpperRange(anlytdata.getUpperRange());
+                results.add(rsltData);
+            }
+            for (ResultsData analyte : testData.getResultData()) {
+                Results rslt = ResultsData.map(analyte);
+                results.add(rslt);
+            }
+            test2.getPatientTestRegister().getRequest().setFulfillerStatus("PartiallyFulfilled");
+
+            //Billing
+            if (test2.getPatientTestRegister().getBill() != null) {
+                PatientBillItem billItem = new PatientBillItem();
+                Optional<Item> item = itemService.findByItemCode(testData.getTestCode());
+                if (item.isPresent()) {
+                    billItem.setAmount(item.get().getCostRate());
+                    billItem.setBalance(item.get().getCostRate());
+                    billItem.setBillingDate(LocalDate.now());
+                    billItem.setItem(item.get());
+                    billItem.setPatientBill(test2.getPatientTestRegister().getBill());
+                    billItem.setQuantity(1.0);
+                    billItem.setServicePoint(ServicePointType.Laboratory.toString());
+//                    billItem.setServicePointId();
+                    billItem.setStatus(BillStatus.Interim);
+//                    billItem.setTransactionNo(transactionNo);
+                    test2.getPatientTestRegister().getBill().getBillLines().add(billItem);
+                }
+            }
+        }
+        if (testData.getState() == LabTestState.Completed) {
+            test2.getPatientTestRegister().getRequest().setFulfillerStatus("Fulfilled");//DoctorRequest.FullFillerStatusType.Fulfilled);
+        }
+        if (testData.getState() == LabTestState.Cancelled) {
+            test2.getPatientTestRegister().getRequest().setFulfillerStatus("Cancelled");//DoctorRequest.FullFillerStatusType.Fulfilled);
+        }
+
+        test2.setResults(results);
+        return PtestsRepository.save(test2);
+    }
+
+    public PatientLabTest fetchPatientTestsById(Long id) {
+        return PtestsRepository.findById(id).orElseThrow(() -> APIException.notFound("Patient Test identified by {0} not found.", id));
     }
 
     public void deletePatientTestsById(Long id) {
@@ -391,6 +511,12 @@ public class LabService {
         return analyteRepository.findByTestType(testtype, pgbl).map(p -> convertAnalyteToData(p));
     }
 
+    public Page<AnalyteData> fetchAnalytesByAgeAndGender(String testCode, String patientNumber, Pageable pgbl) {
+        LabTestType ttype = this.fetchTestTypeByCode(testCode);
+        Patient patient = patientservice.findPatientOrThrow(patientNumber);
+        return analyteRepository.findAnalytesByGenderAndAge(ttype, patient.getGender(), patient.getAge(), pgbl).map(p -> convertAnalyteToData(p));
+    }
+
     public Analyte fetchAnalyteById(Long id) {
         return analyteRepository.findById(id).orElseThrow(() -> APIException.notFound("Analyte identified by {0} not found.", id));
     }
@@ -398,7 +524,5 @@ public class LabService {
     public void deleteAnalyteById(Long id) {
         analyteRepository.deleteById(id);
     }
-
-   
 
 }

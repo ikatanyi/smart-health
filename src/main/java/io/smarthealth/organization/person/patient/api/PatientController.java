@@ -81,9 +81,10 @@ public class PatientController {
 
     @Autowired
     ModelMapper modelMapper;
-
+    
     @Autowired
     SequenceService sequenceService;
+
 
     @PostMapping("/patients")
     public @ResponseBody

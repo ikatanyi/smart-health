@@ -101,6 +101,7 @@ public class PatientService {
 //        int nextPatient = patientRepository.maxId() + 1;
 //        return String.valueOf("PAT" + nextPatient);
 //    }
+
     public Optional<PatientData> fetchPatientByPatientNumber(final String patientNumber) {
 
         return patientRepository.findByPatientNumber(patientNumber)

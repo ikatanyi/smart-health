@@ -66,7 +66,6 @@ public class DoctorRequest extends Auditable {
     private LocalDateTime orderDatetime;
     private String urgency;
     private String orderNumber;
-    //private String action;
     private String notes;
     private String fulfillerStatus;  //this is the va
     private String fulfillerComment;

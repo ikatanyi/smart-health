@@ -5,6 +5,9 @@
  */
 package io.smarthealth.clinical.lab.domain;
 
+import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
+import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.organization.person.patient.domain.Patient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,8 +20,8 @@ import org.springframework.data.repository.query.Param;
  */
 public interface LabTestRepository extends JpaRepository<PatientLabTest, Long> {
 
-     @Query("SELECT e FROM PatientLabTest e WHERE (:patientNumber='' OR e.patient.patientNumber = :patientNumber) AND (:visitNumber='' OR e.visit.visitNumber=:visitNumber) AND e.state=:status")
-     Page<PatientLabTest>  findByPatientNumberAndVisitNumberAndStatus(@Param("visitNumber") final String visitNumber, @Param("patientNumber") final String patientNumber, @Param("status") final String status, Pageable pageable);
+    @Query("SELECT e FROM PatientLabTest e WHERE (:patient=null OR e.patientTestRegister.patient = :patient) AND (:visit=null OR e.patientTestRegister.visit=:visit) AND e.state=:status")
+     Page<PatientLabTest>  findByPatientAndVisitAndStatus(final Patient patient, final Visit visit, @Param("status") final LabTestState status, Pageable pageable);
     
 //    Page<Analyte> findByTestType(Testtype testtype, Pageable pageable);
 

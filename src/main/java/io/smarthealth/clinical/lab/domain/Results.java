@@ -22,9 +22,11 @@ public class Results extends Identifiable {
     private String testCode;
     private String testType;
     private String testName;
-    private String normalRange;
+    private Double upperRange;
+    private Double lowerRange;
     private String units;
     private String category;
     private String results;
+    private String comments;
 
 }

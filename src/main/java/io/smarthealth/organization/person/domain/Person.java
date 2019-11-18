@@ -37,14 +37,13 @@ public class Person extends Auditable {
   
 
     //@Transient
-    @Formula("YEAR(CURDATE()) - YEAR(date_of_birth)")
-//    private int age;
-//    @Formula("(TIMESTAMPDIFF(YEAR,date_of_birth,CURDATE()))")
-    private String age;
-
+  
     @Column(length = 50)
     private String maritalStatus;
     private LocalDate dateRegistered = LocalDate.now();
+    
+    @Formula("YEAR(CURDATE()) - YEAR(date_of_birth)")
+    private int age;
 
     @Formula(value = " concat(given_name, ' ', surname) ")
     private String fullName;
