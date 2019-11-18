@@ -9,7 +9,7 @@ stages:
 test:
   stage: test
   script:  
-    - mvn clean verify -DskipTests
+    - mvn verify -DskipTests
 
 build:
   stage: build
