@@ -16,7 +16,7 @@ public class BankBranchData {
 
     private String branchName;
     private String branchAddress;
-    private String swiftCode;
+    private String branchCode;
     private String branchContact;
     private String branchEmail;
     private Long branchId;

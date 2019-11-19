@@ -28,8 +28,8 @@ public class BankBranch extends Auditable {
     @Column(name = "branch_address")
     private String branchAddress;
     @Size(max = 50)
-    @Column(name = "swift_code")
-    private String swiftCode;
+    @Column(name = "branch_code")
+    private String branchCode;
     @Size(max = 50)
     @Column(name = "branch_contact")
     private String branchContact;

@@ -5,17 +5,15 @@
  */
 package io.smarthealth.administration.app.domain;
 
-import io.smarthealth.accounting.account.domain.Account;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Size;
 import lombok.Data;
+
 
 /**
  *
@@ -28,6 +26,9 @@ public class MainBank extends Auditable {
     @Size(max = 50)
     @Column(name = "bank_name")
     private String bankName;
+    @Size(max = 50)
+    @Column(name = "bank_code")
+    private String bankCode;
     @Size(max = 50)
     @Column(name = "bank_short_name")
     private String bankShortName;
