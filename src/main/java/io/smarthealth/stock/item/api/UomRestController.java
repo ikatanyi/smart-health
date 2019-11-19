@@ -47,13 +47,13 @@ public class UomRestController {
         this.service = itemService;
     } 
      
-    @GetMapping("/settings/uom/{id}")
+    @GetMapping("/uom/{id}")
     public Uom getItem(@PathVariable(value = "id") Long code) {
         Uom uom = service.fetchUomById(code);
         return  uom;
     }
 
-    @GetMapping("/settings/uom")
+    @GetMapping("/uom")
     public ResponseEntity<?> getAllItems(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "q", required = false) final String term,
@@ -80,7 +80,7 @@ public class UomRestController {
         return ResponseEntity.ok(pagers);
     }
     
-     @PostMapping("/settings/uom")
+     @PostMapping("/uom")
     public ResponseEntity<?> createUom(@Valid @RequestBody UomData uomData) {
         
         UomData result = UomData.map(service.createUom(uomData));
