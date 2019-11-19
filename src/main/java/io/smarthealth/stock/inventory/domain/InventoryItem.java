@@ -1,7 +1,7 @@
 package io.smarthealth.stock.inventory.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.organization.facility.domain.Department;
+import io.smarthealth.stock.inventory.domain.enumeration.StatusType;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
 import java.time.LocalDateTime;
@@ -24,11 +24,7 @@ import lombok.Data;
 @Data
 @Table(name = "stock_inventory_item")
 public class InventoryItem extends Identifiable {
-
-    public enum StatusType {
-        Good,
-        Expired
-    }
+ 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_store_id"))
     private Store store;
@@ -42,4 +38,5 @@ public class InventoryItem extends Identifiable {
     private String serialNumber;
     private LocalDateTime dateRecorded;
 
+    //
 }
