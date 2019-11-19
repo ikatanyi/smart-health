@@ -10,11 +10,14 @@ import io.smarthealth.accounting.account.service.JournalService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.utility.PageDetails;
+import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import javax.validation.Valid;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -72,24 +75,27 @@ public class JournalRestRepository {
     @PostMapping("/journals/{transactionId}")
     @ResponseBody
     public ResponseEntity<?> reverseJournal(@PathVariable(value = "transactionId") String transactionId, @RequestParam(value = "command", required = true) String command, String comment) {
-        String trxid = null;
+        String trxid = UUID.randomUUID().toString();
         if (is(command, "reverse")) {
             trxid = journalService.revertJournalEntry(transactionId, comment);
            
-        } else {
+        } else if (is(command, "updateRunningBalance")) { 
+            journalService.doJournalBalances();
+        } 
+        else {
             throw APIException.badRequest("Unrecognized Query Parameter {0} ", command);
         }
         return ResponseEntity.ok(new JournalResponse(trxid));
     }
 
-    @PostMapping("/journals?command=updateRunningBalance")
+    @PostMapping("/journals/updateRunningBalance")
     public ResponseEntity<?> updateRunningBalance() {
          journalService.doJournalBalances();
         return ResponseEntity.accepted().build();
     }
 
     @GetMapping("/journals")
-    public ResponseEntity<List<JournalData>> fetchJournalEntries(
+    public ResponseEntity<Pager<List<JournalData>>> fetchJournalEntries(
             @RequestParam(value = "referenceNumber", required = false) String referenceNumber,
             @RequestParam(value = "transactionId", required = false) String transactionId,
             @RequestParam(value = "transactionType", required = false) String transactionType,
@@ -99,27 +105,40 @@ public class JournalRestRepository {
 
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        Page<JournalData> page = journalService.fetchJournalEntries(referenceNumber, transactionId, transactionType, range, pageable);
+        Page<JournalData> list = journalService.fetchJournalEntries(referenceNumber, transactionId, transactionType, range, pageable);
 
-        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-        queryParams.add("size", String.valueOf(page.getSize()));
-        queryParams.add("page", String.valueOf(page.getNumber()));
+         Pager<List<JournalData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Suppliers");
+        pagers.setPageDetails(details);
 
-        if (referenceNumber != null) {
-            queryParams.add("referenceNumber", referenceNumber);
-        }
-        if (transactionId != null) {
-            queryParams.add("transactionId", transactionId);
-        }
-        if (transactionType != null) {
-            queryParams.add("transactionType", transactionType);
-        }
-        if (dateRange != null) {
-            queryParams.add("dateRange", dateRange);
-        }
-
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(queryParams, page, "/api/journals");
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+        return ResponseEntity.ok(pagers);
+//        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+//        queryParams.add("size", String.valueOf(page.getSize()));
+//        queryParams.add("page", String.valueOf(page.getNumber()));
+//
+//        if (referenceNumber != null) {
+//            queryParams.add("referenceNumber", referenceNumber);
+//        }
+//        if (transactionId != null) {
+//            queryParams.add("transactionId", transactionId);
+//        }
+//        if (transactionType != null) {
+//            queryParams.add("transactionType", transactionType);
+//        }
+//        if (dateRange != null) {
+//            queryParams.add("dateRange", dateRange);
+//        }
+//
+//        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(queryParams, page, "/api/journals");
+//        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
     @Value

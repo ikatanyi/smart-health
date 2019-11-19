@@ -45,7 +45,7 @@ import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
-import io.smarthealth.infrastructure.sequence.SequenceService;
+import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.clinical.lab.data.ResultsData;
 import io.smarthealth.clinical.lab.domain.PatientTestRegister;

@@ -1,14 +1,16 @@
 package io.smarthealth.stock.purchase.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.supplier.domain.Supplier;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.OneToOne;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -21,21 +23,26 @@ import lombok.Data;
 @Table(name = "purchase_invoice")
 public class PurchaseInvoice extends Auditable {
 
-    public enum Status {
-        Unpaid,
-        Paid
-    }
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_purchase_invoice_supplier_id"))
     private Supplier supplier;
+    private String purchaseOrderNumber;
     private String serialNumber; //ACC-PINV-2019-00001
-    private LocalDate transactionDate;
-    private LocalDateTime postingDatetime;
-    private LocalDate dueDate;
     private Boolean paid;
     private Boolean isReturn; //debit note
-    private String invoiceNo; //supplier invoice number
+    private String invoiceNumber; //supplier invoice number
     private LocalDate invoiceDate; //supplier invoice date
+    private LocalDate dueDate;
     private BigDecimal invoiceAmount;
+    private BigDecimal tax;
+    private BigDecimal discount;
+    private BigDecimal netAmount;
+    private BigDecimal invoiceBalance;
+    
+    private LocalDate transactionDate;
+    private String transactionNumber;
+    
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private PurchaseInvoiceStatus status;
+
 }

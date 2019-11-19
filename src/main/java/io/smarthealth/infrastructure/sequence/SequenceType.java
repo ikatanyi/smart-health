@@ -16,6 +16,10 @@ public enum SequenceType {
 
     public final String sequenceName;
 
+    public String getSequenceName() {
+        return sequenceName;
+    }
+
     private SequenceType(String sequenceName) {
         this.sequenceName = sequenceName;
     }

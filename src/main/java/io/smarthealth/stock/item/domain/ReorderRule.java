@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -20,11 +19,11 @@ import lombok.Data;
 public class ReorderRule extends Identifiable {
 
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_reorder_store_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_reorder_rule_store_id"))
     private Store store;  
     
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_reorder_item_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_reorder_rule_item_id"))
     private Item stockItem;
     
     private double reorderLevel;

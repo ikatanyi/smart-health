@@ -22,7 +22,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 /**
- *
+ *  Patient Lab Request
  * @author Kennedy.Imbenzi
  */
 @Data

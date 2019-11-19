@@ -1,7 +1,7 @@
 package io.smarthealth.administration.app.api;
 
-import io.smarthealth.administration.app.domain.PaymentTerms;
-import io.smarthealth.accounting.account.service.PaymentTermsService;
+import io.smarthealth.administration.app.domain.PaymentTerms; 
+import io.smarthealth.administration.app.service.PaymentTermsService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;

@@ -3,6 +3,7 @@ package io.smarthealth.stock.inventory.domain;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.stores.domain.Store;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -29,9 +30,10 @@ public class InventoryItem extends Identifiable {
         Expired
     }
     @ManyToOne
-    private Department store;
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_store_id"))
+    private Store store;
     @ManyToOne
-     @JoinColumn(foreignKey = @ForeignKey(name = "fk_inventory_item_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_item_id"))
     private Item item;
     private double quantity;
     @Enumerated(EnumType.STRING)

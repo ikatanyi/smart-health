@@ -5,12 +5,20 @@
  */
 package io.smarthealth.administration.app.domain;
 
-import org.springframework.data.repository.CrudRepository;
+import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
  * @author Kelsas
  */
-public interface CurrencyRepository extends CrudRepository<Currency, Long>{
+public interface CurrencyRepository extends JpaRepository<Currency, Long>{
+      Page<Currency> findByActiveTrue(Pageable page);
+
+    Optional<Currency> findByName(String name);
     
+     Optional<Currency> findByCode(String code);
+     
 }

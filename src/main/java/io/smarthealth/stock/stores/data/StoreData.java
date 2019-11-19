@@ -13,11 +13,11 @@ public class StoreData {
     private String storeType;
     private String storeName;
     private boolean patientStore;
-    private Long salesAccountId;
+    private String salesAccountId;
     private String salesAccount;
-    private Long purchaseAccountId;
+    private String purchaseAccountId;
     private String purchaseAccount;
-    private Long inventoryAccountId;
+    private String inventoryAccountId;
     private String inventoryAccount;
     private boolean active;
     
@@ -30,15 +30,15 @@ public class StoreData {
         data.setStoreName(store.getStoreName());
         if(store.getInventoryAccount()!=null){
             data.setInventoryAccount(store.getInventoryAccount().getAccountName());
-            data.setInventoryAccountId(store.getInventoryAccount().getId());
+            data.setInventoryAccountId(store.getInventoryAccount().getAccountNumber());
         }
          if(store.getSalesAccount()!=null){
             data.setSalesAccount(store.getSalesAccount().getAccountName());
-            data.setSalesAccountId(store.getSalesAccount().getId());
+            data.setSalesAccountId(store.getSalesAccount().getAccountNumber());
         }
           if(store.getPurchaseAccount()!=null){
             data.setPurchaseAccount(store.getPurchaseAccount().getAccountName());
-            data.setPurchaseAccountId(store.getPurchaseAccount().getId());
+            data.setPurchaseAccountId(store.getPurchaseAccount().getAccountNumber());
         }
           return data;
     }

@@ -13,6 +13,7 @@ import io.smarthealth.administration.app.domain.MainBank;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,6 @@ public class AdminService {
 
     private final AddressRepository addressRepository;
     private final ContactRepository contactRepository;
-
     private final BankRepository bankRepository;
     private final BankBranchRepository bankBranchRepository;
 
@@ -38,6 +38,7 @@ public class AdminService {
         this.bankRepository = bankRepository;
         this.bankBranchRepository = bankBranchRepository;
     }
+   
 
     public List<Contact> createContacts(List<ContactData> contactList) {
         List<Contact> contacts = contactList
@@ -47,6 +48,17 @@ public class AdminService {
         return contactRepository.saveAll(contacts);
     }
 
+    public Contact createContact(ContactData contactData) {
+        Contact contact = ContactData.map(contactData);
+        return contactRepository.save(contact);
+    }
+
+    public Address createAddress(AddressData address) {
+        Address addresses = AddressData.map(address);
+
+        return addressRepository.save(addresses);
+    }
+
     public List<Address> createAddresses(List<AddressData> addressList) {
         List<Address> addresses = addressList
                 .stream()
@@ -54,6 +66,24 @@ public class AdminService {
                 .collect(Collectors.toList());
 
         return addressRepository.saveAll(addresses);
+    }
+
+    public Optional<Address> getAddress(Long id) {
+        return addressRepository.findById(id);
+    }
+
+    public Optional<Contact> getContact(Long id) {
+        return contactRepository.findById(id);
+    }
+
+    public Address getAddressWithNoFoundDetection(Long id) {
+        return getAddress(id)
+                .orElseThrow(() -> APIException.notFound("Address with id {0} not found", id));
+    }
+
+    public Contact getContactWithNoFoundDetection(Long id) {
+        return getContact(id)
+                .orElseThrow(() -> APIException.notFound("Contact with id {0} not found", id));
     }
 
     @Transactional

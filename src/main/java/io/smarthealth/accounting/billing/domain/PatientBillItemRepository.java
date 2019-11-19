@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
- * @author Kennedy.Imbenzi
+ * @author Kelsas
  */
 public interface PatientBillItemRepository extends JpaRepository<PatientBillItem, Long>{
     

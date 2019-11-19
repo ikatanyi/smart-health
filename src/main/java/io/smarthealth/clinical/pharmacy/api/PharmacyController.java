@@ -17,7 +17,7 @@ import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.common.SecurityUtils;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.SequenceService;
+import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;

@@ -58,7 +58,7 @@ public class PatientTestRegisterData {
         }
         if(patientregister.getBill()!=null){
             data.setBillNumber(patientregister.getBill().getBillNumber());
-            data.setBillData(PatientBillData.map(patientregister.getBill()));
+            data.setBillData(patientregister.getBill().toData());
         }
         return data;
     }

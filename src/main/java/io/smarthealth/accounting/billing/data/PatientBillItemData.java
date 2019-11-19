@@ -29,26 +29,26 @@ public class PatientBillItemData {
    private Long servicePointId;
     private String servicePoint;
 
-    public static PatientBillItemData map(PatientBillItem bill) {
-        PatientBillItemData data = new PatientBillItemData();
-        data.setBillNumber(bill.getPatientBill().getBillNumber());
-        data.setBillingDate(bill.getBillingDate());
-        data.setPrice(bill.getPrice());
-        data.setQuantity(bill.getQuantity());
-        data.setAmount(bill.getAmount());
-        data.setTransactionNo(bill.getTransactionNo());
-        data.setCreatedBy(bill.getCreatedBy());
-
-        if (bill.getItem() != null) {
-            data.setItemId(bill.getItem().getId());
-            data.setItemCode(bill.getItem().getItemCode());
-            data.setItem(bill.getItem().getItemName()); 
-        }
-            data.setServicePoint(bill.getServicePoint());
-            data.setServicePointId(bill.getServicePointId());
-        
-
-        return data;
-    }
+//    public static PatientBillItemData map(PatientBillItem bill) {
+//        PatientBillItemData data = new PatientBillItemData();
+//        data.setBillNumber(bill.getPatientBill().getBillNumber());
+//        data.setBillingDate(bill.getBillingDate());
+//        data.setPrice(bill.getPrice());
+//        data.setQuantity(bill.getQuantity());
+//        data.setAmount(bill.getAmount());
+//        data.setTransactionNo(bill.getTransactionNo());
+//        data.setCreatedBy(bill.getCreatedBy());
+//
+//        if (bill.getItem() != null) {
+//            data.setItemId(bill.getItem().getId());
+//            data.setItemCode(bill.getItem().getItemCode());
+//            data.setItem(bill.getItem().getItemName()); 
+//        }
+//            data.setServicePoint(bill.getServicePoint());
+//            data.setServicePointId(bill.getServicePointId());
+//        
+//
+//        return data;
+//    }
 
 }

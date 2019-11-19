@@ -38,6 +38,6 @@ public interface AccountRepository extends JpaRepository<Account, Long>, JpaSpec
     List<Account> findByAccountType(final AccountType type);
 
     List<Account> findByParentAccountOrderByAccountNumber(final Account parentAccount);
-
+ 
     //account balances
 }

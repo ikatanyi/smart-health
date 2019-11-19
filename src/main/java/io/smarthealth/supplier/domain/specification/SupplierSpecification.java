@@ -1,6 +1,7 @@
 package io.smarthealth.supplier.domain.specification;
 
 import io.smarthealth.supplier.domain.Supplier;
+import io.smarthealth.supplier.domain.enumeration.SupplierType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,7 +17,7 @@ public class SupplierSpecification {
         super();
     }
     
-    public static Specification<Supplier> createSpecification(final Supplier.Type type, final String term, final boolean includeClosed) {
+    public static Specification<Supplier> createSpecification(final SupplierType type, final String term, final boolean includeClosed) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 

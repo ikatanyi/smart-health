@@ -39,5 +39,5 @@ public class HealthApplication {
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return bean;
     }
-
+    
 }

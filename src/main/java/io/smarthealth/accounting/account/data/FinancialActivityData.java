@@ -1,6 +1,6 @@
 package io.smarthealth.accounting.account.data;
 
-import io.smarthealth.accounting.account.domain.enumeration.AccountCategory;
+import io.smarthealth.accounting.account.domain.enumeration.FinancialActivity;
 import lombok.Value;
 
 /**
@@ -10,8 +10,11 @@ import lombok.Value;
 @Value
 public class FinancialActivityData {
 
-    private final Integer id;
+    private FinancialActivity activity;
     private final String name;
-    private final AccountCategory mappedAccountType;
+    private final String category;
 
+    public static FinancialActivityData map(FinancialActivity activity) {
+        return new FinancialActivityData(activity, activity.getActivityName(), activity.getCategory().name());
+    }
 }

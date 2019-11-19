@@ -20,12 +20,16 @@ import lombok.Data;
 public class PurchaseOrderItem extends Identifiable {
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_purch_order_item_order_id"))
     private PurchaseOrder purchaseOrder;
 
     @ManyToOne
-     @JoinColumn(foreignKey = @ForeignKey(name = "fk_purchase_item_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_purch_order_item_item_id"))
     private Item item;
+    
     private double quantity;
+    private double receivedQuantity;
     private BigDecimal price; //this can be linked to the pricelist and be defined in the values that
     private BigDecimal amount;
+    
 }

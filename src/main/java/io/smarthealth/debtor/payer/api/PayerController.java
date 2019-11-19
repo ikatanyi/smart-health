@@ -1,17 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.debtor.payer.api;
 
-import io.smarthealth.accounting.account.data.AccountData;
 import io.smarthealth.accounting.account.domain.Account;
-import io.smarthealth.accounting.account.service.AccountService;
-import io.smarthealth.accounting.account.service.PaymentTermsService;
+import io.smarthealth.accounting.account.service.AccountService; 
 import io.smarthealth.administration.app.domain.BankBranch;
 import io.smarthealth.administration.app.domain.PaymentTerms;
 import io.smarthealth.administration.app.service.AdminService;
+import io.smarthealth.administration.app.service.PaymentTermsService;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
