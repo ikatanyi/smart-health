@@ -39,7 +39,11 @@ public class PatientQueueService {
 
     @Transactional
     public PatientQueue createPatientQueue(PatientQueue patientQueue) {
-        return patientQueueRepository.save(patientQueue);
+        if (!patientIsQueued(patientQueue.getDepartment(), patientQueue.getPatient())) {
+            return patientQueueRepository.save(patientQueue);
+        } else {
+            throw APIException.conflict("Patient is already queued in the department selected", "");
+        }
     }
 
     public Page<PatientQueue> fetchQueueByDept(final Department department, final boolean status, Pageable pageable) {
