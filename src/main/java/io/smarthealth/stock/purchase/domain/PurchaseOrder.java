@@ -10,6 +10,9 @@ import io.smarthealth.supplier.domain.Supplier;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -52,21 +55,34 @@ public class PurchaseOrder extends Auditable {
     @Enumerated(EnumType.STRING)
     private PurchaseOrderStatus status;
     //payment details that can be defined here that contains the terms and conditions for this and the rest will have to made
-    @OneToMany(mappedBy = "purchaseOrder")
-    private List<PurchaseOrderItem> purchaseOrderLines = new ArrayList<>();
-    
-      public void addOrderItem(PurchaseOrderItem item) {
+    @OneToMany(mappedBy = "purchaseOrder",cascade = CascadeType.ALL)
+    private List<PurchaseOrderItem> purchaseOrderLines;
+
+    public PurchaseOrder() {
+    }
+
+    public PurchaseOrder(PurchaseOrder order, PurchaseOrderItem... orderItems) {
+        this.address = order.getAddress();
+        this.contact = order.getContact();
+        this.orderNumber = order.getOrderNumber();
+        this.priceList = order.getPriceList();
+        this.requiredDate = order.getRequiredDate();
+        this.status = order.getStatus();
+        this.store = order.getStore();
+        this.supplier = order.getSupplier();
+        this.transactionDate = order.getTransactionDate();
+        this.purchaseOrderLines = Stream.of(orderItems).collect(Collectors.toList());
+        this.purchaseOrderLines.forEach(x -> x.setPurchaseOrder(this));
+    }
+
+    public void addOrderItem(PurchaseOrderItem item) {
         item.setPurchaseOrder(this);
         purchaseOrderLines.add(item);
     }
 
     public void addOrderItems(List<PurchaseOrderItem> items) {
-        items.stream().map((item) -> {
-            item.setPurchaseOrder(this);
-            return item;
-        }).forEachOrdered((bill) -> {
-            purchaseOrderLines.add(bill);
-        });
+        this.purchaseOrderLines = items;
+        this.purchaseOrderLines.forEach(x -> x.setPurchaseOrder(this));
     }
 
 }
