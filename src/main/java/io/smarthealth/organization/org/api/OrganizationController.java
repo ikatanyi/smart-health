@@ -31,7 +31,6 @@ public class OrganizationController {
     public OrganizationController(OrganizationService service) {
         this.service = service;
     }
- 
 
     @PostMapping("/organization")
     public @ResponseBody
@@ -39,22 +38,21 @@ public class OrganizationController {
         OrganizationData result = service.createOrganization(orgData);
         Pager<OrganizationData> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Organization created successful");
+        pagers.setMessage("Organization created successfully");
         pagers.setContent(result);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers); 
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-    
-    
+
     @GetMapping("/organization/{id}")
     public OrganizationData getOrganization(@PathVariable(value = "id") String code) {
         Organization org = service.getOrganization(code);
-        
+
         return OrganizationData.map(org);
     }
-    
-     @PutMapping("/organization/{id}")
-    public OrganizationData OrganizationData(@PathVariable(value = "id") String id, OrganizationData data) { 
-        return service.updateOrganization(id, data); 
+
+    @PutMapping("/organization/{id}")
+    public OrganizationData OrganizationData(@PathVariable(value = "id") String id, OrganizationData data) {
+        return service.updateOrganization(id, data);
     }
 }
