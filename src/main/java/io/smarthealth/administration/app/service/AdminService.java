@@ -11,9 +11,9 @@ import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.domain.ContactRepository;
 import io.smarthealth.administration.app.domain.MainBank;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.organization.org.domain.Organization;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -125,5 +125,17 @@ public class AdminService {
 
     public BankBranch fetchBankBranchById(Long id) {
         return bankBranchRepository.findById(id).orElseThrow(() -> APIException.notFound("Bank branch identified by {0} was not found", id));
+    }
+
+    public void removeAddressByOrganization(Organization org) {
+        if (!org.getAddress().isEmpty()) {
+            addressRepository.delete(org.getAddress().get(0));
+        }
+    }
+
+    public void removeContactByOrganization(Organization org) {
+        if (!org.getContact().isEmpty()) {
+            contactRepository.delete(org.getContact().get(0));
+        }
     }
 }

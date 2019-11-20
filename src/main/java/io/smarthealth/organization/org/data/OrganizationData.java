@@ -1,7 +1,11 @@
 package io.smarthealth.organization.org.data;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.ContactData;
+import io.smarthealth.administration.app.domain.Address;
+import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.organization.org.domain.Organization;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
@@ -12,6 +16,7 @@ import lombok.Data;
  * @author Kelsas
  */
 @Data
+@JsonInclude(Include.NON_NULL)
 public class OrganizationData {
 
     private String id;
@@ -39,8 +44,14 @@ public class OrganizationData {
 
     @ApiModelProperty(required = false, hidden = true)
     private List<AddressData> addresses;
+
+    @ApiModelProperty(required = false, hidden = true)
+    AddressData address;
     @ApiModelProperty(required = false, hidden = true)
     private List<ContactData> contacts;
+
+    @ApiModelProperty(required = false, hidden = true)
+    private ContactData contact;
 
     public static OrganizationData map(Organization org) {
         OrganizationData data = new OrganizationData();
@@ -50,6 +61,32 @@ public class OrganizationData {
         data.setLegalName(org.getLegalName());
         data.setTaxNumber(org.getTaxNumber());
         data.setWebsite(org.getWebsite());
+        if (!org.getAddress().isEmpty()) {
+            for (Address address : org.getAddress()) {
+                AddressData addressData = new AddressData();
+                addressData.setCountry(address.getCountry());
+                addressData.setCounty(address.getCounty());
+                addressData.setLine1(address.getLine1());
+                addressData.setLine2(address.getLine2());
+                addressData.setPostalCode(address.getPostalCode());
+                addressData.setTown(address.getTown());
+                addressData.setType(address.getType().name());
+                addressData.setId(address.getId());
+                data.setAddress(addressData);
+            }
+        }
+        if (!org.getContact().isEmpty()) {
+            for (Contact contact : org.getContact()) {
+                ContactData contactData = new ContactData();
+                contactData.setId(contact.getId());
+                contactData.setEmail(contact.getEmail());
+                contactData.setFullName(contact.getFullName());
+                contactData.setMobile(contact.getMobile());
+                contactData.setSalutation(contactData.getSalutation());
+                contactData.setTelephone(contact.getTelephone());
+                data.setContact(contactData);
+            }
+        }
 
         return data;
     }

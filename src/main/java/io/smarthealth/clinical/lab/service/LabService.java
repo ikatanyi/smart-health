@@ -143,14 +143,9 @@ public class LabService {
         }
     }
 
-    @Transactional
-    public Optional<LabTestTypeData> getById(Long id) {
-        try {
-            return ttypeRepository.findById(id).map(d -> convertToTestTypeData(d));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("TestType identified by {0} not found ", e.getMessage());
-        }
+    public LabTestType findTestById(Long id) {
+        return ttypeRepository.findById(id).orElseThrow(() -> APIException.notFound("Test identified by id {0} not found", id)
+        );
     }
 
     @Transactional
@@ -168,16 +163,12 @@ public class LabService {
         return ttypeRepository.findById(testtypeId);//.orElseThrow(() -> APIException.notFound("LabTestType identified by {0} not found", testtypeId));
     }
 
-    public List<AnalyteData> saveAnalytes(List<AnalyteData> analyteData) {
+    public List<AnalyteData> saveAnalytes(List<AnalyteData> analyteData, LabTestType labTest) {
         List<AnalyteData> analyteArray = new ArrayList();
         List<Analyte> analytes = new ArrayList();
         for (AnalyteData analytedata : analyteData) {
             Analyte analyte = convertDataToAnalyte(analytedata);
-            Optional<LabTestType> ttype = ttypeRepository.findById(analytedata.getTestTypeId());
-
-            if (ttype.isPresent()) {
-                analyte.setTestType(ttype.get());
-            }
+            analyte.setTestType(labTest);
             analytes.add(analyte);
         }
 
@@ -383,9 +374,10 @@ public class LabService {
     public Page<PatientTestData> fetchAllPatientTests(String patientNumber, String visitNumber, LabTestState status, Pageable pgbl) {
         Patient patient = null;
         Visit visit = visitRepository.findByVisitNumber(visitNumber).orElse(null);
-        Optional<PatientData>pat = patientservice.fetchPatientByPatientNumber(patientNumber);
-        if(pat.isPresent())
-           patient= patientservice.createPatient(pat.get());
+        Optional<PatientData> pat = patientservice.fetchPatientByPatientNumber(patientNumber);
+        if (pat.isPresent()) {
+            patient = patientservice.createPatient(pat.get());
+        }
         Page<PatientTestData> ptests = PtestsRepository.findByPatientAndVisitAndStatus(patient, visit, status, pgbl).map(p -> PatientTestData.map(p));
         return ptests;
     }
