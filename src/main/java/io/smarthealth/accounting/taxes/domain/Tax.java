@@ -16,4 +16,5 @@ public class Tax extends Identifiable {
 
     private String taxName;
     private double rate;
+    private Boolean active;
 }
