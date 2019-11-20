@@ -1,0 +1,109 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package io.smarthealth.clinical.radiology.api;
+
+import io.smarthealth.clinical.lab.data.AnalyteData;
+import io.smarthealth.clinical.lab.data.ContainerData;
+import io.smarthealth.clinical.lab.data.LabTestTypeData;
+import io.smarthealth.clinical.lab.data.PatientTestData;
+import io.smarthealth.clinical.lab.service.LabService;
+import io.smarthealth.clinical.radiology.data.RadiologyTestData;
+import io.smarthealth.clinical.radiology.service.RadiologyService;
+import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.utility.PageDetails;
+import io.smarthealth.infrastructure.utility.Pager;
+import io.swagger.annotations.Api;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriComponentsBuilder;
+
+/**
+ *
+ * @author Kennedy.Imbenzi
+ */
+@RequestMapping("/api/")
+@Api(value = "Radiology-Controller", description = "Operations pertaining to Radiology maintenance")
+public class RadiologyController {
+
+    @Autowired
+    RadiologyService radiologyService;
+
+    @Autowired
+    ModelMapper modelMapper;
+
+    @PostMapping("/radiology-tests")
+    public @ResponseBody
+    ResponseEntity<?> createTests(@RequestBody @Valid final List<RadiologyTestData> radiologyTestData) {
+        List<RadiologyTestData> radiologyTestList = radiologyService.createRadiologyTest(radiologyTestData)
+                .stream()
+                .map((radiology)->{
+                 RadiologyTestData testdata =  RadiologyTestData.map(radiology);
+            return testdata;
+            }).collect(Collectors.toList());
+        Pager<List<RadiologyTestData>> pagers = new Pager();        
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(radiologyTestList);
+        PageDetails details = new PageDetails();
+        details.setReportName("Radiology Tests");
+        pagers.setPageDetails(details);        
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);      
+    }
+
+    @GetMapping("/radiology-tests/{id}")
+    public ResponseEntity<?> fetchRadiologyTest(@PathVariable("id") final Long id) {
+        RadiologyTestData radiologyTests = RadiologyTestData.map(radiologyService.getById(id));
+        if (radiologyTests != null) {
+            return ResponseEntity.ok(radiologyTests);
+        } else {
+            throw APIException.notFound("radiology Test Number {0} not found.", id);
+        }
+    }
+
+    @GetMapping("/radiology-tests")
+    public ResponseEntity<?> fetchAllRadiology(
+       @RequestParam(value = "page", required = false) Integer page1,
+       @RequestParam(value = "pageSize", required = false) Integer size
+    ) {
+
+        Pageable pageable = PaginationUtil.createPage(page1, size);
+        List<RadiologyTestData> testData = radiologyService.findAll(pageable)
+                .stream()
+                .map((radiology)->{
+                 RadiologyTestData testdata =  RadiologyTestData.map(radiology);
+            return testdata;
+            }).collect(Collectors.toList());
+        Pager page = new Pager();
+        page.setCode("200");
+        page.setContent(testData);
+        page.setMessage("Radiology Tests fetched successfully");
+        PageDetails details = new PageDetails();
+        details.setPage(1);
+        details.setPerPage(25);
+        details.setReportName("Radiology Tests fetched");
+//        details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
+        page.setPageDetails(details);
+        return ResponseEntity.ok(page);
+    }
+}
