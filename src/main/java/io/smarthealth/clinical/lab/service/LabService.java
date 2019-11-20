@@ -5,10 +5,10 @@
  */
 package io.smarthealth.clinical.lab.service;
 
-import io.smarthealth.accounting.billing.domain.PatientBill;
-import io.smarthealth.accounting.billing.domain.PatientBillItem;
-import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
-import io.smarthealth.accounting.billing.service.PatientBillService;
+import io.smarthealth.billing.domain.PatientBill;
+import io.smarthealth.billing.domain.PatientBillItem;
+import io.smarthealth.billing.domain.enumeration.BillStatus;
+import io.smarthealth.billing.service.PatientBillService;
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.ContainerData;
 import io.smarthealth.clinical.lab.data.DisciplineData;

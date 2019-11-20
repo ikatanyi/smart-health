@@ -1,7 +1,7 @@
-package io.smarthealth.accounting.billing.domain.specification;
+package io.smarthealth.billing.domain.specification;
 
-import io.smarthealth.accounting.billing.domain.PatientBill;
-import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.billing.domain.PatientBill;
+import io.smarthealth.billing.domain.enumeration.BillStatus;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import org.springframework.data.jpa.domain.Specification;

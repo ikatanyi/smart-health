@@ -1,8 +1,8 @@
-package io.smarthealth.accounting.billing.data;
+package io.smarthealth.billing.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.billing.domain.PatientBillItem;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDate;
 import lombok.Data;

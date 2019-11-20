@@ -39,9 +39,14 @@ public class JournalData {
     private String createdBy;
 
     public Double getJournalTotals() {
-        return journalEntries
+        Double dbts= journalEntries
                 .stream()
                 .map(d -> d.getDebit())
+                .reduce(0D, Double::sum);
+        
+        Double crts= journalEntries
+                .stream()
+                .map(d -> d.getCredit())
                 .reduce(0D, Double::sum);
 
 //        Double dbts = debit
@@ -52,8 +57,8 @@ public class JournalData {
 //                .stream()
 //                .map(d -> Double.valueOf(d.getAmount()))
 //                .reduce(0D, Double::sum);
-//        journalTotals = dbts > 0 ? dbts : crts;
-//        return journalTotals;
+        journalTotals = dbts > 0 ? dbts : crts;
+        return journalTotals;
     }
 
     public static JournalData map(Journal journal) {

@@ -43,4 +43,7 @@ public class JournalEntryData {
                 entity.getRunningBalance(),
                 entity.isBalanceCalculated());
     }
+    public boolean isDebit(){
+        return debit !=0;
+    }
 }

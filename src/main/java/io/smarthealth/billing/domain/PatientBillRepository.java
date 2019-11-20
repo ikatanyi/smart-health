@@ -1,4 +1,4 @@
-package io.smarthealth.accounting.billing.domain;
+package io.smarthealth.billing.domain;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

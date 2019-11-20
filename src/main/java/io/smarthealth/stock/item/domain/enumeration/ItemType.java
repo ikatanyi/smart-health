@@ -6,6 +6,5 @@ package io.smarthealth.stock.item.domain.enumeration;
  */
 public enum ItemType {
     Inventory,
-    Service,
-    Consumable
+    Service 
 }
