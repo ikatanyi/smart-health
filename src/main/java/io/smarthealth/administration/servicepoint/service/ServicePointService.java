@@ -1,5 +1,7 @@
 package io.smarthealth.administration.servicepoint.service;
  
+import io.smarthealth.accounting.account.domain.Account;
+import io.smarthealth.accounting.account.service.AccountService;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
@@ -17,16 +19,30 @@ import org.springframework.stereotype.Service;
 public class ServicePointService {
 
     private final ServicePointRepository repository;
+    private final AccountService accountService;
 
-    public ServicePointService(ServicePointRepository repository) {
+    public ServicePointService(ServicePointRepository repository, AccountService accountService) {
         this.repository = repository;
+        this.accountService = accountService;
     }
+
+     
 
     public ServicePointData createPoint(ServicePointData data) {
         ServicePoint point = new ServicePoint();
         point.setActive(data.getActive());
         point.setDescription(data.getDescription());
         point.setName(data.getName());
+        if(data.getExpenseAccount()!=null && data.getExpenseAccount().getAccountNumber()!=null){
+            Account acc =accountService.findOneWithNotFoundDetection(data.getExpenseAccount().getAccountNumber());
+            point.setExpenseAccount(acc);
+        }
+        
+         if(data.getIncomeAccount()!=null && data.getIncomeAccount().getAccountNumber()!=null){
+            Account acc =accountService.findOneWithNotFoundDetection(data.getIncomeAccount().getAccountNumber());
+            point.setIncomeAccount(acc);
+        }
+        
         ServicePoint savedPoint = repository.save(point);
         return savedPoint.toData();
     }
