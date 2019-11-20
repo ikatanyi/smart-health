@@ -38,7 +38,6 @@ public class AdminService {
         this.bankRepository = bankRepository;
         this.bankBranchRepository = bankBranchRepository;
     }
-   
 
     public List<Contact> createContacts(List<ContactData> contactList) {
         List<Contact> contacts = contactList
@@ -46,6 +45,10 @@ public class AdminService {
                 .map(contc -> ContactData.map(contc))
                 .collect(Collectors.toList());
         return contactRepository.saveAll(contacts);
+    }
+
+    public List<Contact> createContactEntity(List<Contact> contactList) {
+        return contactRepository.saveAll(contactList);
     }
 
     public Contact createContact(ContactData contactData) {
@@ -66,6 +69,10 @@ public class AdminService {
                 .collect(Collectors.toList());
 
         return addressRepository.saveAll(addresses);
+    }
+
+    public List<Address> createAddressesEntity(List<Address> addressList) {
+        return addressRepository.saveAll(addressList);
     }
 
     public Optional<Address> getAddress(Long id) {

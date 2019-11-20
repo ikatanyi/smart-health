@@ -1,6 +1,7 @@
 package io.smarthealth.organization.org.domain;
 
 import io.smarthealth.administration.app.domain.Address;
+import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.organization.facility.domain.Facility;
 import java.io.Serializable;
 import java.time.Instant;
@@ -51,7 +52,6 @@ public class Organization implements Serializable {
     private String legalName;
     private String taxNumber;
     private String website;
-    private String country;
 
     private Boolean active;
 
@@ -78,6 +78,11 @@ public class Organization implements Serializable {
         @JoinColumn(name = "organization_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "address_id", referencedColumnName = "id")})
     private List<Address> address = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(name = "org_contact", joinColumns = {
+        @JoinColumn(name = "organization_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "contact_id", referencedColumnName = "id")})
+    private List<Contact> contact = new ArrayList<>();
 
     @OneToMany(mappedBy = "organization")
     private List<Facility> facilities;

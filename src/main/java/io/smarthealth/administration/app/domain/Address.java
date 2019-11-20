@@ -27,7 +27,6 @@ public class Address extends Identifiable {
         Permanent,
         Other
     }
-    private String title;
     @Enumerated(EnumType.STRING)
     private Type type;
     private String line1;
@@ -36,7 +35,4 @@ public class Address extends Identifiable {
     private String county;
     private String country;
     private String postalCode;
-    private String email;
-    private String phone;
-    private String fax;
 }
