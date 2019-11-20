@@ -85,7 +85,6 @@ public class SupplierService {
         if (supplierData.getAddresses() != null && supplierData.getAddresses() .getPhone()!=null) {
             Address addresses = adminService.createAddress(supplierData.getAddresses());
             addresses.setType(Address.Type.Office);
-            addresses.setTitle("Office");
             supplier.setAddress(addresses);
         }
         

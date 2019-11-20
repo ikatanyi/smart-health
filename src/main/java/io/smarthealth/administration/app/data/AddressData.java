@@ -25,7 +25,6 @@ public class AddressData {
     public static AddressData map(Address address) {
         AddressData data = new AddressData();
         data.setId(address.getId());
-        data.setTitle(address.getTitle());
         if(address.getType()!=null){
         data.setType(address.getType().name());
         }
@@ -35,8 +34,7 @@ public class AddressData {
         data.setCounty(address.getCounty());
         data.setCountry(address.getCountry());
         data.setPostalCode(address.getPostalCode());
-        data.setEmail(address.getEmail());
-        data.setPhone(address.getPhone());
+     
         return data;
 
     }
@@ -46,7 +44,6 @@ public class AddressData {
         if (addressData.getId() != null) {
             address.setId(addressData.getId());
         }
-        address.setTitle(addressData.getTitle());
         if (addressData.getType() != null) {
             address.setType(Address.Type.valueOf(addressData.getType()));
         }
@@ -56,8 +53,6 @@ public class AddressData {
         address.setCounty(addressData.getCounty());
         address.setCountry(addressData.getCountry());
         address.setPostalCode(addressData.getPostalCode());
-        address.setEmail(addressData.getEmail());
-        address.setPhone(addressData.getPhone());
         return address;
 
     }

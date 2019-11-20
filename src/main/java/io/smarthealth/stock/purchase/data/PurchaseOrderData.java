@@ -22,12 +22,12 @@ public class PurchaseOrderData {
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate transactionDate;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
-    private LocalDate requiredDate; 
+    private LocalDate requiredDate;
     private Long addressId;
     private String address;
     private Long contactId;
     private String contact;
-    
+
     private Long storeId;
     private String store;
     private Long priceListId;
@@ -47,7 +47,6 @@ public class PurchaseOrderData {
         data.setRequiredDate(order.getRequiredDate());
         if (order.getAddress() != null) {
             data.setAddressId(order.getAddress().getId());
-            data.setAddress(order.getAddress().getTitle());
         }
         if (order.getContact() != null) {
             data.setContact(order.getContact().getFullName());

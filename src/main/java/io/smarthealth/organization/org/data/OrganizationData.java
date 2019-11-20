@@ -3,7 +3,7 @@ package io.smarthealth.organization.org.data;
 import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.organization.org.domain.Organization;
-import io.smarthealth.organization.facility.domain.*;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import lombok.Data;
 
@@ -20,9 +20,26 @@ public class OrganizationData {
     private String legalName;
     private String taxNumber;
     private String website;
-    private String country;
+    @ApiModelProperty(required = false, hidden = true)
     private Boolean active;
+
+    private String line1;
+    private String line2;
+    private String town;
+    private String county;
+    private String country;
+    private String postalCode;
+    private String addressType;
+
+    private String contactSalutation;
+    private String contactFullName;
+    private String email;
+    private String telephone;
+    private String mobile;
+
+    @ApiModelProperty(required = false, hidden = true)
     private List<AddressData> addresses;
+    @ApiModelProperty(required = false, hidden = true)
     private List<ContactData> contacts;
 
     public static OrganizationData map(Organization org) {
@@ -33,8 +50,6 @@ public class OrganizationData {
         data.setLegalName(org.getLegalName());
         data.setTaxNumber(org.getTaxNumber());
         data.setWebsite(org.getWebsite());
-        data.setCountry(org.getCountry());
-       
 
         return data;
     }
@@ -47,7 +62,6 @@ public class OrganizationData {
         org.setLegalName(orgData.getLegalName());
         org.setTaxNumber(orgData.getTaxNumber());
         org.setWebsite(orgData.getWebsite());
-        org.setCountry(orgData.getCountry());
 
         return org;
     }
