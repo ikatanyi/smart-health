@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.lab.data;
 
-import io.smarthealth.accounting.billing.data.PatientBillData;
+import io.smarthealth.billing.data.PatientBillData;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.lab.domain.PatientTestRegister;
 import io.smarthealth.clinical.record.data.DoctorRequestData;

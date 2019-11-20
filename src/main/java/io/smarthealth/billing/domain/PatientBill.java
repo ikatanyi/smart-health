@@ -1,8 +1,8 @@
-package io.smarthealth.accounting.billing.domain;
+package io.smarthealth.billing.domain;
 
-import io.smarthealth.accounting.billing.data.PatientBillData;
-import io.smarthealth.accounting.billing.data.PatientBillItemData;
-import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.billing.data.PatientBillData;
+import io.smarthealth.billing.data.PatientBillItemData;
+import io.smarthealth.billing.domain.enumeration.BillStatus;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;

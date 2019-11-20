@@ -1,9 +1,9 @@
-package io.smarthealth.accounting.billing.data;
+package io.smarthealth.billing.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.smarthealth.accounting.billing.domain.PatientBill;
-import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.billing.domain.PatientBill;
+import io.smarthealth.billing.domain.enumeration.BillStatus;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDate;
 import java.util.List;

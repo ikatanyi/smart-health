@@ -1,8 +1,8 @@
-package io.smarthealth.accounting.billing.domain;
+package io.smarthealth.billing.domain;
 
 import io.smarthealth.accounting.account.domain.enumeration.TransactionType;
-import io.smarthealth.accounting.billing.data.PatientBillItemData;
-import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.billing.data.PatientBillItemData;
+import io.smarthealth.billing.domain.enumeration.BillStatus;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;

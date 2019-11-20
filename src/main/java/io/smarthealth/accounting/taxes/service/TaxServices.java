@@ -29,7 +29,18 @@ public class TaxServices {
     public Page<Tax> fetchAllTaxes(Pageable page){
         return taxRepository.findAll(page);
     }
-    public Optional<Tax> getTax(Long id){
-        return taxRepository.findById(id);
+    public Tax getTax(Long id){
+        return taxRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Tax with id  {0} not found.", id));
+    }
+    public Tax updateTax(Long id, Tax data){
+        Tax tax=getTax(id);
+        if(!tax.getTaxName().equals(data.getTaxName())){
+            tax.setTaxName(data.getTaxName());
+        }
+         if(tax.getRate()!=(data.getRate())){
+            tax.setRate(data.getRate());
+        }
+         return taxRepository.save(tax);
     }
 }

@@ -44,4 +44,7 @@ public class Item extends Identifiable {
     @ManyToMany(mappedBy = "priceBookItems")
     private List<PriceBook> priceBooks;
     private Boolean active;
+    public boolean isInventoryItem(){
+       return this.itemType.equals("Inventory");
+    }
 }

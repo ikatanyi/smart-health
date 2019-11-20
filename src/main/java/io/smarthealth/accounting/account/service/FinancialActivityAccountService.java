@@ -66,9 +66,9 @@ public class FinancialActivityAccountService {
                 .orElseThrow(() -> APIException.notFound("Activity with Id {0} not found", accountNumber));
     }
 
-    public FinancialActivityAccount getByTransactionType(FinancialActivity activity) {
-        return repository.findByFinancialActivity(activity)
-                .orElseThrow(() -> APIException.badRequest("Patient Control Account for billing is not mapped"));
+    public Optional<FinancialActivityAccount> getByTransactionType(FinancialActivity activity) {
+        return repository.findByFinancialActivity(activity);
+                
     }
 
     public Optional<FinancialActivityAccount> getFinancialActivityAccount(String accountNumber) {

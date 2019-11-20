@@ -1,9 +1,8 @@
-package io.smarthealth.accounting.taxes.api;
-
-import io.smarthealth.accounting.taxes.domain.Tax;
-import io.smarthealth.accounting.taxes.service.TaxServices;
+package io.smarthealth.administration.servicepoint.api;
+ 
+import io.smarthealth.administration.servicepoint.data.ServicePointData;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
-import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
@@ -31,53 +30,54 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequestMapping("/api")
-public class TaxRestController {
+public class ServicepointApiController {
 
-    private final TaxServices service;
+    private final ServicePointService service;
 
-    public TaxRestController(TaxServices taxServices) {
-        this.service = taxServices;
+    public ServicepointApiController(ServicePointService service) {
+        this.service = service;
     }
 
-    @PostMapping("/taxes")
-    public ResponseEntity<?> createTax(@Valid @RequestBody Tax tax) {
+    @PostMapping("/service-points")
+    public ResponseEntity<?> createServicepoint(@Valid @RequestBody ServicePointData data) {
 
-        Tax result = service.createTax(tax);
+        ServicePointData result = service.createPoint(data);
 
-        Pager<Tax> pagers = new Pager();
+        Pager<ServicePointData> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Tax Success Created");
+        pagers.setMessage("Service Point Success Created");
         pagers.setContent(result);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
-    @GetMapping("/taxes/{id}")
-    public ResponseEntity<?> getTax(@PathVariable(value = "id") Long code) {
-        Tax result = service.getTax(code);
-        Pager<Tax> pagers = new Pager();
+    @GetMapping("/service-points/{id}")
+    public ResponseEntity<?> getServicepoint(@PathVariable(value = "id") Long id) {
+        ServicePointData data = service.getServicePoint(id).toData();
+        return ResponseEntity.ok(data);
+    }
+
+    @PutMapping("/service-points/{id}")
+    public ResponseEntity<?> updateServicepoint(@PathVariable(value = "id") Long id, ServicePointData data) {
+        ServicePointData result = service.updateServicePoint(id, data);
+
+        Pager<ServicePointData> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Tax Success updated");
+        pagers.setMessage("Service Point Success updated");
         pagers.setContent(result);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
     }
 
-    @PutMapping("/taxes/{id}")
-    public ResponseEntity<?> updatetax(@PathVariable(value = "id") Long id, Tax data) {
-        Tax tax = service.updateTax(id, data);
-        return ResponseEntity.ok(tax);
-    }
-
-    @GetMapping("/taxes")
-    public ResponseEntity<?> getAllTaxes(
+    @GetMapping("/service-points")
+    public ResponseEntity<?> listServicepoint(
             @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "pageSize", required = false, defaultValue = "1000") Integer size) {
+            @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<Tax> list = service.fetchAllTaxes(pageable);
-        Pager<List<Tax>> pagers = new Pager();
+        Page<ServicePointData> list = service.listServicePoints(pageable);
+        Pager<List<ServicePointData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());
@@ -86,7 +86,7 @@ public class TaxRestController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Taxes");
+        details.setReportName("Service points");
         pagers.setPageDetails(details);
 
         return ResponseEntity.ok(pagers);

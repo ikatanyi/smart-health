@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.account.service;
 
 import io.smarthealth.accounting.account.data.AccountData;
+import io.smarthealth.accounting.account.data.SimpleAccountData;
 import io.smarthealth.accounting.account.domain.Account;
 import io.smarthealth.accounting.account.domain.AccountRepository;
 import io.smarthealth.accounting.account.domain.AccountType;
@@ -11,12 +12,14 @@ import io.smarthealth.accounting.account.domain.JournalRepository;
 import io.smarthealth.accounting.account.domain.enumeration.AccountCategory;
 import io.smarthealth.accounting.account.domain.enumeration.JournalState;
 import io.smarthealth.accounting.account.domain.specification.AccountSpecification;
+import io.smarthealth.accounting.account.domain.AccountsMetadata;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -193,6 +196,22 @@ public class AccountService {
         final String uniqueVal = String.valueOf(time) + 120L + companyId;
         final String transactionId = Long.toHexString(Long.parseLong(uniqueVal));
         return transactionId;
+    }
+
+    public AccountsMetadata getAccountMetadata() {
+        AccountsMetadata metadata = new AccountsMetadata();
+        List<SimpleAccountData> income = accountRepository.findParentAccountIsNullAndAccountCategory(AccountCategory.REVENUE)
+                .stream()
+                .map(acc -> SimpleAccountData.map(acc))
+                .collect(Collectors.toList());
+        List<SimpleAccountData> expenses = accountRepository.findParentAccountIsNullAndAccountCategory(AccountCategory.EXPENSE)
+                .stream()
+                .map(acc -> SimpleAccountData.map(acc))
+                .collect(Collectors.toList());
+        metadata.setIncomeAccounts(income);
+        metadata.setExpensesAccounts(expenses);
+
+        return metadata;
     }
 
 }

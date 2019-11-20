@@ -1,11 +1,14 @@
 package io.smarthealth.accounting.account.domain;
 
+import io.smarthealth.accounting.account.data.JournalData;
+import io.smarthealth.accounting.account.data.JournalEntryData;
 import io.smarthealth.accounting.account.domain.enumeration.JournalState;
 import io.smarthealth.accounting.account.domain.enumeration.TransactionType;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -69,6 +72,34 @@ public class Journal extends Auditable {
         return reversedJournal;
 
     }
+
+    public JournalData toData() {
+        JournalData journalData = new JournalData();
+        journalData.setActivity(this.getActivity());
+        journalData.setDescriptions(this.getDescriptions());
+        journalData.setDocumentDate(this.getDocumentDate());
+        journalData.setManualEntry(this.isManualEntry());
+        journalData.setReferenceNumber(this.getReferenceNumber());
+        journalData.setState(this.getState());
+        journalData.setTransactionDate(this.getTransactionDate());
+        journalData.setTransactionId(this.getTransactionId());
+        if (this.getTransactionType() != null) {
+            journalData.setTransactionType(this.getTransactionType().name());
+        }
+        journalData.setCreatedBy(this.getCreatedBy());
+        List<JournalEntryData> lists = this.getJournalEntries()
+                .stream().map(je -> JournalEntryData.map(je)).collect(Collectors.toList());
+
+        journalData.setJournalEntries(lists);
+        journalData.setJournalTotals(
+                this.getJournalEntries()
+                        .stream()
+                        .map(d -> d.getDebit())
+                        .reduce(0D, Double::sum)
+        );
+        return journalData;
+    }
+
     //this is the values that can be defined and n
     //I have a transactions
 }

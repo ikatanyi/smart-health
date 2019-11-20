@@ -1,17 +1,9 @@
-package io.smarthealth.accounting.billing.api;
+package io.smarthealth.billing.api;
 
-import io.smarthealth.accounting.account.domain.FinancialActivityAccount;
-import io.smarthealth.accounting.account.domain.Journal;
-import io.smarthealth.accounting.account.domain.JournalEntry;
-import io.smarthealth.accounting.account.domain.enumeration.FinancialActivity;
-import io.smarthealth.accounting.account.domain.enumeration.JournalState;
-import io.smarthealth.accounting.account.domain.enumeration.TransactionType;
-import io.smarthealth.accounting.account.service.FinancialActivityAccountService;
-import io.smarthealth.accounting.account.service.JournalService;
-import io.smarthealth.accounting.billing.data.PatientBillData;
-import io.smarthealth.accounting.billing.data.PatientBillItemData;
-import io.smarthealth.accounting.billing.domain.PatientBill;
-import io.smarthealth.accounting.billing.service.PatientBillService;
+import io.smarthealth.billing.data.PatientBillData;
+import io.smarthealth.billing.data.PatientBillItemData;
+import io.smarthealth.billing.domain.PatientBill;
+import io.smarthealth.billing.service.PatientBillService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -40,17 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class PatientBillingController {
 
     private final PatientBillService service; 
-    private final JournalService journalService;
-    private final FinancialActivityAccountService financialActivityAccountService;
 
-    public PatientBillingController(PatientBillService service, 
-            JournalService journalService, 
-            FinancialActivityAccountService financialActivityAccountService) {
+    public PatientBillingController(PatientBillService service) {
         this.service = service;
-        this.journalService = journalService;
-        this.financialActivityAccountService = financialActivityAccountService;
     }
-    
+   
  
     /*
     //api/v1/patient-billing    //create invoice and line items
@@ -111,27 +97,5 @@ public class PatientBillingController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-    private void createJournal(PatientBill bill){
-        FinancialActivityAccount activity=financialActivityAccountService.getByTransactionType(FinancialActivity.Patient_Invoice_Control);
-        
-        Journal journal=new Journal();
-         journal.setTransactionType(TransactionType.Billing);
-         journal.setDocumentDate(bill.getBillingDate());
-         journal.setManualEntry(false);
-         journal.setReferenceNumber(bill.getReferenceNumber());
-         journal.setState(JournalState.APPROVED);
-         journal.setTransactionDate(bill.getBillingDate());
-         journal.setActivity(bill.getPatient().getPatientNumber());
-         
-         bill.getBillLines()
-                 .forEach(billItem -> {
-                 JournalEntry entry=new JournalEntry(); 
-                  //find the account for patient billing control
-                  
-                  
-                  //then determing the service point accounts 
-                  
-                 
-                 });
-    }
+    
 }

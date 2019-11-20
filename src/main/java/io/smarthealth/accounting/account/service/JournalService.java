@@ -10,6 +10,7 @@ import io.smarthealth.accounting.account.domain.enumeration.TransactionType;
 import io.smarthealth.accounting.account.domain.specification.JournalSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -38,6 +40,7 @@ public class JournalService {
         this.sequenceService = sequenceService;
     }
 
+    @Transactional
     public Journal createJournalEntry(JournalData journalData) {
 
         if (journalData.getTransactionId() != null && findJournalEntry(journalData.getTransactionId()).isPresent()) {
@@ -48,11 +51,15 @@ public class JournalService {
 
         Journal journal = convertToEntity(journalData);
         journal.setState(JournalState.DRAFT);
-        journal.setTransactionId(generateTransactionId(2L));
+        journal.setTransactionId(journalNumber());
 //           journal.setTransactionId(sequenceService.nextNumber(SequenceType.JournalNumber));       
         Journal savedJournal = journalRepository.save(journal);
+        
+        balanceUpdateService.updateRunningBalance();
+        
         return savedJournal;
     }
+    
 
     public Optional<Journal> findJournalEntry(final String transactionIdentifier) {
         return journalRepository.findByTransactionId(transactionIdentifier);
@@ -98,9 +105,10 @@ public class JournalService {
         return journal;
     }
 
+    @Transactional
     public String revertJournalEntry(String transactionId, String reversalComment) {
 
-        final String reversalTransactionId = generateTransactionId(2L);// sequenceService.nextNumber(SequenceType.JournalNumber);//generateTransactionId(2L);
+        final String reversalTransactionId =journalNumber(); //generateTransactionId(2L);// sequenceService.nextNumber(SequenceType.JournalNumber);//generateTransactionId(2L);
         final boolean manualEntry = true;
         final boolean useDefaultComment = StringUtils.isBlank(reversalComment);
 
@@ -121,12 +129,22 @@ public class JournalService {
         journalEntry.setReversalJournal(savedJournal);
 
         journalRepository.save(journalEntry);
+        
+          balanceUpdateService.updateRunningBalance();
+        
         return reversalTransactionId;
+    }
+    
+    private String journalNumber(){
+        String trxId=sequenceService.nextNumber(SequenceType.JournalNumber);
+        trxId=String.format("ACC-JV-%s-%s", String.valueOf(LocalDate.now().getYear()), trxId);
+        return trxId;
     }
 
     public static String generateTransactionId(final Long companyId) {
         //journal format : ACC-JV-2019-00001
 //        Long id = SecurityUtils.getCurrentLoggedUserId().get();
+         
         final Long time = System.currentTimeMillis();
         final String uniqueVal = String.valueOf(time) + 120L + companyId;
         final String transactionId = Long.toHexString(Long.parseLong(uniqueVal));

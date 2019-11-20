@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.lab.domain;
 
-import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.billing.domain.PatientBill;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import java.util.List;

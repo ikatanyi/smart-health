@@ -56,7 +56,7 @@ public class CurrencyRestController {
     }
 
     @GetMapping("/currencies/{id}")
-    public Currency getPaymentterm(@PathVariable(value = "id") Long code) {
+    public Currency getCurrency(@PathVariable(value = "id") Long code) {
         Currency currencyService = service.getCurrency(code)
                 .orElseThrow(() -> APIException.notFound("Payment Terms with id {0} not found.", code));
         return currencyService;
