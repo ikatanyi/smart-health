@@ -60,6 +60,7 @@ public class PurchaseRestController {
 
     @GetMapping("/purchaseorders")
     public ResponseEntity<?> getAllPurchaseOrders(  
+             @RequestParam(value = "showItems", required = false) boolean  showItems,
             @RequestParam(value = "status", required = false) final String status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {

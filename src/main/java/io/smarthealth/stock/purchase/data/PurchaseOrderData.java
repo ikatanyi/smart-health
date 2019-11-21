@@ -1,6 +1,7 @@
 package io.smarthealth.stock.purchase.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.stock.purchase.domain.*;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
@@ -35,6 +36,8 @@ public class PurchaseOrderData {
     private PurchaseOrderStatus status;
     private String createdBy;
     private List<PurchaseOrderItemData> purchaseOrderItems;
+    @JsonIgnore
+    private boolean showItems;
 
     public static PurchaseOrderData map(PurchaseOrder order) {
         PurchaseOrderData data = new PurchaseOrderData();
@@ -62,11 +65,13 @@ public class PurchaseOrderData {
         }
         data.setStatus(order.getStatus());
         data.setCreatedBy(order.getCreatedBy());
-
+          
         List<PurchaseOrderItemData> list = order.getPurchaseOrderLines()
                 .stream()
                 .map(item -> PurchaseOrderItemData.map(item))
                 .collect(Collectors.toList());
+        
+        data.setPurchaseOrderItems(list);
 
         return data;
     }
