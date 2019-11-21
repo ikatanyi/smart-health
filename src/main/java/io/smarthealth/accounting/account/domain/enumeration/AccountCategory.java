@@ -8,6 +8,6 @@ public enum AccountCategory {
     ASSET,
     LIABILITY,
     EQUITY,
-    REVENUE,
+    INCOME,
     EXPENSE
 }

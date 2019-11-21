@@ -91,7 +91,7 @@ public class JournalBalanceUpdateServiceImpl implements JournalBalanceUpdateServ
                     isIncrease = true;
                 }
                 break;
-            case REVENUE:
+            case INCOME:
                 if (!entry.isDebit()) { //credit
                     isIncrease = true;
                 }

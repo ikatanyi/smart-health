@@ -33,7 +33,7 @@ public class IncomeStatementService {
         final IncomeStatement incomeStatement = new IncomeStatement();
         incomeStatement.setDate(LocalDateTime.now());
 
-        this.createIncomeStatementSection(incomeStatement, AccountCategory.REVENUE, IncomeStatementSection.Type.INCOME);
+        this.createIncomeStatementSection(incomeStatement, AccountCategory.INCOME, IncomeStatementSection.Type.INCOME);
         this.createIncomeStatementSection(incomeStatement, AccountCategory.EXPENSE, IncomeStatementSection.Type.EXPENSES);
 
         incomeStatement.setGrossProfit(this.calculateTotal(incomeStatement, IncomeStatementSection.Type.INCOME));

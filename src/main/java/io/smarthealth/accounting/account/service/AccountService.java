@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.account.service;
 
 import io.smarthealth.accounting.account.data.AccountData;
+import io.smarthealth.accounting.account.data.AccountTypeData;
 import io.smarthealth.accounting.account.data.SimpleAccountData;
 import io.smarthealth.accounting.account.domain.Account;
 import io.smarthealth.accounting.account.domain.AccountRepository;
@@ -15,7 +16,6 @@ import io.smarthealth.accounting.account.domain.specification.AccountSpecificati
 import io.smarthealth.accounting.account.domain.AccountsMetadata;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -159,7 +159,7 @@ public class AccountService {
                 case EXPENSE:
                     entryType = "debit";
                     break;
-                case REVENUE:
+                case INCOME:
                     entryType = "credit";
                     break;
                 case LIABILITY:
@@ -200,7 +200,7 @@ public class AccountService {
 
     public AccountsMetadata getAccountMetadata() {
         AccountsMetadata metadata = new AccountsMetadata();
-        List<SimpleAccountData> income = accountRepository.findParentAccountIsNullAndAccountCategory(AccountCategory.REVENUE)
+        List<SimpleAccountData> income = accountRepository.findParentAccountIsNullAndAccountCategory(AccountCategory.INCOME)
                 .stream()
                 .map(acc -> SimpleAccountData.map(acc))
                 .collect(Collectors.toList());
@@ -212,6 +212,46 @@ public class AccountService {
         metadata.setExpensesAccounts(expenses);
 
         return metadata;
+    }
+
+    public AccountTypeData createAccountType(AccountTypeData data) {
+        AccountType point = new AccountType();
+        point.setGlAccountType(data.getAccountCategory());
+        point.setType(data.getType());
+        point.setDescription(data.getDescription());
+
+        AccountType savedPoint = accountTypeRepository.save(point);
+        return savedPoint.toData();
+    }
+
+    public AccountType getAccountType(Long id) {
+        return accountTypeRepository
+                .findById(id)
+                .orElseThrow(() -> APIException.notFound("Service point with id {0} not found", id));
+    }
+
+    public Page<AccountTypeData> listAccountTypes(Pageable page) {
+        return accountTypeRepository
+                .findAll(page)
+                .map(sd -> sd.toData());
+    }
+
+    public AccountTypeData updateAccountType(Long id, AccountTypeData data) {
+        AccountType point = getAccountType(id);
+
+        if (point.getGlAccountType() != data.getAccountCategory()) {
+            point.setGlAccountType(data.getAccountCategory());
+        }
+        if (!point.getType().equals(data.getType())) {
+            point.setType(data.getType());
+        }
+        if (!point.getDescription().equals(data.getDescription())) {
+            point.setDescription(data.getDescription());
+        }
+
+        AccountType savedPoint = accountTypeRepository.save(point);
+
+        return savedPoint.toData();
     }
 
 }
