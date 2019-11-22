@@ -11,7 +11,7 @@ public enum FinancialActivity {
     Receipt_Control("Receipt Control Account",AccountCategory.INCOME),
     Patient_Invoice_Control("Patient Invoice Control Account",AccountCategory.INCOME),
     Surplus_And_Loss("Surplus And Loss",AccountCategory.LIABILITY),
-    Stocks_Ledger("Stocks Ledger",AccountCategory.EXPENSE);
+    Cost_Of_Sales("Cost of Sales",AccountCategory.EXPENSE);
 
     private final String activityName;
     private final AccountCategory category;

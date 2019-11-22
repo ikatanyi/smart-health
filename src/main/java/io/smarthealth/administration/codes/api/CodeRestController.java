@@ -1,6 +1,8 @@
 package io.smarthealth.administration.codes.api;
 
 import io.smarthealth.administration.codes.data.CodeData;
+import io.smarthealth.administration.codes.data.CodeValueData;
+import io.smarthealth.administration.codes.data.CodeValues;
 import io.smarthealth.administration.codes.service.CodesService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -86,4 +88,17 @@ public class CodeRestController {
         return ResponseEntity.accepted().body(ids);
     }
 
+    @GetMapping("/codes/{id}/values")
+    public CodeValues getCodeValues(@PathVariable(value = "id") Long id) {
+        return service.getValuesByCode(id);
+    }
+      @GetMapping("/codes/{name}/codevalues")
+    public CodeValues getCodeValues(@PathVariable(value = "name") String name) {
+        return service.getValuesByName(name);
+    }
+    @PostMapping("/codes/{id}/values")
+    public ResponseEntity<?> createCodeValue(@PathVariable(value = "id") Long id, @Valid @RequestBody CodeValueData codeData) {
+        CodeValueData code = service.createCodeValue(id, codeData);
+        return ResponseEntity.status(HttpStatus.CREATED).body(code);
+    }
 }

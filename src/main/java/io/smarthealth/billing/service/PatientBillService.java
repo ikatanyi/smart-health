@@ -166,7 +166,7 @@ public class PatientBillService {
     }
 
     private void createJournal(PatientBill bill) {
-        FinancialActivityAccount activity = financialActivityAccountService.getByTransactionType(FinancialActivity.Accounts_Receivable)
+        FinancialActivityAccount activity = financialActivityAccountService.getByTransactionType(FinancialActivity.Patient_Invoice_Control)
                 .orElseThrow(() -> APIException.badRequest("Patient Control Account for billing is not mapped"));
 
         Account patientControlAccount = activity.getAccount();

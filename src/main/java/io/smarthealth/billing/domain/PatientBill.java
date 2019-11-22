@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -45,7 +46,7 @@ public class PatientBill extends Auditable {
     @Enumerated(EnumType.STRING)
     private BillStatus status;
 
-    @OneToMany(mappedBy = "patientBill")
+    @OneToMany(mappedBy = "patientBill", cascade = CascadeType.ALL)
     private List<PatientBillItem> billLines = new ArrayList<>();
     //
 
@@ -55,14 +56,10 @@ public class PatientBill extends Auditable {
     }
 
     public void addBillItems(List<PatientBillItem> billItems) {
-        billItems.stream().map((bill) -> {
-            bill.setPatientBill(this);
-            return bill;
-        }).forEachOrdered((bill) -> {
-            billLines.add(bill);
-        });
+        this.billLines=billItems;
+        this.billLines.forEach(x -> x.setPatientBill(this));
     }
-    //
+     
 
     public PatientBillData toData() {
         PatientBillData data = new PatientBillData();

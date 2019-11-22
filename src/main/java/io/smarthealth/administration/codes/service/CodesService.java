@@ -2,6 +2,7 @@ package io.smarthealth.administration.codes.service;
 
 import io.smarthealth.administration.codes.data.CodeData;
 import io.smarthealth.administration.codes.data.CodeValueData;
+import io.smarthealth.administration.codes.data.CodeValues;
 import io.smarthealth.administration.codes.domain.Code;
 import io.smarthealth.administration.codes.domain.CodeRepository;
 import io.smarthealth.administration.codes.domain.CodeValue;
@@ -33,6 +34,11 @@ public class CodesService {
                 .orElseThrow(() -> APIException.notFound("Code with id  {0} not found.", id));
     }
 
+    public Code getCodeByNameWithNotFoundDetection(String name) {
+        return codeRepository.findOneByName(name)
+                .orElseThrow(() -> APIException.notFound("Code with id  {0} not found.", name));
+    }
+    
     public CodeValue getCodeValueWithNotFoundDetection(Long id) {
         return codeValueRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Code Value with id  {0} not found.", id));
@@ -52,6 +58,33 @@ public class CodesService {
     public CodeData getCode(Long id) {
         Code codes = getWithNotFoundDetection(id);
         return CodeData.map(codes);
+    }
+
+    public CodeValues getValuesByCode(Long id) {
+        Code codes = getWithNotFoundDetection(id);
+        CodeValues values = new CodeValues();
+        values.setName(codes.getName());
+        if (codes.getValues().size() > 0) {
+            codes.getValues()
+                    .stream()
+                    .forEach(x -> {
+                        values.getValues().add(CodeValueData.map(x));
+                    });
+        }
+        return values;
+    }
+     public CodeValues getValuesByName(String name) {
+        Code codes = getCodeByNameWithNotFoundDetection(name);
+        CodeValues values = new CodeValues();
+        values.setName(codes.getName());
+        if (codes.getValues().size() > 0) {
+            codes.getValues()
+                    .stream()
+                    .forEach(x -> {
+                        values.getValues().add(CodeValueData.map(x));
+                    });
+        }
+        return values;
     }
 
     public CodeData updateCode(Long id, CodeData data) {
