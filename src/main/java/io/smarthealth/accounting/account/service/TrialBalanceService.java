@@ -39,7 +39,7 @@ public class TrialBalanceService {
                             break;
                         case LIABILITY:
                         case EQUITY:
-                        case REVENUE:
+                        case INCOME:
                             trialBalanceEntry.setType(TrialBalanceEntry.Type.CREDIT);
                             break;
                     }

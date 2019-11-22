@@ -68,7 +68,7 @@ public class ServicePointService {
             point.setName(data.getName());
         }
         if (!point.getDescription().equals(data.getDescription())) {
-            point.setName(data.getDescription());
+            point.setDescription(data.getDescription());
         }
         ServicePoint savedPoint = repository.save(point);
 

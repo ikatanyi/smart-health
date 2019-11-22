@@ -6,6 +6,7 @@
 package io.smarthealth.accounting.account.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.smarthealth.accounting.account.data.AccountTypeData;
 import io.smarthealth.accounting.account.domain.enumeration.AccountCategory;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
@@ -28,4 +29,13 @@ public class AccountType extends Identifiable {
     private AccountCategory glAccountType;
     private String type;
     private String description;
+
+    public AccountTypeData toData() {
+        AccountTypeData data = new AccountTypeData();
+        data.setId(this.getId());
+        data.setAccountCategory(this.getGlAccountType());
+        data.setType(this.getType());
+        data.setDescription(this.getDescription());
+        return data;
+    }
 }

@@ -6,10 +6,10 @@ package io.smarthealth.accounting.account.domain.enumeration;
  */
 public enum FinancialActivity {
     Accounts_Payable("Account Payables", AccountCategory.LIABILITY),
-    Accounts_Receivable("Account Receivable",AccountCategory.REVENUE),
+    Accounts_Receivable("Account Receivable",AccountCategory.INCOME),
     Petty_Cash("Petty Cash",AccountCategory.EXPENSE),
-    Receipt_Control("Receipt Control Account",AccountCategory.REVENUE),
-    Patient_Invoice_Control("Patient Invoice Control Account",AccountCategory.REVENUE),
+    Receipt_Control("Receipt Control Account",AccountCategory.INCOME),
+    Patient_Invoice_Control("Patient Invoice Control Account",AccountCategory.INCOME),
     Surplus_And_Loss("Surplus And Loss",AccountCategory.LIABILITY),
     Stocks_Ledger("Stocks Ledger",AccountCategory.EXPENSE);
 
