@@ -36,7 +36,7 @@ public class PrescriptionData extends DoctorRequestData {
 
     @ApiModelProperty(required = false, hidden = true)
     private Long id;
-    
+
     public static PrescriptionData map(Prescription p) {
         PrescriptionData pd = new PrescriptionData();
         pd.setAsNeeded(p.getAsNeeded());
@@ -53,8 +53,15 @@ public class PrescriptionData extends DoctorRequestData {
         pd.setFulfillerStatus(FullFillerStatusType.valueOf(p.getFulfillerStatus()));
         pd.setId(p.getId());
         pd.setIssuedQuantity(p.getIssuedQuantity());
-        pd.setItemCode(p.getItem().getItemCode());
-        pd.setItemName(p.getItem().getItemName());
+        //pd.set
+        /*
+        if (pd.get != null) {
+            doctorRequestData.setItemCode(doctorRequest.getItem().getItemCode());
+            doctorRequestData.setItemCostRate(doctorRequest.getItem().getCostRate());
+            doctorRequestData.setItemName(doctorRequest.getItem().getItemName());
+            doctorRequestData.setItemRate(doctorRequest.getItem().getRate());
+        } */
+        //pd.setItemData(DoctorRequestItemData.map(p.getDoctorRequestItem()));
         pd.setNotes(p.getNotes());
         pd.setNumRefills(p.getNumRefills());
         pd.setOrderDatetime(p.getOrderDatetime());
@@ -67,9 +74,13 @@ public class PrescriptionData extends DoctorRequestData {
         pd.setVisitNumber(p.getVisitNumber());
         pd.setPrescriptionNo(p.getOrderNumber());
         pd.setPrescriptionId(p.getId());
+        pd.setItemCode(p.getItem().getItemCode());
+        pd.setItemName(p.getItem().getItemName());
+        pd.setItemRate(p.getItemRate());
+        pd.setItemCostRate(p.getItemCostRate());
         return pd;
     }
-    
+
     public static Prescription map(PrescriptionData p) {
         Prescription pd = new Prescription();
         pd.setAsNeeded(p.getAsNeeded());

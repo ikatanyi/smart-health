@@ -5,9 +5,6 @@
  */
 package io.smarthealth.clinical.record.domain.specification;
 
-import io.smarthealth.accounting.account.domain.Account;
-import io.smarthealth.accounting.account.domain.AccountType;
-import io.smarthealth.accounting.account.domain.enumeration.AccountCategory;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,31 +16,32 @@ import org.springframework.data.jpa.domain.Specification;
  * @author Kennedy.Imbenzi
  */
 public class DoctorRequestSpecification {
+
     public DoctorRequestSpecification() {
         super();
     }
 
-    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String status, final String requestType, Date from , Date to) {
+    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String requestType, final String fulfillerStatus/*, Date from , Date to*/) {
+        System.out.println("visitNumber to request " + visitNumber);
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
-            
-            if (visitNumber!=null) {
+
+            if (visitNumber != null) {
                 predicates.add(cb.equal(root.get("visit").get("visitNumber"), visitNumber));
             }
 
-            if (status!=null) {
-                predicates.add(cb.equal(root.get("fulfillerStatus"), status));
+            if (fulfillerStatus != null) {
+                predicates.add(cb.equal(root.get("fulfillerStatus"), fulfillerStatus));
             }
 
             if (requestType != null) {
                 predicates.add(cb.equal(root.get("requestType"), requestType));
             }
-            
-            if (from != null && to!=null) {
-                predicates.add(
-                        cb.between(root.get("createdOn"), from, to));
-            }
 
+//            if (from != null && to!=null) {
+//                predicates.add(
+//                        cb.between(root.get("createdOn"), from, to));
+//            }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

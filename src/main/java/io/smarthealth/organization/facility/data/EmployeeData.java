@@ -20,9 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Data
 public class EmployeeData extends PersonData {
 
-    @Autowired
-    ModelMapper modelMapper;
-
     @Enumerated(EnumType.STRING)
     private Employee.Category employeeCategory;
     private String departmentName;
@@ -36,9 +33,4 @@ public class EmployeeData extends PersonData {
     private String mobile;
     private String telephone;
 
-//    public EmployeeData convertEmployeeEntityToEmployeeData(Employee employee) {
-//        EmployeeData employeeData = modelMapper.map(employee, EmployeeData.class);
-//        employeeData.setDepartmentCode(employee.getDepartment().getCode());
-//        return employeeData;
-//    }
 }

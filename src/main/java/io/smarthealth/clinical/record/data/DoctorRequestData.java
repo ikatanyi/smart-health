@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.person.patient.data.PatientData;
-import io.smarthealth.stock.item.data.ItemData;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import javax.persistence.EnumType;
@@ -20,21 +19,21 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DoctorRequestData {
-     
+
     public enum FullFillerStatusType {
         Fulfilled,
         Unfulfilled,
         Cancelled,
         PartiallyFullfilled
     }
-    
+
     public enum RequestType {
         Laboratory,
         Pharmacy,
         Radiology,
         Procedure
     }
-    
+
     public enum Urgency {
         Low,
         Medium,
@@ -50,13 +49,12 @@ public class DoctorRequestData {
     @NotNull
     private String itemCode;
     private String itemName;
-    
-    @ApiModelProperty(required = false, hidden = true)
-    private ItemData item;
-    
+    private double itemCostRate;
+    private double itemRate;
+
     @ApiModelProperty(required = false, hidden = true)
     private EmployeeData employeeData;
-    
+
     @ApiModelProperty(required = false, hidden = true)
     private LocalDateTime orderDatetime;
     private Urgency urgency;
@@ -70,7 +68,9 @@ public class DoctorRequestData {
     private Boolean drug;
     @ApiModelProperty(required = false, hidden = true)
     private PatientData patientData;
-    
+
+    @ApiModelProperty(required = false, hidden = true)
+
     public static DoctorRequest map(DoctorRequestData doctorRequestData) {
         DoctorRequest doctorRequest = new DoctorRequest();
         doctorRequest.setNotes(doctorRequestData.getNotes());
@@ -83,7 +83,7 @@ public class DoctorRequestData {
         doctorRequest.setRequestType(doctorRequestData.requestType.name());
         return doctorRequest;
     }
-    
+
     public static DoctorRequestData map(DoctorRequest doctorRequest) {
         DoctorRequestData doctorRequestData = new DoctorRequestData();
         doctorRequestData.setDrug(doctorRequest.getDrug());
@@ -95,9 +95,11 @@ public class DoctorRequestData {
         doctorRequestData.setRequestType(RequestType.valueOf(doctorRequest.getRequestType()));
         doctorRequestData.setUrgency(Urgency.valueOf(doctorRequest.getUrgency()));
         doctorRequestData.setRequestId(doctorRequest.getId());
+        doctorRequestData.setItemCode(doctorRequest.getItem().getItemCode());
+        doctorRequestData.setItemCostRate(doctorRequest.getItemCostRate());
         doctorRequestData.setItemName(doctorRequest.getItem().getItemName());
+        doctorRequestData.setItemRate(doctorRequest.getItemRate());
+
         return doctorRequestData;
     }
 }
-   
-    

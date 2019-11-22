@@ -10,6 +10,7 @@ import io.smarthealth.organization.facility.data.DepartmentData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
 import io.smarthealth.organization.facility.domain.Facility;
+import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -57,8 +58,8 @@ public class DepartmentService {
     }
 
     public Department findByServicePointTypeAndloggedFacility(String servicePointType) {
-        Facility facility  = facilityService.loggedFacility();
-        System.out.println("Facility name logged in"+facility.getFacilityName());
+        Facility facility = facilityService.loggedFacility();
+        System.out.println("Facility name logged in" + facility.getFacilityName());
         return departmentRepository.findByServicePointTypeAndFacility(servicePointType, facility).orElseThrow(() -> APIException.notFound("Department not found.", servicePointType));
     }
 
@@ -68,6 +69,14 @@ public class DepartmentService {
 
     public Department fetchDepartmentByCode(String code) {
         return departmentRepository.findByCode(code).orElseThrow(() -> APIException.notFound("Department identified by code {0} not found.", code));
+    }
+
+    public boolean existsByName(final String name, final Facility facility) {
+        return departmentRepository.existsByName(name, facility);
+    }
+
+    public boolean existsByNameAndServicePoint(final String name, final Facility facility, final String servicePoint) {
+        return departmentRepository.existsByNameAndServicePoint(name, facility, servicePoint);
     }
 
     public boolean departmentCodeExists(String code) {

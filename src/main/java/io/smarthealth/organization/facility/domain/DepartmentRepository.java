@@ -26,4 +26,10 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
     @Query("SELECT CASE WHEN COUNT(d) > 0 THEN 'true' ELSE 'false' END FROM Department d WHERE d.code = :code")
     Boolean existsByCode(@Param("code") final String code);
+
+    @Query("SELECT CASE WHEN COUNT(d) > 0 THEN 'true' ELSE 'false' END FROM Department d WHERE d.name = :name AND d.facility=:facility")
+    Boolean existsByName(@Param("name") final String name, @Param("facility") final Facility facility);
+
+    @Query("SELECT CASE WHEN COUNT(d) > 0 THEN 'true' ELSE 'false' END FROM Department d WHERE d.name = :name AND d.facility=:facility AND d.servicePointType=:servicePointType")
+    Boolean existsByNameAndServicePoint(@Param("name") final String name, @Param("facility") final Facility facility, @Param("servicePointType") final String servicePointType);
 }

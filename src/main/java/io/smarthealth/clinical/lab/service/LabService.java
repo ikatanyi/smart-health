@@ -51,6 +51,7 @@ import io.smarthealth.clinical.lab.data.ResultsData;
 import io.smarthealth.clinical.lab.domain.PatientTestRegister;
 import io.smarthealth.clinical.lab.domain.PatientTestRegisterRepository;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
+import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.Department.ServicePointType;
 import io.smarthealth.organization.person.patient.data.PatientData;
@@ -87,9 +88,6 @@ public class LabService {
     private final LabTestRepository PtestsRepository;
 
     @Autowired
-    private final VisitRepository visitRepository;
-
-    @Autowired
     private final SpecimenRepository specimenRepository;
 
     @Autowired
@@ -104,14 +102,15 @@ public class LabService {
     private PatientService patientservice;
     private PatientBillService billService;
     private ItemService itemService;
+    private final VisitService visitService;
 
-    public LabService(AnalyteRepository analyteRepository, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, VisitRepository visitRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, SequenceService seqService) {
+    public LabService(AnalyteRepository analyteRepository, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, VisitService visitService, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, SequenceService seqService) {
         this.analyteRepository = analyteRepository;
         this.containerRepository = containerRepository;
         this.disciplineRepository = disciplineRepository;
         this.ttypeRepository = ttypeRepository;
         this.PtestsRepository = PtestsRepository;
-        this.visitRepository = visitRepository;
+        this.visitService = visitService;
         this.specimenRepository = specimenRepository;
         this.doctorRequestRepository = doctorRequestRepository;
         this.seqService = seqService;
@@ -329,8 +328,7 @@ public class LabService {
 //        PatientBillData data = new PatientBillData();
 //        List<PatientBillItemData> billItemArray = new ArrayList();
 
-        Visit visit = visitRepository.findByVisitNumber(patientRegData.getVisitNumber())
-                .orElseThrow(() -> APIException.notFound("Patient Session with Visit Number : {0} not found.", patientRegData.getVisitNumber()));
+        Visit visit = visitService.findVisitEntityOrThrow(patientRegData.getVisitNumber());
         PatientTestRegister patientTestReg = PatientTestRegisterData.map(patientRegData);
         patientTestReg.setVisit(visit);
         patientTestReg.setPatient(visit.getPatient());
@@ -371,14 +369,8 @@ public class LabService {
         return patientTestsList;
     }
 
-    public Page<PatientTestData> fetchAllPatientTests(String patientNumber, String visitNumber, LabTestState status, Pageable pgbl) {
-        Patient patient = null;
-        Visit visit = visitRepository.findByVisitNumber(visitNumber).orElse(null);
-        Optional<PatientData> pat = patientservice.fetchPatientByPatientNumber(patientNumber);
-        if (pat.isPresent()) {
-            patient = patientservice.createPatient(pat.get());
-        }
-        Page<PatientTestData> ptests = PtestsRepository.findByPatientAndVisitAndStatus(patient, visit, status, pgbl).map(p -> PatientTestData.map(p));
+    public Page<PatientTestData> fetchAllPatientTests(final Visit visit, LabTestState status, Pageable pgbl) {
+        Page<PatientTestData> ptests = PtestsRepository.findByPatientAndVisitAndStatus(visit.getPatient(), visit, status, pgbl).map(p -> PatientTestData.map(p));
         return ptests;
     }
 

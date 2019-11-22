@@ -2,6 +2,7 @@ package io.smarthealth.stock.item.data;
 
 import io.smarthealth.infrastructure.utility.AppHelper;
 import io.smarthealth.stock.item.domain.Item;
+import java.util.List;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
 
@@ -63,5 +64,9 @@ public class ItemData {
          
         return itemsdata;
     }
+//    
+//    public static List<ItemData> map(){
+//        
+//    }
       
 }

@@ -27,6 +27,7 @@ import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.facility.service.FacilityService;
+import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.swagger.annotations.Api;
 import java.net.URI;
@@ -111,7 +112,10 @@ public class PharmacyController {
         for (PrescriptionData pd : prescriptionData) {
             Prescription p = PrescriptionData.map(pd);
             p.setPatient(visit.getPatient());
-            p.setItem(itemService.findItemWithNoFoundDetection(pd.getItemCode()));
+            Item item = itemService.findItemWithNoFoundDetection(pd.getItemCode());
+            p.setItem(item);
+            p.setItemCostRate(item.getCostRate());
+            p.setItemRate(item.getRate());
             p.setVisit(visit);
             p.setOrderNumber(prescriptionNo);
             p.setRequestedBy(employee);
