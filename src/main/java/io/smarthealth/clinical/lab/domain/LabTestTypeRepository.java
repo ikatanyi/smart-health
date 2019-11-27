@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.lab.domain;
 
+import io.smarthealth.stock.item.domain.Item;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -17,8 +18,11 @@ public interface LabTestTypeRepository extends JpaRepository<LabTestType, Long> 
 //    @Query("SELECT CASE WHEN COUNT(e) > 0 THEN 'true' ELSE 'false' END FROM Employee e WHERE e.staffNumber = :staffNumber")
 //    Boolean existsByStaffNumber(@Param("staffNumber") final String staffNumber);
 //
-    Optional<LabTestType> findByServiceCode(final String serviceCode);
+    //Optional<LabTestType> findByServiceCode(final String serviceCode);
     
 //
 //    Page<Employee> findByEmployeeCategory(final String categoryName, final Pageable pg);
+    
+    
+    Optional<LabTestType> findByItemService(final Item itemService);
 }

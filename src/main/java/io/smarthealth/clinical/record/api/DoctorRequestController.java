@@ -181,6 +181,7 @@ public class DoctorRequestController {
             waitingRequest.setPatientNumber(docReq.getPatient().getPatientNumber());
             waitingRequest.setVisitData(visitService.convertVisitEntityToData(docReq.getVisit()));
             waitingRequest.setVisitNumber(docReq.getVisit().getVisitNumber());
+            waitingRequest.setRequestId(docReq.getId());
             //find line items by request_id
             List<DoctorRequest> serviceItems = requestService.fetchServiceRequestsByPatient(docReq.getPatient(), fulfillerStatus, requestType);
             List<DoctorRequestItem> requestItems = new ArrayList<>();

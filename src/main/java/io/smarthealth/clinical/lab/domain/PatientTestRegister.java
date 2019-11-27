@@ -8,10 +8,16 @@ package io.smarthealth.clinical.lab.domain;
 import io.smarthealth.billing.domain.PatientBill;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.smarthealth.organization.facility.domain.Employee;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn; 
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -24,24 +30,37 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "patient_test_register")
-public class PatientTestRegister extends ClinicalRecord{
-    private String LabTestNumber; 
-    private String clinicalDetails;   
-     
+public class PatientTestRegister extends ClinicalRecord {
+
+    @Column(nullable = false, unique = true)
+    private String accessNo;
+    //private String clinicalDetails;
+
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_test_register_request_id"))
     @OneToOne
-    private DoctorRequest request;    
-    
-//    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_test_register_labtest_id"))
-    @OneToMany(mappedBy = "patientTestRegister")
-    private List<PatientLabTest> patientLabTest; 
-    
-    public void addLabTest(PatientLabTest test){
+    private DoctorRequest request;
+
+    @OneToMany(mappedBy = "patientTestRegister", cascade = CascadeType.ALL)
+    private List<PatientLabTest> patientLabTest=new ArrayList<>();
+
+    @ManyToOne
+    private Employee requestedBy;
+
+    private LocalDate receivedDate;
+
+    public void addPatientLabTest(List<PatientLabTest> tests) {
+        for (PatientLabTest test : tests) {
+            test.setPatientTestRegister(this);
+            patientLabTest.add(test);
+        }
+    }
+
+    public void addPatientLabTest(PatientLabTest test) {
         test.setPatientTestRegister(this);
         patientLabTest.add(test);
     }
-    
+
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_test_register_bill_id"))
     @OneToOne
-    private PatientBill bill;    
+    private PatientBill bill;
 }

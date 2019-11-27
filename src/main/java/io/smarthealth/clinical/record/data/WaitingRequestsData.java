@@ -19,6 +19,7 @@ import lombok.Data;
 @Data
 public class WaitingRequestsData {
 
+    private Long requestId;
     private String patientNumber;
     private String visitNumber;
     private VisitData visitData;

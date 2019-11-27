@@ -6,6 +6,7 @@
 package io.smarthealth.clinical.visit.service;
 
 import io.smarthealth.clinical.visit.data.VisitData;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -66,10 +67,13 @@ public class VisitService {
 //    public int generateVisitNumber() {
 //        return visitRepository.maxVisitId() + 1;
 //    }
-
     private Patient findPatientEntityOrThrow(String patientNumber) {
         return this.patientRepository.findByPatientNumber(patientNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Number {0} not found.", patientNumber));
+    }
+
+    public Page<Visit> findVisitByStatus(final VisitEnum.Status status, Pageable pageable) {
+        return visitRepository.findByStatus(status, pageable);
     }
 
     public Visit findVisitEntityOrThrow(String visitNumber) {

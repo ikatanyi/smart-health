@@ -8,7 +8,7 @@ package io.smarthealth.clinical.radiology.api;
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.ContainerData;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
-import io.smarthealth.clinical.lab.data.PatientTestData;
+import io.smarthealth.clinical.lab.data.PatientLabTestData;
 import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.clinical.radiology.data.RadiologyTestData;
 import io.smarthealth.clinical.radiology.service.RadiologyService;

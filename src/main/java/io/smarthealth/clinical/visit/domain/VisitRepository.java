@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.visit.domain;
 
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.math.BigInteger;
 import java.util.Optional;
@@ -24,10 +25,11 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
 
     Optional<Visit> findByVisitNumber(String visitNumber);
 
-    Page<Visit> findByStatus(String status, Pageable pageable);
+    Page<Visit> findByStatus(final VisitEnum.Status status, Pageable pageable);
 
-    Optional<Visit> findByVisitNumberAndStatus(String visitNumber, String status);
+    Optional<Visit> findByVisitNumberAndStatus(final String visitNumber, final String status);
 
+    //Page<Visit> findByStatus(final String status, final Pageable pageable);
     Optional<Visit> findByPatientAndStatus(Patient patient, String status);
 
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN 'true' ELSE 'false' END FROM Visit c WHERE c.status=:currentStatus AND  c.patient.patientNumber = :patient")

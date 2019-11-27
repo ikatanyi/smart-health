@@ -5,10 +5,11 @@
  */
 package io.smarthealth.clinical.lab.data;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.billing.data.PatientBillData;
-import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.lab.domain.PatientTestRegister;
-import io.smarthealth.clinical.record.data.DoctorRequestData;
+import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
@@ -18,48 +19,68 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL) 	//  ignore all null fields
 public class PatientTestRegisterData {
-    private String visitNumber;
-    private String requestId;
-    private String clinicalDetails;
-    private String labTestNumber;   
-    private String billNumber;
-    private String physicianId;
-    private String physicianName;    
-    private DoctorRequestData requestData;    
-    private List<PatientTestData> testData = new ArrayList();
-    private PatientBillData billData; 
     
-    public static PatientTestRegister map(PatientTestRegisterData patientregister){
-        PatientTestRegister entity = new PatientTestRegister();
-        entity.setClinicalDetails(patientregister.getClinicalDetails());
-        entity.setLabTestNumber(patientregister.getLabTestNumber());
-        if(patientregister.getBillNumber()==null){
-            
-        }
-        return entity;
+    @ApiModelProperty(hidden = true, required = false)
+    private String visitNumber;
+    @ApiModelProperty(hidden = true, required = false)
+    private String requestId;
+    private String accessionNo;
+    
+    @ApiModelProperty(hidden = true, required = false)
+    private String patientName;
+    @ApiModelProperty(hidden = true, required = false)
+    private String billNumber;
+    @ApiModelProperty(required = false)
+    private String requestedBy;
+    @ApiModelProperty(hidden = true, required = false)
+    private String physicianName;
+    private LocalDate receivedDate;
+    
+    private String servicePoint;
+    
+    @ApiModelProperty(hidden = true, required = false)
+    private List<PatientLabTestData> patientLabTestData = new ArrayList();
+    
+    private List<TestItemData> itemData = new ArrayList();
+    
+    @ApiModelProperty(required = false, hidden = true)
+    private PatientBillData billData;
+    
+    public static PatientTestRegister map(PatientTestRegisterData patientregister) {
+        PatientTestRegister e = new PatientTestRegister();
+        e.setAccessNo(patientregister.getAccessionNo());
+        return e;
     }
     
-    public static PatientTestRegisterData map(PatientTestRegister patientregister){
+    public static PatientTestRegisterData map(PatientTestRegister patientregister) {
         PatientTestRegisterData data = new PatientTestRegisterData();
-        if(patientregister.getVisit()!=null){
-           data.setVisitNumber(patientregister.getVisit().getVisitNumber());
+        if (patientregister.getVisit() != null) {
+            data.setVisitNumber(patientregister.getVisit().getVisitNumber());
+            data.setPatientName(patientregister.getVisit().getPatient().getFullName());
         }
-        if(patientregister.getRequest()!=null){
+        if (patientregister.getRequest() != null) {
             data.setRequestId(String.valueOf(patientregister.getRequest().getId()));
-            data.setPhysicianId(patientregister.getRequest().getRequestedBy().getStaffNumber());
-            data.setPhysicianName(patientregister.getRequest().getCreatedBy());            
+            data.setRequestedBy(patientregister.getRequest().getRequestedBy().getStaffNumber());
+            data.setPhysicianName(patientregister.getRequest().getCreatedBy());
         }
-        data.setLabTestNumber(patientregister.getLabTestNumber());
-        data.setClinicalDetails(patientregister.getClinicalDetails());        
+        data.setAccessionNo(patientregister.getAccessNo());
         
-        for(PatientLabTest ttype:patientregister.getPatientLabTest()){
-            data.getTestData().add(PatientTestData.map(ttype));
-        }
-        if(patientregister.getBill()!=null){
+        //data.setClinicalDetails(patientregister.getClinicalDetails());
+
+//        for (PatientLabTest ttype : patientregister.getPatientLabTest()) {
+//            data.getPatientLabTestData().add(PatientLabTestData.map(ttype));
+//        }
+        if (patientregister.getBill() != null) {
             data.setBillNumber(patientregister.getBill().getBillNumber());
             data.setBillData(patientregister.getBill().toData());
         }
+        
+        if (patientregister.getPatientLabTest() != null) {
+            data.setPatientLabTestData(PatientLabTestData.map(patientregister.getPatientLabTest()));
+        }
+        
         return data;
     }
     

@@ -1,7 +1,14 @@
 package io.smarthealth.clinical.lab.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -12,24 +19,21 @@ import lombok.Data;
  */
 @Entity
 @Data
-//@NamedQuery(name="tets",query = "SELECT e FROM Analyte e WHERE e.testType = :testType AND e.sex = :gender AND :age BETWEEN e.startAge and e.endAge ")
 @Table(name = "lab_specimen")
 public class Specimen extends Identifiable {
 
-    @ManyToOne
-    private LabTestType testtype;
-
+//    @ManyToOne
+//    private LabTestType testtype;
     private String specimen;
-    private String abbreviation; 
-    
+    private String abbreviation;
+
 //    @OneToOne(mappedBy = "specimen",cascade = {javax.persistence.CascadeType.ALL}, orphanRemoval = true)
     @ManyToOne
     private Container container;
 
-//    @ManyToMany(cascade = CascadeType.ALL)
-//    @JoinTable(
-//            name = "lab_test_specimen",
-//            joinColumns = @JoinColumn(name = "test_id"),
-//            inverseJoinColumns = @JoinColumn(name = "specimen_id"))
-//    private List<Testtype> testType;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<LabTestType> labTest;
+
+    @ManyToMany(cascade = CascadeType.ALL/*, mappedBy = "specimen"*/)
+    private List<PatientLabTest> patientLabTest;
 }

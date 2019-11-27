@@ -21,25 +21,25 @@ import org.modelmapper.ModelMapper;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LabTestTypeData {  
-    
+public class LabTestTypeData {
+
     public enum Gender {
         Male,
         Female,
         Both
     }
-    
-    private Boolean consent; 
-    private Boolean withRef; 
-    private Boolean refOut; 
+
+    private Boolean consent;
+    private Boolean withRef;
+    private Boolean refOut;
     private Long duration;
     private String durationDesc;
     private String notes;
     private Boolean supervisorConfirmation;
     private Discipline discipline;
-    
+
     private List<Long> specimenId;
-    
+
     private Long disciplineId;
     private Gender gender;
 
@@ -49,18 +49,16 @@ public class LabTestTypeData {
     private String code;
     @NotNull
     @Column(length = 50)
-    private String testType;  
+    private String testType;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
-    private LocalDateTime recorded = LocalDateTime.now();    
-    
+    private LocalDateTime recorded = LocalDateTime.now();
+
     private List<AnalyteData> analytes = new ArrayList();
-    private List<SpecimenData>specimens = new ArrayList();
+    private List<SpecimenData> specimens = new ArrayList();
 
     public static LabTestType map(LabTestTypeData testtype) {
-        System.out.println("Test type received "+testtype.toString());
         LabTestType entity = new LabTestType();
-        entity.setServiceCode(testtype.getCode());
         entity.setTestType(testtype.getTestType());
         entity.setConsent(testtype.getConsent());
         entity.setWithRef(testtype.getWithRef());
@@ -77,8 +75,8 @@ public class LabTestTypeData {
         ModelMapper modelMapper = new ModelMapper();
         LabTestTypeData test = new LabTestTypeData();
         test.setId(entity.getId());
-        test.setCode(entity.getServiceCode());
-        test.setTestType(entity.getTestType());  
+        test.setCode(entity.getItemService().getItemCode());
+        test.setTestType(entity.getTestType());
         test.setConsent(entity.getConsent());
         test.setDuration(entity.getDuration());
         test.setDurationDesc(entity.getDurationDesc());
@@ -86,27 +84,27 @@ public class LabTestTypeData {
         test.setRefOut(entity.getRefOut());
         test.setTestType(entity.getTestType());
         test.setGender(entity.getGender());
-        for(Analyte analyte:entity.getAnalytes()){
-            AnalyteData analytedata = modelMapper.map(analyte,AnalyteData.class);
-            if(test.getAnalytes()!=null)
-               test.getAnalytes().add(analytedata);
-            else{
+        for (Analyte analyte : entity.getAnalytes()) {
+            AnalyteData analytedata = modelMapper.map(analyte, AnalyteData.class);
+            if (test.getAnalytes() != null) {
+                test.getAnalytes().add(analytedata);
+            } else {
                 test.setAnalytes(new ArrayList());
                 test.getAnalytes().add(analytedata);
             }
         }
-        for(Specimen specimen:entity.getSpecimens()){
-            SpecimenData specimendata = modelMapper.map(specimen,SpecimenData.class);
-            if(!test.getSpecimens().isEmpty())
-               test.getSpecimens().add(specimendata);
-            else{
+        for (Specimen specimen : entity.getSpecimen()) {
+            SpecimenData specimendata = modelMapper.map(specimen, SpecimenData.class);
+            if (!test.getSpecimens().isEmpty()) {
+                test.getSpecimens().add(specimendata);
+            } else {
                 test.setSpecimens(new ArrayList());
                 test.getSpecimens().add(specimendata);
             }
         }
         return test;
     }
-    
+
 //     public AnalyteData convertAnalyteToData(Analyte analyte) {
 //        AnalyteData analyteData = modelMapper.map(analyte, AnalyteData.class);
 //        return analyteData;

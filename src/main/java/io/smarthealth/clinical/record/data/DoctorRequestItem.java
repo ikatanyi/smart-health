@@ -16,7 +16,7 @@ import lombok.Data;
 public class DoctorRequestItem {
 
     private Long itemId;
-    private String name;
+    private String itemName;
     private String code;
     private double costRate;
     private double rate;
@@ -26,7 +26,7 @@ public class DoctorRequestItem {
         requestItem.setCode(d.getItem().getItemCode());
         requestItem.setCostRate(d.getItemCostRate());
         requestItem.setItemId(d.getItem().getId());
-        requestItem.setName(d.getItem().getItemName());
+        requestItem.setItemName(d.getItem().getItemName());
         requestItem.setRate(d.getItemRate());
         return requestItem;
     }

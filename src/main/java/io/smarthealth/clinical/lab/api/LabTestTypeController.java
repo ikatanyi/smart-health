@@ -2,19 +2,21 @@ package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
+import io.smarthealth.clinical.lab.data.SpecimenData;
 import io.smarthealth.clinical.lab.domain.LabTestType;
+import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.infrastructure.common.APIResponse;
-import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.service.ItemService;
 import io.swagger.annotations.Api;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -45,14 +47,18 @@ public class LabTestTypeController {
 
     private final ModelMapper modelMapper;
 
-    public LabTestTypeController(LabService labService, ModelMapper modelMapper) {
+    private final ItemService itemService;
+
+    public LabTestTypeController(LabService labService, ModelMapper modelMapper, ItemService itemService) {
         this.labService = labService;
+        this.itemService = itemService;
         this.modelMapper = modelMapper;
     }
 
     @PostMapping("/test-type")
     public @ResponseBody
     ResponseEntity<?> createTestType(@RequestBody @Valid final LabTestTypeData testtypeData) {
+
         Long id = labService.createTestType(testtypeData);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/test-type/" + id)
                 .buildAndExpand(id).toUri();
@@ -61,14 +67,15 @@ public class LabTestTypeController {
     }
 
     @GetMapping("/test-type/{id}")
-    public ResponseEntity<?> fetchAllTestTypes(@PathVariable("id") final Long id) {
+    public ResponseEntity<?> fetchTestTypeById(@PathVariable("id") final Long id) {
         LabTestType testType = labService.findTestById(id);
         return ResponseEntity.ok(convertToTestTypeData(testType));
     }
 
     @GetMapping("/analyte/{code}")
     public ResponseEntity<?> fetchAllAnnalyetesByTestCode(@PathVariable("code") final String code, Pageable pageable) {
-        LabTestType labTest = labService.fetchTestTypeByCode(code);
+        Item item = itemService.findItemWithNoFoundDetection(code);
+        LabTestType labTest = labService.findTestTypeByItemService(item).get();
 
         Page<AnalyteData> analyteData = labService.fetchAnalyteByTestType(labTest, pageable);
 
@@ -88,7 +95,6 @@ public class LabTestTypeController {
 
     @GetMapping("/test-type")
     public ResponseEntity<?> fetchAllTests(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-
         Page<LabTestTypeData> labTestsList = labService.fetchAllTestTypes(pageable).map(d -> convertToTestTypeData(d));
         Pager<List<LabTestTypeData>> pagers = new Pager();
         pagers.setCode("0");
@@ -124,14 +130,23 @@ public class LabTestTypeController {
         return ResponseEntity.ok("200");
     }
 
+    //Create lab test register
     private LabTestType convertTestTTypeDataToTestType(LabTestTypeData testtypeData) {
         LabTestType ttype = modelMapper.map(testtypeData, LabTestType.class);
         return ttype;
     }
 
-    private LabTestTypeData convertToTestTypeData(LabTestType Testtype) {
-        LabTestTypeData testTypeData = modelMapper.map(Testtype, LabTestTypeData.class);
+    private LabTestTypeData convertToTestTypeData(LabTestType testtype) {
+        LabTestTypeData testTypeData = modelMapper.map(testtype, LabTestTypeData.class);
+        if (!testtype.getSpecimen().isEmpty()) {
+            List<SpecimenData> specimens = new ArrayList<>();
+            for (Specimen specimen : testtype.getSpecimen()) {
+                SpecimenData specimendata = modelMapper.map(specimen, SpecimenData.class);
+                specimens.add(specimendata);
+            }
+            testTypeData.setSpecimens(specimens);
+        }
+        testTypeData.setCode(testtype.getItemService().getItemCode());
         return testTypeData;
     }
-    //Hope this one works out for now    
 }

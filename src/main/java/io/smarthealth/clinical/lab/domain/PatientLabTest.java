@@ -13,16 +13,18 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 /**
- *  Patient Lab Request
+ * Patient Lab Request
+ *
  * @author Kennedy.Imbenzi
  */
 @Data
@@ -31,23 +33,25 @@ import org.hibernate.annotations.LazyCollectionOption;
 public class PatientLabTest extends Identifiable {
 
     @ManyToOne
+    private LabTestType testType;
+    private double testPrice;
+    private int quantity;
+    @Enumerated(EnumType.STRING)
+    private LabTestState status;
+    //private String accessNo;
+
+    @ManyToOne
     private PatientTestRegister patientTestRegister;
 
-    @Enumerated(EnumType.STRING)
-    private LabTestState state;    
-    private LocalDateTime specimenCollectionTime;    
-    private LabTestType testtype;
-    @OneToOne
-    private Specimen specimen;
-   // @Setter(AccessLevel.NONE)
+    private LocalDateTime specimenCollectionTime;
+
+    @ManyToMany
+    @JoinTable(name = "patient_lab_test_specimen")
+    private List<Specimen> specimen;
+
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name = "request_id", nullable = false)
     private List<Results> results;
-    
-
-//    public void setResults(List<Results> results) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
 
 }

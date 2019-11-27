@@ -7,6 +7,7 @@ package io.smarthealth.clinical.record.api;
 
 import io.smarthealth.auth.domain.User;
 import io.smarthealth.auth.service.UserService;
+import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.PatientNotesData;
 import io.smarthealth.clinical.record.domain.Disease;
@@ -15,6 +16,8 @@ import io.smarthealth.clinical.record.domain.PatientNotes;
 import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.DiseaseService;
 import io.smarthealth.clinical.record.service.PatientNotesService;
+import io.smarthealth.clinical.visit.data.VisitData;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.APIResponse;
@@ -22,6 +25,8 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.organization.facility.data.DepartmentData;
+import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
@@ -67,8 +72,9 @@ public class ConsultationController {
     private final DiseaseService diseaseService;
 
     private final DiagnosisService diagnosisService;
+    private final DepartmentService departmentService;
 
-    public ConsultationController(PatientNotesService patientNotesService, PatientService patientService, VisitService visitService, EmployeeService employeeService, UserService userService, DiseaseService diseaseService, DiagnosisService diagnosisService) {
+    public ConsultationController(PatientNotesService patientNotesService, PatientService patientService, VisitService visitService, EmployeeService employeeService, UserService userService, DiseaseService diseaseService, DiagnosisService diagnosisService, DepartmentService departmentService) {
         this.patientNotesService = patientNotesService;
         this.patientService = patientService;
         this.visitService = visitService;
@@ -76,6 +82,7 @@ public class ConsultationController {
         this.userService = userService;
         this.diseaseService = diseaseService;
         this.diagnosisService = diagnosisService;
+        this.departmentService = departmentService;
     }
 
     /* Patient Notes */
@@ -227,4 +234,36 @@ public class ConsultationController {
                 .body(pagers);
     }
 
+    @GetMapping("/consultation-waiting-list")
+    public ResponseEntity<?> consultationWaitingList(
+            //@RequestParam(value = "requestParam", required = false) final String requestParam,
+            Pageable pageable) {
+        Page<Visit> list = visitService.findVisitByStatus(VisitEnum.Status.CheckIn, pageable);
+        List<PatientQueueData> patientQueue = new ArrayList<>();
+        for (Visit v : list) {
+            PatientQueueData q = new PatientQueueData();
+            if (v.getDepartment() != null) {
+                q.setDepartmentData(departmentService.convertDepartmentToData(v.getDepartment()));
+            }
+            q.setPatientData(patientService.convertToPatientData(v.getPatient()));
+            q.setPatientNumber(v.getPatient().getPatientNumber());
+            q.setVisitData(VisitData.map(v));
+            q.setVisitNumber(v.getVisitNumber());
+            patientQueue.add(q);
+        }
+
+        Pager<List<PatientQueueData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(patientQueue);
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Consultation waiting list");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
 }

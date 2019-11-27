@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.visit.domain;
 
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -29,19 +30,6 @@ import org.hibernate.annotations.NaturalId;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Visit extends Auditable {
 
-    public enum Status {
-        CheckIn,
-        CheckOut,
-        Admitted,
-        Transferred,
-        Discharged
-    }
-
-    public enum VisitType {
-        Outpatient,
-        Inpatient
-    }
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_visit_patient_id"))
     private Patient patient;
@@ -59,11 +47,11 @@ public class Visit extends Auditable {
 
     @Column(length = 50)
     @Enumerated(EnumType.STRING)
-    private VisitType visitType; //Outpatient | Hospitalization
+    private VisitEnum.VisitType visitType; //Outpatient | Hospitalization
 
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
-    private Status status;
+    private VisitEnum.Status status;
 
     private Boolean scheduled;
 

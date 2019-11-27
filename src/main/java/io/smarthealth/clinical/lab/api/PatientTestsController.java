@@ -1,7 +1,8 @@
 package io.smarthealth.clinical.lab.api;
 
-import io.smarthealth.clinical.lab.data.PatientTestData;
+import io.smarthealth.clinical.lab.data.PatientLabTestData;
 import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
+import io.smarthealth.clinical.lab.domain.PatientTestRegister;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -46,25 +47,23 @@ public class PatientTestsController {
 
     @PostMapping("/patient-test")
     public @ResponseBody
-    ResponseEntity<?> createPatientTest(@RequestBody final PatientTestRegisterData patientRegData) {
-        PatientTestRegisterData Patienttests = PatientTestRegisterData.map(resultService.savePatientResults(patientRegData));
+    ResponseEntity<?> createPatientTest(@RequestBody final PatientTestRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo, @RequestParam(value = "requestId", required = false) final String requestId) {
+        PatientTestRegisterData Patienttests = PatientTestRegisterData.map(resultService.savePatientResults(patientRegData, visitNo, requestId));
         Pager<PatientTestRegisterData> pagers = new Pager();
-
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(Patienttests);
         PageDetails details = new PageDetails();
         details.setReportName("Patient Lab Tests");
         pagers.setPageDetails(details);
-
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pagers);
     }
 
     @GetMapping("/patient-test/{id}")
     public ResponseEntity<?> fetchPatientTestById(@PathVariable("id") final Long id) {
-        PatientTestData result = PatientTestData.map(resultService.fetchPatientTestsById(id));
-        Pager<PatientTestData> pagers = new Pager();
+        PatientLabTestData result = PatientLabTestData.map(resultService.fetchPatientTestsById(id));
+        Pager<PatientLabTestData> pagers = new Pager();
 
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -77,16 +76,41 @@ public class PatientTestsController {
                 .body(pagers);
     }
 
-    @GetMapping("/patient-test/result")
-    public ResponseEntity<?> fetchAllPatientTests(
-            @RequestParam(value = "visitNumber", required = false) String visitNumber,
+//    @GetMapping("/patient-test/result")
+//    public ResponseEntity<?> fetchAllPatientTests(
+//            @RequestParam(value = "visitNumber", required = false) String visitNumber,
+//            @RequestParam(value = "state", required = false) LabTestState status,
+//            @RequestParam(value = "page", required = false) Integer page1,
+//            @RequestParam(value = "pageSize", required = false) Integer size
+//    ) {
+//        Pageable pageable = PaginationUtil.createPage(page1, size);
+//        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+//        Page<PatientLabTestData> pag = resultService.fetchAllPatientTests(visit, status, pageable);
+//        Pager page = new Pager();
+//        page.setCode("200");
+//        page.setContent(pag.getContent());
+//        page.setMessage("Patient tests fetched successfully");
+//        PageDetails details = new PageDetails();
+//        details.setPage(1);
+//        details.setPerPage(25);
+//        details.setReportName("Patient Labtests");
+//        details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
+//        page.setPageDetails(details);
+//        return ResponseEntity.ok(page);
+//    }
+    @GetMapping("/patient-test")
+    public ResponseEntity<?> fetchAllPatientLabTests(
+            @RequestParam(value = "visitNo", required = false) String visitNumber,
             @RequestParam(value = "state", required = false) LabTestState status,
             @RequestParam(value = "page", required = false) Integer page1,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page1, size);
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        Page<PatientTestData> pag = resultService.fetchAllPatientTests(visit, status, pageable);
+
+//        Page<PatientTestRegister> pag = resultService.fetchAllPatientTests(visitNumber, status, pageable);
+        Page<PatientTestRegisterData> pag = resultService.fetchAllPatientTests(visitNumber, status, pageable).map(p -> PatientTestRegisterData.map(p));
+
+        //Page<PatientLabTestData> pag = resultService.fetchAllPatientTests(visit, status, pageable);
         Pager page = new Pager();
         page.setCode("200");
         page.setContent(pag.getContent());

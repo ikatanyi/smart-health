@@ -7,9 +7,9 @@ package io.smarthealth.clinical.visit.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum.VisitType;
 import io.smarthealth.clinical.visit.domain.Visit;
-import io.smarthealth.clinical.visit.domain.Visit.Status;
-import io.smarthealth.clinical.visit.domain.Visit.VisitType;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import java.time.LocalDateTime;
@@ -41,7 +41,7 @@ public class VisitData {
     private Boolean scheduled;
     @NotNull
     private String departmentCode;
-    
+
     private PatientData patientData;
 
     public static Visit map(VisitData visitDTO) {

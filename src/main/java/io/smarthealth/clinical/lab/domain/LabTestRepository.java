@@ -20,10 +20,9 @@ import org.springframework.data.repository.query.Param;
  */
 public interface LabTestRepository extends JpaRepository<PatientLabTest, Long> {
 
-    @Query("SELECT e FROM PatientLabTest e WHERE (:patient=null OR e.patientTestRegister.patient = :patient) AND (:visit=null OR e.patientTestRegister.visit=:visit) AND e.state=:status")
-     Page<PatientLabTest>  findByPatientAndVisitAndStatus(final Patient patient, final Visit visit, @Param("status") final LabTestState status, Pageable pageable);
-    
-//    Page<Analyte> findByTestType(Testtype testtype, Pageable pageable);
+    @Query("SELECT e FROM PatientLabTest e WHERE (:patient=null OR e.patientTestRegister.patient = :patient) AND (:visit=null OR e.patientTestRegister.visit=:visit) AND e.status=:status")
+    Page<PatientLabTest> fetchPatientLabTests(final Patient patient, final Visit visit, @Param("status") final LabTestState status, Pageable pageable);
 
+//    Page<Analyte> findByTestType(Testtype testtype, Pageable pageable);
 //    Optional<Department> findByCode(String code);
 }
