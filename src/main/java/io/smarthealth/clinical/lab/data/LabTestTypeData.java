@@ -84,6 +84,7 @@ public class LabTestTypeData {
         test.setRefOut(entity.getRefOut());
         test.setTestType(entity.getTestType());
         test.setGender(entity.getGender());
+
         for (Analyte analyte : entity.getAnalytes()) {
             AnalyteData analytedata = modelMapper.map(analyte, AnalyteData.class);
             if (test.getAnalytes() != null) {

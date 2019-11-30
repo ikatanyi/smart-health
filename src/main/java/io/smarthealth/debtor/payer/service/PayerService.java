@@ -63,4 +63,8 @@ public class PayerService {
         }
     }
 
+    public Payer findPayerByIdWithNotFoundDetection(final Long payerId) {
+        return payerRepository.findById(payerId).orElseThrow(() -> APIException.notFound("Payer identified by id {0} no available", payerId));
+    }
+
 }

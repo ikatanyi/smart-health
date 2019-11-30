@@ -138,6 +138,8 @@ public class LabTestTypeController {
 
     private LabTestTypeData convertToTestTypeData(LabTestType testtype) {
         LabTestTypeData testTypeData = modelMapper.map(testtype, LabTestTypeData.class);
+//        LabTestTypeData testTypeData = LabTestTypeData.map(testtype);
+
         if (!testtype.getSpecimen().isEmpty()) {
             List<SpecimenData> specimens = new ArrayList<>();
             for (Specimen specimen : testtype.getSpecimen()) {

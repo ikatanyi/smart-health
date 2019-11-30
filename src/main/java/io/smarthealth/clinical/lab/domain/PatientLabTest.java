@@ -7,20 +7,14 @@ package io.smarthealth.clinical.lab.domain;
 
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 /**
  * Patient Lab Request
@@ -43,15 +37,13 @@ public class PatientLabTest extends Identifiable {
     @ManyToOne
     private PatientTestRegister patientTestRegister;
 
-    private LocalDateTime specimenCollectionTime;
+//    @ManyToMany
+//    @JoinTable(name = "patient_lab_test_specimen")
+//    private List<Specimen> specimen;
+    @OneToMany(mappedBy = "patientLabTest", cascade = {javax.persistence.CascadeType.ALL})
+    private List<PatientLabTestSpecimen> patientLabTestSpecimens;
 
-    @ManyToMany
-    @JoinTable(name = "patient_lab_test_specimen")
-    private List<Specimen> specimen;
-
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, orphanRemoval = true)
-    @JoinColumn(name = "request_id", nullable = false)
+    @OneToMany(mappedBy = "patientLabTest", cascade = {javax.persistence.CascadeType.ALL})
     private List<Results> results;
 
 }

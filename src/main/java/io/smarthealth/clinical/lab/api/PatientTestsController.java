@@ -1,16 +1,22 @@
 package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.PatientLabTestData;
+import io.smarthealth.clinical.lab.data.PatientLabTestSpecimenData;
 import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
+import io.smarthealth.clinical.lab.domain.PatientLabTest;
+import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimen;
 import io.smarthealth.clinical.lab.domain.PatientTestRegister;
+import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.lab.service.LabService;
-import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,7 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PatientTestsController {
 
     @Autowired
-    LabService resultService;
+    LabService labService;
 
     @Autowired
     VisitService visitService;
@@ -48,7 +54,7 @@ public class PatientTestsController {
     @PostMapping("/patient-test")
     public @ResponseBody
     ResponseEntity<?> createPatientTest(@RequestBody final PatientTestRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo, @RequestParam(value = "requestId", required = false) final String requestId) {
-        PatientTestRegisterData Patienttests = PatientTestRegisterData.map(resultService.savePatientResults(patientRegData, visitNo, requestId));
+        PatientTestRegisterData Patienttests = PatientTestRegisterData.map(labService.savePatientResults(patientRegData, visitNo, requestId));
         Pager<PatientTestRegisterData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -60,9 +66,19 @@ public class PatientTestsController {
                 .body(pagers);
     }
 
+    @GetMapping("/patient-test/results/{labAccessionNo}")
+    public @ResponseBody
+    ResponseEntity<?> fetchPatientTestsByAccessionNo(@PathVariable("labAccessionNo") final String labAccessionNo) {
+        PatientTestRegister labTestFile = labService.findPatientTestRegisterByAccessNoWithNotFoundDetection(labAccessionNo);
+        //find patient tests by labTestFile
+        List<PatientLabTestData> patientLabTests = PatientLabTestData.mapConfirmedTests(labTestFile.getPatientLabTest());
+
+        return ResponseEntity.status(HttpStatus.OK).body(patientLabTests);
+    }
+
     @GetMapping("/patient-test/{id}")
     public ResponseEntity<?> fetchPatientTestById(@PathVariable("id") final Long id) {
-        PatientLabTestData result = PatientLabTestData.map(resultService.fetchPatientTestsById(id));
+        PatientLabTestData result = PatientLabTestData.map(labService.fetchPatientTestsById(id));
         Pager<PatientLabTestData> pagers = new Pager();
 
         pagers.setCode("0");
@@ -85,7 +101,7 @@ public class PatientTestsController {
 //    ) {
 //        Pageable pageable = PaginationUtil.createPage(page1, size);
 //        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-//        Page<PatientLabTestData> pag = resultService.fetchAllPatientTests(visit, status, pageable);
+//        Page<PatientLabTestData> pag = labService.fetchAllPatientTests(visit, status, pageable);
 //        Pager page = new Pager();
 //        page.setCode("200");
 //        page.setContent(pag.getContent());
@@ -101,16 +117,13 @@ public class PatientTestsController {
     @GetMapping("/patient-test")
     public ResponseEntity<?> fetchAllPatientLabTests(
             @RequestParam(value = "visitNo", required = false) String visitNumber,
-            @RequestParam(value = "state", required = false) LabTestState status,
+            @RequestParam(value = "status", required = false) LabTestState status,
             @RequestParam(value = "page", required = false) Integer page1,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page1, size);
+        Page<PatientTestRegisterData> pag = labService.fetchAllPatientTests(visitNumber, status, pageable).map(p -> PatientTestRegisterData.map(p));
 
-//        Page<PatientTestRegister> pag = resultService.fetchAllPatientTests(visitNumber, status, pageable);
-        Page<PatientTestRegisterData> pag = resultService.fetchAllPatientTests(visitNumber, status, pageable).map(p -> PatientTestRegisterData.map(p));
-
-        //Page<PatientLabTestData> pag = resultService.fetchAllPatientTests(visit, status, pageable);
         Pager page = new Pager();
         page.setCode("200");
         page.setContent(pag.getContent());
@@ -126,7 +139,29 @@ public class PatientTestsController {
 
     @DeleteMapping("/patient-test/result/{id}")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
-        resultService.deletePatientTestsById(id);
+        labService.deletePatientTestsById(id);
         return ResponseEntity.ok("200");
     }
+
+    @PostMapping("/patient-test/specimen-details")
+    public ResponseEntity<?> addLabtestSpecimenDetails(@Valid @RequestBody PatientLabTestSpecimenData patientLabTestSpecimen) {
+        PatientLabTest plt = labService.fetchPatientTestsById(patientLabTestSpecimen.getPatientLabtestId());
+        Specimen specimen = labService.fetchSpecimenById(patientLabTestSpecimen.getSpecimenId());
+        PatientLabTestSpecimen testSpecimen = PatientLabTestSpecimenData.map(patientLabTestSpecimen);
+        testSpecimen.setPatientLabTest(plt);
+        testSpecimen.setSpecimen(specimen);
+        PatientLabTestSpecimen specimenDetail = labService.createPatientLabTestSpecimen(testSpecimen);
+
+        return ResponseEntity.ok(PatientLabTestSpecimenData.map(specimenDetail));
+    }
+
+    @GetMapping("/patient-test/specimen-details/{labTestId}")
+    public ResponseEntity<?> fetchLabtestSpecimenDetails(
+            @PathVariable("labTestId") final Long labTestId) {
+        PatientLabTest test = labService.fetchPatientTestsById(labTestId);
+        List<PatientLabTestSpecimen> pltsList = labService.fetchAllLabTestSpecimensByPatientTest(test);
+        List<PatientLabTestSpecimenData> list = pltsList.stream().map(p -> PatientLabTestSpecimenData.map(p)).collect(Collectors.toList());
+        return ResponseEntity.ok(list);
+    }
+
 }

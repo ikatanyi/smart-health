@@ -22,8 +22,6 @@ import lombok.Data;
 @Table(name = "lab_specimen")
 public class Specimen extends Identifiable {
 
-//    @ManyToOne
-//    private LabTestType testtype;
     private String specimen;
     private String abbreviation;
 
@@ -34,6 +32,9 @@ public class Specimen extends Identifiable {
     @ManyToMany(cascade = CascadeType.ALL)
     private List<LabTestType> labTest;
 
-    @ManyToMany(cascade = CascadeType.ALL/*, mappedBy = "specimen"*/)
-    private List<PatientLabTest> patientLabTest;
+//    @ManyToOne
+//    private PatientLabTestSpecimen patientLabTestSpecimen;
+//
+//    @ManyToMany(cascade = CascadeType.ALL/*, mappedBy = "specimen"*/)
+//    private List<PatientLabTest> patientLabTest;
 }

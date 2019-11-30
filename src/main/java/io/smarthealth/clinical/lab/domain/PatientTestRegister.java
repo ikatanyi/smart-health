@@ -6,6 +6,7 @@
 package io.smarthealth.clinical.lab.domain;
 
 import io.smarthealth.billing.domain.PatientBill;
+import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -15,6 +16,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -40,8 +43,12 @@ public class PatientTestRegister extends ClinicalRecord {
     @OneToOne
     private DoctorRequest request;
 
+    @Column(nullable = false, unique = false)
+    @Enumerated(EnumType.STRING)
+    private LabTestState status = LabTestState.Scheduled;
+
     @OneToMany(mappedBy = "patientTestRegister", cascade = CascadeType.ALL)
-    private List<PatientLabTest> patientLabTest=new ArrayList<>();
+    private List<PatientLabTest> patientLabTest = new ArrayList<>();
 
     @ManyToOne
     private Employee requestedBy;

@@ -113,7 +113,7 @@ public class DoctorRequestService implements DateConverter {
         return doctorRequestRepository.findRequestLine(fulfillerStatus, requestType, pageable);
     }
 
-    public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final String fullfillerStatus,final String requestType) {
+    public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final String fullfillerStatus, final String requestType) {
         return doctorRequestRepository.findServiceRequestsByPatient(patient, fullfillerStatus, requestType);
     }
 

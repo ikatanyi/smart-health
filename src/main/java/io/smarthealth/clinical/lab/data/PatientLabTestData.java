@@ -35,22 +35,18 @@ public class PatientLabTestData {
     private LabTestState status;
     
     @ApiModelProperty(hidden = true, required = false)
+    List<SpecimenData> specimenData;
+    @ApiModelProperty(hidden = true, required = false)
     private String accessNo;
-    private List<PatientLabTestSpecimen> patientLabTestSpecimen;
-
-//    private Long specimenId;
-//    private SpecimenData specimenData;
-//    private LocalDateTime specimenCollectionTime;
-//    private LabTestTypeData testTypeData;
-//    private String testCode;
-//    private String patientNumber;
-//
-//    private List<ResultsData> resultData = new ArrayList();
+    private List<PatientLabTestSpecimenData> patientLabTestSpecimen;
+    
+    @ApiModelProperty(hidden = true, required = false)
+    private List<ResultsData> resultsData = new ArrayList();
+    
     public static PatientLabTest map(PatientLabTestData ptestdata) {
         PatientLabTest entity = new PatientLabTest();
         entity.setStatus(ptestdata.getStatus());
         entity.setTestPrice(ptestdata.getTestPrice());
-        
         return entity;
     }
     
@@ -94,7 +90,33 @@ public class PatientLabTestData {
             p.setTestName(labTest.getTestType().getTestType());
             p.setQuantity(labTest.getQuantity());
             p.setTestPrice(labTest.getTestPrice());
+
+            //Display possible specimen
+            p.setSpecimenData(SpecimenData.map(labTest.getTestType().getSpecimen()));
+            
             patientLabTestsData.add(p);
+            
+        }
+        return patientLabTestsData;
+    }
+    
+    public static List<PatientLabTestData> mapConfirmedTests(List<PatientLabTest> patientLabTests) {
+        List<PatientLabTestData> patientLabTestsData = new ArrayList<>();
+        for (PatientLabTest labTest : patientLabTests) {
+            PatientLabTestData p = new PatientLabTestData();
+            p.setPatientLabTestId(labTest.getId());
+            p.setStatus(labTest.getStatus());
+            p.setTestName(labTest.getTestType().getTestType());
+            p.setQuantity(labTest.getQuantity());
+            p.setTestPrice(labTest.getTestPrice());
+
+            //Display collected specimen
+            p.setPatientLabTestSpecimen(PatientLabTestSpecimenData.map(labTest.getPatientLabTestSpecimens()));
+
+            //Display confirmed/pending results
+            p.setResultsData(ResultsData.map(labTest.getResults()));
+            patientLabTestsData.add(p);
+            
         }
         return patientLabTestsData;
     }

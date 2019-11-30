@@ -15,24 +15,24 @@ import lombok.Data;
  */
 @Data
 public class AnalyteData {
+
     public enum Gender {
         Male,
         Female,
         Both
-    }   
+    }
     private Long id;
     private Long testTypeId;
-    private String testCode;
-    private String testName;
+    private String analyteCode;
+    private String analyteName;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    private String startAge;
+    private int startAge;
     private String category;
-    private String endAge;
+    private int endAge;
     private Double lowerRange;
     private Double upperRange;
     private String units;
-    private String description;   
-    
-    
+    private String description;
+
 }

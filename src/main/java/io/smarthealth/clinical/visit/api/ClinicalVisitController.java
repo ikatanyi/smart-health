@@ -17,8 +17,6 @@ import io.smarthealth.infrastructure.common.APIResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.infrastructure.utility.PageDetails;
-import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.DepartmentService;

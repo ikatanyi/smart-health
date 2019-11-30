@@ -17,25 +17,24 @@ import lombok.Data;
 //@NamedQuery(name="tets",query = "SELECT e FROM Analyte e WHERE e.testType = :testType AND e.sex = :gender AND :age BETWEEN e.startAge and e.endAge ")
 @Table(name = "lab_test_analyte")
 public class Analyte extends Identifiable {
-    
-     public enum Gender {
+
+    public enum Gender {
         Male,
         Female,
         Both
     }
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    
-    private String testCode;
-    private String testName;
-    private String startAge;
-    private String endAge;
+
+    private String analyteName;
+    private int startAge;
+    private int endAge;
     private Double lowerRange;
     private Double upperRange;
     private String units;
     private String category;
-    private String description;   
-    
-    @ManyToOne                           
+    private String description;
+
+    @ManyToOne
     private LabTestType testType;
 }

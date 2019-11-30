@@ -7,6 +7,9 @@ package io.smarthealth.clinical.lab.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.lab.domain.Results;
+import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 
 /**
@@ -16,41 +19,78 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ResultsData {
-    private Long id;
-    private String testCode;
-    private String testType;
+
+    @ApiModelProperty(hidden = true, required = false)
+    private String analyteName;
+    
+    
+    @ApiModelProperty(hidden = true, required = false)
+    private Long resultId;
+
+    private Long patientTestId;
+    @ApiModelProperty(required = true)
+    private Long analyteId;
+
+    @ApiModelProperty(hidden = true, required = false)
     private String testName;
-    private Double upperRange;
-    private Double lowerRange;
-    private String units;
-    private String category;
-    private String results;
+
+    private String upperRange;
+    private String lowerRange;
+
+    @ApiModelProperty(required = true)
+    private String unit;
+
+    @ApiModelProperty(required = true)
+    private String resultValue;
+
+    @ApiModelProperty(required = true)
+    private String status;
+
     private String comments;
-    
-    public static Results map(ResultsData resultdata) {
-        Results entity = new Results();
-        entity.setId(resultdata.getId());
-        entity.setTestCode(resultdata.getTestCode());
-        entity.setTestName(resultdata.getTestName());
-        entity.setTestType(resultdata.getTestType());
-        entity.setCategory(resultdata.getCategory());
-        entity.setLowerRange(resultdata.getLowerRange());
-        entity.setUpperRange(resultdata.getUpperRange());
-        entity.setResults(resultdata.getResults());
-        entity.setUnits(resultdata.getUnits());
-        entity.setComments(resultdata.getComments());
-        return entity;
+
+    public static Results map(ResultsData d) {
+        Results e = new Results();
+        e.setComments(d.getComments());
+        e.setLowerRange(d.getLowerRange());
+        e.setResultValue(d.getResultValue());
+        e.setUnit(d.getUnit());
+        e.setUpperRange(d.getUpperRange());
+        e.setStatus(d.getStatus());
+        return e;
     }
-    
-    public static ResultsData map(Results results) {
-        ResultsData entity = new ResultsData();
-        entity.setId(results.getId());
-        entity.setCategory(results.getCategory());
-        entity.setLowerRange(results.getLowerRange());
-        entity.setUpperRange(results.getUpperRange());
-        entity.setResults(results.getResults());
-        entity.setUnits(results.getUnits());
-        entity.setComments(results.getComments());
-        return entity;
+
+    public static ResultsData map(Results e) {
+        ResultsData d = new ResultsData();
+        d.setAnalyteId(e.getAnalyte().getId());
+        d.setComments(e.getComments());
+        d.setLowerRange(e.getLowerRange());
+        d.setPatientTestId(e.getPatientLabTest().getId());
+        d.setResultId(e.getId());
+        d.setResultValue(e.getResultValue());
+        d.setStatus(e.getStatus());
+        d.setTestName(e.getPatientLabTest().getTestType().getTestType());
+        d.setUnit(e.getUnit());
+        d.setUpperRange(e.getUpperRange());
+        return d;
+    }
+
+    public static List<ResultsData> map(List<Results> entities) {
+        List<ResultsData> data = new ArrayList<>();
+        for (Results e : entities) {
+            ResultsData d = new ResultsData();
+            d.setAnalyteName(e.getAnalyte().getAnalyteName());
+            d.setAnalyteId(e.getAnalyte().getId());
+            d.setComments(e.getComments());
+            d.setLowerRange(e.getLowerRange());
+            d.setPatientTestId(e.getPatientLabTest().getId());
+            d.setResultId(e.getId());
+            d.setResultValue(e.getResultValue());
+            d.setStatus(e.getStatus());
+            d.setTestName(e.getPatientLabTest().getTestType().getTestType());
+            d.setUnit(e.getUnit());
+            d.setUpperRange(e.getUpperRange());
+            data.add(d);
+        }
+        return data;
     }
 }
