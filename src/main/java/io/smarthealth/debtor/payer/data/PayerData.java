@@ -21,6 +21,7 @@ import lombok.Data;
 public class PayerData {
 
     private Payer.Type payerType;
+    private Long payerId;
     private String payerName;
     private String legalName;
     private String taxNumber;
@@ -28,6 +29,7 @@ public class PayerData {
     private Long branchId;
     private Long paymentTermId;
     private boolean insurance;
+
     private String debitAccountNo;
     private List<AddressData> address;
     private List<ContactData> contact;
@@ -62,6 +64,7 @@ public class PayerData {
             }
             payerData.setContact(contactDataList);
         }
+        payerData.setPayerId(payer.getId());
 
         return payerData;
     }

@@ -15,6 +15,7 @@ import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,11 +40,11 @@ public class PatientQueueService {
 
     @Transactional
     public PatientQueue createPatientQueue(PatientQueue patientQueue) {
-        if (!patientIsQueued(patientQueue.getDepartment(), patientQueue.getPatient())) {
-            return patientQueueRepository.save(patientQueue);
-        } else {
-            throw APIException.conflict("Patient is already queued in the department selected", "");
-        }
+        //if (!patientIsQueued(patientQueue.getDepartment(), patientQueue.getPatient())) {
+        return patientQueueRepository.save(patientQueue);
+//        } else {
+//            throw APIException.conflict("Patient is already queued in the department selected", "");
+//        }
     }
 
     public Page<PatientQueue> fetchQueueByDept(final Department department, final boolean status, Pageable pageable) {
@@ -68,6 +69,12 @@ public class PatientQueueService {
 
     public boolean patientIsQueued(final Department department, final Patient patient) {
         return patientQueueRepository.findByPatientAndDepartmentAndStatus(patient, department, true).isPresent();
+//        Optional<PatientQueue> patientQueue = patientQueueRepository.findByPatientAndDepartmentAndStatus(patient, department, true);
+//        if (patientQueue.isPresent()) {
+//            return true;
+//        } else {
+//            return false;
+//        }
     }
 
     public PatientQueueData convertToPatientQueueData(PatientQueue patientQueue) {
