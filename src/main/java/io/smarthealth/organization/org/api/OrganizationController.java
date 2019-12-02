@@ -45,9 +45,8 @@ public class OrganizationController {
     }
 
     @GetMapping("/organization/{id}")
-    public OrganizationData getOrganization(@PathVariable(value = "id") String code) {
-        Organization org = service.getOrganization(code);
-
+    public OrganizationData getOrganization(@PathVariable(value = "id") String id) {
+        Organization org = service.getOrganization(id);
         return OrganizationData.map(org);
     }
 

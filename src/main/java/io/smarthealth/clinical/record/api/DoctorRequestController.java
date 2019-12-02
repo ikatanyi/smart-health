@@ -5,6 +5,9 @@
  */
 package io.smarthealth.clinical.record.api;
 
+import io.smarthealth.clinical.lab.data.PatientLabTestData;
+import io.smarthealth.clinical.lab.domain.PatientLabTest;
+import io.smarthealth.clinical.lab.service.LabResultsService;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestItem;
@@ -55,24 +58,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 @Api(value = "Doctor Request Controller", description = "Operations pertaining to Doctor Requests/Orders maintenance")
 public class DoctorRequestController {
-
-    final DoctorRequestService requestService;
-
-    final VisitService visitService;
-
-    final ModelMapper modelMapper;
-
-    final EmployeeService employeeService;
-
-    final SequenceService sequenceService;
-
-    final ItemService itemService;
-
-    final PatientQueueService patientQueueService;
-
-    final PatientService patientService;
-
-    public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, SequenceService sequenceService, ItemService itemService, PatientQueueService patientQueueService, PatientService patientService) {
+    
+    private final DoctorRequestService requestService;
+    
+    private final VisitService visitService;
+    
+    private final ModelMapper modelMapper;
+    
+    private final EmployeeService employeeService;
+    
+    private final SequenceService sequenceService;
+    
+    private final ItemService itemService;
+    
+    private final PatientQueueService patientQueueService;
+    
+    private final PatientService patientService;
+    
+    private final LabResultsService labResultsService;
+    
+    public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, SequenceService sequenceService, ItemService itemService, PatientQueueService patientQueueService, PatientService patientService, LabResultsService labResultsService) {
         this.requestService = requestService;
         this.visitService = visitService;
         this.modelMapper = modelMapper;
@@ -81,8 +86,9 @@ public class DoctorRequestController {
         this.itemService = itemService;
         this.patientQueueService = patientQueueService;
         this.patientService = patientService;
+        this.labResultsService = labResultsService;
     }
-
+    
     @PostMapping("/visit/{visitNo}/doctor-request")
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
@@ -106,12 +112,12 @@ public class DoctorRequestController {
             doctorRequest.setRequestType(data.getRequestType().name());
             docRequests.add(doctorRequest);
         }
-
+        
         List<DoctorRequest> docReqs = requestService.createRequest(docRequests);
-
+        
         List<DoctorRequestData> requestList = modelMapper.map(docReqs, new TypeToken<List<DoctorRequest>>() {
         }.getType());
-
+        
         if (requestList != null) {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(requestList);
@@ -119,7 +125,7 @@ public class DoctorRequestController {
             throw APIException.notFound("TestType Number {0} not found.", "");
         }
     }
-
+    
     @GetMapping("/doctor-request/{id}")
     public ResponseEntity<?> fetchRequestById(@PathVariable("id") final Long id) {
         Optional<DoctorRequestData> specimens = requestService.getDocRequestById(id);
@@ -129,12 +135,12 @@ public class DoctorRequestController {
             throw APIException.notFound("Request Number {0} not found.", id);
         }
     }
-
+    
     @GetMapping("/visit/{visitNo}/doctor-request")
     public ResponseEntity<?> fetchAllRequestsByVisit(@PathVariable("visitNo") final String visitNo, Pageable pageable) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
         Page<DoctorRequest> page = requestService.findAllRequestsByVisit(visit, pageable);
-
+        
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);
             dd.setEmployeeData(employeeService.convertEmployeeEntityToEmployeeData(r.getRequestedBy()));
@@ -153,16 +159,10 @@ public class DoctorRequestController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
-
+        
         return ResponseEntity.ok(pagers);
     }
-
-    /*
-    //Fetch waiting list per request
-    {
     
-    }
-     */
     @GetMapping("/doctor-request")
     public ResponseEntity<?> waitingListByRequestType(
             @RequestParam(value = "requestType", required = false) final String requestType,
@@ -174,7 +174,7 @@ public class DoctorRequestController {
         //Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(null, requestType, fulfillerStatus, pageable);
         Page<DoctorRequest> pageList = requestService.fetchDoctorRequestLine(fulfillerStatus, requestType, pageable);
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
-
+        
         for (DoctorRequest docReq : pageList.getContent()) {
             WaitingRequestsData waitingRequest = new WaitingRequestsData();
             waitingRequest.setPatientData(patientService.convertToPatientData(docReq.getPatient()));
@@ -191,11 +191,11 @@ public class DoctorRequestController {
             waitingRequest.setItem(requestItems);
             waitingRequests.add(waitingRequest);
         }
-
+        
         PagedListHolder waitingPage = new PagedListHolder(waitingRequests);
         waitingPage.setPageSize(size); // number of items per page
         waitingPage.setPage(page);
-
+        
         Pager<List<WaitingRequestsData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -207,10 +207,10 @@ public class DoctorRequestController {
         details.setTotalPage(waitingPage.getPageCount());
         details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
-
+        
         return ResponseEntity.ok(pagers);
     }
-
+    
     @GetMapping("/visit/{visitNo}/doctor-request/{requestType}")
     public ResponseEntity<?> fetchAllRequestsByVisitAndRequestType(
             @PathVariable("visitNo") final String visitNo,
@@ -221,7 +221,7 @@ public class DoctorRequestController {
 
 //        Page<DoctorRequest> page = requestService.findAllRequestsByOrderNoAndRequestType(visitNo, requestType, pageable);
         Page<DoctorRequest> page = requestService.fetchAllDoctorRequests(visit.getVisitNumber(), requestType, fulfillerStatus, pageable);
-
+        
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);
             dd.setEmployeeData(employeeService.convertEmployeeEntityToEmployeeData(r.getRequestedBy()));
@@ -240,24 +240,20 @@ public class DoctorRequestController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
-
+        
         return ResponseEntity.ok(pagers);
     }
-
-//    @GetMapping("/docRequest")
-//    public ResponseEntity<List<DoctorRequestData>> fetchAllSpecimens(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-//        String visitNumber = queryParams.getFirst("visitNumber");
-//        String status = queryParams.getFirst("status");
-//        String requestType = queryParams.getFirst("requestType");
-//        String from = queryParams.getFirst("from");
-//        String to = queryParams.getFirst("to");
-//        List<DoctorRequestData> page = requestService.findAll(visitNumber, status, requestType, from, to, pageable);
-//        HttpHeaders headers = null;//PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page.);
-//        return new ResponseEntity<>(page, headers, HttpStatus.OK);
-//    }
-    @DeleteMapping("/docRequest/{id}")
+    
+    @DeleteMapping("/doc-request/{id}")
     public ResponseEntity<?> deleteRequest(@PathVariable("id") final Long id) {
         return requestService.deleteById(id);
     }
-
+    
+    @GetMapping("/lab-results/{visitNo}")
+    public ResponseEntity<?> fetchLabRequestByVisit(@PathVariable("visitNo") final String visitNo) {
+        Visit visit = visitService.findVisitEntityOrThrow(visitNo);
+        List<PatientLabTest> results = labResultsService.findLabResultsByVisit(visit);
+        return ResponseEntity.status(HttpStatus.OK).body(PatientLabTestData.mapConfirmedTests(results));
+    }
+    
 }

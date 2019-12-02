@@ -3,11 +3,14 @@ package io.smarthealth.clinical.lab.api;
 import io.smarthealth.clinical.lab.data.PatientLabTestData;
 import io.smarthealth.clinical.lab.data.PatientLabTestSpecimenData;
 import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
+import io.smarthealth.clinical.lab.data.ResultsData;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimen;
 import io.smarthealth.clinical.lab.domain.PatientTestRegister;
+import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
+import io.smarthealth.clinical.lab.service.LabResultsService;
 import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,9 +55,12 @@ public class PatientTestsController {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    LabResultsService labResultsService;
+
     @PostMapping("/patient-test")
     public @ResponseBody
-    ResponseEntity<?> createPatientTest(@RequestBody final PatientTestRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo, @RequestParam(value = "requestId", required = false) final String requestId) {
+    ResponseEntity<?> createPatientTest(@RequestBody final PatientTestRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo, @RequestParam(value = "requestId", required = false) final Long requestId) {
         PatientTestRegisterData Patienttests = PatientTestRegisterData.map(labService.savePatientResults(patientRegData, visitNo, requestId));
         Pager<PatientTestRegisterData> pagers = new Pager();
         pagers.setCode("0");
@@ -74,6 +81,21 @@ public class PatientTestsController {
         List<PatientLabTestData> patientLabTests = PatientLabTestData.mapConfirmedTests(labTestFile.getPatientLabTest());
 
         return ResponseEntity.status(HttpStatus.OK).body(patientLabTests);
+    }
+
+    @PutMapping("/patient-test/results/{resultId}")
+    public @ResponseBody
+    ResponseEntity<?> updateLabTestResults(@PathVariable("resultId") final Long resultId, @Valid @RequestBody ResultsData resultData) {
+        Results r = labResultsService.findResultsByIdWithNotFoundDetection(resultId);
+        r.setComments(resultData.getComments());
+        r.setLowerRange(resultData.getLowerRange());
+        r.setResultValue(resultData.getResultValue());
+        r.setStatus(resultData.getStatus());
+        r.setUnit(resultData.getUnit());
+        r.setUpperRange(resultData.getUpperRange());
+
+        Results savedResult = labResultsService.updateLabResult(r);
+        return ResponseEntity.status(HttpStatus.OK).body(ResultsData.map(savedResult));
     }
 
     @GetMapping("/patient-test/{id}")

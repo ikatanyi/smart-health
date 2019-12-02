@@ -22,13 +22,14 @@ public class ResultsData {
 
     @ApiModelProperty(hidden = true, required = false)
     private String analyteName;
-    
-    
+
     @ApiModelProperty(hidden = true, required = false)
     private Long resultId;
 
+    @ApiModelProperty(hidden = true, required = false)
     private Long patientTestId;
-    @ApiModelProperty(required = true)
+
+    @ApiModelProperty(hidden = true, required = false)
     private Long analyteId;
 
     @ApiModelProperty(hidden = true, required = false)
@@ -61,6 +62,7 @@ public class ResultsData {
 
     public static ResultsData map(Results e) {
         ResultsData d = new ResultsData();
+        d.setAnalyteName(e.getAnalyte().getAnalyteName());
         d.setAnalyteId(e.getAnalyte().getId());
         d.setComments(e.getComments());
         d.setLowerRange(e.getLowerRange());

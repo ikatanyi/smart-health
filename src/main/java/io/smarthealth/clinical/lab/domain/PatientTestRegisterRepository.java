@@ -5,6 +5,8 @@
  */
 package io.smarthealth.clinical.lab.domain;
 
+import io.smarthealth.clinical.visit.domain.Visit;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,5 +25,7 @@ public interface PatientTestRegisterRepository extends JpaRepository<PatientTest
     Page<PatientTestRegister> findPatientTests(@Param("visitNumber") final String visitNo, final Pageable pageable);
 
     Optional<PatientTestRegister> findByAccessNo(final String accessNo);
+
+    List<PatientTestRegister> findByVisit(final Visit visit);
 
 }

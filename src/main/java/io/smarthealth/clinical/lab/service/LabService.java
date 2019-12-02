@@ -46,6 +46,7 @@ import io.smarthealth.clinical.lab.domain.PatientTestRegister;
 import io.smarthealth.clinical.lab.domain.PatientTestRegisterRepository;
 import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
+import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.specification.PatientTestSpecifica;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -326,7 +327,7 @@ public class LabService {
     c. Update PatientResults
      */
     @Transactional
-    public PatientTestRegister savePatientResults(PatientTestRegisterData patientRegData, final String visitNo, final String requestId) {
+    public PatientTestRegister savePatientResults(PatientTestRegisterData patientRegData, final String visitNo, final Long requestId) {
         PatientTestRegister patientTestReg = PatientTestRegisterData.map(patientRegData);
         if (visitNo != null) {
             Visit visit = visitService.findVisitEntityOrThrow(visitNo);
@@ -339,12 +340,14 @@ public class LabService {
         if (emp.isPresent()) {
             patientTestReg.setRequestedBy(emp.get());
         }
-        /*
-        Optional<DoctorRequest> request = doctorRequestRepository.findById(Long.parseLong(patientRegData.getRequestId() != null ? patientRegData.getRequestId() : "0"));
-        if (request.isPresent()) {
-            patientTestReg.setRequest(request.get());
+
+        if (requestId != null) {
+            Optional<DoctorRequest> request = doctorRequestRepository.findById(requestId);
+            if (request.isPresent()) {
+                patientTestReg.setRequest(request.get());
+            }
+
         }
-         */
         if (patientRegData.getAccessionNo() == null || patientRegData.getAccessionNo().equals("")) {
             String accessionNo = seqService.nextNumber(SequenceType.LabTestNumber);
             patientTestReg.setAccessNo(accessionNo);
@@ -496,6 +499,10 @@ public class LabService {
 
     public PatientTestRegister findPatientTestRegisterByAccessNoWithNotFoundDetection(final String accessNo) {
         return patientRegRepository.findByAccessNo(accessNo).orElseThrow(() -> APIException.notFound("Lab file identifed by {0} not found ", accessNo));
+    }
+
+    public List<PatientTestRegister> findPatientTestRegisterByVisit(final Visit visit) {
+        return patientRegRepository.findByVisit(visit);
     }
 
     /*
