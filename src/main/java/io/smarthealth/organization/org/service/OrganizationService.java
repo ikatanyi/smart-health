@@ -35,7 +35,7 @@ public class OrganizationService {
         
         Optional<Organization> orgx =orgRepository.findTopByOrderByOrganizationNameDesc();
         if(orgx.isPresent()){
-            APIException.notFound("Organization Already Exists");
+           throw APIException.notFound("Organization Already Exists");
         }
             
         Organization org = new Organization();
