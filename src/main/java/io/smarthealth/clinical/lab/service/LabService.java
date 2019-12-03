@@ -40,14 +40,14 @@ import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.clinical.lab.data.ScanItemData;
+import io.smarthealth.clinical.lab.data.TestItemData;
 import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimenRepo;
 import io.smarthealth.clinical.lab.domain.PatientTestRegister;
 import io.smarthealth.clinical.lab.domain.PatientTestRegisterRepository;
 import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
-import io.smarthealth.clinical.lab.domain.specification.PatientTestSpecifica;
+import io.smarthealth.clinical.record.domain.specification.PatientTestSpecifica;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
@@ -356,7 +356,7 @@ public class LabService {
         //PatientTestRegister savedPatientTestRegister = patientRegRepository.save(patientTestReg);
         if (!patientRegData.getItemData().isEmpty()) {
             List<PatientLabTest> patientLabTest = new ArrayList<>();
-            for (ScanItemData id : patientRegData.getItemData()) {
+            for (TestItemData id : patientRegData.getItemData()) {
                 Item i = itemService.findItemWithNoFoundDetection(id.getItemCode());
                 LabTestType labTestType = findTestTypeByItemService(i).get();
                 PatientLabTest pte = new PatientLabTest();

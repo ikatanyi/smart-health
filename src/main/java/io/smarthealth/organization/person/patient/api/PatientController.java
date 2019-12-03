@@ -68,7 +68,6 @@ public class PatientController {
 
     @Value("${upload.image.max-size:524288}")
     Long maxSize;
-    
     @Autowired
     private PatientService patientService;
     @Autowired

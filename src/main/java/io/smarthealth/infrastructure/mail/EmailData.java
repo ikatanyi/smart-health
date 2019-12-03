@@ -1,6 +1,5 @@
 package io.smarthealth.infrastructure.mail;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,8 @@ import org.springframework.stereotype.Component;
  * Data needed for sending a mail. Override this if you need more data to be
  * sent.
  */
-@Data
+@Getter
+@Setter
 @Component
 public class EmailData {
 

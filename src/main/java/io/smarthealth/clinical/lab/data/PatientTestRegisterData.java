@@ -50,7 +50,7 @@ public class PatientTestRegisterData {
     @ApiModelProperty(hidden = true, required = false)
     private List<PatientLabTestData> patientLabTestData = new ArrayList();
 
-    private List<ScanItemData> itemData = new ArrayList();
+    private List<TestItemData> itemData = new ArrayList();
 
     @ApiModelProperty(required = false, hidden = true)
     private PatientBillData billData;
