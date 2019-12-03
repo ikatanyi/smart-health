@@ -1,0 +1,38 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/
+/src/main/resources/thoughts
+/src/main/resources/design-todos
+/src/main/java/io/smarthealth/clinical/visit/domain/Visit
+/src/main/resources/notes/
+/src/main/java/io/smarthealth/financial/account/domain/definations
+/src/main/java/io/smarthealth/accounting/account/accounting
+/nbactions.xml

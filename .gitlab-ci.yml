@@ -1,0 +1,56 @@
+# maven_build:
+#  script: mvn verify
+
+stages:
+  - test
+  - build
+  - deploy
+
+test:
+  stage: test
+  script:  
+    - mvn verify -DskipTests
+
+build:
+  stage: build
+  script:  
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - target/*.jar
+
+deploy_review:
+  stage: deploy
+  script:
+    - rsync -azP --append-verify target/smart-health-1.0.0.jar smart@192.180.4.102:/home/smart/workloads 
+  environment: 
+    name: smarthealth
+    url: https://192.180.4.102
+  only:
+    - master
+  # only:
+  #   - branches
+  # except:
+  #   - master
+
+# deploy_staging:
+#   stage: deploy
+#   script:
+#     - echo "Deploy to staging server"
+#   environment:
+#     name: staging
+#     url: https://staging.example.com
+#   only:
+#   - master
+
+deploy_prod:
+  stage: deploy
+  script:
+    - echo "Stop running jar and start a new one"
+    - rsync -azP --append-verify target/smart-health-1.0.0.jar smart@192.180.4.102:/opt/smarthealth/prod
+  environment:
+    name: production
+    url: https://192.180.4.102
+  when: manual
+  only:
+  - master
