@@ -31,6 +31,13 @@ public class OrganizationService {
 
     @Transactional
     public OrganizationData createOrganization(OrganizationData o) {
+        
+        
+        Optional<Organization> orgx =orgRepository.findTopByOrderByOrganizationNameDesc();
+        if(orgx.isPresent()){
+            APIException.notFound("Organization Already Exists");
+        }
+            
         Organization org = new Organization();
         //check if there is an organization already
         List<Organization> orgs = fetchOrganizations();
