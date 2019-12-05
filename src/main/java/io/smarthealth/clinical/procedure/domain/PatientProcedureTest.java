@@ -12,12 +12,14 @@ package io.smarthealth.clinical.procedure.domain;
 
 
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
+import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -35,5 +37,8 @@ public class PatientProcedureTest extends ClinicalRecord{
     @Enumerated(EnumType.STRING)
     private ProcedureTestState status;
     private String result;
-    private String comments;   
+    private String comments;  
+    
+    @ManyToOne
+    private PatientProcedureRegister patientProcedureRegister;
 }

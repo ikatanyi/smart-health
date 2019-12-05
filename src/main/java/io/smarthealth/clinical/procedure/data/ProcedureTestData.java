@@ -20,7 +20,7 @@ import lombok.Data;
 public class ProcedureTestData {
     private Long id;
     private String itemCode;
-    private String scanName; //government classifications
+    private String procedureName; //government classifications
     private Boolean consent; 
     private Boolean withRef; 
     private Boolean refOut; 
@@ -38,7 +38,7 @@ public class ProcedureTestData {
         entity.setGender(rtd.getGender());
         entity.setNotes(rtd.getNotes());
         entity.setRefOut(rtd.getRefOut());
-        entity.setScanName(rtd.getScanName());
+        entity.setProcedureName(rtd.getProcedureName());
         if(rtd.getItem()!=null)
            entity.setItemData(ItemData.map(rtd.getItem()));
         entity.setStatus(rtd.getStatus());
@@ -55,7 +55,7 @@ public class ProcedureTestData {
         entity.setGender(rtd.getGender());
         entity.setNotes(rtd.getNotes());
         entity.setRefOut(rtd.getRefOut());
-        entity.setScanName(rtd.getScanName());
+        entity.setProcedureName(rtd.getProcedureName());
         entity.setStatus(rtd.getStatus());
         entity.setSupervisorConfirmation(rtd.getSupervisorConfirmation());
         entity.setWithRef(rtd.getWithRef());

@@ -15,6 +15,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 /**
@@ -23,7 +24,8 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "radiology_tests")
+@Table(name = "radiology_tests",uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"scanName", "item_id"}, name="unique_scan_name_item_id")})
 @Inheritance(strategy = InheritanceType.JOINED)
 public class RadiologyTest extends Identifiable{
     private String scanName; //government classifications

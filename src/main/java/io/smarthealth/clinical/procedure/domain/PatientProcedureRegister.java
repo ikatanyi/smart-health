@@ -57,15 +57,15 @@ public class PatientProcedureRegister extends ClinicalRecord {
 
     public void addPatientProcedures(List<PatientProcedureTest> procs) {
         for (PatientProcedureTest proc : procs) {
-//            proc.setPatientProcedureRegister(this);
+            proc.setPatientProcedureRegister(this);
             patientProcedureTest.add(proc);
         }
     }
 
-//    public void addPatientProcedure(PatientProcedureTest proc) {
-//        proc.setPatientProcedureRegister(this);
-//        patientScanTest.add(proc);
-//    }
+    public void addPatientProcedure(PatientProcedureTest proc) {
+        proc.setPatientProcedureRegister(this);
+        patientProcedureTest.add(proc);
+    }
 
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_bill_id"))
     @OneToOne
