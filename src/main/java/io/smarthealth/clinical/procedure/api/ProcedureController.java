@@ -44,7 +44,7 @@ public class ProcedureController {
     @Autowired
     ModelMapper modelMapper;
 
-    @PostMapping("/radiology-tests")
+    @PostMapping("/procedure")
     public @ResponseBody
     ResponseEntity<?> createTests(@RequestBody @Valid final List<ProcedureTestData> radiologyTestData) {
         List<ProcedureTestData> radiologyTestList = radiologyService.createProcedureTest(radiologyTestData)
@@ -63,7 +63,7 @@ public class ProcedureController {
         return ResponseEntity.status(HttpStatus.OK).body(pagers);      
     }
 
-    @GetMapping("/radiology-tests/{id}")
+    @GetMapping("/procedure/{id}")
     public ResponseEntity<?> fetchProcedureTest(@PathVariable("id") final Long id) {
         ProcedureTestData radiologyTests = ProcedureTestData.map(radiologyService.getById(id));
         if (radiologyTests != null) {
@@ -73,7 +73,7 @@ public class ProcedureController {
         }
     }
 
-    @GetMapping("/radiology-tests")
+    @GetMapping("/procedure")
     public ResponseEntity<?> fetchAllProcedure(
        @RequestParam(value = "page", required = false) Integer page1,
        @RequestParam(value = "pageSize", required = false) Integer size
