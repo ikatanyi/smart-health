@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.radiology.domain;
+package io.smarthealth.clinical.procedure.domain;
 
 import io.smarthealth.billing.domain.PatientBill;
-import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
+import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -32,42 +32,42 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "patient_scan_register")
-public class PatientScanRegister extends ClinicalRecord {
+@Table(name = "patient_procedure_register")
+public class PatientProcedureRegister extends ClinicalRecord {
 
     @Column(nullable = false, unique = true)
     private String accessNo;
     //private String clinicalDetails;
 
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_request_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_request_id"))
     @OneToOne
     private DoctorRequest request;
 
     @Column(nullable = false, unique = false)
     @Enumerated(EnumType.STRING)
-    private ScanTestState status = ScanTestState.Scheduled;
+    private ProcedureTestState status = ProcedureTestState.Scheduled;
 
-    @OneToMany(mappedBy = "patientScanRegister", cascade = CascadeType.ALL)
-    private List<PatientScanTest> patientScanTest = new ArrayList<>();
+    @OneToMany(mappedBy = "patientProcedureRegister", cascade = CascadeType.ALL)
+    private List<PatientProcedureTest> patientProcedureTest = new ArrayList<>();
 
     @ManyToOne
     private Employee requestedBy;
 
     private LocalDate receivedDate;
 
-    public void addPatientScans(List<PatientScanTest> scans) {
-        for (PatientScanTest scan : scans) {
-            scan.setPatientScanRegister(this);
-            patientScanTest.add(scan);
+    public void addPatientProcedures(List<PatientProcedureTest> procs) {
+        for (PatientProcedureTest proc : procs) {
+//            proc.setPatientProcedureRegister(this);
+            patientProcedureTest.add(proc);
         }
     }
 
-    public void addPatientScan(PatientScanTest scan) {
-        scan.setPatientScanRegister(this);
-        patientScanTest.add(scan);
-    }
+//    public void addPatientProcedure(PatientProcedureTest proc) {
+//        proc.setPatientProcedureRegister(this);
+//        patientScanTest.add(proc);
+//    }
 
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_bill_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_bill_id"))
     @OneToOne
     private PatientBill bill;
     

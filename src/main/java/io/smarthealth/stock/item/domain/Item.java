@@ -11,6 +11,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 /**
@@ -20,7 +21,8 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "stock_item_service")
+@Table(name = "stock_item_service",uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"category","itemName"})})
 public class Item extends Identifiable {
 
     private String itemType;

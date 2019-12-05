@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.radiology.data;
+package io.smarthealth.clinical.procedure.data;
 
-import io.smarthealth.clinical.lab.data.LabTestTypeData;
-import io.smarthealth.clinical.radiology.domain.RadiologyTest;
+import io.smarthealth.clinical.procedure.domain.ProcedureTest;
+import io.smarthealth.clinical.procedure.domain.enumeration.Gender;
 import io.smarthealth.stock.item.data.ItemData;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -17,7 +17,7 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-public class RadiologyTestData {
+public class ProcedureTestData {
     private Long id;
     private String itemCode;
     private String scanName; //government classifications
@@ -28,11 +28,11 @@ public class RadiologyTestData {
     private String notes;
     private Boolean supervisorConfirmation;
     @Enumerated(EnumType.STRING)
-    private LabTestTypeData.Gender gender;  
+    private Gender gender;  
     private ItemData itemData;
     
-    public static RadiologyTestData map(RadiologyTest rtd){
-        RadiologyTestData entity = new RadiologyTestData();
+    public static ProcedureTestData map(ProcedureTest rtd){
+        ProcedureTestData entity = new ProcedureTestData();
         entity.setId(rtd.getId());
         entity.setConsent(rtd.getConsent());
         entity.setGender(rtd.getGender());
@@ -49,8 +49,8 @@ public class RadiologyTestData {
         return entity;
     }
     
-     public static RadiologyTest map(RadiologyTestData rtd){
-        RadiologyTest entity = new RadiologyTest();
+     public static ProcedureTest map(ProcedureTestData rtd){
+        ProcedureTest entity = new ProcedureTest();
         entity.setConsent(rtd.getConsent());
         entity.setGender(rtd.getGender());
         entity.setNotes(rtd.getNotes());

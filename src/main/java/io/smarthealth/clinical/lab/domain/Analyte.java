@@ -6,6 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 /**
@@ -15,7 +16,8 @@ import lombok.Data;
 @Entity
 @Data
 //@NamedQuery(name="tets",query = "SELECT e FROM Analyte e WHERE e.testType = :testType AND e.sex = :gender AND :age BETWEEN e.startAge and e.endAge ")
-@Table(name = "lab_test_analyte")
+@Table(name = "lab_test_analyte",uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"analyteName", "test_type_id"}, name="unique_analyte_name_test_type_id")})
 public class Analyte extends Identifiable {
 
     public enum Gender {

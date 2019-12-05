@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 /**
@@ -23,7 +24,8 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "lab_test_type")
+@Table(name = "lab_test_type",uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"testType"}, name="unique_test_type")})
 public class LabTestType extends Identifiable {
 
     @OneToMany(mappedBy = "testType")

@@ -1,16 +1,13 @@
 package io.smarthealth.clinical.lab.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
-import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 /**
@@ -19,7 +16,8 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "lab_specimen")
+@Table(name = "lab_specimen",uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"specimen"}, name="unique_specimen_name")})
 public class Specimen extends Identifiable {
 
     private String specimen;

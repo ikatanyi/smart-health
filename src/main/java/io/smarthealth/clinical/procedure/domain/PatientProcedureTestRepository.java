@@ -1,0 +1,25 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package io.smarthealth.clinical.procedure.domain;
+
+import io.smarthealth.clinical.pharmacy.domain.PatientDrugs;
+import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
+import io.smarthealth.clinical.visit.domain.Visit;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+/**
+ *
+ * @author Kennedy.Imbenzi
+ */
+public interface PatientProcedureTestRepository extends JpaRepository<PatientProcedureRegister, Long>{
+    @Query("SELECT d FROM PatientScanRegister d WHERE d.visit=:visit")
+    List<PatientProcedureRegister> findByVisit(@Param("visit") final Visit visit);    
+     Optional<PatientProcedureRegister> findByAccessNo(final String accessNo);
+}

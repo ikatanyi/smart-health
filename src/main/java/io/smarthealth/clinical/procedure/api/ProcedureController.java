@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.radiology.api;
+package io.smarthealth.clinical.procedure.api;
 
-import io.smarthealth.clinical.radiology.data.RadiologyTestData;
-import io.smarthealth.clinical.radiology.service.RadiologyService;
+import io.smarthealth.clinical.procedure.data.ProcedureTestData;
+import io.smarthealth.clinical.procedure.service.ProcedureService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -35,37 +35,37 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/v1")
-@Api(value = "Radiology-Controller", description = "Operations pertaining to Radiology maintenance")
-public class RadiologyController {
+@Api(value = "Procedure-Controller", description = "Operations pertaining to Procedure maintenance")
+public class ProcedureController {
 
     @Autowired
-    RadiologyService radiologyService;
+    ProcedureService radiologyService;
 
     @Autowired
     ModelMapper modelMapper;
 
     @PostMapping("/radiology-tests")
     public @ResponseBody
-    ResponseEntity<?> createTests(@RequestBody @Valid final List<RadiologyTestData> radiologyTestData) {
-        List<RadiologyTestData> radiologyTestList = radiologyService.createRadiologyTest(radiologyTestData)
+    ResponseEntity<?> createTests(@RequestBody @Valid final List<ProcedureTestData> radiologyTestData) {
+        List<ProcedureTestData> radiologyTestList = radiologyService.createProcedureTest(radiologyTestData)
                 .stream()
                 .map((radiology)->{
-                 RadiologyTestData testdata =  RadiologyTestData.map(radiology);
+                 ProcedureTestData testdata =  ProcedureTestData.map(radiology);
             return testdata;
             }).collect(Collectors.toList());
-        Pager<List<RadiologyTestData>> pagers = new Pager();        
+        Pager<List<ProcedureTestData>> pagers = new Pager();        
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(radiologyTestList);
         PageDetails details = new PageDetails();
-        details.setReportName("Radiology Tests");
+        details.setReportName("Procedure Tests");
         pagers.setPageDetails(details);        
         return ResponseEntity.status(HttpStatus.OK).body(pagers);      
     }
 
     @GetMapping("/radiology-tests/{id}")
-    public ResponseEntity<?> fetchRadiologyTest(@PathVariable("id") final Long id) {
-        RadiologyTestData radiologyTests = RadiologyTestData.map(radiologyService.getById(id));
+    public ResponseEntity<?> fetchProcedureTest(@PathVariable("id") final Long id) {
+        ProcedureTestData radiologyTests = ProcedureTestData.map(radiologyService.getById(id));
         if (radiologyTests != null) {
             return ResponseEntity.ok(radiologyTests);
         } else {
@@ -74,26 +74,26 @@ public class RadiologyController {
     }
 
     @GetMapping("/radiology-tests")
-    public ResponseEntity<?> fetchAllRadiology(
+    public ResponseEntity<?> fetchAllProcedure(
        @RequestParam(value = "page", required = false) Integer page1,
        @RequestParam(value = "pageSize", required = false) Integer size
     ) {
 
         Pageable pageable = PaginationUtil.createPage(page1, size);
-        List<RadiologyTestData> testData = radiologyService.findAll(pageable)
+        List<ProcedureTestData> testData = radiologyService.findAll(pageable)
                 .stream()
                 .map((radiology)->{
-                 RadiologyTestData testdata =  RadiologyTestData.map(radiology);
+                 ProcedureTestData testdata =  ProcedureTestData.map(radiology);
             return testdata;
             }).collect(Collectors.toList());
         Pager page = new Pager();
         page.setCode("200");
         page.setContent(testData);
-        page.setMessage("Radiology Tests fetched successfully");
+        page.setMessage("Procedure Tests fetched successfully");
         PageDetails details = new PageDetails();
         details.setPage(1);
         details.setPerPage(25);
-        details.setReportName("Radiology Tests fetched");
+        details.setReportName("Procedure Tests fetched");
 //        details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
         page.setPageDetails(details);
         return ResponseEntity.ok(page);

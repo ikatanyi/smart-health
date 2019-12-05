@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 /**
@@ -21,7 +22,8 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "facility")
+@Table(name = "facility",uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"facilityName"}, name="unique_facility_name")})
 public class Facility extends Auditable {
 
     public enum Type {

@@ -26,13 +26,14 @@ import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
-import io.smarthealth.stock.item.data.ItemData;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,20 +44,25 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Kennedy.Imbenzi
  */
 @Service
+@RequiredArgsConstructor
 public class RadiologyService {
 
+    @Autowired
     RadiologyRepository radiologyRepository;
+    @Autowired
     PatientRadiologyTestRepository patientradiologyRepository;
+    @Autowired
     DoctorsRequestRepository doctorRequestRepository;
-    
+    @Autowired
     PatientScanTestRepository pscanRepository;
 
-    EmployeeService employeeService;
-    private PatientService patientservice;
-    private PatientBillService billService;
-    private ItemService itemService;
-    private VisitService visitService;
-    private SequenceService seqService;
+    private final EmployeeService employeeService;
+    private final PatientService patientservice;
+    private final PatientBillService billService;
+    private final ItemService itemService;
+    private final VisitService visitService;
+    private final SequenceService seqService;
+
 
     @Transactional
     public List<RadiologyTest> createRadiologyTest(List<RadiologyTestData> radiolgyTestData) {
@@ -93,8 +99,10 @@ public class RadiologyService {
 
     }
     
-    public Optional<RadiologyTest> findScanByItem(final Item item) {
-        return radiologyRepository.findByItem(item);
+    public RadiologyTest findScanByItem(final Item item) {
+        return radiologyRepository.findByItem(item).orElseThrow(() -> {
+            return APIException.notFound("Radiology Test not Registered in Radiology Department");
+        });
     }
 
     @Transactional
@@ -139,7 +147,7 @@ public class RadiologyService {
             List<PatientScanTest> patientScanTest = new ArrayList<>();
             for (ScanItemData id : patientScanRegData.getItemData()) {
                 Item i = itemService.findItemWithNoFoundDetection(id.getItemCode());
-                RadiologyTest labTestType = findScanByItem(i).get();
+                RadiologyTest labTestType = findScanByItem(i);
                 PatientScanTest pte = new PatientScanTest();
                 pte.setStatus(ScanTestState.valueOf(id.getStatus()));
                 pte.setTestPrice(id.getItemPrice());

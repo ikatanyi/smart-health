@@ -13,7 +13,8 @@ public enum SequenceType {
     BillNumber("patient_bill_seq"),
     LabTestNumber("lab_test_seq"),
     PrescriptionNo("patient_prescription_seq"),
-    ScanNumber("patient_scan_seq");
+    ScanNumber("patient_scan_seq"),
+    ProcedureNumber("patient_procedure_seq");
 
     public final String sequenceName;
 

@@ -10,6 +10,7 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.Data;
 
 /**
@@ -18,7 +19,8 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "facility_department")
+@Table(name = "facility_department",uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"dept_name"}, name="unique_dept_name_fk_dept_facility_id")})
 public class Department extends Identifiable {
 
     public enum Type {

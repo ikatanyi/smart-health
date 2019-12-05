@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.radiology.domain;
 
+
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;

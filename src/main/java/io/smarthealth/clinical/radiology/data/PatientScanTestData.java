@@ -24,7 +24,7 @@ public class PatientScanTestData {
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
     private String imagePath;
-    private PatientScanRegisterData patientScanRegisterData;
+   // private PatientScanRegisterData patientScanRegisterData;
 
     private String result;
     private String comments;
@@ -50,8 +50,8 @@ public class PatientScanTestData {
         entity.setResult(patScan.getResult());
         entity.setStatus(patScan.getStatus());
         entity.setTestPrice(patScan.getTestPrice());
-        if(patScan.getPatientScanRegister()!=null)
-            entity.setPatientScanRegisterData(PatientScanRegisterData.map(patScan.getPatientScanRegister()));
+//        if(patScan.getPatientScanRegister()!=null)
+//            entity.setPatientScanRegisterData(PatientScanRegisterData.map(patScan.getPatientScanRegister()));
         if(patScan.getRadiologyTest()!=null)
             entity.setRadiologyTestData(RadiologyTestData.map(patScan.getRadiologyTest()));
         return entity;

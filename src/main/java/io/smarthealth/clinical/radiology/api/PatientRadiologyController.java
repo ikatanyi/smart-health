@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.radiology.api;
 
+import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
@@ -44,15 +45,30 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
  * @author Kennedy.Imbenzi
  */
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/v1")
 @Api(value = "Patient-Radiology-Controller", description = "Radiology Patient Results Rest Controller")
-public class PatientResultsController {
+public class PatientRadiologyController {
 
     @Autowired
     RadiologyService radiologyService;
 
     @Autowired
-    ModelMapper modelMapper;    
+    ModelMapper modelMapper;   
+    
+    @PostMapping("/patient-scan")
+    public @ResponseBody
+    ResponseEntity<?> createPatientScan(@RequestBody final PatientScanRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo, @RequestParam(value = "requestId", required = false) final Long requestId) {
+        PatientScanRegisterData Patientscans = PatientScanRegisterData.map(radiologyService.savePatientResults(patientRegData, visitNo, requestId));
+        Pager<PatientScanRegisterData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(Patientscans);
+        PageDetails details = new PageDetails();
+        details.setReportName("Patient Scans Tests");
+        pagers.setPageDetails(details);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(pagers);
+    }
     
     @GetMapping("/patient-scan/results/{scanAccessionNo}")
     public @ResponseBody
@@ -116,8 +132,9 @@ public class PatientResultsController {
             return ResponseEntity.created(location).body(data);
         } catch (IOException ex) {
             ex.printStackTrace();
-            throw APIException.internalError("Error saving patient's image ", ex.getMessage());
+            throw APIException.internalError("Error saving Patient Scan image ", ex.getMessage());
         }
 
     }
+    
 }

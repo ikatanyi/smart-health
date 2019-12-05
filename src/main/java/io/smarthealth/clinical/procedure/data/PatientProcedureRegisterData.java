@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.radiology.data;
-
+package io.smarthealth.clinical.procedure.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.billing.data.PatientBillData;
-import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
+import io.smarthealth.clinical.procedure.domain.PatientProcedureRegister;
+import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.infrastructure.lang.DateConverter;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
@@ -25,7 +25,7 @@ import lombok.Data;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL) 	//  ignore all null fields
-public class PatientScanRegisterData {
+public class PatientProcedureRegisterData {
 
     @ApiModelProperty(hidden = true, required = false)
     private LocalDate orderedDate;
@@ -33,7 +33,7 @@ public class PatientScanRegisterData {
     @ApiModelProperty(hidden = true, required = false)
     private String visitNumber;
     @ApiModelProperty(hidden = true, required = false)
-    private String requestId;
+    private Long requestId;
     private String accessionNo;
     private String patientNumber;
 
@@ -46,32 +46,34 @@ public class PatientScanRegisterData {
     @ApiModelProperty(hidden = true, required = false)
     private String physicianName;
     private LocalDate receivedDate;
+    
+    private DoctorRequestData requestData;
 
     private String servicePoint;
 
     @ApiModelProperty(hidden = true, required = false)
-    private List<PatientScanTestData> patientScanTestData = new ArrayList();
+    private List<PatientProcedureTestData> patientProcecedureTestData = new ArrayList();
 
-    private List<ScanItemData> itemData = new ArrayList();
+    private List<ProcedureItemData> itemData = new ArrayList();
 
     @ApiModelProperty(required = false, hidden = true)
     private PatientBillData billData;
 
-    public static PatientScanRegister map(PatientScanRegisterData patientregister) {
-        PatientScanRegister e = new PatientScanRegister();
+    public static PatientProcedureRegister map(PatientProcedureRegisterData patientregister) {
+        PatientProcedureRegister e = new PatientProcedureRegister();
         e.setAccessNo(patientregister.getAccessionNo());
         return e;
     }
 
-    public static PatientScanRegisterData map(PatientScanRegister patientregister) {
-        PatientScanRegisterData data = new PatientScanRegisterData();
+    public static PatientProcedureRegisterData map(PatientProcedureRegister patientregister) {
+        PatientProcedureRegisterData data = new PatientProcedureRegisterData();
         if (patientregister.getVisit() != null) {
             data.setVisitNumber(patientregister.getVisit().getVisitNumber());
             data.setPatientName(patientregister.getVisit().getPatient().getFullName());
             data.setPatientNumber(patientregister.getVisit().getPatient().getPatientNumber());
         }
         if (patientregister.getRequest() != null) {
-            data.setRequestId(String.valueOf(patientregister.getRequest().getId()));
+            data.setRequestId(patientregister.getRequest().getId());
             data.setRequestedBy(patientregister.getRequest().getRequestedBy().getStaffNumber());
             data.setPhysicianName(patientregister.getRequest().getCreatedBy());
         }
@@ -82,13 +84,17 @@ public class PatientScanRegisterData {
             data.setBillData(patientregister.getBill().toData());
         }
 
-        if (patientregister.getPatientScanTest()!= null) {
-            data.setPatientScanTestData(
-                    patientregister.getPatientScanTest()
+        if (patientregister.getPatientProcedureTest()!= null) {
+            data.setPatientProcecedureTestData(
+                    patientregister.getPatientProcedureTest()
                     .stream()
-                    .map((pscantest)->PatientScanTestData.map(pscantest))
+                    .map((pscantest)->PatientProcedureTestData.map(pscantest))
                     .collect(Collectors.toList())
             );
+        }
+        if(patientregister.getRequest()!=null){
+            data.setRequestId(patientregister.getRequest().getId());
+            data.setRequestData(DoctorRequestData.map(patientregister.getRequest()));
         }
         //data.setOrderedDate(DateConverter.toIsoString(LocalDateTime.ofInstant(patientregister.getCreatedOn(), ZoneOffset.UTC)));
 

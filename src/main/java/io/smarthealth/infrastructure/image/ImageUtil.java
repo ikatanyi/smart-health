@@ -5,11 +5,9 @@
  */
 package io.smarthealth.infrastructure.image;
 
+
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.person.domain.Person;
-import io.smarthealth.organization.person.domain.Portrait;
-import io.smarthealth.organization.person.domain.PortraitRepository;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,7 +31,7 @@ public class ImageUtil {
      
      private File ImageDirRoot;
      
-     @Value("${upload.image.max-size:524288}")
+     @Value("${upload.image.max-size:10242880}")
     Long maxSize;
      
      @Value("${clinical.image.upload.dir}")
