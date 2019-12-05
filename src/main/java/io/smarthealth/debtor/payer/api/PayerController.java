@@ -1,7 +1,7 @@
 package io.smarthealth.debtor.payer.api;
 
-import io.smarthealth.accounting.account.domain.Account;
-import io.smarthealth.accounting.account.service.AccountService; 
+import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.accounting.acc.service.AccountService;
 import io.smarthealth.administration.app.domain.BankBranch;
 import io.smarthealth.administration.app.domain.PaymentTerms;
 import io.smarthealth.administration.app.service.AdminService;
@@ -51,7 +51,7 @@ public class PayerController {
 
         Payer payer = PayerData.map(payerData);
         BankBranch bankBranch = adminService.fetchBankBranchById(payerData.getBranchId());
-        Account debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
+        AccountEntity debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
         PaymentTerms paymentTerms = paymentTermsService.getPaymentTermByIdWithFailDetection(payerData.getPaymentTermId());
         payer.setBankBranch(bankBranch);
         payer.setDebitAccount(debitAccount);

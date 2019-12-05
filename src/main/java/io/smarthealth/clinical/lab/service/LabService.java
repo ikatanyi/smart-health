@@ -1,10 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.lab.service;
 
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.billing.domain.PatientBill;
 import io.smarthealth.billing.domain.PatientBillItem;
 import io.smarthealth.billing.domain.enumeration.BillStatus;
@@ -26,7 +22,6 @@ import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.SpecimenRepository;
 import io.smarthealth.clinical.lab.domain.LabTestType;
 import io.smarthealth.clinical.visit.domain.Visit;
-import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -52,15 +47,11 @@ import io.smarthealth.clinical.lab.domain.PatientTestRegister;
 import io.smarthealth.clinical.lab.domain.PatientTestRegisterRepository;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.visit.service.VisitService;
-import io.smarthealth.organization.facility.domain.Department;
-import io.smarthealth.organization.facility.domain.Department.ServicePointType;
-import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  *

@@ -24,6 +24,7 @@ public class PatientBillItemData {
     private Double quantity;
     private Double price;
     private Double amount;
+    private Double discount;
     private String transactionNo;
     private String createdBy;
    private Long servicePointId;

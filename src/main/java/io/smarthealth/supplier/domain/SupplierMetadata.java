@@ -24,4 +24,5 @@ public class SupplierMetadata {
     private List<PriceBookData> pricelists;
     private List<Currency> currencies;
     private List<PaymentTerms> paymentTerms;
+    
 }

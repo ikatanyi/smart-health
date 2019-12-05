@@ -51,6 +51,13 @@ public class OrganizationController {
         return OrganizationData.map(org);
     }
 
+    @GetMapping("/organization")
+    public OrganizationData getActiveOrganization() {
+        Organization org = service.getActiveOrganization();
+
+        return OrganizationData.map(org);
+    }
+    
     @PutMapping("/organization/{id}")
     public OrganizationData OrganizationData(@PathVariable(value = "id") String id, OrganizationData data) {
         return service.updateOrganization(id, data);

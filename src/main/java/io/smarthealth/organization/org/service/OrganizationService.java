@@ -97,6 +97,10 @@ public class OrganizationService {
         return orgRepository.findById(orgId)
                 .orElseThrow(() -> APIException.notFound("Organization with Id {0} not Found", orgId));
     }
+       public Organization getActiveOrganization(){
+        return orgRepository.findTopByOrderByOrganizationNameDesc()
+                .orElseThrow(() -> APIException.notFound("No active Organization set"));
+    }
     
     @Transactional
     public OrganizationData updateOrganization(String id, OrganizationData data) {

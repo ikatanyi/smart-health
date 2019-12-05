@@ -13,4 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface OrganizationRepository extends JpaRepository<Organization, String> {
 
     Optional<Organization> findByCode(String code);
+    
+    Optional<Organization> findTopByOrderByOrganizationNameDesc();
 }

@@ -1,6 +1,6 @@
 package io.smarthealth.stock.stores.domain;
-
-import io.smarthealth.accounting.account.domain.Account;
+ 
+import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -27,13 +27,13 @@ public class Store extends Identifiable {
     private boolean patientStore;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_sales_account_id"))
-    private Account salesAccount;
+    private AccountEntity salesAccount;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_purchase_account_id"))
-    private Account purchaseAccount;
+    private AccountEntity purchaseAccount;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_inventory_account_id"))
-    private Account inventoryAccount;
+    private AccountEntity inventoryAccount;
     private boolean active;
 
 }

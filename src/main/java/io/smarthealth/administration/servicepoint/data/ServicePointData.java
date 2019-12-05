@@ -1,6 +1,6 @@
 package io.smarthealth.administration.servicepoint.data;
-  
-import io.smarthealth.accounting.account.data.SimpleAccountData;
+
+import io.smarthealth.accounting.acc.data.SimpleAccountData;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +17,7 @@ public class ServicePointData {
     private String name;
     private String description;
     private Boolean active;
+    private String servicePointType;
     private SimpleAccountData incomeAccount;
     private SimpleAccountData expenseAccount;
 

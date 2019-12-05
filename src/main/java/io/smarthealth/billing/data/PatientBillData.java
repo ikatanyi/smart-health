@@ -30,6 +30,7 @@ public class PatientBillData {
     private String paymentMode;
     private Double balance;
     private Double Amount;
+    private Double discount;
     private String journalNumber;
     
     @Enumerated(EnumType.STRING)

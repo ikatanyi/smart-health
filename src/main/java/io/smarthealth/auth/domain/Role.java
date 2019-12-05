@@ -17,24 +17,28 @@ import lombok.Data;
 
 /**
  * User's Role
+ *
  * @author Kelsas
  */
 @Entity
 @Data
-@Table(name = "auth_role" )
-public class Role extends Identifiable{
+@Table(name = "auth_role")
+public class Role extends Identifiable {
+
     private String name;
     private String description;
-     @Column(name = "is_disabled", nullable = false)
+    @Column(name = "is_disabled", nullable = false)
     private Boolean disabled;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "auth_permission_role", joinColumns = {
-        @JoinColumn(name = "role_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "permission_id", referencedColumnName = "id")}, foreignKey = @ForeignKey(name = "fk_role_permission_id"))
-     private Set<Permission> permissions = new HashSet<>();
-    
-     protected Role() {
+    @JoinTable(name = "auth_permission_role",
+            joinColumns = {
+                @JoinColumn(name = "role_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_role_role__id"))},
+            inverseJoinColumns = {
+                @JoinColumn(name = "permission_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_role_permission_id"))})
+    private Set<Permission> permissions = new HashSet<>();
+
+    protected Role() {
         //
     }
 
@@ -43,7 +47,7 @@ public class Role extends Identifiable{
         this.description = description.trim();
         this.disabled = false;
     }
-    
+
     public boolean updatePermission(final Permission permission, final boolean isSelected) {
         boolean changed = false;
         if (isSelected) {
@@ -54,7 +58,7 @@ public class Role extends Identifiable{
 
         return changed;
     }
-    
+
     private boolean addPermission(final Permission permission) {
         return this.permissions.add(permission);
     }
@@ -76,8 +80,9 @@ public class Role extends Identifiable{
             }
         }
         return match;
-    } 
-    public RoleData toData(){ 
+    }
+
+    public RoleData toData() {
         return new RoleData(getId(), this.name, this.description, this.disabled);
     }
 

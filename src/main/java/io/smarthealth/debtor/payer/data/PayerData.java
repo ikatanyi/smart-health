@@ -36,7 +36,7 @@ public class PayerData {
         PayerData payerData = new PayerData();
         payerData.setBranchId(payer.getBankBranch().getId());
         if (payer.getDebitAccount() != null) {
-            payerData.setDebitAccountNo(payer.getDebitAccount().getAccountNumber());
+            payerData.setDebitAccountNo(payer.getDebitAccount().getIdentifier());
         }
         payerData.setInsurance(payer.isInsurance());
         payerData.setLegalName(payer.getLegalName());

@@ -5,6 +5,7 @@
  */
 package io.smarthealth.organization.facility.data;
 
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.organization.facility.domain.Department;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -39,5 +40,5 @@ public class DepartmentData {
     private boolean active;
 
     @Enumerated(EnumType.STRING)
-    private Department.ServicePointType servicePointType;
+    private ServicePointType servicePointType;
 }

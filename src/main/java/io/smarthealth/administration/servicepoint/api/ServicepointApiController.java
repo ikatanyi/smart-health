@@ -38,7 +38,7 @@ public class ServicepointApiController {
         this.service = service;
     }
 
-    @PostMapping("/service-points")
+    @PostMapping("/servicepoints")
     public ResponseEntity<?> createServicepoint(@Valid @RequestBody ServicePointData data) {
 
         ServicePointData result = service.createPoint(data);
@@ -51,13 +51,13 @@ public class ServicepointApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
-    @GetMapping("/service-points/{id}")
+    @GetMapping("/servicepoints/{id}")
     public ResponseEntity<?> getServicepoint(@PathVariable(value = "id") Long id) {
         ServicePointData data = service.getServicePoint(id).toData();
         return ResponseEntity.ok(data);
     }
 
-    @PutMapping("/service-points/{id}")
+    @PutMapping("/servicepoints/{id}")
     public ResponseEntity<?> updateServicepoint(@PathVariable(value = "id") Long id, ServicePointData data) {
         ServicePointData result = service.updateServicePoint(id, data);
 
@@ -69,7 +69,7 @@ public class ServicepointApiController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
     }
 
-    @GetMapping("/service-points")
+    @GetMapping("/servicepoints")
     public ResponseEntity<?> listServicepoint(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {

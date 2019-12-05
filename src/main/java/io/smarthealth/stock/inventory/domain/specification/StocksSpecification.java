@@ -1,26 +1,11 @@
 package io.smarthealth.stock.inventory.domain.specification;
 
-import io.smarthealth.accounting.account.domain.specification.*;
-import io.smarthealth.accounting.account.domain.Account;
-import io.smarthealth.accounting.account.domain.AccountType;
-import io.smarthealth.accounting.account.domain.Journal;
-import io.smarthealth.accounting.account.domain.enumeration.AccountCategory;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.stock.inventory.domain.StockMovement;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
-import io.smarthealth.stock.item.domain.Item;
-import io.smarthealth.stock.item.domain.Uom;
-import io.smarthealth.stock.stores.domain.Store;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import org.springframework.data.jpa.domain.Specification;
 
 /**

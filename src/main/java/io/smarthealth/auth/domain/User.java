@@ -24,7 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @author Kelsas
  */
 @Entity
-@Table(name = "auth_user") 
+@Table(name = "auth_user")
 public class User extends Identifiable implements UserDetails {
 
     private static final long serialVersionUID = 1L;
@@ -46,11 +46,13 @@ public class User extends Identifiable implements UserDetails {
     private boolean verified;
 
     private LocalDateTime lastLogin;
- 
+
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "auth_role_user", joinColumns = {
-        @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "role_id", referencedColumnName = "id")}, foreignKey = @ForeignKey(name = "fk_user_roles_id"))
+    @JoinTable(name = "auth_role_user",
+            joinColumns = {
+                @JoinColumn(name = "user_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_auth_user_user_id"))},
+            inverseJoinColumns = {
+                @JoinColumn(name = "role_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_auth_user_roles_id"))})
     private List<Role> roles;
 
     public User() {

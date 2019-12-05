@@ -1,7 +1,6 @@
 package io.smarthealth.auth.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.Data;

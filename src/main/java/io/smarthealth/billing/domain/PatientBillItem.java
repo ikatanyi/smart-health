@@ -1,6 +1,5 @@
 package io.smarthealth.billing.domain;
-
-import io.smarthealth.accounting.account.domain.enumeration.TransactionType;
+ 
 import io.smarthealth.billing.data.PatientBillItemData;
 import io.smarthealth.billing.domain.enumeration.BillStatus;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -17,7 +16,7 @@ import lombok.Data;
 
 /**
  *
- * @author Kennedy.Imbenzi
+ * @author Kelsas
  */
 @Entity
 @Data
@@ -26,9 +25,8 @@ public class PatientBillItem extends Auditable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_item_bill_id"))
-    private PatientBill patientBill;
-    @Enumerated(EnumType.STRING)
-    private TransactionType transactionType;
+    private PatientBill patientBill; 
+    private String transactionType;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_item_item_id"))
     private Item item;
@@ -36,6 +34,7 @@ public class PatientBillItem extends Auditable {
     private Double quantity;
     private Double price;
     private Double amount;
+    private Double discount;
     private String transactionNo;
     private Long servicePointId;
     private String servicePoint;
@@ -53,7 +52,9 @@ public class PatientBillItem extends Auditable {
         data.setPrice(this.getPrice());
         data.setQuantity(this.getQuantity());
         data.setAmount(this.getAmount());
+        data.setDiscount(this.getDiscount());
         data.setTransactionNo(this.getTransactionNo());
+        
         data.setCreatedBy(this.getCreatedBy());
 
         if (this.getItem() != null) {
