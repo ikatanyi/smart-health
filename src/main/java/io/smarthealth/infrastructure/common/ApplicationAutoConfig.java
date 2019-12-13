@@ -1,18 +1,19 @@
 package io.smarthealth.infrastructure.common;
 
+import io.smarthealth.infrastructure.mail.MailService;
 import io.smarthealth.infrastructure.mail.MockMailSender;
 import io.smarthealth.infrastructure.mail.SmtpMailSender;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.javamail.JavaMailSender;
-import io.smarthealth.infrastructure.mail.MailService;
-import javax.sql.DataSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mail.javamail.JavaMailSender;
+
+import javax.sql.DataSource;
 
 /**
  *

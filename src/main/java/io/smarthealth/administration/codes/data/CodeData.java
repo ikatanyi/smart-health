@@ -1,8 +1,9 @@
 package io.smarthealth.administration.codes.data;
 
 import io.smarthealth.administration.codes.domain.Code;
-import java.io.Serializable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * Immutable data object representing a code.

@@ -2,7 +2,6 @@ package io.smarthealth.organization.person.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.organization.person.domain.PersonAddress;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 //import org.smarthealth.patient.domain.Address;
 

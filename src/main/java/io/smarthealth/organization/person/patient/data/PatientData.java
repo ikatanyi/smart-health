@@ -3,8 +3,9 @@ package io.smarthealth.organization.person.patient.data;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.organization.person.data.PersonData;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.List;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  *

@@ -2,13 +2,10 @@ package io.smarthealth.stock.purchase.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.item.domain.Item;
-import java.math.BigDecimal;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import lombok.Data;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
 
 /**
  *

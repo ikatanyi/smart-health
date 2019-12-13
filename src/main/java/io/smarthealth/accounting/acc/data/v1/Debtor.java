@@ -1,10 +1,11 @@
 package io.smarthealth.accounting.acc.data.v1;
 
 
-import java.util.Objects;
+import io.smarthealth.accounting.acc.validation.contraints.ValidIdentifiers;
+
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
-import io.smarthealth.accounting.acc.validation.contraints.ValidIdentifiers;
+import java.util.Objects;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Debtor {

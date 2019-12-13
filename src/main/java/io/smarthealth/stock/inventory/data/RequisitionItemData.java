@@ -1,14 +1,6 @@
 package io.smarthealth.stock.inventory.data;
 
-import io.smarthealth.stock.inventory.domain.*;
-import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.stock.item.domain.Item;
-import io.smarthealth.stock.item.domain.Uom;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import io.smarthealth.stock.inventory.domain.RequisitionItem;
 import lombok.Data;
 
 /**

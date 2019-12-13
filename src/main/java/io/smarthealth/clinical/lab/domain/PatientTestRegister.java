@@ -8,14 +8,10 @@ package io.smarthealth.clinical.lab.domain;
 import io.smarthealth.billing.domain.PatientBill;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
-import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn; 
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import lombok.Data;
+
+import javax.persistence.*;
+import java.util.List;
 
 /**
  *

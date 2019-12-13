@@ -6,12 +6,13 @@
 package io.smarthealth.administration.config.service;
 
 import io.smarthealth.administration.config.domain.GlobalConfiguration;
-import java.util.Optional;
+import io.smarthealth.administration.config.domain.GlobalConfigurationRepository;
+import io.smarthealth.infrastructure.exception.APIException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import io.smarthealth.administration.config.domain.GlobalConfigurationRepository;
-import io.smarthealth.infrastructure.exception.APIException;
+
+import java.util.Optional;
 
 /**
  *

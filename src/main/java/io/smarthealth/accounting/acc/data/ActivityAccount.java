@@ -1,8 +1,8 @@
  package io.smarthealth.accounting.acc.data;
 
-import io.smarthealth.accounting.acc.data.v1.FinancialActivity;
-import io.smarthealth.accounting.acc.domain.FinancialActivityAccount; 
-import lombok.Value;
+ import io.smarthealth.accounting.acc.data.v1.FinancialActivity;
+ import io.smarthealth.accounting.acc.domain.FinancialActivityAccount;
+ import lombok.Value;
 
 /**
  *

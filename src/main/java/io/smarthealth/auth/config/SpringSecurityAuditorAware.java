@@ -2,8 +2,9 @@ package io.smarthealth.auth.config;
 
 import io.smarthealth.config.Constants;
 import io.smarthealth.infrastructure.common.SecurityUtils;
-import java.util.Optional;
 import org.springframework.data.domain.AuditorAware;
+
+import java.util.Optional;
 
 public class SpringSecurityAuditorAware implements AuditorAware<String> {
 

@@ -6,12 +6,14 @@
 package io.smarthealth.clinical.record.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
+import lombok.Data;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import lombok.Data;
+import java.time.LocalDateTime;
+
+import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 
 /**
  *

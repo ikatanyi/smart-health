@@ -1,8 +1,9 @@
  package io.smarthealth.auth.data;
 
-import java.io.Serializable;
-import java.util.Collection;
-import lombok.Data;
+ import lombok.Data;
+
+ import java.io.Serializable;
+ import java.util.Collection;
 
 /**
  *

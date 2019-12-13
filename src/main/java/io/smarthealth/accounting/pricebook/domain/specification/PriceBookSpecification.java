@@ -3,9 +3,10 @@ package io.smarthealth.accounting.pricebook.domain.specification;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.pricebook.domain.enumeration.PriceCategory;
 import io.smarthealth.accounting.pricebook.domain.enumeration.PriceType;
+import org.springframework.data.jpa.domain.Specification;
+
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
-import org.springframework.data.jpa.domain.Specification;
 
 /**
  * Filters for searching the data and filtering for the user

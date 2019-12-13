@@ -3,9 +3,10 @@ package io.smarthealth.infrastructure.sequence.service;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.domain.SequenceFormat;
 import io.smarthealth.infrastructure.sequence.domain.SequenceRepository;
-import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  *  Database Based sequence generator

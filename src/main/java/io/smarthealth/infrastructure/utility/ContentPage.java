@@ -6,8 +6,9 @@
 package io.smarthealth.infrastructure.utility;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  *

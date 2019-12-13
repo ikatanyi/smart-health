@@ -1,19 +1,13 @@
 package io.smarthealth.auth.domain;
 
-import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.auth.data.RoleData;
+import io.smarthealth.infrastructure.domain.Identifiable;
+import lombok.Data;
+
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import lombok.Data;
 
 /**
  * User's Role

@@ -6,11 +6,12 @@
 package io.smarthealth.clinical.record.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import lombok.Data;
 
 /**
  *

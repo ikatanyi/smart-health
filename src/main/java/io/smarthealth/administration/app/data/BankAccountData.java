@@ -1,9 +1,10 @@
 package io.smarthealth.administration.app.data;
 
 import io.smarthealth.administration.app.domain.BankAccount;
-import java.io.Serializable;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
+
+import java.io.Serializable;
 
 /**
  *

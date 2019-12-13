@@ -2,15 +2,14 @@ package io.smarthealth.billing.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.smarthealth.billing.domain.PatientBill;
 import io.smarthealth.billing.domain.enumeration.BillStatus;
 import io.smarthealth.infrastructure.lang.Constants;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.Data;
+
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import lombok.Data;
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  *

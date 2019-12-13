@@ -7,11 +7,12 @@ package io.smarthealth.infrastructure.sequence.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.infrastructure.sequence.SequenceType;
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import lombok.Data;
 
 /**
  *

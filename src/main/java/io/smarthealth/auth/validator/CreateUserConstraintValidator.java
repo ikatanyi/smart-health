@@ -3,11 +3,12 @@ package io.smarthealth.auth.validator;
 import io.smarthealth.auth.data.UserRequest;
 import io.smarthealth.auth.domain.User;
 import io.smarthealth.auth.domain.UserRepository;
-import java.util.Optional;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+import java.util.Optional;
 
 /**
  *

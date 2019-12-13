@@ -8,6 +8,7 @@ package io.smarthealth.infrastructure.common;
 import com.machinezoo.sourceafis.FingerprintMatcher;
 import com.machinezoo.sourceafis.FingerprintTemplate;
 import io.smarthealth.organization.person.data.PersonBiometricRecord;
+
 import java.util.Base64;
 
 /**

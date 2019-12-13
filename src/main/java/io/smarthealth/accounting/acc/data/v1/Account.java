@@ -1,12 +1,13 @@
 package io.smarthealth.accounting.acc.data.v1;
 
 
+import io.smarthealth.accounting.acc.validation.contraints.ValidIdentifiers;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.Set;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull; 
-import org.hibernate.validator.constraints.Length; 
-import io.smarthealth.accounting.acc.validation.contraints.ValidIdentifiers;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Account {
@@ -17,8 +18,8 @@ public final class Account {
   @NotEmpty
   @Length(max = 256)
   private String name;
-  private Set<String> holders;
-  private Set<String> signatureAuthorities;
+//  private Set<String> holders;
+//  private Set<String> signatureU6Authorities;
   @NotNull
   private Double balance;
   private String referenceAccount;
@@ -59,21 +60,21 @@ public final class Account {
     this.name = name;
   }
 
-  public Set<String> getHolders() {
-    return this.holders;
-  }
-
-  public void setHolders(final Set<String> holders) {
-    this.holders = holders;
-  }
-
-  public Set<String> getSignatureAuthorities() {
-    return this.signatureAuthorities;
-  }
-
-  public void setSignatureAuthorities(final Set<String> signatureAuthorities) {
-    this.signatureAuthorities = signatureAuthorities;
-  }
+//  public Set<String> getHolders() {
+//    return this.holders;
+//  }
+//
+//  public void setHolders(final Set<String> holders) {
+//    this.holders = holders;
+//  }
+//
+//  public Set<String> getSignatureAuthorities() {
+//    return this.signatureAuthorities;
+//  }
+//
+//  public void setSignatureAuthorities(final Set<String> signatureAuthorities) {
+//    this.signatureAuthorities = signatureAuthorities;
+//  }
 
   public Double getBalance() {
     return this.balance;
@@ -165,8 +166,8 @@ public final class Account {
     return type == account.type &&
             Objects.equals(identifier, account.identifier) &&
             Objects.equals(name, account.name) &&
-            Objects.equals(holders, account.holders) &&
-            Objects.equals(signatureAuthorities, account.signatureAuthorities) &&
+//            Objects.equals(holders, account.holders) &&
+//            Objects.equals(signatureAuthorities, account.signatureAuthorities) &&
             Objects.equals(balance, account.balance) &&
             Objects.equals(referenceAccount, account.referenceAccount) &&
             Objects.equals(ledger, account.ledger) &&
@@ -175,7 +176,8 @@ public final class Account {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, identifier, name, holders, signatureAuthorities, balance, referenceAccount, ledger, state);
+    return Objects.hash(type, identifier, name, balance, referenceAccount, ledger, state);
+//    return Objects.hash(type, identifier, name, holders, signatureAuthorities, balance, referenceAccount, ledger, state);
   }
 
   @Override
@@ -184,8 +186,8 @@ public final class Account {
             "type=" + type +
             ", identifier='" + identifier + '\'' +
             ", name='" + name + '\'' +
-            ", holders=" + holders +
-            ", signatureAuthorities=" + signatureAuthorities +
+//            ", holders=" + holders +
+//            ", signatureAuthorities=" + signatureAuthorities +
             ", balance=" + balance +
             ", referenceAccount='" + referenceAccount + '\'' +
             ", ledger='" + ledger + '\'' +

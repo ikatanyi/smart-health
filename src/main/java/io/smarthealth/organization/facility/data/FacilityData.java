@@ -6,8 +6,9 @@
 package io.smarthealth.organization.facility.data;
 
 import io.smarthealth.organization.facility.domain.Facility;
-import javax.persistence.Lob;
 import lombok.Data;
+
+import javax.persistence.Lob;
 
 /**
  *

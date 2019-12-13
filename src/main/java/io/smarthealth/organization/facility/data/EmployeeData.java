@@ -7,11 +7,10 @@ package io.smarthealth.organization.facility.data;
 
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.data.PersonData;
+import lombok.Data;
+
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import lombok.Data;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *

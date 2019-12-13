@@ -1,8 +1,9 @@
 package io.smarthealth.administration.app.domain;
 
-import java.io.Serializable;
-import javax.persistence.Embeddable;
 import lombok.Data;
+
+import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 /**
  *

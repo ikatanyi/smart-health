@@ -9,7 +9,6 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.domain.Person;
 import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.domain.PersonContactRepository;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

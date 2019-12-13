@@ -4,15 +4,15 @@
  * and open the template in the editor.
  */
 package io.smarthealth.auth.data;
- 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonView;
 import io.smarthealth.auth.validator.ValidPassword;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data; 
 
 /**
  *

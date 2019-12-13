@@ -1,5 +1,5 @@
 package io.smarthealth.auth.domain;
- 
+
 
 import io.smarthealth.config.Constants;
 import io.smarthealth.config.audit.AuditEventConverter;
@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An implementation of Spring Boot's AuditEventRepository.

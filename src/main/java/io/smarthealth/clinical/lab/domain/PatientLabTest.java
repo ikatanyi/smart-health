@@ -7,19 +7,13 @@ package io.smarthealth.clinical.lab.domain;
 
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import java.time.LocalDateTime;
-import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import lombok.Data;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  *  Patient Lab Request

@@ -7,10 +7,10 @@ package io.smarthealth.clinical.record.data;
 
 import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.organization.person.patient.data.PatientData;
-import io.smarthealth.stock.item.data.ItemData;
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 
 /**
  *

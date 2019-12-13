@@ -2,9 +2,10 @@ package io.smarthealth.supplier.domain.specification;
 
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.domain.enumeration.SupplierType;
+import org.springframework.data.jpa.domain.Specification;
+
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
-import org.springframework.data.jpa.domain.Specification;
 
 /**
  * Filters for searching the data and filtering for the user

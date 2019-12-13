@@ -4,16 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.record.domain.Diagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
-import io.smarthealth.clinical.record.service.PatientNotesService;
-import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.patient.data.PatientData;
-import io.smarthealth.organization.person.patient.service.PatientService;
-import java.time.LocalDateTime;
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.time.LocalDateTime;
+
+import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 
 /**
  *

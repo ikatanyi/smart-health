@@ -5,11 +5,9 @@
  */
 package io.smarthealth.organization.facility.service;
 
-import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.facility.data.RoomTypeData;
 import io.smarthealth.organization.facility.domain.RoomType;
 import io.smarthealth.organization.facility.domain.RoomTypeRepository;
-import java.util.Optional;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 /**
  *

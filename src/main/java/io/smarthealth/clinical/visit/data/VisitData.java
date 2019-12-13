@@ -10,14 +10,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.Visit.Status;
 import io.smarthealth.clinical.visit.domain.Visit.VisitType;
-import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.patient.data.PatientData;
-import java.time.LocalDateTime;
+import lombok.Data;
+
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import lombok.Data;
+import java.time.LocalDateTime;
+
+import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 
 /**
  *

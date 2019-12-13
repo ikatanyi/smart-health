@@ -1,8 +1,9 @@
 package io.smarthealth.clinical.record.domain;
 
+import lombok.Data;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import lombok.Data;
 
 /**
  * Patient Vital Records

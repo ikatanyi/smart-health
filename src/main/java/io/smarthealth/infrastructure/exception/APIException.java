@@ -1,7 +1,8 @@
 package io.smarthealth.infrastructure.exception;
 
-import java.text.MessageFormat;
 import org.springframework.http.HttpStatus;
+
+import java.text.MessageFormat;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public final class APIException extends RuntimeException {

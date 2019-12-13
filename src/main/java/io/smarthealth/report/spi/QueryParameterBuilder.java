@@ -1,7 +1,9 @@
 package io.smarthealth.report.spi;
+
 import io.smarthealth.report.domain.AutoCompleteResource;
 import io.smarthealth.report.domain.QueryParameter;
 import io.smarthealth.report.domain.Type;
+
 import java.util.Arrays;
 
 public class QueryParameterBuilder {

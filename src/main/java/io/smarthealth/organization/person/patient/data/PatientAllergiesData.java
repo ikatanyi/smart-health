@@ -6,9 +6,11 @@
 package io.smarthealth.organization.person.patient.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
-import java.time.LocalDateTime;
 import lombok.Data;
+
+import java.time.LocalDateTime;
+
+import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 
 /**
  *

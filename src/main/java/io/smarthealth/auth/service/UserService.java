@@ -1,15 +1,6 @@
 package io.smarthealth.auth.service;
 
-import io.smarthealth.auth.domain.PasswordResetToken;
-import io.smarthealth.auth.domain.PasswordTokenRepository;
-import io.smarthealth.auth.domain.Role;
-import io.smarthealth.auth.domain.RoleRepository;
-import io.smarthealth.auth.domain.User;
-import io.smarthealth.auth.domain.UserRepository;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Optional;
+import io.smarthealth.auth.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +9,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  *

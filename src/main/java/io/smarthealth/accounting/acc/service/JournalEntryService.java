@@ -1,37 +1,21 @@
 package io.smarthealth.accounting.acc.service;
 
 import io.smarthealth.accounting.acc.data.mapper.JournalEntryMapper;
-import io.smarthealth.accounting.acc.data.v1.AccountEntry;
-import io.smarthealth.accounting.acc.data.v1.AccountType;
-import io.smarthealth.accounting.acc.data.v1.Creditor;
-import io.smarthealth.accounting.acc.data.v1.Debtor;
-import io.smarthealth.accounting.acc.data.v1.JournalEntry;
-import io.smarthealth.accounting.acc.domain.AccountEntity;
-import io.smarthealth.accounting.acc.domain.AccountEntryEntity;
-import io.smarthealth.accounting.acc.domain.CreditorType;
-import io.smarthealth.accounting.acc.domain.DebtorType;
-import io.smarthealth.accounting.acc.domain.JournalEntryEntity;
-import io.smarthealth.accounting.acc.domain.TransactionTypeEntity;
-import io.smarthealth.accounting.acc.domain.TransactionTypeRepository;
+import io.smarthealth.accounting.acc.data.v1.*;
+import io.smarthealth.accounting.acc.domain.*;
 import io.smarthealth.infrastructure.lang.DateRange;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import io.smarthealth.infrastructure.sequence.SequenceType;
+import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import io.smarthealth.accounting.acc.domain.JournalEntrysRepository;
-import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import org.apache.commons.lang3.RandomStringUtils;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class JournalEntryService {

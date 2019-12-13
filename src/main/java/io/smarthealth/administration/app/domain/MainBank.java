@@ -6,13 +6,14 @@
 package io.smarthealth.administration.app.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
-import java.util.List;
+import lombok.Data;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Size;
-import lombok.Data;
+import java.util.List;
 
 
 /**

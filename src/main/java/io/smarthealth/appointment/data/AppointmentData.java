@@ -3,16 +3,18 @@ package io.smarthealth.appointment.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.appointment.domain.Appointment;
-import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
-import static io.smarthealth.infrastructure.lang.Constants.TIME_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import org.modelmapper.ModelMapper;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import lombok.Data;
-import org.modelmapper.ModelMapper;
+
+import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
+import static io.smarthealth.infrastructure.lang.Constants.TIME_PATTERN;
 
 /**
  *

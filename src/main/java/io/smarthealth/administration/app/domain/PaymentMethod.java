@@ -2,10 +2,11 @@ package io.smarthealth.administration.app.domain;
 
 import io.smarthealth.administration.app.data.PaymentMethodData;
 import io.smarthealth.infrastructure.domain.Identifiable;
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import lombok.Data;
 
 /**
  *

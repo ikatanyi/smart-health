@@ -1,19 +1,18 @@
 package io.smarthealth.accounting.acc.service;
 
 import io.smarthealth.accounting.acc.data.ActivityAccount;
-import io.smarthealth.accounting.acc.data.v1.Account;
 import io.smarthealth.accounting.acc.data.v1.FinancialActivity;
 import io.smarthealth.accounting.acc.domain.AccountEntity;
-import io.smarthealth.accounting.acc.domain.AccountRepository;
 import io.smarthealth.accounting.acc.domain.FinancialActivityAccount;
 import io.smarthealth.accounting.acc.domain.FinancialActivityAccountRepository;
 import io.smarthealth.infrastructure.exception.APIException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 /**
  *

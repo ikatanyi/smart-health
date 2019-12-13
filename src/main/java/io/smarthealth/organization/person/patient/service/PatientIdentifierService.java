@@ -7,12 +7,12 @@ package io.smarthealth.organization.person.patient.service;
 
 import io.smarthealth.organization.person.patient.data.PatientIdentifierData;
 import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.organization.person.patient.domain.PatientIdentificationType;
 import io.smarthealth.organization.person.patient.domain.PatientIdentifier;
 import io.smarthealth.organization.person.patient.domain.PatientIdentifierRepository;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  *

@@ -1,7 +1,8 @@
 package io.smarthealth.accounting.acc.data.v1;
 
-import javax.validation.constraints.NotEmpty;
 import io.smarthealth.accounting.acc.validation.contraints.ValidIdentifiers;
+
+import javax.validation.constraints.NotEmpty;
 
 public class TransactionType {
 

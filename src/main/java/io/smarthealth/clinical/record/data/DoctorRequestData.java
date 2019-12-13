@@ -5,12 +5,13 @@ import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
+import lombok.Data;
+
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import lombok.Data;
+import java.time.LocalDateTime;
 
 /**
  *

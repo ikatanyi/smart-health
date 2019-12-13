@@ -6,12 +6,12 @@
 package io.smarthealth.clinical.pharmacy.domain;
 
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
-import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.Prescription;
+import lombok.Data;
+
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import lombok.Data;
 
 /**
  *

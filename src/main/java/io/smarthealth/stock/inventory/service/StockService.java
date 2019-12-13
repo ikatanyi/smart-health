@@ -1,6 +1,5 @@
 package io.smarthealth.stock.inventory.service;
 
-import io.smarthealth.accounting.pricebook.service.PricebookService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.stock.inventory.data.StockMovementData;
@@ -15,7 +14,6 @@ import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.item.service.UomService;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
-import io.smarthealth.supplier.service.SupplierService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;

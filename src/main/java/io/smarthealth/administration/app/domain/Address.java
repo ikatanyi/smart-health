@@ -1,12 +1,13 @@
 package io.smarthealth.administration.app.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  *

@@ -1,18 +1,13 @@
 package io.smarthealth.billing.domain;
- 
+
 import io.smarthealth.billing.data.PatientBillItemData;
 import io.smarthealth.billing.domain.enumeration.BillStatus;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
-import java.time.LocalDate;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import lombok.Data;
+
+import javax.persistence.*;
+import java.time.LocalDate;
 
 /**
  *

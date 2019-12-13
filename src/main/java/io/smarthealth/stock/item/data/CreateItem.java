@@ -1,5 +1,6 @@
 package io.smarthealth.stock.item.data;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**

@@ -5,9 +5,10 @@
  */
 package io.smarthealth.administration.codes.data;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 
 /**
  *

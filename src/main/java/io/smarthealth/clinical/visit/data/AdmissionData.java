@@ -8,10 +8,11 @@ package io.smarthealth.clinical.visit.data;
 import io.smarthealth.clinical.record.domain.Diagnosis;
 import io.smarthealth.clinical.visit.domain.Admission;
 import io.smarthealth.organization.facility.data.EmployeeData;
-import java.util.List;
+import lombok.Data;
+
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import lombok.Data;
+import java.util.List;
 
 /**
  *

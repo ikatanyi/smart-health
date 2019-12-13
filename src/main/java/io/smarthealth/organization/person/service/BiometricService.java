@@ -11,11 +11,11 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.data.PersonBiometricRecord;
 import io.smarthealth.organization.person.domain.Biometrics;
 import io.smarthealth.organization.person.domain.BiometricsRepository;
-import io.smarthealth.organization.person.patient.domain.Patient;
-import java.util.LinkedList;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *

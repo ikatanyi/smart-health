@@ -1,12 +1,9 @@
 package io.smarthealth.stock.item.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
 import lombok.Data;
+
+import javax.persistence.*;
 
 /**
  *

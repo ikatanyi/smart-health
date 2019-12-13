@@ -7,11 +7,12 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.org.data.OrganizationData;
 import io.smarthealth.organization.org.domain.Organization;
 import io.smarthealth.organization.org.domain.OrganizationRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *

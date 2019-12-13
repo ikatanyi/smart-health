@@ -1,12 +1,13 @@
 package io.smarthealth.accounting.acc.data.v1;
 
 
-import java.math.BigDecimal;
-import java.util.List;
+import io.smarthealth.accounting.acc.validation.contraints.ValidIdentifiers;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import io.smarthealth.accounting.acc.validation.contraints.ValidIdentifiers;
+import java.math.BigDecimal;
+import java.util.List;
 
 @SuppressWarnings({"unused"})
 public final class Ledger {

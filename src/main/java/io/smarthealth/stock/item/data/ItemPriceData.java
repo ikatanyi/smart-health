@@ -5,8 +5,9 @@
  */
 package io.smarthealth.stock.item.data;
 
-import java.math.BigDecimal;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 /**
  *

@@ -8,14 +8,9 @@ package io.smarthealth.clinical.radiology.domain;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.item.domain.Item;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import lombok.Data;
+
+import javax.persistence.*;
 
 /**
  *

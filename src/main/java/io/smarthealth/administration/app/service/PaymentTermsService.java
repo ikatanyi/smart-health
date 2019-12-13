@@ -3,12 +3,13 @@ package io.smarthealth.administration.app.service;
 import io.smarthealth.administration.app.domain.PaymentTerms;
 import io.smarthealth.administration.app.domain.PaymentTermsRepository;
 import io.smarthealth.infrastructure.exception.APIException;
-import java.util.List;
-import java.util.Optional;
-import javax.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 /**
  *

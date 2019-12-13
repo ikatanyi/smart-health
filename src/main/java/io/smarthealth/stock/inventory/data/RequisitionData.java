@@ -1,25 +1,15 @@
 package io.smarthealth.stock.inventory.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.stock.inventory.domain.*;
-import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.lang.Constants;
+import io.smarthealth.stock.inventory.domain.Requisition;
 import io.smarthealth.stock.inventory.domain.enumeration.RequisitionStatus;
 import io.smarthealth.stock.inventory.domain.enumeration.RequisitionType;
-import io.smarthealth.stock.stores.domain.Store;
+import lombok.Data;
+
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import lombok.Data;
 
 /**
  *

@@ -1,7 +1,6 @@
 package io.smarthealth.clinical.lab.data;
 
 import io.smarthealth.clinical.lab.domain.Specimen;
-import java.util.List;
 import lombok.Data;
 
 /**

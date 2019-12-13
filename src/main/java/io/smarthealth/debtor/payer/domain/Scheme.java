@@ -1,13 +1,10 @@
 package io.smarthealth.debtor.payer.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
-import java.time.LocalDate;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import lombok.Data;
+
+import javax.persistence.*;
+import java.time.LocalDate;
 
 /**
  *

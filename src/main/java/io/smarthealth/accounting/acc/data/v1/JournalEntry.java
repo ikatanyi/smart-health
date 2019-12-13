@@ -2,13 +2,14 @@ package io.smarthealth.accounting.acc.data.v1;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.util.Objects;
-import java.util.Set;
+import io.smarthealth.infrastructure.lang.Constants;
+import org.hibernate.validator.constraints.Length;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Length;
-import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Set;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class JournalEntry {

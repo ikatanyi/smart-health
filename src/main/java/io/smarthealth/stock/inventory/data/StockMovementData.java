@@ -5,9 +5,10 @@ import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.stock.inventory.domain.StockMovement;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import lombok.Data;
 
 /**
  * Stock Entry

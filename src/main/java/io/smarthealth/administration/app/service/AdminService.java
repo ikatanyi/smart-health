@@ -2,23 +2,17 @@ package io.smarthealth.administration.app.service;
 
 import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.ContactData;
-import io.smarthealth.administration.app.domain.Address;
-import io.smarthealth.administration.app.domain.AddressRepository;
-import io.smarthealth.administration.app.domain.BankBranch;
-import io.smarthealth.administration.app.domain.BankBranchRepository;
-import io.smarthealth.administration.app.domain.BankRepository;
-import io.smarthealth.administration.app.domain.Contact;
-import io.smarthealth.administration.app.domain.ContactRepository;
-import io.smarthealth.administration.app.domain.MainBank;
+import io.smarthealth.administration.app.domain.*;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.org.domain.Organization;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  *

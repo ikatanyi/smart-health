@@ -6,11 +6,12 @@
 package io.smarthealth.organization.person.patient.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
+import lombok.Data;
+
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import lombok.Data;
 
 /**
  *

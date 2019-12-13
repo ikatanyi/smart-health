@@ -13,12 +13,13 @@ import io.smarthealth.auth.domain.PermissionRepository;
 import io.smarthealth.auth.domain.Role;
 import io.smarthealth.auth.domain.RoleRepository;
 import io.smarthealth.infrastructure.exception.APIException;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  *

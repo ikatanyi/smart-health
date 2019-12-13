@@ -9,6 +9,7 @@ import org.passay.CharacterData;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
 import org.passay.PasswordGenerator;
+
 import static org.passay.WhitespaceRule.ERROR_CODE;
 
 /**

@@ -2,12 +2,13 @@ package io.smarthealth.auth.data;
 
 import io.smarthealth.auth.validator.ValidCreateUser;
 import io.smarthealth.auth.validator.ValidPassword;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Data;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import lombok.Data;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *

@@ -8,9 +8,10 @@ package io.smarthealth.clinical.radiology.data;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
 import io.smarthealth.clinical.radiology.domain.RadiologyTest;
 import io.smarthealth.stock.item.data.ItemData;
+import lombok.Data;
+
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import lombok.Data;
 
 /**
  *

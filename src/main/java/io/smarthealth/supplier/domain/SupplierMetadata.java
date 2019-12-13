@@ -8,8 +8,9 @@ package io.smarthealth.supplier.domain;
 import io.smarthealth.accounting.pricebook.data.PriceBookData;
 import io.smarthealth.administration.app.domain.Currency;
 import io.smarthealth.administration.app.domain.PaymentTerms;
-import java.util.List;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  *

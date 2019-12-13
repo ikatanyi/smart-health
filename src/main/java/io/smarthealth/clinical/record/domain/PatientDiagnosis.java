@@ -1,11 +1,12 @@
 package io.smarthealth.clinical.record.domain;
 
+import lombok.Data;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import lombok.Data;
-import org.hibernate.annotations.Type;
 
 /**
  * Patient PatientDiagnosis Record

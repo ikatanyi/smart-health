@@ -1,8 +1,9 @@
 package io.smarthealth.accounting.pricebook.domain;
 
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import java.util.Optional;
 
 /**
  *

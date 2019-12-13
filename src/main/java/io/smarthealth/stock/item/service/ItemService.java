@@ -6,20 +6,11 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.data.ItemData;
 import io.smarthealth.stock.item.data.Uoms;
-import io.smarthealth.stock.item.domain.Drug;
-import io.smarthealth.stock.item.domain.DrugRepository;
-import io.smarthealth.stock.item.domain.Item;
-import io.smarthealth.stock.item.domain.ItemMetadata;
-import io.smarthealth.stock.item.domain.ItemRepository;
-import io.smarthealth.stock.item.domain.ReorderRule;
-import io.smarthealth.stock.item.domain.ReorderRuleRepository;
-import io.smarthealth.stock.item.domain.Uom;
+import io.smarthealth.stock.item.domain.*;
 import io.smarthealth.stock.item.domain.specification.ItemSpecification;
 import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
-import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,12 +18,17 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+
 /**
  *
  * @author Kelsas
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ItemService {
 
     private final TaxRepository taxRepository;
@@ -42,20 +38,20 @@ public class ItemService {
     private final ReorderRuleRepository reorderRuleRepository;
     private final DrugRepository drugRepository;
 
-    public ItemService(
-            TaxRepository taxRepository,
-            ItemRepository itemRepository,
-            UomService uomService, 
-            StoreService storeService,
-            ReorderRuleRepository reorderRuleRepository,
-            DrugRepository drugRepository) {
-        this.taxRepository = taxRepository;
-        this.itemRepository = itemRepository;
-        this.uomService =uomService; 
-        this.storeService = storeService;
-        this.reorderRuleRepository = reorderRuleRepository;
-        this.drugRepository = drugRepository;
-    }
+//    public ItemService(
+//            TaxRepository taxRepository,
+//            ItemRepository itemRepository,
+//            UomService uomService, 
+//            StoreService storeService,
+//            ReorderRuleRepository reorderRuleRepository,
+//            DrugRepository drugRepository) {
+//        this.taxRepository = taxRepository;
+//        this.itemRepository = itemRepository;
+//        this.uomService =uomService; 
+//        this.storeService = storeService;
+//        this.reorderRuleRepository = reorderRuleRepository;
+//        this.drugRepository = drugRepository;
+//    }
 
     @Transactional
     public ItemData createItem(CreateItem createItem) {

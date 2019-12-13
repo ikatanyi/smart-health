@@ -5,7 +5,6 @@
  */
 package io.smarthealth.clinical.radiology.domain;
 
-import io.smarthealth.clinical.pharmacy.domain.PatientDrugs;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

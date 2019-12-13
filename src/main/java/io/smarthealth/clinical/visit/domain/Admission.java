@@ -1,20 +1,13 @@
 package io.smarthealth.clinical.visit.domain;
 
-import io.smarthealth.clinical.record.domain.Diagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.organization.facility.domain.Bed;
 import io.smarthealth.organization.facility.domain.Employee;
+import lombok.Data;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import lombok.Data;
 
 /**
  * Inpatient {@link Visit}

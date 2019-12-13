@@ -6,12 +6,13 @@ import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.domain.FacilityRepository;
 import io.smarthealth.organization.org.domain.Organization;
 import io.smarthealth.organization.org.service.OrganizationService;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  *

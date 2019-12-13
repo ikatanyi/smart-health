@@ -1,11 +1,12 @@
 package io.smarthealth.accounting.payment.domain;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
+import lombok.Data;
+
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import lombok.Data;
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  *

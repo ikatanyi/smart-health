@@ -1,32 +1,17 @@
 package io.smarthealth.supplier.domain;
 
 import io.smarthealth.accounting.acc.domain.AccountEntity;
-import io.smarthealth.administration.app.domain.PaymentTerms;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.BankAccountData;
 import io.smarthealth.administration.app.data.ContactData;
-import io.smarthealth.administration.app.domain.Address;
-import io.smarthealth.administration.app.domain.BankAccount;
-import io.smarthealth.administration.app.domain.Contact;
-import io.smarthealth.administration.app.domain.Currency;
+import io.smarthealth.administration.app.domain.*;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.enumeration.SupplierType;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import lombok.Data;
+
+import javax.persistence.*;
 
 /**
  * Supplier - Creditors - Vendor

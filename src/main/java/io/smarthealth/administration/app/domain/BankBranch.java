@@ -6,12 +6,13 @@
 package io.smarthealth.administration.app.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Size;
-import lombok.Data;
 
 /**
  *

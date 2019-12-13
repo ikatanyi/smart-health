@@ -1,14 +1,15 @@
 package io.smarthealth.clinical.record.domain;
 
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.clinical.visit.domain.Visit;
-import java.time.LocalDateTime;
+import lombok.Data;
+
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import lombok.Data;
+import java.time.LocalDateTime;
 
 /**
  * Base for all Clinical Documentations of Patient Medical Records

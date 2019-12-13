@@ -1,15 +1,12 @@
 package io.smarthealth.administration.servicepoint.domain;
 
-import io.smarthealth.accounting.acc.data.SimpleAccountData; 
+import io.smarthealth.accounting.acc.data.SimpleAccountData;
 import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import lombok.Data;
+
+import javax.persistence.*;
 
 /**
  *

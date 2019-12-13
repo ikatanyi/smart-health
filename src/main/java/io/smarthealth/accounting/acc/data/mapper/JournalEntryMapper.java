@@ -1,11 +1,12 @@
 package io.smarthealth.accounting.acc.data.mapper;
 
- 
+
 import io.smarthealth.accounting.acc.data.v1.Creditor;
 import io.smarthealth.accounting.acc.data.v1.Debtor;
 import io.smarthealth.accounting.acc.data.v1.JournalEntry;
 import io.smarthealth.accounting.acc.domain.JournalEntryEntity;
-import java.util.stream.Collectors; 
+
+import java.util.stream.Collectors;
 
 public class JournalEntryMapper {
 

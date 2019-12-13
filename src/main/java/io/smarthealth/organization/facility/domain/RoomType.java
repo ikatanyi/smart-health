@@ -6,9 +6,10 @@
 package io.smarthealth.organization.facility.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import lombok.Data;
 
 /**
  *

@@ -1,8 +1,9 @@
 package io.smarthealth.stock.stores.domain;
 
 import io.smarthealth.accounting.acc.data.SimpleAccountData;
-import java.util.List;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  *

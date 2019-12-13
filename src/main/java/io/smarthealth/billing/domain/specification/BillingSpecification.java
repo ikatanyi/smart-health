@@ -2,9 +2,10 @@ package io.smarthealth.billing.domain.specification;
 
 import io.smarthealth.billing.domain.PatientBill;
 import io.smarthealth.billing.domain.enumeration.BillStatus;
+import org.springframework.data.jpa.domain.Specification;
+
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
-import org.springframework.data.jpa.domain.Specification;
 
 /**
  * Filters for searching the data and filtering for the user

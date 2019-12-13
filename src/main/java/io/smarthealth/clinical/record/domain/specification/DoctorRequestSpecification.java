@@ -6,10 +6,10 @@
 package io.smarthealth.clinical.record.domain.specification;
 
 import io.smarthealth.clinical.record.domain.DoctorRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 
 /**
  *

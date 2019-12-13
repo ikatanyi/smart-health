@@ -2,15 +2,11 @@ package io.smarthealth.clinical.lab.domain;
 
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
 import io.smarthealth.infrastructure.domain.Identifiable;
+import lombok.Data;
+
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import lombok.Data;
 
 /**
  *  Defines Lab Test service for the laboratory 

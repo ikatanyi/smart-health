@@ -4,11 +4,12 @@ import io.smarthealth.administration.app.data.PaymentMethodData;
 import io.smarthealth.administration.app.domain.PaymentMethod;
 import io.smarthealth.administration.app.domain.PaymentMethodRepository;
 import io.smarthealth.infrastructure.exception.APIException;
-import java.util.Objects;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  *

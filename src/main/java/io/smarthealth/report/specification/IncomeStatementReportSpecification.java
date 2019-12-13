@@ -3,18 +3,14 @@ package io.smarthealth.report.specification;
 
 import io.smarthealth.infrastructure.common.SecurityUtils;
 import io.smarthealth.infrastructure.lang.DateConverter;
-import io.smarthealth.report.domain.DisplayableField;
-import io.smarthealth.report.domain.Header;
-import io.smarthealth.report.domain.QueryParameter;
-import io.smarthealth.report.domain.ReportDefinition;
-import io.smarthealth.report.domain.ReportPage;
-import io.smarthealth.report.domain.ReportRequest;
-import io.smarthealth.report.domain.Row;
-import io.smarthealth.report.domain.Type;
-import io.smarthealth.report.domain.Value;
+import io.smarthealth.report.domain.*;
 import io.smarthealth.report.spi.DisplayableFieldBuilder;
 import io.smarthealth.report.spi.Report;
 import io.smarthealth.report.spi.ReportSpecification;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -23,11 +19,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 @Slf4j
 @Report(category = "Accounting", identifier = "Incomestatement")

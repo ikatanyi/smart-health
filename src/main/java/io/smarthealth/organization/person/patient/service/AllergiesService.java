@@ -8,18 +8,15 @@ package io.smarthealth.organization.person.patient.service;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.patient.data.AllergyTypeData;
 import io.smarthealth.organization.person.patient.data.PatientAllergiesData;
-import io.smarthealth.organization.person.patient.domain.Allergy;
-import io.smarthealth.organization.person.patient.domain.AllergyRepository;
-import io.smarthealth.organization.person.patient.domain.AllergyType;
-import io.smarthealth.organization.person.patient.domain.AllergyTypeRepository;
-import io.smarthealth.organization.person.patient.domain.Patient;
-import java.util.List;
+import io.smarthealth.organization.person.patient.domain.*;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  *

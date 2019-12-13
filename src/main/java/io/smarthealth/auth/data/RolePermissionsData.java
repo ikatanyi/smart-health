@@ -5,8 +5,9 @@
  */
 package io.smarthealth.auth.data;
 
-import java.util.Collection;
 import lombok.Data;
+
+import java.util.Collection;
 
 /**
  *

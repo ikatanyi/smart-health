@@ -1,7 +1,8 @@
 package io.smarthealth.accounting.acc.data.mapper;
- 
+
 import io.smarthealth.accounting.acc.data.v1.Ledger;
 import io.smarthealth.accounting.acc.domain.LedgerEntity;
+
 import java.math.BigDecimal;
 
 public class LedgerMapper {

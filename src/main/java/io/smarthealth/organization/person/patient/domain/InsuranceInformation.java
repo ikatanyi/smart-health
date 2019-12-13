@@ -5,15 +5,11 @@
  */
 package io.smarthealth.organization.person.patient.domain;
 
-import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.debtor.payer.domain.Payer;
-import java.time.LocalDate;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import io.smarthealth.infrastructure.domain.Identifiable;
 import lombok.Data;
+
+import javax.persistence.*;
 
 /**
  *

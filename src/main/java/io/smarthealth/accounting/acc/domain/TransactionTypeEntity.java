@@ -1,10 +1,11 @@
 package io.smarthealth.accounting.acc.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import lombok.Data;
 
 @Data
 @Entity

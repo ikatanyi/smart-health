@@ -6,19 +6,20 @@
 package io.smarthealth.organization.person.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import io.smarthealth.organization.person.domain.Person;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.domain.enumeration.MaritalStatus;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import lombok.Data;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 
 /**
  *

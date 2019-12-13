@@ -1,5 +1,7 @@
 package org.smarthealth.patient.validation.constraints;
- 
+
+import org.smarthealth.patient.validation.CheckIdentifier;
+
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.Documented;
@@ -8,7 +10,6 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import org.smarthealth.patient.validation.CheckIdentifier;
 
 /**
  * The annotated string must not be null, must have a minimum length of 2, and

@@ -3,16 +3,14 @@ package io.smarthealth.clinical.lab.data;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.lab.domain.Results;
-import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
-import io.smarthealth.clinical.record.domain.DoctorRequest;
-import java.time.LocalDateTime;
 import lombok.Data;
-import java.util.ArrayList;
-import java.util.List;
+
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import org.modelmapper.ModelMapper;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *

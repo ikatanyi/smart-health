@@ -1,26 +1,19 @@
 package io.smarthealth.report.provider;
 
- 
+
 import io.smarthealth.report.domain.ReportDefinition;
 import io.smarthealth.report.spi.Report;
 import io.smarthealth.report.spi.ReportSpecification;
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
 
 @Component
 @Slf4j

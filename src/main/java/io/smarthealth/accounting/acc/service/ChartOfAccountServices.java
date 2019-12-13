@@ -2,6 +2,7 @@ package io.smarthealth.accounting.acc.service;
 
 import io.smarthealth.accounting.acc.data.v1.ChartOfAccountEntry;
 import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.accounting.acc.domain.AccountRepository;
 import io.smarthealth.accounting.acc.domain.LedgerEntity;
 import io.smarthealth.accounting.acc.domain.LedgerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import io.smarthealth.accounting.acc.domain.AccountRepository;
 
 @Service
 public class ChartOfAccountServices {

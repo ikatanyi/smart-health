@@ -16,19 +16,16 @@ import io.smarthealth.infrastructure.lang.DateConverter;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.stock.item.domain.Item;
-import io.smarthealth.stock.item.domain.specification.ItemSpecification;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 /**
  *

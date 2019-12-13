@@ -7,11 +7,12 @@ package io.smarthealth.organization.facility.data;
 
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.organization.facility.domain.Department;
+import lombok.Data;
+
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import lombok.Data;
 
 /**
  *

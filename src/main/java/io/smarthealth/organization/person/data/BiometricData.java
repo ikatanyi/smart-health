@@ -5,10 +5,11 @@
  */
 package io.smarthealth.organization.person.data;
 
-import java.io.Serializable;
+import lombok.Data;
+
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
-import lombok.Data;
+import java.io.Serializable;
 
 /**
  *

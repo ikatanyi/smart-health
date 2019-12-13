@@ -1,10 +1,11 @@
 package io.smarthealth.accounting.acc.validation;
 
+import io.smarthealth.accounting.acc.validation.contraints.ValidIdentifiers;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import io.smarthealth.accounting.acc.validation.contraints.ValidIdentifiers;
 
 /**
  * @author Kelsas

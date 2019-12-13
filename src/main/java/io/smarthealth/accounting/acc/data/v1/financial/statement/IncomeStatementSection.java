@@ -1,10 +1,10 @@
 package io.smarthealth.accounting.acc.data.v1.financial.statement;
- 
+
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.constraints.NotEmpty;
 
 public class IncomeStatementSection {
 

@@ -1,19 +1,19 @@
 package io.smarthealth.stock.item.domain;
 
-import io.smarthealth.infrastructure.domain.Identifiable;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import io.smarthealth.infrastructure.domain.Identifiable; 
+
+import javax.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  *
  * @author Kelsas
  */
+
 @Data
 @Entity
+@ToString
 @Table(name = "stock_drugs")
 public class Drug extends Identifiable{
     @OneToOne

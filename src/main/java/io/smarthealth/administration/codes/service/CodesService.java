@@ -8,11 +8,12 @@ import io.smarthealth.administration.codes.domain.CodeRepository;
 import io.smarthealth.administration.codes.domain.CodeValue;
 import io.smarthealth.administration.codes.domain.CodeValueRepository;
 import io.smarthealth.infrastructure.exception.APIException;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *

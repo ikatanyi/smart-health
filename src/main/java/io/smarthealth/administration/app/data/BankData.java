@@ -5,8 +5,9 @@
  */
 package io.smarthealth.administration.app.data;
 
-import java.util.List;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  *
