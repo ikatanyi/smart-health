@@ -1,11 +1,10 @@
 package io.smarthealth.infrastructure.lang;
 
-import org.springframework.util.Assert;
-
-import javax.annotation.Nonnull;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import javax.annotation.Nonnull;
+import org.springframework.util.Assert;
 
 public interface DateConverter {
 
@@ -50,6 +49,13 @@ public interface DateConverter {
         final int zIndex = isoDateString.indexOf("Z");
         final String shortenedString = isoDateString.substring(0, zIndex);
         return LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(shortenedString));
+    }
+    
+      @Nonnull
+    static LocalDate dateFromString(@Nonnull final String isoDateString) {  //2019-02-01
+        Assert.notNull(isoDateString, "ISO date time must be given."); 
+        return LocalDate.parse(isoDateString);
+//         return LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(isoDateString));
     }
 
     @Nonnull

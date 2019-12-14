@@ -4,7 +4,6 @@ package io.smarthealth.auth.domain;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;

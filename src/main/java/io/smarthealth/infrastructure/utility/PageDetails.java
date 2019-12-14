@@ -1,11 +1,14 @@
 package io.smarthealth.infrastructure.utility;
-
+   
 import lombok.Data;
+
+
+
 
 /**
  *
  * @author Kelsas
- */
+ */  
 @Data
 public class PageDetails {
 

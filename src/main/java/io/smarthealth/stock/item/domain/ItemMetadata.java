@@ -17,15 +17,5 @@ public class ItemMetadata {
     private String message;
     private List<Uoms> uom;
     private List<Tax> taxes;
-    private List<StoreData> stores;
-         // Get the codes - drug classes | frequenc
-    //    {
-//        "code": 0,
-//        "message": "success",
-//         "uom": [],
-//         "taxes":[],
-//         "income_accounts_list":[],
-//         "purchase_accounts_list" :[],
-//         "stores" : []
-//    }
+    private List<StoreData> stores; 
 }

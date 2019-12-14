@@ -7,7 +7,6 @@ package io.smarthealth.appointment.service;
 
 import io.smarthealth.appointment.domain.AppointmentType;
 import io.smarthealth.appointment.domain.AppointmentTypeRepository;
-import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.infrastructure.exception.APIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

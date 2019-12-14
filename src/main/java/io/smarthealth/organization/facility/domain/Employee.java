@@ -2,16 +2,8 @@ package io.smarthealth.organization.facility.domain;
 
 import io.smarthealth.auth.domain.User;
 import io.smarthealth.organization.person.domain.Person;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.Formula;
 
 /**
  *

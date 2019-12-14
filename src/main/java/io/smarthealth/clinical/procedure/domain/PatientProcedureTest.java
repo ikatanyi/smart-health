@@ -12,7 +12,6 @@ package io.smarthealth.clinical.procedure.domain;
 
 
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
-import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

@@ -1,7 +1,7 @@
 package io.smarthealth.debtor.payer.api;
 
-import io.smarthealth.accounting.account.domain.Account;
-import io.smarthealth.accounting.account.service.AccountService; 
+import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.accounting.acc.service.AccountService;
 import io.smarthealth.administration.app.domain.BankBranch;
 import io.smarthealth.administration.app.domain.PaymentTerms;
 import io.smarthealth.administration.app.service.AdminService;
@@ -18,11 +18,7 @@ import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
@@ -51,7 +47,7 @@ public class PayerController {
 
         Payer payer = PayerData.map(payerData);
         BankBranch bankBranch = adminService.fetchBankBranchById(payerData.getBranchId());
-        Account debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
+        AccountEntity debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
         PaymentTerms paymentTerms = paymentTermsService.getPaymentTermByIdWithFailDetection(payerData.getPaymentTermId());
         payer.setBankBranch(bankBranch);
         payer.setDebitAccount(debitAccount);

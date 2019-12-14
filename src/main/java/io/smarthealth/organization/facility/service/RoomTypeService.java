@@ -5,7 +5,6 @@
  */
 package io.smarthealth.organization.facility.service;
 
-import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.facility.data.RoomTypeData;
 import io.smarthealth.organization.facility.domain.RoomType;
 import io.smarthealth.organization.facility.domain.RoomTypeRepository;

@@ -10,20 +10,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import lombok.Data;
 
 /**
  *
- * @author Kennedy.Imbenzi
+ * @author Kelsas
  */
 @Entity
 @Data
@@ -41,6 +33,7 @@ public class PatientBill extends Auditable {
     private String referenceNumber;
     private Double balance;
     private Double Amount;
+    private Double discount;
     private LocalDate billingDate;
     private String journalNumber;
     @Enumerated(EnumType.STRING)
@@ -69,6 +62,7 @@ public class PatientBill extends Auditable {
         data.setJournalNumber(this.getJournalNumber());
         data.setReferenceNumber(this.getReferenceNumber());
         data.setAmount(this.getAmount());
+        data.setDiscount(this.getDiscount());
         data.setBalance(this.getBalance());
         data.setPaymentMode(this.getPaymentMode());
         data.setStatus(this.getStatus());

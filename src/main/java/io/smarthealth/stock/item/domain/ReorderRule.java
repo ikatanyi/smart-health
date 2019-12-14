@@ -2,11 +2,7 @@ package io.smarthealth.stock.item.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.stores.domain.Store;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import lombok.Data;
 
 /**

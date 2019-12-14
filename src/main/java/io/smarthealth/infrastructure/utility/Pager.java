@@ -1,13 +1,13 @@
 package io.smarthealth.infrastructure.utility;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;    
 import lombok.Data;
 
 /**
  *
  * @author Kelsas
- */
+ */   
 @Data
 public class Pager<T> {
 

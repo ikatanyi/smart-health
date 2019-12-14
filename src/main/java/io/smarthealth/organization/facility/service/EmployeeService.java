@@ -5,7 +5,6 @@
  */
 package io.smarthealth.organization.facility.service;
 
-import io.smarthealth.auth.data.UserGroupRoles;
 import io.smarthealth.auth.domain.Role;
 import io.smarthealth.auth.domain.User;
 import io.smarthealth.auth.service.UserService;
@@ -18,7 +17,6 @@ import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.domain.EmployeeRepository;
-import io.smarthealth.organization.person.data.ContactData;
 import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.patient.service.PersonContactService;
 import java.util.ArrayList;

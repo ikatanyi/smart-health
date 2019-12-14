@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package io.smarthealth.clinical.radiology.service;
- 
+
 import io.smarthealth.billing.service.PatientBillService;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.RadiologyTestData;

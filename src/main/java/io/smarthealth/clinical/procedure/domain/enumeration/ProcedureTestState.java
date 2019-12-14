@@ -5,8 +5,6 @@
  */
 package io.smarthealth.clinical.procedure.domain.enumeration;
 
-import io.smarthealth.clinical.lab.domain.enumeration.*;
-
 /**
  *
  * @author Kennedy.Imbenzi

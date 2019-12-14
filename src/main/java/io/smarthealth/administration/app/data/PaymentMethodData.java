@@ -1,6 +1,6 @@
 package io.smarthealth.administration.app.data;
 
-import io.smarthealth.administration.app.domain.*;
+import io.smarthealth.administration.app.domain.PaymentMethod;
 import lombok.Data;
 
 /**

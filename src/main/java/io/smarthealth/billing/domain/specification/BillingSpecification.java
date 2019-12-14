@@ -2,8 +2,8 @@ package io.smarthealth.billing.domain.specification;
 
 import io.smarthealth.billing.domain.PatientBill;
 import io.smarthealth.billing.domain.enumeration.BillStatus;
-import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
+import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 /**

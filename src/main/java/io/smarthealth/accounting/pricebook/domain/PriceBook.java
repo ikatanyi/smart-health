@@ -5,7 +5,7 @@ import io.smarthealth.accounting.pricebook.domain.enumeration.PriceType;
 import io.smarthealth.administration.app.domain.Currency;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
-import java.util.List;
+import java.util.List; 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -21,8 +21,8 @@ import lombok.Data;
  *
  * @author Kelsas
  */
-@Entity
 @Data
+@Entity 
 public class PriceBook extends Auditable {
 
     @Enumerated(EnumType.STRING)

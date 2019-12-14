@@ -2,7 +2,6 @@ package io.smarthealth.clinical.lab.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 

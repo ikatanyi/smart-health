@@ -10,7 +10,6 @@ import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.organization.facility.domain.Department;
-import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.FacilityService;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -24,12 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**

@@ -1,8 +1,8 @@
 package io.smarthealth.stock.purchase.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.stock.purchase.domain.*;
 import io.smarthealth.infrastructure.lang.Constants;
+import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;

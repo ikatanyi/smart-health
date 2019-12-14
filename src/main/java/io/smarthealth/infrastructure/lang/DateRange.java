@@ -1,16 +1,15 @@
 package io.smarthealth.infrastructure.lang;
 
 import io.smarthealth.infrastructure.exception.APIException;
-import org.springframework.util.Assert;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.springframework.util.Assert;
 
 /**
  * A range of dates specified by a start and an end.  Inclusive of both.
@@ -64,10 +63,9 @@ public class DateRange {
             isoDateRangeString);
       }
     }
-  }
-
+  } 
   @Nonnull
-  public static DateRange fromIsoString(@Nullable final String isoDateRangeString) {
+  public static DateRange fromIsoString(@Nullable final String isoDateRangeString) { 
     if (isoDateRangeString == null) {
       final LocalDate today = LocalDate.now(Clock.systemUTC());
       return new DateRange(today, today);
@@ -75,10 +73,10 @@ public class DateRange {
       final String[] dates = isoDateRangeString.split("\\.\\.");
       if (dates.length != 2)
         throw APIException.badRequest("Date range should consist of exactly two dates.",
-            isoDateRangeString);
-
+            isoDateRangeString); 
       try {
-        return new DateRange(DateConverter.dateFromIsoString(dates[0]), DateConverter.dateFromIsoString(dates[1]));
+          System.err.println(DateConverter.dateFromString(dates[0])+" <->"+ DateConverter.dateFromString(dates[1]));
+        return new DateRange(DateConverter.dateFromString(dates[0]), DateConverter.dateFromString(dates[1]));
       }
       catch(final DateTimeParseException e){
         throw APIException.badRequest("Date {0} must use ISO format",

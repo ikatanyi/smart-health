@@ -13,7 +13,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "app_payment_method")
+@Table(name = "payment_method")
 public class PaymentMethod extends Identifiable {
 
     @Column(name = "value")

@@ -1,28 +1,24 @@
 package io.smarthealth.accounting.pricebook.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.pricebook.domain.enumeration.PriceCategory;
 import io.smarthealth.accounting.pricebook.domain.enumeration.PriceType;
 import io.smarthealth.stock.item.data.ItemSimpleData;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.Accessors;
+import lombok.Data;
 
 /**
  *
  * @author Kelsas
  */
-@Getter
-@Setter
-@Accessors(chain = true)
-@NoArgsConstructor
-@ToString
+//@Getter
+//@Setter
+//@Accessors(chain = true)
+//@NoArgsConstructor
+//@ToString
+@Data
 //@JsonInclude(value = JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PriceBookData {

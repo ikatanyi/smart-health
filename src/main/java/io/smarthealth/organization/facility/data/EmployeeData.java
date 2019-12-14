@@ -10,8 +10,6 @@ import io.smarthealth.organization.person.data.PersonData;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *

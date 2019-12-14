@@ -7,9 +7,9 @@ import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import lombok.Data;
 
 /**
  *

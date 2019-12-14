@@ -1,8 +1,8 @@
 package io.smarthealth.stock.item.domain.specification;
 
 import io.smarthealth.stock.item.domain.Item;
-import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
+import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 /**

@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "app_payment_terms")
+@Table(name = "payment_terms")
 public class PaymentTerms extends Auditable {
 
     private String termsName;

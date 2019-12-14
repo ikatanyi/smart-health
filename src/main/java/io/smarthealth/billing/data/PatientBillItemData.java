@@ -2,7 +2,6 @@ package io.smarthealth.billing.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.smarthealth.billing.domain.PatientBillItem;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDate;
 import lombok.Data;
@@ -24,6 +23,7 @@ public class PatientBillItemData {
     private Double quantity;
     private Double price;
     private Double amount;
+    private Double discount;
     private String transactionNo;
     private String createdBy;
    private Long servicePointId;

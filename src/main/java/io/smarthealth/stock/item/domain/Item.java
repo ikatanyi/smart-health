@@ -3,7 +3,8 @@ package io.smarthealth.stock.item.domain;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import java.util.List;
+import java.util.List; 
+ 
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
@@ -18,9 +19,9 @@ import lombok.Data;
  * Product or Service representation
  *
  * @author Kelsas
- */
-@Entity
+ */ 
 @Data
+@Entity
 @Table(name = "stock_item_service",uniqueConstraints = {
     @UniqueConstraint(columnNames = {"category","itemName"})})
 public class Item extends Identifiable {

@@ -1,30 +1,45 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.lab.service;
 
 import io.smarthealth.billing.service.PatientBillService;
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.ContainerData;
 import io.smarthealth.clinical.lab.data.DisciplineData;
-import io.smarthealth.clinical.lab.data.SpecimenData;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
-import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimen;
 import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
+import io.smarthealth.clinical.lab.data.SpecimenData;
+import io.smarthealth.clinical.lab.data.TestItemData;
 import io.smarthealth.clinical.lab.domain.Analyte;
 import io.smarthealth.clinical.lab.domain.AnalyteRepository;
 import io.smarthealth.clinical.lab.domain.Container;
 import io.smarthealth.clinical.lab.domain.ContainerRepository;
 import io.smarthealth.clinical.lab.domain.Discipline;
 import io.smarthealth.clinical.lab.domain.DisciplineRepository;
+import io.smarthealth.clinical.lab.domain.LabTestRepository;
+import io.smarthealth.clinical.lab.domain.LabTestType;
+import io.smarthealth.clinical.lab.domain.LabTestTypeRepository;
+import io.smarthealth.clinical.lab.domain.PatientLabTest;
+import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimen;
+import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimenRepo;
+import io.smarthealth.clinical.lab.domain.PatientTestRegister;
+import io.smarthealth.clinical.lab.domain.PatientTestRegisterRepository;
+import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.SpecimenRepository;
-import io.smarthealth.clinical.lab.domain.LabTestType;
+import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
+import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
+import io.smarthealth.clinical.record.domain.specification.PatientTestSpecifica;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
-import java.lang.reflect.Type;
+import io.smarthealth.infrastructure.sequence.SequenceType;
+import io.smarthealth.infrastructure.sequence.service.SequenceService;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.facility.service.EmployeeService;
+import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.service.ItemService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,30 +47,9 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import io.smarthealth.clinical.lab.domain.LabTestRepository;
-import io.smarthealth.clinical.lab.domain.LabTestTypeRepository;
-import io.smarthealth.clinical.lab.domain.PatientLabTest;
-import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
-import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.clinical.lab.data.TestItemData;
-import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimenRepo;
-import io.smarthealth.clinical.lab.domain.PatientTestRegister;
-import io.smarthealth.clinical.lab.domain.PatientTestRegisterRepository;
-import io.smarthealth.clinical.lab.domain.Results;
-import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
-import io.smarthealth.clinical.record.domain.DoctorRequest;
-import io.smarthealth.clinical.record.domain.specification.PatientTestSpecifica;
-import io.smarthealth.clinical.visit.service.VisitService;
-import io.smarthealth.organization.facility.domain.Employee;
-import io.smarthealth.organization.facility.service.EmployeeService;
-import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.organization.person.patient.service.PatientService;
-import io.smarthealth.stock.item.domain.Item;
-import io.smarthealth.stock.item.service.ItemService;
-import org.springframework.data.jpa.domain.Specification;
 
 /**
  *
@@ -293,7 +287,8 @@ public class LabService {
      */
     @Transactional
     public List<DisciplineData> createDisciplines(List<DisciplineData> disciplineData) {
-        Type listType = new TypeToken<List<Discipline>>() {
+
+        java.lang.reflect.Type listType = new TypeToken<List<Discipline>>() {
         }.getType();
         List<Discipline> disciplines = modelMapper.map(disciplineData, listType);
 
@@ -598,7 +593,7 @@ public class LabService {
      */
     @Transactional
     public List<ContainerData> createContainers(List<ContainerData> containerData) {
-        Type listType = new TypeToken<List<Container>>() {
+        java.lang.reflect.Type listType = new TypeToken<List<Container>>() {
         }.getType();
         List<Container> containers = modelMapper.map(containerData, listType);
 
@@ -660,11 +655,8 @@ public class LabService {
         if (patient.getGender().equals("F")) {
             gender = "Female";
         }
-        System.out.println("Age " + patient.getAge());
-        System.out.println("gender " + Analyte.Gender.valueOf(gender));
-        System.out.println("ttype " + ttype.getId());
-        List<Analyte> list = analyteRepository.findAllAnalyteByPatientsAndTests(ttype, Analyte.Gender.valueOf(gender), patient.getAge());
-        System.out.println("list size " + list.size());
+
+        List<Analyte> list = analyteRepository.findAllAnalyteByPatientsAndTests(ttype, Analyte.Gender.valueOf(gender), patient.getAge()); 
         return list;
     }
 
