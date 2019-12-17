@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.lab.service;
 
+import io.github.jhipster.web.util.PageUtil;
 import io.smarthealth.billing.service.PatientBillService;
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.ContainerData;
@@ -46,7 +47,9 @@ import io.smarthealth.clinical.lab.domain.PatientTestRegister;
 import io.smarthealth.clinical.lab.domain.PatientTestRegisterRepository;
 import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
+import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.smarthealth.clinical.record.domain.DoctorRequest.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.specification.PatientTestSpecifica;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -55,6 +58,7 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
+import java.util.stream.Collectors;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -341,22 +345,25 @@ public class LabService {
             patientTestReg.setRequestedBy(emp.get());
         }
 
-        if (requestId != null) {
-            Optional<DoctorRequest> request = doctorRequestRepository.findById(requestId);
-            if (request.isPresent()) {
-                patientTestReg.setRequest(request.get());
-            }
-
-        }
         if (patientRegData.getAccessionNo() == null || patientRegData.getAccessionNo().equals("")) {
             String accessionNo = seqService.nextNumber(SequenceType.LabTestNumber);
             patientTestReg.setAccessNo(accessionNo);
         }
 
+        List<DoctorRequest> req = new ArrayList();
         //PatientTestRegister savedPatientTestRegister = patientRegRepository.save(patientTestReg);
         if (!patientRegData.getItemData().isEmpty()) {
             List<PatientLabTest> patientLabTest = new ArrayList<>();
-            for (TestItemData id : patientRegData.getItemData()) {
+            patientRegData.getItemData().stream().map((id) -> {
+                if (id.getRequestId() != null) {
+                    Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
+                    if (request.isPresent()) {
+                        patientTestReg.setRequest(request.get());
+                        request.get().setFulfillerStatus("Fulfilled");
+                        req.add(request.get());                        
+                    }
+                }
+
                 Item i = itemService.findItemWithNoFoundDetection(id.getItemCode());
                 LabTestType labTestType = findTestTypeByItemService(i).get();
                 PatientLabTest pte = new PatientLabTest();
@@ -364,22 +371,28 @@ public class LabService {
                 pte.setTestPrice(id.getItemPrice());
                 pte.setQuantity(id.getQuantity());
                 pte.setTestType(labTestType);
+                return pte;
+            }).map((pte) -> {
                 //Here I am anticipating for results *I know this is a bad idea that should not be implemented under normal situations, but due to time constraints from some guys, which you will learn later (or maybe by now you know them), I had to do this!*
                 //find annalytes pegged to this patient
                 List<Analyte> analytes = this.filterAnnalytesByPatient(patientTestReg.getPatient(), pte.getTestType());
                 List<Results> results = new ArrayList<>();
-
                 for (Analyte a : analytes) {
                     Results r = new Results();
                     r.setAnalyte(a);
+                    r.setLowerRange(String.valueOf(a.getLowerRange()));
+                    r.setUpperRange(String.valueOf(a.getUpperRange()));
+                    r.setUnit(a.getUnits());
                     r.setComments("Pending result");
                     r.setPatientLabTest(pte);
                     results.add(r);
                 }
                 pte.setResults(results);
-
+                return pte;
+            }).forEachOrdered((pte) -> {
                 patientLabTest.add(pte);
-            }
+            });
+            doctorRequestRepository.saveAll(req);
             patientTestReg.addPatientLabTest(patientLabTest);
 
         }
@@ -638,8 +651,11 @@ public class LabService {
         return labTestTypeRepository.findByItemService(item);
     }
 
-    public Page<AnalyteData> fetchAnalyteByTestType(LabTestType testtype, Pageable pgbl) {
-        return analyteRepository.findByTestType(testtype, pgbl).map(p -> convertAnalyteToData(p));
+    public List<AnalyteData> fetchAnalyteByTestType(LabTestType testtype) {
+        return analyteRepository.findByTestType(testtype)
+                .stream()
+                .map(p -> convertAnalyteToData(p))
+                .collect(Collectors.toList());
     }
 
     public Page<AnalyteData> fetchAnalytesByAgeAndGender(String testCode, String patientNumber, Pageable pgbl) {
@@ -651,19 +667,14 @@ public class LabService {
 
     public List<Analyte> filterAnnalytesByPatient(final Patient patient, final LabTestType ttype) {
         String gender = patient.getGender();
-        if (patient.getGender() == null) {
-            gender = "Both";
+        List<Analyte> list = null;
+        gender = patient.getGender() == null ? "Both"
+                : patient.getGender() == null && patient.getGender().equals("M") ? "Male" : "Female";
+        if (ttype.getWithRef()) {
+            list = analyteRepository.findAllAnalyteByPatientsAndTests(ttype, Analyte.Gender.valueOf(gender), patient.getAge());
+        } else {
+            list = analyteRepository.findByTestType(ttype);
         }
-        if (patient.getGender().equals("M")) {
-            gender = "Male";
-        }
-        if (patient.getGender().equals("F")) {
-            gender = "Female";
-        }
-        System.out.println("Age " + patient.getAge());
-        System.out.println("gender " + Analyte.Gender.valueOf(gender));
-        System.out.println("ttype " + ttype.getId());
-        List<Analyte> list = analyteRepository.findAllAnalyteByPatientsAndTests(ttype, Analyte.Gender.valueOf(gender), patient.getAge());
         System.out.println("list size " + list.size());
         return list;
     }
@@ -674,6 +685,11 @@ public class LabService {
 
     public void deleteAnalyteById(Long id) {
         analyteRepository.deleteById(id);
+    }
+
+    public PatientLabTest savePatientLabTest(PatientLabTest labtest) {
+        return PtestsRepository.save(labtest);
+
     }
 
 }
