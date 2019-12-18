@@ -1,5 +1,5 @@
 package io.smarthealth.administration.servicepoint.api;
- 
+
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.common.PaginationUtil;

@@ -51,10 +51,13 @@ public class OrganizationController {
     }
 
     @PutMapping("/organization/{id}")
-    public OrganizationData OrganizationData(@PathVariable(value = "id") String id, OrganizationData data) {
-        return service.updateOrganization(id, data);
+    public ResponseEntity<?> OrganizationData(@PathVariable(value = "id") String id, @RequestBody @Valid OrganizationData data) {
+        System.out.println("org_organization id " + id);
+        System.out.println("data " + data.toString());
+        OrganizationData org = service.updateOrganization(id, data);
+        return ResponseEntity.status(HttpStatus.OK).body(org);
     }
-    
+
     @GetMapping("/organization")
     public OrganizationData getActiveOrganization() {
         Organization org = service.getActiveOrganization();

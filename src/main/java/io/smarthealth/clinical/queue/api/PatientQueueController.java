@@ -10,7 +10,6 @@ import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.organization.facility.domain.Department;
-import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.FacilityService;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -59,8 +58,6 @@ public class PatientQueueController {
         if (queryParams.getFirst("status") != null) {
             status = Boolean.valueOf(queryParams.getFirst("status"));
         }
-        System.out.println("status " + status);
-        //Facility facility = facilityService.findFacility(Long.valueOf("1"));
         Department department = departmentService.findByServicePointTypeAndfacility(servicePoint, facilityService.loggedFacility());
         Page<PatientQueueData> page = patientQueueService.fetchQueueByDept(department, status, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);

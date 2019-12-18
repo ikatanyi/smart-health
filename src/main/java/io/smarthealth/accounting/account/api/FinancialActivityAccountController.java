@@ -7,7 +7,6 @@ import io.smarthealth.accounting.account.service.FinancialActivityAccountService
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.stock.item.data.ItemData;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.List;
@@ -67,11 +66,8 @@ public class FinancialActivityAccountController {
     public ResponseEntity<?> getAllFinancialActivities(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
-
         Pageable pageable = PaginationUtil.createPage(page, size);
-
         Page<ActivityAccount> list = service.getAllFinancialMapping(pageable);
-
         Pager<List<ActivityAccount>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -83,7 +79,6 @@ public class FinancialActivityAccountController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Financial Activity");
         pagers.setPageDetails(details);
-
         return ResponseEntity.ok(pagers);
     }
 

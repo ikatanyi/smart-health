@@ -40,8 +40,8 @@ public class PriceBook extends Auditable {
     private Double decimalPlace;
     @ManyToMany
     @JoinTable(name = "pricebook_items", joinColumns = {
-        @JoinColumn(name = "pricebook_id", referencedColumnName = "id", foreignKey = @ForeignKey(name="fk_pricebook_items_pricebook_id"))}, inverseJoinColumns = {
-        @JoinColumn(name = "item_id", referencedColumnName = "id",foreignKey = @ForeignKey(name="fk_pricebook_items_pricebook_item_id"))})
+        @JoinColumn(name = "pricebook_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_pricebook_items_pricebook_id"))}, inverseJoinColumns = {
+        @JoinColumn(name = "item_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_pricebook_items_pricebook_item_id"))})
     private List<Item> priceBookItems;
 
     private boolean active;

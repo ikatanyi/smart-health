@@ -31,13 +31,12 @@ public class OrganizationService {
 
     @Transactional
     public OrganizationData createOrganization(OrganizationData o) {
-        
-        
-        Optional<Organization> orgx =orgRepository.findTopByOrderByOrganizationNameDesc();
-        if(orgx.isPresent()){
-           throw APIException.notFound("Organization Already Exists");
+
+        Optional<Organization> orgx = orgRepository.findTopByOrderByOrganizationNameDesc();
+        if (orgx.isPresent()) {
+            throw APIException.notFound("Organization Already Exists");
         }
-            
+
         Organization org = new Organization();
         //check if there is an organization already
         List<Organization> orgs = fetchOrganizations();
@@ -106,17 +105,57 @@ public class OrganizationService {
     }
 
     @Transactional
-    public OrganizationData updateOrganization(String id, OrganizationData data) {
+    public OrganizationData updateOrganization(String id, OrganizationData o) {
         Organization org = getOrganization(id);
+        org.setOrganizationName(o.getOrganizationName());
+        org.setOrganizationType(Organization.Type.valueOf(o.getOrganizationType()));
+        org.setLegalName(o.getLegalName());
+        org.setTaxNumber(o.getTaxNumber());
+        org.setWebsite(o.getWebsite());
+        //delete address
+        adminService.removeAddressByOrganization(org);
+        //delete contact
+        adminService.removeContactByOrganization(org);
 
-        org.setOrganizationName(data.getOrganizationName());
-        org.setTaxNumber(data.getTaxNumber());
-
+        org.setActive(Boolean.TRUE);
         Organization savedOrg = orgRepository.save(org);
-        return OrganizationData.map(savedOrg);
+        //Address data
+        List<Address> addresses = new ArrayList<>();
+        Address a = new Address();
+        a.setCountry(o.getCountry());
+        a.setCounty(o.getCounty());
+        a.setLine1(o.getLine1());
+        a.setLine2(o.getLine2());
+        a.setPostalCode(o.getPostalCode());
+        a.setTown(o.getTown());
+        a.setType(Address.Type.valueOf(o.getAddressType()));
+
+        addresses.add(a);
+
+        savedOrg.setAddress(addresses);
+
+        adminService.createAddressesEntity(addresses);
+
+        //Contact data
+        List<Contact> contact = new ArrayList<>();
+        Contact c = new Contact();
+        c.setEmail(o.getEmail());
+        c.setFullName(o.getContactFullName());
+        c.setMobile(o.getMobile());
+        c.setSalutation(o.getContactSalutation());
+        c.setTelephone(o.getTelephone());
+
+        contact.add(c);
+
+        savedOrg.setContact(contact);
+        adminService.createContactEntity(contact);
+
+        OrganizationData savedData = OrganizationData.map(savedOrg);
+        return savedData;
+
     }
-    
-    public Organization getActiveOrganization(){
+
+    public Organization getActiveOrganization() {
         return orgRepository.findTopByOrderByOrganizationNameDesc()
                 .orElseThrow(() -> APIException.notFound("No active Organization set"));
     }

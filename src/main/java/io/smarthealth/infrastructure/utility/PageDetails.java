@@ -14,4 +14,5 @@ public class PageDetails {
     private Integer totalPage;
     private Long totalElements;
     private String reportName;
+
 }

@@ -1,7 +1,9 @@
 package io.smarthealth.debtor.payer.api;
 
 import io.smarthealth.accounting.account.domain.Account;
-import io.smarthealth.accounting.account.service.AccountService; 
+import io.smarthealth.accounting.account.service.AccountService;
+import io.smarthealth.accounting.pricebook.domain.PriceBook;
+import io.smarthealth.accounting.pricebook.service.PricebookService;
 import io.smarthealth.administration.app.domain.BankBranch;
 import io.smarthealth.administration.app.domain.PaymentTerms;
 import io.smarthealth.administration.app.service.AdminService;
@@ -33,47 +35,48 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/api")
 public class PayerController {
-
+    
     private final PayerService payerService;
     private final AdminService adminService;
     private final AccountService accountService;
     private final PaymentTermsService paymentTermsService;
-
-    public PayerController(PayerService payerService, AdminService adminService, AccountService accountService, PaymentTermsService paymentTermsService) {
+    private final PricebookService pricebookService;
+    
+    public PayerController(PayerService payerService, AdminService adminService, AccountService accountService, PaymentTermsService paymentTermsService, PricebookService pricebookService) {
         this.payerService = payerService;
         this.adminService = adminService;
         this.accountService = accountService;
         this.paymentTermsService = paymentTermsService;
+        this.pricebookService = pricebookService;
     }
-
+    
     @PostMapping("/payer")
     public ResponseEntity<?> createPayer(@Valid @RequestBody PayerData payerData) {
-
+        
         Payer payer = PayerData.map(payerData);
         BankBranch bankBranch = adminService.fetchBankBranchById(payerData.getBranchId());
         Account debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
         PaymentTerms paymentTerms = paymentTermsService.getPaymentTermByIdWithFailDetection(payerData.getPaymentTermId());
+        PriceBook priceBook = pricebookService.getPricebookWithNotFoundExeption(payerData.getPayerId());
         payer.setBankBranch(bankBranch);
         payer.setDebitAccount(debitAccount);
         payer.setPaymentTerms(paymentTerms);
-        //if(){
-
-        //payer.setAddress(address);
+        payer.setPriceBook(priceBook);
         Payer result = payerService.createPayer(payer);
-
+        
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/payer/{id}")
                 .buildAndExpand(result.getId()).toUri();
-
+        
         PayerData data = PayerData.map(result);
-
+        
         return ResponseEntity.created(location).body(data);
     }
-
+    
     @GetMapping("payer")
     public ResponseEntity<?> fetchAllPayers(Pageable pageable) {
         Page<PayerData> payers = payerService.fetchPayers(pageable).map(p -> PayerData.map(p));
-
+        
         Pager<List<PayerData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -85,8 +88,8 @@ public class PayerController {
         details.setTotalPage(payers.getTotalPages());
         details.setReportName("Payer List");
         pagers.setPageDetails(details);
-
+        
         return ResponseEntity.ok(pagers);
     }
-
+    
 }

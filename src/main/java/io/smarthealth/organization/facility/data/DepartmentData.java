@@ -32,12 +32,14 @@ public class DepartmentData {
     private String facilityName;
     private Long facilityId;
     private Long parentId;
+    private Long servicePointId;
     private String parentName;
 //    private Long incomeAccountId;
 //    private Long expenseAccountId;
+    private String servicePointTypeName;
     private boolean isStore;
     private boolean active;
 
-    @Enumerated(EnumType.STRING)
-    private Department.ServicePointType servicePointType;
+//    @Enumerated(EnumType.STRING)
+//    private Department.ServicePointType servicePointType;
 }

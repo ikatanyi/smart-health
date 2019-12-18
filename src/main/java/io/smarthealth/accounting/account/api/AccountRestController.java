@@ -101,9 +101,9 @@ public class AccountRestController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createPage(page, size); 
+        Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<AccountData> list = service.fetchAccounts(includeClosed, term, type,category,runningBalance, pageable ).map(u -> AccountData.map(u));
+        Page<AccountData> list = service.fetchAccounts(includeClosed, term, type, category, runningBalance, pageable).map(u -> AccountData.map(u));
 
         return ResponseEntity.ok(ContentPage.createPage(list));
 //        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
@@ -147,14 +147,14 @@ public class AccountRestController {
     }
 
     @GetMapping("/accounts/$metadata")
-    public ResponseEntity<?> getAccountsMetadata(){
+    public ResponseEntity<?> getAccountsMetadata() {
         return ResponseEntity.ok(service.getAccountMetadata());
     }
-    
+
     @GetMapping("/chartofaccounts")
     @ResponseBody
     public ResponseEntity<List<ChartOfAccountEntry>> getChartOfAccounts() {
         return ResponseEntity.ok(this.chartOfAccountsService.getChartOfAccounts());
     }
-   //file:///D:/dev/projects/Fineract-folder/api-docs/apiLive.htm#glaccounts
+    //file:///D:/dev/projects/Fineract-folder/api-docs/apiLive.htm#glaccounts
 }

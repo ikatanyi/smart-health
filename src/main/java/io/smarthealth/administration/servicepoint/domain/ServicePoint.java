@@ -1,7 +1,7 @@
 package io.smarthealth.administration.servicepoint.domain;
 
 import io.smarthealth.accounting.account.data.SimpleAccountData;
-import io.smarthealth.accounting.account.domain.Account; 
+import io.smarthealth.accounting.account.domain.Account;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
@@ -42,7 +42,6 @@ public class ServicePoint extends Identifiable {
         if (this.getExpenseAccount() != null) {
             data.setExpenseAccount(SimpleAccountData.map(this.getExpenseAccount()));
         }
-
         return data;
     }
 }
