@@ -77,17 +77,13 @@ public class LabTestTypeController {
         Item item = itemService.findItemWithNoFoundDetection(code);
         LabTestType labTest = labService.findTestTypeByItemService(item).get();
 
-        Page<AnalyteData> analyteData = labService.fetchAnalyteByTestType(labTest, pageable);
+        List<AnalyteData> analyteData = labService.fetchAnalyteByTestType(labTest);
 
         Pager<List<AnalyteData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
-        pagers.setContent(analyteData.getContent());
+        pagers.setContent(analyteData);
         PageDetails details = new PageDetails();
-        details.setPage(analyteData.getNumber() + 1);
-        details.setPerPage(analyteData.getSize());
-        details.setTotalElements(analyteData.getTotalElements());
-        details.setTotalPage(analyteData.getTotalPages());
         details.setReportName("Analytes for test identified by code " + code);
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);

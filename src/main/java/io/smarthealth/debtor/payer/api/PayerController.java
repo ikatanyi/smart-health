@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,6 +74,21 @@ public class PayerController {
         return ResponseEntity.created(location).body(data);
     }
     
+    @GetMapping("payer/{id}")
+    public ResponseEntity<?> fetchAllPayers(@PathVariable("id") final Long payerId) {
+        PayerData payers = PayerData.map(payerService.findPayerByIdWithNotFoundDetection(payerId));
+
+        Pager<PayerData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(payers);
+        PageDetails details = new PageDetails();
+        details.setReportName("Payer");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
+
     @GetMapping("payer")
     public ResponseEntity<?> fetchAllPayers(Pageable pageable) {
         Page<PayerData> payers = payerService.fetchPayers(pageable).map(p -> PayerData.map(p));
