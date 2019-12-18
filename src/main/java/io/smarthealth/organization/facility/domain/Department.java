@@ -19,8 +19,8 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "facility_department",uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"dept_name"}, name="unique_dept_name_fk_dept_facility_id")})
+@Table(name = "facility_department", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"dept_name"}, name = "unique_dept_name_fk_dept_facility_id")})
 public class Department extends Identifiable {
 
     public enum Type {
@@ -53,6 +53,9 @@ public class Department extends Identifiable {
     private Boolean isStore; // the department can be store location
 
     private Boolean active;
-    private String servicePointType;
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_service_point_type_id"))
+    private ServicePoint servicePointType;
 
 }

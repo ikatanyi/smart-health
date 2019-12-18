@@ -46,6 +46,10 @@ public class Payer extends Auditable {
     @ManyToOne
     private AccountEntity debitAccount;
 
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_price_book_id"))
+    @ManyToOne
+    private PriceBook priceBook;
+
     @ManyToMany
     @JoinTable(name = "payer_address", joinColumns = {
         @JoinColumn(name = "payer_id", referencedColumnName = "id")}, inverseJoinColumns = {

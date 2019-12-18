@@ -28,6 +28,7 @@ public class PayerData {
     private String website;
     private Long branchId;
     private Long paymentTermId;
+    private Long priceBookId;
     private boolean insurance;
 
     private String debitAccountNo;

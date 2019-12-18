@@ -8,6 +8,7 @@ import io.smarthealth.accounting.pricebook.domain.enumeration.PriceType;
 import io.smarthealth.accounting.pricebook.domain.specification.PriceBookSpecification;
 import io.smarthealth.administration.app.domain.Currency;
 import io.smarthealth.administration.app.domain.CurrencyRepository;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.util.ArrayList;
@@ -41,12 +42,12 @@ public class PricebookService {
     @Transactional
     public PriceBookData createPricebook(PriceBookData priceBook) {
         PriceBook book = new PriceBook();
-        if(priceBook.getCurrencyId()!=null){
-        Optional<Currency> currency = currencyRepository.findById(priceBook.getCurrencyId());
+        if (priceBook.getCurrencyId() != null) {
+            Optional<Currency> currency = currencyRepository.findById(priceBook.getCurrencyId());
 
-        if (currency.isPresent()) {
-            book.setCurrency(currency.get());
-        }
+            if (currency.isPresent()) {
+                book.setCurrency(currency.get());
+            }
         }
         book.setDecimalPlace(priceBook.getDecimalPlace());
         book.setDescription(priceBook.getDescription());
@@ -78,6 +79,10 @@ public class PricebookService {
 
     public Optional<PriceBook> getPricebook(Long id) {
         return priceBookRepository.findById(id);
+    }
+
+    public PriceBook getPricebookWithNotFoundExeption(Long id) {
+        return priceBookRepository.findById(id).orElseThrow(() -> APIException.notFound("Price book identified by {0} is not available ", id));
     }
 
     public Optional<PriceBook> getPricebookByName(String name) {

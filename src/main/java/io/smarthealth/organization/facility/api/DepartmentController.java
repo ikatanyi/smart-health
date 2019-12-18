@@ -5,6 +5,8 @@
  */
 package io.smarthealth.organization.facility.api;
 
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.facility.data.DepartmentData;
@@ -37,43 +39,50 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api")
 @Api(value = "Department Controller", description = "Operations pertaining to department maintenance")
 public class DepartmentController {
-    
+
     @Autowired
     DepartmentService departmentService;
-    
+
     @Autowired
     FacilityService facilityService;
-    
+
+    @Autowired
+    ServicePointService servicePointService;
+
     @Autowired
     ModelMapper modelMapper;
-    
+
     @PostMapping("/department")
     public @ResponseBody
     ResponseEntity<?> createFacilityDepartment(@RequestBody @Valid final DepartmentData departmentData) {
-        
+
         Facility facility = facilityService.findFacility(departmentData.getFacilityId());
         //check if department already exists
         if (departmentService.existsByName(departmentData.getName(), facility)) {
             throw APIException.conflict("Department already exists", "");
         }
+        //fetch service points
+        ServicePoint servicePoint = servicePointService.getServicePoint(departmentData.getServicePointId());
+        /*
         if (departmentService.existsByNameAndServicePoint(departmentData.getName(), facility, departmentData.getServicePointType().name())) {
             throw APIException.conflict("Department already exists", "");
-        }
+        }*/
         Department department = convertDeptDataToDepartment(departmentData);
         department.setFacility(facility);
         if (departmentData.getParentId() != null) {
             department.setParent(departmentService.fetchDepartmentById(departmentData.getParentId()));
         }
+        department.setServicePointType(servicePoint);
         department.setType(Department.Type.valueOf(departmentData.getType().name()));
         Department departmentSaved = this.departmentService.createDepartment(department);
-        
+
         DepartmentData savedDeptData = convertToDeptData(departmentSaved);
-        
+
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/facility/" + departmentData.getFacilityId() + "/department/{code}")
                 .buildAndExpand(departmentSaved.getCode()).toUri();
         return new ResponseEntity<>(savedDeptData, HttpStatus.CREATED);
     }
-    
+
     @PutMapping("/department/{id}")
     public @ResponseBody
     ResponseEntity<?> updateFacilityDepartment(@PathVariable("id") final Long id, @RequestBody @Valid final DepartmentData departmentData) {
@@ -88,23 +97,23 @@ public class DepartmentController {
         if (departmentData.getParentId() != null) {
             department.setParent(departmentService.fetchDepartmentById(departmentData.getParentId()));
         }
-        department.setServicePointType(departmentData.getServicePointType().name());
+        //department.setServicePointType(departmentData.getServicePointType().name());
         department.setType(Department.Type.valueOf(departmentData.getType().name()));
         Department departmentSaved = this.departmentService.createDepartment(department);
-        
+
         DepartmentData savedDeptData = convertToDeptData(departmentSaved);
-        
+
         return new ResponseEntity<>(savedDeptData, HttpStatus.CREATED);
     }
-    
+
     @GetMapping("/department")
     public ResponseEntity<List<DepartmentData>> fetchAllDepartments(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-        
+
         Page<DepartmentData> page = departmentService.fetchAllDepartments(pageable).map(d -> convertToDeptData(d));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-    
+
     @GetMapping("/facility/{id}/department")
     public ResponseEntity<List<DepartmentData>> fetchDepartmentsByFacility(@PathVariable("id") final String facilityId, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Facility facility = facilityService.findFacility(Long.valueOf(facilityId));
@@ -112,7 +121,7 @@ public class DepartmentController {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-    
+
     @GetMapping("/logged-in-facility/department")
     public ResponseEntity<List<DepartmentData>> fetchDepartmentsByLoggedFacility(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Facility facility = facilityService.loggedFacility();
@@ -120,27 +129,30 @@ public class DepartmentController {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-    
+
     private Department convertDeptDataToDepartment(DepartmentData departmentData) {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         Department dept = modelMapper.map(departmentData, Department.class);
 //Department dept = DepartmentData.
         //if (EnumExists.isInEnum("Open", Department.ServicePointType.class)) {
-        dept.setServicePointType(departmentData.getServicePointType().name());
+        //dept.setServicePointType(departmentData.getServicePointType().name());
         //}
         return dept;
     }
-    
+
     private DepartmentData convertToDeptData(Department department) {
-        DepartmentData d = modelMapper.map(department, DepartmentData.class);
+        DepartmentData d = /*new DepartmentData();*/ modelMapper.map(department, DepartmentData.class);
         d.setFacilityId(department.getFacility().getId());
         d.setFacilityName(department.getFacility().getFacilityName());
         if (department.getParent() != null) {
             d.setParentId(department.getParent().getId());
             d.setParentName(department.getParent().getName());
         }
+        if (department.getServicePointType() != null) {
+            d.setServicePointTypeName(department.getServicePointType().getName() == null ? "" : department.getServicePointType().getName());
+        }
         d.setType(department.getType());
         return d;
     }
-    
+
 }

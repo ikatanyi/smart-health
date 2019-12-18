@@ -34,41 +34,57 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/api")
 public class PayerController {
-
+    
     private final PayerService payerService;
     private final AdminService adminService;
     private final AccountService accountService;
     private final PaymentTermsService paymentTermsService;
-
-    public PayerController(PayerService payerService, AdminService adminService, AccountService accountService, PaymentTermsService paymentTermsService) {
+    private final PricebookService pricebookService;
+    
+    public PayerController(PayerService payerService, AdminService adminService, AccountService accountService, PaymentTermsService paymentTermsService, PricebookService pricebookService) {
         this.payerService = payerService;
         this.adminService = adminService;
         this.accountService = accountService;
         this.paymentTermsService = paymentTermsService;
+        this.pricebookService = pricebookService;
     }
-
+    
     @PostMapping("/payer")
     public ResponseEntity<?> createPayer(@Valid @RequestBody PayerData payerData) {
-
+        
         Payer payer = PayerData.map(payerData);
         BankBranch bankBranch = adminService.fetchBankBranchById(payerData.getBranchId());
         AccountEntity debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
         PaymentTerms paymentTerms = paymentTermsService.getPaymentTermByIdWithFailDetection(payerData.getPaymentTermId());
+        PriceBook priceBook = pricebookService.getPricebookWithNotFoundExeption(payerData.getPayerId());
         payer.setBankBranch(bankBranch);
         payer.setDebitAccount(debitAccount);
         payer.setPaymentTerms(paymentTerms);
-        //if(){
-
-        //payer.setAddress(address);
+        payer.setPriceBook(priceBook);
         Payer result = payerService.createPayer(payer);
-
+        
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/payer/{id}")
                 .buildAndExpand(result.getId()).toUri();
-
+        
         PayerData data = PayerData.map(result);
-
+        
         return ResponseEntity.created(location).body(data);
+    }
+    
+    @GetMapping("payer/{id}")
+    public ResponseEntity<?> fetchAllPayers(@PathVariable("id") final Long payerId) {
+        PayerData payers = PayerData.map(payerService.findPayerByIdWithNotFoundDetection(payerId));
+
+        Pager<PayerData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(payers);
+        PageDetails details = new PageDetails();
+        details.setReportName("Payer");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
     }
     
     @GetMapping("payer/{id}")
@@ -89,7 +105,7 @@ public class PayerController {
     @GetMapping("payer")
     public ResponseEntity<?> fetchAllPayers(Pageable pageable) {
         Page<PayerData> payers = payerService.fetchPayers(pageable).map(p -> PayerData.map(p));
-
+        
         Pager<List<PayerData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -101,8 +117,8 @@ public class PayerController {
         details.setTotalPage(payers.getTotalPages());
         details.setReportName("Payer List");
         pagers.setPageDetails(details);
-
+        
         return ResponseEntity.ok(pagers);
     }
-
+    
 }

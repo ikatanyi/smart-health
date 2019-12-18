@@ -53,8 +53,6 @@ public class PatientQueueController {
         if (queryParams.getFirst("status") != null) {
             status = Boolean.valueOf(queryParams.getFirst("status"));
         }
-        System.out.println("status " + status);
-        //Facility facility = facilityService.findFacility(Long.valueOf("1"));
         Department department = departmentService.findByServicePointTypeAndfacility(servicePoint, facilityService.loggedFacility());
         Page<PatientQueueData> page = patientQueueService.fetchQueueByDept(department, status, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
