@@ -4,7 +4,7 @@ import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.BankBranch;
 import io.smarthealth.administration.app.domain.Contact;
-import io.smarthealth.administration.app.domain.PaymentTerms;
+import io.smarthealth.accounting.payment.domain.PaymentTerms;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.org.domain.Organization;
 import java.util.ArrayList;

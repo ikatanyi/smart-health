@@ -30,8 +30,10 @@ public class Item extends Identifiable {
     private String category; // is this a consumable, service, procedure, inventory
     private String itemName;
     private String itemCode;//sku;
-    private double rate;
-    private double costRate;
+    private Double rate;
+    private Double costRate;
+    private Boolean discountable;
+    private Boolean taxable;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_item_uom"))
     private Uom uom;

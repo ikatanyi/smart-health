@@ -1,7 +1,7 @@
 package io.smarthealth.stock.stores.service;
 
 import io.smarthealth.accounting.acc.domain.AccountEntity;
-import io.smarthealth.accounting.acc.domain.AccountsMetadata;
+import io.smarthealth.accounting.acc.domain.IncomeExpenseData;
 import io.smarthealth.accounting.acc.service.AccountService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.stores.data.StoreData;
@@ -80,7 +80,7 @@ public class StoreService {
         return stores.getContent();
     }
 
-    public AccountsMetadata getStoreMetadata() {
-        return accountService.getAccountMetadata();
+    public IncomeExpenseData getStoreMetadata() {
+        return accountService.getIncomeExpenseAccounts();
     }
 }

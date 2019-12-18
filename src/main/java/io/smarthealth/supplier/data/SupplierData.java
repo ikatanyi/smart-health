@@ -3,13 +3,13 @@ package io.smarthealth.supplier.data;
 import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.BankAccountData;
 import io.smarthealth.administration.app.data.ContactData;
-import io.smarthealth.supplier.domain.enumeration.SupplierType; 
+import io.smarthealth.supplier.domain.enumeration.SupplierType;    
 import lombok.Data;
-
+ 
 /**
  *
  * @author Kelsas
- */ 
+ */   
 @Data
 public class SupplierData {
 

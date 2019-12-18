@@ -1,12 +1,12 @@
 package io.smarthealth.accounting.acc.data;
  
-import io.smarthealth.accounting.acc.domain.AccountEntity; 
+import io.smarthealth.accounting.acc.domain.AccountEntity;  
 import lombok.Data;
 
 /**
  *
  * @author Kelsas
- */  
+ */   
 @Data
 public class SimpleAccountData {
 

@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.radiology.service;
 
-import io.smarthealth.billing.service.PatientBillService;
+import io.smarthealth.billing.service.BillingService;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.RadiologyTestData;
 import io.smarthealth.clinical.radiology.data.ScanItemData;
@@ -58,7 +58,7 @@ public class RadiologyService {
 
     private final EmployeeService employeeService;
     private final PatientService patientservice;
-    private final PatientBillService billService;
+    private final BillingService billService;
     private final ItemService itemService;
     private final VisitService visitService;
     private final SequenceService seqService;

@@ -253,8 +253,8 @@ public class AccountService {
             this.adjustLedgerTotals(savedLedger.getParentLedger().getIdentifier(), amount);
         }
     }
-     public AccountsMetadata getAccountMetadata() {
-        AccountsMetadata metadata = new AccountsMetadata();
+     public IncomeExpenseData getIncomeExpenseAccounts() {
+        IncomeExpenseData metadata = new IncomeExpenseData();
         List<SimpleAccountData> income = accountRepository.findByType(AccountType.REVENUE.name())
                 .stream()
                 .map(acc -> SimpleAccountData.map(acc))
@@ -268,4 +268,6 @@ public class AccountService {
 
         return metadata;
     }
+      
+
 }

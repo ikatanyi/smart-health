@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.procedure.service;
  
-import io.smarthealth.billing.service.PatientBillService;
+import io.smarthealth.billing.service.BillingService;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
 import io.smarthealth.clinical.procedure.data.ProcedureItemData;
 import io.smarthealth.clinical.procedure.data.ProcedureTestData;
@@ -58,7 +58,7 @@ public class ProcedureService {
 
     private final EmployeeService employeeService;
     private final PatientService patientservice;
-    private final PatientBillService billService;
+    private final BillingService billService;
     private final ItemService itemService;
     private final VisitService visitService;
     private final SequenceService seqService;

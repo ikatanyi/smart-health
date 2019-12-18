@@ -41,10 +41,10 @@ public class JournalRestControllers {
             throw ServiceException.conflict("Journal entry {0} already exists.", journalEntry.getTransactionIdentifier());
         }
 
-        if (journalEntry.getDebtors().size() == 0) {
+        if (journalEntry.getDebtors().isEmpty()) {
             throw ServiceException.badRequest("Debtors must be given.");
         }
-        if (journalEntry.getCreditors().size() == 0) {
+        if (journalEntry.getCreditors().isEmpty()) {
             throw ServiceException.badRequest("Creditors must be given.");
         }
 

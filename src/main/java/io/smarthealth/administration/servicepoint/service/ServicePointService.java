@@ -33,6 +33,7 @@ public class ServicePointService {
         point.setActive(data.getActive());
         point.setDescription(data.getDescription());
         point.setName(data.getName());
+        point.setServicePointType(data.getServicePointType());
         if(data.getExpenseAccount()!=null && data.getExpenseAccount().getAccountNumber()!=null){
             AccountEntity acc =accountService.findOneWithNotFoundDetection(data.getExpenseAccount().getAccountNumber());
             point.setExpenseAccount(acc);

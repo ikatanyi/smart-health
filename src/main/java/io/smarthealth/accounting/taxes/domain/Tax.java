@@ -2,15 +2,15 @@ package io.smarthealth.accounting.taxes.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.Table; 
 import lombok.Data;
 
 /**
  *
  * @author Kelsas
  */
-@Entity
 @Data
+@Entity 
 @Table(name = "config_taxes")
 public class Tax extends Identifiable {
 

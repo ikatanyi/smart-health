@@ -3,6 +3,7 @@ package io.smarthealth.administration.servicepoint.domain;
 import io.smarthealth.accounting.acc.data.SimpleAccountData;
 import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.*;
 import lombok.Data;
@@ -16,16 +17,20 @@ import lombok.Data;
 @Table(name = "service_points")
 public class ServicePoint extends Identifiable {
 
+    @Enumerated(EnumType.STRING)
+    private ServicePointType servicePointType;
+    
     private String name;
     private String description;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_income_account_id"))
     private AccountEntity incomeAccount;
+    
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_expense_account_id"))
     private AccountEntity expenseAccount;
+    
     private Boolean active;
-    private String servicePointType;
 
     public ServicePointData toData() {
         ServicePointData data = new ServicePointData();

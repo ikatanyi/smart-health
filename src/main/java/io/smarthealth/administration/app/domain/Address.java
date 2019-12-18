@@ -4,16 +4,16 @@ import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import javax.persistence.Table;  
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author Kelsas
- */
-@Entity
+ */ 
 @Data
+@Entity 
 @EqualsAndHashCode(callSuper = false)
 @Table(name = "addresses")
 public class Address extends Identifiable {

@@ -1,6 +1,6 @@
 package io.smarthealth.clinical.lab.service;
 
-import io.smarthealth.billing.service.PatientBillService;
+import io.smarthealth.billing.service.BillingService;
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.ContainerData;
 import io.smarthealth.clinical.lab.data.DisciplineData;
@@ -83,13 +83,13 @@ public class LabService {
     private final PatientService patientservice;
     private final ItemService itemService;
     private final VisitService visitService;
-    private final PatientBillService billingService;
+    private final BillingService billingService;
 
     private final LabTestTypeRepository labTestTypeRepository;
 
     private final PatientLabTestSpecimenRepo patientLabTestSpecimenRepo;
 
-    public LabService(AnalyteRepository analyteRepository, ModelMapper modelMapper, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, PatientTestRegisterRepository patientRegRepository, SequenceService seqService, EmployeeService employeeService, PatientService patientservice, ItemService itemService, VisitService visitService, PatientBillService billingService, LabTestTypeRepository labTestTypeRepository, PatientLabTestSpecimenRepo patientLabTestSpecimenRepo) {
+    public LabService(AnalyteRepository analyteRepository, ModelMapper modelMapper, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, PatientTestRegisterRepository patientRegRepository, SequenceService seqService, EmployeeService employeeService, PatientService patientservice, ItemService itemService, VisitService visitService, BillingService billingService, LabTestTypeRepository labTestTypeRepository, PatientLabTestSpecimenRepo patientLabTestSpecimenRepo) {
         this.analyteRepository = analyteRepository;
         this.modelMapper = modelMapper;
         this.containerRepository = containerRepository;

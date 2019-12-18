@@ -1,6 +1,6 @@
 package io.smarthealth.billing.domain.specification;
 
-import io.smarthealth.billing.domain.PatientBill;
+import io.smarthealth.billing.domain.Bill;
 import io.smarthealth.billing.domain.enumeration.BillStatus;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
@@ -16,7 +16,7 @@ public class BillingSpecification {
     public BillingSpecification() {
         super();
     }                  
-    public static Specification<PatientBill> createSpecification(String refNo, String visitNo, String patientNo, String paymentMode, String billNo, BillStatus status) {
+    public static Specification<Bill> createSpecification(String refNo, String visitNo, String patientNo, String paymentMode, String billNo, BillStatus status) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (refNo != null) {
