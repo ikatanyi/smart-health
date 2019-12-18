@@ -15,6 +15,8 @@ import lombok.Data;
 public class TestItemData {
 
     private String itemName, itemCode, status;
+    private Long requestId;
+    private Long requestItemId;
     private double itemPrice;
     private int quantity;
 }

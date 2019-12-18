@@ -15,9 +15,9 @@ import org.springframework.stereotype.Repository;
 public interface SequenceRepository extends CrudRepository<SequenceFormat, Long>{
      Optional<SequenceFormat> findByIdType(SequenceType type);
 
-//     @Procedure(procedureName = "nextval")
+//     @Procedure(procedureName = "nextVal")
 //     Long nextSequence(@Param("seq_name") String sequenceName, @Param("company_id") String companyId);
       
-     @Query(value = "SELECT nextval(:seq_name, :company_id) as next_sequence", nativeQuery = true)
+     @Query(value = "SELECT nextVal(:seq_name, :company_id) as next_sequence", nativeQuery = true)
      Long nextSequence(@Param("seq_name") String sequenceName, @Param("company_id") String companyId);
 }

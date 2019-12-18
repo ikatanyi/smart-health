@@ -8,11 +8,14 @@ package io.smarthealth.clinical.lab.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimen;
+import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -37,7 +40,10 @@ public class PatientLabTestSpecimenData {
     private String comments;
 
     private Long patientLabtestId;
-
+    
+    @Enumerated(EnumType.STRING)
+    private LabTestState status;
+    
     @ApiModelProperty(required = false, hidden = true)
     private String testName;
 

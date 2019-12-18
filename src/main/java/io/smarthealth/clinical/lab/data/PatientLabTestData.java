@@ -43,6 +43,8 @@ public class PatientLabTestData {
     @ApiModelProperty(hidden = true, required = false)
     private List<ResultsData> resultsData = new ArrayList();
     
+    private Boolean withRef;
+    
     public static PatientLabTest map(PatientLabTestData ptestdata) {
         PatientLabTest entity = new PatientLabTest();
         entity.setStatus(ptestdata.getStatus());
@@ -90,6 +92,8 @@ public class PatientLabTestData {
             p.setTestName(labTest.getTestType().getTestType());
             p.setQuantity(labTest.getQuantity());
             p.setTestPrice(labTest.getTestPrice());
+            if(labTest.getTestType()!=null)
+               p.setWithRef(labTest.getTestType().getWithRef());
 
             //Display possible specimen
             p.setSpecimenData(SpecimenData.map(labTest.getTestType().getSpecimen()));
@@ -109,6 +113,8 @@ public class PatientLabTestData {
             p.setTestName(labTest.getTestType().getTestType());
             p.setQuantity(labTest.getQuantity());
             p.setTestPrice(labTest.getTestPrice());
+            if(labTest.getTestType()!=null)
+               p.setWithRef(labTest.getTestType().getWithRef());
 
             //Display collected specimen
             p.setPatientLabTestSpecimen(PatientLabTestSpecimenData.map(labTest.getPatientLabTestSpecimens()));

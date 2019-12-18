@@ -23,11 +23,11 @@ import org.springframework.web.bind.annotation.*;
 @Api
 @RestController
 @RequestMapping("/api/v1")
-public class PatientBillingController {
+public class BillingController {
 
     private final BillingService service; 
 
-    public PatientBillingController(BillingService service) {
+    public BillingController(BillingService service) {
         this.service = service;
     }
    

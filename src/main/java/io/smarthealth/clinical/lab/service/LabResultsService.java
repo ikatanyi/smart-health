@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.lab.service;
 
+import io.smarthealth.clinical.lab.data.ResultsData;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.lab.domain.PatientTestRegister;
 import io.smarthealth.clinical.lab.domain.Results;
@@ -31,8 +32,23 @@ public class LabResultsService {
     ResultsRepository resultsRepository;
 
     @Transactional
-    public Results updateLabResult(Results r) {
-        return resultsRepository.save(r);
+    public List<Results> updateLabResult(List<ResultsData> resultsData) {
+        
+        List<Results> results=new ArrayList();
+        resultsData.stream().map((resultData) -> {
+            Results r = findResultsByIdWithNotFoundDetection(resultData.getResultId()); 
+            r.setComments(resultData.getComments());
+            r.setLowerRange(resultData.getLowerRange());
+            r.setResultValue(resultData.getResultValue());
+            r.setStatus(resultData.getStatus());
+            r.setUnit(resultData.getUnit());
+            r.setUpperRange(resultData.getUpperRange());
+            return r;
+        }).forEachOrdered((r) -> {
+            results.add(r);
+        });
+        
+        return resultsRepository.saveAll(results);
     }
 
     public Results findResultsByIdWithNotFoundDetection(Long id) {

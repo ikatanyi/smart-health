@@ -14,12 +14,13 @@ import lombok.Data;
  */
 @Data
 public class DoctorRequestItem {
-
+    
     private Long itemId;
     private String itemName;
     private String code;
     private double costRate;
     private double rate;
+    private Long requestItemId;
 
     public static DoctorRequestItem map(DoctorRequest d) {
         DoctorRequestItem requestItem = new DoctorRequestItem();
@@ -28,6 +29,7 @@ public class DoctorRequestItem {
         requestItem.setItemId(d.getItem().getId());
         requestItem.setItemName(d.getItem().getItemName());
         requestItem.setRate(d.getItemRate());
+        requestItem.setRequestItemId(d.getId());
         return requestItem;
     }
 }

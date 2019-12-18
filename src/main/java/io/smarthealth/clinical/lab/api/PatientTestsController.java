@@ -2,6 +2,7 @@ package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.PatientLabTestData;
 import io.smarthealth.clinical.lab.data.PatientLabTestSpecimenData;
+import io.smarthealth.clinical.lab.data.PatientResultsData;
 import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
 import io.smarthealth.clinical.lab.data.ResultsData;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
@@ -83,18 +84,13 @@ public class PatientTestsController {
         return ResponseEntity.status(HttpStatus.OK).body(patientLabTests);
     }
 
-    @PutMapping("/patient-test/results/{resultId}")
+    @PutMapping("/patient-test/results")
     public @ResponseBody
-    ResponseEntity<?> updateLabTestResults(@PathVariable("resultId") final Long resultId, @Valid @RequestBody ResultsData resultData) {
-        Results r = labResultsService.findResultsByIdWithNotFoundDetection(resultId);
-        r.setComments(resultData.getComments());
-        r.setLowerRange(resultData.getLowerRange());
-        r.setResultValue(resultData.getResultValue());
-        r.setStatus(resultData.getStatus());
-        r.setUnit(resultData.getUnit());
-        r.setUpperRange(resultData.getUpperRange());
-
-        Results savedResult = labResultsService.updateLabResult(r);
+    ResponseEntity<?> updateLabTestResults(@Valid @RequestBody PatientResultsData presultData) {
+        PatientLabTest plt = labService.fetchPatientTestsById(presultData.getId());
+        plt.setStatus(presultData.getStatus());
+        labService.savePatientLabTest(plt);
+        List<Results> savedResult = labResultsService.updateLabResult(presultData.getResultsData());
         return ResponseEntity.status(HttpStatus.OK).body(ResultsData.map(savedResult));
     }
 
@@ -170,6 +166,7 @@ public class PatientTestsController {
         PatientLabTest plt = labService.fetchPatientTestsById(patientLabTestSpecimen.getPatientLabtestId());
         Specimen specimen = labService.fetchSpecimenById(patientLabTestSpecimen.getSpecimenId());
         PatientLabTestSpecimen testSpecimen = PatientLabTestSpecimenData.map(patientLabTestSpecimen);
+        plt.setStatus(patientLabTestSpecimen.getStatus());
         testSpecimen.setPatientLabTest(plt);
         testSpecimen.setSpecimen(specimen);
         PatientLabTestSpecimen specimenDetail = labService.createPatientLabTestSpecimen(testSpecimen);
