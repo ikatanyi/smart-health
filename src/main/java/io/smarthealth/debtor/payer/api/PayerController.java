@@ -58,7 +58,7 @@ public class PayerController {
         BankBranch bankBranch = adminService.fetchBankBranchById(payerData.getBranchId());
         Account debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
         PaymentTerms paymentTerms = paymentTermsService.getPaymentTermByIdWithFailDetection(payerData.getPaymentTermId());
-        PriceBook priceBook = pricebookService.getPricebookWithNotFoundExeption(payerData.getPayerId());
+        PriceBook priceBook = pricebookService.getPricebookWithNotFoundExeption(payerData.getPriceBookId());
         payer.setBankBranch(bankBranch);
         payer.setDebitAccount(debitAccount);
         payer.setPaymentTerms(paymentTerms);
