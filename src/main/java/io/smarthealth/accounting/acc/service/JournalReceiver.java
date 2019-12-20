@@ -1,8 +1,6 @@
 package io.smarthealth.accounting.acc.service;
 
 import io.smarthealth.accounting.acc.data.v1.JournalEntry;
-import io.smarthealth.accounting.acc.service.FinancialActivityAccountService;
-import io.smarthealth.accounting.acc.service.JournalEntryService;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;

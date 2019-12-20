@@ -97,7 +97,7 @@ public class BillingService {
 
         Bill savedBill = patientBillRepository.save(patientbill);
         
-//         journalSender.postJournal(toJournal(savedBill));
+         journalSender.postJournal(toJournal(savedBill));
          
         return savedBill;
     }
