@@ -1,10 +1,10 @@
-package io.smarthealth.config;
+package io.smarthealth.accounting.acc.service;
 
+import io.smarthealth.accounting.acc.data.v1.JournalEntry;
 import io.smarthealth.accounting.acc.service.FinancialActivityAccountService;
 import io.smarthealth.accounting.acc.service.JournalEntryService;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
@@ -14,15 +14,14 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@EnableJms
-public class MessageConsumer {
+public class JournalReceiver {
 
     private FinancialActivityAccountService financialActivityAccountService;
     private JournalEntryService journalService;
     private ServicePointService pointsService;
 
-    @JmsListener(destination = "journal-queue")
-    public void listener(String message) {
-        log.info("Message received on Journal posting {} ", message);
+    @JmsListener(destination = "journalQueue", containerFactory = "connectionFactory")
+    public void receiveJournal(JournalEntry journalEntry) {
+        log.info(" >>  Received Journal: " + journalEntry);
     }
 }

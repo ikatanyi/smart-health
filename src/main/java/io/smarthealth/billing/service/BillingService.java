@@ -1,7 +1,10 @@
 package io.smarthealth.billing.service;
 
 import com.google.common.collect.Sets;
+import io.smarthealth.accounting.acc.data.v1.Creditor;
+import io.smarthealth.accounting.acc.data.v1.Debtor;
 import io.smarthealth.accounting.acc.data.v1.JournalEntry;
+import io.smarthealth.accounting.acc.service.JournalSender;
 import io.smarthealth.billing.data.BillData;
 import io.smarthealth.billing.data.BillItemData;
 import io.smarthealth.billing.domain.Bill;
@@ -28,29 +31,23 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.billing.domain.BillRepository;
-import io.smarthealth.config.JmsMessageService;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
  * @author Kelsas
  */
 @Service
+@RequiredArgsConstructor
 public class BillingService {
 
     private final BillRepository patientBillRepository;
     private final VisitService visitService;
     private final ItemService itemService;
   
-    private final SequenceService sequenceService;
-    private final JmsMessageService messageService;
-
-    public BillingService(BillRepository patientBillRepository, VisitService visitService, ItemService itemService, SequenceService sequenceService, JmsMessageService messageService) {
-        this.patientBillRepository = patientBillRepository;
-        this.visitService = visitService;
-        this.itemService = itemService;
-        this.sequenceService = sequenceService;
-        this.messageService = messageService;
-    }
+    private final SequenceService sequenceService; 
+    private final JournalSender journalSender;
+    
  
     @Transactional
     public Bill createPatientBill(BillData data) {
@@ -82,7 +79,6 @@ public class BillingService {
                     if (lineData.getItemId() != null) {
                         Item item = itemService.findItemEntityOrThrow(lineData.getItemId());
                         billItem.setItem(item);
-
                     }
 
                     billItem.setPrice(lineData.getPrice());
@@ -101,8 +97,8 @@ public class BillingService {
 
         Bill savedBill = patientBillRepository.save(patientbill);
         
-        messageService.publish("Billing has been received Queued ... "+savedBill.getBillNumber());
-        
+//         journalSender.postJournal(toJournal(savedBill));
+         
         return savedBill;
     }
 
@@ -190,26 +186,27 @@ public class BillingService {
 //
 //    }
 
-    private JournalEntry post(Bill patientBill) {
+    private JournalEntry toJournal(Bill patientBill) {
         
         //Note to self - aggregated service based on billing point
         // Arraylist accruedValues =new Arraylist();
         // BigDecimal.valueOf(accruedValues.parallelStream().reduce(0.00D, Double::sum)).setScale(2, BigDecimal.ROUND_HALF_EVEN).toString();
         
         final String roundedAmount = BigDecimal.valueOf(6500D).setScale(2, BigDecimal.ROUND_HALF_EVEN).toString();
-        final io.smarthealth.accounting.acc.data.v1.JournalEntry cashToAccrueJournalEntry = new io.smarthealth.accounting.acc.data.v1.JournalEntry();
+        final JournalEntry cashToAccrueJournalEntry = new JournalEntry();
         cashToAccrueJournalEntry.setTransactionIdentifier(RandomStringUtils.randomAlphanumeric(32));
         cashToAccrueJournalEntry.setTransactionDate(LocalDateTime.now());
+        cashToAccrueJournalEntry.setState("PENDING");
         cashToAccrueJournalEntry.setTransactionType("INTR");
         cashToAccrueJournalEntry.setClerk(SecurityUtils.getCurrentUserLogin().get());
-        cashToAccrueJournalEntry.setNote("Patient Billing : patient no. .");
+        cashToAccrueJournalEntry.setNote("Patient Billing : patient no. ");
 
-        final io.smarthealth.accounting.acc.data.v1.Debtor cashDebtor = new io.smarthealth.accounting.acc.data.v1.Debtor();
+        final Debtor cashDebtor = new Debtor();
         cashDebtor.setAccountNumber("account to debit");
         cashDebtor.setAmount(roundedAmount);
         cashToAccrueJournalEntry.setDebtors(Sets.newHashSet(cashDebtor));
 
-        final io.smarthealth.accounting.acc.data.v1.Creditor accrueCreditor = new io.smarthealth.accounting.acc.data.v1.Creditor();
+        final Creditor accrueCreditor = new Creditor();
         accrueCreditor.setAccountNumber("account to credit");
         accrueCreditor.setAmount(roundedAmount);
         cashToAccrueJournalEntry.setCreditors(Sets.newHashSet(accrueCreditor));

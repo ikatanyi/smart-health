@@ -28,7 +28,7 @@
 //
 //    private final ReportSpecificationProvider reportSpecificationProvider;
 //    private final ReportService reportService;
-//
+////api/test/ken?format=html
 //    @GetMapping("/test/{username}")
 //    public ResponseEntity<byte[]> report(@PathVariable String username, @RequestParam(defaultValue = "pdf") ExportFormat format) {
 //        Map<String, Object> params = new HashMap<>();
