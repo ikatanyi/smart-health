@@ -28,15 +28,9 @@ import lombok.Data;
     @UniqueConstraint(columnNames = {"scanName", "item_id"}, name="unique_scan_name_item_id")})
 @Inheritance(strategy = InheritanceType.JOINED)
 public class RadiologyTest extends Identifiable{
-    private String scanName; //government classifications
-    private Boolean consent; 
-    private Boolean withRef; 
-    private Boolean refOut; 
+    private String scanName; 
     private Boolean status; 
     private String notes;
     @OneToOne
     private Item item;
-    private Boolean supervisorConfirmation;
-    @Enumerated(EnumType.STRING)
-    private LabTestTypeData.Gender gender;  
 }

@@ -5,6 +5,8 @@
  */
 package io.smarthealth.infrastructure.reports.service;
 
+import io.smarthealth.organization.facility.domain.Facility;
+import io.smarthealth.organization.facility.service.FacilityService;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +34,7 @@ import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
@@ -43,14 +46,23 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public class ReportService {
 
-;
 JasperPrint jasperPrint;    
     
  @Autowired
  @Qualifier("jdbcTemplate")
  private JdbcTemplate jdbcTemplate;
  
+ 
  private HashMap jasperParameter;
+ 
+ private FacilityService facilityService;
+ 
+ @Value("${reportTemplate.upload.dir}")
+    private String ReportDir;
+
+    public ReportService(final FacilityService facilityService) {
+        this.facilityService = facilityService;
+    }
  
  
     public void report_viewer2(String reportname, HashMap m, String type, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -111,25 +123,15 @@ JasperPrint jasperPrint;
     public void reportDatasource(String reportname, HashMap m, String type, List list, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        getFacility();
         // set header as pdf
         response.setContentType("application/pdf");
 
         // set input and output stream
         ServletOutputStream servletOutputStream = response.getOutputStream();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        try {
-
-            // get report            
-            ApplicationContext appContext = new ClassPathXmlApplicationContext(new String[]{});
-            Resource resource = appContext.getResource("classpath:com/smart/reports/" + reportname);
-            final InputStream rept = resource.getInputStream();
-//            jasperParameter.putAll(m);
-//            jasperParameter.put("SUBREPORT_DIR", "com/reports/templates/");
-//            reports rpt = new reports(jasperParameter, rept, beanDataSource);
-            
+        try {            
             // export to pdf
-//            JasperExportManager.exportReportToPdfStream(rpt.beanReporter(), baos);
             jasperPrint = this.beanReporter(reportname, m, list);
             baos = this.exportManager(jasperPrint, type);
             response.setContentLength(baos.size());
@@ -138,7 +140,6 @@ JasperPrint jasperPrint;
         } catch (Exception ex) {
             ex.getMessage();
         } finally {
-            servletOutputStream.flush();
             servletOutputStream.close();
             baos.close();
         }
@@ -213,7 +214,7 @@ JasperPrint jasperPrint;
             Resource resource = appContext.getResource("classpath:com/smart/reports/" + reportname);
             JRBeanCollectionDataSource beanDataSource = new JRBeanCollectionDataSource(list);
             final InputStream jasperReport = resource.getInputStream();
-             jasperPrint = JasperFillManager.fillReport(jasperReport, this.jasperParameter, beanDataSource);
+             jasperPrint = JasperFillManager.fillReport(jasperReport, m, beanDataSource);
         } catch (JRException ex) {
            ex.printStackTrace();
         }
@@ -236,4 +237,16 @@ JasperPrint jasperPrint;
         return jasperPrint;
     }
     
+    private void getFacility(){
+        jasperParameter = new HashMap();
+        Facility facility = facilityService.loggedFacility();
+        jasperParameter.put("CompanyName", facility.getFacilityName());
+        jasperParameter.put("Contact", facility.getOrganization().getContact().get(0));
+        jasperParameter.put("Address", facility.getOrganization().getAddress().get(0));
+        jasperParameter.put("RegistrationNo", facility.getRegistrationNumber());
+        jasperParameter.put("RegistrationNo", facility.getRegistrationNumber());
+//        jasperParameter.put("PIC_DIR", sup.imageURL()+"/hmis/images/");
+        jasperParameter.put("logo", facility.getLogo());
+        jasperParameter.put("SUBREPORT_DIR", ReportDir);
+    }
 }
