@@ -89,23 +89,5 @@ public class PayerController {
         return ResponseEntity.ok(pagers);
     }
      
-    @GetMapping("payer")
-    public ResponseEntity<?> fetchAllPayers(Pageable pageable) {
-        Page<PayerData> payers = payerService.fetchPayers(pageable).map(p -> PayerData.map(p));
-        
-        Pager<List<PayerData>> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Success");
-        pagers.setContent(payers.getContent());
-        PageDetails details = new PageDetails();
-        details.setPage(payers.getNumber() + 1);
-        details.setPerPage(payers.getSize());
-        details.setTotalElements(payers.getTotalElements());
-        details.setTotalPage(payers.getTotalPages());
-        details.setReportName("Payer List");
-        pagers.setPageDetails(details);
-        
-        return ResponseEntity.ok(pagers);
-    }
     
 }

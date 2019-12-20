@@ -44,7 +44,7 @@ public class PatientLabTestData {
     private List<ResultsData> resultsData = new ArrayList();
     
     private Boolean withRef; 
-    
+      
     public static PatientLabTest map(PatientLabTestData ptestdata) {
         PatientLabTest entity = new PatientLabTest();
         entity.setStatus(ptestdata.getStatus());

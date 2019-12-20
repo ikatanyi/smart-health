@@ -4,12 +4,12 @@ import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.accounting.acc.service.AccountService;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
-import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.Objects;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
 
 /**
  *
@@ -26,8 +26,6 @@ public class ServicePointService {
         this.accountService = accountService;
     }
 
-     
-
     public ServicePointData createPoint(ServicePointData data) {
         ServicePoint point = new ServicePoint();
         point.setActive(data.getActive());
@@ -43,7 +41,7 @@ public class ServicePointService {
             AccountEntity acc =accountService.findOneWithNotFoundDetection(data.getIncomeAccount().getAccountNumber());
             point.setIncomeAccount(acc);
         }
-        
+
         ServicePoint savedPoint = repository.save(point);
         return savedPoint.toData();
     }
@@ -56,7 +54,7 @@ public class ServicePointService {
 
     public Page<ServicePointData> listServicePoints(Pageable page) {
         return repository
-                .findAll(page) 
+                .findAll(page)
                 .map(sd -> sd.toData());
     }
 

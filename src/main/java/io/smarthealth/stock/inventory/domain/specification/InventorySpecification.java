@@ -9,6 +9,7 @@ import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.stores.domain.Store;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 

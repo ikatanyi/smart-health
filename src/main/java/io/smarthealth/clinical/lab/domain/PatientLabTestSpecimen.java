@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.lab.domain;
 
+import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDateTime;
 import javax.persistence.CascadeType;
