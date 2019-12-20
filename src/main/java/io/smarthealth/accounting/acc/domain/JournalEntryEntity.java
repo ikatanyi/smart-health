@@ -15,7 +15,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @Table(name = "acc_journal_entries")
-@EqualsAndHashCode(exclude={"debtors", "creditors"})
+@EqualsAndHashCode(exclude={"debtors", "creditors"}, callSuper = false)
 public class JournalEntryEntity extends Auditable {
 
     private LocalDate dateBucket;

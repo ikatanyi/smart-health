@@ -11,7 +11,7 @@ import io.smarthealth.accounting.acc.validation.ServiceException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.swagger.annotations.Api;
 import java.util.Optional;
-import javax.annotation.Nullable;
+//import javax.annotation.Nullable;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -112,12 +112,12 @@ public class AccountRestControllers {
     @ResponseBody
     ResponseEntity<AccountEntryPage> fetchAccountEntries(
             @PathVariable("identifier") final String identifier,
-            @RequestParam(value = "dateRange", required = false) @Nullable final String dateRange,
-            @RequestParam(value = "message", required = false) @Nullable final String message,
-            @RequestParam(value = "pageIndex", required = false) @Nullable final Integer pageIndex,
-            @RequestParam(value = "size", required = false) @Nullable final Integer size,
-            @RequestParam(value = "sortColumn", required = false) @Nullable final String sortColumn,
-            @RequestParam(value = "sortDirection", required = false) @Nullable final String sortDirection
+            @RequestParam(value = "dateRange", required = false) final String dateRange,
+            @RequestParam(value = "message", required = false) final String message,
+            @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
+            @RequestParam(value = "size", required = false) final Integer size,
+            @RequestParam(value = "sortColumn", required = false) final String sortColumn,
+            @RequestParam(value = "sortDirection", required = false) final String sortDirection
     ) {
         final DateRange range = DateRange.fromIsoString(dateRange);
 

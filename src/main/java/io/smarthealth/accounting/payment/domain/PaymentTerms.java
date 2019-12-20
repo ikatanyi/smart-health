@@ -2,15 +2,15 @@ package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
 import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.Table; 
 import lombok.Data;
 
 /**
  *
  * @author Kelsas
  */
-@Entity
 @Data
+@Entity 
 @Table(name = "payment_terms")
 public class PaymentTerms extends Auditable {
 

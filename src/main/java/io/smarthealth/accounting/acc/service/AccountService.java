@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
+//import javax.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,7 +92,7 @@ public class AccountService {
 
     public AccountEntryPage fetchAccountEntries(final String identifier,
             final DateRange range,
-            final @Nullable String message,
+            final String message,
             final Pageable pageable) {
 
         final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier); 

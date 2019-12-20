@@ -8,14 +8,16 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.Table; 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author Kelsas
- */ 
+ */  
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "acc_ledgers")
 public class LedgerEntity extends Auditable {

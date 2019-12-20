@@ -23,6 +23,6 @@ public class MessageConsumer {
 
     @JmsListener(destination = "journal-queue")
     public void listener(String message) {
-        log.info("Message received {} ", message);
+        log.info("Message received on Journal posting {} ", message);
     }
 }

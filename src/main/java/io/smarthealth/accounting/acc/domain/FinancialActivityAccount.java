@@ -4,6 +4,7 @@ import io.smarthealth.accounting.acc.data.v1.FinancialActivity;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
@@ -11,6 +12,7 @@ import lombok.Data;
  */
  
  @Data
+ @EqualsAndHashCode(callSuper = false)
 @Entity 
 @Table(name = "acc_financial_activity")
 public class FinancialActivityAccount extends Identifiable {

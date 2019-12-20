@@ -6,13 +6,13 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table; 
+import javax.persistence.Table;  
 import lombok.Data;
 
 /**
  *
  * @author Kelsas
- */
+ */ 
 @Data
 @Entity 
 @Table(name = "invoice_line_item")

@@ -1,6 +1,7 @@
 package io.smarthealth.organization.facility.domain;
 
 import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Column;
 import javax.persistence.Entity;

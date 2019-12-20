@@ -53,4 +53,5 @@ public class Item extends Identifiable {
     public boolean isInventoryItem() {
         return this.itemType.equals("Inventory");
     }
+ 
 }

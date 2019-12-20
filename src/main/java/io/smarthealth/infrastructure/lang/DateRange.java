@@ -7,8 +7,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
+//import javax.annotation.Nonnull;
+//import javax.annotation.Nullable;
 import org.springframework.util.Assert;
 
 /**
@@ -18,10 +19,10 @@ import org.springframework.util.Assert;
  */
 @SuppressWarnings("WeakerAccess")
 public class DateRange {
-  private final @Nonnull LocalDate start;
-  private final @Nonnull LocalDate end;
+  private final LocalDate start;
+  private final LocalDate end;
 
-  public DateRange(final @Nonnull LocalDate start, final @Nonnull LocalDate end) {
+  public DateRange(final LocalDate start, final LocalDate end) {
     Assert.notNull(start, "Range start must be given.");
     Assert.notNull(start, "Range end must be given.");
     this.start = start;
@@ -45,8 +46,8 @@ public class DateRange {
   public String toString() {
     return DateConverter.toIsoString(start) + ".." + DateConverter.toIsoString(end);
   }
-    @Nonnull
-  public static DateRange fromIsoStringOrReturnNull(@Nullable final String isoDateRangeString) {
+    @NotNull
+  public static DateRange fromIsoStringOrReturnNull(final String isoDateRangeString) {
     if (isoDateRangeString == null) {
       return null;
     } else {
@@ -64,8 +65,8 @@ public class DateRange {
       }
     }
   } 
-  @Nonnull
-  public static DateRange fromIsoString(@Nullable final String isoDateRangeString) { 
+  
+  public static DateRange fromIsoString(final String isoDateRangeString) { 
     if (isoDateRangeString == null) {
       final LocalDate today = LocalDate.now(Clock.systemUTC());
       return new DateRange(today, today);

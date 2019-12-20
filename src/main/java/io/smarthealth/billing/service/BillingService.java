@@ -101,7 +101,7 @@ public class BillingService {
 
         Bill savedBill = patientBillRepository.save(patientbill);
         
-        messageService.publish(savedBill);
+        messageService.publish("Billing has been received Queued ... "+savedBill.getBillNumber());
         
         return savedBill;
     }

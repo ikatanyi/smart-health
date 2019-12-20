@@ -6,6 +6,8 @@ import io.smarthealth.administration.app.domain.BankBranch;
 import io.smarthealth.accounting.payment.domain.PaymentTerms;
 import io.smarthealth.administration.app.service.AdminService;
 import io.smarthealth.accounting.payment.service.PaymentTermsService;
+import io.smarthealth.accounting.pricebook.domain.PriceBook;
+import io.smarthealth.accounting.pricebook.service.PricebookService;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
@@ -86,22 +88,7 @@ public class PayerController {
 
         return ResponseEntity.ok(pagers);
     }
-    
-    @GetMapping("payer/{id}")
-    public ResponseEntity<?> fetchAllPayers(@PathVariable("id") final Long payerId) {
-        PayerData payers = PayerData.map(payerService.findPayerByIdWithNotFoundDetection(payerId));
-
-        Pager<PayerData> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Success");
-        pagers.setContent(payers);
-        PageDetails details = new PageDetails();
-        details.setReportName("Payer");
-        pagers.setPageDetails(details);
-
-        return ResponseEntity.ok(pagers);
-    }
-
+     
     @GetMapping("payer")
     public ResponseEntity<?> fetchAllPayers(Pageable pageable) {
         Page<PayerData> payers = payerService.fetchPayers(pageable).map(p -> PayerData.map(p));

@@ -43,9 +43,7 @@ public class PatientLabTestData {
     @ApiModelProperty(hidden = true, required = false)
     private List<ResultsData> resultsData = new ArrayList();
     
-    private Boolean withRef;
-    
-    private Boolean withRef;
+    private Boolean withRef; 
     
     public static PatientLabTest map(PatientLabTestData ptestdata) {
         PatientLabTest entity = new PatientLabTest();

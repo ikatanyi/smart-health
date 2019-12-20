@@ -5,8 +5,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Data
+@Data        
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "acc_tx_types")
 public class TransactionTypeEntity extends Identifiable {

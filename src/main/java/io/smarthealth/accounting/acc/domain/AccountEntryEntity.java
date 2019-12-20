@@ -1,15 +1,23 @@
 package io.smarthealth.accounting.acc.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
-import java.time.LocalDateTime;
-import javax.persistence.*;
+import java.time.LocalDateTime; 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author Kelsas
- */
-@Data 
+ */ 
+@Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "acc_account_entries")
 public class AccountEntryEntity extends Identifiable {

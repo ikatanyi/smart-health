@@ -4,16 +4,17 @@ import io.smarthealth.accounting.payment.data.PaymentMethodData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.Table; 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author Kelsas
  */
-
-@Entity
 @Data
+@EqualsAndHashCode(callSuper = false)
+@Entity 
 @Table(name = "payment_method")
 public class PaymentMethod extends Identifiable {
 
