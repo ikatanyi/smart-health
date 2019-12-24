@@ -3,13 +3,7 @@ package io.smarthealth.organization.person.domain;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Formula;
 

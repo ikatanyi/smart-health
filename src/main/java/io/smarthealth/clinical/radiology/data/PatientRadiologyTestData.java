@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.radiology.data;
  
-import io.smarthealth.billing.data.PatientBillData;
+import io.smarthealth.billing.data.BillData;
 import io.smarthealth.clinical.radiology.domain.PatientRadiologyTest;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
@@ -26,7 +26,7 @@ public class PatientRadiologyTestData {
     private Long requestId;
     private DoctorRequestData requestData;    
     private String scanImagePath;    
-    private PatientBillData billData;    
+    private BillData billData;    
     
     private static PatientRadiologyTestData map (PatientRadiologyTest scan){
         PatientRadiologyTestData entity = new PatientRadiologyTestData();

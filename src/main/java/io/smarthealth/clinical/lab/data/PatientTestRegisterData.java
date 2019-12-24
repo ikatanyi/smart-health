@@ -6,7 +6,7 @@
 package io.smarthealth.clinical.lab.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.smarthealth.billing.data.PatientBillData;
+import io.smarthealth.billing.data.BillData;
 import io.smarthealth.clinical.lab.domain.PatientTestRegister;
 import io.smarthealth.infrastructure.lang.DateConverter;
 import io.swagger.annotations.ApiModelProperty;
@@ -53,7 +53,7 @@ public class PatientTestRegisterData {
     private List<TestItemData> itemData = new ArrayList();
 
     @ApiModelProperty(required = false, hidden = true)
-    private PatientBillData billData;
+    private BillData billData;
 
     public static PatientTestRegister map(PatientTestRegisterData patientregister) {
         PatientTestRegister e = new PatientTestRegister();

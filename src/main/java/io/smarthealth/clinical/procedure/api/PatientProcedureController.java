@@ -10,17 +10,9 @@ import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureRegister;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureTest;
 import io.smarthealth.clinical.procedure.service.ProcedureService;
-import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.image.ClinicalImage;
-import io.smarthealth.infrastructure.image.ImageUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.person.data.PortraitData;
-import io.smarthealth.organization.person.domain.Portrait;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -37,8 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 /**
  *

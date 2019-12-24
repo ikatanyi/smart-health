@@ -14,15 +14,17 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToOne; 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author Kelsas
- */
-@Entity
+ */ 
 @Data
+@EqualsAndHashCode(callSuper = false)
+@Entity
 public class PriceBook extends Auditable {
 
     @Enumerated(EnumType.STRING)

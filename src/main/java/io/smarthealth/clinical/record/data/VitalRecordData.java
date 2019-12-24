@@ -4,10 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.record.domain.VitalsRecord;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
-import io.smarthealth.clinical.visit.validation.constraints.CheckValidVisit;
-import io.swagger.annotations.ApiModelProperty;
 import org.smarthealth.patient.validation.constraints.ValidIdentifier;
 
 /**

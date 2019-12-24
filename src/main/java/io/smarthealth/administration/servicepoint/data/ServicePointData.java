@@ -1,22 +1,21 @@
 package io.smarthealth.administration.servicepoint.data;
-  
-import io.smarthealth.accounting.account.data.SimpleAccountData;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
-import lombok.AllArgsConstructor;
+
+import io.smarthealth.accounting.acc.data.SimpleAccountData;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint; 
 import lombok.Data;
 
 /**
  *
  * @author Kelsas
- */
+ */ 
 @Data
-@AllArgsConstructor
 public class ServicePointData {
 
     private Long id;
     private String name;
     private String description;
     private Boolean active;
+    private ServicePointType servicePointType;
     private SimpleAccountData incomeAccount;
     private SimpleAccountData expenseAccount;
 
@@ -29,6 +28,7 @@ public class ServicePointData {
         data.setActive(point.getActive());
         data.setName(point.getName());
         data.setDescription(point.getDescription());
+        data.setServicePointType(point.getServicePointType());
         if (point.getIncomeAccount() != null) {
             data.setIncomeAccount(SimpleAccountData.map(point.getIncomeAccount()));
         }

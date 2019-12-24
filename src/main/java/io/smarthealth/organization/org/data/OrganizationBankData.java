@@ -34,7 +34,7 @@ public class OrganizationBankData {
         data.setSwiftNumber(account.getBank().getSwiftNumber());
         if (account.getLedgerAccount() != null) {
             data.setLedgerId(account.getLedgerAccount().getId());
-            data.setLedgerAccount(account.getLedgerAccount().getAccountName());
+            data.setLedgerAccount(account.getLedgerAccount().getName());
         }
         data.setDefaultAccount(account.getDefaultAccount());
 

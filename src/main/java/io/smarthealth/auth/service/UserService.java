@@ -1,11 +1,6 @@
 package io.smarthealth.auth.service;
 
-import io.smarthealth.auth.domain.PasswordResetToken;
-import io.smarthealth.auth.domain.PasswordTokenRepository;
-import io.smarthealth.auth.domain.Role;
-import io.smarthealth.auth.domain.RoleRepository;
-import io.smarthealth.auth.domain.User;
-import io.smarthealth.auth.domain.UserRepository;
+import io.smarthealth.auth.domain.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;

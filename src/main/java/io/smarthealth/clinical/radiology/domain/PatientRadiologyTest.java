@@ -11,17 +11,11 @@ package io.smarthealth.clinical.radiology.domain;
  */
 
 
-import io.smarthealth.billing.domain.PatientBill;
+import io.smarthealth.billing.domain.Bill;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import lombok.Data;
 
 @Data
@@ -40,5 +34,5 @@ public class PatientRadiologyTest extends ClinicalRecord{
     private String scanImagePath;    
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_radiology_bill_id"))
     @OneToOne
-    private PatientBill bill;    
+    private Bill bill;    
 }

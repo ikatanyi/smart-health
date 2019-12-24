@@ -1,6 +1,5 @@
 package io.smarthealth.auth.service;
 
-import io.smarthealth.auth.config.ApplicationUserDetails;
 import io.smarthealth.auth.domain.User;
 import io.smarthealth.auth.domain.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

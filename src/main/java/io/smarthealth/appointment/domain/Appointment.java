@@ -1,19 +1,13 @@
 package io.smarthealth.appointment.domain;
 
-import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.NaturalId;
 

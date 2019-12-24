@@ -12,14 +12,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToOne; 
 import lombok.Data;
 
 /**
  *
  * @author Simon.Waweru
  */
-@Data
+ @Data
 @Entity
 public class InsuranceScheme extends Auditable {
 

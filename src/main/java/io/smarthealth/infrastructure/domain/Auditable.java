@@ -15,7 +15,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * Audit Model 
  * @author Kelsas
  */
-@Data
+//@Data
 @MappedSuperclass
 //@Audited
 @EntityListeners(AuditingEntityListener.class)
@@ -31,4 +31,46 @@ public abstract class Auditable extends Identifiable {
     protected Instant lastModifiedOn;
     @LastModifiedBy
     private String lastModifiedBy;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public Instant getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(Instant createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Instant getLastModifiedOn() {
+        return lastModifiedOn;
+    }
+
+    public void setLastModifiedOn(Instant lastModifiedOn) {
+        this.lastModifiedOn = lastModifiedOn;
+    }
+
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+    
+    
 }

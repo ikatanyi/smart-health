@@ -5,15 +5,14 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.infrastructure.utility.web.ResponseUtil;
 import io.swagger.annotations.Api;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.List;
 
 /**
  * REST controller for getting the audit events.

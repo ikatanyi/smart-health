@@ -1,7 +1,7 @@
 package io.smarthealth.administration.servicepoint.service;
 
-import io.smarthealth.accounting.account.domain.Account;
-import io.smarthealth.accounting.account.service.AccountService;
+import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.accounting.acc.service.AccountService;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -31,13 +31,14 @@ public class ServicePointService {
         point.setActive(data.getActive());
         point.setDescription(data.getDescription());
         point.setName(data.getName());
-        if (data.getExpenseAccount() != null && data.getExpenseAccount().getAccountNumber() != null) {
-            Account acc = accountService.findOneWithNotFoundDetection(data.getExpenseAccount().getAccountNumber());
+        point.setServicePointType(data.getServicePointType());
+        if(data.getExpenseAccount()!=null && data.getExpenseAccount().getAccountNumber()!=null){
+            AccountEntity acc =accountService.findOneWithNotFoundDetection(data.getExpenseAccount().getAccountNumber());
             point.setExpenseAccount(acc);
         }
-
-        if (data.getIncomeAccount() != null && data.getIncomeAccount().getAccountNumber() != null) {
-            Account acc = accountService.findOneWithNotFoundDetection(data.getIncomeAccount().getAccountNumber());
+        
+         if(data.getIncomeAccount()!=null && data.getIncomeAccount().getAccountNumber()!=null){
+            AccountEntity acc =accountService.findOneWithNotFoundDetection(data.getIncomeAccount().getAccountNumber());
             point.setIncomeAccount(acc);
         }
 

@@ -1,13 +1,13 @@
 package io.smarthealth.debtor.payer.api;
 
-import io.smarthealth.accounting.account.domain.Account;
-import io.smarthealth.accounting.account.service.AccountService;
+import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.accounting.acc.service.AccountService;
+import io.smarthealth.administration.app.domain.BankBranch;
+import io.smarthealth.accounting.payment.domain.PaymentTerms;
+import io.smarthealth.administration.app.service.AdminService;
+import io.smarthealth.accounting.payment.service.PaymentTermsService;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.pricebook.service.PricebookService;
-import io.smarthealth.administration.app.domain.BankBranch;
-import io.smarthealth.administration.app.domain.PaymentTerms;
-import io.smarthealth.administration.app.service.AdminService;
-import io.smarthealth.administration.app.service.PaymentTermsService;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
@@ -56,9 +56,9 @@ public class PayerController {
         
         Payer payer = PayerData.map(payerData);
         BankBranch bankBranch = adminService.fetchBankBranchById(payerData.getBranchId());
-        Account debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
+        AccountEntity debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
         PaymentTerms paymentTerms = paymentTermsService.getPaymentTermByIdWithFailDetection(payerData.getPaymentTermId());
-        PriceBook priceBook = pricebookService.getPricebookWithNotFoundExeption(payerData.getPriceBookId());
+        PriceBook priceBook = pricebookService.getPricebookWithNotFoundExeption(payerData.getPayerId());
         payer.setBankBranch(bankBranch);
         payer.setDebitAccount(debitAccount);
         payer.setPaymentTerms(paymentTerms);
@@ -88,24 +88,6 @@ public class PayerController {
 
         return ResponseEntity.ok(pagers);
     }
-
-    @GetMapping("payer")
-    public ResponseEntity<?> fetchAllPayers(Pageable pageable) {
-        Page<PayerData> payers = payerService.fetchPayers(pageable).map(p -> PayerData.map(p));
-        
-        Pager<List<PayerData>> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Success");
-        pagers.setContent(payers.getContent());
-        PageDetails details = new PageDetails();
-        details.setPage(payers.getNumber() + 1);
-        details.setPerPage(payers.getSize());
-        details.setTotalElements(payers.getTotalElements());
-        details.setTotalPage(payers.getTotalPages());
-        details.setReportName("Payer List");
-        pagers.setPageDetails(details);
-        
-        return ResponseEntity.ok(pagers);
-    }
+     
     
 }

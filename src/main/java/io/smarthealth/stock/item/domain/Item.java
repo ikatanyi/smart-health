@@ -3,7 +3,8 @@ package io.smarthealth.stock.item.domain;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import java.util.List;
+import java.util.List; 
+ 
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
@@ -18,9 +19,9 @@ import lombok.Data;
  * Product or Service representation
  *
  * @author Kelsas
- */
-@Entity
+ */ 
 @Data
+@Entity
 @Table(name = "stock_item_service",uniqueConstraints = {
     @UniqueConstraint(columnNames = {"category","itemName"})})
 public class Item extends Identifiable {
@@ -29,8 +30,10 @@ public class Item extends Identifiable {
     private String category; // is this a consumable, service, procedure, inventory
     private String itemName;
     private String itemCode;//sku;
-    private double rate;
-    private double costRate;
+    private Double rate;
+    private Double costRate;
+    private Boolean discountable;
+    private Boolean taxable;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_item_uom"))
     private Uom uom;
@@ -50,4 +53,5 @@ public class Item extends Identifiable {
     public boolean isInventoryItem() {
         return this.itemType.equals("Inventory");
     }
+ 
 }

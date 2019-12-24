@@ -5,8 +5,6 @@
  */
 package io.smarthealth.clinical.procedure.domain;
 
-import io.smarthealth.clinical.pharmacy.domain.PatientDrugs;
-import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
 import io.smarthealth.clinical.visit.domain.Visit;
 import java.util.List;
 import java.util.Optional;

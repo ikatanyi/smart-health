@@ -3,8 +3,8 @@ package io.smarthealth.accounting.pricebook.domain.specification;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.pricebook.domain.enumeration.PriceCategory;
 import io.smarthealth.accounting.pricebook.domain.enumeration.PriceType;
-import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
+import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 /**

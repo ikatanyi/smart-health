@@ -11,7 +11,6 @@ import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimen;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

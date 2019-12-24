@@ -5,10 +5,9 @@
  */
 package io.smarthealth.clinical.procedure.data;
  
-import io.smarthealth.billing.data.PatientBillData;
+import io.smarthealth.billing.data.BillData;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureTest;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
-import io.smarthealth.clinical.record.data.DoctorRequestData;
 import lombok.Data;
 
 
@@ -26,7 +25,7 @@ public class PatientProcedureTestData {
     private ProcedureTestState state;
     private Long requestId;
 //    private DoctorRequestData requestData;    
-    private PatientBillData billData;    
+    private BillData billData;    
     
     public static PatientProcedureTestData map (PatientProcedureTest scan){
         PatientProcedureTestData entity = new PatientProcedureTestData();

@@ -5,7 +5,6 @@
  */
 package io.smarthealth.auth.domain;
 
-import io.smarthealth.auth.domain.User;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.springframework.data.jpa.repository.JpaRepository;
