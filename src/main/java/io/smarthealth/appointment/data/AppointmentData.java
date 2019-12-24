@@ -37,10 +37,16 @@ public class AppointmentData implements Serializable {
         Normal,
         Medical_Emergency
     }
+    @ApiModelProperty(required = false, hidden = false)
+    private Long appointmentId;
     private String patientNumber;
+    private String patientName;
     private String practitionerCode;
+    private String practionerName;
+    private String departmentName;
     private String typeOfAppointment;
     private Long appointmentTypeId;
+    private String appointmentTypeName;
     private String appointmentNo;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate appointmentDate;
@@ -64,8 +70,29 @@ public class AppointmentData implements Serializable {
     }
 
     public static AppointmentData map(Appointment appointment) {
-        ModelMapper mapper = new ModelMapper();
-        AppointmentData data = mapper.map(appointment, AppointmentData.class);
+        AppointmentData data = new AppointmentData();//mapper.map(appointment, AppointmentData.class);
+        if (appointment.getAppointmentType() != null) {
+            data.setAppointmentTypeId(appointment.getAppointmentType().getId());
+            data.setAppointmentTypeName(appointment.getAppointmentType().getName());
+        }
+        if (appointment.getPatient() != null) {
+            data.setPatientNumber(appointment.getPatient().getPatientNumber());
+            data.setPatientName(appointment.getPatient().getFullName());
+        }
+        if (appointment.getPractioneer() != null) {
+            data.setPractitionerCode(appointment.getPractioneer().getStaffNumber());
+            data.setPractionerName(appointment.getPractioneer().getFullName());
+            data.setDepartmentName(appointment.getPractioneer().getDepartment().getName());
+        }
+        
+        data.setAppointmentId(appointment.getId());
+        data.setAppointmentDate(appointment.getAppointmentDate());
+        data.setAppointmentNo(appointment.getAppointmentNo());
+        data.setComments(appointment.getComments());
+        data.setEndTime(appointment.getEndTime());
+        data.setStartTime(appointment.getStartTime());
+        data.setStatus(Status.valueOf(appointment.getStatus()));
+        data.setUrgency(Urgency.valueOf(appointment.getUrgency()));
         return data;
     }
 }

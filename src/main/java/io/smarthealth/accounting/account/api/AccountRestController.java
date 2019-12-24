@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.smarthealth.accounting.account.service.AccountService;
 import io.smarthealth.accounting.account.service.ChartOfAccountsService;
-import io.smarthealth.billing.service.PatientBillService;
 import io.smarthealth.infrastructure.common.ContentPage;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;

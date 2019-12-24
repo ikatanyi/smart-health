@@ -101,7 +101,6 @@ public class PatientService {
 //        int nextPatient = patientRepository.maxId() + 1;
 //        return String.valueOf("PAT" + nextPatient);
 //    }
-
     public Optional<PatientData> fetchPatientByPatientNumber(final String patientNumber) {
 
         return patientRepository.findByPatientNumber(patientNumber)
@@ -251,6 +250,23 @@ public class PatientService {
                     .collect(Collectors.toList())
             );
             savedPatient.setIdentifications(patientIdentifiersList);
+        }
+
+        if (patient.getVisitType() != null) {
+            if (patient.getVisitType().equals("OPD_VISIT")) {
+                //send to triage
+            } else if (patient.getVisitType().equals("EMERGENCY_VISIT")) {
+                
+            } else if (patient.getVisitType().equals("PHARMACY_VISIT")) {
+                //send to pharmacy
+
+            } else if (patient.getVisitType().equals("LABORATORY_VISIT")) {
+                //send to laboratory
+
+            } else if (patient.getVisitType().equals("IPD_VISIT")) {
+                //send to inpatient
+
+            }
         }
 
         return savedPatient;

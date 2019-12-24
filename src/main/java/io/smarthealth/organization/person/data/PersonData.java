@@ -17,7 +17,6 @@ import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -38,10 +37,10 @@ public class PersonData {
     private LocalDate dateOfBirth;
     @Enumerated(EnumType.STRING)
     @Column(length = 1)
-    private Gender  gender;
+    private Gender gender;
     @Enumerated(EnumType.STRING)
     @Column(length = 25)
-    private MaritalStatus  maritalStatus;
+    private MaritalStatus maritalStatus;
     private List<AddressData> address;
     private List<ContactData> contact;
     private String fullName;

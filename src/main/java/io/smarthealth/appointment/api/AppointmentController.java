@@ -109,9 +109,11 @@ public class AppointmentController {
     public @ResponseBody
     ResponseEntity<?> fetchAllAppointments(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
 
-        Page<Appointment> page = appointmentService.fetchAllAppointments(pageable);
+        Page<AppointmentData> page = appointmentService.fetchAllAppointments(pageable).map(a->AppointmentData.map(a));
 
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+        
+//        AppointmentData app = page.map(a->AppointmentData.map(a));//AppointmentData.map(appointment);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
@@ -165,7 +167,6 @@ public class AppointmentController {
             Logger.getLogger(AppointmentController.class.getName()).log(Level.SEVERE, null, ex);
             throw APIException.internalError("Error occured when deleting appointment type identifed by " + appId, ex.getMessage());
         }
-
     }
 
     private AppointmentType convertDataToAppType(AppointmentTypeData appointmentTypeData) {
