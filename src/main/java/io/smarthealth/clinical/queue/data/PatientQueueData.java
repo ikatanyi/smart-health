@@ -27,6 +27,7 @@ public class PatientQueueData {
     private Long id;
     private String urgency;
     private String specialNotes;
+    private  String servicePointName;
     
 
 }

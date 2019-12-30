@@ -234,8 +234,8 @@ public class ConsultationController {
         List<PatientQueueData> patientQueue = new ArrayList<>();
         for (Visit v : list) {
             PatientQueueData q = new PatientQueueData();
-            if (v.getDepartment() != null) {
-                q.setDepartmentData(departmentService.convertDepartmentToData(v.getDepartment()));
+            if (v.getServicePoint() != null) {
+                q.setServicePointName(v.getServicePoint().getName());
             }
             q.setPatientData(patientService.convertToPatientData(v.getPatient()));
             q.setPatientNumber(v.getPatient().getPatientNumber());

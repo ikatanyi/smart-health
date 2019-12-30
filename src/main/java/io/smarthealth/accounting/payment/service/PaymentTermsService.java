@@ -27,6 +27,7 @@ public class PaymentTermsService {
     public PaymentTerms createPaymentTerm(PaymentTerms terms) {
         return paymentTermsRepository.save(terms);
     }
+
     public PaymentTerms getPaymentTermByIdWithFailDetection(Long id) {
         return paymentTermsRepository.findById(id).orElseThrow(() -> APIException.notFound("Payment terms identified by id {0} not found ", id));
     }

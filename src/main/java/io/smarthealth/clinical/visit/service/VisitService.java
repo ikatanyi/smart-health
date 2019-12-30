@@ -46,7 +46,7 @@ public class VisitService {
     @Transactional
     public Visit createAVisit(final Visit visit) {
         try {
-            return visitRepository.saveAndFlush(visit);
+            return visitRepository.save(visit);
         } catch (Exception e) {
             e.printStackTrace();
             throw APIException.internalError("There was an error creating visit", e.getMessage());
