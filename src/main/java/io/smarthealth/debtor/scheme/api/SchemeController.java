@@ -1,16 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.debtor.scheme.api;
 
-import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
-import io.smarthealth.debtor.scheme.data.InsuranceSchemeData;
-import io.smarthealth.debtor.scheme.domain.InsuranceScheme;
+import io.smarthealth.debtor.scheme.data.SchemeData;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -46,11 +39,11 @@ public class SchemeController {
     SchemeService schemeService;
 
     @PostMapping("/scheme")
-    public ResponseEntity<?> createScheme(@Valid @RequestBody InsuranceSchemeData scheme) {
+    public ResponseEntity<?> createScheme(@Valid @RequestBody SchemeData scheme) {
         //validate Payer
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(scheme.getPayerId());
 
-        Scheme s = InsuranceSchemeData.map(scheme);
+        Scheme s = SchemeData.map(scheme);
         s.setPayer(payer);
         Scheme savedScheme = schemeService.createScheme(s);
 
@@ -58,16 +51,16 @@ public class SchemeController {
                 .fromCurrentContextPath().path("/api/scheme/{id}")
                 .buildAndExpand(s.getId()).toUri();
 
-        InsuranceSchemeData data = InsuranceSchemeData.map(savedScheme);
+        SchemeData data = SchemeData.map(savedScheme);
 
         return ResponseEntity.created(location).body(data);
     }
 
     @GetMapping("/scheme")
     public ResponseEntity<?> fetchAllSchemes(Pageable pageable) {
-        Page<InsuranceSchemeData> scheme = schemeService.fetchSchemes(pageable).map(p -> InsuranceSchemeData.map(p));
+        Page<SchemeData> scheme = schemeService.fetchSchemes(pageable).map(p -> SchemeData.map(p));
 
-        Pager<List<InsuranceSchemeData>> pagers = new Pager();
+        Pager<List<SchemeData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(scheme.getContent());
@@ -84,7 +77,8 @@ public class SchemeController {
 
     @GetMapping("/scheme/{id}")
     public ResponseEntity<?> fetchSchemeById(@PathVariable("id") final Long schemeId) {
-        InsuranceSchemeData schemeData = InsuranceSchemeData.map(schemeService.fetchSchemeById(schemeId));
+        SchemeData schemeData = SchemeData.map(schemeService.fetchSchemeById(schemeId));
+
         return ResponseEntity.ok(schemeData);
     }
 

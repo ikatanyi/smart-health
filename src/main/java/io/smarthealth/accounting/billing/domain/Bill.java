@@ -25,6 +25,7 @@ public class Bill extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_patient_id"))
     private Patient patient;
+    
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_visit_id"))
     private Visit visit;

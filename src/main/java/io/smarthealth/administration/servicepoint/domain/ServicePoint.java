@@ -5,7 +5,6 @@ import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.organization.facility.domain.Facility;
 import javax.persistence.*;
 import lombok.Data;
 

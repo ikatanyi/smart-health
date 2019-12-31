@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.debtor.scheme.data;
 
 import io.smarthealth.debtor.payer.domain.Scheme;
@@ -19,7 +14,7 @@ import lombok.Data;
  * @author Simon.Waweru
  */
 @Data
-public class InsuranceSchemeData {
+public class SchemeData {
 
     private Long payerId;
 
@@ -49,8 +44,8 @@ public class InsuranceSchemeData {
     @ApiModelProperty(hidden = true, required = false)
     private String payerName;
 
-    public static InsuranceSchemeData map(Scheme i) {
-        InsuranceSchemeData d = new InsuranceSchemeData();
+    public static SchemeData map(Scheme i) {
+        SchemeData d = new SchemeData();
 //        d.setCategory(i.getCategory());
         d.setCover(i.getCover());
         d.setEmailAddress(i.getEmailAddress());
@@ -65,7 +60,7 @@ public class InsuranceSchemeData {
         return d;
     }
 
-    public static Scheme map(InsuranceSchemeData d) {
+    public static Scheme map(SchemeData d) {
         Scheme i = new Scheme();
 //        i.setCategory(d.getCategory());
         i.setCover(d.getCover());

@@ -5,7 +5,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.inventory.data.CreateStockEntry;
-import io.smarthealth.stock.inventory.data.InventoryBalanceData;
+import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.StockEntryData;
 import io.smarthealth.stock.inventory.data.TransData;
 import io.smarthealth.stock.inventory.domain.StockEntry;

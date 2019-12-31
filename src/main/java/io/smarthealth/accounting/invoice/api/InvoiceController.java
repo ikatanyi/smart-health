@@ -60,13 +60,13 @@ public class InvoiceController {
     @GetMapping("/invoices")
     public ResponseEntity<?> getInvoices(
             @RequestParam(value = "payer", required = false) String customer,
-            @RequestParam(value = "invoice", required = false) String invoice,
-            @RequestParam(value = "receipt", required = false) String receipt,
+            @RequestParam(value = "number", required = false) String invoice,
+            @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<InvoiceData> list = service.fetchInvoices(customer, invoice, receipt, pageable)
+        Page<InvoiceData> list = service.fetchInvoices(customer, invoice, status, pageable)
                 .map(bill -> InvoiceData.map(bill));
 
         Pager<List<InvoiceData>> pagers = new Pager();
@@ -78,7 +78,7 @@ public class InvoiceController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Invoice Invoices");
+        details.setReportName("Invoices");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     } 

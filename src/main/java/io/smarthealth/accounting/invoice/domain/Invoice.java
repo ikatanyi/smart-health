@@ -1,7 +1,6 @@
 package io.smarthealth.accounting.invoice.domain;
 
 import io.smarthealth.accounting.billing.domain.Bill;
-import io.smarthealth.accounting.payment.domain.PaymentTerms;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
@@ -21,6 +20,7 @@ import javax.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.NaturalId;
 
 /**
@@ -31,26 +31,31 @@ import org.hibernate.annotations.NaturalId;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "invoices", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"number"})})
+@Table(name = "invoices", uniqueConstraints = { @UniqueConstraint( columnNames = { "number" }, name = "uk_invoice_number")})
 public class Invoice extends Auditable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payer_id"))
     private Payer payer;
 
+    private String payee;
+
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_bill_id"))
     private Bill bill;
-    
+
     @Column(name = "invoice_date")
     private LocalDate date;
-    
+
     private LocalDate dueDate;
-    
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payment_terms_id"))
-    private PaymentTerms terms; // 'Net 30'
+
+    private String terms; // 'Net 30'
+
+    private String transactionNo;
+
+    private String reference;
+
     @NaturalId
     private String number;  //invoice number
     private String currency;
@@ -67,6 +72,7 @@ public class Invoice extends Auditable {
     @Enumerated(EnumType.STRING)
     private InvoiceStatus status; //tracking status for the invoice
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     private List<InvoiceLineItem> items = new ArrayList<>();
 

@@ -21,8 +21,13 @@ build:
 
 deploy_review:
   stage: deploy
+  
+  before_script:
+    - echo "$DEPLOY_KEY" > ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts 
+            
   script:
-    - rsync -azP --append-verify target/smart-health-1.0.0.jar smart@192.180.4.102:/home/smart/workloads 
+    - scp target/smart-health-1.0.0.jar smart@192.180.4.102:/home/smart/workloads 
   environment: 
     name: smarthealth
     url: https://192.180.4.102

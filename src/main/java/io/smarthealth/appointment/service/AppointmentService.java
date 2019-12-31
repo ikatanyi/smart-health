@@ -28,11 +28,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppointmentService {
 
-    AppointmentRepository appointmentRepository;
-    PersonRepository personRepository;
-    PatientRepository patientRepository;
-    AppointmentTypeService appointmentTypeService;
-    EmployeeService employeeService;
+    private final AppointmentRepository appointmentRepository;
+    private final PersonRepository personRepository;
+    private final PatientRepository patientRepository;
+    private final AppointmentTypeService appointmentTypeService;
+    private final EmployeeService employeeService;
 
     @Autowired
     ModelMapper modelMapper;

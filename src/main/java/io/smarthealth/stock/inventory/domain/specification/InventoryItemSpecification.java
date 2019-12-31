@@ -1,8 +1,6 @@
 package io.smarthealth.stock.inventory.domain.specification;
 
-import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.stock.inventory.domain.InventoryBalance;
-import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.stores.domain.Store;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
@@ -18,22 +16,32 @@ public class InventoryItemSpecification {
         super();
     }
 
-    public static Specification<InventoryBalance> createSpecification(Store store, Item item, DateRange range) {
+    public static Specification<InventoryItem> createSpecification(Store store, String item,boolean includeClosed) {
         
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
  
+             if (!includeClosed) {
+                predicates.add(cb.equal(root.get("item").get("active"), true));
+            }
+             
             if (item != null) {
                 predicates.add(cb.equal(root.get("item"), item));
             }
             if (store != null) {
                 predicates.add(cb.equal(root.get("store"), store));
             }
-             if(range!=null){
-                  predicates.add(
-                     cb.between(root.get("dateRecorded"), range.getStartDateTime(), range.getEndDateTime())
-                  );
-              }
+            
+             if (item != null) {
+                final String likeExpression = "%" + item + "%";
+                predicates.add(
+                        cb.or(
+                                cb.like(root.get("item").get("itemName"), likeExpression),
+                                cb.like(root.get("item").get("itemCode"), likeExpression)
+                        )
+                );
+            }
+             
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

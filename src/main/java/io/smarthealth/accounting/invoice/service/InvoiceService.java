@@ -10,14 +10,11 @@ import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceLineItem;
-import io.smarthealth.accounting.invoice.domain.PayerInvoice;
-import io.smarthealth.accounting.invoice.domain.PayerInvoiceId;
-import io.smarthealth.accounting.invoice.domain.PayerInvoiceRepository;
+import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceSpecification;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
-import io.smarthealth.debtor.scheme.domain.InsuranceScheme;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.sequence.service.TxnService;
@@ -43,8 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
-    private final PayerInvoiceRepository debtorRepository;
-//    private final ItemService itemService;
     private final BillingService billingService;
     private final PayerService payerService;
     private final SchemeService schemeService;
@@ -54,20 +49,48 @@ public class InvoiceService {
     public String createInvoice(CreateInvoiceData invoiceData) {
 
         final String trxId = txnService.nextId();// UUID.randomUUID().toString();
-        final String invoiceNo = RandomStringUtils.randomNumeric(5);
-
+//        final 
+        Optional<Bill> bill = billingService.findByBillNumber(invoiceData.getBillNumber());
         invoiceData.getPayers()
                 .stream()
                 .forEach(debt -> {
+                    String invoiceNo = RandomStringUtils.randomNumeric(5);
+                    Payer payer = payerService.findPayerByIdWithNotFoundDetection(debt.getPayerId());
+                    Scheme scheme = schemeService.fetchSchemeById(debt.getSchemeId());
+
+                    Integer creditDays = 30;
+                    String terms = "Net 30";
+                    if (payer.getPaymentTerms() != null) {
+                        creditDays = payer.getPaymentTerms().getCreditDays();
+                        terms = payer.getPaymentTerms().getTermsName();
+                    }
 
                     Invoice invoice = new Invoice();
+                    invoice.setPayer(payer);
+                    invoice.setPayee(scheme.getSchemeName());
+                    invoice.setReference(debt.getMemberNo());
+                    invoice.setTransactionNo(trxId);
                     invoice.setDate(invoiceData.getDate());
                     invoice.setNotes(invoice.getNotes());
+
+                    invoice.setDueDate(invoiceData.getDate().plusDays(creditDays));
+                    invoice.setTerms(terms);
+
                     invoice.setNumber(invoiceNo);
-                    invoice.setSubtotal(invoiceData.getSubTotal());
+                    invoice.setSubtotal(debt.getAmount());
+                    invoice.setBalance(debt.getAmount());
                     invoice.setDisounts(invoiceData.getDiscount());
                     invoice.setTaxes(invoiceData.getTaxes());
-                    invoice.setTotal(invoiceData.getTotal());
+                    invoice.setTotal(debt.getAmount());
+                    invoice.setPaid(Boolean.FALSE);
+                    invoice.setClosed(Boolean.FALSE);
+                    invoice.setDraft(Boolean.FALSE);
+                    invoice.setStatus(InvoiceStatus.pending);
+
+                    if (bill.isPresent()) {
+                        invoice.setBill(bill.get());
+
+                    }
 
                     if (!invoiceData.getItems().isEmpty()) {
                         List<InvoiceLineItem> items = invoiceData.getItems()
@@ -77,7 +100,7 @@ public class InvoiceService {
 
                         invoice.addItems(items);
                     }
-                    saveInvoice(debt.getPayerId(),debt.getSchemeId(),invoice);
+                    saveInvoice(invoice);
                 }
                 );
         return trxId;
@@ -87,39 +110,11 @@ public class InvoiceService {
     @Transactional
     public Invoice saveInvoice(Invoice invoice) {
         Invoice savedInv = invoiceRepository.save(invoice);
-        Bill bill = savedInv.getBill();
-        bill.setStatus(BillStatus.Final);
-        billingService.save(bill);
-        return savedInv;
-    }
-
-    @Transactional
-    public Invoice saveInvoice(Long payerId, Long SchemeId, Invoice invoice) {
-        Invoice savedInv = invoiceRepository.save(invoice);
-        Bill bill = savedInv.getBill();
-        bill.setStatus(BillStatus.Final);
-        billingService.save(bill);
-
-        Payer payer = payerService.findPayerByIdWithNotFoundDetection(payerId);
-        Scheme scheme = schemeService.fetchSchemeById(SchemeId);
-
-        PayerInvoice payerInv = new PayerInvoice();
-
-        PayerInvoiceId id = new PayerInvoiceId();
-        id.setInvoiceId(payer.getId());
-        id.setSchemeId(scheme.getId());
-        id.setInvoiceId(invoice.getId());
-
-        payerInv.setId(id);
-        payerInv.setInvoice(invoice);
-        payerInv.setPayer(payer);
-        payerInv.setScheme(scheme);
-        payerInv.setInvoiceDate(invoice.getDate());
-        payerInv.setBillNumber(invoice.getBill().getBillNumber());
-        payerInv.setPatientNumber(invoice.getBill().getPatient().getPatientNumber());
-
-        debtorRepository.save(payerInv);
-
+        if (savedInv.getBill() != null) {
+            Bill bill = savedInv.getBill();
+            bill.setStatus(BillStatus.Final);
+            billingService.save(bill);
+        }
         return savedInv;
     }
 
@@ -144,8 +139,12 @@ public class InvoiceService {
         return invoiceRepository.findByNumber(invoiceNo);
     }
 
-    public Page<Invoice> fetchInvoices(String customer, String invoice, String receipt, Pageable pageable) {
-        Specification<Invoice> spec = InvoiceSpecification.createSpecification(customer, invoice);
+    public Page<Invoice> fetchInvoices(String customer, String invoice, String status, Pageable pageable) {
+        InvoiceStatus state = null;
+        if (state != null) {
+            state = InvoiceStatus.valueOf(status);
+        }
+        Specification<Invoice> spec = InvoiceSpecification.createSpecification(customer, invoice, state);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
         return invoices;
     }

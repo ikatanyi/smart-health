@@ -1,6 +1,6 @@
 package io.smarthealth.stock.inventory.service;
 
-import io.smarthealth.stock.inventory.domain.InventoryBalance;
+import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class InventoryEventListener {
 
-    private final InventoryBalanceService service;
+    private final InventoryItemService service;
 
     @JmsListener(destination = "stockBalanceQueue", containerFactory = "connectionFactory")
     public void receive(InventoryEvent inventoryEvent) {

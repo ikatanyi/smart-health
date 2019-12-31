@@ -14,10 +14,12 @@ import org.springframework.stereotype.Repository;
  * @author Kelsas
  */
 @Repository
-public interface InventoryBalanceRepository extends JpaRepository<InventoryBalance, Long>, JpaSpecificationExecutor<InventoryBalance> {
+public interface InventoryItemRepository extends JpaRepository<InventoryItem, Long>, JpaSpecificationExecutor<InventoryItem> {
 
-    Page<InventoryBalance> findByItem(Item item, Pageable page);
+    Page<InventoryItem> findByItem(Item item, Pageable page);
 
-    Optional<InventoryBalance> findByItemAndStore(Item item, Store store);
-     
+    Page<InventoryItem> findByStore(Store store, Pageable page);
+
+    Optional<InventoryItem> findByItemAndStore(Item item, Store store);
+
 }
