@@ -59,7 +59,6 @@ public class ConsultationController {
     private final EmployeeService employeeService;
 
 //    private final UserService userService;
-
     private final DiseaseService diseaseService;
 
     private final DiagnosisService diagnosisService;

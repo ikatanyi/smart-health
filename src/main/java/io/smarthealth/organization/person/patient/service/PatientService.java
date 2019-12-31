@@ -12,6 +12,7 @@ import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.sequence.SequenceType;
@@ -31,7 +32,6 @@ import io.smarthealth.organization.person.patient.domain.specification.PatientSp
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,9 +70,9 @@ public class PatientService {
 
     @Autowired
     FacilityService facilityService;
-
+//
     @Autowired
-    VisitService visitService;
+    VisitRepository visitRepository;
 
     @Autowired
     SequenceService sequenceService;
@@ -301,7 +301,7 @@ public class PatientService {
 
             }
 
-            visitService.createAVisit(visit);
+            visitRepository.save(visit);
             //insert into patient visit log
             PatientQueue queue = new PatientQueue();
             queue.setPatient(savedPatient);

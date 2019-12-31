@@ -39,7 +39,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api")
 @Api(value = "Department Controller", description = "Operations pertaining to department maintenance")
 public class DepartmentController {
-    
 
     @Autowired
     DepartmentService departmentService;

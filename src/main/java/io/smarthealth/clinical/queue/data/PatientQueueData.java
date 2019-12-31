@@ -7,8 +7,8 @@ package io.smarthealth.clinical.queue.data;
 
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.clinical.visit.data.VisitData;
-import io.smarthealth.organization.facility.data.DepartmentData;
 import io.smarthealth.organization.person.patient.data.PatientData;
+import java.time.Instant;
 import lombok.Data;
 
 /**
@@ -20,7 +20,6 @@ public class PatientQueueData {
 
     private String patientNumber;
     private String visitNumber;
-    private String departmentId;
 
     private ServicePointData servicePointData;
     private VisitData visitData;
@@ -29,6 +28,8 @@ public class PatientQueueData {
     private String urgency;
     private String specialNotes;
     private  String servicePointName;
+    
+    private Instant startDateTime;
     
 
 }

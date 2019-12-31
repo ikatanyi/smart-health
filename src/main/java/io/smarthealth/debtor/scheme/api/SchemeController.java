@@ -85,7 +85,6 @@ public class SchemeController {
     @GetMapping("/scheme/{id}")
     public ResponseEntity<?> fetchSchemeById(@PathVariable("id") final Long schemeId) {
         InsuranceSchemeData schemeData = InsuranceSchemeData.map(schemeService.fetchSchemeById(schemeId));
-
         return ResponseEntity.ok(schemeData);
     }
 

@@ -40,25 +40,25 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api")
 @Api(value = "Patient Queue", description = "End points pertaining to patient departmental queue")
 public class PatientQueueController {
-    
+
     @Autowired
     PatientService patientService;
-    
+
     @Autowired
     PatientQueueService patientQueueService;
-    
+
     @Autowired
     private DepartmentService departmentService;
-    
+
     @Autowired
     private FacilityService facilityService;
-    
+
     @Autowired
     private VisitService visitService;
-    
+
     @Autowired
     private ServicePointService servicePointService;
-    
+
     @GetMapping("/department/{servicePoint}/queue")
     public ResponseEntity<List<PatientQueueData>> fetchQueuesByDepartment(@PathVariable("servicePoint") final String servicePoint, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         boolean status = true;
@@ -80,9 +80,9 @@ public class PatientQueueController {
              */
         }
         List<PatientQueueData> patientQueue = new ArrayList<>();
-        
+
         ServicePoint serviceP = servicePointService.getServicePointByType(ServicePointType.valueOf(servicePoint));
-        
+
         Page<Visit> page = visitService.findVisitByServicePoint(serviceP, pageable);
         //.map(q -> patientQueueService.convertToPatientQueueData(q));
 
@@ -98,7 +98,7 @@ public class PatientQueueController {
             pq.setVisitNumber(visit.getVisitNumber());
             patientQueue.add(pq);
         }
-        
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(patientQueue, headers, HttpStatus.OK);
     }
@@ -118,14 +118,20 @@ public class PatientQueueController {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-    
+
+    /*
     @GetMapping("/queue")
     public ResponseEntity<List<PatientQueueData>> fetchQueue(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Page<PatientQueueData> page = patientQueueService.fetchQueue(pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }*/
+    @GetMapping("/queue")
+    public ResponseEntity<List<PatientQueueData>> fetchQueue(@RequestParam(value = "visitNumber", required = false) final String visitNumber, @RequestParam(value = "staffNumber", required = false) final String staffNumber, @RequestParam(value = "servicePoint", required = false) final String servicePoint, @RequestParam(value = "patientNumber", required = false) final String patientNumber, Pageable pageable) {
+        Page<PatientQueueData> page = patientQueueService.fetchQueue(visitNumber, staffNumber, servicePoint, patientNumber, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
+        return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
-    
+
     @PostMapping("/queue/{queueNo}/deactivate-queue")
     public ResponseEntity<?> deactivateFromQueue(@PathVariable("queueNo") final Long queueNo) {
         PatientQueue pq = patientQueueService.fetchQueueByID(queueNo);
@@ -133,5 +139,5 @@ public class PatientQueueController {
         patientQueueService.createPatientQueue(pq);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    
+
 }
