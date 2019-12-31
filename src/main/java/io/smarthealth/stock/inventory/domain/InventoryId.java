@@ -19,10 +19,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class InventoryId implements Serializable{
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_store_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_id_store_id"))
     private Store store;
 
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_item_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_id_item_id"))
     private Item item;
 }
