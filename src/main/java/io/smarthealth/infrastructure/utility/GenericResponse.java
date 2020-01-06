@@ -2,7 +2,6 @@ package io.smarthealth.infrastructure.utility;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 

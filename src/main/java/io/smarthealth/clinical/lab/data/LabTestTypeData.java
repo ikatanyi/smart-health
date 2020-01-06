@@ -4,15 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.lab.domain.Analyte;
 import io.smarthealth.clinical.lab.domain.Discipline;
-import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.LabTestType;
+import io.smarthealth.clinical.lab.domain.Specimen;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
+import lombok.Data;
 import org.modelmapper.ModelMapper;
 
 /**

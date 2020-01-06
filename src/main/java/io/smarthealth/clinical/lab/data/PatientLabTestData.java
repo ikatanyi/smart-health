@@ -7,9 +7,9 @@ import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import lombok.Data;
 
 /**
  *
@@ -43,8 +43,8 @@ public class PatientLabTestData {
     @ApiModelProperty(hidden = true, required = false)
     private List<ResultsData> resultsData = new ArrayList();
     
-    private Boolean withRef;
-    
+    private Boolean withRef; 
+      
     public static PatientLabTest map(PatientLabTestData ptestdata) {
         PatientLabTest entity = new PatientLabTest();
         entity.setStatus(ptestdata.getStatus());

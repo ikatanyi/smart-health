@@ -1,11 +1,10 @@
 package io.smarthealth.config.audit;
 
 import io.smarthealth.auth.domain.PersistentAuditEvent;
+import java.util.*;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
-
-import java.util.*;
 
 @Component
 public class AuditEventConverter {

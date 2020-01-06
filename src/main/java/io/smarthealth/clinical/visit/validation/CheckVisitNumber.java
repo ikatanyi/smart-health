@@ -1,10 +1,10 @@
 package io.smarthealth.clinical.visit.validation;
- 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+
+import io.smarthealth.clinical.visit.validation.constraints.CheckValidVisit;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import io.smarthealth.clinical.visit.validation.constraints.CheckValidVisit;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
 /**
  * @author Kelsas

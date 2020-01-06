@@ -7,7 +7,6 @@ package io.smarthealth.organization.person.patient.service;
 
 import io.smarthealth.organization.person.patient.data.PatientIdentifierData;
 import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.organization.person.patient.domain.PatientIdentificationType;
 import io.smarthealth.organization.person.patient.domain.PatientIdentifier;
 import io.smarthealth.organization.person.patient.domain.PatientIdentifierRepository;
 import java.util.List;

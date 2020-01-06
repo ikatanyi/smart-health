@@ -7,7 +7,6 @@ package io.smarthealth.clinical.visit.domain;
 
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.organization.person.patient.domain.Patient;
-import java.math.BigInteger;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

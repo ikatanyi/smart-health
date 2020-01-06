@@ -8,7 +8,6 @@ package io.smarthealth.clinical.pharmacy.service;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.domain.PatientDrugs;
 import io.smarthealth.clinical.pharmacy.domain.PatientDrugsRepository;
-import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorRequest.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.domain.PrescriptionRepository;

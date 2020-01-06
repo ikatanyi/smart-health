@@ -2,14 +2,7 @@ package io.smarthealth.administration.app.service;
 
 import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.ContactData;
-import io.smarthealth.administration.app.domain.Address;
-import io.smarthealth.administration.app.domain.AddressRepository;
-import io.smarthealth.administration.app.domain.BankBranch;
-import io.smarthealth.administration.app.domain.BankBranchRepository;
-import io.smarthealth.administration.app.domain.BankRepository;
-import io.smarthealth.administration.app.domain.Contact;
-import io.smarthealth.administration.app.domain.ContactRepository;
-import io.smarthealth.administration.app.domain.MainBank;
+import io.smarthealth.administration.app.domain.*;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.org.domain.Organization;
 import java.util.List;

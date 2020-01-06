@@ -6,12 +6,7 @@
 package io.smarthealth.organization.person.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.person.domain.Person;
-import io.smarthealth.organization.person.domain.PersonAddress;
-import io.smarthealth.organization.person.domain.PersonAddressRepository;
-import io.smarthealth.organization.person.domain.PersonContact;
-import io.smarthealth.organization.person.domain.PersonContactRepository;
-import io.smarthealth.organization.person.domain.PersonRepository;
+import io.smarthealth.organization.person.domain.*;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

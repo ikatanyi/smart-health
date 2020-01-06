@@ -1,6 +1,7 @@
 package io.smarthealth.organization.facility.domain;
 
-import io.smarthealth.accounting.account.domain.Account;
+import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,25 +20,14 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "facility_department",uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"dept_name"}, name="unique_dept_name_fk_dept_facility_id")})
+@Table(name = "facility_department", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"dept_name"}, name = "unique_dept_name_fk_dept_facility_id")})
 public class Department extends Identifiable {
 
     public enum Type {
         Patient,
         Store,
         ServicePoint
-    }
-
-    public enum ServicePointType {
-        Triage,
-        Consultation,
-        Pharmacy,
-        Laboratory,
-        Radiology,
-        Accounts,
-        Procedure,
-        Open
     }
 
     @ManyToOne
@@ -55,14 +45,18 @@ public class Department extends Identifiable {
     private Department parent;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_income_account_id"))
-    private Account incomeAccount;
+    private AccountEntity incomeAccount;
+    
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_expense_account_id"))
-    private Account expenseAccount;
+    private AccountEntity expenseAccount;
 
     private Boolean isStore; // the department can be store location
 
     private Boolean active;
-    private String servicePointType;
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_service_point_type_id"))
+    private ServicePoint servicePointType;
 
 }

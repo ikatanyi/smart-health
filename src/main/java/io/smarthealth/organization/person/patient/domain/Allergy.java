@@ -2,12 +2,7 @@ package io.smarthealth.organization.person.patient.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDateTime;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import lombok.Data;
 
 /**

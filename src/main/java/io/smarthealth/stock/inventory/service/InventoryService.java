@@ -8,11 +8,16 @@ package io.smarthealth.stock.inventory.service;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.InventoryVarianceData;
+import io.smarthealth.stock.inventory.data.StockMovementData;
+import io.smarthealth.stock.inventory.data.VarItemData;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.inventory.domain.InventoryItemRepository;
 import io.smarthealth.stock.inventory.domain.InventoryVariance;
 import io.smarthealth.stock.inventory.domain.InventoryVarianceRepository;
-import io.smarthealth.stock.inventory.domain.StockMovementRepository;
+import io.smarthealth.stock.inventory.domain.StockMovement;
+import io.smarthealth.stock.inventory.domain.VarItem;
+import io.smarthealth.stock.inventory.domain.enumeration.ModeofAdjustment;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.domain.specification.InventorySpecification;
 import io.smarthealth.stock.inventory.domain.specification.VarianceSpecification;
 import io.smarthealth.stock.item.data.ItemData;
@@ -23,7 +28,10 @@ import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,47 +46,65 @@ import org.springframework.stereotype.Service;
 public class InventoryService {
 
     private final InventoryItemRepository inventoryItemRepository;
-    private final StockMovementRepository stockMovementRepository;
+    private final StockService stockService;
     private final InventoryVarianceRepository inventoryVarianceRepository;
     @Autowired
     private final ItemService itemService;
     @Autowired
     private final StoreService storeService;
-    public InventoryService(InventoryItemRepository inventoryItemRepository, 
-            StockMovementRepository stockMovementRepository, ItemService itemService, StoreService storeService,
+
+    public InventoryService(InventoryItemRepository inventoryItemRepository,
+            StockService stockService, ItemService itemService, StoreService storeService,
             InventoryVarianceRepository inventoryVarianceRepository) {
-            this.inventoryItemRepository = inventoryItemRepository;
-            this.stockMovementRepository = stockMovementRepository;
-            this.inventoryVarianceRepository = inventoryVarianceRepository;
-            this.storeService  = storeService;
-            this.itemService  = itemService;
+        this.inventoryItemRepository = inventoryItemRepository;
+        this.stockService = stockService;
+        this.inventoryVarianceRepository = inventoryVarianceRepository;
+        this.storeService = storeService;
+        this.itemService = itemService;
     }
 
     public InventoryVariance saveStockVariance(InventoryVarianceData varianceData) {
+        List<VarItem> varItems = new ArrayList();
+        List<StockMovement> stockArray = new ArrayList();
         InventoryVariance variance = InventoryVarianceData.map(varianceData);
         InventoryItem inventoryItem = new InventoryItem();
-        Item item = itemService.findItemEntityOrThrow(varianceData.getItemId());
         Store store = storeService.getStoreWithNoFoundDetection(varianceData.getStoreId());
-        inventoryItem.setItem(item);
-        inventoryItem.setStore(store);
-        variance.setItem(item);
-        variance.setStore(store);
+        variance.setDescription(varianceData.getDescription());
+
+        varianceData.getItemData().forEach((VarItemData items) -> {
+            VarItem varItem = VarItemData.map(items);
+            Item item = itemService.findItemEntityOrThrow(items.getId());
+            varItem.setItem(item);
+            varItems.add(varItem);
+            if (varianceData.getAdjustmentMode() == ModeofAdjustment.Quantity) {
+                StockMovementData stock = new StockMovementData();
+                stock.setItem(item.getItemName());
+                stock.setItemCode(item.getItemCode());
+                stock.setMoveType(MovementType.Adjustment);
+                stock.setReferenceNumber(varianceData.getReference());
+                stock.setUomId(item.getUom().getId());
+                stock.setStoreId(varianceData.getStoreId());
+                stock.setReceiving(items.getVariance());
+                stockService.saveStock(stock);
+            }
+        });
+        variance.setVarItem(varItems);
         return inventoryVarianceRepository.save(variance);
     }
-    
+
     public InventoryVariance findOneWithNotFoundDetection(Long id) {
         return inventoryVarianceRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Inventory variance with Id {0} not found", id));
     }
-    
-     public Page<InventoryVarianceData> getAllStockVariances(LocalDate from, LocalDate to, Long storeId, Pageable pgbl) {
+
+    public Page<InventoryVarianceData> getAllStockVariances(LocalDate from, LocalDate to, Long storeId, Pageable pgbl) {
         Store store = storeService.getStoreWithNoFoundDetection(storeId);
         Specification<InventoryVariance> spec = VarianceSpecification.createSpecification(from, to, store);
         Page<InventoryVarianceData> inventoryVariances = inventoryVarianceRepository.findAll(spec, pgbl).map(variance -> map(variance));
         return inventoryVariances;
     }
-    
-     public InventoryItem saveInventoryItem(InventoryItem inventoryItem) {
+
+    public InventoryItem saveInventoryItem(InventoryItem inventoryItem) {
 //        InventoryItem inventoryItem = InventoryItemData.map(itemData);
 //        Item item = itemService.findItemEntityOrThrow(itemData.getItemId());
 //        Store store = storeService.getStoreWithNoFoundDetection(itemData.getStoreId());
@@ -87,50 +113,64 @@ public class InventoryService {
         return inventoryItemRepository.save(inventoryItem);
     }
 //    
+
     public InventoryItem findInventoryItemWithNotFoundDetection(Long id) {
         return inventoryItemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Inventory Item with Id {0} not found", id));
     }
-    
+
     public Optional<InventoryItem> findInventoryItemByItem(Item item) {
         return inventoryItemRepository.findByItem(item);
     }
 //    
-     public Page<InventoryItemData> getAllInventoryItems(LocalDate from, LocalDate to, String moveType,Long storeId, Pageable pgbl) {
+
+    public Page<InventoryItemData> getAllInventoryItems(LocalDate from, LocalDate to, String moveType, Long storeId, Pageable pgbl) {
         Store store = storeService.getStoreWithNoFoundDetection(storeId);
         Specification<InventoryItem> spec = InventorySpecification.createSpecification(store, from, to, moveType);
-        Page<InventoryItemData> inventoryItems = inventoryItemRepository.findAll(spec,pgbl).map(item -> map(item));
+        Page<InventoryItemData> inventoryItems = inventoryItemRepository.findAll(spec, pgbl).map(item -> map(item));
         return inventoryItems;
     }
-     
-    public InventoryVarianceData map(InventoryVariance variance){
+
+    public InventoryVarianceData map(InventoryVariance variance) {
         InventoryVarianceData data = new InventoryVarianceData();
-        data.setComments(variance.getComments());
-        data.setQuantity(variance.getQuantity());
-        data.setReasons(variance.getReasons());
         data.setDateRecorded(LocalDateTime.now());
-        if(variance.getStore()!=null)
-            data.setStoreData(StoreData.map(variance.getStore()));
-        if(variance.getItem()!=null)
-             data.setItemData(ItemData.map(variance.getItem()));
+        if (variance.getStore() != null) {
+            data.setStoreName(variance.getStore().getStoreName());
+        }
+        if (!variance.getVarItem().isEmpty()) {
+            data.setItemData(
+                    variance.getVarItem()
+                            .stream()
+                            .map((p)->this.map(p)).collect(Collectors.toList()));
+        }
         return data;
     }
-    
-    public InventoryItemData map(InventoryItem inventoryItem){
+
+    public InventoryItemData map(InventoryItem inventoryItem) {
         InventoryItemData data = new InventoryItemData();
-        if(inventoryItem.getStore()!=null)
+        if (inventoryItem.getStore() != null) {
             data.setStoreData(StoreData.map(inventoryItem.getStore()));
+        }
         data.setSerialNumber(inventoryItem.getSerialNumber());
         data.setDateRecorded(LocalDateTime.now());
         data.setId(inventoryItem.getId());
-        if(inventoryItem.getItem()!=null)
+        if (inventoryItem.getItem() != null) {
             data.setItemData(ItemData.map(inventoryItem.getItem()));
+        }
         data.setItemType(inventoryItem.getItemType());
         data.setQuantity(inventoryItem.getQuantity());
         data.setSerialNumber(inventoryItem.getSerialNumber());
         data.setStatusType(inventoryItem.getStatusType());
         return data;
     }
-
     
+    public VarItemData map(VarItem data){
+        VarItemData vItem = new VarItemData();
+        vItem.setId(data.getId());
+        vItem.setQuantity(data.getQuantity());
+        vItem.setReasons(data.getReason());
+        vItem.setVariance(data.getVariance());
+        return vItem;
+    }
+
 }

@@ -1,16 +1,16 @@
 package io.smarthealth.supplier.service;
 
 import io.smarthealth.accounting.pricebook.data.PriceBookData;
-import io.smarthealth.administration.app.domain.PaymentTerms;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.pricebook.service.PricebookService;
 import io.smarthealth.administration.app.data.BankAccountData;
 import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.domain.Currency;
+import io.smarthealth.accounting.payment.domain.PaymentTerms;
 import io.smarthealth.administration.app.service.AdminService;
-import io.smarthealth.administration.app.service.PaymentTermsService;
 import io.smarthealth.administration.app.service.CurrencyService;
+import io.smarthealth.accounting.payment.service.PaymentTermsService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;

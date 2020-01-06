@@ -1,20 +1,12 @@
 package io.smarthealth.clinical.record.domain;
 
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDateTime;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import lombok.Data;
 
 /**

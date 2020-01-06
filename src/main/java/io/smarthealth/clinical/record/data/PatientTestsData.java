@@ -3,13 +3,13 @@ package io.smarthealth.clinical.record.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
+import io.smarthealth.clinical.visit.validation.constraints.CheckValidVisit;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
-import io.smarthealth.clinical.visit.validation.constraints.CheckValidVisit;
 import org.smarthealth.patient.validation.constraints.ValidIdentifier;
 
 /**

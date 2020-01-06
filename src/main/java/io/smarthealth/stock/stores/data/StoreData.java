@@ -29,16 +29,16 @@ public class StoreData {
         data.setStoreType(store.getStoreType().name());
         data.setStoreName(store.getStoreName());
         if(store.getInventoryAccount()!=null){
-            data.setInventoryAccount(store.getInventoryAccount().getAccountName());
-            data.setInventoryAccountNumber(store.getInventoryAccount().getAccountNumber());
+            data.setInventoryAccount(store.getInventoryAccount().getName());
+            data.setInventoryAccountNumber(store.getInventoryAccount().getIdentifier());
         }
          if(store.getSalesAccount()!=null){
-            data.setSalesAccount(store.getSalesAccount().getAccountName());
-            data.setSalesAccountNumber(store.getSalesAccount().getAccountNumber());
+            data.setSalesAccount(store.getSalesAccount().getName());
+            data.setSalesAccountNumber(store.getSalesAccount().getIdentifier());
         }
           if(store.getPurchaseAccount()!=null){
-            data.setPurchaseAccount(store.getPurchaseAccount().getAccountName());
-            data.setPurchaseAccountNumber(store.getPurchaseAccount().getAccountNumber());
+            data.setPurchaseAccount(store.getPurchaseAccount().getName());
+            data.setPurchaseAccountNumber(store.getPurchaseAccount().getIdentifier());
         }
           return data;
     }

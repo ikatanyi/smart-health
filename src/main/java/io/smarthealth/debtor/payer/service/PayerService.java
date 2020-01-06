@@ -5,9 +5,9 @@
  */
 package io.smarthealth.debtor.payer.service;
 
-import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.PayerRepository;
+import io.smarthealth.infrastructure.exception.APIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

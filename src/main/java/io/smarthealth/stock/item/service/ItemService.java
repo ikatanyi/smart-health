@@ -5,7 +5,7 @@ import io.smarthealth.accounting.taxes.domain.TaxRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.data.ItemData;
-import io.smarthealth.stock.item.data.Uoms;
+import io.smarthealth.stock.item.data.Uoms; 
 import io.smarthealth.stock.item.domain.Drug;
 import io.smarthealth.stock.item.domain.DrugRepository;
 import io.smarthealth.stock.item.domain.Item;
@@ -19,7 +19,7 @@ import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import java.util.List;
-import java.util.Optional;
+import java.util.Optional; 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Kelsas
  */
-@Service
-@Slf4j
+@Slf4j 
+@Service 
 public class ItemService {
 
     private final TaxRepository taxRepository;
@@ -59,7 +59,7 @@ public class ItemService {
 
     @Transactional
     public ItemData createItem(CreateItem createItem) {
-        Item item = new Item();
+        Item item = new Item(); 
         item.setActive(Boolean.TRUE);
         item.setCategory(createItem.getStockCategory());
         item.setCostRate(createItem.getPurchaseRate());

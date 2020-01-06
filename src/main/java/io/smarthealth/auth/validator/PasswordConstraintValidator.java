@@ -1,17 +1,10 @@
 package io.smarthealth.auth.validator;
- 
+
 import com.google.common.base.Joiner;
 import java.util.Arrays;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import org.passay.CharacterRule;
-import org.passay.EnglishCharacterData;
-import org.passay.LengthRule;
-import org.passay.PasswordData;
-import org.passay.PasswordValidator;
-import org.passay.RuleResult;
-import org.passay.WhitespaceRule;
+import org.passay.*;
 
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
 

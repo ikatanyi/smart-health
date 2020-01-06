@@ -4,11 +4,10 @@ package io.smarthealth.infrastructure.utility.web;
  *
  * @author Kelsas
  */
+import java.util.Optional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Optional;
 
 /**
  * Utility class for ResponseEntity creation.

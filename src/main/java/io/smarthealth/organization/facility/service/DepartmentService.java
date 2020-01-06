@@ -10,7 +10,6 @@ import io.smarthealth.organization.facility.data.DepartmentData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
 import io.smarthealth.organization.facility.domain.Facility;
-import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

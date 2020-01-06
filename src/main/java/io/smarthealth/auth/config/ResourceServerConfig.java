@@ -26,6 +26,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception { 
         http.authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                
                 .antMatchers("/api/user/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
                 .and()
                 .antMatcher("/api/**")

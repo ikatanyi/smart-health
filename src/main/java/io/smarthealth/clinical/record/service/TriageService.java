@@ -1,8 +1,8 @@
 package io.smarthealth.clinical.record.service;
 
+import io.smarthealth.clinical.record.data.VitalRecordData;
 import io.smarthealth.clinical.record.domain.TriageRepository;
 import io.smarthealth.clinical.record.domain.VitalsRecord;
-import io.smarthealth.clinical.record.data.VitalRecordData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;

@@ -5,9 +5,9 @@
  */
 package io.smarthealth.clinical.record.service;
 
+import io.smarthealth.clinical.record.data.PatientTestsData;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosisRepository;
-import io.smarthealth.clinical.record.data.PatientTestsData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;

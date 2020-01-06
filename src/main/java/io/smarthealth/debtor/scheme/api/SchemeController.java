@@ -5,12 +5,10 @@
  */
 package io.smarthealth.debtor.scheme.api;
 
-import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.data.InsuranceSchemeData;
 import io.smarthealth.debtor.scheme.domain.InsuranceScheme;
-import io.smarthealth.debtor.scheme.domain.InsuranceSchemeRepository;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;

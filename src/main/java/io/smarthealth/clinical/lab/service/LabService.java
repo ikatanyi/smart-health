@@ -1,31 +1,24 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.lab.service;
 
-import io.github.jhipster.web.util.PageUtil;
-import io.smarthealth.billing.service.PatientBillService;
+import io.smarthealth.billing.service.BillingService;
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.ContainerData;
 import io.smarthealth.clinical.lab.data.DisciplineData;
-import io.smarthealth.clinical.lab.data.SpecimenData;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
-import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimen;
 import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
+import io.smarthealth.clinical.lab.data.SpecimenData;
 import io.smarthealth.clinical.lab.domain.Analyte;
 import io.smarthealth.clinical.lab.domain.AnalyteRepository;
 import io.smarthealth.clinical.lab.domain.Container;
 import io.smarthealth.clinical.lab.domain.ContainerRepository;
 import io.smarthealth.clinical.lab.domain.Discipline;
 import io.smarthealth.clinical.lab.domain.DisciplineRepository;
+import io.smarthealth.clinical.lab.domain.LabTestType;
+import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimen;
 import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.SpecimenRepository;
-import io.smarthealth.clinical.lab.domain.LabTestType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +34,6 @@ import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.clinical.lab.data.TestItemData;
 import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimenRepo;
 import io.smarthealth.clinical.lab.domain.PatientTestRegister;
 import io.smarthealth.clinical.lab.domain.PatientTestRegisterRepository;
@@ -93,13 +85,13 @@ public class LabService {
     private final PatientService patientservice;
     private final ItemService itemService;
     private final VisitService visitService;
-    private final PatientBillService billingService;
+    private final BillingService billingService;
 
     private final LabTestTypeRepository labTestTypeRepository;
 
     private final PatientLabTestSpecimenRepo patientLabTestSpecimenRepo;
 
-    public LabService(AnalyteRepository analyteRepository, ModelMapper modelMapper, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, PatientTestRegisterRepository patientRegRepository, SequenceService seqService, EmployeeService employeeService, PatientService patientservice, ItemService itemService, VisitService visitService, PatientBillService billingService, LabTestTypeRepository labTestTypeRepository, PatientLabTestSpecimenRepo patientLabTestSpecimenRepo) {
+    public LabService(AnalyteRepository analyteRepository, ModelMapper modelMapper, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, PatientTestRegisterRepository patientRegRepository, SequenceService seqService, EmployeeService employeeService, PatientService patientservice, ItemService itemService, VisitService visitService, BillingService billingService, LabTestTypeRepository labTestTypeRepository, PatientLabTestSpecimenRepo patientLabTestSpecimenRepo) {
         this.analyteRepository = analyteRepository;
         this.modelMapper = modelMapper;
         this.containerRepository = containerRepository;
@@ -297,7 +289,8 @@ public class LabService {
      */
     @Transactional
     public List<DisciplineData> createDisciplines(List<DisciplineData> disciplineData) {
-        Type listType = new TypeToken<List<Discipline>>() {
+
+        java.lang.reflect.Type listType = new TypeToken<List<Discipline>>() {
         }.getType();
         List<Discipline> disciplines = modelMapper.map(disciplineData, listType);
 
@@ -611,7 +604,7 @@ public class LabService {
      */
     @Transactional
     public List<ContainerData> createContainers(List<ContainerData> containerData) {
-        Type listType = new TypeToken<List<Container>>() {
+        java.lang.reflect.Type listType = new TypeToken<List<Container>>() {
         }.getType();
         List<Container> containers = modelMapper.map(containerData, listType);
 

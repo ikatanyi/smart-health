@@ -3,7 +3,6 @@ package io.smarthealth.administration.config.domain;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 import javax.persistence.Table;
 import lombok.Data;
 

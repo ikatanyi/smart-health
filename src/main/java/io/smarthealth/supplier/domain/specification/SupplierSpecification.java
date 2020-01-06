@@ -2,8 +2,8 @@ package io.smarthealth.supplier.domain.specification;
 
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.domain.enumeration.SupplierType;
-import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
+import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 /**

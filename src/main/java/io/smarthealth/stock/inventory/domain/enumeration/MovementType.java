@@ -16,5 +16,9 @@ public enum MovementType {
         /**
          * Items dispensed to patient
          */
-        Dispensed
+        Dispensed,
+        /**
+         * Items Adjusted after stock retake
+         */
+        Adjustment;
 }

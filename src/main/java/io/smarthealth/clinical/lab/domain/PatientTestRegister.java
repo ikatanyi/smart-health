@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.lab.domain;
 
-import io.smarthealth.billing.domain.PatientBill;
+import io.smarthealth.billing.domain.Bill;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
@@ -69,5 +69,5 @@ public class PatientTestRegister extends ClinicalRecord {
 
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_test_register_bill_id"))
     @OneToOne
-    private PatientBill bill;
+    private Bill bill;
 }

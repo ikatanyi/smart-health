@@ -1,9 +1,9 @@
 package org.smarthealth.patient.validation;
- 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 import org.smarthealth.patient.validation.constraints.ValidIdentifier;
 
 /**

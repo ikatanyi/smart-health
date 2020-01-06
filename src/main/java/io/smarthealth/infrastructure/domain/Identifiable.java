@@ -5,16 +5,14 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import lombok.Data;
+import javax.persistence.MappedSuperclass; 
 
 /**
  * Base Entity using {@link  GeneratedValue } Identity Strategy to generate a
  * primary key, with a unique UUID, User and Date audit information.
  *
  * @author Kelsas
- */
-@Data
+ */ 
 @MappedSuperclass
 public abstract class Identifiable implements Serializable {
 
@@ -24,5 +22,21 @@ public abstract class Identifiable implements Serializable {
 
     @Column(length = 38)
     private String companyId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
 
 }

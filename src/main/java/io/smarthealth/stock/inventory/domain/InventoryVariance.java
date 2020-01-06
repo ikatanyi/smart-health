@@ -1,15 +1,13 @@
 package io.smarthealth.stock.inventory.domain;
 
+import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.stock.inventory.domain.enumeration.ModeofAdjustment;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.List;
+import javax.persistence.*;
 import lombok.Data;
 
 /**
@@ -24,14 +22,19 @@ public class InventoryVariance extends Auditable {
 
     private LocalDateTime dateRecorded;
     @ManyToOne
-     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_variance_store_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_variance_store_id"))
     private Store store;
+    private String description; 
     @ManyToOne
      @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_variance_item_id"))
-    private Item item;
-    private double quantity;
-    private String comments; 
-    @Column(name = "variance_reason")
-    private String reasons;
+    private AccountEntity costingAccount;
+    @Enumerated(EnumType.STRING)
+    private ModeofAdjustment adjustmentMode;
+    private String reference;
+    
+    @OneToMany
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_inventory_variance_var_item_id"))
+    private List<VarItem>varItem; 
+    
     //use code - Stock Variance Reason
 }

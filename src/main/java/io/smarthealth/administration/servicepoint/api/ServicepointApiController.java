@@ -1,5 +1,5 @@
 package io.smarthealth.administration.servicepoint.api;
- 
+
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -13,14 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *
@@ -38,7 +31,7 @@ public class ServicepointApiController {
         this.service = service;
     }
 
-    @PostMapping("/service-points")
+    @PostMapping("/servicepoints")
     public ResponseEntity<?> createServicepoint(@Valid @RequestBody ServicePointData data) {
 
         ServicePointData result = service.createPoint(data);
@@ -51,13 +44,13 @@ public class ServicepointApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
-    @GetMapping("/service-points/{id}")
+    @GetMapping("/servicepoints/{id}")
     public ResponseEntity<?> getServicepoint(@PathVariable(value = "id") Long id) {
         ServicePointData data = service.getServicePoint(id).toData();
         return ResponseEntity.ok(data);
     }
 
-    @PutMapping("/service-points/{id}")
+    @PutMapping("/servicepoints/{id}")
     public ResponseEntity<?> updateServicepoint(@PathVariable(value = "id") Long id, ServicePointData data) {
         ServicePointData result = service.updateServicePoint(id, data);
 
@@ -69,7 +62,7 @@ public class ServicepointApiController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
     }
 
-    @GetMapping("/service-points")
+    @GetMapping("/servicepoints")
     public ResponseEntity<?> listServicepoint(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {
