@@ -21,7 +21,7 @@ public class InventoryVarianceData {
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime dateRecorded;
     private String accountNumber; 
-    private String accountName; 
+    private String accountName;
     private ModeofAdjustment adjustmentMode;
     private String reference;
     private String description;
