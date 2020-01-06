@@ -2,7 +2,7 @@ package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.SpecimenData;
 import io.smarthealth.clinical.lab.service.LabService;
-import io.smarthealth.infrastructure.common.APIResponse;
+import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.swagger.annotations.Api;
@@ -46,7 +46,7 @@ public class SpecimenController {
              URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/specimen" )
                 .buildAndExpand().toUri();
 
-            return ResponseEntity.created(location).body(APIResponse.successMessage("Specimen successfuly created", HttpStatus.CREATED, specimenList));
+            return ResponseEntity.created(location).body(ApiResponse.successMessage("Specimen successfuly created", HttpStatus.CREATED, specimenList));
         } else {
             throw APIException.notFound("Specimen Number {0} not found.", "");
         }

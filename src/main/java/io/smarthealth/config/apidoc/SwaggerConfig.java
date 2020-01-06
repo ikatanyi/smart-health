@@ -25,12 +25,14 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 public class SwaggerConfig {
 
-    @Value("${smarthealth-security.web-app-client-id}")
-    private String CLIENT_ID;
-    @Value("${smarthealth-security.web-app-client-secret}")
-    private String CLIENT_SECRET;
-    @Value("${smarthealth-auth-server}")
-    private String AUTH_SERVER;
+    @Value("${jwt.clientId:smarthealth}")
+    private String clientId;
+
+    @Value("${jwt.client-secret:ccUyb6vS4S8nxfbKPCrN}")
+    private String clientSecret;
+
+    @Value("${io.smarthealth.auth-server:http://localhost:8200}")
+    private String authServer;
 
     @Bean
     public Docket api() {
@@ -47,8 +49,8 @@ public class SwaggerConfig {
     @Bean
     public SecurityConfiguration security() {
         return SecurityConfigurationBuilder.builder()
-                .clientId(CLIENT_ID)
-                .clientSecret(CLIENT_SECRET)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
                 .scopeSeparator(" ")
                 .useBasicAuthenticationWithAccessCodeGrant(false)
                 .build();
@@ -68,7 +70,7 @@ public class SwaggerConfig {
 //                .tokenRequestEndpoint(
 //                        new TokenRequestEndpoint(AUTH_SERVER + "/authorize", CLIENT_ID, CLIENT_SECRET))
 //                .build();
-        GrantType grantType = new ResourceOwnerPasswordCredentialsGrant(AUTH_SERVER + "/oauth/token");
+        GrantType grantType = new ResourceOwnerPasswordCredentialsGrant(authServer + "/oauth/token");
         SecurityScheme oauth = new OAuthBuilder().name("spring_oauth")
                 .grantTypes(Arrays.asList(grantType))
                 .scopes(Arrays.asList(scopes()))

@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.radiology.service;
 
-import io.smarthealth.billing.service.BillingService;
+import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.RadiologyTestData;
 import io.smarthealth.clinical.radiology.data.ScanItemData;

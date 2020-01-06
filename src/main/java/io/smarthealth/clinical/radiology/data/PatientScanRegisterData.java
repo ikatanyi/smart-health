@@ -7,7 +7,7 @@ package io.smarthealth.clinical.radiology.data;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.smarthealth.billing.data.BillData;
+import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
 import io.smarthealth.infrastructure.lang.DateConverter;
 import io.swagger.annotations.ApiModelProperty;

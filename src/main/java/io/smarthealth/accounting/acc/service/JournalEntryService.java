@@ -3,6 +3,7 @@ package io.smarthealth.accounting.acc.service;
 import io.smarthealth.accounting.acc.data.mapper.JournalEntryMapper;
 import io.smarthealth.accounting.acc.data.v1.*;
 import io.smarthealth.accounting.acc.domain.*;
+import io.smarthealth.accounting.acc.events.JournalEvent;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
@@ -11,34 +12,26 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Service 
 public class JournalEntryService {
-
-    private Logger logger;
+ 
     private final JournalEntrysRepository journalEntryRepository;
     private final TransactionTypeRepository transactionTypeRepository;
     private final AccountService accountServices;
-     private final SequenceService sequenceService;
+    private final SequenceService sequenceService;
+    private final JournalEventSender journalEventSender;
 
-
-    @Autowired
-    public JournalEntryService(
-            final JournalEntrysRepository journalEntryRepository,
-            final TransactionTypeRepository transactionTypeRepository,
-            final AccountService accountServices,
-            SequenceService sequenceService) {
-        super();
+    public JournalEntryService(JournalEntrysRepository journalEntryRepository, TransactionTypeRepository transactionTypeRepository, AccountService accountServices, SequenceService sequenceService, JournalEventSender journalEventSender) {
         this.journalEntryRepository = journalEntryRepository;
         this.transactionTypeRepository = transactionTypeRepository;
         this.accountServices = accountServices;
-        this.sequenceService=sequenceService;
+        this.sequenceService = sequenceService;
+        this.journalEventSender = journalEventSender;
     }
-
+ 
     private List<JournalEntryEntity> fetchJournalEntriesByDate(DateRange range) {
         return journalEntryRepository.findByDateBucketBetween(range.getStartDateTime().toLocalDate(), range.getEndDateTime().toLocalDate());
     }
@@ -102,6 +95,8 @@ public class JournalEntryService {
     @Transactional
     public JournalEntry createJournalEntry(JournalEntry createJournalEntryCommand) {
         final JournalEntry journalEntry = createJournalEntryCommand;
+        journalEntry.setState("PENDING");
+
         final Set<Debtor> debtors = journalEntry.getDebtors();
         final Set<DebtorType> debtorTypes = debtors
                 .stream()
@@ -123,7 +118,7 @@ public class JournalEntryService {
                 })
                 .collect(Collectors.toSet());
         final JournalEntryEntity journalEntryEntity = new JournalEntryEntity();
-        String journalid=generateJournalId(); //RandomStringUtils.randomAlphanumeric(32)
+        String journalid = UUID.randomUUID().toString(); //generateJournalId(); //RandomStringUtils.randomAlphanumeric(32)
 //        journalEntryEntity.setTransactionIdentifier(journalEntry.getTransactionIdentifier());
         journalEntryEntity.setTransactionIdentifier(journalid);
         final LocalDateTime transactionDate = journalEntry.getTransactionDate();
@@ -134,16 +129,20 @@ public class JournalEntryService {
         journalEntryEntity.addCreditors(creditorTypes);
         journalEntryEntity.setMessage(journalEntry.getMessage());
         journalEntryEntity.setState(JournalEntry.State.PENDING.name());
-        JournalEntryEntity jee=journalEntryRepository.save(journalEntryEntity);
+
+        JournalEntryEntity jee = journalEntryRepository.save(journalEntryEntity);
 
 //    this.commandGateway.process(new BookJournalEntryCommand(journalEntry.getTransactionIdentifier()));
-        bookJournalEntry(jee.getTransactionIdentifier());
+//        bookJournalEntry(jee.getTransactionIdentifier());
+//        journalSender.postJournal(journalEntry); 
+        journalEventSender.process(new JournalEvent(jee.getTransactionIdentifier()));
+        
 
         return JournalEntryMapper.map(jee);
 //        return journalEntry.getTransactionIdentifier();
     }
-    
-     @Transactional
+
+    @Transactional
     public String bookJournalEntry(String transactionIdentifier) {
 
         final Optional<JournalEntryEntity> optionalJournalEntry = this.findJournalEntryEntity(transactionIdentifier);
@@ -183,9 +182,9 @@ public class JournalEntryService {
                         accountEntryEntity.setAmount(debtor.getAmount());
                         accountEntryEntity.setMessage(journalEntryEntity.getMessage());
                         accountEntryEntity.setTransactionDate(journalEntryEntity.getTransactionDate());
-                        
+
                         this.accountServices.saveAccountEntry(accountEntryEntity);
-                        
+
                         this.accountServices.adjustLedgerTotals(savedAccountEntity.getLedger().getIdentifier(), amount);
                     });
             // process all creditors
@@ -232,12 +231,14 @@ public class JournalEntryService {
             return null;
         }
     }
+
     @Transactional
- private String generateJournalId(){
-        String trxId=sequenceService.nextNumber(SequenceType.JournalNumber);
-        trxId=String.format("ACC-JV-%s-%s", String.valueOf(LocalDate.now().getYear()), trxId);
+    private String generateJournalId() {
+        String trxId = sequenceService.nextNumber(SequenceType.JournalNumber);
+        trxId = String.format("ACC-JV-%s-%s", String.valueOf(LocalDate.now().getYear()), trxId); //acc-jv-2019-0001
         return trxId;
     }
+
     @Transactional
     public void releaseJournalEntry(String transactionIdentifier) {
         final Optional<JournalEntryEntity> optionalJournalEntry = this.journalEntryRepository.findByTransactionIdentifier(transactionIdentifier);

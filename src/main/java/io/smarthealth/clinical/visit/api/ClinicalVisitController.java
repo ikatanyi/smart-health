@@ -13,7 +13,7 @@ import io.smarthealth.clinical.record.service.TriageService;
 import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
-import io.smarthealth.infrastructure.common.APIResponse;
+import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
@@ -98,7 +98,7 @@ public class ClinicalVisitController {
                 .fromCurrentContextPath().path("/api/visits/{visitNumber}")
                 .buildAndExpand(visit.getVisitNumber()).toUri();
 
-        return ResponseEntity.created(location).body(APIResponse.successMessage("Visit was activated successfully", HttpStatus.CREATED, visitDat));
+        return ResponseEntity.created(location).body(ApiResponse.successMessage("Visit was activated successfully", HttpStatus.CREATED, visitDat));
     }
 
     @PutMapping("/visits/{visitNumber}")

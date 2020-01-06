@@ -28,5 +28,6 @@ public class ApplicationProperties {
      */
     @NotNull
     private Resource reportLocation;
-
+ 
+    private Resource authServer;
 }

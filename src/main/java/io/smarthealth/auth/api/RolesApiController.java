@@ -74,7 +74,7 @@ public class RolesApiController {
                 .body(data);
     }
 
-    @PostMapping("/roles/{id}/permissions")
+    @GetMapping("/roles/{id}/permissions")
     public ResponseEntity<?> retrieveRolePermissions(@PathVariable(value = "id") Long roleId) {
         RolePermissionsData data = service.getRolePermissions(roleId);
         return ResponseEntity.ok(data);
@@ -111,7 +111,7 @@ public class RolesApiController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Suppliers");
+        details.setReportName("Roles");
         pagers.setPageDetails(details);
 
         return ResponseEntity.ok(pagers);

@@ -14,7 +14,7 @@ import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
-import io.smarthealth.infrastructure.common.APIResponse;
+import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.SecurityUtils;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.sequence.SequenceType;
@@ -185,7 +185,7 @@ public class PharmacyController {
         List<PatientDrugsData> patientDrugs = pharmService.getByVisitIdAndPatientId(visitNumber, patientNumber);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/lab/patientDrug/")
                 .buildAndExpand().toUri();
-        return ResponseEntity.created(location).body(APIResponse.successMessage("PatientDrugsData returned successfuly", HttpStatus.OK, patientDrugs));
+        return ResponseEntity.created(location).body(ApiResponse.successMessage("PatientDrugsData returned successfuly", HttpStatus.OK, patientDrugs));
     }
 
     @DeleteMapping("/patientDrug/{id}")

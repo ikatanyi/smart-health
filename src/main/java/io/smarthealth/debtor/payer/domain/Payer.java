@@ -27,7 +27,10 @@ public class Payer extends Auditable {
         Business,
         Individual
     }
+    
+    @Enumerated(EnumType.STRING)
     private Type payerType;
+    
     private String payerName;
     private String legalName;
     private String taxNumber;

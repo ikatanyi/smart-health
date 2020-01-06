@@ -1,10 +1,12 @@
 package io.smarthealth;
 
-import io.smarthealth.infrastructure.mail.MailService;
+import static java.time.ZoneId.of;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.TimeZone;
+import static java.util.TimeZone.getTimeZone;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -15,15 +17,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-
-
 @SpringBootApplication
 @EnableJms
 @Slf4j
 public class HealthApplication {
-
-    @Autowired
-    MailService mailSender;
 
     public static void main(String[] args) {
         SpringApplication.run(HealthApplication.class, args);
@@ -41,6 +38,11 @@ public class HealthApplication {
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return bean;
+    }
+
+    @PostConstruct
+    void started() {
+        TimeZone.setDefault(getTimeZone(of("Africa/Nairobi")));
     }
 
 }

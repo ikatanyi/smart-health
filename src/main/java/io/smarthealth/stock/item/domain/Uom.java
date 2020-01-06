@@ -24,10 +24,8 @@ public class Uom extends Identifiable {
     private Category category;
 
     private String name;
-    private double rounding;
+
     @Column(length = 10)
     private String symbol;
-    private double rate;
-    private double factor;
     private boolean active;
 }

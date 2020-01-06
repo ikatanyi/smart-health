@@ -1,5 +1,6 @@
 package io.smarthealth.auth.domain;
-
+ 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -23,6 +24,7 @@ public class User extends Identifiable implements UserDetails {
     private static final long serialVersionUID = 1L;
     private String email;
     private String username;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String name;
     private boolean enabled;

@@ -3,8 +3,8 @@ package io.smarthealth.stock.item.domain;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import java.util.List; 
- 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
@@ -19,11 +19,11 @@ import lombok.Data;
  * Product or Service representation
  *
  * @author Kelsas
- */ 
+ */
 @Data
 @Entity
-@Table(name = "stock_item_service",uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"category","itemName"})})
+@Table(name = "stock_item_service", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"category", "itemName"})})
 public class Item extends Identifiable {
 
     private String itemType;
@@ -34,6 +34,8 @@ public class Item extends Identifiable {
     private Double costRate;
     private Boolean discountable;
     private Boolean taxable;
+//    private Double availableStock;
+    
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_item_uom"))
     private Uom uom;
@@ -53,5 +55,13 @@ public class Item extends Identifiable {
     public boolean isInventoryItem() {
         return this.itemType.equals("Inventory");
     }
- 
+//    public void decrease(double number){
+//        this.availableStock=this.availableStock-number;
+//        //fire event to decrease the stocks
+//    }
+//    
+//    public void increase(double number){
+//        this.availableStock=this.availableStock+number;
+//        //fire event to increase the stocks
+//    }
 }

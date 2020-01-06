@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.procedure.service;
  
-import io.smarthealth.billing.service.BillingService;
+import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
 import io.smarthealth.clinical.procedure.data.ProcedureItemData;
 import io.smarthealth.clinical.procedure.data.ProcedureTestData;
