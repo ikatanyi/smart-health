@@ -18,7 +18,7 @@ public class SequenceData implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @Column(name = "sequence_name")
+    @Column(name = "sequence_name", unique = true)
     private String sequenceName;
     @Column(name = "sequence_increment")
     private Integer sequenceIncrement;

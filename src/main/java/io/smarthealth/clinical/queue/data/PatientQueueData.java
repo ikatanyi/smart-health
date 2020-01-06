@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.queue.data;
 
+import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.organization.facility.data.DepartmentData;
 import io.smarthealth.organization.person.patient.data.PatientData;
@@ -21,7 +22,7 @@ public class PatientQueueData {
     private String visitNumber;
     private String departmentId;
 
-    private DepartmentData departmentData;
+    private ServicePointData servicePointData;
     private VisitData visitData;
     private PatientData patientData;
     private Long id;

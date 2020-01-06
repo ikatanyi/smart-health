@@ -18,6 +18,7 @@ import lombok.Data;
 @Table(name = "auth_role")
 public class Role extends Identifiable {
 
+    @Column(nullable = false, unique = true)
     private String name;
     private String description;
     @Column(name = "is_disabled", nullable = false)
@@ -28,7 +29,8 @@ public class Role extends Identifiable {
             joinColumns = {
                 @JoinColumn(name = "role_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_role_role__id"))},
             inverseJoinColumns = {
-                @JoinColumn(name = "permission_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_role_permission_id"))})
+                @JoinColumn(name = "permission_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_role_permission_id"))}, uniqueConstraints = {
+                @UniqueConstraint(name = "ROLE_PERMISSION_UK_auth_permission_role", columnNames = {"role_id", "permission_id"})})
     private Set<Permission> permissions = new HashSet<>();
 
     protected Role() {

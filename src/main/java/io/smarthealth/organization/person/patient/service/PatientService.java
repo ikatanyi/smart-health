@@ -8,6 +8,8 @@ package io.smarthealth.organization.person.patient.service;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.queue.domain.PatientQueue;
+import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -83,6 +85,9 @@ public class PatientService {
 
     @Autowired
     PatientIdentifierService patientIdentifierService;
+
+    @Autowired
+    PatientQueueService patientQueueService;
 
     private final File patientImageDirRoot;
 
@@ -274,22 +279,22 @@ public class PatientService {
             visit.setVisitType(VisitEnum.VisitType.Outpatient);
             //generate visit number
             visit.setVisitNumber(sequenceService.nextNumber(SequenceType.VisitNumber));
-
+            ServicePoint servicePoint = null;
             if (patient.getVisitType().equals("OPD_VISIT")) {
                 //find service point by service type
-                ServicePoint servicePoint = servicePointService.getServicePointByType(facilityLogged, ServicePointType.Triage);
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Triage);
                 //send to triage
                 visit.setServicePoint(servicePoint);
             } else if (patient.getVisitType().equals("EMERGENCY_VISIT")) {
 
             } else if (patient.getVisitType().equals("PHARMACY_VISIT")) {
                 //send to pharmacy
-                ServicePoint servicePoint = servicePointService.getServicePointByType(facilityLogged, ServicePointType.Pharmacy);
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Pharmacy);
 
                 visit.setServicePoint(servicePoint);
             } else if (patient.getVisitType().equals("LABORATORY_VISIT")) {
                 //send to laboratory
-                ServicePoint servicePoint = servicePointService.getServicePointByType(facilityLogged, ServicePointType.Laboratory);
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
                 visit.setServicePoint(servicePoint);
             } else if (patient.getVisitType().equals("IPD_VISIT")) {
                 //send to inpatient
@@ -297,6 +302,16 @@ public class PatientService {
             }
 
             visitService.createAVisit(visit);
+            //insert into patient visit log
+            PatientQueue queue = new PatientQueue();
+            queue.setPatient(savedPatient);
+            queue.setServicePoint(servicePoint);
+            queue.setSpecialNotes(patient.getVisitType());
+            queue.setStatus(true);
+            queue.setUrgency(PatientQueue.QueueUrgency.Normal);
+            queue.setVisit(visit);
+
+            patientQueueService.createPatientQueue(queue);
         }
 
         return savedPatient;

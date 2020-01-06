@@ -5,6 +5,9 @@
  */
 package io.smarthealth.clinical.pharmacy.api;
 
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
@@ -35,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -71,7 +75,9 @@ public class PharmacyController {
 
     final FacilityService facilityService;
 
-    public PharmacyController(PharmacyService pharmService, ModelMapper modelMapper, VisitService visitService, PrescriptionService prescriptionService, ItemService itemService, SequenceService sequenceService, EmployeeService employeeService, PatientQueueService patientQueueService, DepartmentService departmentService, FacilityService facilityService) {
+    final ServicePointService servicePointService;
+
+    public PharmacyController(PharmacyService pharmService, ModelMapper modelMapper, VisitService visitService, PrescriptionService prescriptionService, ItemService itemService, SequenceService sequenceService, EmployeeService employeeService, PatientQueueService patientQueueService, DepartmentService departmentService, FacilityService facilityService, ServicePointService servicePointService) {
         this.pharmService = pharmService;
         this.modelMapper = modelMapper;
         this.visitService = visitService;
@@ -82,6 +88,7 @@ public class PharmacyController {
         this.patientQueueService = patientQueueService;
         this.departmentService = departmentService;
         this.facilityService = facilityService;
+        this.servicePointService = servicePointService;
     }
 
     @PostMapping("/patient-drug")
@@ -119,10 +126,11 @@ public class PharmacyController {
 
         //Send patient to queue
         PatientQueue patientQueue = new PatientQueue();
-        //logged in facility 
-        Facility facility = facilityService.loggedFacility();
-        Department department = departmentService.findByServicePointTypeAndfacility("Pharmacy", facility);
-        patientQueue.setDepartment(department);
+
+        //Department department = departmentService.findByServicePointTypeAndfacility("Pharmacy", facility);
+        ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Pharmacy);
+
+        patientQueue.setServicePoint(servicePoint);
         patientQueue.setPatient(visit.getPatient());
         patientQueue.setSpecialNotes("");
         patientQueue.setUrgency(PatientQueue.QueueUrgency.Medium);

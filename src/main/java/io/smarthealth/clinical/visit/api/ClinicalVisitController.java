@@ -5,6 +5,10 @@
  */
 package io.smarthealth.clinical.visit.api;
 
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.record.data.VitalRecordData;
@@ -71,12 +75,17 @@ public class ClinicalVisitController {
     @Autowired
     SequenceService sequenceService;
 
+    @Autowired
+    ServicePointService servicePointService;
+
     @PostMapping("/visits")
     @ApiOperation(value = "Submit a new patient visit", response = VisitData.class)
     public @ResponseBody
     ResponseEntity<?> addVisitRecord(@RequestBody @Valid final VisitData visitData) {
         Patient patient = patientService.findPatientOrThrow(visitData.getPatientNumber());
         Department department = departmentService.fetchDepartmentByCode(visitData.getDepartmentCode());
+
+//        ServicePoint servicePoint = servicePointService.getServicePointByType(department.getServicePointType().getServicePointType());
         Visit visit = VisitData.map(visitData);
         //generate visit number
         visit.setVisitNumber(sequenceService.nextNumber(SequenceType.VisitNumber)/*String.valueOf(visitService.generateVisitNumber())*/);
@@ -86,7 +95,7 @@ public class ClinicalVisitController {
         //Push it to queue
 
         PatientQueue patientQueue = new PatientQueue();
-        patientQueue.setDepartment(department);
+        patientQueue.setServicePoint(department.getServicePointType());
         patientQueue.setPatient(patient);
         patientQueue.setStatus(true);
         patientQueue.setVisit(visit);
@@ -168,15 +177,18 @@ public class ClinicalVisitController {
         if (vital.getSendTo().equals("specialist")) {
             Employee employee = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());
             patientQueue.setStaffNumber(employee);
-            patientQueue.setDepartment(employee.getDepartment());
+            patientQueue.setServicePoint(employee.getDepartment().getServicePointType());
             patientQueue.setSpecialNotes("Sent from triage");
+            vitalR.getVisit().setServicePoint(employee.getDepartment().getServicePointType());
         } else if (vital.getSendTo().equals("department")) {
             Department department = departmentService.fetchDepartmentByCode(vital.getDepartmentCode());
-            patientQueue.setDepartment(department);
+            patientQueue.setServicePoint(department.getServicePointType());
             patientQueue.setSpecialNotes("Sent from triage");
+            vitalR.getVisit().setServicePoint(department.getServicePointType());
         } else {
             //patientQueue.setStatus(false);
         }
+        visitService.createAVisit(vitalR.getVisit());
         patientQueueService.createPatientQueue(patientQueue);
         VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
 

@@ -54,9 +54,9 @@ public class ServicePointService {
                 .orElseThrow(() -> APIException.notFound("Service point with id {0} not found", id));
     }
 
-    public ServicePoint getServicePointByType(final Facility facility, final ServicePointType servicePointType) {
+    public ServicePoint getServicePointByType(final ServicePointType servicePointType) {
         return repository
-                .findByFacilityAndServicePointType(facility, servicePointType)
+                .findByServicePointType(servicePointType)
                 .orElseThrow(() -> APIException.notFound("Service point identified by  {0} not found", servicePointType.name()));
     }
 

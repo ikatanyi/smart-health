@@ -53,7 +53,7 @@ public class DepartmentService {
     }
 
     public Department findByServicePointTypeAndfacility(String servicePointType, Facility facility) {
-        return departmentRepository.findByServicePointTypeAndFacility(servicePointType, facility).orElseThrow(() -> APIException.notFound("Department not found.", servicePointType));
+        return departmentRepository.findByServicePointTypeAndFacility(servicePointType, facility).orElseThrow(() -> APIException.notFound("Service point not found.", servicePointType));
     }
 
     public Department findByServicePointTypeAndloggedFacility(String servicePointType) {

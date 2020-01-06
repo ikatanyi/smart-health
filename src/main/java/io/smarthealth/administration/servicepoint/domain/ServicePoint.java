@@ -32,10 +32,9 @@ public class ServicePoint extends Identifiable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_expense_account_id"))
     private AccountEntity expenseAccount;
 
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_facility"))
-    private Facility facility;
-
+//    @ManyToOne
+//    @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_facility"))
+//    private Facility facility;
     private Boolean active;
 
     public ServicePointData toData() {

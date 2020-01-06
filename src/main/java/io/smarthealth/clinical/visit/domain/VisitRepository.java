@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.visit.domain;
 
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.Optional;
@@ -21,6 +22,8 @@ import org.springframework.data.repository.query.Param;
 public interface VisitRepository extends JpaRepository<Visit, Long> {
 
     Page<Visit> findByPatient(final Patient patient, Pageable page);
+
+    Page<Visit> findByServicePoint(final ServicePoint servicePoint, Pageable page);
 
     Optional<Visit> findByVisitNumber(String visitNumber);
 
