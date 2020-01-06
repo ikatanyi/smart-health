@@ -5,6 +5,7 @@
  */
 package io.smarthealth.debtor.scheme.api;
 
+import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.data.InsuranceSchemeData;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,6 +79,13 @@ public class SchemeController {
         pagers.setPageDetails(details);
 
         return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/scheme/{id}")
+    public ResponseEntity<?> fetchSchemeById(@PathVariable("id") final Long schemeId) {
+        InsuranceSchemeData schemeData = InsuranceSchemeData.map(schemeService.fetchSchemeById(schemeId));
+
+        return ResponseEntity.ok(schemeData);
     }
 
 }

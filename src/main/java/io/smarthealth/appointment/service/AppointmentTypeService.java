@@ -24,6 +24,7 @@ public class AppointmentTypeService {
     @Autowired
     AppointmentTypeRepository appointmentTypeRepository;
 
+    
     @Transactional
     public AppointmentType createAppointmentType(AppointmentType appointmentType) {
         return appointmentTypeRepository.saveAndFlush(appointmentType);

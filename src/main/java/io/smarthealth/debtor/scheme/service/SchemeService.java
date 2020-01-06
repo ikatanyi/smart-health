@@ -7,6 +7,7 @@ package io.smarthealth.debtor.scheme.service;
 
 import io.smarthealth.debtor.scheme.domain.InsuranceScheme;
 import io.smarthealth.debtor.scheme.domain.InsuranceSchemeRepository;
+import io.smarthealth.infrastructure.exception.APIException;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,5 +31,9 @@ public class SchemeService {
 
     public Page<InsuranceScheme> fetchSchemes(Pageable p) {
         return insuranceSchemeRepository.findAll(p);
+    }
+
+    public InsuranceScheme fetchSchemeById(Long id) {
+        return insuranceSchemeRepository.findById(id).orElseThrow(() -> APIException.notFound("Scheme identified by id {0} not available ", id));
     }
 }

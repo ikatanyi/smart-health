@@ -5,6 +5,9 @@
  */
 package io.smarthealth.clinical.visit.service;
 
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -26,10 +29,12 @@ public class VisitService {
 
     private final VisitRepository visitRepository;
     private final PatientRepository patientRepository;
+    private final ServicePointService servicePointService;
 
-    public VisitService(VisitRepository visitRepository, PatientRepository patientRepository) {
+    public VisitService(VisitRepository visitRepository, PatientRepository patientRepository, ServicePointService servicePointService) {
         this.visitRepository = visitRepository;
         this.patientRepository = patientRepository;
+        this.servicePointService = servicePointService;
     }
 
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
@@ -46,7 +51,7 @@ public class VisitService {
     @Transactional
     public Visit createAVisit(final Visit visit) {
         try {
-            return visitRepository.saveAndFlush(visit);
+            return visitRepository.save(visit);
         } catch (Exception e) {
             e.printStackTrace();
             throw APIException.internalError("There was an error creating visit", e.getMessage());
@@ -74,6 +79,10 @@ public class VisitService {
 
     public Page<Visit> findVisitByStatus(final VisitEnum.Status status, Pageable pageable) {
         return visitRepository.findByStatus(status, pageable);
+    }
+
+    public Page<Visit> findVisitByServicePoint(final ServicePoint servicePoint, Pageable pageable) {
+        return visitRepository.findByServicePoint(servicePoint, pageable);
     }
 
     public Visit findVisitEntityOrThrow(String visitNumber) {

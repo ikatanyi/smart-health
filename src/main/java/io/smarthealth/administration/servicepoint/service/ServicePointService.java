@@ -3,6 +3,7 @@ package io.smarthealth.administration.servicepoint.service;
 import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.accounting.acc.service.AccountService;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
+import io.smarthealth.organization.facility.domain.Facility;
 
 /**
  *
@@ -32,13 +34,13 @@ public class ServicePointService {
         point.setDescription(data.getDescription());
         point.setName(data.getName());
         point.setServicePointType(data.getServicePointType());
-        if(data.getExpenseAccount()!=null && data.getExpenseAccount().getAccountNumber()!=null){
-            AccountEntity acc =accountService.findOneWithNotFoundDetection(data.getExpenseAccount().getAccountNumber());
+        if (data.getExpenseAccount() != null && data.getExpenseAccount().getAccountNumber() != null) {
+            AccountEntity acc = accountService.findOneWithNotFoundDetection(data.getExpenseAccount().getAccountNumber());
             point.setExpenseAccount(acc);
         }
-        
-         if(data.getIncomeAccount()!=null && data.getIncomeAccount().getAccountNumber()!=null){
-            AccountEntity acc =accountService.findOneWithNotFoundDetection(data.getIncomeAccount().getAccountNumber());
+
+        if (data.getIncomeAccount() != null && data.getIncomeAccount().getAccountNumber() != null) {
+            AccountEntity acc = accountService.findOneWithNotFoundDetection(data.getIncomeAccount().getAccountNumber());
             point.setIncomeAccount(acc);
         }
 
@@ -50,6 +52,12 @@ public class ServicePointService {
         return repository
                 .findById(id)
                 .orElseThrow(() -> APIException.notFound("Service point with id {0} not found", id));
+    }
+
+    public ServicePoint getServicePointByType(final ServicePointType servicePointType) {
+        return repository
+                .findByServicePointType(servicePointType)
+                .orElseThrow(() -> APIException.notFound("Service point identified by  {0} not found", servicePointType.name()));
     }
 
     public Page<ServicePointData> listServicePoints(Pageable page) {

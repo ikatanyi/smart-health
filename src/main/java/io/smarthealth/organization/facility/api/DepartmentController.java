@@ -141,7 +141,7 @@ public class DepartmentController {
     }
 
     private DepartmentData convertToDeptData(Department department) {
-        DepartmentData d = /*new DepartmentData();*/ modelMapper.map(department, DepartmentData.class);
+        DepartmentData d = modelMapper.map(department, DepartmentData.class);
         d.setFacilityId(department.getFacility().getId());
         d.setFacilityName(department.getFacility().getFacilityName());
         if (department.getParent() != null) {

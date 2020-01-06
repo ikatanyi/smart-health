@@ -5,6 +5,8 @@
  */
 package io.smarthealth.clinical.queue.service;
 
+import io.smarthealth.administration.servicepoint.data.ServicePointData;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.domain.PatientQueueRepository;
@@ -46,8 +48,8 @@ public class PatientQueueService {
 //        }
     }
 
-    public Page<PatientQueue> fetchQueueByDept(final Department department, final boolean status, Pageable pageable) {
-        return patientQueueRepository.findByDepartmentAndStatus(department, status, pageable);
+    public Page<PatientQueue> fetchQueueByDept(final ServicePoint servicePoint, final boolean status, Pageable pageable) {
+        return patientQueueRepository.findByServicePointAndStatus(servicePoint, status, pageable);
     }
 
     public Page<PatientQueue> fetchQueueByPatient(Patient patient, Pageable pageable) {
@@ -66,8 +68,8 @@ public class PatientQueueService {
         return patientQueueRepository.findAll(pageable);
     }
 
-    public boolean patientIsQueued(final Department department, final Patient patient) {
-        return patientQueueRepository.findByPatientAndDepartmentAndStatus(patient, department, true).isPresent();
+    public boolean patientIsQueued(final ServicePoint servicePoint, final Patient patient) {
+        return patientQueueRepository.findByPatientAndServicePointAndStatus(patient, servicePoint, true).isPresent();
 //        Optional<PatientQueue> patientQueue = patientQueueRepository.findByPatientAndDepartmentAndStatus(patient, department, true);
 //        if (patientQueue.isPresent()) {
 //            return true;
@@ -81,8 +83,7 @@ public class PatientQueueService {
         patientQueueData.setVisitNumber(patientQueue.getVisit().getVisitNumber());
         patientQueueData.setVisitData(VisitData.map(patientQueue.getVisit()));
         patientQueueData.setPatientNumber(patientQueue.getPatient().getPatientNumber());
-        patientQueueData.setDepartmentId(patientQueue.getDepartment().getId().toString());
-        patientQueueData.setDepartmentData(departmentService.convertDepartmentToData(patientQueue.getDepartment()));
+        patientQueueData.setServicePointData(ServicePointData.map(patientQueue.getServicePoint()));
         patientQueueData.setPatientData(patientService.convertToPatientData(patientQueue.getPatient()));
         patientQueueData.setId(patientQueue.getId());
         if (patientQueue.getUrgency() != null) {

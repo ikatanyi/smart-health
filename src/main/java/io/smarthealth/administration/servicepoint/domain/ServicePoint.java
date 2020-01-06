@@ -5,6 +5,7 @@ import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.organization.facility.domain.Facility;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -18,18 +19,22 @@ import lombok.Data;
 public class ServicePoint extends Identifiable {
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ServicePointType servicePointType;
-    
+
     private String name;
     private String description;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_income_account_id"))
     private AccountEntity incomeAccount;
-    
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_expense_account_id"))
     private AccountEntity expenseAccount;
-    
+
+//    @ManyToOne
+//    @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_facility"))
+//    private Facility facility;
     private Boolean active;
 
     public ServicePointData toData() {

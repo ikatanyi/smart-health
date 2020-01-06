@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.queue.domain;
 
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Department;
@@ -45,9 +46,12 @@ public class PatientQueue extends Auditable {
     @Enumerated(EnumType.STRING)
     private QueueUrgency urgency;
 
+//    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+//    @JoinColumn(name = "department_id", foreignKey = @ForeignKey(name = "fk_que_dept_id"))
+//    private Department department;
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "department_id", foreignKey = @ForeignKey(name = "fk_que_dept_id"))
-    private Department department;
+    @JoinColumn(name = "service_point_id", foreignKey = @ForeignKey(name = "fk_que_service_point_id"))
+    private ServicePoint servicePoint;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
