@@ -24,8 +24,7 @@ public class Scheme extends Auditable {
         Inpatient,
         Both
     }
-    @Column(nullable = false)
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Payer payer;
     private String schemeCode;
     private String schemeName;
