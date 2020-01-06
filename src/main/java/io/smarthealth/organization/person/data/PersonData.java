@@ -37,10 +37,10 @@ public class PersonData {
     private LocalDate dateOfBirth;
     @Enumerated(EnumType.STRING)
     @Column(length = 1)
-    private Gender  gender;
+    private Gender gender;
     @Enumerated(EnumType.STRING)
     @Column(length = 25)
-    private MaritalStatus  maritalStatus;
+    private MaritalStatus maritalStatus;
     private List<AddressData> address;
     private List<ContactData> contact;
     private String fullName;
