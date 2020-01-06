@@ -24,11 +24,11 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Api
 @RequestMapping("/api/v1")
-public class CurrencyRestController {
+public class CurrencyController {
 
     private final CurrencyService service;
 
-    public CurrencyRestController(CurrencyService currencyService) {
+    public CurrencyController(CurrencyService currencyService) {
         this.service = currencyService;
     }
 

@@ -50,11 +50,11 @@ public class BillingService {
     private final BllItemRepository billItemRepository;
     private final VisitService visitService;
     private final ItemService itemService;
-  
-    private final SequenceService sequenceService; 
+
+    private final SequenceService sequenceService;
     private final JournalEntryService journalService;
     private final ServicePointService servicePointService;
-     
+
     public Bill createBill(BillData data) {
         //check the validity of the patient visit
         Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
@@ -90,7 +90,7 @@ public class BillingService {
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getAmount());
                     billItem.setDiscount(lineData.getDiscount());
-                    billItem.setBalance(lineData.getAmount()); 
+                    billItem.setBalance(lineData.getAmount());
                     billItem.setServicePoint(lineData.getServicePoint());
                     billItem.setStatus(BillStatus.Draft);
 
@@ -100,11 +100,10 @@ public class BillingService {
         patientbill.addBillItems(lineItems);
 
         Bill savedBill = patientBillRepository.save(patientbill);
-        
+
         journalService.createJournalEntry(toJournal(savedBill));
-        
+
         //trigger stock balance if items is an inventory
-        
 //         journalSender.postJournal(toJournal(savedBill)); 
         return savedBill;
     }
@@ -117,10 +116,14 @@ public class BillingService {
         return patientBillRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bill with Id {0} not found", id));
     }
-    
-     public BillItem findBillItemById(Long id) {
+
+    public BillItem findBillItemById(Long id) {
         return billItemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bill Item with Id {0} not found", id));
+    }
+
+    public BillItem updateBillItem(BillItem item) {
+        return billItemRepository.save(item);
     }
 
     public String addPatientBillItems(Long id, List<BillItemData> billItems) {
@@ -196,11 +199,10 @@ public class BillingService {
 //        //do a stock movement for the inventory at this point
 //
 //    }
-
     private JournalEntry toJournal(Bill bill) {
-         
+
         final String roundedAmount = BigDecimal.valueOf(6500D).setScale(2, BigDecimal.ROUND_HALF_EVEN).toString();
-        
+
         final JournalEntry je = new JournalEntry();
         je.setTransactionIdentifier(RandomStringUtils.randomAlphanumeric(32));
         je.setTransactionDate(LocalDateTime.now());
@@ -208,19 +210,17 @@ public class BillingService {
         je.setTransactionType("INTR");
         je.setClerk(SecurityUtils.getCurrentUserLogin().get());
         je.setNote(bill.getBillNumber());
-        
-       if(!bill.getBillItems().isEmpty()){
-           
-           //need to determine
-          bill.getBillItems()
-                  .stream()
-                  .forEach(item -> {
-                      
-                      
-                  });
-           
-       }
-        
+
+        if (!bill.getBillItems().isEmpty()) {
+
+            //need to determine
+            bill.getBillItems()
+                    .stream()
+                    .forEach(item -> {
+
+                    });
+
+        }
 
         final Debtor cashDebtor = new Debtor();
         cashDebtor.setAccountNumber("account to debit");
@@ -234,11 +234,10 @@ public class BillingService {
 
         return je;
     }
-    
-    
-    public JournalEntry createJournalEntry(Bill bill){
+
+    public JournalEntry createJournalEntry(Bill bill) {
         final String roundedAmount = BigDecimal.valueOf(6500D).setScale(2, BigDecimal.ROUND_HALF_EVEN).toString();
-        
+
         final JournalEntry cashToAccrueJournalEntry = new JournalEntry();
         cashToAccrueJournalEntry.setTransactionIdentifier(RandomStringUtils.randomAlphanumeric(32));
         cashToAccrueJournalEntry.setTransactionDate(LocalDateTime.now());
@@ -259,12 +258,12 @@ public class BillingService {
 
         return cashToAccrueJournalEntry;
     }
-    
+
     //posting rules
     /*
     // Service point have Income and Expense accounts
     // Receipting Point/ Cash Drawer  has Income and Expenses
    I can use this determine the posting rules
     
-    */
+     */
 }

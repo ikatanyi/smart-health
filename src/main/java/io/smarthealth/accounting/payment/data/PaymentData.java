@@ -13,9 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentData {
+
     private Long id;
-    
-private String method;
+
+    private String method;
 
     private Double amount;
 
@@ -24,16 +25,15 @@ private String method;
     private String type;
 
     private String currency;
-     
-    
-    public static PaymentData map(Payment payment){
-       return  new PaymentData(
-               payment.getId(), 
-               payment.getMethod(), 
-               payment.getAmount(), 
-               payment.getReferenceCode(), 
-               payment.getType(), 
-               payment.getCurrency()
-       );
+
+    public static PaymentData map(Payment payment) {
+        return new PaymentData(
+                payment.getId(),
+                payment.getMethod(),
+                payment.getAmount(),
+                payment.getReferenceCode(),
+                payment.getType(),
+                payment.getCurrency()
+        );
     }
 }
