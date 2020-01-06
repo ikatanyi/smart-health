@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.acc.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 @Entity
@@ -18,8 +20,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(exclude={"debtors", "creditors"}, callSuper = false)
 public class JournalEntryEntity extends Auditable {
 
+    @DateTimeFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate dateBucket;
     private String transactionIdentifier;
+    @DateTimeFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime transactionDate;
     private String transactionType;
     private String clerk;

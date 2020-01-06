@@ -1,6 +1,6 @@
 package io.smarthealth.clinical.lab.service;
 
-import io.smarthealth.billing.service.BillingService;
+import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.ContainerData;
 import io.smarthealth.clinical.lab.data.DisciplineData;

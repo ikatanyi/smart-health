@@ -6,7 +6,7 @@
 package io.smarthealth.clinical.procedure.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.smarthealth.billing.data.BillData;
+import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureRegister;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.infrastructure.lang.DateConverter;

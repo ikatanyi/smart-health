@@ -1,19 +1,26 @@
 package io.smarthealth.accounting.payment.service;
 
-import io.smarthealth.accounting.payment.data.TransactionData;
-import io.smarthealth.accounting.payment.domain.Transaction;
-import io.smarthealth.accounting.payment.domain.TransactionRepository;
-import io.smarthealth.accounting.payment.domain.TranxType;
+import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.accounting.acc.service.AccountService;
+import io.smarthealth.accounting.payment.data.PaymentData;
+import io.smarthealth.accounting.payment.data.FinancialTransactionData;
+import io.smarthealth.accounting.payment.domain.Payment;
+import io.smarthealth.accounting.payment.domain.FinancialTransaction;
+import io.smarthealth.accounting.payment.domain.enumeration.TrxType;
 import io.smarthealth.accounting.payment.domain.specification.PaymentSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import io.smarthealth.accounting.payment.domain.FinancialTransactionRepository;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -23,46 +30,66 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PaymentService {
 
-    private final TransactionRepository transactionRepository;
+    private final FinancialTransactionRepository transactionRepository;
+    private final AccountService accountService;
 
-    public PaymentService(TransactionRepository transactionRepository) {
+    public PaymentService(FinancialTransactionRepository transactionRepository, AccountService accountService) {
         this.transactionRepository = transactionRepository;
+        this.accountService = accountService;
     }
-
+ 
     @Transactional
-    public TransactionData createTransaction(TransactionData transactionData) {
-        Transaction transaction = new Transaction();
-        transaction.setPayer(transactionData.getPayer());
-        transaction.setInvoice(transactionData.getInvoice());
-        transaction.setReceiptNo(UUID.randomUUID().toString());
-        transaction.setCreditNote(transactionData.getCreditNote());
+    public FinancialTransactionData createTransaction(FinancialTransactionData transactionData) {
+        //TODO determine the users session and get the shift id from
+        
+        FinancialTransaction transaction = new FinancialTransaction();
         transaction.setDate(transactionData.getDate());
-        transaction.setType(transactionData.getType());
-        transaction.setMethod(transactionData.getMethod());
-        transaction.setStatus(transactionData.getStatus());
-        transaction.setCurrency(transactionData.getCurrency());
-        transaction.setAmount(transactionData.getAmount());
-        transaction.setNotes(transactionData.getNotes());
+        transaction.setTrxType(transactionData.getTrxType());
+        transaction.setReceiptNo(transactionData.getReceiptNo());
         transaction.setShiftNo("0000");
+        transaction.setTransactionId(UUID.randomUUID().toString());
+        transaction.setInvoice(transactionData.getInvoice()); 
+        
+        AccountEntity acc=accountService.findOneWithNotFoundDetection(transactionData.getAccount());
+        transaction.setAccount(acc);
+        
+        if (!transactionData.getPayment().isEmpty()) {
+            List<Payment> paylist = transactionData.getPayment()
+                    .stream()
+                    .map(p -> createPayment(p))
+                    .collect(Collectors.toList());
+            transaction.addPayments(paylist);
+        }
 
-        Transaction trans = transactionRepository.save(transaction);
+       
+        FinancialTransaction trans = transactionRepository.save(transaction);
 
-        return TransactionData.map(trans);
+        return FinancialTransactionData.map(trans);
 
     }
 
-    public TransactionData updatePayment(final Long id, TransactionData data) {
-        Transaction trans = findTransactionOrThrowException(id);
+    private Payment createPayment(PaymentData data) {
+        Payment pay = new Payment();
+        pay.setAmount(data.getAmount());
+        pay.setMethod(data.getMethod());
+        pay.setCurrency(data.getCurrency());
+        pay.setReferenceCode(data.getReferenceCode());
+        pay.setType(data.getType());
+        return pay;
+    }
+
+    public FinancialTransactionData updatePayment(final Long id, FinancialTransactionData data) {
+        FinancialTransaction trans = findTransactionOrThrowException(id);
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public Optional<Transaction> findById(final Long id) {
+    public Optional<FinancialTransaction> findById(final Long id) {
         return transactionRepository.findById(id);
     }
 
-    public Page<Transaction> fetchTransactions(String customer, String invoice, String receipt, Pageable pageable) {
-        Specification<Transaction> spec = PaymentSpecification.createSpecification(customer, invoice, receipt);
-        Page<Transaction> transactions = transactionRepository.findAll(spec, pageable);
+    public Page<FinancialTransaction> fetchTransactions(String customer, String invoice, String receipt, Pageable pageable) {
+        Specification<FinancialTransaction> spec = PaymentSpecification.createSpecification(customer, invoice, receipt);
+        Page<FinancialTransaction> transactions = transactionRepository.findAll(spec, pageable);
         return transactions;
     }
 
@@ -74,29 +101,29 @@ public class PaymentService {
     }
 
     @Transactional
-    public TransactionData refund(Long id, Double amount) {
-        Transaction trans = findTransactionOrThrowException(id);
+    public FinancialTransactionData refund(Long id, Double amount) {
+        
+        FinancialTransaction trans = findTransactionOrThrowException(id);
         if (amount > trans.getAmount()) {
             throw APIException.badRequest("Refund amount is more than the receipt amount");
         }
-        Transaction toSave = new Transaction();
-        toSave.setType(TranxType.refund);
-        toSave.setStatus("succeeded");
-        toSave.setReceiptNo(UUID.randomUUID().toString());
-        toSave.setParentTransaction(trans);
-        toSave.setInvoice(trans.getInvoice());
-        toSave.setCurrency(trans.getCurrency());
-        toSave.setPayer(trans.getPayer());
-        toSave.setCreditNote(trans.getCreditNote());
-        toSave.setAmount(amount);
+        
+        FinancialTransaction toSave = new FinancialTransaction();
+        toSave.setDate(LocalDateTime.now());
+        toSave.setTrxType(TrxType.refund);
+        toSave.setReceiptNo(trans.getReceiptNo());
         toSave.setShiftNo("0000");
-
-        Transaction trns = transactionRepository.save(toSave);
-        return TransactionData.map(trns);
+        toSave.setTransactionId(UUID.randomUUID().toString());
+        toSave.setInvoice(trans.getInvoice()); 
+        toSave.setAccount(trans.getAccount());
+        toSave.setAmount(amount);
+        
+        FinancialTransaction trns = transactionRepository.save(toSave);
+        return FinancialTransactionData.map(trns);
 
     }
 
-    public Transaction findTransactionOrThrowException(Long id) {
+    public FinancialTransaction findTransactionOrThrowException(Long id) {
         return findById(id)
                 .orElseThrow(() -> APIException.notFound("Transaction with id {0} not found.", id));
     }

@@ -5,13 +5,16 @@
  */
 package io.smarthealth.auth.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.auth.validator.ValidPassword;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  *
@@ -24,8 +27,10 @@ public class UserData implements Serializable {
     private Long id;
     private String uuid;
     private String email;
-    private String username; 
+    private String username;
     @ValidPassword
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ToString.Exclude
     private String password;
     private String name;
     private boolean enabled;
@@ -33,7 +38,7 @@ public class UserData implements Serializable {
     private boolean account_expired;
     private boolean credentials_expired;
     private boolean verified;
-     private LocalDateTime lastLogin;
+    private LocalDateTime lastLogin;
     private List<String> roles = new ArrayList<>();
- 
+
 }

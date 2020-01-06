@@ -36,3 +36,6 @@ build/
 /src/main/java/io/smarthealth/financial/account/domain/definations
 /src/main/java/io/smarthealth/accounting/account/accounting
 /nbactions.xml
+/src/main/resources/db/migration/tenants/
+/src/main/resources/db/migration/default/
+/src/main/resources/db/migration/data.sql

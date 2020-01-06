@@ -1,5 +1,8 @@
 package io.smarthealth.accounting.invoice.domain;
 
+import io.smarthealth.accounting.billing.domain.Bill;
+import io.smarthealth.accounting.payment.domain.PaymentTerms;
+import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,57 +12,68 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;   
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  *
  * @author Kelsas
- */ 
+ */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Entity 
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "invoices")
 public class Invoice extends Auditable {
-    
-    private String payer;
-    private String number;
-    private String name = "Invoice"; //for internam use
+ 
+    @ManyToOne
+      @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payer_id"))
+    private Payer payer;
+     
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_bill_id"))
+    private Bill bill;
+    @Column(name = "invoice_date")
+    private LocalDate date;
+    private LocalDate dueDate;
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payment_terms_id"))
+    private PaymentTerms terms; // 'Net 30'
+    private String number;  //invoice number
+
     private String currency;
     private Boolean draft; // Outstanding true or false 
     private Boolean closed; // bad debt or not
     private Boolean paid; // fully paid or not
-    
-    @Enumerated(EnumType.STRING)
-    private InvoiceStatus status; //tracking status for the invoice
-
-    @Column(name = "invoice_date")
-    private LocalDate date;
-    private LocalDate dueDate;
-    private String paymentTerms; // 'Net 30'
-    
-    @OneToMany(mappedBy = "invoice",cascade = CascadeType.ALL)
-    private List<LineItem> items=new ArrayList<>();
-    private String notes; // additional notes displayed on invoice
     private Double subtotal;
-//    private List<Discount> disounts;
-//    private List<Tax> taxes;
+    private Double disounts;
+    private Double taxes;
     private Double total;
     private Double balance;
+    private String notes; // additional notes displayed on invoice
 
+    @Enumerated(EnumType.STRING)
+    private InvoiceStatus status; //tracking status for the invoice
+ 
+       @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
+    private List<InvoiceLineItem> items = new ArrayList<>();
+    
 //    @ManyToOne
 //    private Address shipTo; // include the supplier address here
     // Inoivce
-    
-      public void addItem(LineItem item) {
+    public void addItem(InvoiceLineItem item) {
         item.setInvoice(this);
         items.add(item);
     }
 
-    public void addItems(List<LineItem> items) {
-        this.items=items;
+    public void addItems(List<InvoiceLineItem> items) {
+        this.items = items;
         this.items.forEach(x -> x.setInvoice(this));
     }
 }

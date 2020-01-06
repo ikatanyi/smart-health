@@ -199,8 +199,7 @@ public class UserController {
                 roles.add(role.getName());
             });
             userData.setRoles(roles);
-        }
-        userData.setPassword("**************");
+        } 
         return userData;
     }
 

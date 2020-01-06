@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,15 +24,12 @@ public class JournalRestControllers {
     private final JournalEntryService journalEntryService;
     private final AccountService accountService;
 
-    @Autowired
-    public JournalRestControllers(
-            final JournalEntryService journalEntryService,
-            final AccountService accountService) {
-        super();
+    public JournalRestControllers(JournalEntryService journalEntryService, AccountService accountService) {
         this.journalEntryService = journalEntryService;
         this.accountService = accountService;
     }
-
+   
+ 
     @PostMapping
     @ResponseBody
     ResponseEntity<?> createJournalEntry(@RequestBody @Valid final JournalEntry journalEntry) {
@@ -82,6 +78,8 @@ public class JournalRestControllers {
         }
 
 //    this.commandGateway.process(new CreateJournalEntryCommand(journalEntry));
+       
+        
         JournalEntry result = journalEntryService.createJournalEntry(journalEntry);
 
         Pager<JournalEntry> pagers = new Pager();

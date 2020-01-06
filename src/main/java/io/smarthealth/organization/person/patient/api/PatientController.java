@@ -1,6 +1,6 @@
 package io.smarthealth.organization.person.patient.api;
 
-import io.smarthealth.infrastructure.common.APIResponse;
+import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
@@ -91,7 +91,7 @@ public class PatientController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
 
-        return ResponseEntity.created(location).body(APIResponse.successMessage("Patient successfuly created", HttpStatus.CREATED, savedpatientData));
+        return ResponseEntity.created(location).body(ApiResponse.successMessage("Patient successfuly created", HttpStatus.CREATED, savedpatientData));
     }
 
     @GetMapping("/patients/{id}")
@@ -264,7 +264,7 @@ public class PatientController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patient_identification_type/{id}")
                 .buildAndExpand(patientIdtype.getId()).toUri();
 
-        return ResponseEntity.created(location).body(APIResponse.successMessage("Identity type was successfully created", HttpStatus.CREATED, patientIdtype));
+        return ResponseEntity.created(location).body(ApiResponse.successMessage("Identity type was successfully created", HttpStatus.CREATED, patientIdtype));
     }
 
     /*

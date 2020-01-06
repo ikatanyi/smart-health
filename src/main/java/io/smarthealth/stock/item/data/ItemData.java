@@ -48,6 +48,7 @@ public class ItemData {
         itemsdata.setItemId(item.getId());
         itemsdata.setSku(item.getItemCode());
         itemsdata.setItemCategory(item.getCategory());
+//        itemsdata.setAvailableStock(item.getAvailableStock()); 
         if(item.getUom()!=null){
             itemsdata.setUnit(item.getUom().getName());
             itemsdata.setUomId(item.getId());

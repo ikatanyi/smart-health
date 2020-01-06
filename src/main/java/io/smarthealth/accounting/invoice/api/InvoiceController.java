@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.invoice.api;
 
+import io.smarthealth.accounting.invoice.data.CreateInvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.service.InvoiceService; 
@@ -31,7 +32,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/invoices")
-    public ResponseEntity<?> createInvoice(@Valid @RequestBody InvoiceData invoiceData) {
+    public ResponseEntity<?> createInvoice(@Valid @RequestBody CreateInvoiceData invoiceData) {
 
         InvoiceData trans = service.createInvoice(invoiceData);
 

@@ -11,7 +11,7 @@ import io.smarthealth.appointment.domain.Appointment;
 import io.smarthealth.appointment.domain.AppointmentType;
 import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.appointment.service.AppointmentTypeService;
-import io.smarthealth.infrastructure.common.APIResponse;
+import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -66,7 +66,7 @@ public class AppointmentController {
                 .buildAndExpand(appointmentType.getId()).toUri();
 
         //return ResponseEntity.created(location).body(savedAppointmentTypeData);
-        return ResponseEntity.created(location).body(APIResponse.successMessage("Appointment type was successfully created", HttpStatus.CREATED, savedAppointmentTypeData));
+        return ResponseEntity.created(location).body(ApiResponse.successMessage("Appointment type was successfully created", HttpStatus.CREATED, savedAppointmentTypeData));
     }
 
     @PostMapping("/appointment")
@@ -82,7 +82,7 @@ public class AppointmentController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/appointment/{no}")
                 .buildAndExpand(appointment.getAppointmentNo()).toUri();
 
-        return ResponseEntity.created(location).body(APIResponse.successMessage("Appointment was successfully created", HttpStatus.CREATED, savedAppointmentData));
+        return ResponseEntity.created(location).body(ApiResponse.successMessage("Appointment was successfully created", HttpStatus.CREATED, savedAppointmentData));
     }
 
     @GetMapping("/employee/{no}/appointment")
@@ -150,10 +150,10 @@ public class AppointmentController {
 //    }
     @DeleteMapping("/appointmentTypes/{id}")
     public @ResponseBody
-    ResponseEntity<APIResponse> deleteAppointmentType(@PathVariable("id") final Long appId) {
+    ResponseEntity<ApiResponse> deleteAppointmentType(@PathVariable("id") final Long appId) {
         try {
             this.appointmentTypeService.removeAppointmentTypeById(appId);
-            return ResponseEntity.accepted().body(APIResponse.successMessage("Appointment type was successfully deleted", HttpStatus.ACCEPTED, null));
+            return ResponseEntity.accepted().body(ApiResponse.successMessage("Appointment type was successfully deleted", HttpStatus.ACCEPTED, null));
         } catch (Exception ex) {
             Logger.getLogger(AppointmentController.class.getName()).log(Level.SEVERE, null, ex);
             throw APIException.internalError("Error occured when deleting appointment type identifed by " + appId, ex.getMessage());

@@ -13,8 +13,7 @@ public class PaymentMethodData {
     private Long id;
     private String name;
     private String description;
-    private Boolean isCashPayment;
-    private Long position;
+    private Boolean isCashPayment; 
     private Boolean active;
 
     public static PaymentMethodData map(PaymentMethod paymode) {
@@ -23,8 +22,7 @@ public class PaymentMethodData {
         data.setActive(paymode.getActive());
         data.setName(paymode.getName());
         data.setDescription(paymode.getDescription());
-        data.setIsCashPayment(paymode.getIsCashPayment());
-        data.setPosition(paymode.getPosition());
+        data.setIsCashPayment(paymode.getIsCashPayment()); 
         return data;
     }
 

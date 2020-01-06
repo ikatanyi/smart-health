@@ -1,5 +1,6 @@
 package io.smarthealth.auth.domain;
-
+ 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -22,8 +23,8 @@ public class User extends Identifiable implements UserDetails {
 
     private static final long serialVersionUID = 1L;
     private String email;
-    @Column(nullable = false, unique = true)
     private String username;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String name;
     private boolean enabled;
@@ -46,8 +47,7 @@ public class User extends Identifiable implements UserDetails {
             joinColumns = {
                 @JoinColumn(name = "user_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_auth_user_user_id"))},
             inverseJoinColumns = {
-                @JoinColumn(name = "role_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_auth_user_roles_id"))}, uniqueConstraints = {
-                @UniqueConstraint(name = "USER_ROLE_UK_auth_role_user", columnNames = {"user_id", "role_id"})})
+                @JoinColumn(name = "role_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_auth_user_roles_id"))})
     private List<Role> roles;
 
     public User() {

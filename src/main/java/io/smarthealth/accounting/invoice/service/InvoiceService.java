@@ -1,16 +1,19 @@
 package io.smarthealth.accounting.invoice.service;
 
+import io.smarthealth.accounting.billing.domain.BillItem;
+import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.invoice.data.CreateInvoiceData;
+import io.smarthealth.accounting.invoice.data.CreateInvoiceItemData;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
-import io.smarthealth.accounting.invoice.data.LineItemData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
-import io.smarthealth.accounting.invoice.domain.LineItem;
+import io.smarthealth.accounting.invoice.domain.InvoiceLineItem;
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.util.List;
 import java.util.Optional; 
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,57 +31,48 @@ import org.springframework.transaction.annotation.Transactional;
 public class InvoiceService {
      private final InvoiceRepository invoiceRepository;
      private final ItemService itemService;
+     private final BillingService billingService;
 
-    public InvoiceService(InvoiceRepository invoiceRepository, ItemService itemService) {
+    public InvoiceService(InvoiceRepository invoiceRepository, ItemService itemService, BillingService billingService) {
         this.invoiceRepository = invoiceRepository;
         this.itemService = itemService;
+        this.billingService = billingService;
     }
- 
 
+   
     @Transactional
-    public InvoiceData createInvoice(InvoiceData invoiceData) {
-         Invoice data=new Invoice();
-        data.setPayer(invoiceData.getPayer());
-        data.setNumber(invoiceData.getNumber());
-        data.setName(invoiceData.getName());
-        data.setCurrency(invoiceData.getCurrency());
-        data.setDraft(invoiceData.getDraft());
-        data.setClosed(invoiceData.getClosed());
-        data.setPaid(invoiceData.getPaid());
-        data.setStatus(invoiceData.getStatus());
-        data.setDate(invoiceData.getDate());
-        data.setDueDate(invoiceData.getDueDate());
-        data.setPaymentTerms(invoiceData.getPaymentTerms());
-        data.setNotes(invoiceData.getNotes());
-        data.setSubtotal(invoiceData.getSubtotal());
-        data.setTotal(invoiceData.getTotal());
-        data.setBalance(invoiceData.getBalance());
-        
+    public InvoiceData createInvoice(CreateInvoiceData invoiceData) {
+         
+        final String trxId=UUID.randomUUID().toString();
+         
+        Invoice invoice=new Invoice(); 
+         invoice.setDate(invoiceData.getDate());
+         invoice.setNotes(invoice.getNotes());
+         invoice.setSubtotal(invoiceData.getSubTotal());
+         invoice.setDisounts(invoiceData.getDiscount());
+         invoice.setTaxes(invoiceData.getTaxes());
+         invoice.setTotal(invoiceData.getTotal());
+          
         if(!invoiceData.getItems().isEmpty()){
-                 List<LineItem> items=  invoiceData.getItems()
+                 List<InvoiceLineItem> items=  invoiceData.getItems()
                     .stream()
-                    .map(inv -> createItem(inv))
+                    .map(inv -> createItem(trxId,inv))
                     .collect(Collectors.toList());
                  
-                 data.addItems(items);
+                 invoice.addItems(items);
         }
-       Invoice inv=invoiceRepository.save(data);
+        //
+       Invoice inv=invoiceRepository.save(invoice);
+       
        return InvoiceData.map(inv);
                
     }
-    private LineItem createItem(LineItemData lineItemData){
-         LineItem lineItem = new LineItem();
-        lineItem.setId(lineItemData.getId());
-        if (lineItemData.getItem() != null) {
-            Item item=itemService.findItemEntityOrThrow(lineItemData.getId());
-            lineItem.setItem(item);
-        }
-        lineItem.setType(lineItemData.getType());
-        lineItem.setDescription(lineItemData.getDescription());
-        lineItem.setQuantity(lineItemData.getQuantity());
-        lineItem.setUnitCost(lineItemData.getUnitCost());
-        lineItem.setAmount(lineItemData.getAmount());
-        
+    private InvoiceLineItem createItem(String trxId, CreateInvoiceItemData data){
+         InvoiceLineItem lineItem = new InvoiceLineItem(); 
+        BillItem item=billingService.findBillItemById(data.getBillItemId());
+        lineItem.setBillItem(item);
+        lineItem.setDeleted(false);
+        lineItem.setTransactionId(trxId); 
         return lineItem;
     }
 
