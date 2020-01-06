@@ -19,12 +19,12 @@ import org.springframework.stereotype.Service;
  * @author Kelsas
  */
 @Service
-public class CodesService {
+public class CodeService {
 
     private final CodeRepository codeRepository;
     private final CodeValueRepository codeValueRepository;
 
-    public CodesService(CodeRepository codeRepository, CodeValueRepository codeValueRepository) {
+    public CodeService(CodeRepository codeRepository, CodeValueRepository codeValueRepository) {
         this.codeRepository = codeRepository;
         this.codeValueRepository = codeValueRepository;
     }
