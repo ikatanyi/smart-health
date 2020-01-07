@@ -35,6 +35,7 @@ import io.smarthealth.accounting.billing.domain.BillRepository;
 import io.smarthealth.accounting.billing.domain.BllItemRepository;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.infrastructure.utility.UuidGenerator;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -58,7 +59,8 @@ public class BillingService {
     public Bill createBill(BillData data) {
         //check the validity of the patient visit
         Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
-        String billNumber = sequenceService.nextNumber(SequenceType.BillNumber);
+        String billNumber =RandomStringUtils.randomNumeric(6); //sequenceService.nextNumber(SequenceType.BillNumber);
+        String trdId=UuidGenerator.newUuid();
 
         Bill patientbill = new Bill();
         patientbill.setVisit(visit);
@@ -70,7 +72,7 @@ public class BillingService {
         patientbill.setBillingDate(data.getBillingDate());
         patientbill.setJournalNumber(data.getJournalNumber());
         patientbill.setPaymentMode(data.getPaymentMode());
-        patientbill.setTransactionId(data.getTransactionId());
+        patientbill.setTransactionId(trdId);
         patientbill.setStatus(BillStatus.Draft);
 
         List<BillItem> lineItems = data.getBillItems()
@@ -79,7 +81,7 @@ public class BillingService {
                     BillItem billItem = new BillItem();
 
                     billItem.setBillingDate(lineData.getBillingDate());
-                    billItem.setTransactionId(lineData.getTransactionId());
+                    billItem.setTransactionId(trdId);
 
                     if (lineData.getItemId() != null) {
                         Item item = itemService.findItemEntityOrThrow(lineData.getItemId());
@@ -106,6 +108,10 @@ public class BillingService {
         //trigger stock balance if items is an inventory
 //         journalSender.postJournal(toJournal(savedBill)); 
         return savedBill;
+    }
+    
+    public Bill save(Bill bill){
+        return patientBillRepository.save(bill);
     }
 
     public Optional<Bill> findByBillNumber(final String billNumber) {

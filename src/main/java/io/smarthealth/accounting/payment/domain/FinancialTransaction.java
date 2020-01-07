@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -57,7 +58,7 @@ public class FinancialTransaction extends Auditable {
     @JoinColumn(name = "parent_transaction", foreignKey = @ForeignKey(name = "fk_payment_trx_parent_trx_id"))
     private FinancialTransaction parentTransaction;
     
-    @OneToMany(mappedBy = "transaction")
+    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     private List<Payment> payments = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
