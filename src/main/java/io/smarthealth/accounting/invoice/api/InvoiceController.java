@@ -7,6 +7,7 @@ import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.stock.inventory.data.TransData;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -36,10 +37,10 @@ public class InvoiceController {
 
         String trans = service.createInvoice(invoiceData);
 
-        Pager<String> pagers = new Pager();
+        Pager<TransData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Invoice successfully Created.");
-        pagers.setContent("<transaction_id>"+trans+"</transaction_id>");
+        pagers.setContent(new TransData(trans));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }

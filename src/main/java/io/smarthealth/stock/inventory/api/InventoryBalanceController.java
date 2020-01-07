@@ -60,7 +60,7 @@ public class InventoryBalanceController {
     
     @GetMapping("/inventory-balances")
     public ResponseEntity<?> getAllItemsBalance(
-            @RequestParam(value = "store", required = false) final Long store,
+            @RequestParam(value = "store", required = true) final Long store,
             @RequestParam(value = "item", required = false) final Long item,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
@@ -79,7 +79,7 @@ public class InventoryBalanceController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Stock Items Balance");
+        details.setReportName("Stock Inventory Balance");
         pagers.setPageDetails(details);
 
         return ResponseEntity.ok(pagers);

@@ -48,6 +48,15 @@ public class InventoryBalanceService {
         inventoryItemRepository.save(balance);
     }
  
+    public void adjustment(Item item, Store store, double qty) {
+        InventoryBalance balance = inventoryItemRepository
+                .findByItemAndStore(item, store)
+                .orElse(InventoryBalance.create(store, item));
+
+        balance.setAvailableStock(qty);
+        inventoryItemRepository.save(balance);
+    }
+    
     public Page<InventoryBalanceData> getInventoryBalance(Long storeId, Long itemId, DateRange range, Pageable pageable) {
         Item item = itemService.findItemEntityOrThrow(itemId);
         Store store = storeService.getStoreWithNoFoundDetection(storeId);

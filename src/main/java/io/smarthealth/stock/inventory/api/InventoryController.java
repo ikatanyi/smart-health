@@ -4,8 +4,10 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.stock.inventory.data.CreateStockEntry;
 import io.smarthealth.stock.inventory.data.InventoryBalanceData;
 import io.smarthealth.stock.inventory.data.StockEntryData;
+import io.smarthealth.stock.inventory.data.TransData;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.service.InventoryService;
 import io.swagger.annotations.Api;
@@ -33,14 +35,14 @@ public class InventoryController {
     private final InventoryService service;
 
     @PostMapping("/inventory-entries")
-    public ResponseEntity<?> createStockEntry(@Valid @RequestBody StockEntryData stocks) {
+    public ResponseEntity<?> createStockEntry(@Valid @RequestBody CreateStockEntry stocks) {
 
-        StockEntry result = service.createStockEntry(stocks);
+        String result = service.createStockEntry(stocks);
 
-        Pager<StockEntryData> pagers = new Pager();
+        Pager<TransData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Stock Movement successful");
-        pagers.setContent(result.toData());
+        pagers.setContent(new TransData(result));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 

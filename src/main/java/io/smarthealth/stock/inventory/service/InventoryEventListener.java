@@ -1,7 +1,7 @@
 package io.smarthealth.stock.inventory.service;
 
-import io.smarthealth.stock.inventory.domain.StockAdjustment;
-import io.smarthealth.stock.inventory.domain.StockEntry;
+import io.smarthealth.stock.inventory.domain.InventoryBalance;
+import io.smarthealth.stock.inventory.events.InventoryEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
@@ -15,21 +15,26 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 public class InventoryEventListener {
-    
+
     private final InventoryBalanceService service;
-    
-     @JmsListener(destination = "stockBalanceQueue", containerFactory = "connectionFactory")
-    public void receive(Object stocks) {
-        if(stocks instanceof StockEntry){
-            StockEntry entry=(StockEntry) stocks;
-            log.info(" >>  Received Stock Entry : " + entry.toString()); 
+
+    @JmsListener(destination = "stockBalanceQueue", containerFactory = "connectionFactory")
+    public void receive(InventoryEvent inventoryEvent) {
+
+        InventoryEvent event = inventoryEvent;
+
+        switch (event.getType()) {
+            case Increase:
+                service.increase(event.getItem(), event.getStore(), event.getQuantity());
+                break;
+            case Decrease:
+                service.decrease(event.getItem(), event.getStore(), event.getQuantity());
+                break;
+            case Adjustment:
+                service.adjustment(event.getItem(), event.getStore(), event.getQuantity());
+            default:
+                log.info("Nothing to calculate balance");
         }
-        if(stocks instanceof  StockAdjustment){
-            StockAdjustment entry=(StockAdjustment) stocks;
-            log.info(" >>  Received Stock Adjustment : " + entry.toString()); 
-        }
-         log.info(" >>  Received Stock Balance Request"); 
     }
-    
-    
+
 }

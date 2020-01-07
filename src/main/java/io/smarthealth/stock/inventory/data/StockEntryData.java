@@ -26,12 +26,11 @@ public class StockEntryData {
     private String itemCode;
     private String item;
 
-    private Double receiving;
-    private Double issuing;
+    private Double quantity;
     private BigDecimal price;
     private BigDecimal amount;
     private String unit;
- 
+
     private String referenceNumber; //ref LPO,supplier, patient no
     private String deliveryNumber; //GRN| transaction reference
     private String transactionNumber; //auto generated ST-2019-00002
@@ -53,10 +52,9 @@ public class StockEntryData {
             data.setItemCode(stock.getItem().getItemCode());
             data.setItem(stock.getItem().getItemName());
         }
-        
+
         data.setUnit(stock.getUnit());
-        data.setReceiving(stock.getReceiving());
-        data.setIssuing(stock.getIssuing());
+        data.setQuantity(stock.getQuantity());
         data.setPrice(stock.getPrice());
         data.setAmount(stock.getAmount());
         data.setReferenceNumber(stock.getReferenceNumber());
