@@ -55,17 +55,24 @@ public class PayerController {
     public ResponseEntity<?> createPayer(@Valid @RequestBody PayerData payerData) {
 
         Payer payer = PayerData.map(payerData);
-        
-        BankBranch bankBranch = adminService.fetchBankBranchById(payerData.getBranchId());
-        AccountEntity debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
-        PaymentTerms paymentTerms = paymentTermsService.getPaymentTermByIdWithFailDetection(payerData.getPaymentTermId());
-        PriceBook priceBook = pricebookService.getPricebookWithNotFoundExeption(payerData.getPayerId());
-        
-        payer.setBankBranch(bankBranch);
-        payer.setDebitAccount(debitAccount);
-        payer.setPaymentTerms(paymentTerms);
-        payer.setPriceBook(priceBook);
-        
+
+        if (payerData.getBranchId() != null) {
+            BankBranch bankBranch = adminService.fetchBankBranchById(payerData.getBranchId());
+            payer.setBankBranch(bankBranch);
+        }
+        if (payerData.getDebitAccountNo() != null) {
+            AccountEntity debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
+            payer.setDebitAccount(debitAccount);
+        }
+        if (payerData.getPaymentTermId() != null) {
+            PaymentTerms paymentTerms = paymentTermsService.getPaymentTermByIdWithFailDetection(payerData.getPaymentTermId());
+            payer.setPaymentTerms(paymentTerms);
+        }
+        if (payerData.getPriceBookId() != null) {
+            PriceBook priceBook = pricebookService.getPricebookWithNotFoundExeption(payerData.getPriceBookId());
+            payer.setPriceBook(priceBook);
+        }
+
         Payer result = payerService.createPayer(payer);
 
         URI location = ServletUriComponentsBuilder
