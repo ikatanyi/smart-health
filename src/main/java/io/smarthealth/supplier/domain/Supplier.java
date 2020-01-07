@@ -56,11 +56,11 @@ public class Supplier extends Auditable {
     private PaymentTerms paymentTerms;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_supplier_address_id"))
     private Address address;
 
     @OneToOne
-    @JoinColumn
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_supplier_contacts_id"))
     private Contact contact;
     
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_supplier_account_id"))

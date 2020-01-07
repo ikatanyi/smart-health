@@ -55,14 +55,17 @@ public class PayerController {
     public ResponseEntity<?> createPayer(@Valid @RequestBody PayerData payerData) {
 
         Payer payer = PayerData.map(payerData);
+        
         BankBranch bankBranch = adminService.fetchBankBranchById(payerData.getBranchId());
         AccountEntity debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
         PaymentTerms paymentTerms = paymentTermsService.getPaymentTermByIdWithFailDetection(payerData.getPaymentTermId());
         PriceBook priceBook = pricebookService.getPricebookWithNotFoundExeption(payerData.getPayerId());
+        
         payer.setBankBranch(bankBranch);
         payer.setDebitAccount(debitAccount);
         payer.setPaymentTerms(paymentTerms);
         payer.setPriceBook(priceBook);
+        
         Payer result = payerService.createPayer(payer);
 
         URI location = ServletUriComponentsBuilder

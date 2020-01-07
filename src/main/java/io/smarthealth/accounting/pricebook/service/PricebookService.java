@@ -82,7 +82,8 @@ public class PricebookService {
     }
 
     public PriceBook getPricebookWithNotFoundExeption(Long id) {
-        return priceBookRepository.findById(id).orElseThrow(() -> APIException.notFound("Price book identified by {0} is not available ", id));
+        return priceBookRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Price book identified by {0} is not available ", id));
     }
 
     public Optional<PriceBook> getPricebookByName(String name) {
