@@ -11,7 +11,7 @@ package io.smarthealth.clinical.radiology.domain;
  */
 
 
-import io.smarthealth.billing.domain.Bill;
+import io.smarthealth.accounting.billing.domain.Bill;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;

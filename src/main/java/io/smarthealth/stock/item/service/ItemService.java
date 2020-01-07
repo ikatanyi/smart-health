@@ -3,6 +3,9 @@ package io.smarthealth.stock.item.service;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.accounting.taxes.domain.TaxRepository;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
+import io.smarthealth.stock.inventory.events.InventoryEvent;
+import io.smarthealth.stock.inventory.service.InventoryEventSender;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.data.ItemData;
 import io.smarthealth.stock.item.data.Uoms; 
@@ -18,9 +21,14 @@ import io.smarthealth.stock.item.domain.specification.ItemSpecification;
 import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
+import java.util.Collection;
 import java.util.List;
-import java.util.Optional; 
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -31,33 +39,22 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Kelsas
  */
-@Slf4j 
-@Service 
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@CacheConfig(cacheNames = {"items"})
 public class ItemService {
 
     private final TaxRepository taxRepository;
     private final ItemRepository itemRepository;
-    private final UomService uomService; 
+    private final UomService uomService;
     private final StoreService storeService;
     private final ReorderRuleRepository reorderRuleRepository;
     private final DrugRepository drugRepository;
-
-    public ItemService(
-            TaxRepository taxRepository,
-            ItemRepository itemRepository,
-            UomService uomService, 
-            StoreService storeService,
-            ReorderRuleRepository reorderRuleRepository,
-            DrugRepository drugRepository) {
-        this.taxRepository = taxRepository;
-        this.itemRepository = itemRepository;
-        this.uomService =uomService; 
-        this.storeService = storeService;
-        this.reorderRuleRepository = reorderRuleRepository;
-        this.drugRepository = drugRepository;
-    }
+    private final InventoryEventSender inventoryEventSender;
 
     @Transactional
+    @CachePut
     public ItemData createItem(CreateItem createItem) {
         Item item = new Item(); 
         item.setActive(Boolean.TRUE);
@@ -81,11 +78,11 @@ public class ItemService {
                 item.setTax(tax.get());
             }
         }
-            System.err.println(item);
-            
+        System.err.println(item);
+
         Item savedItem = itemRepository.save(item);
 
-        if (createItem.getStockCategory()!=null && createItem.getStockCategory().equals("drug")) {
+        if (createItem.getStockCategory() != null && createItem.getStockCategory().equals("drug")) {
             Drug drug = new Drug();
             drug.setItem(savedItem);
             drug.setDrugCategory(createItem.getDrugCategory());
@@ -95,12 +92,17 @@ public class ItemService {
             drugRepository.save(drug);
         }
 
-        if (createItem.getItemType().equals("Inventory") && createItem.getInventoryStore()!=null) { 
+        if (createItem.getItemType().equals("Inventory") && createItem.getInventoryStore() != null) {
             Store store = storeService.getStore(createItem.getInventoryStore())
                     .orElseThrow(() -> APIException.notFound("Store with Identifier {0} not found ", createItem.getInventoryStore()));
 
             if (createItem.getStockBalance() > 0) {
                 log.info("Receiving the initial stock");
+                //determine the stock
+               
+
+                inventoryEventSender.process(new InventoryEvent(InventoryEvent.Type.Increase, store.getId(), item.getId(), createItem.getStockBalance()));
+               // can we record this as receiving initial 
             }
             if (createItem.getReorderLevel() > 0) {
                 ReorderRule rule = new ReorderRule();
@@ -109,6 +111,7 @@ public class ItemService {
                 rule.setReorderLevel(createItem.getReorderLevel());
                 rule.setReorderQty(createItem.getOrderQuantity());
                 reorderRuleRepository.save(rule);
+
             }
         }
 
@@ -123,27 +126,35 @@ public class ItemService {
         return itemRepository.findByItemCode(itemCode);
     }
 
-    public Page<Item> fetchItems(String category,String type, boolean includeClosed, String term, Pageable pageable) {
-        Specification<Item> spec = ItemSpecification.createSpecification(category, type,includeClosed, term);
+    public Page<Item> fetchItems(String category, String type, boolean includeClosed, String term, Pageable pageable) {
+        Specification<Item> spec = ItemSpecification.createSpecification(category, type, includeClosed, term);
         Page<Item> items = itemRepository.findAll(spec, pageable);
         return items;
     }
-    
+
     public Item findItemEntityOrThrow(Long id) {
         return this.itemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Item id {0} not found.", id));
     }
-     public Item findItemWithNoFoundDetection(String code) {
+
+    public Item findItemWithNoFoundDetection(String code) {
         return this.itemRepository.findByItemCode(code)
                 .orElseThrow(() -> APIException.notFound("Item id {0} not found.", code));
     }
+
+    @Transactional(readOnly = true)
+    @Cacheable
+    public Collection<Item> findAll() {
+        return itemRepository.findAll();
+    }
+
     //this should be cached
-    public ItemMetadata getItemMetadata(){
-        List<StoreData> stores=storeService.getAllStores();
-        List<Tax> tax=taxRepository.findAll(); 
-        List<Uoms> uoms=uomService.getAllUnitofMeasure();
-        
-        ItemMetadata data=new ItemMetadata();
+    public ItemMetadata getItemMetadata() {
+        List<StoreData> stores = storeService.getAllStores();
+        List<Tax> tax = taxRepository.findAll();
+        List<Uoms> uoms = uomService.getAllUnitofMeasure();
+
+        ItemMetadata data = new ItemMetadata();
         data.setCode("0");
         data.setMessage("success");
         data.setStores(stores);

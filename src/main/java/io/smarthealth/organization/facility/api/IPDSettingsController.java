@@ -5,7 +5,7 @@
  */
 package io.smarthealth.organization.facility.api;
 
-import io.smarthealth.infrastructure.common.APIResponse;
+import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.organization.facility.data.RoomTypeData;
 import io.smarthealth.organization.facility.domain.RoomType;
@@ -45,7 +45,7 @@ public class IPDSettingsController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/room-type/" + roomType.getId())
                 .buildAndExpand(roomType.getId()).toUri();
 
-        return ResponseEntity.created(location).body(APIResponse.successMessage("Room type was created successfully", HttpStatus.CREATED, roomTypeService.convertRoomTypeEntityToData(roomType)));
+        return ResponseEntity.created(location).body(ApiResponse.successMessage("Room type was created successfully", HttpStatus.CREATED, roomTypeService.convertRoomTypeEntityToData(roomType)));
     }
 
     @GetMapping("/room-type")

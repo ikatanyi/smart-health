@@ -27,6 +27,7 @@ public class CreateUserConstraintValidator implements ConstraintValidator<ValidC
     public boolean isValid(UserRequest userRequest, ConstraintValidatorContext context) {
 
         Optional<User> user = userRepository.findByUsernameOrEmail(userRequest.getUsername(), userRequest.getEmail());
+        
         if (user.isPresent()) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("An account for that username/email already exists. Please enter a different username.").addConstraintViolation();

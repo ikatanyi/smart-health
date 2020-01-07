@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.procedure.domain;
 
-import io.smarthealth.billing.domain.Bill;
+import io.smarthealth.accounting.billing.domain.Bill;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;

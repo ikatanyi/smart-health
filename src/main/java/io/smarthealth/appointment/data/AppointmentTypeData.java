@@ -6,6 +6,9 @@
 package io.smarthealth.appointment.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.smarthealth.appointment.domain.Appointment;
+import io.smarthealth.appointment.domain.AppointmentType;
+import io.smarthealth.organization.facility.data.EmployeeData;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -19,10 +22,25 @@ public class AppointmentTypeData {
 
     @ApiModelProperty(required = false, hidden = true)
     private Long id;
+    
 
    // @NotNull
     private String name;
     //@NotNull
     private Integer duration; // in minutes
     private String color; // calendar display color
+    private String staffNumber;
+    private String appointmentTypeNumber;
+    
+    
+    public static AppointmentType map(AppointmentTypeData data) {
+        AppointmentType appointmentType = new AppointmentType();//mapper.map(appointment, AppointmentData.class);
+        appointmentType.setId(data.getId());
+        appointmentType.setName(data.getName());
+        appointmentType.setColor(data.getColor());
+        appointmentType.setDuration(data.getDuration());
+        return appointmentType;
+    }
+    
+    
 }

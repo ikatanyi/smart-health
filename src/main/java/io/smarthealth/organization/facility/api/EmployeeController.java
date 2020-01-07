@@ -5,7 +5,7 @@
  */
 package io.smarthealth.organization.facility.api;
 
-import io.smarthealth.infrastructure.common.APIResponse;
+import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Department;
@@ -67,7 +67,7 @@ public class EmployeeController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/facility/" + employeeData1.getDepartment().getFacilityId() + "/department/{code}")
                 .buildAndExpand(employeeData1.getDepartmentCode()).toUri();
 
-        return ResponseEntity.created(location).body(APIResponse.successMessage("Employee was successfully created", HttpStatus.CREATED, employeeData1));
+        return ResponseEntity.created(location).body(ApiResponse.successMessage("Employee was successfully created", HttpStatus.CREATED, employeeData1));
     }
 
     @GetMapping("/employee")

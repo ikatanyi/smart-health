@@ -7,7 +7,7 @@
 package io.smarthealth.organization.person.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.smarthealth.infrastructure.common.APIResponse;
+import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.BiometricUtil;
 import io.smarthealth.organization.person.data.BiometricDataIndicator;
 import io.smarthealth.organization.person.data.PatientBiometricRequest;
@@ -55,7 +55,7 @@ public class BiometricController {
         }).forEachOrdered((finger) -> {
             biometricService.addBiometric(finger);
         });
-        return ResponseEntity.ok().body(APIResponse.successMessage("Fingerprint data has been successfully", HttpStatus.CREATED, ""));
+        return ResponseEntity.ok().body(ApiResponse.successMessage("Fingerprint data has been successfully", HttpStatus.CREATED, ""));
     }
 
     @PostMapping("/patient/verify")
@@ -68,9 +68,9 @@ public class BiometricController {
             //fetch patient by person id
             Patient patient = patientService.fetchPatientByPersonId(Long.valueOf(success));
             PatientData patientData = patientService.convertToPatientData(patient);
-            return ResponseEntity.ok().body(APIResponse.successMessage("Success", HttpStatus.OK, patientData));
+            return ResponseEntity.ok().body(ApiResponse.successMessage("Success", HttpStatus.OK, patientData));
         }
-        return ResponseEntity.ok().body(APIResponse.errorMessage("Failed", HttpStatus.OK, "No  Fingerprint Match Found!"));
+        return ResponseEntity.ok().body(ApiResponse.errorMessage("Failed", HttpStatus.OK, "No  Fingerprint Match Found!"));
     }
 
 }

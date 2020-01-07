@@ -1,7 +1,7 @@
 package io.smarthealth.accounting.payment.api;
 
-import io.smarthealth.accounting.payment.data.TransactionData;
-import io.smarthealth.accounting.payment.domain.Transaction;
+import io.smarthealth.accounting.payment.data.FinancialTransactionData;
+import io.smarthealth.accounting.payment.domain.FinancialTransaction;
 import io.smarthealth.accounting.payment.service.PaymentService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -31,11 +31,11 @@ public class PaymentController {
     }
 
     @PostMapping("/payments")
-    public ResponseEntity<?> createPayment(@Valid @RequestBody TransactionData transactionData) {
+    public ResponseEntity<?> createPayment(@Valid @RequestBody FinancialTransactionData transactionData) {
 
-        TransactionData trans = service.createTransaction(transactionData);
+        FinancialTransactionData trans = service.createTransaction(transactionData);
 
-        Pager<TransactionData> pagers = new Pager();
+        Pager<FinancialTransactionData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Payment successfully Created.");
         pagers.setContent(trans);
@@ -44,14 +44,14 @@ public class PaymentController {
     }
 
     @GetMapping("/payments/{id}")
-    public TransactionData getPayment(@PathVariable(value = "id") Long id) {
-        Transaction trans = service.findTransactionOrThrowException(id);
-        return TransactionData.map(trans);
+    public FinancialTransactionData getPayment(@PathVariable(value = "id") Long id) {
+        FinancialTransaction trans = service.findTransactionOrThrowException(id);
+        return FinancialTransactionData.map(trans);
     }
 
     @PatchMapping("/payments/{id}")
-    public TransactionData updatePayment(@PathVariable(value = "id") Long id, TransactionData transactionData) {
-        TransactionData trans = service.updatePayment(id, transactionData);
+    public FinancialTransactionData updatePayment(@PathVariable(value = "id") Long id, FinancialTransactionData transactionData) {
+        FinancialTransactionData trans = service.updatePayment(id, transactionData);
         return trans;
     }
 
@@ -64,10 +64,10 @@ public class PaymentController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<TransactionData> list = service.fetchTransactions(customer, invoice, receipt, pageable)
-                .map(bill -> TransactionData.map(bill));
+        Page<FinancialTransactionData> list = service.fetchTransactions(customer, invoice, receipt, pageable)
+                .map(bill -> FinancialTransactionData.map(bill));
 
-        Pager<List<TransactionData>> pagers = new Pager();
+        Pager<List<FinancialTransactionData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());
@@ -88,13 +88,13 @@ public class PaymentController {
 
     @PostMapping("/payments/{id}/refunds")
     public ResponseEntity<?> refundPayment(@PathVariable(value = "id") Long id, @RequestParam(name = "amount") Double amount) {
-        TransactionData trans = service.refund(id, amount);
+        FinancialTransactionData trans = service.refund(id, amount);
         return ResponseEntity.status(HttpStatus.CREATED).body(trans);
     }
     
     /*Charging external payment gateways like M-pesa, Credit card */
     @PostMapping("/payments/charge")
-    public ResponseEntity<?> charge(@RequestParam(name = "type") String type, TransactionData transaction) {
+    public ResponseEntity<?> charge(@RequestParam(name = "type") String type, FinancialTransactionData transaction) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment Gateway not implemented");
     }
     //TODO

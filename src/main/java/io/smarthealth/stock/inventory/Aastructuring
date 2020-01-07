@@ -1,0 +1,33 @@
+* Define 
+1. Product 
+2. Product Category
+3. Uom
+4. Uom Category
+5. Reordering Rules  - [name,product,store-store&location, min qty, max qty, qty multiplier, active] - S.No|Name|Store|Location|Product|Product Unit of Measure |Minimum Quantity | Maximum Quantity
+6. Store - 
+7. Location - [S.No,type,name, parent location,
+
+8 . InventoryItem - BT Line 
+9.  InventoryVariance - stock variance
+10. StockMovement - cardex { transaction type  } 
+
+
+Setting up new product
+Inventory Adjustment
+Scrapping - removing Item from system shelves
+Transfer - 
+   - Define the OPeration Types - Journal
+   
+
+* Configuring price for the product
+   - to support the method of costing
+  - multiple pricing to be defined.
+
+
+1. Stock Movement - Receiving and Issuing of stocks logs
+2. Stock Adjustment - Stock reconciliation (Variance and adjustments)
+3. Stock Balances - Inventory Item
+
+
+* On  stock movement calculate balance and update stock balance.
+* On stock adjustment calculate balance and update stock balance. 

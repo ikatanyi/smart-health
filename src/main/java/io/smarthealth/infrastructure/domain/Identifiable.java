@@ -5,21 +5,22 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.MappedSuperclass; 
+import javax.persistence.MappedSuperclass;
 
 /**
  * Base Entity using {@link  GeneratedValue } Identity Strategy to generate a
  * primary key, with a unique UUID, User and Date audit information.
  *
  * @author Kelsas
- */ 
+ */
 @MappedSuperclass
 public abstract class Identifiable implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    /*This is*/
     @Column(length = 38)
     private String companyId;
 
@@ -39,4 +40,11 @@ public abstract class Identifiable implements Serializable {
         this.companyId = companyId;
     }
 
+    public boolean isNew() {
+        return this.id == null;
+    }
+//    @PrePersist
+//    public void setTenant(){
+//        this.setCompanyId(TenantContext.getCurrentTenant());
+//    }
 }

@@ -28,7 +28,6 @@ public class PaymentMethodService {
         paymode.setName(modeData.getName());
         paymode.setDescription(modeData.getDescription());
         paymode.setIsCashPayment(modeData.getIsCashPayment());
-        paymode.setPosition(modeData.getPosition());
 
         PaymentMethod result = repository.save(paymode);
         return result.toData();

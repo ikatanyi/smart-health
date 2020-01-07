@@ -1,176 +1,167 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.stock.inventory.data.InventoryItemData;
-import io.smarthealth.stock.inventory.data.InventoryVarianceData;
-import io.smarthealth.stock.inventory.data.StockMovementData;
-import io.smarthealth.stock.inventory.data.VarItemData;
-import io.smarthealth.stock.inventory.domain.InventoryItem;
-import io.smarthealth.stock.inventory.domain.InventoryItemRepository;
-import io.smarthealth.stock.inventory.domain.InventoryVariance;
-import io.smarthealth.stock.inventory.domain.InventoryVarianceRepository;
-import io.smarthealth.stock.inventory.domain.StockMovement;
-import io.smarthealth.stock.inventory.domain.VarItem;
-import io.smarthealth.stock.inventory.domain.enumeration.ModeofAdjustment;
+import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.stock.inventory.data.StockEntryData;
+import io.smarthealth.stock.inventory.domain.StockEntry;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import io.smarthealth.stock.inventory.domain.StockEntryRepository;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
-import io.smarthealth.stock.inventory.domain.specification.InventorySpecification;
-import io.smarthealth.stock.inventory.domain.specification.VarianceSpecification;
-import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.inventory.domain.specification.StockEntrySpecification;
+import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
-import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Kelsas
  */
 @Service
+@RequiredArgsConstructor
 public class InventoryService {
 
-    private final InventoryItemRepository inventoryItemRepository;
-    private final StockService stockService;
-    private final InventoryVarianceRepository inventoryVarianceRepository;
-    @Autowired
+    private final StockEntryRepository stockEntryRepository;
     private final ItemService itemService;
-    @Autowired
     private final StoreService storeService;
+    private final InventoryEventSender inventoryEventSender;
 
-    public InventoryService(InventoryItemRepository inventoryItemRepository,
-            StockService stockService, ItemService itemService, StoreService storeService,
-            InventoryVarianceRepository inventoryVarianceRepository) {
-        this.inventoryItemRepository = inventoryItemRepository;
-        this.stockService = stockService;
-        this.inventoryVarianceRepository = inventoryVarianceRepository;
-        this.storeService = storeService;
-        this.itemService = itemService;
-    }
+    public StockEntry createStockEntry(StockEntryData stockData) {
 
-    public InventoryVariance saveStockVariance(InventoryVarianceData varianceData) {
-        List<VarItem> varItems = new ArrayList();
-        List<StockMovement> stockArray = new ArrayList();
-        InventoryVariance variance = InventoryVarianceData.map(varianceData);
-        InventoryItem inventoryItem = new InventoryItem();
-        Store store = storeService.getStoreWithNoFoundDetection(varianceData.getStoreId());
-        variance.setDescription(varianceData.getDescription());
+        Item item = itemService.findItemEntityOrThrow(stockData.getItemId());
+        Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
 
-        varianceData.getItemData().forEach((VarItemData items) -> {
-            VarItem varItem = VarItemData.map(items);
-            Item item = itemService.findItemEntityOrThrow(items.getId());
-            varItem.setItem(item);
-            varItems.add(varItem);
-            if (varianceData.getAdjustmentMode() == ModeofAdjustment.Quantity) {
-                StockMovementData stock = new StockMovementData();
-                stock.setItem(item.getItemName());
-                stock.setItemCode(item.getItemCode());
-                stock.setMoveType(MovementType.Adjustment);
-                stock.setReferenceNumber(varianceData.getReference());
-                stock.setUomId(item.getUom().getId());
-                stock.setStoreId(varianceData.getStoreId());
-                stock.setReceiving(items.getVariance());
-                stockService.saveStock(stock);
-            }
-        });
-        variance.setVarItem(varItems);
-        return inventoryVarianceRepository.save(variance);
-    }
+        StockEntry stock = new StockEntry();
+        stock.setAmount(stockData.getAmount());
+        stock.setDeliveryNumber(stockData.getDeliveryNumber());
+        stock.setIssuing(stockData.getIssuing());
+        stock.setItem(item);
+        stock.setJournalNumber(stockData.getJournalNumber());
+        stock.setMoveType(stockData.getMoveType());
+        stock.setPrice(stockData.getPrice());
+        stock.setPurpose(stockData.getPurpose());
+        stock.setReceiving(stockData.getReceiving());
+        stock.setReferenceNumber(stockData.getReferenceNumber());
+        stock.setStore(store);
+        stock.setTransactionDate(stockData.getTransactionDate());
+        stock.setTransactionNumber(stockData.getTransactionNumber());
+        stock.setUnit(stockData.getUnit());
 
-    public InventoryVariance findOneWithNotFoundDetection(Long id) {
-        return inventoryVarianceRepository.findById(id)
-                .orElseThrow(() -> APIException.notFound("Inventory variance with Id {0} not found", id));
-    }
+        StockEntry savedEntry = stockEntryRepository.save(stock);
 
-    public Page<InventoryVarianceData> getAllStockVariances(LocalDate from, LocalDate to, Long storeId, Pageable pgbl) {
-        Store store = storeService.getStoreWithNoFoundDetection(storeId);
-        Specification<InventoryVariance> spec = VarianceSpecification.createSpecification(from, to, store);
-        Page<InventoryVarianceData> inventoryVariances = inventoryVarianceRepository.findAll(spec, pgbl).map(variance -> map(variance));
-        return inventoryVariances;
-    }
+        //TODO : Stock Movement that should affect stock balance
+        Double qty = savedEntry.getReceiving() != null && savedEntry.getReceiving() != 0D ? stock.getReceiving() : stock.getIssuing();
 
-    public InventoryItem saveInventoryItem(InventoryItem inventoryItem) {
-//        InventoryItem inventoryItem = InventoryItemData.map(itemData);
-//        Item item = itemService.findItemEntityOrThrow(itemData.getItemId());
-//        Store store = storeService.getStoreWithNoFoundDetection(itemData.getStoreId());
-//        inventoryItem.setItem(item);
-//        inventoryItem.setStore(store);
-        return inventoryItemRepository.save(inventoryItem);
-    }
-//    
-
-    public InventoryItem findInventoryItemWithNotFoundDetection(Long id) {
-        return inventoryItemRepository.findById(id)
-                .orElseThrow(() -> APIException.notFound("Inventory Item with Id {0} not found", id));
-    }
-
-    public Optional<InventoryItem> findInventoryItemByItem(Item item) {
-        return inventoryItemRepository.findByItem(item);
-    }
-//    
-
-    public Page<InventoryItemData> getAllInventoryItems(LocalDate from, LocalDate to, String moveType, Long storeId, Pageable pgbl) {
-        Store store = storeService.getStoreWithNoFoundDetection(storeId);
-        Specification<InventoryItem> spec = InventorySpecification.createSpecification(store, from, to, moveType);
-        Page<InventoryItemData> inventoryItems = inventoryItemRepository.findAll(spec, pgbl).map(item -> map(item));
-        return inventoryItems;
-    }
-
-    public InventoryVarianceData map(InventoryVariance variance) {
-        InventoryVarianceData data = new InventoryVarianceData();
-        data.setDateRecorded(LocalDateTime.now());
-        if (variance.getStore() != null) {
-            data.setStoreName(variance.getStore().getStoreName());
+        InventoryEvent.Type type = InventoryEvent.Type.Increase;
+        if (savedEntry.getMoveType() == MovementType.Dispensed) {
+            type = InventoryEvent.Type.Decrease;
         }
-        if (!variance.getVarItem().isEmpty()) {
-            data.setItemData(
-                    variance.getVarItem()
-                            .stream()
-                            .map((p)->this.map(p)).collect(Collectors.toList()));
-        }
-        return data;
+
+        inventoryEventSender.process(new InventoryEvent(type, store.getId(), item.getId(), qty));
+
+        return stock;
     }
 
-    public InventoryItemData map(InventoryItem inventoryItem) {
-        InventoryItemData data = new InventoryItemData();
-        if (inventoryItem.getStore() != null) {
-            data.setStoreData(StoreData.map(inventoryItem.getStore()));
-        }
-        data.setSerialNumber(inventoryItem.getSerialNumber());
-        data.setDateRecorded(LocalDateTime.now());
-        data.setId(inventoryItem.getId());
-        if (inventoryItem.getItem() != null) {
-            data.setItemData(ItemData.map(inventoryItem.getItem()));
-        }
-        data.setItemType(inventoryItem.getItemType());
-        data.setQuantity(inventoryItem.getQuantity());
-        data.setSerialNumber(inventoryItem.getSerialNumber());
-        data.setStatusType(inventoryItem.getStatusType());
-        return data;
+    public StockEntry getStockEntry(Long id) {
+        return stockEntryRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Stock Movement with Id {0} not found", id));
     }
-    
-    public VarItemData map(VarItem data){
-        VarItemData vItem = new VarItemData();
-        vItem.setId(data.getId());
-        vItem.setQuantity(data.getQuantity());
-        vItem.setReasons(data.getReason());
-        vItem.setVariance(data.getVariance());
-        return vItem;
+
+    public Page<StockEntry> getStockEntries(String store, String itemName, String referenceNumber, String transactionId, String deliveryNumber, String purpose, String moveType, DateRange range, Pageable pageable) {
+        MovementPurpose p = null;
+        if (purpose != null) {
+            p = MovementPurpose.valueOf(purpose);
+        }
+        MovementType type = null;
+        if (moveType != null) {
+            type = MovementType.valueOf(moveType);
+        }
+
+        Specification<StockEntry> spec = StockEntrySpecification.createSpecification(store, itemName, referenceNumber, transactionId, deliveryNumber, range, p, type);
+        Page<StockEntry> stocks = stockEntryRepository.findAll(spec, pageable);
+        return stocks;
     }
+//
+//    //update stock balances
+//    public void updateStockBalance(LocalDateTime date, Item item, Store store, double qty) {
+//        InventoryBalance inventory = new InventoryBalance();
+//        inventory.setDateRecorded(date);
+//        inventory.setItem(item);
+//        inventory.setStore(store);
+//        inventory.setQuantity(qty);
+//        inventoryItemRepository.save(inventory);
+//    }
+//
+//    public void updateStockBalance(InventoryBalanceData data) {
+//        InventoryBalance inventory = new InventoryBalance();
+//        inventory.setDateRecorded(data.getDateRecorded());
+//        Item item = itemService.findItemEntityOrThrow(data.getItemId());
+//        Store store = storeService.getStoreWithNoFoundDetection(data.getStoreId());
+//        inventory.setItem(item);
+//        inventory.setStore(store);
+//        inventory.setQuantity(data.getQuantity());
+//        inventoryItemRepository.save(inventory);
+//    }
+//
+//    public Page<InventoryBalanceData> getInventoryBalance(Long storeId, Long itemId, DateRange range, Pageable pageable) {
+//        Item item = itemService.findItemEntityOrThrow(itemId);
+//        Store store = storeService.getStoreWithNoFoundDetection(storeId);
+//        Specification<InventoryBalance> spec = InventoryItemSpecification.createSpecification(store, item, range);
+//        Page<InventoryBalanceData> inventoryItems = inventoryItemRepository.findAll(spec, pageable).map(itm -> itm.toData());
+//
+//        return inventoryItems;
+//    }
+//
+//    public Page<InventoryBalanceData> getInventoryBalance(Long itemId, Long storeId, Pageable page) {
+//        Item item = itemService.findItemEntityOrThrow(itemId);
+//        Store store = null;
+//        if (storeId != null) {
+//            store = storeService.getStoreWithNoFoundDetection(storeId);
+//            return inventoryItemRepository.findByItemAndStore(item, store, page).map(d -> d.toData());
+//        }
+//        return inventoryItemRepository.findByItem(item, page).map(d -> d.toData());
+//    }
+//
+//    public Page<InventoryBalanceData> getInventoryBalanceByItem(Long itemId, Pageable page) {
+//        Item item = itemService.findItemEntityOrThrow(itemId);
+//        return inventoryItemRepository.findByItem(item, page).map(d -> d.toData());
+//    }
+//
+//    // create Invariance
+//    public StockAdjustment createStockAdjustment(StockAdjustmentData data) {
+//        StockAdjustment stocks = new StockAdjustment();
+//        Item item = itemService.findItemEntityOrThrow(data.getItemId());
+//        Store store = storeService.getStoreWithNoFoundDetection(data.getStoreId());
+//
+//        stocks.setComments(data.getComments());
+//        stocks.setDateRecorded(data.getDateRecorded());
+//        stocks.setItem(item);
+//        stocks.setStore(store);
+//        stocks.setQuantity(data.getQuantity());
+//        stocks.setReasons(data.getReasons());
+//
+//        StockAdjustment stockAdjstment = stockAdjustmentRepository.save(stocks);
+//        return stockAdjstment;
+//    }
+//
+//    public StockAdjustment getStockAdjustment(Long id) {
+//        return stockAdjustmentRepository.findById(id)
+//                .orElseThrow(() -> APIException.notFound("Stock Adjustment with Id {0} not found", id));
+//    }
+//
+//    public Page<StockAdjustmentData> getStockAdjustments(Long storeId, Long itemId, DateRange range, Pageable pageable) {
+//        Item item = itemService.findItemEntityOrThrow(itemId);
+//        Store store = storeService.getStoreWithNoFoundDetection(storeId);
+//        Specification<StockAdjustment> spec = StockAdjustmentSpecification.createSpecification(store, item, range);
+//        Page<StockAdjustmentData> adjstments = stockAdjustmentRepository.findAll(spec, pageable).map(itm -> itm.toData());
+//
+//        return adjstments;
+//    }
 
 }

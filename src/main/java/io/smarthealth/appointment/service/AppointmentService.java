@@ -8,9 +8,11 @@ package io.smarthealth.appointment.service;
 import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.appointment.domain.Appointment;
 import io.smarthealth.appointment.domain.AppointmentRepository;
+import io.smarthealth.appointment.domain.AppointmentType;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.domain.PersonRepository;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
@@ -33,16 +35,22 @@ public class AppointmentService {
     AppointmentRepository appointmentRepository;
     PersonRepository personRepository;
     PatientRepository patientRepository;
+    AppointmentTypeService appointmentTypeService;
+    EmployeeService employeeService;
 
     @Autowired
     ModelMapper modelMapper;
 
     public AppointmentService(AppointmentRepository appointmentRepository,
             PersonRepository personRepository,
-            PatientRepository patientRepository) {
+            PatientRepository patientRepository,
+            EmployeeService employeeService,
+            AppointmentTypeService appointmentTypeService) {
         this.appointmentRepository = appointmentRepository;
         this.personRepository = personRepository;
         this.patientRepository = patientRepository;
+        this.employeeService = employeeService;
+        this.appointmentTypeService = appointmentTypeService;
     }
 
     public ContentPage<AppointmentData> fetchAppointmentsByPatient(final String patientNumber, final Pageable pageable) {
@@ -72,14 +80,19 @@ public class AppointmentService {
 //        if (!appointment.getAllDay() && appointment.getEndTime() == null) {
 //            throw APIException.badRequest("Appointment End Date and Time is Required. The appointment is not marked as all day event");
 //        }
+        Employee practitioner = employeeService.fetchEmployeeByNumberOrThrow(appointment.getPractitionerCode()); 
+              
+        AppointmentType appointmentType = appointmentTypeService.fetchAppointmentTypeById(appointment.getAppointmentTypeId());
+       
         //Verify patient number
         Patient patient = findPatientOrThrow(appointment.getPatientNumber());
-        Appointment entity = modelMapper.map(appointment, Appointment.class);
+        Appointment entity = modelMapper.map(appointment, Appointment.class); 
+        entity.setPractitioner(practitioner);
         //Appointment entity = AppointmentData.map(appointment);
         entity.setPatient(patient);
-
-        Appointment savedAppointment = appointmentRepository.save(entity);
-
+        entity.setAppointmentType(appointmentType);
+        
+        Appointment savedAppointment = appointmentRepository.save(entity);         
         return savedAppointment;
 
     }
@@ -93,7 +106,7 @@ public class AppointmentService {
     }
 
     public Page<Appointment> fetchAllAppointmentsByPractioneer(final Employee employee, final Pageable pageable) {
-        return appointmentRepository.findByPractioneer(employee, pageable);
+        return appointmentRepository.findByPractitioner(employee, pageable);
     }
 
     public AppointmentData geAppointmentById(Long id) {

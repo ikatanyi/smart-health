@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.procedure.data;
  
-import io.smarthealth.billing.data.BillData;
+import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureTest;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import lombok.Data;

@@ -30,5 +30,6 @@ public final class PatientData extends PersonData {
     private String basicNotes;
     private Integer age;
     private List<PatientIdentifierData> identifiers;
+    private String visitType;
 
 }

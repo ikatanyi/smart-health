@@ -19,9 +19,6 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.domain.EmployeeRepository;
 import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.patient.service.PersonContactService;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +27,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -142,16 +143,16 @@ public class EmployeeService {
         return employeeRepository.findByStaffNumber(staffNumber).orElseThrow(() -> APIException.notFound("Employee identified by number {0} was not found ", staffNumber));
     }
 
-    public Optional<Employee> findEmployeeByStaffNumber(final String staffNumber) {
-        return employeeRepository.findByStaffNumber(staffNumber);
-    }
-
     public Employee convertEmployeeDataToEntity(EmployeeData employeeData) {
         // use strict to prevent over eager matching (happens with ID fields)
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         Employee employee = modelMapper.map(employeeData, Employee.class);
         System.out.println("employee " + employee.toString());
         return employee;
+    }
+
+    public Optional<Employee> findEmployeeByStaffNumber(final String staffNumber) {
+        return employeeRepository.findByStaffNumber(staffNumber);
     }
 
     public EmployeeData convertEmployeeEntityToEmployeeData(Employee employee) {

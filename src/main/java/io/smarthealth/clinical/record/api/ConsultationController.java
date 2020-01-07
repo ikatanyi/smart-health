@@ -5,8 +5,8 @@
  */
 package io.smarthealth.clinical.record.api;
 
-import io.smarthealth.auth.domain.User;
-import io.smarthealth.auth.service.UserService;
+//import io.smarthealth.auth.domain.User;
+//import io.smarthealth.auth.service.UserService;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.PatientNotesData;
@@ -20,9 +20,8 @@ import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
-import io.smarthealth.infrastructure.common.APIResponse;
+import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
-import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.service.DepartmentService;
@@ -59,19 +58,19 @@ public class ConsultationController {
 
     private final EmployeeService employeeService;
 
-    private final UserService userService;
+//    private final UserService userService;
 
     private final DiseaseService diseaseService;
 
     private final DiagnosisService diagnosisService;
     private final DepartmentService departmentService;
 
-    public ConsultationController(PatientNotesService patientNotesService, PatientService patientService, VisitService visitService, EmployeeService employeeService, UserService userService, DiseaseService diseaseService, DiagnosisService diagnosisService, DepartmentService departmentService) {
+    public ConsultationController(PatientNotesService patientNotesService, PatientService patientService, VisitService visitService, EmployeeService employeeService, DiseaseService diseaseService, DiagnosisService diagnosisService, DepartmentService departmentService) {
         this.patientNotesService = patientNotesService;
         this.patientService = patientService;
         this.visitService = visitService;
         this.employeeService = employeeService;
-        this.userService = userService;
+//        this.userService = userService;
         this.diseaseService = diseaseService;
         this.diagnosisService = diagnosisService;
         this.departmentService = departmentService;
@@ -82,12 +81,12 @@ public class ConsultationController {
     public @ResponseBody
     ResponseEntity<?> savePatientNotes(Authentication authentication, @Valid @RequestBody PatientNotesData patientNotesData) {
         Visit visit = visitService.findVisitEntityOrThrow(patientNotesData.getVisitNumber());
-        User user = userService.findUserByUsernameOrEmail(authentication.getName())
-                .orElseThrow(() -> APIException.notFound("Employee login account provided is not valid"));
+//        User user = userService.findUserByUsernameOrEmail(authentication.getName())
+//                .orElseThrow(() -> APIException.notFound("Employee login account provided is not valid"));
         Patient patient = patientService.findPatientOrThrow(patientNotesData.getPatientNumber());
         PatientNotes patientNotes = patientNotesService.convertDataToEntity(patientNotesData);
         patientNotes.setVisit(visit);
-        patientNotes.setHealthProvider(employeeService.fetchEmployeeByUser(user));
+//        patientNotes.setHealthProvider(employeeService.fetchEmployeeByUser(user));
         patientNotes.setPatient(patient);
 
         //check if notes already exists by visit
@@ -106,7 +105,7 @@ public class ConsultationController {
             pns = patientNotesService.createPatientNote(patientNotes);
         }
         PatientNotesData savedData = patientNotesService.convertEntityToData(pns);
-        return ResponseEntity.ok().body(APIResponse.successMessage("History and examination notes saved successfully", HttpStatus.CREATED, savedData));
+        return ResponseEntity.ok().body(ApiResponse.successMessage("History and examination notes saved successfully", HttpStatus.CREATED, savedData));
     }
 
     @GetMapping("/visit/{visitNumber}/patient-notes")
@@ -116,9 +115,9 @@ public class ConsultationController {
         Optional<PatientNotes> pn = patientNotesService.fetchPatientNotesByVisit(visit);
         if (pn.isPresent()) {
             PatientNotesData savedData = patientNotesService.convertEntityToData(pn.get());
-            return ResponseEntity.ok().body(APIResponse.successMessage("Success", HttpStatus.OK, savedData));
+            return ResponseEntity.ok().body(ApiResponse.successMessage("Success", HttpStatus.OK, savedData));
         } else {
-            return ResponseEntity.ok().body(APIResponse.successMessage("No records found", HttpStatus.OK, new ArrayList<>()));
+            return ResponseEntity.ok().body(ApiResponse.successMessage("No records found", HttpStatus.OK, new ArrayList<>()));
         }
 
     }

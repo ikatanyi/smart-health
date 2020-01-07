@@ -72,7 +72,7 @@ public class PatientProcedureController {
 
         return ResponseEntity.status(HttpStatus.OK).body(patientLabTests);
     }
-
+    
     @PutMapping("/patient-procedure/results/{resultId}")
     public @ResponseBody
     ResponseEntity<?> updateProcedureResults(@PathVariable("resultId") final Long resultId, @Valid @RequestBody PatientProcedureTestData resultData) {

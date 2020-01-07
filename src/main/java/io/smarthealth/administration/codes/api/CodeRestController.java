@@ -3,7 +3,7 @@ package io.smarthealth.administration.codes.api;
 import io.smarthealth.administration.codes.data.CodeData;
 import io.smarthealth.administration.codes.data.CodeValueData;
 import io.smarthealth.administration.codes.data.CodeValues;
-import io.smarthealth.administration.codes.service.CodesService;
+import io.smarthealth.administration.codes.service.CodeService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 public class CodeRestController {
 
-    private final CodesService service;
+    private final CodeService service;
 
-    public CodeRestController(CodesService codesService) {
+    public CodeRestController(CodeService codesService) {
         this.service = codesService;
     }
 

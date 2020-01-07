@@ -6,7 +6,7 @@ import io.smarthealth.clinical.lab.data.SpecimenData;
 import io.smarthealth.clinical.lab.domain.LabTestType;
 import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.service.LabService;
-import io.smarthealth.infrastructure.common.APIResponse;
+import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.item.domain.Item;
@@ -54,7 +54,7 @@ public class LabTestTypeController {
         Long id = labService.createTestType(testtypeData);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/test-type/" + id)
                 .buildAndExpand(id).toUri();
-        return ResponseEntity.created(location).body(APIResponse.successMessage("TestType successfuly created", HttpStatus.CREATED, testtypeData));
+        return ResponseEntity.created(location).body(ApiResponse.successMessage("TestType successfuly created", HttpStatus.CREATED, testtypeData));
 
     }
 

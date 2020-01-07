@@ -1,0 +1,79 @@
+package io.smarthealth.stock.inventory.data;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.infrastructure.lang.Constants;
+import io.smarthealth.stock.inventory.domain.StockEntry;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import lombok.Data;
+
+/**
+ * Stock Entry
+ *
+ * @author Kelsas
+ */
+@Data
+public class StockEntryData {
+
+    private Long id;
+
+    private Long storeId;
+    private String store;
+
+    private Long itemId;
+    private String itemCode;
+    private String item;
+
+    private Double receiving;
+    private Double issuing;
+    private BigDecimal price;
+    private BigDecimal amount;
+    private String unit;
+ 
+    private String referenceNumber; //ref LPO,supplier, patient no
+    private String deliveryNumber; //GRN| transaction reference
+    private String transactionNumber; //auto generated ST-2019-00002
+    private String journalNumber;
+    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
+    private LocalDate transactionDate;
+    private MovementType moveType;
+    private MovementPurpose purpose;
+
+    public static StockEntryData map(StockEntry stock) {
+        StockEntryData data = new StockEntryData();
+        data.setId(stock.getId());
+        if (stock.getStore() != null) {
+            data.setStoreId(stock.getStore().getId());
+            data.setStore(stock.getStore().getStoreName());
+        }
+        if (stock.getItem() != null) {
+            data.setItemId(stock.getItem().getId());
+            data.setItemCode(stock.getItem().getItemCode());
+            data.setItem(stock.getItem().getItemName());
+        }
+        
+        data.setUnit(stock.getUnit());
+        data.setReceiving(stock.getReceiving());
+        data.setIssuing(stock.getIssuing());
+        data.setPrice(stock.getPrice());
+        data.setAmount(stock.getAmount());
+        data.setReferenceNumber(stock.getReferenceNumber());
+        data.setDeliveryNumber(stock.getDeliveryNumber());
+        data.setTransactionNumber(stock.getTransactionNumber());
+        data.setJournalNumber(stock.getJournalNumber());
+        data.setTransactionDate(stock.getTransactionDate());
+        data.setMoveType(stock.getMoveType());
+        data.setPurpose(stock.getPurpose());
+
+        return data;
+    }
+
+    /*
+    Perpetual Inventory
+        If perpetual inventory system is enabled, additional costs will be booked in "Expense Included In Valuation" account.
+    Periodic
+        Do not post stocks
+     */
+}
