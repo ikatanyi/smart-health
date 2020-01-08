@@ -36,5 +36,6 @@ public class BillItemData {
     private String servicePoint;
 
     private BillStatus status;
+    private Boolean paid;
 
 }

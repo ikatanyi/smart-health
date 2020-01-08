@@ -4,7 +4,9 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.stock.inventory.data.AdjustmentData;
 import io.smarthealth.stock.inventory.data.StockAdjustmentData;
+import io.smarthealth.stock.inventory.data.TransData;
 import io.smarthealth.stock.inventory.domain.StockAdjustment;
 import io.smarthealth.stock.inventory.service.InventoryAdjustmentService;
 import io.smarthealth.stock.inventory.service.InventoryService;
@@ -33,14 +35,14 @@ public class InventoryAdjustmentController {
     private final InventoryAdjustmentService service;
 
     @PostMapping("/inventory-adjustment")
-    public ResponseEntity<?> createStockAdjustment(@Valid @RequestBody StockAdjustmentData data) {
+    public ResponseEntity<?> createStockAdjustment(@Valid @RequestBody AdjustmentData data) {
 
-        StockAdjustment result = service.createStockAdjustment(data);
+        String result = service.createStockAdjustment(data);
 
-        Pager<StockAdjustmentData> pagers = new Pager();
+        Pager<TransData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Stock Adjustment successful");
-        pagers.setContent(result.toData());
+        pagers.setContent(new TransData(result));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 

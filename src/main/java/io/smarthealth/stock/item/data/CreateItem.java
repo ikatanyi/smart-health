@@ -1,5 +1,6 @@
 package io.smarthealth.stock.item.data;
 
+import java.math.BigDecimal;
 import lombok.Data;
 
 /**
@@ -23,6 +24,7 @@ public class CreateItem {
     private String drugRoute;
     private String doseForm;
     private Long inventoryStore;
+    private BigDecimal stockRatePerUnit;
     private Integer stockBalance;
     private Integer reorderLevel;
     private Integer orderQuantity;

@@ -16,5 +16,7 @@ public enum MovementType {
         /**
          * Items dispensed to patient
          */
-        Dispensed
+        Dispensed,
+        
+        Opening_Balance
 }

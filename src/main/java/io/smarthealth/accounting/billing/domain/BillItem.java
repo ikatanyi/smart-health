@@ -33,7 +33,7 @@ public class BillItem extends Auditable {
     private Double amount;
     private Double balance; 
     private String servicePoint;
-    
+    private Boolean paid;
 
     @Enumerated(EnumType.STRING)
     private BillStatus status;
@@ -62,6 +62,7 @@ public class BillItem extends Auditable {
             data.setItem(this.getItem().getItemName());
         }
         data.setServicePoint(this.getServicePoint()); 
+        data.setPaid(this.getPaid());
 
         return data;
     }

@@ -20,17 +20,16 @@ import lombok.Data;
 @Data
 @Table(name = "stock_inventory_entries")
 public class StockEntry extends Auditable {
- 
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_entry_store_id"))
     private Store store;
-    
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_entry_item_id"))
     private Item item;
-     
-    private Double receiving;
-    private Double issuing;
+
+    private Double quantity;
     private BigDecimal price;
     private BigDecimal amount;
     private String unit;
@@ -38,14 +37,14 @@ public class StockEntry extends Auditable {
     private String deliveryNumber; //GRN| transaction reference
     private String transactionNumber; //auto generated ST-2019-00002
     private String journalNumber;
-    
+
     private LocalDate transactionDate;
-    
+
     @Enumerated(EnumType.STRING)
     private MovementType moveType;
-    
+
     @Enumerated(EnumType.STRING)
-    private MovementPurpose purpose; 
+    private MovementPurpose purpose;
 
     /*
     Perpetual Inventory
@@ -65,10 +64,9 @@ public class StockEntry extends Auditable {
             data.setItemCode(this.getItem().getItemCode());
             data.setItem(this.getItem().getItemName());
         }
-        
+
         data.setUnit(this.getUnit());
-        data.setReceiving(this.getReceiving());
-        data.setIssuing(this.getIssuing());
+        data.setQuantity(this.getQuantity());
         data.setPrice(this.getPrice());
         data.setAmount(this.getAmount());
         data.setReferenceNumber(this.getReferenceNumber());

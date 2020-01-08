@@ -22,11 +22,15 @@ public class StockAdjustment extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_variance_store_id"))
     private Store store;
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_variance_item_id"))
     private Item item;
-    private double quantity;
-    private String comments;
+    private Double quantityBalance;
+    private Double quantityCounted;
+    private double quantityAdjusted;
+    private String transactionId;
+
     @Column(name = "variance_reason")
     private String reasons;
     //use code - Stock Variance Reason
@@ -45,8 +49,12 @@ public class StockAdjustment extends Auditable {
         }
 
         data.setDateRecorded(this.getDateRecorded());
-        data.setQuantity(this.getQuantity());
-        data.setComments(this.getComments());
+        
+        data.setQuantityAdjusted(this.getQuantityAdjusted());
+        data.setQuantityBalance(this.getQuantityBalance());
+        data.setQuantityCounted(this.getQuantityCounted());
+        
+        data.setTransactionId(this.getTransactionId());
         data.setReasons(this.getReasons());
         return data;
     }

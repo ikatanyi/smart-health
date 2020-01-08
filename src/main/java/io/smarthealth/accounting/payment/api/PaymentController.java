@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.payment.api;
 
+import io.smarthealth.accounting.payment.data.CreateTransactionData;
 import io.smarthealth.accounting.payment.data.FinancialTransactionData;
 import io.smarthealth.accounting.payment.domain.FinancialTransaction;
 import io.smarthealth.accounting.payment.service.PaymentService;
@@ -31,7 +32,7 @@ public class PaymentController {
     }
 
     @PostMapping("/payments")
-    public ResponseEntity<?> createPayment(@Valid @RequestBody FinancialTransactionData transactionData) {
+    public ResponseEntity<?> createPayment(@Valid @RequestBody CreateTransactionData transactionData) {
 
         FinancialTransactionData trans = service.createTransaction(transactionData);
 

@@ -26,7 +26,7 @@ public class Room extends Identifiable {
      @JoinColumn(foreignKey = @ForeignKey(name = "fk_room_ward_id"))
     private Ward ward;//this is a locations
 
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room") 
     private List<Bed> beds = new ArrayList<>();
 
     private String gender; //enum Male|Female
