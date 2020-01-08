@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -28,4 +29,8 @@ public interface PatientQueueRepository extends JpaRepository<PatientQueue, Long
     Optional<PatientQueue> findByPatientAndServicePointAndStatus(final Patient patient, final ServicePoint department, final boolean status);
 
     Optional<PatientQueue> findByVisit(Visit visit);
+
+    @Query("SELECT p FROM PatientQueue p WHERE p.visit.status = 'CheckIn' OR p.visit.status = 'Admitted' GROUP BY p.visit ")
+    Page<PatientQueue> findActivePatientQueue(Pageable pageable);
+
 }

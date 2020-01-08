@@ -69,9 +69,10 @@ public class VisitService {
         return visitDTO.getVisitNumber();
     }
 
-//    public int generateVisitNumber() {
-//        return visitRepository.maxVisitId() + 1;
-//    }
+    public boolean isPatientVisitActive(Patient patient) {
+        return visitRepository.isPatientVisitActive(patient);
+    }
+
     private Patient findPatientEntityOrThrow(String patientNumber) {
         return this.patientRepository.findByPatientNumber(patientNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Number {0} not found.", patientNumber));
