@@ -2,6 +2,8 @@ package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.utility.UuidGenerator;
+import io.smarthealth.stock.inventory.data.CreateStockEntry;
 import io.smarthealth.stock.inventory.data.StockEntryData;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import lombok.RequiredArgsConstructor;
@@ -32,40 +34,46 @@ public class InventoryService {
     private final StoreService storeService;
     private final InventoryEventSender inventoryEventSender;
 
-    public StockEntry createStockEntry(StockEntryData stockData) {
+    public String createStockEntry(CreateStockEntry stockData) {
 
-        Item item = itemService.findItemEntityOrThrow(stockData.getItemId());
-        Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
+        String trxId = UuidGenerator.newUuid();
 
-        StockEntry stock = new StockEntry();
-        stock.setAmount(stockData.getAmount());
-        stock.setDeliveryNumber(stockData.getDeliveryNumber());
-        stock.setIssuing(stockData.getIssuing());
-        stock.setItem(item);
-        stock.setJournalNumber(stockData.getJournalNumber());
-        stock.setMoveType(stockData.getMoveType());
-        stock.setPrice(stockData.getPrice());
-        stock.setPurpose(stockData.getPurpose());
-        stock.setReceiving(stockData.getReceiving());
-        stock.setReferenceNumber(stockData.getReferenceNumber());
-        stock.setStore(store);
-        stock.setTransactionDate(stockData.getTransactionDate());
-        stock.setTransactionNumber(stockData.getTransactionNumber());
-        stock.setUnit(stockData.getUnit());
+        if (!stockData.getItems().isEmpty()) {
+            stockData.getItems()
+                    .stream()
+                    .forEach(st -> {
+                        Item item = itemService.findItemEntityOrThrow(st.getItemId());
+                        Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
 
-        StockEntry savedEntry = stockEntryRepository.save(stock);
+                        StockEntry stock = new StockEntry();
+                        stock.setAmount(st.getAmount());
+                        stock.setDeliveryNumber(stockData.getDeliveryNumber());
+                        stock.setQuantity(st.getQuantity());
+                        stock.setItem(item);
+                        stock.setMoveType(stockData.getMovementType());
+                        stock.setPrice(st.getPrice());
+                        stock.setPurpose(stockData.getMovementPurpose());
+                        stock.setReferenceNumber(stockData.getReferenceNumber());
+                        stock.setStore(store);
+                        stock.setTransactionDate(stockData.getTransactionDate());
+                        stock.setTransactionNumber(trxId);
+                        stock.setUnit(st.getUnit());
 
-        //TODO : Stock Movement that should affect stock balance
-        Double qty = savedEntry.getReceiving() != null && savedEntry.getReceiving() != 0D ? stock.getReceiving() : stock.getIssuing();
+                        StockEntry savedEntry = stockEntryRepository.save(stock);
+                        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), store, item, savedEntry.getQuantity()));
+                    });
 
-        InventoryEvent.Type type = InventoryEvent.Type.Increase;
-        if (savedEntry.getMoveType() == MovementType.Dispensed) {
-            type = InventoryEvent.Type.Decrease;
         }
+        return trxId;
+    }
 
-        inventoryEventSender.process(new InventoryEvent(type, store.getId(), item.getId(), qty));
+    public void save(StockEntry entry) {
+        StockEntry savedEntry = stockEntryRepository.save(entry); 
+        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), savedEntry.getStore(), savedEntry.getItem(), savedEntry.getQuantity()));
+    }
 
-        return stock;
+    private InventoryEvent.Type getEvent(MovementType type) {
+        return type == MovementType.Dispensed ? InventoryEvent.Type.Decrease : InventoryEvent.Type.Increase;
     }
 
     public StockEntry getStockEntry(Long id) {

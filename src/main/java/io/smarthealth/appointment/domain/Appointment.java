@@ -1,5 +1,6 @@
 package io.smarthealth.appointment.domain;
 
+import io.smarthealth.appointment.data.AppointmentData.Urgency;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -49,7 +50,7 @@ public class Appointment extends Auditable {
     private LocalTime endTime;
 
     private Boolean allDay;
-    private String urgency;
+    private Urgency urgency;
     private String comments;
     private String status; //new followup 
     @OneToOne

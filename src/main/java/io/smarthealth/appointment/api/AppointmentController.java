@@ -88,6 +88,22 @@ public class AppointmentController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
+    
+    @PutMapping("/appointment/{id}")
+    public @ResponseBody
+    ResponseEntity<?> updateAppointment(@RequestBody @Valid final AppointmentData appointmentData, @PathVariable("id") final Long id) {
+        appointmentData.setStatus(AppointmentData.Status.Scheduled);
+        Appointment appointment = this.appointmentService.UpdateAppointment(id, appointmentData);
+
+        AppointmentData savedAppointmentData = appointmentService.convertAppointment(appointment);
+
+        Pager<AppointmentData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Appointment Updated successful");
+        pagers.setContent(savedAppointmentData);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
+    }
 
 //    @GetMapping("/employee/{no}/appointment")
 //    public @ResponseBody
@@ -102,21 +118,24 @@ public class AppointmentController {
 
     @GetMapping("/appointment")
     public @ResponseBody
-    ResponseEntity<?> fetchAllAppointments(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-
+    ResponseEntity<?> fetchAllAppointments(
+        @RequestParam(value = "page", required = false) Integer page,
+        @RequestParam(value = "pageSize", required = false) Integer size
+    ) {
+        Pageable pageable = PaginationUtil.createPage(page, size);
         Page<AppointmentData> results = appointmentService.fetchAllAppointments(pageable).map(a->AppointmentData.map(a));
         
-        Pager page = new Pager();
-        page.setCode("200");
-        page.setContent(results);
-        page.setMessage("Appointment Types fetched successfully");
+        Pager pager = new Pager();
+        pager.setCode("200");
+        pager.setContent(results.getContent());
+        pager.setMessage("Appointment Types fetched successfully");
         PageDetails details = new PageDetails();
         details.setPage(1);
         details.setPerPage(25);
         details.setReportName("Appointment Types fetched");
 //        details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
-        page.setPageDetails(details);
-        return ResponseEntity.ok(page);
+        pager.setPageDetails(details);
+        return ResponseEntity.ok(pager);
 
 //        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         

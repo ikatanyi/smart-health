@@ -3,9 +3,14 @@ package io.smarthealth.stock.item.service;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.accounting.taxes.domain.TaxRepository;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.utility.UuidGenerator;
+import io.smarthealth.stock.inventory.domain.StockEntry;
+import io.smarthealth.stock.inventory.domain.StockEntryRepository;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.inventory.service.InventoryEventSender;
+import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.data.ItemData;
 import io.smarthealth.stock.item.data.Uoms; 
@@ -21,6 +26,8 @@ import io.smarthealth.stock.item.domain.specification.ItemSpecification;
 import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +58,7 @@ public class ItemService {
     private final StoreService storeService;
     private final ReorderRuleRepository reorderRuleRepository;
     private final DrugRepository drugRepository;
+    private final StockEntryRepository stockEntryRepository;
     private final InventoryEventSender inventoryEventSender;
 
     @Transactional
@@ -98,11 +106,27 @@ public class ItemService {
 
             if (createItem.getStockBalance() > 0) {
                 log.info("Receiving the initial stock");
+                String trxId = UuidGenerator.newUuid();
                 //determine the stock
-               
+                StockEntry stock = new StockEntry();
+                stock.setQuantity(Double.valueOf(createItem.getStockBalance()));
+                stock.setItem(item);
+                stock.setMoveType(MovementType.Opening_Balance);
+                if (createItem.getStockRatePerUnit() != null) {
+                    BigDecimal qty = BigDecimal.valueOf(createItem.getStockBalance());
+                    BigDecimal amt = createItem.getStockRatePerUnit().multiply(qty);
+                    stock.setAmount(amt);
+                    stock.setPrice(createItem.getStockRatePerUnit());
+                }
 
-                inventoryEventSender.process(new InventoryEvent(InventoryEvent.Type.Increase, store.getId(), item.getId(), createItem.getStockBalance()));
-               // can we record this as receiving initial 
+                stock.setPurpose(MovementPurpose.Receipt);
+                stock.setReferenceNumber("0000");
+                stock.setStore(store);
+                stock.setTransactionDate(LocalDate.now());
+                stock.setTransactionNumber(trxId);
+                stock.setUnit(createItem.getItemUnit());
+                saveStockEntry(stock);
+
             }
             if (createItem.getReorderLevel() > 0) {
                 ReorderRule rule = new ReorderRule();
@@ -148,6 +172,11 @@ public class ItemService {
         return itemRepository.findAll();
     }
 
+    public void saveStockEntry(StockEntry entry) {
+        StockEntry savedEntry = stockEntryRepository.save(entry);
+        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), savedEntry.getStore(), savedEntry.getItem(), savedEntry.getQuantity()));
+    }
+
     //this should be cached
     public ItemMetadata getItemMetadata() {
         List<StoreData> stores = storeService.getAllStores();
@@ -161,5 +190,9 @@ public class ItemService {
         data.setTaxes(tax);
         data.setUom(uoms);
         return data;
+    }
+
+    private InventoryEvent.Type getEvent(MovementType type) {
+        return type == MovementType.Dispensed ? InventoryEvent.Type.Decrease : InventoryEvent.Type.Increase;
     }
 }

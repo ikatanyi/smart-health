@@ -10,6 +10,7 @@ import io.smarthealth.organization.facility.data.DepartmentData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
 import io.smarthealth.organization.facility.domain.Facility;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,16 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Simon.waweru
  */
 @Service
+@RequiredArgsConstructor
 public class DepartmentService {
 
-    @Autowired
-    DepartmentRepository departmentRepository;
-
-    @Autowired
-    FacilityService facilityService;
-
-    @Autowired
-    ModelMapper modelMapper;
+    private final DepartmentRepository departmentRepository;
+    private final FacilityService facilityService;
+    private final ModelMapper modelMapper;
 
     /*
     a. Create a new department
@@ -53,7 +50,7 @@ public class DepartmentService {
     }
 
     public Department findByServicePointTypeAndfacility(String servicePointType, Facility facility) {
-        return departmentRepository.findByServicePointTypeAndFacility(servicePointType, facility).orElseThrow(() -> APIException.notFound("Department not found.", servicePointType));
+        return departmentRepository.findByServicePointTypeAndFacility(servicePointType, facility).orElseThrow(() -> APIException.notFound("Service point not found.", servicePointType));
     }
 
     public Department findByServicePointTypeAndloggedFacility(String servicePointType) {

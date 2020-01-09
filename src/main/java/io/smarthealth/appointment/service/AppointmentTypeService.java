@@ -38,6 +38,7 @@ public class AppointmentTypeService {
     }
         
 
+    
     @Transactional
     public AppointmentType createAppointmentType(AppointmentTypeData data) {
         AppointmentType appointmentType = AppointmentTypeData.map(data);

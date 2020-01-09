@@ -41,6 +41,7 @@ public class Payer extends Auditable {
     private BankBranch bankBranch;
 
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_payer_payment_terms_id"))
     private PaymentTerms paymentTerms;
 
     @Column(name = "is_insurance")

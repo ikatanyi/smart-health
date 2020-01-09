@@ -1,9 +1,13 @@
 package io.smarthealth.accounting.payment.service;
 
-import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.accounting.acc.service.AccountService;
+import io.smarthealth.accounting.billing.domain.Bill;
+import io.smarthealth.accounting.billing.domain.BillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.accounting.payment.data.FinancialTransactionData;
+import io.smarthealth.accounting.payment.data.CreateTransactionData;
 import io.smarthealth.accounting.payment.domain.Payment;
 import io.smarthealth.accounting.payment.domain.FinancialTransaction;
 import io.smarthealth.accounting.payment.domain.enumeration.TrxType;
@@ -20,7 +24,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.FinancialTransactionRepository;
+import io.smarthealth.infrastructure.utility.UuidGenerator;
 import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  *
@@ -28,31 +35,26 @@ import java.time.LocalDateTime;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class PaymentService {
 
     private final FinancialTransactionRepository transactionRepository;
     private final AccountService accountService;
+    private final BillingService billingService;
 
-    public PaymentService(FinancialTransactionRepository transactionRepository, AccountService accountService) {
-        this.transactionRepository = transactionRepository;
-        this.accountService = accountService;
-    }
- 
     @Transactional
-    public FinancialTransactionData createTransaction(FinancialTransactionData transactionData) {
-        //TODO determine the users session and get the shift id from
-        
+    public FinancialTransactionData createTransaction(CreateTransactionData transactionData) {
+
         FinancialTransaction transaction = new FinancialTransaction();
         transaction.setDate(transactionData.getDate());
-        transaction.setTrxType(transactionData.getTrxType());
-        transaction.setReceiptNo(transactionData.getReceiptNo());
+        transaction.setTrxType(TrxType.payment);
+        transaction.setReceiptNo(RandomStringUtils.randomNumeric(6));
         transaction.setShiftNo("0000");
-        transaction.setTransactionId(UUID.randomUUID().toString());
-        transaction.setInvoice(transactionData.getInvoice()); 
-        
-        AccountEntity acc=accountService.findOneWithNotFoundDetection(transactionData.getAccount());
-        transaction.setAccount(acc);
-        
+        transaction.setTransactionId(UuidGenerator.newUuid());
+        transaction.setInvoice(transactionData.getBillNumber());
+
+//        AccountEntity acc=accountService.findOneWithNotFoundDetection(transactionData.getAccount());
+//        transaction.setAccount(acc);
         if (!transactionData.getPayment().isEmpty()) {
             List<Payment> paylist = transactionData.getPayment()
                     .stream()
@@ -61,8 +63,28 @@ public class PaymentService {
             transaction.addPayments(paylist);
         }
 
-       
-        FinancialTransaction trans = transactionRepository.save(transaction);
+        final FinancialTransaction trans = transactionRepository.save(transaction);
+
+        Optional<Bill> bill = billingService.findByBillNumber(transactionData.getBillNumber());
+
+        if (bill.isPresent()) {
+            Bill b = bill.get();
+            b.setStatus(BillStatus.Final);
+            billingService.save(b);
+        }
+
+        if (!transactionData.getBillItems().isEmpty()) {
+            transactionData.getBillItems()
+                    .stream()
+                    .forEach(data -> {
+                        BillItem item = billingService.findBillItemById(data.getBillItemId());
+                        item.setPaid(Boolean.TRUE);
+                        item.setStatus(BillStatus.Final);
+                        item.setBalance(0D);
+                        billingService.updateBillItem(item);
+                    });
+
+        }
 
         return FinancialTransactionData.map(trans);
 
@@ -102,22 +124,22 @@ public class PaymentService {
 
     @Transactional
     public FinancialTransactionData refund(Long id, Double amount) {
-        
+
         FinancialTransaction trans = findTransactionOrThrowException(id);
         if (amount > trans.getAmount()) {
             throw APIException.badRequest("Refund amount is more than the receipt amount");
         }
-        
+
         FinancialTransaction toSave = new FinancialTransaction();
         toSave.setDate(LocalDateTime.now());
         toSave.setTrxType(TrxType.refund);
         toSave.setReceiptNo(trans.getReceiptNo());
         toSave.setShiftNo("0000");
         toSave.setTransactionId(UUID.randomUUID().toString());
-        toSave.setInvoice(trans.getInvoice()); 
+        toSave.setInvoice(trans.getInvoice());
         toSave.setAccount(trans.getAccount());
         toSave.setAmount(amount);
-        
+
         FinancialTransaction trns = transactionRepository.save(toSave);
         return FinancialTransactionData.map(trns);
 

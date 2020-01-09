@@ -5,6 +5,9 @@
  */
 package io.smarthealth.clinical.record.service;
 
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
@@ -41,27 +44,29 @@ public class DoctorRequestService implements DateConverter {
 
     // @Autowired
     private final ModelMapper modelMapper;
-
-    private final DepartmentService departmentService;
-
-    public DoctorRequestService(DoctorsRequestRepository doctorRequestRepository, PatientQueueService patientQueueService, ModelMapper modelMapper, DepartmentService departmentService) {
+    
+    private final ServicePointService servicePointService;
+    
+    public DoctorRequestService(DoctorsRequestRepository doctorRequestRepository, PatientQueueService patientQueueService, ModelMapper modelMapper, ServicePointService servicePointService) {
         this.doctorRequestRepository = doctorRequestRepository;
         this.patientQueueService = patientQueueService;
         this.modelMapper = modelMapper;
-        this.departmentService = departmentService;
+        this.servicePointService = servicePointService;
     }
-
+    
     @Transactional
     public List<DoctorRequest> createRequest(List<DoctorRequest> docRequests) {
         List<DoctorRequest> docReqs = doctorRequestRepository.saveAll(docRequests);
         //Send patient to queue
         for (DoctorRequest docRequest : docReqs) {
             PatientQueue patientQueue = new PatientQueue();
-            Department department = departmentService.findByServicePointTypeAndloggedFacility(docRequest.getRequestType());             //check if patient is already queued
-            if (patientQueueService.patientIsQueued(department, docRequest.getPatient())) {
+//            Department department = departmentService.findByServicePointTypeAndloggedFacility(docRequest.getRequestType());      
+            ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(docRequest.getRequestType()));
+            //check if patient is already queued
+            if (patientQueueService.patientIsQueued(servicePoint, docRequest.getPatient())) {
                 continue;
             }
-            patientQueue.setDepartment(department);
+            patientQueue.setServicePoint(servicePoint);
             patientQueue.setPatient(docRequest.getPatient());
             patientQueue.setSpecialNotes("");
             patientQueue.setStatus(true);
@@ -69,9 +74,9 @@ public class DoctorRequestService implements DateConverter {
             patientQueue.setVisit(docRequest.getVisit());
             PatientQueue savedQueue = patientQueueService.createPatientQueue(patientQueue);
         }
-
+        
         return docReqs;
-
+        
     }
 
 //    public List<DoctorRequestData> findAll(final String visitNumber, final String status, final String requestType, String from, String to, Pageable page) {
@@ -87,37 +92,37 @@ public class DoctorRequestService implements DateConverter {
         Page<DoctorRequest> docReqs = doctorRequestRepository.findByVisitAndRequestType(visit, requestType, pageable);
         return docReqs;
     }
-
+    
     public Page<DoctorRequest> findAllRequestsByVisit(final Visit visit, Pageable pageable) {
         Page<DoctorRequest> docReqs = doctorRequestRepository.findByVisit(visit, pageable);
         return docReqs;
     }
-
+    
     public Page<DoctorRequest> findAllRequestsByOrderNoAndRequestType(final String orderNo, String requestType, Pageable pageable) {
         Page<DoctorRequest> docReqs = doctorRequestRepository.findByOrderNumberAndRequestType(orderNo, requestType, pageable);
         return docReqs;
     }
-
+    
     public Page<DoctorRequest> fetchAllDoctorRequests(final String visitNumber, final String requestType, final String fulfillerStatus, Pageable pageable) {
         Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, requestType, fulfillerStatus);
-
+        
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
         return docReqs;
     }
-
+    
     public Page<DoctorRequest> fetchDoctorRequestLine(final String fulfillerStatus, final String requestType, Pageable pageable) {
         return doctorRequestRepository.findRequestLine(fulfillerStatus, requestType, pageable);
     }
-
+    
     public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final String fullfillerStatus, final String requestType) {
         return doctorRequestRepository.findServiceRequestsByPatient(patient, fullfillerStatus, requestType);
     }
-
+    
     public Optional<DoctorRequestData> getDocRequestById(Long id) {
         Optional<DoctorRequestData> entity = doctorRequestRepository.findById(id).map(p -> DoctorRequestToData(p));
         return entity;
     }
-
+    
     public DoctorRequestData UpdateDocRequest(DoctorRequestData requestData) {
         DoctorRequest docReq = convertDoctorRequestData(requestData);
         Optional<DoctorRequest> entity = doctorRequestRepository.findById(docReq.getId());
@@ -126,7 +131,7 @@ public class DoctorRequestService implements DateConverter {
         }
         return DoctorRequestToData(docReq);
     }
-
+    
     public ResponseEntity<?> deleteById(long Id) {
         try {
             doctorRequestRepository.deleteById(Id);
@@ -135,12 +140,12 @@ public class DoctorRequestService implements DateConverter {
             return ResponseEntity.notFound().build();
         }
     }
-
+    
     public DoctorRequestData DoctorRequestToData(DoctorRequest docRequest) {
         DoctorRequestData docReqData = modelMapper.map(docRequest, DoctorRequestData.class);
         return docReqData;
     }
-
+    
     public DoctorRequest convertDoctorRequestData(DoctorRequestData docRequestData) {
         DoctorRequest docReqData = modelMapper.map(docRequestData, DoctorRequest.class);
         return docReqData;

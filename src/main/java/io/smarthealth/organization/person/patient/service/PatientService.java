@@ -5,7 +5,19 @@
  */
 package io.smarthealth.organization.person.patient.service;
 
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.queue.domain.PatientQueue;
+import io.smarthealth.clinical.queue.service.PatientQueueService;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.sequence.SequenceType;
+import io.smarthealth.infrastructure.sequence.service.SequenceService;
+import io.smarthealth.organization.facility.domain.Facility;
+import io.smarthealth.organization.facility.service.FacilityService;
 import io.smarthealth.organization.person.data.AddressData;
 import io.smarthealth.organization.person.data.ContactData;
 import io.smarthealth.organization.person.domain.*;
@@ -17,7 +29,9 @@ import io.smarthealth.organization.person.patient.domain.PatientIdentifierReposi
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.organization.person.patient.domain.specification.PatientSpecification;
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,6 +66,18 @@ public class PatientService {
     PatientIdentifierRepository patientIdentifierRepository;
 
     @Autowired
+    ServicePointService servicePointService;
+
+    @Autowired
+    FacilityService facilityService;
+
+    @Autowired
+    VisitService visitService;
+
+    @Autowired
+    SequenceService sequenceService;
+
+    @Autowired
     ModelMapper modelMapper;
 
     @Autowired
@@ -59,6 +85,9 @@ public class PatientService {
 
     @Autowired
     PatientIdentifierService patientIdentifierService;
+
+    @Autowired
+    PatientQueueService patientQueueService;
 
     private final File patientImageDirRoot;
 
@@ -239,21 +268,50 @@ public class PatientService {
             savedPatient.setIdentifications(patientIdentifiersList);
         }
 
+        Facility facilityLogged = facilityService.loggedFacility();
         if (patient.getVisitType() != null) {
+            Visit visit = new Visit();
+            visit.setPatient(savedPatient);
+            visit.setScheduled(Boolean.TRUE);
+
+            visit.setStartDatetime(LocalDateTime.now());
+            visit.setStatus(VisitEnum.Status.CheckIn);
+            visit.setVisitType(VisitEnum.VisitType.Outpatient);
+            //generate visit number
+            visit.setVisitNumber(sequenceService.nextNumber(SequenceType.VisitNumber));
+            ServicePoint servicePoint = null;
             if (patient.getVisitType().equals("OPD_VISIT")) {
+                //find service point by service type
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Triage);
                 //send to triage
+                visit.setServicePoint(servicePoint);
             } else if (patient.getVisitType().equals("EMERGENCY_VISIT")) {
-                
+
             } else if (patient.getVisitType().equals("PHARMACY_VISIT")) {
                 //send to pharmacy
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Pharmacy);
 
+                visit.setServicePoint(servicePoint);
             } else if (patient.getVisitType().equals("LABORATORY_VISIT")) {
                 //send to laboratory
-
+                servicePoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
+                visit.setServicePoint(servicePoint);
             } else if (patient.getVisitType().equals("IPD_VISIT")) {
                 //send to inpatient
 
             }
+
+            visitService.createAVisit(visit);
+            //insert into patient visit log
+            PatientQueue queue = new PatientQueue();
+            queue.setPatient(savedPatient);
+            queue.setServicePoint(servicePoint);
+            queue.setSpecialNotes(patient.getVisitType());
+            queue.setStatus(true);
+            queue.setUrgency(PatientQueue.QueueUrgency.Normal);
+            queue.setVisit(visit);
+
+            patientQueueService.createPatientQueue(queue);
         }
 
         return savedPatient;

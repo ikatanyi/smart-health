@@ -14,8 +14,6 @@ import lombok.Data;
 @Table(name = "payer_scheme")
 public class Scheme extends Auditable {
 
-    
-
     public enum Type {
         Corporate,
         Individual
@@ -26,8 +24,7 @@ public class Scheme extends Auditable {
         Inpatient,
         Both
     }
-    //i need contact informations for this
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Payer payer;
     private String schemeCode;
     private String schemeName;
@@ -36,10 +33,10 @@ public class Scheme extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private Type type;
-    
+
     @Enumerated(EnumType.STRING)
     private PolicyCover policyCover;
-    
+
     private Boolean active;
     // any other scheme configuration parameters will
     // have a single configuration class to hold configurations values for this

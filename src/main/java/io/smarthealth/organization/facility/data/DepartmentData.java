@@ -20,6 +20,7 @@ import lombok.Data;
 @Data
 public class DepartmentData {
 
+    
     @Enumerated(EnumType.STRING)
     private Department.Type type;
     @NotBlank

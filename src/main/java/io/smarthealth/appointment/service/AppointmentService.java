@@ -5,6 +5,7 @@
  */
 package io.smarthealth.appointment.service;
 
+import io.smarthealth.accounting.payment.domain.FinancialTransaction;
 import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.appointment.domain.Appointment;
 import io.smarthealth.appointment.domain.AppointmentRepository;
@@ -96,6 +97,28 @@ public class AppointmentService {
         return savedAppointment;
 
     }
+    
+    public Appointment UpdateAppointment(Long id, AppointmentData appointment) {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        
+        findAppointmentOrThrowException(id);
+
+        Employee practitioner = employeeService.fetchEmployeeByNumberOrThrow(appointment.getPractitionerCode()); 
+              
+        AppointmentType appointmentType = appointmentTypeService.fetchAppointmentTypeById(appointment.getAppointmentTypeId());
+       
+        //Verify patient number
+        Patient patient = findPatientOrThrow(appointment.getPatientNumber());
+        Appointment entity = modelMapper.map(appointment, Appointment.class); 
+        entity.setPractitioner(practitioner);
+        //Appointment entity = AppointmentData.map(appointment);
+        entity.setPatient(patient);
+        entity.setAppointmentType(appointmentType);
+        
+        Appointment savedAppointment = appointmentRepository.save(entity);         
+        return savedAppointment;
+
+    }
 
     public Appointment fetchAppointmentByNo(final String appointmentNo) {
         return appointmentRepository.findByAppointmentNo(appointmentNo).orElseThrow(() -> APIException.notFound("Appointment identified by {0} not found", appointmentNo));
@@ -118,6 +141,11 @@ public class AppointmentService {
     private Patient findPatientOrThrow(String patientNumber) {
         return this.patientRepository.findByPatientNumber(patientNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Number : {0} not found.", patientNumber));
+    }
+    
+    public Appointment findAppointmentOrThrowException(Long id) {
+        return this.appointmentRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Transaction with id {0} not found.", id));
     }
 
     private void throwIfAppointmentStatusInvalid(String status) {

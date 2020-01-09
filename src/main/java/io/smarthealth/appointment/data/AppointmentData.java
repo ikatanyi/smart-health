@@ -6,6 +6,7 @@ import io.smarthealth.appointment.domain.Appointment;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.TIME_PATTERN;
 import io.smarthealth.organization.facility.data.EmployeeData;
+import io.smarthealth.organization.facility.domain.Employee.Category;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -43,6 +44,8 @@ public class AppointmentData implements Serializable {
     private String patientNumber;
     private String patientName;
     private String practitionerCode;
+    @Enumerated(EnumType.STRING)
+    private Category practitionerCategory;
     private String practionerName;
     private String departmentName;
     private String typeOfAppointment;
@@ -85,9 +88,10 @@ public class AppointmentData implements Serializable {
         }
         
         if (appointment.getPractitioner() != null) {
-            data.getPractitionerData().setStaffNumber(appointment.getPractitioner().getStaffNumber());
-            data.getPractitionerData().setFullName(appointment.getPractitioner().getFullName());
-            data.getPractitionerData().setDepartmentName(appointment.getPractitioner().getDepartment().getName());
+            data.setPractitionerCode(appointment.getPractitioner().getStaffNumber());
+            data.setPractionerName(appointment.getPractitioner().getFullName());
+            data.setDepartmentName(appointment.getPractitioner().getDepartment().getName());
+            data.setPractitionerCategory(appointment.getPractitioner().getEmployeeCategory());
         }
         
         data.setAppointmentId(appointment.getId());
@@ -97,7 +101,7 @@ public class AppointmentData implements Serializable {
         data.setEndTime(appointment.getEndTime());
         data.setStartTime(appointment.getStartTime());
         data.setStatus(Status.valueOf(appointment.getStatus()));
-        data.setUrgency(Urgency.valueOf(appointment.getUrgency()));
+        data.setUrgency(appointment.getUrgency());
         return data;
     }
 }

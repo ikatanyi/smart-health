@@ -2,6 +2,8 @@ package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.utility.UuidGenerator;
+import io.smarthealth.stock.inventory.data.AdjustmentData;
 import io.smarthealth.stock.inventory.data.StockAdjustmentData;
 import io.smarthealth.stock.inventory.domain.StockAdjustment;
 import io.smarthealth.stock.inventory.domain.StockAdjustmentRepository;
@@ -31,32 +33,40 @@ public class InventoryAdjustmentService {
     private final InventoryEventSender inventoryEventSender;
 
     // create Invariance
-    public StockAdjustment createStockAdjustment(StockAdjustmentData data) {
-        StockAdjustment stocks = new StockAdjustment();
-        Item item = itemService.findItemEntityOrThrow(data.getItemId());
-        Store store = storeService.getStoreWithNoFoundDetection(data.getStoreId());
+    public String createStockAdjustment(AdjustmentData data) {
+        String trdId = UuidGenerator.newUuid();
 
-        stocks.setComments(data.getComments());
-        stocks.setDateRecorded(data.getDateRecorded());
-        stocks.setItem(item);
-        stocks.setStore(store);
-        stocks.setQuantity(data.getQuantity());
-        stocks.setReasons(data.getReasons());
+        if (!data.getAdjustments().isEmpty()) {
 
-        StockAdjustment stockAdjstment = stockAdjustmentRepository.save(stocks);
+            data.getAdjustments()
+                    .stream()
+                    .forEach(adjt -> {
 
-        //TODO : Stock Movement that should affect stock balance
-//        trigger a stock movement
-        Double qty = stockAdjstment.getQuantity();
+                        StockAdjustment stocks = new StockAdjustment();
+                        Item item = itemService.findItemEntityOrThrow(adjt.getItemId());
+                        Store store = storeService.getStoreWithNoFoundDetection(data.getStoreId());
 
-        InventoryEvent.Type type = InventoryEvent.Type.Increase;
-        if (qty < 0) {
-            type = InventoryEvent.Type.Decrease;
+                        stocks.setTransactionId(trdId);
+                        stocks.setDateRecorded(data.getDateRecorded());
+                        stocks.setItem(item);
+                        stocks.setStore(store); 
+                        stocks.setReasons(data.getReasons()); 
+                        stocks.setQuantityBalance(adjt.getQuantityBalance());
+                        stocks.setQuantityAdjusted(adjt.getQuantityAdjusted());
+                        stocks.setQuantityCounted(adjt.getQuantityCounted());
+
+                        StockAdjustment stockAdjstment = stockAdjustmentRepository.save(stocks);
+
+                        if (data.getAdjustmentMode().equals("quantity")) {
+                            inventoryEventSender.process(new InventoryEvent(InventoryEvent.Type.Adjustment, store, item, stockAdjstment.getQuantityCounted()));
+                        }
+                    });
         }
+        return trdId;
+    }
 
-        inventoryEventSender.process(new InventoryEvent(type, store.getId(), item.getId(), qty));
-
-        return stockAdjstment;
+    public StockAdjustment save(StockAdjustment adjst) {
+        return stockAdjustmentRepository.save(adjst);
     }
 
     public StockAdjustment getStockAdjustment(Long id) {

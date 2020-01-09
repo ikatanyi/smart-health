@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.visit.domain;
 
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Department;
@@ -29,8 +30,8 @@ public class Visit extends Auditable {
     private String visitNumber;
 
     @ManyToOne(fetch = FetchType.LAZY/*, optional = false*/)
-    @JoinColumn(name = "department_id", foreignKey = @ForeignKey(name = "fk_visit_department_id"))
-    private Department department;
+    @JoinColumn(name = "service_point_id", foreignKey = @ForeignKey(name = "fk_visit_service_point"))
+    private ServicePoint servicePoint;
 
     private LocalDateTime startDatetime;
     private LocalDateTime stopDatetime;
