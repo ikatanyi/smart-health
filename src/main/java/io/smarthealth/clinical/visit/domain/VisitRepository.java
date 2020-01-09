@@ -37,8 +37,8 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN 'true' ELSE 'false' END FROM Visit c WHERE c.status=:currentStatus AND  c.patient.patientNumber = :patient")
     Boolean visitExists(@Param("currentStatus") final String status, @Param("patient") final String patient);
 
-    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN 'true' ELSE 'false' END FROM Visit c WHERE c.status='RUNNING' and c.visitNumber=:visitNumber")
-    Boolean isVisitRunning(@Param("visitNumber") String visitNumber);
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN 'true' ELSE 'false' END FROM Visit c WHERE (c.status='CheckIn' OR c.status = 'Admitted') and c.patient=:patient")
+    Boolean isPatientVisitActive(@Param("patient") Patient patient);
 
     @Query(value = "SELECT max(id) FROM Visit")
     public Integer maxVisitId();

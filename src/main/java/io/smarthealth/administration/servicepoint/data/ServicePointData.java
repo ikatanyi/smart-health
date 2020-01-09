@@ -1,13 +1,13 @@
 package io.smarthealth.administration.servicepoint.data;
 
 import io.smarthealth.accounting.acc.data.SimpleAccountData;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint; 
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import lombok.Data;
 
 /**
  *
  * @author Kelsas
- */ 
+ */
 @Data
 public class ServicePointData {
 

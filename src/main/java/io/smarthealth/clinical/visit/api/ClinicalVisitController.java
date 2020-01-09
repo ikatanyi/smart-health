@@ -19,6 +19,7 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Department;
@@ -82,20 +83,30 @@ public class ClinicalVisitController {
     @ApiOperation(value = "Submit a new patient visit", response = VisitData.class)
     public @ResponseBody
     ResponseEntity<?> addVisitRecord(@RequestBody @Valid final VisitData visitData) {
-        Patient patient = patientService.findPatientOrThrow(visitData.getPatientNumber());
-        Department department = departmentService.fetchDepartmentByCode(visitData.getDepartmentCode());
 
-//        ServicePoint servicePoint = servicePointService.getServicePointByType(department.getServicePointType().getServicePointType());
+        Patient patient = patientService.findPatientOrThrow(visitData.getPatientNumber());
+        //check if patient has an active visit
+        if (visitService.isPatientVisitActive(patient)) {
+            throw APIException.conflict("Patient identified by {0} already has an active visit", patient.getPatientNumber());
+        }
+        Employee employee = null;
+        if (visitData.getPractitionerCode() != null || !visitData.getPractitionerCode().equals("")) {
+            employee = employeeService.fetchEmployeeByNumberOrThrow(visitData.getPractitionerCode());
+        }
+        ServicePoint servicePoint = servicePointService.getServicePoint(visitData.getServicePointIdentifier());
+
+        System.out.println("Selected service point " + servicePoint.getName());
         Visit visit = VisitData.map(visitData);
         //generate visit number
         visit.setVisitNumber(sequenceService.nextNumber(SequenceType.VisitNumber)/*String.valueOf(visitService.generateVisitNumber())*/);
         visit.setStartDatetime(visitData.getStartDatetime());
         visit.setPatient(patient);
+        visit.setServicePoint(servicePoint);
+        visit.setHealthProvider(employee);
         visit = this.visitService.createAVisit(visit);
         //Push it to queue
-
         PatientQueue patientQueue = new PatientQueue();
-        patientQueue.setServicePoint(department.getServicePointType());
+        patientQueue.setServicePoint(servicePoint);
         patientQueue.setPatient(patient);
         patientQueue.setStatus(true);
         patientQueue.setVisit(visit);
@@ -169,22 +180,29 @@ public class ClinicalVisitController {
     @ApiOperation(value = "", response = VitalRecordData.class)
     public @ResponseBody
     ResponseEntity<VitalRecordData> addVitalRecordByPatient(@PathVariable("patientNo") String patientNo, @RequestBody @Valid final VitalRecordData vital) {
-        VitalsRecord vitalR = this.triageService.addVitalRecordsByPatient(patientNo, vital);
-        System.out.println("vital.getUrgency() " + vital.getUrgency());
-        //Update queue
-        PatientQueue patientQueue = patientQueueService.fetchQueueByVisitNumber(vitalR.getVisit());
+        Patient patient = patientService.findPatientOrThrow(patientNo);
+
+        VitalsRecord vitalR = this.triageService.addVitalRecordsByPatient(patient, vital);
+        //log queue
+        PatientQueue patientQueue = new PatientQueue(); //patientQueueService.fetchQueueByVisitNumber(vitalR.getVisit());
         patientQueue.setUrgency(PatientQueue.QueueUrgency.valueOf(vital.getUrgency()));
+        patientQueue.setPatient(patient);
+        patientQueue.setVisit(vitalR.getVisit());
         if (vital.getSendTo().equals("specialist")) {
             Employee employee = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());
             patientQueue.setStaffNumber(employee);
             patientQueue.setServicePoint(employee.getDepartment().getServicePointType());
             patientQueue.setSpecialNotes("Sent from triage");
             vitalR.getVisit().setServicePoint(employee.getDepartment().getServicePointType());
-        } else if (vital.getSendTo().equals("department")) {
-            Department department = departmentService.fetchDepartmentByCode(vital.getDepartmentCode());
-            patientQueue.setServicePoint(department.getServicePointType());
+            vitalR.getVisit().setHealthProvider(employee);
+        } else if (vital.getSendTo().equals("Service Point")) {
+            ServicePoint servicePoint = servicePointService.getServicePoint(vital.getServicePointIdentifier());
+            if (servicePoint.getServicePointType().equals(ServicePointType.Triage)) {
+                throw APIException.conflict("Please select another service point. Patient is already on {0}", ServicePointType.Triage.name());
+            }
+            patientQueue.setServicePoint(servicePoint);
             patientQueue.setSpecialNotes("Sent from triage");
-            vitalR.getVisit().setServicePoint(department.getServicePointType());
+            vitalR.getVisit().setServicePoint(servicePoint);
         } else {
             //patientQueue.setStatus(false);
         }
@@ -218,6 +236,10 @@ public class ClinicalVisitController {
 
     private VisitData convertToVisitData(Visit visit) {
         VisitData visitData = modelMapper.map(visit, VisitData.class);
+        if (visit.getServicePoint() != null) {
+            visitData.setServicePointIdentifier(visit.getServicePoint().getId());
+            visitData.setServicePointName(visit.getServicePoint().getName());
+        }
         Patient patient = patientService.findPatientOrThrow(visitData.getPatientNumber());
         visitData.setPatientData(patientService.convertToPatientData(patient));
         return visitData;
