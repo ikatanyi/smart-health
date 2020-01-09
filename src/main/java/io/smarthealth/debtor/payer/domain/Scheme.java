@@ -38,7 +38,7 @@ public class Scheme extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private PolicyCover cover;
-    private String category;
+    //private String category;
 
     @Column(nullable = false, unique = true)
     private String telNo;

@@ -85,7 +85,7 @@ public class InvoiceService {
                     Invoice inv = invoiceRepository.save(invoice);
 
                     Payer payer = payerService.findPayerByIdWithNotFoundDetection(debt.getPayerId());
-                    InsuranceScheme scheme = schemeService.fetchSchemeById(debt.getSchemeId());
+                    Scheme scheme = schemeService.fetchSchemeById(debt.getSchemeId());
 
                     Debtors debtor = createDebtor(debt);
                     debtor.setPayer(payer);
@@ -105,17 +105,17 @@ public class InvoiceService {
         InvoiceLineItem lineItem = new InvoiceLineItem();
         BillItem item = billingService.findBillItemById(data.getBillItemId());
         item.setStatus(BillStatus.Final);
-  
+
         lineItem.setBillItem(item);
         lineItem.setDeleted(false);
-        
+
         lineItem.setTransactionId(trxId);
         return lineItem;
     }
 
     private Debtors createDebtor(DebtorData debt) {
         Debtors debtor = new Debtors();
-        debtor.setBalance(debt.getAmount()); 
+        debtor.setBalance(debt.getAmount());
         debtor.setInvoiceAmount(debt.getAmount());
         debtor.setMemberName(debt.getMemberName());
         debtor.setMemberNumber(debt.getMemberNo());

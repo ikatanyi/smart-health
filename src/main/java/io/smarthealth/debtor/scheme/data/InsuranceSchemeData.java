@@ -28,7 +28,7 @@ public class InsuranceSchemeData {
     private String schemeName;
     @Enumerated(EnumType.STRING)
     private PolicyCover cover;
-    private String category;
+    //private String category;
 
     private LocalDate startDate;
     private LocalDate endDate;
@@ -51,7 +51,7 @@ public class InsuranceSchemeData {
 
     public static InsuranceSchemeData map(Scheme i) {
         InsuranceSchemeData d = new InsuranceSchemeData();
-        d.setCategory(i.getCategory());
+//        d.setCategory(i.getCategory());
         d.setCover(i.getCover());
         d.setEmailAddress(i.getEmailAddress());
         d.setLine1(i.getLine1());
@@ -67,7 +67,7 @@ public class InsuranceSchemeData {
 
     public static Scheme map(InsuranceSchemeData d) {
         Scheme i = new Scheme();
-        i.setCategory(d.getCategory());
+//        i.setCategory(d.getCategory());
         i.setCover(d.getCover());
         i.setEmailAddress(d.getEmailAddress());
         i.setLine1(d.getLine1());

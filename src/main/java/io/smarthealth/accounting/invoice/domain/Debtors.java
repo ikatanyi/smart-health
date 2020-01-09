@@ -35,7 +35,7 @@ public class Debtors extends Auditable {
     private Payer payer;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_debtor_invoice_scheme_id"))
-    private InsuranceScheme scheme;
+    private Scheme scheme;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_debtor_invoice_invoice_id"))
     private Invoice invoice;
