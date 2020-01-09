@@ -1,5 +1,6 @@
 package io.smarthealth.appointment.domain;
 
+import io.smarthealth.appointment.data.AppointmentData.Urgency;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -29,10 +30,7 @@ public class Appointment extends Auditable {
     private String appointmentNo;
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_procedure_id"))
-    private Item procedure;
-    @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_practioneer_id"))
-    private Employee practioneer;
+    private Item procedure;    
 
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_department_id"))
@@ -44,11 +42,15 @@ public class Appointment extends Auditable {
 
     private LocalDate appointmentDate;
 
+    @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_empoyee_id"))
+    private Employee practitioner;
+    
     private LocalTime startTime;
     private LocalTime endTime;
 
     private Boolean allDay;
-    private String urgency;
+    private Urgency urgency;
     private String comments;
     private String status; //new followup 
     @OneToOne

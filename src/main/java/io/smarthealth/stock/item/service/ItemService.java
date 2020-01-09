@@ -13,7 +13,7 @@ import io.smarthealth.stock.inventory.service.InventoryEventSender;
 import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.data.ItemData;
-import io.smarthealth.stock.item.data.Uoms;
+import io.smarthealth.stock.item.data.Uoms; 
 import io.smarthealth.stock.item.domain.Drug;
 import io.smarthealth.stock.item.domain.DrugRepository;
 import io.smarthealth.stock.item.domain.Item;
@@ -64,7 +64,7 @@ public class ItemService {
     @Transactional
     @CachePut
     public ItemData createItem(CreateItem createItem) {
-        Item item = new Item();
+        Item item = new Item(); 
         item.setActive(Boolean.TRUE);
         item.setCategory(createItem.getStockCategory());
         item.setCostRate(createItem.getPurchaseRate());

@@ -155,8 +155,12 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-        
-<!--         caching 
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
+   
+        <!--         caching 
         <dependency>
             <groupId>javax.cache</groupId>
             <artifactId>cache-api</artifactId>
