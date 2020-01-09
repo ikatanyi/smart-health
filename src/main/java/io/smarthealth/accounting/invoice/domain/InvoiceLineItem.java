@@ -29,6 +29,7 @@ public class InvoiceLineItem extends Auditable {
     @ManyToOne
     @JoinColumn(name = "item_id", foreignKey = @ForeignKey(name = "fk_invoiceline_billitem_id"))
     private BillItem billItem; 
+    
     private boolean deleted;
     private String transactionId;
 }
