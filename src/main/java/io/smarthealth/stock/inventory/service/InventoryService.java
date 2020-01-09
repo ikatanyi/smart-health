@@ -2,9 +2,9 @@ package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.sequence.service.TxnService;
 import io.smarthealth.infrastructure.utility.UuidGenerator;
 import io.smarthealth.stock.inventory.data.CreateStockEntry;
-import io.smarthealth.stock.inventory.data.StockEntryData;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,9 +17,11 @@ import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
+import java.math.BigDecimal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -33,10 +35,12 @@ public class InventoryService {
     private final ItemService itemService;
     private final StoreService storeService;
     private final InventoryEventSender inventoryEventSender;
+    private final TxnService txnService;
 
+    @Transactional
     public String createStockEntry(CreateStockEntry stockData) {
 
-        String trxId = UuidGenerator.newUuid();
+        String trxId = txnService.nextId();
 
         if (!stockData.getItems().isEmpty()) {
             stockData.getItems()
@@ -44,11 +48,13 @@ public class InventoryService {
                     .forEach(st -> {
                         Item item = itemService.findItemEntityOrThrow(st.getItemId());
                         Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
-
+                         BigDecimal qty = BigDecimal.valueOf(st.getQuantity());
+                         Double qtyAmt =stockData.getMovementType()==MovementType.Dispensed ? qty.negate().doubleValue() : qty.doubleValue();
+                         
                         StockEntry stock = new StockEntry();
                         stock.setAmount(st.getAmount());
                         stock.setDeliveryNumber(stockData.getDeliveryNumber());
-                        stock.setQuantity(st.getQuantity());
+                        stock.setQuantity(qtyAmt);
                         stock.setItem(item);
                         stock.setMoveType(stockData.getMovementType());
                         stock.setPrice(st.getPrice());
@@ -60,13 +66,13 @@ public class InventoryService {
                         stock.setUnit(st.getUnit());
 
                         StockEntry savedEntry = stockEntryRepository.save(stock);
-                        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), store, item, savedEntry.getQuantity()));
+                        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), store, item, qty.doubleValue()));
                     });
 
         }
         return trxId;
     }
-
+@Transactional
     public void save(StockEntry entry) {
         StockEntry savedEntry = stockEntryRepository.save(entry); 
         inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), savedEntry.getStore(), savedEntry.getItem(), savedEntry.getQuantity()));
@@ -172,4 +178,5 @@ public class InventoryService {
 //        return adjstments;
 //    }
 
+    //TODO:: Post the changes to the ledgerr
 }

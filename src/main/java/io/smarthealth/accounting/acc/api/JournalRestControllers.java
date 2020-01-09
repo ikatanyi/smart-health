@@ -33,8 +33,8 @@ public class JournalRestControllers {
     @PostMapping
     @ResponseBody
     ResponseEntity<?> createJournalEntry(@RequestBody @Valid final JournalEntry journalEntry) {
-        if (this.journalEntryService.findJournalEntry(journalEntry.getTransactionIdentifier()).isPresent()) {
-            throw ServiceException.conflict("Journal entry {0} already exists.", journalEntry.getTransactionIdentifier());
+        if (this.journalEntryService.findJournalEntry(journalEntry.getJournalNumber()).isPresent()) {
+            throw ServiceException.conflict("Journal entry number {0} already exists.", journalEntry.getJournalNumber());
         }
 
         if (journalEntry.getDebtors().isEmpty()) {

@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * Stock Entry
@@ -21,10 +22,12 @@ import lombok.Data;
 @Table(name = "stock_inventory_entries")
 public class StockEntry extends Auditable {
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_entry_store_id"))
     private Store store;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_entry_item_id"))
     private Item item;
@@ -36,8 +39,8 @@ public class StockEntry extends Auditable {
     private String referenceNumber; //ref LPO,supplier, patient no
     private String deliveryNumber; //GRN| transaction reference
     private String transactionNumber; //auto generated ST-2019-00002
-    private String journalNumber;
-
+    private String costCenter;
+    private String issuedTo;
     private LocalDate transactionDate;
 
     @Enumerated(EnumType.STRING)
@@ -72,10 +75,10 @@ public class StockEntry extends Auditable {
         data.setReferenceNumber(this.getReferenceNumber());
         data.setDeliveryNumber(this.getDeliveryNumber());
         data.setTransactionNumber(this.getTransactionNumber());
-        data.setJournalNumber(this.getJournalNumber());
         data.setTransactionDate(this.getTransactionDate());
         data.setMoveType(this.getMoveType());
         data.setPurpose(this.getPurpose());
+        data.setCostCenter(this.getCostCenter());
 
         return data;
     }

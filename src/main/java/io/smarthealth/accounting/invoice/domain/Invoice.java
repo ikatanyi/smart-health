@@ -46,7 +46,6 @@ public class Invoice extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payment_terms_id"))
     private PaymentTerms terms; // 'Net 30'
     private String number;  //invoice number
-
     private String currency;
     private Boolean draft; // Outstanding true or false 
     private Boolean closed; // bad debt or not

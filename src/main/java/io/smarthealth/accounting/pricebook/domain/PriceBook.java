@@ -17,6 +17,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne; 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  *
@@ -40,6 +41,8 @@ public class PriceBook extends Auditable {
     @Column(name = "is_increase")
     private Boolean increase; //mark down or mark up
     private Double decimalPlace;
+    
+    @ToString.Exclude
     @ManyToMany
     @JoinTable(name = "pricebook_items", joinColumns = {
         @JoinColumn(name = "pricebook_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_pricebook_items_pricebook_id"))}, inverseJoinColumns = {

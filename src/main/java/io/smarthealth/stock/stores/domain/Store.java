@@ -4,6 +4,7 @@ import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  *
@@ -24,10 +25,12 @@ public class Store extends Identifiable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_sales_account_id"))
     private AccountEntity salesAccount;
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_purchase_account_id"))
     private AccountEntity purchaseAccount;
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_inventory_account_id"))
     private AccountEntity inventoryAccount;
     private boolean active;
