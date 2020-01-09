@@ -21,6 +21,7 @@ public class Scheme extends Auditable {
     }
 
     @ManyToOne(optional = false)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_scheme_payer_id"))
     private Payer payer;
 
     @Column(nullable = false, unique = true)
@@ -39,8 +40,6 @@ public class Scheme extends Auditable {
     @Enumerated(EnumType.STRING)
     private PolicyCover cover;
     private String category;
-
-    @Column(nullable = false, unique = true)
     private String telNo;
     private String mobileNo;
     private String emailAddress;

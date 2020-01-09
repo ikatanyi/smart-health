@@ -1,11 +1,13 @@
 package io.smarthealth.accounting.invoice.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Kelsas
  */
-public interface DebtorsRepository extends JpaRepository<Debtors, Long>{
+@Repository
+public interface PayerInvoiceRepository extends JpaRepository<PayerInvoice, Long> {
     
 }
