@@ -16,6 +16,7 @@ import io.smarthealth.accounting.invoice.domain.specification.InvoiceSpecificati
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
+import io.smarthealth.debtor.scheme.domain.InsuranceScheme;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.sequence.service.TxnService;
@@ -84,7 +85,7 @@ public class InvoiceService {
                     Invoice inv = invoiceRepository.save(invoice);
 
                     Payer payer = payerService.findPayerByIdWithNotFoundDetection(debt.getPayerId());
-                    Scheme scheme = null;
+                    InsuranceScheme scheme = schemeService.fetchSchemeById(debt.getSchemeId());
 
                     Debtors debtor = createDebtor(debt);
                     debtor.setPayer(payer);

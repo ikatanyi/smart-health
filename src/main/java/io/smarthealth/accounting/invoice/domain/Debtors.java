@@ -7,6 +7,7 @@ package io.smarthealth.accounting.invoice.domain;
 
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
+import io.smarthealth.debtor.scheme.domain.InsuranceScheme;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
 import javax.persistence.Entity;
@@ -34,7 +35,7 @@ public class Debtors extends Auditable {
     private Payer payer;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_debtor_invoice_scheme_id"))
-    private Scheme scheme;
+    private InsuranceScheme scheme;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_debtor_invoice_invoice_id"))
     private Invoice invoice;
