@@ -21,6 +21,9 @@ public class CreateStockEntry {
 
     private Long storeId;
     private String store;
+    
+    private Long destinationStoreId;
+    private String destinationStore;
 
     private String referenceNumber; //ref LPO,supplier, patient no
     private String deliveryNumber; //GRN| transaction reference

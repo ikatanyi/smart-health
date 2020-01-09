@@ -12,11 +12,11 @@ import org.hibernate.validator.constraints.Length;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class JournalEntry {
 
-    private String transactionIdentifier;
+    private String journalNumber;
     @NotNull
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime transactionDate;
-    
+    private String transactionNo;
     private String transactionType;
     private String clerk;
     private String note;
@@ -34,14 +34,7 @@ public final class JournalEntry {
         super();
     }
 
-    public String getTransactionIdentifier() {
-        return this.transactionIdentifier;
-    }
-
-    public void setTransactionIdentifier(final String transactionIdentifier) {
-        this.transactionIdentifier = transactionIdentifier;
-    }
-
+   
     public LocalDateTime getTransactionDate() {
         return transactionDate;
     }
@@ -106,6 +99,22 @@ public final class JournalEntry {
         this.message = message;
     }
 
+    public String getJournalNumber() {
+        return journalNumber;
+    }
+
+    public void setJournalNumber(String journalNumber) {
+        this.journalNumber = journalNumber;
+    }
+
+    public String getTransactionNo() {
+        return transactionNo;
+    }
+
+    public void setTransactionNo(String transactionNo) {
+        this.transactionNo = transactionNo;
+    }
+
     @SuppressWarnings("WeakerAccess")
     public enum State {
         PENDING,
@@ -121,7 +130,7 @@ public final class JournalEntry {
             return false;
         }
         JournalEntry that = (JournalEntry) o;
-        return Objects.equals(transactionIdentifier, that.transactionIdentifier)
+        return Objects.equals(journalNumber, that.journalNumber)
                 && Objects.equals(transactionDate, that.transactionDate)
                 && Objects.equals(transactionType, that.transactionType)
                 && Objects.equals(clerk, that.clerk)
@@ -134,13 +143,13 @@ public final class JournalEntry {
 
     @Override
     public int hashCode() {
-        return Objects.hash(transactionIdentifier, transactionDate, transactionType, clerk, note, debtors, creditors, state, message);
+        return Objects.hash(journalNumber, transactionDate, transactionType, clerk, note, debtors, creditors, state, message);
     }
 
     @Override
     public String toString() {
         return "JournalEntry{"
-                + "transactionIdentifier='" + transactionIdentifier + '\''
+                + "journalNumber='" + journalNumber + '\''
                 + ", transactionDate='" + transactionDate + '\''
                 + ", transactionType='" + transactionType + '\''
                 + ", clerk='" + clerk + '\''

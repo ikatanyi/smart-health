@@ -28,7 +28,8 @@ public class StockAdjustment extends Auditable {
     private Item item;
     private Double quantityBalance;
     private Double quantityCounted;
-    private double quantityAdjusted;
+    private Double quantityAdjusted;
+    private Double stockValue;
     private String transactionId;
 
     @Column(name = "variance_reason")

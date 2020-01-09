@@ -22,10 +22,11 @@ public class JournalEntryEntity extends Auditable {
 
     @DateTimeFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate dateBucket;
-    private String transactionIdentifier;
+    private String journalNumber;
     @DateTimeFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime transactionDate;
     private String transactionType;
+    private String transactionNo;
     private String clerk;
     private String note;
     @OneToMany(mappedBy = "journalEntryEntity", cascade = CascadeType.ALL)

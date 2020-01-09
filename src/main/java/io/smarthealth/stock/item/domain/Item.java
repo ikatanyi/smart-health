@@ -1,5 +1,6 @@
 package io.smarthealth.stock.item.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.infrastructure.domain.Identifiable;
@@ -14,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * Product or Service representation
@@ -35,19 +37,27 @@ public class Item extends Identifiable {
     private Boolean discountable;
     private Boolean taxable;
 //    private Double availableStock;
-    
+
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_item_uom"))
     private Uom uom;
+
     private String description;
+
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_item_tax_id"))
     private Tax tax;
 
     //this should be populated if it's a stock item
+    @ToString.Exclude
+    @JsonIgnore
     @OneToMany(mappedBy = "stockItem")
     private List<ReorderRule> reorderRules;
     //sales, purchase, inventory accounts to be linked via the store
+    @ToString.Exclude
+    @JsonIgnore
     @ManyToMany(mappedBy = "priceBookItems")
     private List<PriceBook> priceBooks;
     private Boolean active;
@@ -55,6 +65,7 @@ public class Item extends Identifiable {
     public boolean isInventoryItem() {
         return this.itemType.equals("Inventory");
     }
+
 //    public void decrease(double number){
 //        this.availableStock=this.availableStock-number;
 //        //fire event to decrease the stocks

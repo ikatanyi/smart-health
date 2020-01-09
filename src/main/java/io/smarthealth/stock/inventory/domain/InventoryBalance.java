@@ -8,6 +8,7 @@ import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Balance Transaction Line of a given {@link Item } . It holds the current
@@ -24,11 +25,13 @@ import lombok.NoArgsConstructor;
 public class InventoryBalance extends Identifiable {
 
 //    @Id
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_store_id"))
     private Store store;
 
 //    @Id
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_item_id"))
     private Item item;
@@ -69,4 +72,6 @@ public class InventoryBalance extends Identifiable {
 
         return data;
     }
+    
+    
 }

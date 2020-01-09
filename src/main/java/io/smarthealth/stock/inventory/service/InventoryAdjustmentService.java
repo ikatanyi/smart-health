@@ -2,6 +2,7 @@ package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.sequence.service.TxnService;
 import io.smarthealth.infrastructure.utility.UuidGenerator;
 import io.smarthealth.stock.inventory.data.AdjustmentData;
 import io.smarthealth.stock.inventory.data.StockAdjustmentData;
@@ -18,6 +19,7 @@ import io.smarthealth.stock.stores.service.StoreService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -31,10 +33,12 @@ public class InventoryAdjustmentService {
     private final StoreService storeService;
     private final StockAdjustmentRepository stockAdjustmentRepository;
     private final InventoryEventSender inventoryEventSender;
+    private final TxnService txnService;
 
     // create Invariance
+    @Transactional
     public String createStockAdjustment(AdjustmentData data) {
-        String trdId = UuidGenerator.newUuid();
+        String trdId = txnService.nextId();
 
         if (!data.getAdjustments().isEmpty()) {
 
@@ -49,13 +53,13 @@ public class InventoryAdjustmentService {
                         stocks.setTransactionId(trdId);
                         stocks.setDateRecorded(data.getDateRecorded());
                         stocks.setItem(item);
-                        stocks.setStore(store); 
-                        stocks.setReasons(data.getReasons()); 
+                        stocks.setStore(store);
+                        stocks.setReasons(data.getReasons());
                         stocks.setQuantityBalance(adjt.getQuantityBalance());
                         stocks.setQuantityAdjusted(adjt.getQuantityAdjusted());
                         stocks.setQuantityCounted(adjt.getQuantityCounted());
 
-                        StockAdjustment stockAdjstment = stockAdjustmentRepository.save(stocks);
+                        StockAdjustment stockAdjstment = save(stocks);
 
                         if (data.getAdjustmentMode().equals("quantity")) {
                             inventoryEventSender.process(new InventoryEvent(InventoryEvent.Type.Adjustment, store, item, stockAdjstment.getQuantityCounted()));
@@ -65,6 +69,7 @@ public class InventoryAdjustmentService {
         return trdId;
     }
 
+    @Transactional
     public StockAdjustment save(StockAdjustment adjst) {
         return stockAdjustmentRepository.save(adjst);
     }
