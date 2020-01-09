@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.invoice.service;
 
 import io.smarthealth.accounting.billing.domain.BillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.CreateInvoiceData;
 import io.smarthealth.accounting.invoice.data.CreateInvoiceItemData;
@@ -17,6 +18,7 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.sequence.service.TxnService;
 import io.smarthealth.stock.item.service.ItemService;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,11 +50,13 @@ public class InvoiceService {
     private final BillingService billingService;
     private final PayerService payerService;
     private final SchemeService schemeService;
+    private final TxnService txnService;
 
     @Transactional
     public String createInvoice(CreateInvoiceData invoiceData) {
 
-        final String trxId = UUID.randomUUID().toString();
+        final String trxId = txnService.nextId();// UUID.randomUUID().toString();
+        final String invoiceNo = RandomStringUtils.randomNumeric(5);
 
         invoiceData.getPayers()
                 .stream()
@@ -60,7 +65,7 @@ public class InvoiceService {
                     Invoice invoice = new Invoice();
                     invoice.setDate(invoiceData.getDate());
                     invoice.setNotes(invoice.getNotes());
-                    invoice.setNumber(UUID.randomUUID().toString());
+                    invoice.setNumber(invoiceNo);
                     invoice.setSubtotal(invoiceData.getSubTotal());
                     invoice.setDisounts(invoiceData.getDiscount());
                     invoice.setTaxes(invoiceData.getTaxes());
@@ -98,8 +103,11 @@ public class InvoiceService {
     private InvoiceLineItem createItem(String trxId, CreateInvoiceItemData data) {
         InvoiceLineItem lineItem = new InvoiceLineItem();
         BillItem item = billingService.findBillItemById(data.getBillItemId());
+        item.setStatus(BillStatus.Final);
+  
         lineItem.setBillItem(item);
         lineItem.setDeleted(false);
+        
         lineItem.setTransactionId(trxId);
         return lineItem;
     }
