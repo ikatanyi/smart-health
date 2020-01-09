@@ -1,17 +1,18 @@
 package io.smarthealth.accounting.invoice.service;
 
+import io.smarthealth.accounting.billing.domain.Bill;
 import io.smarthealth.accounting.billing.domain.BillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.CreateInvoiceData;
 import io.smarthealth.accounting.invoice.data.CreateInvoiceItemData;
-import io.smarthealth.accounting.invoice.data.DebtorData;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
-import io.smarthealth.accounting.invoice.domain.Debtors;
-import io.smarthealth.accounting.invoice.domain.DebtorsRepository;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceLineItem;
+import io.smarthealth.accounting.invoice.domain.PayerInvoice;
+import io.smarthealth.accounting.invoice.domain.PayerInvoiceId;
+import io.smarthealth.accounting.invoice.domain.PayerInvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceSpecification;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
@@ -20,16 +21,12 @@ import io.smarthealth.debtor.scheme.domain.InsuranceScheme;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.sequence.service.TxnService;
-import io.smarthealth.stock.item.service.ItemService;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -46,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
-    private final DebtorsRepository debtorRepository;
+    private final PayerInvoiceRepository debtorRepository;
 //    private final ItemService itemService;
     private final BillingService billingService;
     private final PayerService payerService;
@@ -80,25 +77,50 @@ public class InvoiceService {
 
                         invoice.addItems(items);
                     }
-                    //
-
-                    Invoice inv = invoiceRepository.save(invoice);
-
-                    Payer payer = payerService.findPayerByIdWithNotFoundDetection(debt.getPayerId());
-                    Scheme scheme = schemeService.fetchSchemeById(debt.getSchemeId());
-
-                    Debtors debtor = createDebtor(debt);
-                    debtor.setPayer(payer);
-                    debtor.setScheme(scheme);
-                    debtor.setInvoiceDate(inv.getDate());
-                    debtor.setBillNumber(invoiceData.getBillNumber());
-                    debtor.setPatientNumber(invoiceData.getPatientNumber());
-
-                    debtorRepository.save(debtor);
+                    saveInvoice(debt.getPayerId(),debt.getSchemeId(),invoice);
                 }
                 );
         return trxId;
 
+    }
+
+    @Transactional
+    public Invoice saveInvoice(Invoice invoice) {
+        Invoice savedInv = invoiceRepository.save(invoice);
+        Bill bill = savedInv.getBill();
+        bill.setStatus(BillStatus.Final);
+        billingService.save(bill);
+        return savedInv;
+    }
+
+    @Transactional
+    public Invoice saveInvoice(Long payerId, Long SchemeId, Invoice invoice) {
+        Invoice savedInv = invoiceRepository.save(invoice);
+        Bill bill = savedInv.getBill();
+        bill.setStatus(BillStatus.Final);
+        billingService.save(bill);
+
+        Payer payer = payerService.findPayerByIdWithNotFoundDetection(payerId);
+        Scheme scheme = schemeService.fetchSchemeById(SchemeId);
+
+        PayerInvoice payerInv = new PayerInvoice();
+
+        PayerInvoiceId id = new PayerInvoiceId();
+        id.setInvoiceId(payer.getId());
+        id.setSchemeId(scheme.getId());
+        id.setInvoiceId(invoice.getId());
+
+        payerInv.setId(id);
+        payerInv.setInvoice(invoice);
+        payerInv.setPayer(payer);
+        payerInv.setScheme(scheme);
+        payerInv.setInvoiceDate(invoice.getDate());
+        payerInv.setBillNumber(invoice.getBill().getBillNumber());
+        payerInv.setPatientNumber(invoice.getBill().getPatient().getPatientNumber());
+
+        debtorRepository.save(payerInv);
+
+        return savedInv;
     }
 
     private InvoiceLineItem createItem(String trxId, CreateInvoiceItemData data) {
@@ -113,14 +135,6 @@ public class InvoiceService {
         return lineItem;
     }
 
-    private Debtors createDebtor(DebtorData debt) {
-        Debtors debtor = new Debtors();
-        debtor.setBalance(debt.getAmount());
-        debtor.setInvoiceAmount(debt.getAmount());
-        debtor.setMemberName(debt.getMemberName());
-        debtor.setMemberNumber(debt.getMemberNo());
-        return debtor;
-    }
 
     public Optional<Invoice> findById(final Long id) {
         return invoiceRepository.findById(id);

@@ -20,11 +20,8 @@ import lombok.Data;
 public class RadiologyTestData {
     private Long id;
     private String itemCode;
-    private String scanName; //government classifications
-    private Boolean consent; 
-    private Boolean withRef; 
-    private Boolean refOut; 
-    private Boolean status; 
+    private String scanName; 
+    private Boolean active; 
     private String notes;
     private Boolean supervisorConfirmation;
     @Enumerated(EnumType.STRING)
@@ -34,31 +31,20 @@ public class RadiologyTestData {
     public static RadiologyTestData map(RadiologyTest rtd){
         RadiologyTestData entity = new RadiologyTestData();
         entity.setId(rtd.getId());
-        entity.setConsent(rtd.getConsent());
-        entity.setGender(rtd.getGender());
         entity.setNotes(rtd.getNotes());
-        entity.setRefOut(rtd.getRefOut());
         entity.setScanName(rtd.getScanName());
         if(rtd.getItem()!=null)
            entity.setItemData(ItemData.map(rtd.getItem()));
-        entity.setStatus(rtd.getStatus());
-        entity.setSupervisorConfirmation(rtd.getSupervisorConfirmation());
-        entity.setWithRef(rtd.getWithRef());
-        
+        entity.setActive(rtd.getStatus());     
         
         return entity;
     }
     
      public static RadiologyTest map(RadiologyTestData rtd){
         RadiologyTest entity = new RadiologyTest();
-        entity.setConsent(rtd.getConsent());
-        entity.setGender(rtd.getGender());
         entity.setNotes(rtd.getNotes());
-        entity.setRefOut(rtd.getRefOut());
         entity.setScanName(rtd.getScanName());
-        entity.setStatus(rtd.getStatus());
-        entity.setSupervisorConfirmation(rtd.getSupervisorConfirmation());
-        entity.setWithRef(rtd.getWithRef());
+        entity.setStatus(rtd.getActive());
         
         return entity;
     }

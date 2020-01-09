@@ -14,8 +14,12 @@ import io.smarthealth.appointment.service.AppointmentTypeService;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.utility.PageDetails;
+import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
+import io.smarthealth.stock.inventory.data.StockEntryData;
+import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.List;
@@ -57,16 +61,14 @@ public class AppointmentController {
 
     @PostMapping("/appointmentTypes")
     public @ResponseBody
-    ResponseEntity<?> createAppointmentType(@RequestBody @Valid final AppointmentTypeData appointmentTypeData) {
-        AppointmentType appointmentType = this.appointmentTypeService.createAppointmentType(convertDataToAppType(appointmentTypeData));
+    ResponseEntity<?> createAppointmentType(@RequestBody @Valid final AppointmentTypeData appointmentTypeData) {        
+        AppointmentType result = appointmentTypeService.createAppointmentType(appointmentTypeData);        
+        Pager<AppointmentTypeData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("AppointmentType made successful");
+        pagers.setContent(appointmentTypeService.toData(result));
 
-        AppointmentTypeData savedAppointmentTypeData = convertDataToAppTypeData(appointmentType);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/appointmentTypes/{id}")
-                .buildAndExpand(appointmentType.getId()).toUri();
-
-        //return ResponseEntity.created(location).body(savedAppointmentTypeData);
-        return ResponseEntity.created(location).body(ApiResponse.successMessage("Appointment type was successfully created", HttpStatus.CREATED, savedAppointmentTypeData));
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
     @PostMapping("/appointment")
@@ -79,33 +81,66 @@ public class AppointmentController {
 
         AppointmentData savedAppointmentData = appointmentService.convertAppointment(appointment);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/appointment/{no}")
-                .buildAndExpand(appointment.getAppointmentNo()).toUri();
+        Pager<AppointmentData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Appointment made successful");
+        pagers.setContent(savedAppointmentData);
 
-        return ResponseEntity.created(location).body(ApiResponse.successMessage("Appointment was successfully created", HttpStatus.CREATED, savedAppointmentData));
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-
-    @GetMapping("/employee/{no}/appointment")
+    
+    @PutMapping("/appointment/{id}")
     public @ResponseBody
-    ResponseEntity<?> fetchAppointmentsByServiceProvider(@PathVariable("no") final String staffNo, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+    ResponseEntity<?> updateAppointment(@RequestBody @Valid final AppointmentData appointmentData, @PathVariable("id") final Long id) {
+        appointmentData.setStatus(AppointmentData.Status.Scheduled);
+        Appointment appointment = this.appointmentService.UpdateAppointment(id, appointmentData);
 
-        Employee employee = employeeService.fetchEmployeeByNumberOrThrow(staffNo);
-        Page<Appointment> page = appointmentService.fetchAllAppointmentsByPractioneer(employee, pageable);
+        AppointmentData savedAppointmentData = appointmentService.convertAppointment(appointment);
 
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+        Pager<AppointmentData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Appointment Updated successful");
+        pagers.setContent(savedAppointmentData);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
     }
+
+//    @GetMapping("/employee/{no}/appointment")
+//    public @ResponseBody
+//    ResponseEntity<?> fetchAppointmentsByServiceProvider(@PathVariable("no") final String staffNo, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+//
+//        Employee employee = employeeService.fetchEmployeeByNumberOrThrow(staffNo);
+//        Page<Appointment> page = appointmentService.fetchAllAppointmentsByPractioneer(employee, pageable);
+//
+//        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+//        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+//    }
 
     @GetMapping("/appointment")
     public @ResponseBody
-    ResponseEntity<?> fetchAllAppointments(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+    ResponseEntity<?> fetchAllAppointments(
+        @RequestParam(value = "page", required = false) Integer page,
+        @RequestParam(value = "pageSize", required = false) Integer size
+    ) {
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        Page<AppointmentData> results = appointmentService.fetchAllAppointments(pageable).map(a->AppointmentData.map(a));
+        
+        Pager pager = new Pager();
+        pager.setCode("200");
+        pager.setContent(results.getContent());
+        pager.setMessage("Appointment Types fetched successfully");
+        PageDetails details = new PageDetails();
+        details.setPage(1);
+        details.setPerPage(25);
+        details.setReportName("Appointment Types fetched");
+//        details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
+        pager.setPageDetails(details);
+        return ResponseEntity.ok(pager);
 
-        Page<AppointmentData> page = appointmentService.fetchAllAppointments(pageable).map(a->AppointmentData.map(a));
-
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+//        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         
 //        AppointmentData app = page.map(a->AppointmentData.map(a));//AppointmentData.map(appointment);
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+//        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
     @GetMapping("/appointment/{appointmentNo}")
@@ -119,27 +154,39 @@ public class AppointmentController {
 
     //fetchAllAppointmentTypes
     @GetMapping("/appointmentTypes")
-    public ResponseEntity<List<AppointmentTypeData>> fetchAllAppTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-        Page<AppointmentTypeData> page = appointmentTypeService.fetchAllAppointmentTypes(pageable).map(a -> convertDataToAppTypeData(a));
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    public ResponseEntity<?> fetchAllAppTypes(
+        @RequestParam(value = "page", required = false) Integer page,
+        @RequestParam(value = "pageSize", required = false) Integer size
+    ) {
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        Page<AppointmentTypeData> results = appointmentTypeService.fetchAllAppointmentTypes(pageable).map(a -> appointmentTypeService.toData(a));
+//        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+
+        Pager<List<AppointmentTypeData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(results.getContent());
+        PageDetails details = new PageDetails();
+        details.setReportName("Appointment Types");
+        pagers.setPageDetails(details);
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
     @GetMapping("/appointmentTypes/{id}")
-    public ResponseEntity<AppointmentTypeData> fetchAppTypeById(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable, @PathVariable("id") final Long id) {
-        System.out.println("Id of app type " + id);
-        AppointmentTypeData appointmentTypeData = convertDataToAppTypeData(appointmentTypeService.fetchAppointmentTypeById(id));
+    public ResponseEntity<AppointmentTypeData> fetchAppTypeById(@PathVariable("id") final Long id) {
+        AppointmentTypeData appointmentTypeData = appointmentTypeService.toData(appointmentTypeService.fetchAppointmentTypeById(id));
         return ResponseEntity.ok(appointmentTypeData);
     }
 
-    @PutMapping("/appointmentTypes/{id}")
-    public ResponseEntity<AppointmentTypeData> fetchAppTypeById(@RequestBody @Valid final AppointmentTypeData appointmentTypeD, @PathVariable("id") final Long id) {
-        AppointmentType appointmentType = appointmentTypeService.fetchAppointmentTypeById(id);
-        appointmentType.setColor(appointmentTypeD.getColor());
-        appointmentType.setDuration(appointmentTypeD.getDuration());
-        appointmentType.setName(appointmentTypeD.getName());
-        AppointmentTypeData appointmentTypeData = convertDataToAppTypeData(appointmentTypeService.createAppointmentType(appointmentType));
-        return ResponseEntity.ok(appointmentTypeData);
+    @PutMapping("/appointmentTypes")
+    public ResponseEntity<?> fetchAppTypeById(@RequestBody @Valid final AppointmentTypeData appointmentTypeD) {
+        AppointmentType result = appointmentTypeService.updateAppointmentType(appointmentTypeD);
+        Pager<AppointmentTypeData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("AppointmentType made successful");
+        pagers.setContent(appointmentTypeService.toData(result));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
 //    @GetMapping("/appointments")

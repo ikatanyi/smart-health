@@ -15,7 +15,6 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.SecurityUtils;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.math.BigDecimal;
@@ -31,10 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.billing.domain.BillRepository;
 import io.smarthealth.accounting.billing.domain.BllItemRepository;
-import io.smarthealth.accounting.payment.domain.enumeration.TrxType;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.sequence.service.TxnService;
-import io.smarthealth.infrastructure.utility.UuidGenerator;
 import lombok.RequiredArgsConstructor;
 
 /**

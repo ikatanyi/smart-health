@@ -5,10 +5,14 @@
  */
 package io.smarthealth.appointment.service;
 
+import io.smarthealth.appointment.data.AppointmentTypeData;
 import io.smarthealth.appointment.domain.AppointmentType;
 import io.smarthealth.appointment.domain.AppointmentTypeRepository;
 import io.smarthealth.infrastructure.exception.APIException;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.smarthealth.infrastructure.sequence.SequenceType;
+import io.smarthealth.infrastructure.sequence.service.SequenceService;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.facility.service.EmployeeService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,13 +25,35 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AppointmentTypeService {
 
-    @Autowired
+   
     AppointmentTypeRepository appointmentTypeRepository;
+    
+    EmployeeService employeeService;
+    SequenceService sequenceService;
+
+    public AppointmentTypeService(AppointmentTypeRepository appointmentTypeRepository, EmployeeService employeeService, SequenceService sequenceService) {
+        this.appointmentTypeRepository = appointmentTypeRepository;
+        this.employeeService = employeeService;
+        this.sequenceService =  sequenceService;
+    }
+        
 
     
     @Transactional
-    public AppointmentType createAppointmentType(AppointmentType appointmentType) {
-        return appointmentTypeRepository.saveAndFlush(appointmentType);
+    public AppointmentType createAppointmentType(AppointmentTypeData data) {
+        AppointmentType appointmentType = AppointmentTypeData.map(data);
+        Employee practitioner = employeeService.fetchEmployeeByNumberOrThrow(data.getStaffNumber());        
+        String appTypeNumber = data.getAppointmentTypeNumber()!=null?data.getAppointmentTypeNumber():sequenceService.nextNumber(SequenceType.AppointmentTypeNumber);
+//        appointmentType.setPractitioner(practitioner);
+        appointmentType.setAppointmentTypeNumber(appTypeNumber);
+        return appointmentTypeRepository.save(appointmentType);
+    }
+    
+    @Transactional
+    public AppointmentType updateAppointmentType(AppointmentTypeData data) {
+        this.fetchAppointmentTypeById(data.getId());
+        AppointmentType appointmentType = AppointmentTypeData.map(data);
+        return appointmentTypeRepository.save(appointmentType);
     }
 
     public Page<AppointmentType> fetchAllAppointmentTypes(final Pageable pageable) {
@@ -44,6 +70,16 @@ public class AppointmentTypeService {
         } catch (Exception e) {
             throw APIException.internalError("There was an error deleting appointment type identified by " + appId, e.getMessage());
         }
+    }
+    
+    public AppointmentTypeData toData(AppointmentType appointment) {
+        AppointmentTypeData data = new AppointmentTypeData();//mapper.map(appointment, AppointmentData.class);        
+        data.setId(appointment.getId());
+        data.setName(appointment.getName());
+        data.setColor(appointment.getColor());
+        data.setDuration(appointment.getDuration());
+        data.setAppointmentTypeNumber(appointment.getAppointmentTypeNumber());
+        return data;
     }
 
 }

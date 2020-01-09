@@ -14,7 +14,8 @@ public enum SequenceType {
     LabTestNumber("lab_test_seq"),
     PrescriptionNo("patient_prescription_seq"),
     ScanNumber("patient_scan_seq"),
-    ProcedureNumber("patient_procedure_seq");
+    ProcedureNumber("patient_procedure_seq"),
+    AppointmentTypeNumber("appointment_type_seq");
 
     public final String sequenceName;
 

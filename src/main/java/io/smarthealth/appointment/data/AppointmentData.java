@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.appointment.domain.Appointment;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.TIME_PATTERN;
+import io.smarthealth.organization.facility.data.EmployeeData;
+import io.smarthealth.organization.facility.domain.Employee.Category;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -42,6 +44,8 @@ public class AppointmentData implements Serializable {
     private String patientNumber;
     private String patientName;
     private String practitionerCode;
+    @Enumerated(EnumType.STRING)
+    private Category practitionerCategory;
     private String practionerName;
     private String departmentName;
     private String typeOfAppointment;
@@ -62,6 +66,9 @@ public class AppointmentData implements Serializable {
     @Enumerated(EnumType.STRING)
     private Status status; //new followup  
     private String comments;
+    
+    @ApiModelProperty(required = false, hidden = true)
+    private EmployeeData practitionerData;
 
     public static Appointment map(AppointmentData data) {
         ModelMapper mapper = new ModelMapper();
@@ -79,10 +86,12 @@ public class AppointmentData implements Serializable {
             data.setPatientNumber(appointment.getPatient().getPatientNumber());
             data.setPatientName(appointment.getPatient().getFullName());
         }
-        if (appointment.getPractioneer() != null) {
-            data.setPractitionerCode(appointment.getPractioneer().getStaffNumber());
-            data.setPractionerName(appointment.getPractioneer().getFullName());
-            data.setDepartmentName(appointment.getPractioneer().getDepartment().getName());
+        
+        if (appointment.getPractitioner() != null) {
+            data.setPractitionerCode(appointment.getPractitioner().getStaffNumber());
+            data.setPractionerName(appointment.getPractitioner().getFullName());
+            data.setDepartmentName(appointment.getPractitioner().getDepartment().getName());
+            data.setPractitionerCategory(appointment.getPractitioner().getEmployeeCategory());
         }
         
         data.setAppointmentId(appointment.getId());
@@ -92,7 +101,7 @@ public class AppointmentData implements Serializable {
         data.setEndTime(appointment.getEndTime());
         data.setStartTime(appointment.getStartTime());
         data.setStatus(Status.valueOf(appointment.getStatus()));
-        data.setUrgency(Urgency.valueOf(appointment.getUrgency()));
+        data.setUrgency(appointment.getUrgency());
         return data;
     }
 }

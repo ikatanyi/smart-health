@@ -31,14 +31,6 @@ public class Bill extends Auditable {
     
     private LocalDate billingDate;    
     
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bill_seq")
-//    @GenericGenerator(
-//        name = "bill_seq", 
-//        strategy = " io.smarthealth.accounting.billing.service.StringPrefixedSequenceIdGenerator", 
-//        parameters = {
-//            @Parameter(name = StringPrefixedSequenceIdGenerator.INCREMENT_PARAM, value = "50"),
-//            @Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "B_"),
-//            @Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d") })
     private String billNumber; //can also be an invoice
     
     private String paymentMode;
