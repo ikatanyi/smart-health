@@ -7,6 +7,7 @@ package io.smarthealth.debtor.scheme.api;
 
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.payer.domain.Payer;
+import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.data.InsuranceSchemeData;
 import io.smarthealth.debtor.scheme.domain.InsuranceScheme;
@@ -49,9 +50,9 @@ public class SchemeController {
         //validate Payer
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(scheme.getPayerId());
 
-        InsuranceScheme s = InsuranceSchemeData.map(scheme);
+        Scheme s = InsuranceSchemeData.map(scheme);
         s.setPayer(payer);
-        InsuranceScheme savedScheme = schemeService.createScheme(s);
+        Scheme savedScheme = schemeService.createScheme(s);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/scheme/{id}")

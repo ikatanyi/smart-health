@@ -5,9 +5,11 @@
  */
 package io.smarthealth.debtor.scheme.data;
 
-import io.smarthealth.debtor.scheme.domain.InsuranceScheme;
-import io.smarthealth.debtor.scheme.domain.enumeration.InsSchemeType;
+import io.smarthealth.debtor.payer.domain.Scheme;
+import io.smarthealth.debtor.payer.domain.Scheme.SchemeType;
+import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -18,27 +20,36 @@ import lombok.Data;
  */
 @Data
 public class InsuranceSchemeData {
-    
+
+    private Long payerId;
+
+    private String schemeCode;
     @ApiModelProperty(required = true)
     private String schemeName;
     @Enumerated(EnumType.STRING)
-    private InsSchemeType cover;
+    private PolicyCover cover;
     private String category;
-    
+
+    private LocalDate startDate;
+    private LocalDate endDate;
+
+    @Enumerated(EnumType.STRING)
+    private SchemeType type;
+
+    private Boolean active;
+
     private String telNo;
     private String mobileNo;
     private String emailAddress;
     private String line1;
     private String line2;
-    
+
     @ApiModelProperty(hidden = true, required = false)
     private Long schemeId;
     @ApiModelProperty(hidden = true, required = false)
     private String payerName;
-    //@ApiModelProperty(hidden = true, required = false)
-    private Long payerId;
-    
-    public static InsuranceSchemeData map(InsuranceScheme i) {
+
+    public static InsuranceSchemeData map(Scheme i) {
         InsuranceSchemeData d = new InsuranceSchemeData();
         d.setCategory(i.getCategory());
         d.setCover(i.getCover());
@@ -53,9 +64,9 @@ public class InsuranceSchemeData {
         d.setSchemeId(i.getId());
         return d;
     }
-    
-    public static InsuranceScheme map(InsuranceSchemeData d) {
-        InsuranceScheme i = new InsuranceScheme();
+
+    public static Scheme map(InsuranceSchemeData d) {
+        Scheme i = new Scheme();
         i.setCategory(d.getCategory());
         i.setCover(d.getCover());
         i.setEmailAddress(d.getEmailAddress());
