@@ -2,6 +2,7 @@ package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.stock.inventory.domain.InventoryBalance;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
@@ -22,7 +23,7 @@ public class InventoryEventListener {
     public void receive(InventoryEvent inventoryEvent) {
 
         InventoryEvent event = inventoryEvent;
-
+        
         switch (event.getType()) {
             case Increase:
                 service.increase(event.getItem(), event.getStore(), event.getQuantity());

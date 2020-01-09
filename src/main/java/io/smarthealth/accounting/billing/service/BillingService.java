@@ -5,7 +5,6 @@ import io.smarthealth.accounting.acc.data.v1.Creditor;
 import io.smarthealth.accounting.acc.data.v1.Debtor;
 import io.smarthealth.accounting.acc.data.v1.JournalEntry;
 import io.smarthealth.accounting.acc.service.JournalEntryService;
-import io.smarthealth.accounting.acc.service.JournalEventSender;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.Bill;
@@ -16,8 +15,6 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.SecurityUtils;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.math.BigDecimal;
@@ -33,9 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.billing.domain.BillRepository;
 import io.smarthealth.accounting.billing.domain.BllItemRepository;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
-import io.smarthealth.infrastructure.utility.UuidGenerator;
+import io.smarthealth.infrastructure.sequence.service.TxnService;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -51,16 +47,15 @@ public class BillingService {
     private final BllItemRepository billItemRepository;
     private final VisitService visitService;
     private final ItemService itemService;
-
-    private final SequenceService sequenceService;
+    private final TxnService txnService;
     private final JournalEntryService journalService;
     private final ServicePointService servicePointService;
 
     public Bill createBill(BillData data) {
         //check the validity of the patient visit
         Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
-        String billNumber =RandomStringUtils.randomNumeric(6); //sequenceService.nextNumber(SequenceType.BillNumber);
-        String trdId=UuidGenerator.newUuid();
+        String billNumber = RandomStringUtils.randomNumeric(6); //sequenceService.nextNumber(SequenceType.BillNumber);
+        String trdId = txnService.nextId();
 
         Bill patientbill = new Bill();
         patientbill.setVisit(visit);
@@ -109,8 +104,8 @@ public class BillingService {
 //         journalSender.postJournal(toJournal(savedBill)); 
         return savedBill;
     }
-    
-    public Bill save(Bill bill){
+
+    public Bill save(Bill bill) {
         return patientBillRepository.save(bill);
     }
 
@@ -210,7 +205,7 @@ public class BillingService {
         final String roundedAmount = BigDecimal.valueOf(6500D).setScale(2, BigDecimal.ROUND_HALF_EVEN).toString();
 
         final JournalEntry je = new JournalEntry();
-        je.setTransactionIdentifier(RandomStringUtils.randomAlphanumeric(32));
+        je.setJournalNumber(RandomStringUtils.randomNumeric(6));
         je.setTransactionDate(LocalDateTime.now());
         je.setState("PENDING");
         je.setTransactionType("INTR");
@@ -245,7 +240,7 @@ public class BillingService {
         final String roundedAmount = BigDecimal.valueOf(6500D).setScale(2, BigDecimal.ROUND_HALF_EVEN).toString();
 
         final JournalEntry cashToAccrueJournalEntry = new JournalEntry();
-        cashToAccrueJournalEntry.setTransactionIdentifier(RandomStringUtils.randomAlphanumeric(32));
+        cashToAccrueJournalEntry.setJournalNumber(RandomStringUtils.randomNumeric(6));
         cashToAccrueJournalEntry.setTransactionDate(LocalDateTime.now());
         cashToAccrueJournalEntry.setState("PENDING");
         cashToAccrueJournalEntry.setTransactionType("INTR");

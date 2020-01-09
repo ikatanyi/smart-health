@@ -9,7 +9,7 @@ package io.smarthealth.debtor.scheme.domain.enumeration;
  *
  * @author Simon.Waweru
  */
-public enum InsSchemeType {
+public enum PolicyCover {
     OPD_Only,
     IP_Only,
     Both

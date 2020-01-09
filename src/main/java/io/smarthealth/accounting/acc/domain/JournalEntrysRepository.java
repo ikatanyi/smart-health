@@ -11,5 +11,5 @@ public interface JournalEntrysRepository extends JpaRepository<JournalEntryEntit
 
     List<JournalEntryEntity> findByDateBucketBetween(LocalDate start, LocalDate end);
 
-    Optional<JournalEntryEntity> findByTransactionIdentifier(String transactionId);
+    Optional<JournalEntryEntity> findByJournalNumber(String journalNo);
 }

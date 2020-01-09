@@ -34,8 +34,9 @@ public class StockEntryData {
     private String referenceNumber; //ref LPO,supplier, patient no
     private String deliveryNumber; //GRN| transaction reference
     private String transactionNumber; //auto generated ST-2019-00002
-    private String journalNumber;
-    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
+    private String costCenter;
+    private String issuedTo;
+    @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate transactionDate;
     private MovementType moveType;
     private MovementPurpose purpose;
@@ -60,7 +61,7 @@ public class StockEntryData {
         data.setReferenceNumber(stock.getReferenceNumber());
         data.setDeliveryNumber(stock.getDeliveryNumber());
         data.setTransactionNumber(stock.getTransactionNumber());
-        data.setJournalNumber(stock.getJournalNumber());
+        data.setCostCenter(stock.getCostCenter());
         data.setTransactionDate(stock.getTransactionDate());
         data.setMoveType(stock.getMoveType());
         data.setPurpose(stock.getPurpose());

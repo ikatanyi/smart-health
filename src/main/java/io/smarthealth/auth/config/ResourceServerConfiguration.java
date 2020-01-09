@@ -29,31 +29,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         resources.resourceId("api");
     }
 
-//    http.authorizeRequests()
-//                .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-//                
-//                .antMatchers("/api/user/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
-//                .and()
-//                .antMatcher("/api/**")
-//                .authorizeRequests()
-//                .antMatchers(HttpMethod.POST, "/api/users").permitAll() //<1>
-//                .antMatchers(HttpMethod.GET, "/api/users","/v2/api-docs/**","/swagger-ui.html*").permitAll() //<1>
-//                .anyRequest().authenticated();
     @Override
     public void configure(HttpSecurity http) throws Exception {
-//        http
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .antMatcher("/api/**")
-//                .authorizeRequests()
-//                .antMatchers("/api/signin**").permitAll()
-//                .antMatchers(HttpMethod.POST, "/api/users").permitAll()
-//                .antMatchers("/api/user/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
-//                .antMatchers(HttpMethod.GET, "/api/users", "/v2/api-docs/**", "/swagger-ui.html*").permitAll() //<1>
-//                .anyRequest().authenticated()
-//                .and()
-//                .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint).accessDeniedHandler(new CustomAccessDeniedHandler());
-
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()

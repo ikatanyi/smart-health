@@ -12,6 +12,7 @@ import io.smarthealth.clinical.visit.data.enums.VisitEnum.VisitType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.patient.data.PatientData;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -40,7 +41,12 @@ public class VisitData {
     private VisitType visitType;
     private Boolean scheduled;
     @NotNull
-    private String departmentCode;
+    private Long servicePointIdentifier;
+
+    @ApiModelProperty(required = false, hidden = true)
+    private String servicePointName;
+
+    private String practitionerCode;
 
     private PatientData patientData;
 

@@ -17,9 +17,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.NaturalId;
 
 /**
  *
@@ -29,24 +31,28 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "invoices")
+@Table(name = "invoices", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"number"})})
 public class Invoice extends Auditable {
- 
+
     @ManyToOne
-      @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payer_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payer_id"))
     private Payer payer;
-     
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_bill_id"))
     private Bill bill;
+    
     @Column(name = "invoice_date")
     private LocalDate date;
+    
     private LocalDate dueDate;
+    
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payment_terms_id"))
     private PaymentTerms terms; // 'Net 30'
+    @NaturalId
     private String number;  //invoice number
-
     private String currency;
     private Boolean draft; // Outstanding true or false 
     private Boolean closed; // bad debt or not
@@ -60,10 +66,10 @@ public class Invoice extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private InvoiceStatus status; //tracking status for the invoice
- 
-       @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     private List<InvoiceLineItem> items = new ArrayList<>();
-    
+
 //    @ManyToOne
 //    private Address shipTo; // include the supplier address here
     // Inoivce

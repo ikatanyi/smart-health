@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import io.smarthealth.stock.inventory.domain.InventoryBalanceRepository;
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -25,11 +26,11 @@ import java.util.Optional;
 public class InventoryBalanceService {
 
 //    https://www.devglan.com/spring-boot/spring-boot-jms-activemq-example
-    
     private final ItemService itemService;
     private final StoreService storeService;
     private final InventoryBalanceRepository inventoryItemRepository;
 
+    @Transactional
     public void decrease(Item item, Store store, double qty) {
         InventoryBalance balance = inventoryItemRepository
                 .findByItemAndStore(item, store)
@@ -39,6 +40,7 @@ public class InventoryBalanceService {
         inventoryItemRepository.save(balance);
     }
 
+    @Transactional
     public void increase(Item item, Store store, double qty) {
         InventoryBalance balance = inventoryItemRepository
                 .findByItemAndStore(item, store)
@@ -47,7 +49,8 @@ public class InventoryBalanceService {
         balance.increase(qty);
         inventoryItemRepository.save(balance);
     }
- 
+
+    @Transactional
     public void adjustment(Item item, Store store, double qty) {
         InventoryBalance balance = inventoryItemRepository
                 .findByItemAndStore(item, store)
@@ -56,7 +59,7 @@ public class InventoryBalanceService {
         balance.setAvailableStock(qty);
         inventoryItemRepository.save(balance);
     }
-    
+
     public Page<InventoryBalanceData> getInventoryBalance(Long storeId, Long itemId, DateRange range, Pageable pageable) {
         Item item = itemService.findItemEntityOrThrow(itemId);
         Store store = storeService.getStoreWithNoFoundDetection(storeId);

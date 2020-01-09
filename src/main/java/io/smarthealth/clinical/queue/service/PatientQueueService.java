@@ -65,7 +65,8 @@ public class PatientQueueService {
     }
 
     public Page<PatientQueue> fetchQueue(Pageable pageable) {
-        return patientQueueRepository.findAll(pageable);
+        // return patientQueueRepository.findAll(pageable);
+        return patientQueueRepository.findActivePatientQueue(pageable);
     }
 
     public boolean patientIsQueued(final ServicePoint servicePoint, final Patient patient) {

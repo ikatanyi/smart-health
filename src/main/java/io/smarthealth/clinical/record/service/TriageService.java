@@ -63,7 +63,7 @@ public class TriageService {
         return triageRepository.save(vr);
     }
 
-    public VitalsRecord addVitalRecordsByPatient(String patientNo, VitalRecordData triage) {
+    public VitalsRecord addVitalRecordsByPatient(Patient patient, VitalRecordData triage) {
         //validate visit
         Optional<Visit> visit = visitRepository.findByVisitNumber(triage.getVisitNumber());
         VitalsRecord vr = VitalRecordData.map(triage);
@@ -71,7 +71,6 @@ public class TriageService {
             vr.setVisit(visit.get());
         }
 
-        Patient patient = patientService.findPatientOrThrow(patientNo);
         float bmi = (float) BMI.calculateBMI(triage.getHeight(), triage.getWeight());
         String category = BMI.getCategory(bmi);
         vr.setPatient(patient);

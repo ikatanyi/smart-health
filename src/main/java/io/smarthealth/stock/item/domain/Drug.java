@@ -12,9 +12,9 @@ import lombok.ToString;
 
 @Data
 @Entity
-@ToString
 @Table(name = "stock_drugs")
 public class Drug extends Identifiable{
+    @ToString.Exclude
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_drugs_item_id"))
     private Item item;
