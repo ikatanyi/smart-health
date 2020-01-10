@@ -30,16 +30,22 @@ public class PriceBook extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private PriceCategory priceCategory;
+    
     private String name;
     private String description;
+    
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pricebook_currency_id"))
     private Currency currency;
+    
     @Enumerated(EnumType.STRING)
     private PriceType priceType;
+    
     private Double percentage;
+    
     @Column(name = "is_increase")
     private Boolean increase; //mark down or mark up
+    
     private Double decimalPlace;
     
     @ToString.Exclude

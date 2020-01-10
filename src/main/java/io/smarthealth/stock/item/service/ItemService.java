@@ -149,6 +149,11 @@ public class ItemService {
     public Optional<Item> findByItemCode(final String itemCode) {
         return itemRepository.findByItemCode(itemCode);
     }
+    
+     public Item findByItemCodeOrThrow(final String itemCode) {
+        return findByItemCode(itemCode)
+               .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", itemCode));
+    }
 
     public Page<Item> fetchItems(String category, String type, boolean includeClosed, String term, Pageable pageable) {
         Specification<Item> spec = ItemSpecification.createSpecification(category, type, includeClosed, term);

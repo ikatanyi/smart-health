@@ -1,7 +1,7 @@
 package io.smarthealth.stock.inventory.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.stock.inventory.data.InventoryBalanceData;
+import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
 import javax.persistence.*;
@@ -20,9 +20,9 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "stock_inventory_balance")
+@Table(name = "stock_inventory_item")
 //@IdClass(InventoryId.class)
-public class InventoryBalance extends Identifiable {
+public class InventoryItem extends Identifiable {
 
 //    @Id
     @ToString.Exclude
@@ -46,22 +46,24 @@ public class InventoryBalance extends Identifiable {
         this.availableStock = (this.availableStock + number);
     }
 
-    public static InventoryBalance create(Store store, Item item, double availableStock) {
-        return new InventoryBalance(store, item, availableStock);
+    public static InventoryItem create(Store store, Item item, double availableStock) {
+        return new InventoryItem(store, item, availableStock);
     }
 
-    public static InventoryBalance create(Store store, Item item) {
-        return new InventoryBalance(store, item, 0);
+    public static InventoryItem create(Store store, Item item) {
+        return new InventoryItem(store, item, 0);
     }
 
-    public InventoryBalanceData toData() {
-        InventoryBalanceData data = new InventoryBalanceData();
+    public InventoryItemData toData() {
+        InventoryItemData data = new InventoryItemData();
         data.setId(this.getId());
 
         if (this.getItem() != null) {
             data.setItem(this.getItem().getItemName());
             data.setItemId(this.getItem().getId());
             data.setItemCode(this.getItem().getItemCode());
+            data.setSellingPrice(this.getItem().getRate());
+            data.setCostPrice(this.getItem().getCostRate());
         }
 
         if (this.getStore() != null) {
@@ -72,6 +74,4 @@ public class InventoryBalance extends Identifiable {
 
         return data;
     }
-    
-    
 }

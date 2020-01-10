@@ -1,12 +1,6 @@
 package io.smarthealth.stock.inventory.data;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.infrastructure.lang.Constants;
-import io.smarthealth.stock.inventory.domain.enumeration.StatusType;
 import io.smarthealth.stock.item.domain.Item;
-import java.time.LocalDateTime;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -16,7 +10,7 @@ import lombok.Data;
  * @author Kelsas
  */
 @Data
-public class InventoryBalanceData {
+public class InventoryItemData {
 
     private Long id;
 
@@ -26,6 +20,9 @@ public class InventoryBalanceData {
     private Long itemId;
     private String item;
     private String itemCode;
+
+    private double costPrice;
+    private double sellingPrice;
 
     private double availableStock;
 }
