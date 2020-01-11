@@ -21,6 +21,13 @@ build:
 
 deploy_review:
   stage: deploy
+  
+  before_script:
+            - mkdir -p ~/.ssh
+            - echo -e "$DEPLOY_KEY" > ~/.ssh/id_rsa
+            - chmod 600 ~/.ssh/id_rsa
+            - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+            
   script:
     - rsync -azP --append-verify target/smart-health-1.0.0.jar smart@192.180.4.102:/home/smart/workloads 
   environment: 
