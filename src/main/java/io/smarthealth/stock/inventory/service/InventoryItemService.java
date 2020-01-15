@@ -6,7 +6,7 @@ import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import io.smarthealth.stock.inventory.domain.specification.InventoryItemSpecification;
+import io.smarthealth.stock.inventory.domain.specification.AppointmentSpecification;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.stores.domain.Store;
@@ -79,7 +79,7 @@ public class InventoryItemService {
     public Page<InventoryItemData> getInventoryItems(Long storeId, String item, Pageable page, boolean includeClosed) {
         Store store = storeService.getStoreWithNoFoundDetection(storeId);
 
-        Specification<InventoryItem> spec = InventoryItemSpecification.createSpecification(store, item, includeClosed);
+        Specification<InventoryItem> spec = AppointmentSpecification.createSpecification(store, item, includeClosed);
         Page<InventoryItemData> inventoryItems = inventoryItemRepository.findAll(spec, page).map(itm -> itm.toData());
 
         return inventoryItems;

@@ -3,6 +3,8 @@ package io.smarthealth.appointment.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.appointment.domain.Appointment;
+import io.smarthealth.appointment.domain.enumeration.StatusType;
+import io.smarthealth.appointment.domain.enumeration.Urgency;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.TIME_PATTERN;
 import io.smarthealth.organization.facility.data.EmployeeData;
@@ -24,21 +26,6 @@ import org.modelmapper.ModelMapper;
 @Data
 public class AppointmentData implements Serializable {
 
-    public enum Status {
-        Scheduled,
-        Rescheduled,
-        Confirmed,
-        Checked_In,
-        Done,
-        Noshow,
-        Cancelled
-    }
-
-    public enum Urgency {
-        Urgent,
-        Normal,
-        Medical_Emergency
-    }
     @ApiModelProperty(required = false, hidden = false)
     private Long appointmentId;
     private String patientNumber;
@@ -60,12 +47,16 @@ public class AppointmentData implements Serializable {
     private LocalTime endTime;
     private Boolean allDay;
     @Enumerated(EnumType.STRING)
-    @ApiModelProperty(dataType = "string", allowableValues = "Urgent, Normal, Medical_Emergency", value = "Urgency", notes = "Urgency level")
+//    @ApiModelProperty(dataType = "string", allowableValues = "Urgent, Normal, Medical_Emergency", value = "Urgency", notes = "Urgency level")
 //    @ApiOperation(value = "Brief description of your operation.", response = Urgency.class)
     private Urgency urgency;
-    @Enumerated(EnumType.STRING)
-    private Status status; //new followup  
+    private StatusType status; //new followup  
     private String comments;
+    
+    private String firstName;
+    private String LastName;
+    private String gender;
+    private String phoneNumber;
     
     @ApiModelProperty(required = false, hidden = true)
     private EmployeeData practitionerData;
@@ -93,15 +84,18 @@ public class AppointmentData implements Serializable {
             data.setDepartmentName(appointment.getPractitioner().getDepartment().getName());
             data.setPractitionerCategory(appointment.getPractitioner().getEmployeeCategory());
         }
-        
+        data.setFirstName(appointment.getFirstName());
+        data.setLastName(appointment.getLastName());
+        data.setGender(appointment.getGender());
         data.setAppointmentId(appointment.getId());
         data.setAppointmentDate(appointment.getAppointmentDate());
         data.setAppointmentNo(appointment.getAppointmentNo());
         data.setComments(appointment.getComments());
         data.setEndTime(appointment.getEndTime());
         data.setStartTime(appointment.getStartTime());
-        data.setStatus(Status.valueOf(appointment.getStatus()));
+        data.setStatus(appointment.getStatus());
         data.setUrgency(appointment.getUrgency());
+        data.setPhoneNumber(appointment.getPhoneNumber());
         return data;
     }
 }
