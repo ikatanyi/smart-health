@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -19,28 +20,28 @@ import org.springframework.data.repository.query.Param;
  *
  * @author Simon.waweru
  */
-public interface VisitRepository extends JpaRepository<Visit, Long> {
-
+public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecificationExecutor<Visit> {
+    
     Page<Visit> findByPatient(final Patient patient, Pageable page);
-
+    
     Page<Visit> findByServicePoint(final ServicePoint servicePoint, Pageable page);
-
+    
     Optional<Visit> findByVisitNumber(String visitNumber);
-
+    
     Page<Visit> findByStatus(final VisitEnum.Status status, Pageable pageable);
-
+    
     Optional<Visit> findByVisitNumberAndStatus(final String visitNumber, final String status);
 
     //Page<Visit> findByStatus(final String status, final Pageable pageable);
     Optional<Visit> findByPatientAndStatus(Patient patient, String status);
-
+    
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN 'true' ELSE 'false' END FROM Visit c WHERE c.status=:currentStatus AND  c.patient.patientNumber = :patient")
     Boolean visitExists(@Param("currentStatus") final String status, @Param("patient") final String patient);
-
+    
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN 'true' ELSE 'false' END FROM Visit c WHERE (c.status='CheckIn' OR c.status = 'Admitted') and c.patient=:patient")
     Boolean isPatientVisitActive(@Param("patient") Patient patient);
-
+    
     @Query(value = "SELECT max(id) FROM Visit")
     public Integer maxVisitId();
-
+    
 }

@@ -10,9 +10,9 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Kelsas
  */
-public class AppointmentSpecification {
+public class InventoryItemSpecification {
 
-    public AppointmentSpecification() {
+    public InventoryItemSpecification() {
         super();
     }
 

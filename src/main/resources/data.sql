@@ -142,7 +142,7 @@ INSERT IGNORE INTO `auth_permission` (NAME) VALUES
 ('can_read_user'),
 ('can_delete_user');
 
-INSERT IGNORE INTO `auth_role` (name) VALUES ('role_admin'),('role_user');
+INSERT IGNORE INTO `auth_role` (name) VALUES ('role_admin'),('role_user'),('role_customer');
 
 INSERT IGNORE INTO `auth_permission_role` (permission_id, role_id) VALUES
 (1,1),

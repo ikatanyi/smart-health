@@ -7,6 +7,7 @@ package io.smarthealth.clinical.visit.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.VisitType;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -14,6 +15,7 @@ import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
@@ -49,6 +51,8 @@ public class VisitData {
     private String practitionerCode;
 
     private PatientData patientData;
+
+    private List<PatientQueueData> patientQueueData;
 
     public static Visit map(VisitData visitDTO) {
         Visit visitEntity = new Visit();

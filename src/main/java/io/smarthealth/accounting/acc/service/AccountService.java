@@ -45,16 +45,17 @@ public class AccountService {
             return Optional.of(AccountMapper.map(accountEntity));
         }
     }
-    
-    public Optional<AccountEntity> findByAccountNumber(String identifier){
-         final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
+
+    public Optional<AccountEntity> findByAccountNumber(String identifier) {
+        final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
         if (accountEntity == null) {
             return Optional.empty();
         } else {
             return Optional.of(accountEntity);
         }
     }
-    public AccountEntity findOneWithNotFoundDetection(String identifier){
+
+    public AccountEntity findOneWithNotFoundDetection(String identifier) {
         return findByAccountNumber(identifier)
                 .orElseThrow(() -> APIException.notFound("Account with Account Number {0} not found", identifier));
     }
@@ -62,12 +63,15 @@ public class AccountService {
     public AccountEntity getAccountEntity(String accountNumber) {
         return this.accountRepository.findByIdentifier(accountNumber);
     }
-   public AccountEntity save(AccountEntity entity){
-       return this.accountRepository.save(entity);
-   }
-   public AccountEntryEntity saveAccountEntry(AccountEntryEntity accEntry){
-       return accountEntryRepository.save(accEntry);
-   }
+
+    public AccountEntity save(AccountEntity entity) {
+        return this.accountRepository.save(entity);
+    }
+
+    public AccountEntryEntity saveAccountEntry(AccountEntryEntity accEntry) {
+        return accountEntryRepository.save(accEntry);
+    }
+
     public AccountPage fetchAccounts(
             final boolean includeClosed, final String term, final String type,
             final boolean includeCustomerAccounts, final Pageable pageable) {
@@ -95,8 +99,8 @@ public class AccountService {
             final String message,
             final Pageable pageable) {
 
-        final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier); 
-        System.err.println(".... "+accountEntity);
+        final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
+        System.err.println(".... " + accountEntity);
         final Page<AccountEntryEntity> accountEntryEntities;
         if (message == null) {
             accountEntryEntities = this.accountEntryRepository.findByAccountAndTransactionDateBetween(
@@ -164,7 +168,6 @@ public class AccountService {
 //                            .collect(Collectors.joining(","))
 //            );
 //        }
-
         accountEntity.setBalance(account.getBalance());
         accountEntity.setState(Account.State.OPEN.name());
         accountEntity.setAlternativeAccountNumber(account.getAlternativeAccountNumber());
@@ -225,7 +228,6 @@ public class AccountService {
 //        } else {
 //            accountEntity.setSignatureAuthorities(null);
 //        }
-
         this.accountRepository.save(accountEntity);
 
         if (ledger != null) {
@@ -253,7 +255,8 @@ public class AccountService {
             this.adjustLedgerTotals(savedLedger.getParentLedger().getIdentifier(), amount);
         }
     }
-     public IncomeExpenseData getIncomeExpenseAccounts() {
+
+    public IncomeExpenseData getIncomeExpenseAccounts() {
         IncomeExpenseData metadata = new IncomeExpenseData();
         List<SimpleAccountData> income = accountRepository.findByType(AccountType.REVENUE.name())
                 .stream()
@@ -268,6 +271,5 @@ public class AccountService {
 
         return metadata;
     }
-      
 
 }

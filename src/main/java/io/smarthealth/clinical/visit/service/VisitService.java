@@ -12,11 +12,16 @@ import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
+import io.smarthealth.clinical.visit.domain.specification.VisitSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
+import io.smarthealth.organization.person.patient.service.PatientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +33,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class VisitService {
 
     private final VisitRepository visitRepository;
-    private final PatientRepository patientRepository;
     private final ServicePointService servicePointService;
+    private final PatientService patientService;
+    private final EmployeeService employeeService;
 
-    public VisitService(VisitRepository visitRepository, PatientRepository patientRepository, ServicePointService servicePointService) {
+    public VisitService(VisitRepository visitRepository, ServicePointService servicePointService, PatientService patientService, EmployeeService employeeService) {
         this.visitRepository = visitRepository;
-        this.patientRepository = patientRepository;
         this.servicePointService = servicePointService;
+        this.patientService = patientService;
+        this.employeeService = employeeService;
     }
 
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
@@ -43,8 +50,26 @@ public class VisitService {
         return visits;
     }
 
-    public Page<Visit> fetchAllVisits(final Pageable pageable) {
-        Page<Visit> visits = visitRepository.findAll(pageable);
+    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, String patientNumber, boolean runningStatus, final Pageable pageable) {
+        Visit visit = null;
+        Employee employee = null;
+        ServicePoint servicePoint = null;
+        Patient patient = null;
+        if (visitNumber != null) {
+            visit = this.findVisitEntityOrThrow(visitNumber);
+        }
+        if (staffNumber != null) {
+            employee = employeeService.fetchEmployeeByNumberOrThrow(staffNumber);
+        }
+        if (servicePointType != null) {
+            servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(servicePointType));
+        }
+        if (patientNumber != null) {
+            patient = patientService.findPatientOrThrow(patientNumber);
+        }
+
+        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visit, employee, servicePoint, patient, runningStatus);
+        Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
         return visits;
     }
 
@@ -74,8 +99,7 @@ public class VisitService {
     }
 
     private Patient findPatientEntityOrThrow(String patientNumber) {
-        return this.patientRepository.findByPatientNumber(patientNumber)
-                .orElseThrow(() -> APIException.notFound("Patient Number {0} not found.", patientNumber));
+        return this.patientService.findPatientOrThrow(patientNumber);
     }
 
     public Page<Visit> findVisitByStatus(final VisitEnum.Status status, Pageable pageable) {
