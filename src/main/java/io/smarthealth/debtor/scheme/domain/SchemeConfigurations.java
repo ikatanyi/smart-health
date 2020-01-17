@@ -9,6 +9,7 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.debtor.scheme.domain.enumeration.DiscountType;
 import io.smarthealth.infrastructure.domain.Auditable;
+import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -38,5 +39,10 @@ public class SchemeConfigurations extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_scheme_configurations_scheme_id"))
     private Scheme scheme;
+
+    private LocalDate copayStartDate;
+    private String schemeCover;
+    private boolean checkMemberShipLimit;
+    private boolean hasClaimSwithing;
 
 }
