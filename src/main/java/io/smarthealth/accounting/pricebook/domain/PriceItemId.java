@@ -7,6 +7,7 @@ package io.smarthealth.accounting.pricebook.domain;
 
 import io.smarthealth.stock.item.domain.Item;
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import lombok.Data;
 
@@ -18,7 +19,9 @@ import lombok.Data;
 @Embeddable
 public class PriceItemId implements Serializable {
 
-    public PriceBook pricebookId;
+    @Column(name = "pricebook_id")
+    private PriceBook pricebookId;
+    @Column(name = "item_id")
     private Item itemId;
 
 }

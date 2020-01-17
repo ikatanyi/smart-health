@@ -20,9 +20,10 @@ public class ServicePoint extends Identifiable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ServicePointType servicePointType;
-
+    private String pointType;
     private String name;
     private String description;
+    
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_income_account_id"))
     private AccountEntity incomeAccount;
@@ -31,6 +32,9 @@ public class ServicePoint extends Identifiable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_expense_account_id"))
     private AccountEntity expenseAccount;
 
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_inventory_asset_account_id"))
+    private AccountEntity inventoryAssetAccount;
 //    @ManyToOne
 //    @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_facility"))
 //    private Facility facility;
@@ -41,6 +45,7 @@ public class ServicePoint extends Identifiable {
         data.setId(this.getId());
         data.setActive(this.getActive());
         data.setName(this.getName());
+        data.setPointType(this.getPointType());
         data.setServicePointType(this.getServicePointType());
         data.setDescription(this.getDescription());
         if (this.getIncomeAccount() != null) {
@@ -48,6 +53,9 @@ public class ServicePoint extends Identifiable {
         }
         if (this.getExpenseAccount() != null) {
             data.setExpenseAccount(SimpleAccountData.map(this.getExpenseAccount()));
+        }
+        if(this.getInventoryAssetAccount()!=null){ 
+            data.setInventoryAssetAccount(SimpleAccountData.map(this.getInventoryAssetAccount()));
         }
 
         return data;

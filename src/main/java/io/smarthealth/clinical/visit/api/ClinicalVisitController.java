@@ -89,10 +89,10 @@ public class ClinicalVisitController {
         if (visitService.isPatientVisitActive(patient)) {
             throw APIException.conflict("Patient identified by {0} already has an active visit", patient.getPatientNumber());
         }
-        Employee employee = null;
-        if (visitData.getPractitionerCode() != null || !visitData.getPractitionerCode().equals("")) {
-            employee = employeeService.fetchEmployeeByNumberOrThrow(visitData.getPractitionerCode());
-        }
+//        Employee employee = null;
+//        if (visitData.getPractitionerCode() != null || !visitData.getPractitionerCode().equals("")) {
+//            employee = employeeService.fetchEmployeeByNumberOrThrow(visitData.getPractitionerCode());
+//        }
         ServicePoint servicePoint = servicePointService.getServicePoint(visitData.getServicePointIdentifier());
 
         System.out.println("Selected service point " + servicePoint.getName());
@@ -102,7 +102,7 @@ public class ClinicalVisitController {
         visit.setStartDatetime(visitData.getStartDatetime());
         visit.setPatient(patient);
         visit.setServicePoint(servicePoint);
-        visit.setHealthProvider(employee);
+//        visit.setHealthProvider(employee);
         visit = this.visitService.createAVisit(visit);
         //Push it to queue
         PatientQueue patientQueue = new PatientQueue();

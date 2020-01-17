@@ -2,7 +2,7 @@ package io.smarthealth.accounting.billing.api;
 
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
-import io.smarthealth.accounting.billing.domain.Bill;
+import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -40,9 +40,9 @@ public class BillingController {
     
      */
     @PostMapping("/billing")
-    public ResponseEntity<?> createPatientBill(@Valid @RequestBody BillData patientBillData) {
+    public ResponseEntity<?> createPatientBill(@Valid @RequestBody BillData billData) {
 
-        Bill patientbill = service.createBill(patientBillData); 
+        PatientBill patientbill = service.createBill(billData); 
          
         Pager<BillData> pagers = new Pager();
         pagers.setCode("0");
@@ -51,21 +51,22 @@ public class BillingController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
+     
 @GetMapping("/billing/{id}")
     public BillData getPatientBill(@PathVariable(value = "id") Long code) {
-        Bill bill = service.findOneWithNoFoundDetection(code);
+        PatientBill bill = service.findOneWithNoFoundDetection(code);
         return bill.toData();
     }
     
     @PostMapping("/billing/{id}/items")
     public BillData addPatientBillItem(@PathVariable(value = "id") Long id,  List<BillItemData>billLines) {
-        Bill bill = service.findOneWithNoFoundDetection(id);
+        PatientBill bill = service.findOneWithNoFoundDetection(id);
         return bill.toData();
     }
     
     @GetMapping("/billing")
     public ResponseEntity<?> getPatientBills(
-            @RequestParam(value = "referenceNumber", required = false) String referenceNumber,
+            @RequestParam(value = "transactionNo", required = false) String transactionNo,
             @RequestParam(value = "visitNumber", required = false) String visitNumber,
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
             @RequestParam(value = "paymentMode", required = false) String paymentMode,
@@ -75,7 +76,7 @@ public class BillingController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
          
         Pageable pageable = PaginationUtil.createPage(page, size); 
-        Page<BillData> list = service.findAllBills(referenceNumber,visitNumber,patientNumber,paymentMode,billNumber,status,pageable)
+        Page<BillData> list = service.findAllBills(transactionNo,visitNumber,patientNumber,paymentMode,billNumber,status,pageable)
                 .map(bill -> bill.toData());
 
         Pager<List<BillData>> pagers = new Pager();

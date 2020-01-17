@@ -19,13 +19,13 @@ import org.springframework.data.repository.query.Param;
  *
  * @author Kennedy.Imbenzi
  */
-public interface PatientTestRegisterRepository extends JpaRepository<PatientTestRegister, Long>, JpaSpecificationExecutor<PatientTestRegister> {
+public interface LabRegisterRepository extends JpaRepository<LabRegister, Long>, JpaSpecificationExecutor<LabRegister> {
 
-    @Query("SELECT pt FROM PatientTestRegister pt WHERE pt.visit.visitNumber=:visitNumber")
-    Page<PatientTestRegister> findPatientTests(@Param("visitNumber") final String visitNo, final Pageable pageable);
+    @Query("SELECT pt FROM LabRegister pt WHERE pt.visit.visitNumber=:visitNumber")
+    Page<LabRegister> findPatientTests(@Param("visitNumber") final String visitNo, final Pageable pageable);
 
-    Optional<PatientTestRegister> findByAccessNo(final String accessNo);
+    Optional<LabRegister> findByAccessNo(final String accessNo);
 
-    List<PatientTestRegister> findByVisit(final Visit visit);
+    List<LabRegister> findByVisit(final Visit visit);
 
 }

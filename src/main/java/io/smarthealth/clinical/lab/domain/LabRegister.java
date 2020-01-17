@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.lab.domain;
 
-import io.smarthealth.accounting.billing.domain.Bill;
+import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
@@ -33,7 +33,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "patient_test_register")
-public class PatientTestRegister extends ClinicalRecord {
+public class LabRegister extends ClinicalRecord {
 
     @Column(nullable = false, unique = true)
     private String accessNo;
@@ -69,5 +69,5 @@ public class PatientTestRegister extends ClinicalRecord {
 
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_test_register_bill_id"))
     @OneToOne
-    private Bill bill;
+    private PatientBill bill;
 }

@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  *
  * @author Kennedy.Imbenzi
  */
-public interface BillRepository extends JpaRepository<Bill, Long>, JpaSpecificationExecutor<Bill> {
+public interface PatientBillRepository extends JpaRepository<PatientBill, Long>, JpaSpecificationExecutor<PatientBill> {
     
-    Optional<Bill> findByBillNumber(final String identifier);
+    Optional<PatientBill> findByBillNumber(final String identifier);
      
 }

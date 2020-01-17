@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author Kelsas
  */
-public interface BillItemRepository extends JpaRepository<BillItem, Long>{
+public interface PatientBillItemRepository extends JpaRepository<PatientBillItem, Long>{
     
 }

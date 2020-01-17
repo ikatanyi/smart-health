@@ -1,14 +1,17 @@
 package io.smarthealth.accounting.billing.service;
 
-import com.google.common.collect.Sets;
 import io.smarthealth.accounting.acc.data.v1.Creditor;
 import io.smarthealth.accounting.acc.data.v1.Debtor;
+import io.smarthealth.accounting.acc.data.v1.FinancialActivity;
 import io.smarthealth.accounting.acc.data.v1.JournalEntry;
+import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.accounting.acc.domain.FinancialActivityAccount;
+import io.smarthealth.accounting.acc.domain.FinancialActivityAccountRepository;
 import io.smarthealth.accounting.acc.service.JournalEntryService;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
-import io.smarthealth.accounting.billing.domain.Bill;
-import io.smarthealth.accounting.billing.domain.BillItem;
+import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -22,17 +25,23 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import io.smarthealth.accounting.billing.domain.BillRepository;
-import io.smarthealth.accounting.billing.domain.BllItemRepository;
+import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
-import io.smarthealth.infrastructure.sequence.service.TxnService;
+import io.smarthealth.clinical.pharmacy.data.PharmacyData;
+import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import io.smarthealth.accounting.billing.domain.PatientBillRepository;
+import io.smarthealth.stock.stores.domain.Store;
+import io.smarthealth.stock.stores.service.StoreService;
 
 /**
  *
@@ -43,37 +52,40 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class BillingService {
 
-    private final BillRepository patientBillRepository;
-    private final BllItemRepository billItemRepository;
+    private final PatientBillRepository patientBillRepository;
+    private final PatientBillItemRepository billItemRepository;
     private final VisitService visitService;
     private final ItemService itemService;
-    private final TxnService txnService;
+    private final SequenceNumberGenerator sequenceGenerator;
+//    private final TxnService txnService;
     private final JournalEntryService journalService;
     private final ServicePointService servicePointService;
+    private final StoreService storeService;
+    private final FinancialActivityAccountRepository activityAccountRepository;
 
-    public Bill createBill(BillData data) {
+    public PatientBill createBill(BillData data) {
         //check the validity of the patient visit
         Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
-        String billNumber = RandomStringUtils.randomNumeric(6); //sequenceService.nextNumber(SequenceType.BillNumber);
-        String trdId = txnService.nextId();
+//        String billNumber = RandomStringUtils.randomNumeric(6); //sequenceService.nextNumber(SequenceType.BillNumber);
+        String trdId = sequenceGenerator.generateTransactionNumber();
 
-        Bill patientbill = new Bill();
+        PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
         patientbill.setPatient(visit.getPatient());
         patientbill.setAmount(data.getAmount());
         patientbill.setDiscount(data.getDiscount());
         patientbill.setBalance(data.getAmount());
-        patientbill.setBillNumber(billNumber);
+//        patientbill.setBillNumber(billNumber);
         patientbill.setBillingDate(data.getBillingDate());
-        patientbill.setJournalNumber(data.getJournalNumber());
+        patientbill.setReferenceNo(data.getReferenceNo());
         patientbill.setPaymentMode(data.getPaymentMode());
         patientbill.setTransactionId(trdId);
         patientbill.setStatus(BillStatus.Draft);
 
-        List<BillItem> lineItems = data.getBillItems()
+        List<PatientBillItem> lineItems = data.getBillItems()
                 .stream()
                 .map(lineData -> {
-                    BillItem billItem = new BillItem();
+                    PatientBillItem billItem = new PatientBillItem();
 
                     billItem.setBillingDate(lineData.getBillingDate());
                     billItem.setTransactionId(trdId);
@@ -89,6 +101,7 @@ public class BillingService {
                     billItem.setDiscount(lineData.getDiscount());
                     billItem.setBalance(lineData.getAmount());
                     billItem.setServicePoint(lineData.getServicePoint());
+                    billItem.setServicePointId(lineData.getServicePointId());
                     billItem.setStatus(BillStatus.Draft);
 
                     return billItem;
@@ -96,43 +109,104 @@ public class BillingService {
                 .collect(Collectors.toList());
         patientbill.addBillItems(lineItems);
 
-        Bill savedBill = patientBillRepository.save(patientbill);
+        PatientBill savedBill = save(patientbill);
+        savedBill.setBillNumber(sequenceGenerator.generate(savedBill));
+        save(savedBill);
 
-        journalService.createJournalEntry(toJournal(savedBill));
+        journalService.createJournalEntry(savedBill);
 
+//        journalService.createJournalEntry(toJournal(trdId, savedBill));
         //trigger stock balance if items is an inventory
 //         journalSender.postJournal(toJournal(savedBill)); 
         return savedBill;
     }
 
-    public Bill save(Bill bill) {
+    public PatientBill createBill(Store store, PharmacyData data) {
+        //check the validity of the patient visit
+        Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
+       
+        PatientBill patientbill = new PatientBill();
+        patientbill.setVisit(visit);
+        patientbill.setPatient(visit.getPatient());
+        patientbill.setAmount(data.getAmount());
+        patientbill.setDiscount(data.getDiscount());
+        patientbill.setBalance(data.getAmount());
+        patientbill.setBillingDate(data.getDispenseDate());
+        patientbill.setReferenceNo(data.getReferenceNo());
+        patientbill.setPaymentMode(data.getPaymentMode());
+        patientbill.setTransactionId(data.getTransactionId());
+        patientbill.setStatus(BillStatus.Draft);
+
+        List<PatientBillItem> lineItems = data.getDrugItems()
+                .stream()
+                .map(lineData -> {
+                    PatientBillItem billItem = new PatientBillItem();
+
+                    billItem.setBillingDate(lineData.getBillingDate());
+                    billItem.setTransactionId(data.getTransactionId());
+
+                    if (lineData.getItemId() != null) {
+                        Item item = itemService.findItemEntityOrThrow(lineData.getItemId());
+                        billItem.setItem(item);
+                    }
+
+                    billItem.setPrice(lineData.getPrice());
+                    billItem.setQuantity(lineData.getQuantity());
+                    billItem.setAmount(lineData.getAmount());
+                    billItem.setDiscount(lineData.getDiscount());
+                    billItem.setBalance(lineData.getAmount());
+                    billItem.setServicePoint(lineData.getServicePoint());
+                    billItem.setServicePointId(lineData.getServicePointId());
+                    billItem.setStatus(BillStatus.Draft);
+
+                    return billItem;
+                })
+                .collect(Collectors.toList());
+        patientbill.addBillItems(lineItems);
+
+        PatientBill savedBill = save(patientbill);
+        savedBill.setBillNumber(sequenceGenerator.generate(savedBill));
+        save(savedBill);
+
+//        journalService.createJournalEntry(toJournal(trdId, savedBill)); 
+        journalService.createJournalEntry(savedBill, store);
+        //trigger stock balance if items is an inventory
+//         journalSender.postJournal(toJournal(savedBill)); 
+        return savedBill;
+    }
+
+    public PatientBill save(PatientBill bill) {
         return patientBillRepository.save(bill);
     }
 
-    public Optional<Bill> findByBillNumber(final String billNumber) {
+    public Optional<PatientBill> findByBillNumber(final String billNumber) {
         return patientBillRepository.findByBillNumber(billNumber);
     }
 
-    public Bill findOneWithNoFoundDetection(Long id) {
+    public PatientBill findOneWithNoFoundDetection(Long id) {
         return patientBillRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bill with Id {0} not found", id));
     }
 
-    public BillItem findBillItemById(Long id) {
+    public PatientBillItem findBillItemById(Long id) {
         return billItemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bill Item with Id {0} not found", id));
     }
 
-    public BillItem updateBillItem(BillItem item) {
+    public PatientBillItem updateBillItem(PatientBillItem item) {
         return billItemRepository.save(item);
     }
 
+    public Item getItemByCode(String code) {
+        return itemService.findByItemCodeOrThrow(code);
+    }
+
     public String addPatientBillItems(Long id, List<BillItemData> billItems) {
-        Bill patientbill = findOneWithNoFoundDetection(id);
-        List<BillItem> lineItems = billItems
+        PatientBill patientbill = findOneWithNoFoundDetection(id);
+        List<PatientBillItem> lineItems = billItems
                 .stream()
                 .map(lineData -> {
-                    BillItem billLine = new BillItem();
+                    PatientBillItem billLine = new PatientBillItem();
 
                     billLine.setBillingDate(lineData.getBillingDate());
                     billLine.setTransactionId(lineData.getTransactionId());
@@ -149,6 +223,7 @@ public class BillingService {
                     billLine.setDiscount(lineData.getDiscount());
                     billLine.setBalance(lineData.getAmount());
                     billLine.setServicePoint(lineData.getServicePoint());
+                    billLine.setServicePointId(lineData.getServicePointId());
                     billLine.setStatus(BillStatus.Draft);
 
                     return billLine;
@@ -159,112 +234,80 @@ public class BillingService {
         return patientbill.getBillNumber();
     }
 
-    public Page<Bill> findAllBills(String refNo, String visitNo, String patientNo, String paymentMode, String billNo, String status, Pageable page) {
+    public Page<PatientBill> findAllBills(String transactionNo, String visitNo, String patientNo, String paymentMode, String billNo, String status, Pageable page) {
         BillStatus state = BillStatus.valueOf(status);
-        Specification<Bill> spec = BillingSpecification.createSpecification(refNo, visitNo, patientNo, paymentMode, billNo, state);
+        Specification<PatientBill> spec = BillingSpecification.createSpecification(transactionNo, visitNo, patientNo, paymentMode, billNo, state);
 
         return patientBillRepository.findAll(spec, page);
 
     }
 
-//    private void createJournal(PatientBill bill) {
-//        FinancialActivityAccount activity = financialActivityAccountService.getByTransactionType(FinancialActivity.Patient_Invoice_Control)
-//                .orElseThrow(() -> APIException.badRequest("Patient Control Account for billing is not mapped"));
+//    private JournalEntry toJournal(String trxId, PatientBill bill) {
+////        final String roundedAmount = BigDecimal.valueOf(6500D).setScale(2, BigDecimal.ROUND_HALF_EVEN).toString();
 //
-//        AccountEntity patientControlAccount = activity.getAccount();
+//        Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Patient_Invoice_Control);
 //
-//        JournalEntryEntity journal = new JournalEntryEntity();
-//        journal.setTransactionType(TransactionType.Billing);
-//        journal.setDocumentDate(bill.getBillingDate());
-//        journal.setManualEntry(false);
-//        journal.setReferenceNumber(bill.getReferenceNumber());
-//        journal.setState(JournalState.APPROVED);
-//        journal.setTransactionDate(bill.getBillingDate());
-//        journal.setActivity(bill.getPatient().getPatientNumber());
+//        if (debitAccount.isPresent()) {
+//            String debitAcc = debitAccount.get().getAccount().getIdentifier();
+//            final JournalEntry je = new JournalEntry();
+//            je.setTransactionDate(LocalDateTime.now());
+//            je.setState("PENDING");;
+//            je.setTransactionNo(trxId);
+//            je.setTransactionType("Billing");
+//            je.setClerk(SecurityUtils.getCurrentUserLogin().get());
+//            je.setNote(bill.getBillNumber());
 //
-//        bill.getBillLines()
-//                .forEach(billItem -> {
-//                    Account revenueAccount = pointsService.getServicePoint(billItem.getServicePointId()).getIncomeAccount();
+//            Set<Creditor> creditors = new HashSet<>();
+//            Set<Debtor> debtors = new HashSet<>();
 //
-//                    journal.addJournalEntry(new JournalEntry(patientControlAccount, 0D, billItem.getAmount(), billItem.getBillingDate(), String.format("Patient Billing %s bill number %s", bill.getPatient().getPatientNumber(), bill.getBillNumber())));
-//                    journal.addJournalEntry(new JournalEntry(revenueAccount, billItem.getAmount(), 0D, billItem.getBillingDate(), String.format("Patient Billing %s bill number %s", bill.getPatient().getPatientNumber(), bill.getBillNumber())));
+//            if (!bill.getBillItems().isEmpty()) {
+//                Map<Long, Double> map = bill.getBillItems()
+//                        .stream()
+//                        .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
+//                                Collectors.summingDouble(PatientBillItem::getAmount)
+//                        )
+//                        );
 //
-//                    if (billItem.getItem().isInventoryItem()) {
-//                        Account expenseAccount = pointsService.getServicePoint(billItem.getServicePointId()).getIncomeAccount();
-//                        journal.addJournalEntry(new JournalEntry(expenseAccount, 0D, billItem.getItem().getCostRate(), billItem.getBillingDate(), "Stocks Inventory"));
-//                        journal.addJournalEntry(new JournalEntry(patientControlAccount, billItem.getItem().getCostRate(), 0D, billItem.getBillingDate(), "Stocks Inventory"));
-//                    }
+//                //then here since we making a revenue
+//                map.forEach((k, v) -> {
+//                    ServicePoint srv = servicePointService.getServicePoint(k);
+//                    AccountEntity credit = srv.getIncomeAccount();
+//                    String amount = roundedAmount(v);
+//                    debtors.add(new Debtor(debitAcc, amount));
+//                    creditors.add(new Creditor(credit.getIdentifier(), amount));
+//                    //expense Inventory
+//
 //                });
 //
-//        journalService.createJournalEntry(journal.toData());
-//        //do a stock movement for the inventory at this point
+//                bill.getBillItems()
+//                        .stream()
+//                        .forEach(item -> {
 //
+//                        });
+//
+//            }
+//
+//            je.setCreditors(creditors);
+//            je.setDebtors(debtors);
+//
+////            final Debtor cashDebtor = new Debtor();
+////            cashDebtor.setAccountNumber("account to debit");
+////            cashDebtor.setAmount(roundedAmount);
+////            je.setDebtors(Sets.newHashSet(cashDebtor));
+////
+////            final Creditor accrueCreditor = new Creditor();
+////            accrueCreditor.setAccountNumber("account to credit");
+////            accrueCreditor.setAmount(roundedAmount);
+////            je.setCreditors(Sets.newHashSet(accrueCreditor));
+//            return je;
+//        } else {
+//            throw APIException.badRequest("Patient Control Account is Not Mapped");
+//        }
 //    }
-    private JournalEntry toJournal(Bill bill) {
-
-        final String roundedAmount = BigDecimal.valueOf(6500D).setScale(2, BigDecimal.ROUND_HALF_EVEN).toString();
-
-        final JournalEntry je = new JournalEntry();
-        je.setJournalNumber(RandomStringUtils.randomNumeric(6));
-        je.setTransactionDate(LocalDateTime.now());
-        je.setState("PENDING");
-        je.setTransactionType("INTR");
-        je.setClerk(SecurityUtils.getCurrentUserLogin().get());
-        je.setNote(bill.getBillNumber());
-
-        if (!bill.getBillItems().isEmpty()) {
-
-            //need to determine
-            bill.getBillItems()
-                    .stream()
-                    .forEach(item -> {
-
-                    });
-
-        }
-
-        final Debtor cashDebtor = new Debtor();
-        cashDebtor.setAccountNumber("account to debit");
-        cashDebtor.setAmount(roundedAmount);
-        je.setDebtors(Sets.newHashSet(cashDebtor));
-
-        final Creditor accrueCreditor = new Creditor();
-        accrueCreditor.setAccountNumber("account to credit");
-        accrueCreditor.setAmount(roundedAmount);
-        je.setCreditors(Sets.newHashSet(accrueCreditor));
-
-        return je;
+    private String roundedAmount(Double amt) {
+        return BigDecimal.valueOf(amt)
+                .setScale(2, BigDecimal.ROUND_HALF_EVEN)
+                .toString();
     }
 
-    public JournalEntry createJournalEntry(Bill bill) {
-        final String roundedAmount = BigDecimal.valueOf(6500D).setScale(2, BigDecimal.ROUND_HALF_EVEN).toString();
-
-        final JournalEntry cashToAccrueJournalEntry = new JournalEntry();
-        cashToAccrueJournalEntry.setJournalNumber(RandomStringUtils.randomNumeric(6));
-        cashToAccrueJournalEntry.setTransactionDate(LocalDateTime.now());
-        cashToAccrueJournalEntry.setState("PENDING");
-        cashToAccrueJournalEntry.setTransactionType("INTR");
-        cashToAccrueJournalEntry.setClerk(SecurityUtils.getCurrentUserLogin().get());
-        cashToAccrueJournalEntry.setNote("Patient Billing : patient no. ");
-
-        final Debtor cashDebtor = new Debtor();
-        cashDebtor.setAccountNumber("account to debit");
-        cashDebtor.setAmount(roundedAmount);
-        cashToAccrueJournalEntry.setDebtors(Sets.newHashSet(cashDebtor));
-
-        final Creditor accrueCreditor = new Creditor();
-        accrueCreditor.setAccountNumber("account to credit");
-        accrueCreditor.setAmount(roundedAmount);
-        cashToAccrueJournalEntry.setCreditors(Sets.newHashSet(accrueCreditor));
-
-        return cashToAccrueJournalEntry;
-    }
-
-    //posting rules
-    /*
-    // Service point have Income and Expense accounts
-    // Receipting Point/ Cash Drawer  has Income and Expenses
-   I can use this determine the posting rules
-    
-     */
 }

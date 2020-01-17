@@ -20,7 +20,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "patient_billing")
-public class Bill extends Auditable {
+public class PatientBill extends Auditable {
  
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_patient_id"))
@@ -41,22 +41,21 @@ public class Bill extends Auditable {
     private Double taxes;
     private Double Amount;
     private Double balance;
-    
-    
-    private String journalNumber;
+    private String referenceNo;
+     
     @Enumerated(EnumType.STRING)
     private BillStatus status;
 
     @OneToMany(mappedBy = "patientBill", cascade = CascadeType.ALL)
-    private List<BillItem> billItems = new ArrayList<>();
+    private List<PatientBillItem> billItems = new ArrayList<>();
     //
 
-    public void addBillItem(BillItem billItem) {
+    public void addBillItem(PatientBillItem billItem) {
         billItem.setPatientBill(this);
         billItems.add(billItem);
     }
 
-    public void addBillItems(List<BillItem> billItems) {
+    public void addBillItems(List<PatientBillItem> billItems) {
         this.billItems=billItems;
         this.billItems.forEach(x -> x.setPatientBill(this));
     }
@@ -67,7 +66,7 @@ public class Bill extends Auditable {
         data.setId(this.getId());
         data.setBillNumber(this.getBillNumber());
         data.setBillingDate(this.getBillingDate());
-        data.setJournalNumber(this.getJournalNumber());
+        data.setReferenceNo(this.getReferenceNo());
         data.setTransactionId(this.getTransactionId());
         data.setAmount(this.getAmount());
         data.setDiscount(this.getDiscount());

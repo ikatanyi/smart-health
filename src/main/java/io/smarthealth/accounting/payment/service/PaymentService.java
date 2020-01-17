@@ -1,8 +1,8 @@
 package io.smarthealth.accounting.payment.service;
 
 import io.smarthealth.accounting.acc.service.AccountService;
-import io.smarthealth.accounting.billing.domain.Bill;
-import io.smarthealth.accounting.billing.domain.BillItem;
+import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.payment.data.PaymentData;
@@ -65,10 +65,10 @@ public class PaymentService {
 
         final FinancialTransaction trans = transactionRepository.save(transaction);
 
-        Optional<Bill> bill = billingService.findByBillNumber(transactionData.getBillNumber());
+        Optional<PatientBill> bill = billingService.findByBillNumber(transactionData.getBillNumber());
 
         if (bill.isPresent()) {
-            Bill b = bill.get();
+            PatientBill b = bill.get();
             b.setStatus(BillStatus.Final);
             billingService.save(b);
         }
@@ -77,7 +77,7 @@ public class PaymentService {
             transactionData.getBillItems()
                     .stream()
                     .forEach(data -> {
-                        BillItem item = billingService.findBillItemById(data.getBillItemId());
+                        PatientBillItem item = billingService.findBillItemById(data.getBillItemId());
                         item.setPaid(Boolean.TRUE);
                         item.setStatus(BillStatus.Final);
                         item.setBalance(0D);

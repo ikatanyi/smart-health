@@ -13,6 +13,7 @@ import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.infrastructure.accountnumberformat.service.AccountNumberGenerator;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
@@ -93,6 +94,9 @@ public class PatientService {
 
     @Value("${patientimage.upload.dir}")
     private String uploadDir;
+    
+    @Autowired
+    AccountNumberGenerator accountNumberGenerator;
 
     @Autowired
     PatientService(@Value("${patientimage.upload.dir}") String uploadDir) {
@@ -278,7 +282,8 @@ public class PatientService {
             visit.setStatus(VisitEnum.Status.CheckIn);
             visit.setVisitType(VisitEnum.VisitType.Outpatient);
             //generate visit number
-            visit.setVisitNumber(sequenceService.nextNumber(SequenceType.VisitNumber));
+//            visit.setVisitNumber(sequenceService.nextNumber(SequenceType.VisitNumber));
+            
             ServicePoint servicePoint = null;
             if (patient.getVisitType().equals("OPD_VISIT")) {
                 //find service point by service type
@@ -302,6 +307,9 @@ public class PatientService {
             }
 
             visitService.createAVisit(visit);
+            visit.setVisitNumber(accountNumberGenerator.generate(visit, null));
+            visitService.createAVisit(visit);
+            
             //insert into patient visit log
             PatientQueue queue = new PatientQueue();
             queue.setPatient(savedPatient);

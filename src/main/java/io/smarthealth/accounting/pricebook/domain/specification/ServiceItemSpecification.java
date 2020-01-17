@@ -29,7 +29,7 @@ public class ServiceItemSpecification {
                 predicates.add(cb.equal(root.get("active"), true));
             }
             if (point != null) {
-                predicates.add(cb.equal(root.get("mainService"), point));
+                predicates.add(cb.equal(root.get("servicePoint"), point));
             }  
             
               if (item != null) {

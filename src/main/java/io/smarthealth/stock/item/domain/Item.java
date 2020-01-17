@@ -5,6 +5,7 @@ import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.util.List;
+import javax.persistence.Column;
 
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -24,10 +25,8 @@ import lombok.ToString;
  */
 @Data
 @Entity
-@Table(name = "stock_item_service", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"category", "itemName"})})
-public class Item extends Identifiable {
-
+@Table(name = "product_services")
+public class Item extends Identifiable { 
     private String itemType;
     private String category; // is this a consumable, service, procedure, inventory
     private String itemName;
@@ -36,11 +35,18 @@ public class Item extends Identifiable {
     private Double costRate;
     private Boolean discountable;
     private Boolean taxable;
+    //if drug
+    private String drugCategory;
+    private String strength;
+    private String route;
+    private String drugForm;
+    @Column(name = "is_drug")
+    private Boolean drug;
 //    private Double availableStock;
 
     @ToString.Exclude
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_item_uom"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_item_uom_id"))
     private Uom uom;
 
     private String description;
@@ -60,6 +66,7 @@ public class Item extends Identifiable {
     @JsonIgnore
     @ManyToMany(mappedBy = "priceBookItems")
     private List<PriceBook> priceBooks;
+    
     private Boolean active;
 
     public boolean isInventoryItem() {

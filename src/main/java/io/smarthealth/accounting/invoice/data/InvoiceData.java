@@ -1,7 +1,7 @@
 package io.smarthealth.accounting.invoice.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.accounting.billing.domain.Bill;
+import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.debtor.payer.domain.Payer;

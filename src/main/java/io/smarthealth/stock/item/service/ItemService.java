@@ -10,12 +10,9 @@ import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.inventory.service.InventoryEventSender;
-import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.data.ItemData;
-import io.smarthealth.stock.item.data.Uoms; 
-import io.smarthealth.stock.item.domain.Drug;
-import io.smarthealth.stock.item.domain.DrugRepository;
+import io.smarthealth.stock.item.data.Uoms;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemMetadata;
 import io.smarthealth.stock.item.domain.ItemRepository;
@@ -57,14 +54,13 @@ public class ItemService {
     private final UomService uomService;
     private final StoreService storeService;
     private final ReorderRuleRepository reorderRuleRepository;
-    private final DrugRepository drugRepository;
     private final StockEntryRepository stockEntryRepository;
     private final InventoryEventSender inventoryEventSender;
 
     @Transactional
     @CachePut
     public ItemData createItem(CreateItem createItem) {
-        Item item = new Item(); 
+        Item item = new Item();
         item.setActive(Boolean.TRUE);
         item.setCategory(createItem.getStockCategory());
         item.setCostRate(createItem.getPurchaseRate());
@@ -86,19 +82,15 @@ public class ItemService {
                 item.setTax(tax.get());
             }
         }
-        System.err.println(item);
+        if (createItem.getStockCategory() != null && createItem.getStockCategory().equals("drug")) {
+            item.setDrug(createItem.getStockCategory().equals("drug"));
+            item.setDrugCategory(createItem.getDrugCategory());
+            item.setDrugForm(createItem.getDoseForm());
+            item.setRoute(createItem.getDrugRoute());
+            item.setStrength(createItem.getDrugStrength());
+        }
 
         Item savedItem = itemRepository.save(item);
-
-        if (createItem.getStockCategory() != null && createItem.getStockCategory().equals("drug")) {
-            Drug drug = new Drug();
-            drug.setItem(savedItem);
-            drug.setDrugCategory(createItem.getDrugCategory());
-            drug.setDrugForm(createItem.getDoseForm());
-            drug.setRoute(createItem.getDrugRoute());
-            drug.setStrength(createItem.getDrugStrength());
-            drugRepository.save(drug);
-        }
 
         if (createItem.getItemType().equals("Inventory") && createItem.getInventoryStore() != null) {
             Store store = storeService.getStore(createItem.getInventoryStore())
@@ -149,10 +141,10 @@ public class ItemService {
     public Optional<Item> findByItemCode(final String itemCode) {
         return itemRepository.findByItemCode(itemCode);
     }
-    
-     public Item findByItemCodeOrThrow(final String itemCode) {
+
+    public Item findByItemCodeOrThrow(final String itemCode) {
         return findByItemCode(itemCode)
-               .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", itemCode));
+                .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", itemCode));
     }
 
     public Page<Item> fetchItems(String category, String type, boolean includeClosed, String term, Pageable pageable) {

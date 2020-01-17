@@ -13,6 +13,7 @@ public class ItemSimpleData {
     private String itemType;
     private String itemName;
     private String itemCode;
+    private  Double price;
 
     public static ItemSimpleData map(Item item) {
         ItemSimpleData data = new ItemSimpleData();
@@ -20,6 +21,7 @@ public class ItemSimpleData {
         data.setItemName(item.getItemName());
         data.setItemType(item.getItemType());
         data.setItemCode(item.getItemCode());
+        data.setPrice(Double.NaN);
         return data;
     }
 }

@@ -2,6 +2,7 @@ package io.smarthealth.accounting.billing.domain;
 
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
@@ -15,15 +16,16 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "patient_billing_item")
-public class BillItem extends Auditable {
+public class PatientBillItem extends Auditable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_item_bill_id"))
-    private Bill patientBill; 
-    
+    private PatientBill patientBill;
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_item_item_id"))
     private Item item;
+    
     private LocalDate billingDate;
     private String transactionId;
     private Double quantity;
@@ -31,8 +33,9 @@ public class BillItem extends Auditable {
     private Double discount;
     private Double taxes;
     private Double amount;
-    private Double balance; 
+    private Double balance;
     private String servicePoint;
+    private Long servicePointId;
     private Boolean paid;
 
     @Enumerated(EnumType.STRING)
@@ -53,7 +56,7 @@ public class BillItem extends Auditable {
         data.setDiscount(this.getDiscount());
         data.setTransactionId(this.getTransactionId());
         data.setStatus(this.getStatus());
-        
+
         data.setCreatedBy(this.getCreatedBy());
 
         if (this.getItem() != null) {
@@ -61,9 +64,10 @@ public class BillItem extends Auditable {
             data.setItemCode(this.getItem().getItemCode());
             data.setItem(this.getItem().getItemName());
         }
-        data.setServicePoint(this.getServicePoint()); 
+        data.setServicePoint(this.getServicePoint());
         data.setPaid(this.getPaid());
 
         return data;
     }
+
 }

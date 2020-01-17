@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.record.domain.specification;
 
-import io.smarthealth.clinical.lab.domain.PatientTestRegister;
+import io.smarthealth.clinical.lab.domain.LabRegister;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
@@ -21,7 +21,7 @@ public class PatientTestSpecifica {
         super();
     }
 
-    public static Specification<PatientTestRegister> createSpecification(final String visitNumber, final LabTestState status/*, Date from , Date to*/) {
+    public static Specification<LabRegister> createSpecification(final String visitNumber, final LabTestState status/*, Date from , Date to*/) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
