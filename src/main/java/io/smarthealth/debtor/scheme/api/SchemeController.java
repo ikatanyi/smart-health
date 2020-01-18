@@ -1,9 +1,12 @@
 package io.smarthealth.debtor.scheme.api;
 
+import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
+import io.smarthealth.debtor.scheme.data.SchemConfigData;
 import io.smarthealth.debtor.scheme.data.SchemeData;
+import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -14,6 +17,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -80,6 +84,73 @@ public class SchemeController {
         SchemeData schemeData = SchemeData.map(schemeService.fetchSchemeById(schemeId));
 
         return ResponseEntity.ok(schemeData);
+    }
+
+    @PostMapping("/scheme/{id}/scheme-configuration")
+    public ResponseEntity<?> updateSchemeConfiguration(@PathVariable("id") final Long schemeId, @Valid @RequestBody SchemConfigData data) {
+        Scheme scheme = schemeService.fetchSchemeById(schemeId);
+
+        SchemeConfigurations configSaved = null;
+        if (data.getConfigId() == null || data.getConfigId().equals("")) {
+            //save as new
+            SchemeConfigurations configurations = SchemConfigData.map(data);
+            configurations.setScheme(scheme);
+            configSaved = schemeService.updateSchemeConfigurations(configurations);
+        } else {
+            //look for scheme config 
+            SchemeConfigurations schemeConfig = schemeService.fetchSchemeConfigById(data.getConfigId());
+            schemeConfig.setCoPayType(data.getCoPayType());
+            schemeConfig.setCoPayValue(data.getCoPayValue());
+            schemeConfig.setDiscountMethod(data.getDiscountMethod());
+            schemeConfig.setDiscountValue(data.getDiscountValue());
+//            schemeConfig.setScheme(scheme);
+            schemeConfig.setSmartEnabled(data.isSmartEnabled());
+            schemeConfig.setStatus(data.isStatus());
+            configSaved = schemeService.updateSchemeConfigurations(schemeConfig);
+        }
+
+        Pager<SchemConfigData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Scheme parameters have successfully been updated");
+        pagers.setContent(SchemConfigData.map(configSaved));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+
+    }
+
+    @GetMapping("/scheme/{id}/scheme-configuration")
+    public ResponseEntity<?> fetchSchemeConfigurationByScheme(@PathVariable("id") final Long id) {
+        //look for scheme config
+        Scheme scheme = schemeService.fetchSchemeById(id);
+
+        if (schemeService.SchemeConfigBySchemeExists(scheme)) {
+            SchemeConfigurations schemeConfig = schemeService.fetchSchemeConfigBySchemeWithNotAvailableDetection(scheme);
+            Pager<SchemConfigData> pagers = new Pager();
+            pagers.setCode("200");
+            pagers.setMessage("Scheme parameters");
+            pagers.setContent(SchemConfigData.map(schemeConfig));
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+        } else {
+            Pager<SchemConfigData> pagers = new Pager();
+            pagers.setCode("404");
+            pagers.setMessage("Scheme parameters not available");
+            return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+        }
+
+    }
+
+    @GetMapping("/scheme-configuration/{id}")
+    public ResponseEntity<?> fetchSchemeConfiguration(@PathVariable("id") final Long id) {
+        //look for scheme config
+        SchemeConfigurations schemeConfig = schemeService.fetchSchemeConfigById(id);
+
+        Pager<SchemConfigData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Scheme parameters have successfully been updated");
+        pagers.setContent(SchemConfigData.map(schemeConfig));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
 }

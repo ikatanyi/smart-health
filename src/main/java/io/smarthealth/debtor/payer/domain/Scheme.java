@@ -41,7 +41,6 @@ public class Scheme extends Auditable {
     private PolicyCover cover;
     //private String category;
 
-    @Column(nullable = false, unique = true)
     private String telNo;
     private String mobileNo;
     private String emailAddress;

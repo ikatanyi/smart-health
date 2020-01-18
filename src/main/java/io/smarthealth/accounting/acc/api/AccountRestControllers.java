@@ -149,7 +149,8 @@ public class AccountRestControllers {
 
         return ResponseEntity.accepted().build();
     }
-   //income-expenses
+    //income-expenses
+
     @GetMapping("/accounts/income-expenses")
     public ResponseEntity<?> getIncomeExpenseAccount() {
         return ResponseEntity.ok(accountService.getIncomeExpenseAccounts());

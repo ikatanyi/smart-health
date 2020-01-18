@@ -22,7 +22,6 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
-import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
@@ -31,6 +30,7 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -146,11 +146,9 @@ public class ClinicalVisitController {
     }
 
     @GetMapping("/visits")
-    public ResponseEntity<List<VisitData>> fetchAllVisits(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-
-        Page<VisitData> page = visitService.fetchAllVisits(pageable).map(v -> convertToVisitData(v));
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    public ResponseEntity<List<VisitData>> fetchAllVisits(@RequestParam(value = "visitNumber", required = false) final String visitNumber, @RequestParam(value = "staffNumber", required = false) final String staffNumber, @RequestParam(value = "servicePointType", required = false) final String servicePointType, @RequestParam(value = "patientNumber", required = false) final String patientNumber, @RequestParam(value = "runningStatus", required = false, defaultValue = "true") final boolean runningStatus, Pageable pageable) {
+        Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, runningStatus, pageable).map(v -> convertToVisitData(v));
+        return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 
     @GetMapping("/patients/{id}/visits")
@@ -239,6 +237,15 @@ public class ClinicalVisitController {
         if (visit.getServicePoint() != null) {
             visitData.setServicePointIdentifier(visit.getServicePoint().getId());
             visitData.setServicePointName(visit.getServicePoint().getName());
+        }
+        //fetch patient log
+        List<PatientQueue> patientQueue = patientQueueService.fetchQueueByVisit(visit);
+        if (!patientQueue.isEmpty()) {
+            List<PatientQueueData> queueData = new ArrayList<>();
+            patientQueue.stream().map((d) -> patientQueueService.convertToPatientQueueData(d)).forEachOrdered((data) -> {
+                queueData.add(data);
+            });
+            visitData.setPatientQueueData(queueData);
         }
         Patient patient = patientService.findPatientOrThrow(visitData.getPatientNumber());
         visitData.setPatientData(patientService.convertToPatientData(patient));

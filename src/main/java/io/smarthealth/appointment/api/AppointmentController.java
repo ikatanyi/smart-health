@@ -9,15 +9,18 @@ import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.appointment.data.AppointmentTypeData;
 import io.smarthealth.appointment.domain.Appointment;
 import io.smarthealth.appointment.domain.AppointmentType;
+import io.smarthealth.appointment.domain.enumeration.StatusType;
 import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.appointment.service.AppointmentTypeService;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.swagger.annotations.Api;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,10 +71,10 @@ public class AppointmentController {
     ResponseEntity<?> createAppointment(@RequestBody @Valid final AppointmentData appointmentData) {
         System.out.println("appointmentData " + appointmentData);
 
-        appointmentData.setStatus(AppointmentData.Status.Scheduled);
+        appointmentData.setStatus(StatusType.Scheduled);
         Appointment appointment = this.appointmentService.createAppointment(appointmentData);
 
-        AppointmentData savedAppointmentData = appointmentService.convertAppointment(appointment);
+        AppointmentData savedAppointmentData = AppointmentData.map(appointment);
 
         Pager<AppointmentData> pagers = new Pager();
         pagers.setCode("0");
@@ -84,14 +87,31 @@ public class AppointmentController {
     @PutMapping("/appointment/{id}")
     public @ResponseBody
     ResponseEntity<?> updateAppointment(@RequestBody @Valid final AppointmentData appointmentData, @PathVariable("id") final Long id) {
-        appointmentData.setStatus(AppointmentData.Status.Scheduled);
+        appointmentData.setStatus(StatusType.Scheduled);
         Appointment appointment = this.appointmentService.UpdateAppointment(id, appointmentData);
 
-        AppointmentData savedAppointmentData = appointmentService.convertAppointment(appointment);
+        AppointmentData savedAppointmentData = AppointmentData.map(appointment);
 
         Pager<AppointmentData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Appointment Updated successful");
+        pagers.setContent(savedAppointmentData);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
+    }
+    
+    @PostMapping("/appointment/reschedule/{id}")
+    public @ResponseBody
+    ResponseEntity<?> updateAppointment(@PathVariable("id") final Long id,
+            @RequestParam(value = "appointmentDate", required = true) final LocalDate appointmentDate,
+            @RequestParam(value = "reason", required = false) final String reason) {
+        Appointment appointment = this.appointmentService.rescheduleAppointment(id, appointmentDate,reason);
+
+        AppointmentData savedAppointmentData = AppointmentData.map(appointment);
+
+        Pager<AppointmentData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Appointment rescheduled successful");
         pagers.setContent(savedAppointmentData);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
@@ -111,11 +131,21 @@ public class AppointmentController {
     @GetMapping("/appointment")
     public @ResponseBody
     ResponseEntity<?> fetchAllAppointments(
+        @RequestParam(value = "practitionerNumber", required = false) final String practitionerNumber,
+        @RequestParam(value = "item", required = false) final String item,
+        @RequestParam(value = "patientId", required = false) final String patientId,
+        @RequestParam(value = "status", required = false) final String status,
+        @RequestParam(value = "urgency", required = false) final String urgency,
+        @RequestParam(value = "deptCode", required = false) final String deptCode,
+        @RequestParam(value = "dateRange", required = false) String dateRange,  
+        
         @RequestParam(value = "page", required = false) Integer page,
         @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<AppointmentData> results = appointmentService.fetchAllAppointments(pageable).map(a->AppointmentData.map(a));
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        System.err.println("my current statys "+status);
+        Page<AppointmentData> results = appointmentService.fetchAllAppointments(practitionerNumber, patientId, status, deptCode, urgency, range, pageable).map(a->AppointmentData.map(a));
         
         Pager pager = new Pager();
         pager.setCode("200");
@@ -141,7 +171,7 @@ public class AppointmentController {
 
         Appointment appointment = appointmentService.fetchAppointmentByNo(appointmentNo);
 
-        return new ResponseEntity<>(appointmentService.convertAppointment(appointment), HttpStatus.OK);
+        return new ResponseEntity<>(AppointmentData.map(appointment), HttpStatus.OK);
     }
 
     //fetchAllAppointmentTypes
