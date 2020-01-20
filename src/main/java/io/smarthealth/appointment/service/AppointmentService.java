@@ -93,7 +93,8 @@ public class AppointmentService {
         if(practitioner.isPresent())
            entity.setPractitioner(practitioner.get());  
         Optional<Item> procedure = itemService.findByItemCode(appointment.getProcedureCode());
-        entity.setProcedure(procedure.get());
+        if(procedure.isPresent())
+          entity.setProcedure(procedure.get());
         
         entity.setAppointmentType(appointmentType);
         
@@ -148,9 +149,28 @@ public class AppointmentService {
         
         appointmentRepository.save(appointment);
         
-        Appointment newAppointment = appointment;
+//        newAppointment.setId(null);
+        Appointment newAppointment = new Appointment();
         
-        newAppointment.setId(null);
+        newAppointment.setAllDay(appointment.getAllDay());
+        newAppointment.setAppointmentDate(appointment.getAppointmentDate());
+//        app.setAppointmentNo();
+        newAppointment.setAppointmentType(newAppointment.getAppointmentType());
+        newAppointment.setComments(appointment.getComments());
+//        app.setDepartment(appointment.getD);
+        newAppointment.setEndTime(appointment.getEndTime());
+        newAppointment.setFirstName(appointment.getFirstName());
+        newAppointment.setGender(appointment.getGender());
+        newAppointment.setLastName(appointment.getLastName());
+        newAppointment.setPhoneNumber(appointment.getPhoneNumber());
+        newAppointment.setStartTime(appointment.getStartTime());
+        newAppointment.setStatus(appointment.getStatus());
+        newAppointment.setUrgency(appointment.getUrgency());
+        if(newAppointment.getProcedure()!=null)
+           newAppointment.setProcedure(newAppointment.getProcedure());
+        if(newAppointment.getPractitioner()!=null)
+           newAppointment.setPractitioner(newAppointment.getPractitioner());
+        
         newAppointment.setStartTime(data.getStartTime());
         newAppointment.setEndTime(data.getEndTime());
         newAppointment.setAppointmentDate(data.getAppointmentDate()); 
