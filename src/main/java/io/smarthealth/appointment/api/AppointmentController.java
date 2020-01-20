@@ -5,6 +5,7 @@
  */
 package io.smarthealth.appointment.api;
 
+import io.smarthealth.appointment.data.AppRescheduleData;
 import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.appointment.data.AppointmentTypeData;
 import io.smarthealth.appointment.domain.Appointment;
@@ -100,12 +101,11 @@ public class AppointmentController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
     }
     
-    @PostMapping("/appointment/reschedule/{id}")
+    @PostMapping(" /api/appointment/{id}/reschedule")
     public @ResponseBody
     ResponseEntity<?> updateAppointment(@PathVariable("id") final Long id,
-            @RequestParam(value = "appointmentDate", required = true) final LocalDate appointmentDate,
-            @RequestParam(value = "reason", required = false) final String reason) {
-        Appointment appointment = this.appointmentService.rescheduleAppointment(id, appointmentDate,reason);
+            @RequestBody @Valid final AppRescheduleData data) {
+        Appointment appointment = this.appointmentService.rescheduleAppointment(id, data);
 
         AppointmentData savedAppointmentData = AppointmentData.map(appointment);
 

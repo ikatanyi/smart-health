@@ -29,23 +29,24 @@ public class Appointment extends Auditable {
 
     @NaturalId
     private String appointmentNo;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_procedure_id"))
     private Item procedure;    
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_department_id"))
     private Department department;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_type_id"))
     private AppointmentType appointmentType;
 
     private LocalDate appointmentDate;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_empoyee_id"))
     private Employee practitioner;
+   
     
     private LocalTime startTime;
     private LocalTime endTime;
