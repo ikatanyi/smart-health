@@ -196,13 +196,13 @@ public class AppointmentController {
 
     @GetMapping("/appointmentTypes/{id}")
     public ResponseEntity<AppointmentTypeData> fetchAppTypeById(@PathVariable("id") final Long id) {
-        AppointmentTypeData appointmentTypeData = appointmentTypeService.toData(appointmentTypeService.fetchAppointmentTypeById(id));
+        AppointmentTypeData appointmentTypeData = appointmentTypeService.toData(appointmentTypeService.fetchAppointmentTypeWithNoFoundDetection(id));
         return ResponseEntity.ok(appointmentTypeData);
     }
 
-    @PutMapping("/appointmentTypes")
-    public ResponseEntity<?> fetchAppTypeById(@RequestBody @Valid final AppointmentTypeData appointmentTypeD) {
-        AppointmentType result = appointmentTypeService.updateAppointmentType(appointmentTypeD);
+    @PutMapping("/appointmentTypes/{id}")
+    public ResponseEntity<?> fetchAppTypeById(@PathVariable("id") final Long id,@RequestBody @Valid final AppointmentTypeData appointmentTypeD) {
+        AppointmentType result = appointmentTypeService.updateAppointmentType(id, appointmentTypeD);
         Pager<AppointmentTypeData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("AppointmentType made successful");
