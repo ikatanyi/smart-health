@@ -33,7 +33,7 @@ public class InventoryItem extends Identifiable {
 //    @Id
     @ToString.Exclude
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_item_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_item_id_"))
     private Item item;
 
     private double availableStock;
