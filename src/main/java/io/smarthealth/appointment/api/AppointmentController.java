@@ -101,7 +101,7 @@ public class AppointmentController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
     }
     
-    @PostMapping(" /api/appointment/{id}/reschedule")
+    @PostMapping("/appointment/{id}/reschedule")
     public @ResponseBody
     ResponseEntity<?> updateAppointment(@PathVariable("id") final Long id,
             @RequestBody @Valid final AppRescheduleData data) {
