@@ -7,6 +7,7 @@ package io.smarthealth.clinical.visit.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.VisitType;
@@ -50,7 +51,11 @@ public class VisitData {
 
     private String practitionerCode;
 
+    private String paymentMethod;
+
     private PatientData patientData;
+
+    private PaymentDetailsData payment;
 
     private List<PatientQueueData> patientQueueData;
 
