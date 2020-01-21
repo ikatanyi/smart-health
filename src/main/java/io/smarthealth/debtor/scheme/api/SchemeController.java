@@ -79,6 +79,26 @@ public class SchemeController {
         return ResponseEntity.ok(pagers);
     }
 
+    @GetMapping("/payer/{id}/scheme")
+    public ResponseEntity<?> fetchAllSchemesByPayer(@PathVariable("id") Long id, Pageable pageable) {
+        Payer payer = payerService.findPayerByIdWithNotFoundDetection(id);
+        Page<SchemeData> scheme = schemeService.fetchSchemesByPayer(payer, pageable).map(p -> SchemeData.map(p));
+
+        Pager<List<SchemeData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(scheme.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(scheme.getNumber() + 1);
+        details.setPerPage(scheme.getSize());
+        details.setTotalElements(scheme.getTotalElements());
+        details.setTotalPage(scheme.getTotalPages());
+        details.setReportName("Scheme List");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
+
     @GetMapping("/scheme/{id}")
     public ResponseEntity<?> fetchSchemeById(@PathVariable("id") final Long schemeId) {
         SchemeData schemeData = SchemeData.map(schemeService.fetchSchemeById(schemeId));
@@ -89,7 +109,6 @@ public class SchemeController {
     @PostMapping("/scheme/{id}/scheme-configuration")
     public ResponseEntity<?> updateSchemeConfiguration(@PathVariable("id") final Long schemeId, @Valid @RequestBody SchemConfigData data) {
         Scheme scheme = schemeService.fetchSchemeById(schemeId);
-
         SchemeConfigurations configSaved = null;
         if (data.getConfigId() == null || data.getConfigId().equals("")) {
             //save as new

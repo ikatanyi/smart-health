@@ -3,19 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.debtor.payer.domain;
+package io.smarthealth.clinical.visit.domain;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author Simon.waweru
+ * @author simz
  */
 @Repository
-public interface SchemeRepository extends JpaRepository<Scheme, Long> {
+public interface PaymentDetailsRepository extends JpaRepository<PaymentDetails, Long> {
 
-    Page<Scheme> findByPayer(Payer payer, Pageable pageable);
 }

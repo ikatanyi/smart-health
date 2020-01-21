@@ -34,8 +34,8 @@ public class smartController {
 
     @PostMapping("/smart/claim/{memberNumber}")
     public @ResponseBody
-    ResponseEntity<?> createClaimFile(@PathVariable("memberNumber") final String memberNumber, @RequestBody @Valid final ClaimFileData claimFileData) throws JsonProcessingException {        
-        ExchangeFile result = integrationService.createclaimFile(memberNumber, claimFileData);        
+    ResponseEntity<?> createClaimFile(@PathVariable("memberNumber") final String memberNumber, @RequestBody @Valid final ClaimFileData claimFileData) throws JsonProcessingException {
+        ExchangeFile result = integrationService.createclaimFile(memberNumber, claimFileData);
         Pager<ExchangeFileData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Smart Claim made successfully");
@@ -44,15 +44,13 @@ public class smartController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
-    @GetMapping("/smart/smartFile")
+    @GetMapping("/smart/smart-file/{memberNumber}")
     public @ResponseBody
     ResponseEntity<?> fetchAllAppointments(
-        @RequestParam(value = "memberNumber", required = true) final String memberNumber,
-        @RequestParam(value = "progressFlag", required = false) final Long progressFlag
+            @PathVariable("memberNumber") final String memberNumber,
+            @RequestParam(value = "progressFlag", required = false) final Long progressFlag
     ) throws JsonProcessingException {
-        
         SmartFileData result = integrationService.fetchSmartFile(memberNumber, progressFlag);
-        
         Pager pager = new Pager();
         pager.setCode("200");
         pager.setContent(result);
