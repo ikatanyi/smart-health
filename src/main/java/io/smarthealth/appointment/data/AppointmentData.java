@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.appointment.domain.Appointment;
 import io.smarthealth.appointment.domain.enumeration.StatusType;
+import io.smarthealth.debtor.claim.remittance.domain.enumeration.PaymentMode;
 import io.smarthealth.appointment.domain.enumeration.Urgency;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.TIME_PATTERN;
@@ -49,9 +50,8 @@ public class AppointmentData implements Serializable {
     private LocalTime endTime;
     private Boolean allDay;
     @Enumerated(EnumType.STRING)
-//    @ApiModelProperty(dataType = "string", allowableValues = "Urgent, Normal, Medical_Emergency", value = "Urgency", notes = "Urgency level")
-//    @ApiOperation(value = "Brief description of your operation.", response = Urgency.class)
     private Urgency urgency;
+    @Enumerated(EnumType.STRING)
     private StatusType status; //new followup  
     private String comments;
     

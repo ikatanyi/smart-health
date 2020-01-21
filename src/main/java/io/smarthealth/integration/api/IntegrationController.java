@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/integration")
 @Api(value = "Integration Controller", description = "Operations pertaining to Integration")
-public class smartController {
+public class IntegrationController {
 
     @Autowired
     IntegrationService integrationService;
@@ -44,9 +44,9 @@ public class smartController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
-    @GetMapping("/smart/smartFile")
+    @GetMapping("/smart/smart-file")
     public @ResponseBody
-    ResponseEntity<?> fetchAllAppointments(
+    ResponseEntity<?> fetchClaim(
         @RequestParam(value = "memberNumber", required = true) final String memberNumber,
         @RequestParam(value = "progressFlag", required = false) final Long progressFlag
     ) throws JsonProcessingException {

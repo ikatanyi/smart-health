@@ -1,6 +1,7 @@
 package io.smarthealth.appointment.domain;
 
 import io.smarthealth.appointment.domain.enumeration.StatusType;
+import io.smarthealth.debtor.claim.remittance.domain.enumeration.PaymentMode;
 import io.smarthealth.appointment.domain.enumeration.Urgency;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Department;

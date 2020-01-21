@@ -11,6 +11,7 @@ import io.smarthealth.appointment.data.AppointmentTypeData;
 import io.smarthealth.appointment.domain.Appointment;
 import io.smarthealth.appointment.domain.AppointmentType;
 import io.smarthealth.appointment.domain.enumeration.StatusType;
+import io.smarthealth.debtor.claim.remittance.domain.enumeration.PaymentMode;
 import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.appointment.service.AppointmentTypeService;
 import io.smarthealth.infrastructure.common.ApiResponse;
@@ -79,7 +80,7 @@ public class AppointmentController {
 
         Pager<AppointmentData> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Appointment made successful");
+        pagers.setMessage("Appointment made successfully");
         pagers.setContent(savedAppointmentData);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
@@ -88,14 +89,13 @@ public class AppointmentController {
     @PutMapping("/appointment/{id}")
     public @ResponseBody
     ResponseEntity<?> updateAppointment(@RequestBody @Valid final AppointmentData appointmentData, @PathVariable("id") final Long id) {
-        appointmentData.setStatus(StatusType.Scheduled);
         Appointment appointment = this.appointmentService.UpdateAppointment(id, appointmentData);
 
         AppointmentData savedAppointmentData = AppointmentData.map(appointment);
 
         Pager<AppointmentData> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Appointment Updated successful");
+        pagers.setMessage("Appointment Updated successfully");
         pagers.setContent(savedAppointmentData);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);

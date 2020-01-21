@@ -49,7 +49,7 @@ public class AppointmentService {
             PersonRepository personRepository,
             PatientRepository patientRepository,
             EmployeeService employeeService,
-            AppointmentTypeService appointmentTypeService,ItemService itemService) {
+            AppointmentTypeService appointmentTypeService, ItemService itemService) {
         this.appointmentRepository = appointmentRepository;
         this.personRepository = personRepository;
         this.patientRepository = patientRepository;
@@ -81,45 +81,49 @@ public class AppointmentService {
     public Appointment createAppointment(AppointmentData appointment) {
         modelMapper.getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.STRICT);
-        
-         
-        AppointmentType appointmentType = appointmentTypeService.fetchAppointmentTypeWithNoFoundDetection(appointment.getAppointmentTypeId());       
-        Appointment entity = modelMapper.map(appointment, Appointment.class); 
-         //Verify patient number
+
+        AppointmentType appointmentType = appointmentTypeService.fetchAppointmentTypeWithNoFoundDetection(appointment.getAppointmentTypeId());
+        Appointment entity = modelMapper.map(appointment, Appointment.class);
+        //Verify patient number
         Optional<Patient> patient = patientRepository.findByPatientNumber(appointment.getPatientNumber());
-        if(patient.isPresent())
+        if (patient.isPresent()) {
             entity.setPatient(patient.get());
-        Optional<Employee> practitioner = employeeService.findEmployeeByStaffNumber(appointment.getPractitionerCode()); 
-        if(practitioner.isPresent())
-           entity.setPractitioner(practitioner.get());  
+        }
+        Optional<Employee> practitioner = employeeService.findEmployeeByStaffNumber(appointment.getPractitionerCode());
+        if (practitioner.isPresent()) {
+            entity.setPractitioner(practitioner.get());
+        }
         Optional<Item> procedure = itemService.findByItemCode(appointment.getProcedureCode());
-        if(procedure.isPresent())
-          entity.setProcedure(procedure.get());
-        
+        if (procedure.isPresent()) {
+            entity.setProcedure(procedure.get());
+        }
+
         entity.setAppointmentType(appointmentType);
-        
-        Appointment savedAppointment = appointmentRepository.save(entity);         
+
+        Appointment savedAppointment = appointmentRepository.save(entity);
         return savedAppointment;
 
     }
-    
+
     public Appointment UpdateAppointment(Long id, AppointmentData appointment) {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        
+
         Appointment app = findAppointmentOrThrowException(id);
 
-        Optional<Employee> practitioner = employeeService.findEmployeeByStaffNumber(appointment.getPractitionerCode()); 
-        
-        if(appointment.getAppointmentTypeId()!=null){
+        Optional<Employee> practitioner = employeeService.findEmployeeByStaffNumber(appointment.getPractitionerCode());
+
+        if (appointment.getAppointmentTypeId() != null) {
             Optional<AppointmentType> appointmentType = appointmentTypeService.fetchAppointmentTypeById(appointment.getAppointmentTypeId());
-            if(appointmentType.isPresent())
+            if (appointmentType.isPresent()) {
                 app.setAppointmentType(appointmentType.get());
+            }
         }
-            Optional<Item> procedure = itemService.findByItemCode(appointment.getProcedureCode());
+        Optional<Item> procedure = itemService.findByItemCode(appointment.getProcedureCode());
         //Verify patient number
         Optional<Patient> patient = patientRepository.findByPatientNumber(appointment.getPatientNumber());
-        if(patient.isPresent())
+        if (patient.isPresent()) {
             app.setPatient(patient.get());
+        }
 //        Appointment entity = modelMapper.map(appointment, Appointment.class);
         app.setAllDay(appointment.getAllDay());
         app.setAppointmentDate(appointment.getAppointmentDate());
@@ -131,32 +135,35 @@ public class AppointmentService {
         app.setGender(appointment.getGender());
         app.setLastName(appointment.getLastName());
         app.setPhoneNumber(appointment.getPhoneNumber());
-        if(practitioner.isPresent())
-           app.setPractitioner(practitioner.get());
-        if(procedure.isPresent())
+        if (practitioner.isPresent()) {
+            app.setPractitioner(practitioner.get());
+        }
+        if (procedure.isPresent()) {
             app.setProcedure(procedure.get());
+        }
         app.setStartTime(appointment.getStartTime());
         app.setStatus(appointment.getStatus());
         app.setUrgency(appointment.getUrgency());
-        
+
         Optional<Patient> patientEntity = this.patientRepository.findByPatientNumber(appointment.getPatientNumber());
-        if(patientEntity.isPresent())
+        if (patientEntity.isPresent()) {
             app.setPatient(patientEntity.get());
-        
-        Appointment savedAppointment = appointmentRepository.save(app);         
+        }
+
+        Appointment savedAppointment = appointmentRepository.save(app);
         return savedAppointment;
 
     }
-    
+
     public Appointment rescheduleAppointment(Long id, AppRescheduleData data) {
         Appointment appointment = findAppointmentOrThrowException(id);
         appointment.setStatus(StatusType.Rescheduled);
-        
+
         appointmentRepository.save(appointment);
-        
+
 //        newAppointment.setId(null);
         Appointment newAppointment = new Appointment();
-        
+
         newAppointment.setAllDay(appointment.getAllDay());
         newAppointment.setAppointmentDate(appointment.getAppointmentDate());
 //        app.setAppointmentNo();
@@ -171,14 +178,16 @@ public class AppointmentService {
         newAppointment.setStartTime(appointment.getStartTime());
         newAppointment.setStatus(appointment.getStatus());
         newAppointment.setUrgency(appointment.getUrgency());
-        if(newAppointment.getProcedure()!=null)
-           newAppointment.setProcedure(newAppointment.getProcedure());
-        if(newAppointment.getPractitioner()!=null)
-           newAppointment.setPractitioner(newAppointment.getPractitioner());
-        
+        if (newAppointment.getProcedure() != null) {
+            newAppointment.setProcedure(newAppointment.getProcedure());
+        }
+        if (newAppointment.getPractitioner() != null) {
+            newAppointment.setPractitioner(newAppointment.getPractitioner());
+        }
+
         newAppointment.setStartTime(data.getStartTime());
         newAppointment.setEndTime(data.getEndTime());
-        newAppointment.setAppointmentDate(data.getAppointmentDate()); 
+        newAppointment.setAppointmentDate(data.getAppointmentDate());
         newAppointment.setStatus(StatusType.Scheduled);
         return appointmentRepository.save(newAppointment);
 
@@ -188,18 +197,21 @@ public class AppointmentService {
         return appointmentRepository.findByAppointmentNo(appointmentNo).orElseThrow(() -> APIException.notFound("Appointment identified by {0} not found", appointmentNo));
     }
 
-    public Page<Appointment> fetchAllAppointments(String practitionerNumber, String patientId, String status, String deptCode, String urgency, DateRange range,final Pageable pageable) {
+    public Page<Appointment> fetchAllAppointments(String practitionerNumber, String patientId, String status, String deptCode, String urgency, DateRange range, final Pageable pageable) {
         Specification<Appointment> spec = AppointmentSpecification.createSpecification(practitionerNumber, patientId, statusToEnum(status), deptCode, urgency, range);
-        return appointmentRepository.findAll(spec,pageable);
+        return appointmentRepository.findAll(spec, pageable);
     }
 
-    private StatusType statusToEnum(String status){
-        if(status==null) return null;
-      if(EnumUtils.isValidEnum(StatusType.class, status)){
-          return StatusType.valueOf(status);
-      }
-      throw APIException.internalError("Provide a Valid Appointment Status");
+    private StatusType statusToEnum(String status) {
+        if (status == null) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(StatusType.class, status)) {
+            return StatusType.valueOf(status);
+        }
+        throw APIException.internalError("Provide a Valid Appointment Status");
     }
+
     public Page<Appointment> fetchAllAppointmentsByPractioneer(final Employee employee, final Pageable pageable) {
         return appointmentRepository.findByPractitioner(employee, pageable);
     }
@@ -214,20 +226,19 @@ public class AppointmentService {
         return this.patientRepository.findByPatientNumber(patientNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Number : {0} not found.", patientNumber));
     }
-    
+
     public Appointment findAppointmentOrThrowException(Long id) {
         return this.appointmentRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Transaction with id {0} not found.", id));
     }
 
-//    private void throwIfAppointmentStatusInvalid(StatusType status) {
+//    private void throwIfAppointmentStatusInvalid(PaymentMode status) {
 //        try {
-//            StatusType.valueOf(status);
+//            PaymentMode.valueOf(status);
 //        } catch (Exception ex) {
-//            throw APIException.badRequest("Appointment StatusType : {0} is not supported .. ", status);
+//            throw APIException.badRequest("Appointment PaymentMode : {0} is not supported .. ", status);
 //        }
 //    }
-
 //    public AppointmentData convertAppointment(Appointment appointment) {
 //        AppointmentData appData = modelMapper.map(appointment, AppointmentData.class);
 //        if (appointment.getAppointmentType() != null) {
@@ -236,5 +247,4 @@ public class AppointmentService {
 //        }
 //        return appData;
 //    }
-
 }

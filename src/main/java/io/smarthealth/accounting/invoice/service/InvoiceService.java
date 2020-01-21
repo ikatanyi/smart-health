@@ -152,6 +152,10 @@ public class InvoiceService {
     public InvoiceData updateInvoice(Long id, InvoiceData data) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+    
+     public Invoice findInvoiceByIdWithFailDetection(String invoiceNumber) {
+        return invoiceRepository.findByNumber(invoiceNumber).orElseThrow(() -> APIException.notFound("Invoice with id {0} not found.", invoiceNumber));
+    }
 
     public Invoice findInvoiceOrThrowException(Long id) {
         return findById(id)
