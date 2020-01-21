@@ -13,6 +13,7 @@ import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -50,8 +51,8 @@ public class AppointmentTypeService {
     }
     
     @Transactional
-    public AppointmentType updateAppointmentType(AppointmentTypeData data) {
-        this.fetchAppointmentTypeById(data.getId());
+    public AppointmentType updateAppointmentType(Long id, AppointmentTypeData data) {
+        this.fetchAppointmentTypeById(id);
         AppointmentType appointmentType = AppointmentTypeData.map(data);
         return appointmentTypeRepository.save(appointmentType);
     }
@@ -60,8 +61,12 @@ public class AppointmentTypeService {
         return appointmentTypeRepository.findAll(pageable);
     }
 
-    public AppointmentType fetchAppointmentTypeById(final Long appId) {
+    public AppointmentType fetchAppointmentTypeWithNoFoundDetection(final Long appId) {
         return appointmentTypeRepository.findById(appId).orElseThrow(() -> APIException.notFound("Appointment type identified by " + appId + " not found ", appId));
+    }
+    
+    public Optional<AppointmentType> fetchAppointmentTypeById(final Long appId) {
+        return appointmentTypeRepository.findById(appId);
     }
 
     public void removeAppointmentTypeById(final Long appId) {
