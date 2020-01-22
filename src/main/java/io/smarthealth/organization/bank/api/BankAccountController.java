@@ -1,14 +1,9 @@
 package io.smarthealth.organization.bank.api;
 
-import io.smarthealth.accounting.payment.api.*;
-import io.smarthealth.accounting.payment.data.CreateTransactionData;
-import io.smarthealth.accounting.payment.data.FinancialTransactionData;
-import io.smarthealth.accounting.payment.domain.FinancialTransaction;
-import io.smarthealth.accounting.payment.service.PaymentService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.bank.data.BankAccountData;
+import io.smarthealth.organization.bank.data.BAccountData;
 import io.smarthealth.organization.bank.domain.BankAccount;
 import io.smarthealth.organization.bank.domain.enumeration.BankType;
 import io.smarthealth.organization.bank.service.BankAccountService;
@@ -37,27 +32,27 @@ public class BankAccountController {
     }
 
     @PostMapping("/bank-account")
-    public ResponseEntity<?> createBankAccount(@Valid @RequestBody BankAccountData bankAccountData) {
+    public ResponseEntity<?> createBankAccount(@Valid @RequestBody BAccountData bankAccountData) {
 
-        BankAccountData bankAccount = BankAccountData.map(bankAccountservice.createBankAccount(bankAccountData));
+        BAccountData bankAccount = BAccountData.map(bankAccountservice.createBankAccount(bankAccountData));
 
-        Pager<BankAccountData> pagers = new Pager();
+        Pager<BAccountData> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Payment successfully Created.");
+        pagers.setMessage("Bank Account successfully Created.");
         pagers.setContent(bankAccount);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
     @GetMapping("/bank-account/{id}")
-    public BankAccountData getBankAccount(@PathVariable(value = "id") Long id) {
+    public BAccountData getBankAccount(@PathVariable(value = "id") Long id) {
         BankAccount bankAccount = bankAccountservice.getBankAccountByIdWithFailDetection(id);
-        return BankAccountData.map(bankAccount);
+        return BAccountData.map(bankAccount);
     }
 
     @PatchMapping("/bank-account/{id}")
-    public BankAccountData updateBankAccount(@PathVariable(value = "id") Long id, BankAccountData bankAccountData) {
-        BankAccountData bankAccount = BankAccountData.map(bankAccountservice.updateBankAccount(id, bankAccountData));
+    public BAccountData updateBankAccount(@PathVariable(value = "id") Long id, BAccountData bankAccountData) {
+        BAccountData bankAccount = BAccountData.map(bankAccountservice.updateBankAccount(id, bankAccountData));
         return bankAccount;
     }
 
@@ -70,10 +65,10 @@ public class BankAccountController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<BankAccountData> list = bankAccountservice.getBankAccounts(bankName, bankBranch, bankType, pageable)
-                .map(bAccount -> BankAccountData.map(bAccount));
+        Page<BAccountData> list = bankAccountservice.getBankAccounts(bankName, bankBranch, bankType, pageable)
+                .map(bAccount -> BAccountData.map(bAccount));
 
-        Pager<List<BankAccountData>> pagers = new Pager();
+        Pager<List<BAccountData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());

@@ -1,12 +1,8 @@
 package io.smarthealth.organization.bank.domain;
 
-import io.smarthealth.accounting.acc.data.v1.Account;
 import io.smarthealth.accounting.acc.domain.AccountEntity;
-import io.smarthealth.debtor.payer.domain.*;
-import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.bank.domain.enumeration.BankType;
-import java.time.LocalDate;
 import javax.persistence.*;
 import lombok.Data;
 

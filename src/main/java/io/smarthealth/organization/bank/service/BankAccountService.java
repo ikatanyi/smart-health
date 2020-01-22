@@ -4,7 +4,7 @@ import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.accounting.acc.service.AccountService;
 import io.smarthealth.appointment.domain.specification.BankAccountSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.bank.data.BankAccountData;
+import io.smarthealth.organization.bank.data.BAccountData;
 import io.smarthealth.organization.bank.domain.BankAccount;
 import io.smarthealth.organization.bank.domain.BankAccountRepository;
 import io.smarthealth.organization.bank.domain.enumeration.BankType;
@@ -32,15 +32,15 @@ public class BankAccountService {
         
 
     @javax.transaction.Transactional
-    public BankAccount createBankAccount(BankAccountData data) {
-        BankAccount bankAccount = BankAccountData.map(data);
+    public BankAccount createBankAccount(BAccountData data) {
+        BankAccount bankAccount = BAccountData.map(data);
         Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getAccountNumber());
         if(accEntity.isPresent())
             bankAccount.setAccount(accEntity.get());        
         return bankAccountRepository.save(bankAccount);
     }
     
-    public BankAccount updateBankAccount(final Long id, BankAccountData data) {
+    public BankAccount updateBankAccount(final Long id, BAccountData data) {
         BankAccount bankAccount = getBankAccountByIdWithFailDetection(id);
         Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getAccountNumber());
         if(accEntity.isPresent())

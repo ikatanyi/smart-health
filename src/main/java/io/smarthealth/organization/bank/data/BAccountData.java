@@ -11,7 +11,7 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-public class BankAccountData {
+public class BAccountData {
 
     private Long id;
     private String accountName;
@@ -26,7 +26,7 @@ public class BankAccountData {
     private BankType bankType;
     private Boolean isDefault;
     
-    public static BankAccount map(BankAccountData data){
+    public static BankAccount map(BAccountData data){
         BankAccount bank = new BankAccount();
         bank.setBankName(data.getAccountNumber());
         bank.setAccountNumber(data.getAccountNumber());
@@ -36,8 +36,8 @@ public class BankAccountData {
         return bank;
     }
     
-    public static BankAccountData map(BankAccount data){
-        BankAccountData bank = new BankAccountData();
+    public static BAccountData map(BankAccount data){
+        BAccountData bank = new BAccountData();
         bank.setBankName(data.getAccountNumber());
         bank.setBankAccountNumber(data.getAccountNumber());
         bank.setBankBranch(data.getBankBranch());
