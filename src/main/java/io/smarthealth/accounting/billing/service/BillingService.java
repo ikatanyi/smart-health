@@ -1,11 +1,5 @@
 package io.smarthealth.accounting.billing.service;
 
-import io.smarthealth.accounting.acc.data.v1.Creditor;
-import io.smarthealth.accounting.acc.data.v1.Debtor;
-import io.smarthealth.accounting.acc.data.v1.FinancialActivity;
-import io.smarthealth.accounting.acc.data.v1.JournalEntry;
-import io.smarthealth.accounting.acc.domain.AccountEntity;
-import io.smarthealth.accounting.acc.domain.FinancialActivityAccount;
 import io.smarthealth.accounting.acc.domain.FinancialActivityAccountRepository;
 import io.smarthealth.accounting.acc.service.JournalEntryService;
 import io.smarthealth.accounting.billing.data.BillData;
@@ -15,13 +9,10 @@ import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
-import io.smarthealth.clinical.visit.service.VisitService;
-import io.smarthealth.infrastructure.common.SecurityUtils;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,15 +22,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.pharmacy.data.PharmacyData;
 import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
+import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 
@@ -54,7 +42,7 @@ public class BillingService {
 
     private final PatientBillRepository patientBillRepository;
     private final PatientBillItemRepository billItemRepository;
-    private final VisitService visitService;
+    private final VisitRepository visitRepository;
     private final ItemService itemService;
     private final SequenceNumberGenerator sequenceGenerator;
 //    private final TxnService txnService;
@@ -65,7 +53,7 @@ public class BillingService {
 
     public PatientBill createBill(BillData data) {
         //check the validity of the patient visit
-        Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
+        Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
 //        String billNumber = RandomStringUtils.randomNumeric(6); //sequenceService.nextNumber(SequenceType.BillNumber);
         String trdId = sequenceGenerator.generateTransactionNumber();
 
@@ -123,7 +111,7 @@ public class BillingService {
 
     public PatientBill createBill(Store store, PharmacyData data) {
         //check the validity of the patient visit
-        Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
+        Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
        
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
@@ -304,6 +292,10 @@ public class BillingService {
 //            throw APIException.badRequest("Patient Control Account is Not Mapped");
 //        }
 //    }
+    public Visit findVisitEntityOrThrow(String visitNumber) {
+        return this.visitRepository.findByVisitNumber(visitNumber)
+                .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
+    }
     private String roundedAmount(Double amt) {
         return BigDecimal.valueOf(amt)
                 .setScale(2, BigDecimal.ROUND_HALF_EVEN)
