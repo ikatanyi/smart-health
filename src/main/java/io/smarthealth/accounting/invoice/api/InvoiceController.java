@@ -53,7 +53,13 @@ public class InvoiceController {
 
     @PatchMapping("/invoices/{id}")
     public InvoiceData updateInvoice(@PathVariable(value = "id") Long id, InvoiceData transactionData) {
-        InvoiceData trans = service.updateInvoice(id, transactionData);
+        InvoiceData trans = InvoiceData.map(service.updateInvoice(id, transactionData));
+        return trans;
+    }
+    
+    @PatchMapping("/invoices/{id}/verify")
+    public InvoiceData updateInvoice(@PathVariable(value = "id") Long id, Boolean Isverified) {
+        InvoiceData trans = InvoiceData.map(service.verifyInvoice(id, Isverified));
         return trans;
     }
 

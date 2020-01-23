@@ -128,7 +128,7 @@ public class AdminController {
         return ResponseEntity.ok(pagers);
     }
 
-    @PostMapping("/bank/{bankId}/back-branch")
+    @PostMapping("/bank/{bankId}/bank-branch")
     public ResponseEntity<?> createBranch(@PathVariable("bankId") final Long bankId, @Valid @RequestBody List<BankBranchData> bankBranchData) {
         MainBank mainBank = adminService.fetchBankById(bankId);
         List<BankBranch> branchList = new ArrayList<>();
@@ -152,7 +152,7 @@ public class AdminController {
 
     }
 
-    @GetMapping("/bank/{bankId}/back-branch")
+    @GetMapping("/bank/{bankId}/bank-branch")
     public ResponseEntity<?> fetchBranchesByBank(@PathVariable("bankId") final Long bankId, Pageable pageable) {
         MainBank mainBank = adminService.fetchBankById(bankId);
         Page<BankBranch> result = adminService.fetchBranchByMainBank(mainBank, pageable);

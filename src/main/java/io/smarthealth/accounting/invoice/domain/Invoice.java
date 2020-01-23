@@ -62,12 +62,14 @@ public class Invoice extends Auditable {
     private Boolean draft; // Outstanding true or false 
     private Boolean closed; // bad debt or not
     private Boolean paid; // fully paid or not
+    private Boolean isVerified; // fully paid or not
     private Double subtotal;
     private Double disounts;
     private Double taxes;
     private Double total;
     private Double balance;
     private String notes; // additional notes displayed on invoice
+    
 
     @Enumerated(EnumType.STRING)
     private InvoiceStatus status; //tracking status for the invoice

@@ -149,8 +149,32 @@ public class InvoiceService {
         return invoices;
     }
 
-    public InvoiceData updateInvoice(Long id, InvoiceData data) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Invoice updateInvoice(Long id, InvoiceData data) {
+        Invoice invoice = findInvoiceOrThrowException(id);
+        invoice.setBalance(data.getBalance());
+        invoice.setClosed(data.getClosed());
+        invoice.setCurrency(data.getCurrency());
+        invoice.setDisounts(data.getDisounts());
+        invoice.setDraft(data.getDraft());
+        invoice.setDueDate(data.getDueDate());
+        invoice.setNotes(data.getNotes());
+        invoice.setPaid(data.getPaid());
+        Payer payer = payerService.findPayerByIdWithNotFoundDetection(data.getPayerId());
+        invoice.setPayee(data.getPayee());
+        invoice.setPayer(payer);
+        invoice.setReference(data.getReference());
+        invoice.setStatus(data.getStatus());
+        invoice.setSubtotal(data.getSubtotal());
+        invoice.setTaxes(data.getTaxes());
+        invoice.setTerms(data.getTerms());
+        invoice.setTotal(data.getTotal());
+        return invoiceRepository.save(invoice);
+    }
+    
+    public Invoice verifyInvoice(Long id, Boolean isVerified) {
+        Invoice invoice = findInvoiceOrThrowException(id);
+        invoice.setIsVerified(isVerified);
+        return invoiceRepository.save(invoice);
     }
     
      public Invoice findInvoiceByIdWithFailDetection(String invoiceNumber) {

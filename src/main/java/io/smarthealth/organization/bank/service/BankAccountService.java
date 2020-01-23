@@ -33,26 +33,38 @@ public class BankAccountService {
 
     @javax.transaction.Transactional
     public BankAccount createBankAccount(BAccountData data) {
-        BankAccount bankAccount = BAccountData.map(data);
-        Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getAccountNumber());
+        BankAccount bank = new BankAccount();
+        Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getLedgerAccount());
         if(accEntity.isPresent())
-            bankAccount.setAccount(accEntity.get());        
-        return bankAccountRepository.save(bankAccount);
+             bank.setLedgerAccount(accEntity.get());
+       
+        bank.setBankName(data.getBankName());
+        bank.setAccountNumber(data.getAccountNumber());
+        bank.setAccountName(data.getAccountName());
+        bank.setBankBranch(data.getBankBranch());
+        bank.setIsDefault(data.getIsDefault());
+        bank.setCurrency(data.getCurrency());
+        bank.setDescription(data.getDescription()); 
+        bank.setBankType(data.getBankType());
+            
+        return bankAccountRepository.save(bank);
     }
     
     public BankAccount updateBankAccount(final Long id, BAccountData data) {
-        BankAccount bankAccount = getBankAccountByIdWithFailDetection(id);
-        Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getAccountNumber());
+        BankAccount bank = getBankAccountByIdWithFailDetection(id);
+        Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getLedgerAccount());
         if(accEntity.isPresent())
-            bankAccount.setAccount(accEntity.get());    
-        bankAccount.setAccountNumber(data.getAccountNumber());
-        bankAccount.setBankBranch(data.getBankBranch());
-        bankAccount.setBankName(data.getBankName());
-        bankAccount.setBankType(data.getBankType());
-        bankAccount.setCurrency(data.getCurrency());
-        bankAccount.setDescription(data.getDescription());
-        bankAccount.setIsDefault(data.getIsDefault());
-        return bankAccountRepository.save(bankAccount);
+             bank.setLedgerAccount(accEntity.get());
+        bank.setBankName(data.getBankName());
+        bank.setAccountNumber(data.getAccountNumber());
+        bank.setAccountName(data.getAccountName());
+        bank.setBankBranch(data.getBankBranch());
+        bank.setIsDefault(data.getIsDefault());
+        bank.setCurrency(data.getCurrency());
+        bank.setDescription(data.getDescription()); 
+       
+        bank.setBankType(data.getBankType());
+        return bankAccountRepository.save(bank);
     }
 
     public BankAccount getBankAccountByIdWithFailDetection(Long id) {
