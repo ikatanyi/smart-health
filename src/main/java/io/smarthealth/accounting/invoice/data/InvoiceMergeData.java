@@ -1,6 +1,6 @@
-package io.smarthealth.debtor.claim.processing.data;
+package io.smarthealth.accounting.invoice.data;
 
-import io.smarthealth.debtor.claim.processing.domain.InvoiceMerge;
+import io.smarthealth.accounting.invoice.domain.InvoiceMerge;
 import io.smarthealth.debtor.claim.processing.domain.enumeration.ProcessType;
 import java.util.List;
 import javax.persistence.EnumType;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.debtor.claim.processing.domain;
+package io.smarthealth.accounting.invoice.domain;
 
 import io.smarthealth.debtor.claim.processing.domain.enumeration.ProcessType;
 import io.smarthealth.infrastructure.domain.Auditable;

@@ -2,6 +2,9 @@ package io.smarthealth.organization.bank.service;
 
 import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.accounting.acc.service.AccountService;
+import io.smarthealth.administration.app.domain.BankBranch;
+import io.smarthealth.administration.app.domain.MainBank;
+import io.smarthealth.administration.app.service.AdminService;
 import io.smarthealth.appointment.domain.specification.BankAccountSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.bank.data.BAccountData;
@@ -28,6 +31,7 @@ public class BankAccountService {
 
     private final BankAccountRepository bankAccountRepository;
     private final AccountService accountService;
+    private final AdminService adminService;
 
         
 
@@ -37,11 +41,13 @@ public class BankAccountService {
         Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getLedgerAccount());
         if(accEntity.isPresent())
              bank.setLedgerAccount(accEntity.get());
-       
-        bank.setBankName(data.getBankName());
+        MainBank mBank = adminService.fetchBankById(data.getBankId());
+        bank.setMainBank(mBank);
+        BankBranch branch = adminService.fetchBankBranchById(data.getBranchId());
+        bank.setBankBranch(branch);
+        
         bank.setAccountNumber(data.getAccountNumber());
-        bank.setAccountName(data.getAccountName());
-        bank.setBankBranch(data.getBankBranch());
+        bank.setAccountName(data.getAccountName());        
         bank.setIsDefault(data.getIsDefault());
         bank.setCurrency(data.getCurrency());
         bank.setDescription(data.getDescription()); 
@@ -55,10 +61,13 @@ public class BankAccountService {
         Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getLedgerAccount());
         if(accEntity.isPresent())
              bank.setLedgerAccount(accEntity.get());
-        bank.setBankName(data.getBankName());
+        MainBank mBank = adminService.fetchBankById(data.getBankId());
+        bank.setMainBank(mBank);
+        BankBranch branch = adminService.fetchBankBranchById(data.getBranchId());
+        bank.setBankBranch(branch);
+        
         bank.setAccountNumber(data.getAccountNumber());
         bank.setAccountName(data.getAccountName());
-        bank.setBankBranch(data.getBankBranch());
         bank.setIsDefault(data.getIsDefault());
         bank.setCurrency(data.getCurrency());
         bank.setDescription(data.getDescription()); 
@@ -75,9 +84,9 @@ public class BankAccountService {
         return bankAccountRepository.findById(id);
     }
 
-    public Optional<BankAccount> getBankAccountByName(String name) {
-        return bankAccountRepository.findByBankName(name);
-    }
+//    public Optional<BankAccount> getBankAccountByName(String name) {
+//        return bankAccountRepository.findByBankName(name);
+//    }
 
     public Page<BankAccount> getBankAccounts(String bankName, String bankBranch, BankType type, Pageable page) {
         Specification spec = BankAccountSpecification.createSpecification(bankName, bankBranch, type);

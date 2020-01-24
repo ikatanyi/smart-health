@@ -72,7 +72,9 @@ public class RemitanceData {
         }
         if(remitance.getBankAccount()!=null){
             data.setBankId(remitance.getBankAccount().getId());
-            data.setBankName(remitance.getBankAccount().getBankName());
+            if(remitance.getBankAccount().getMainBank()!=null){
+                data.setBankName(remitance.getBankAccount().getMainBank().getBankName());
+            }
             data.setBankAccountNumber(remitance.getBankAccount().getAccountNumber());
         }
         return data;

@@ -22,7 +22,11 @@ public class BAccountData {
     private String accountNumber;
 
     private String currency;
+    private Long bankId;
+    @ApiModelProperty(required = false, hidden = true)
     private String bankName;
+    private Long branchId;
+    @ApiModelProperty(required = false, hidden = true)
     private String bankBranch;
     private String description;
 
@@ -33,10 +37,14 @@ public class BAccountData {
     public static BAccountData map(BankAccount data) {
         BAccountData bank = new BAccountData();
         bank.setId(data.getId());
-        bank.setBankName(data.getBankName());
+        if(data.getMainBank()!=null){
+            bank.setBankName(data.getMainBank().getBankName());
+        }
         bank.setAccountNumber(data.getAccountNumber());
         bank.setAccountName(data.getAccountName());
-        bank.setBankBranch(data.getBankBranch());
+        if(data.getBankBranch()!=null){
+            bank.setBankBranch(data.getBankBranch().getBranchName());
+        }
         bank.setIsDefault(data.getIsDefault());
         bank.setCurrency(data.getCurrency());
         if (data.getLedgerAccount() != null) {

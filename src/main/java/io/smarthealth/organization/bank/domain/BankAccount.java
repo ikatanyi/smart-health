@@ -1,6 +1,8 @@
 package io.smarthealth.organization.bank.domain;
 
 import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.administration.app.domain.BankBranch;
+import io.smarthealth.administration.app.domain.MainBank;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.bank.domain.enumeration.BankType;
 import javax.persistence.*;
@@ -23,8 +25,13 @@ public class BankAccount extends Auditable {
     private AccountEntity ledgerAccount;
 
 //    @Column(nullable = false, unique = true)
-    private String bankName;
-    private String bankBranch;
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_bank_account_main_bank_id"))
+    private MainBank mainBank;
+    
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_bank_account_branch_id"))
+    private BankBranch bankBranch;
     
     private String accountName;
     @Column(nullable = false, unique = true)

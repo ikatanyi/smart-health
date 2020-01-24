@@ -1,5 +1,6 @@
-package io.smarthealth.debtor.claim.processing.domain;
+package io.smarthealth.accounting.invoice.domain;
 
+import io.smarthealth.debtor.claim.processing.domain.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;

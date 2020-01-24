@@ -7,9 +7,12 @@ import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.CreateInvoiceData;
 import io.smarthealth.accounting.invoice.data.CreateInvoiceItemData;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceMergeData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceLineItem;
+import io.smarthealth.accounting.invoice.domain.InvoiceMerge;
+import io.smarthealth.accounting.invoice.domain.InvoiceMergeRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceSpecification;
 import io.smarthealth.debtor.payer.domain.Payer;
@@ -40,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
+    private final InvoiceMergeRepository invoiceMergeRepository;
     private final BillingService billingService;
     private final PayerService payerService;
     private final SchemeService schemeService;
@@ -179,6 +183,26 @@ public class InvoiceService {
     
      public Invoice findInvoiceByIdWithFailDetection(String invoiceNumber) {
         return invoiceRepository.findByNumber(invoiceNumber).orElseThrow(() -> APIException.notFound("Invoice with id {0} not found.", invoiceNumber));
+    }
+     
+    
+     @javax.transaction.Transactional
+    public InvoiceMerge mergeInvoice(InvoiceMergeData data) {
+        InvoiceMerge invoiceMerge = InvoiceMergeData.map(data);
+        
+        Invoice fromInvoice = findInvoiceByIdWithFailDetection(data.getFromInvoiceNumber());
+        Invoice toInvoice = findInvoiceByIdWithFailDetection(data.getToInvoiceNumber());
+        
+        fromInvoice.getItems().stream().map((lineItem) -> {
+            lineItem.setInvoice(toInvoice);
+            return lineItem;
+        }).forEachOrdered((lineItem) -> {
+            toInvoice.getItems().add(lineItem);
+        });
+        
+        invoiceRepository.save(toInvoice);
+        invoiceRepository.deleteById(fromInvoice.getId());
+        return invoiceMergeRepository.save(invoiceMerge);
     }
 
     public Invoice findInvoiceOrThrowException(Long id) {
