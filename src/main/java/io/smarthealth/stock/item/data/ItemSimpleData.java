@@ -1,7 +1,9 @@
 package io.smarthealth.stock.item.data;
 
+import io.smarthealth.accounting.pricebook.domain.PriceBookItem;
 import io.smarthealth.stock.item.domain.Item;
 import lombok.Data;
+
 /**
  *
  * @author Kelsas
@@ -13,15 +15,17 @@ public class ItemSimpleData {
     private String itemType;
     private String itemName;
     private String itemCode;
-    private  Double price;
+    private Double amount;
+    private Double defaultAmount;
 
-    public static ItemSimpleData map(Item item) {
+    public static ItemSimpleData map(PriceBookItem bookItem) {
         ItemSimpleData data = new ItemSimpleData();
-        data.setItemId(item.getId());
-        data.setItemName(item.getItemName());
-        data.setItemType(item.getItemType());
-        data.setItemCode(item.getItemCode());
-        data.setPrice(Double.NaN);
+        data.setItemId(bookItem.getItem().getId());
+        data.setItemName(bookItem.getItem().getItemName());
+        data.setItemType(bookItem.getItem().getItemType());
+        data.setItemCode(bookItem.getItem().getItemCode());
+        data.setAmount(bookItem.getAmount());
+        data.setDefaultAmount(bookItem.getItem().getRate());
         return data;
     }
 }

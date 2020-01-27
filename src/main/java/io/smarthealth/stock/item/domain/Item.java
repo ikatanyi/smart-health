@@ -2,9 +2,13 @@ package io.smarthealth.stock.item.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
+import io.smarthealth.accounting.pricebook.domain.PriceBookItem;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.infrastructure.domain.Identifiable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 
 import javax.persistence.Entity;
@@ -26,7 +30,8 @@ import lombok.ToString;
 @Data
 @Entity
 @Table(name = "product_services")
-public class Item extends Identifiable { 
+public class Item extends Identifiable {
+
     private String itemType;
     private String category; // is this a consumable, service, procedure, inventory
     private String itemName;
@@ -64,9 +69,9 @@ public class Item extends Identifiable {
     //sales, purchase, inventory accounts to be linked via the store
     @ToString.Exclude
     @JsonIgnore
-    @ManyToMany(mappedBy = "priceBookItems")
-    private List<PriceBook> priceBooks;
-    
+    @OneToMany(mappedBy = "priceBook", cascade = CascadeType.ALL)
+    private Set<PriceBookItem> priceBookItems = new HashSet<>();
+
     private Boolean active;
 
     public boolean isInventoryItem() {

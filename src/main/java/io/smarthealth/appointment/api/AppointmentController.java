@@ -5,11 +5,13 @@
  */
 package io.smarthealth.appointment.api;
 
+import io.smarthealth.appointment.data.AppRescheduleData;
 import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.appointment.data.AppointmentTypeData;
 import io.smarthealth.appointment.domain.Appointment;
 import io.smarthealth.appointment.domain.AppointmentType;
 import io.smarthealth.appointment.domain.enumeration.StatusType;
+import io.smarthealth.debtor.claim.remittance.domain.enumeration.PaymentMode;
 import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.appointment.service.AppointmentTypeService;
 import io.smarthealth.infrastructure.common.ApiResponse;
@@ -78,7 +80,7 @@ public class AppointmentController {
 
         Pager<AppointmentData> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Appointment made successful");
+        pagers.setMessage("Appointment made successfully");
         pagers.setContent(savedAppointmentData);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
@@ -87,25 +89,23 @@ public class AppointmentController {
     @PutMapping("/appointment/{id}")
     public @ResponseBody
     ResponseEntity<?> updateAppointment(@RequestBody @Valid final AppointmentData appointmentData, @PathVariable("id") final Long id) {
-        appointmentData.setStatus(StatusType.Scheduled);
         Appointment appointment = this.appointmentService.UpdateAppointment(id, appointmentData);
 
         AppointmentData savedAppointmentData = AppointmentData.map(appointment);
 
         Pager<AppointmentData> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Appointment Updated successful");
+        pagers.setMessage("Appointment Updated successfully");
         pagers.setContent(savedAppointmentData);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
     }
     
-    @PostMapping("/appointment/reschedule/{id}")
+    @PostMapping("/appointment/{id}/reschedule")
     public @ResponseBody
     ResponseEntity<?> updateAppointment(@PathVariable("id") final Long id,
-            @RequestParam(value = "appointmentDate", required = true) final LocalDate appointmentDate,
-            @RequestParam(value = "reason", required = false) final String reason) {
-        Appointment appointment = this.appointmentService.rescheduleAppointment(id, appointmentDate,reason);
+            @RequestBody @Valid final AppRescheduleData data) {
+        Appointment appointment = this.appointmentService.rescheduleAppointment(id, data);
 
         AppointmentData savedAppointmentData = AppointmentData.map(appointment);
 
@@ -196,13 +196,13 @@ public class AppointmentController {
 
     @GetMapping("/appointmentTypes/{id}")
     public ResponseEntity<AppointmentTypeData> fetchAppTypeById(@PathVariable("id") final Long id) {
-        AppointmentTypeData appointmentTypeData = appointmentTypeService.toData(appointmentTypeService.fetchAppointmentTypeById(id));
+        AppointmentTypeData appointmentTypeData = appointmentTypeService.toData(appointmentTypeService.fetchAppointmentTypeWithNoFoundDetection(id));
         return ResponseEntity.ok(appointmentTypeData);
     }
 
-    @PutMapping("/appointmentTypes")
-    public ResponseEntity<?> fetchAppTypeById(@RequestBody @Valid final AppointmentTypeData appointmentTypeD) {
-        AppointmentType result = appointmentTypeService.updateAppointmentType(appointmentTypeD);
+    @PutMapping("/appointmentTypes/{id}")
+    public ResponseEntity<?> fetchAppTypeById(@PathVariable("id") final Long id,@RequestBody @Valid final AppointmentTypeData appointmentTypeD) {
+        AppointmentType result = appointmentTypeService.updateAppointmentType(id, appointmentTypeD);
         Pager<AppointmentTypeData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("AppointmentType made successful");

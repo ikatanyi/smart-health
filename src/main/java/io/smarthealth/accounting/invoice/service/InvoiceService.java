@@ -18,7 +18,6 @@ import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
-import io.smarthealth.infrastructure.sequence.service.TxnService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -157,6 +156,10 @@ public class InvoiceService {
 
     public InvoiceData updateInvoice(Long id, InvoiceData data) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+     public Invoice findInvoiceByIdWithFailDetection(String invoiceNumber) {
+        return invoiceRepository.findByNumber(invoiceNumber).orElseThrow(() -> APIException.notFound("Invoice with id {0} not found.", invoiceNumber));
     }
 
     public Invoice findInvoiceOrThrowException(Long id) {

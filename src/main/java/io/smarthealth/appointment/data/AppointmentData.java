@@ -9,6 +9,7 @@ import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.TIME_PATTERN;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Employee.Category;
+import io.smarthealth.stock.item.data.ItemData;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -29,6 +30,7 @@ public class AppointmentData implements Serializable {
     @ApiModelProperty(required = false, hidden = false)
     private Long appointmentId;
     private String patientNumber;
+    private String procedureCode;
     private String patientName;
     private String practitionerCode;
     @Enumerated(EnumType.STRING)
@@ -47,9 +49,8 @@ public class AppointmentData implements Serializable {
     private LocalTime endTime;
     private Boolean allDay;
     @Enumerated(EnumType.STRING)
-//    @ApiModelProperty(dataType = "string", allowableValues = "Urgent, Normal, Medical_Emergency", value = "Urgency", notes = "Urgency level")
-//    @ApiOperation(value = "Brief description of your operation.", response = Urgency.class)
     private Urgency urgency;
+    @Enumerated(EnumType.STRING)
     private StatusType status; //new followup  
     private String comments;
     
@@ -57,6 +58,9 @@ public class AppointmentData implements Serializable {
     private String LastName;
     private String gender;
     private String phoneNumber;
+    
+    @ApiModelProperty(required = false, hidden = true)
+    private ItemData procedureData;
     
     @ApiModelProperty(required = false, hidden = true)
     private EmployeeData practitionerData;
@@ -76,6 +80,10 @@ public class AppointmentData implements Serializable {
         if (appointment.getPatient() != null) {
             data.setPatientNumber(appointment.getPatient().getPatientNumber());
             data.setPatientName(appointment.getPatient().getFullName());
+        }
+        
+        if (appointment.getService()!= null) {
+            data.setProcedureData(ItemData.map(appointment.getService()));
         }
         
         if (appointment.getPractitioner() != null) {

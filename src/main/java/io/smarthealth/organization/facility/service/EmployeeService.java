@@ -142,6 +142,7 @@ public class EmployeeService {
     public Employee fetchEmployeeByNumberOrThrow(final String staffNumber) {
         return employeeRepository.findByStaffNumber(staffNumber).orElseThrow(() -> APIException.notFound("Employee identified by number {0} was not found ", staffNumber));
     }
+    
 
     public Employee convertEmployeeDataToEntity(EmployeeData employeeData) {
         // use strict to prevent over eager matching (happens with ID fields)

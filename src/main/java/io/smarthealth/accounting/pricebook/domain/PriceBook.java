@@ -4,56 +4,70 @@ import io.smarthealth.accounting.pricebook.domain.enumeration.PriceCategory;
 import io.smarthealth.accounting.pricebook.domain.enumeration.PriceType;
 import io.smarthealth.administration.app.domain.Currency;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.stock.item.domain.Item;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne; 
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 /**
  *
  * @author Kelsas
- */ 
+ */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Entity
+@EqualsAndHashCode(callSuper = false)
 public class PriceBook extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private PriceCategory priceCategory;
-    
+
     private String name;
     private String description;
-    
+
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pricebook_currency_id"))
     private Currency currency;
-    
+
     @Enumerated(EnumType.STRING)
     private PriceType priceType;
-    
+
     private Double percentage;
-    
+
     @Column(name = "is_increase")
     private Boolean increase; //mark down or mark up
-    
+
     private Double decimalPlace;
-    
-    @ToString.Exclude
-    @ManyToMany
-    @JoinTable(name = "pricebook_items", joinColumns = {
-        @JoinColumn(name = "pricebook_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_pricebook_items_pricebook_id"))}, inverseJoinColumns = {
-        @JoinColumn(name = "item_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_pricebook_items_pricebook_item_id"))})
-    private List<Item> priceBookItems;
+
+    @OneToMany(mappedBy = "priceBook", cascade = CascadeType.ALL)
+    private Set<PriceBookItem> priceBookItems = new HashSet<>();
 
     private boolean active;
+
+    public PriceBook() {
+    }
+
+    public PriceBook(String name, PriceBookItem... priceBookItems) {
+        this.name = name;
+        for (PriceBookItem priceBookItem : priceBookItems) {
+            priceBookItem.setPriceBook(this);
+        }
+        this.priceBookItems = Stream.of(priceBookItems).collect(Collectors.toSet());
+    }
+     public void addPriceItems(Set<PriceBookItem> bookItems) {
+        this.priceBookItems=bookItems;
+        this.priceBookItems.forEach(x -> x.setPriceBook(this));
+    }
+     
 }

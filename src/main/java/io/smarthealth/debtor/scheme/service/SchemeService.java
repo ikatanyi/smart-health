@@ -5,6 +5,7 @@
  */
 package io.smarthealth.debtor.scheme.service;
 
+import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.domain.SchemeRepository;
 import io.smarthealth.debtor.scheme.domain.InsuranceSchemeRepository;
@@ -42,6 +43,10 @@ public class SchemeService {
 
     public Page<Scheme> fetchSchemes(Pageable p) {
         return schemeRepository.findAll(p);
+    }
+
+    public Page<Scheme> fetchSchemesByPayer(Payer payer, Pageable page) {
+        return schemeRepository.findByPayer(payer, page);
     }
 
     public Scheme fetchSchemeById(Long id) {

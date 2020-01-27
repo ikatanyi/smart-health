@@ -2,6 +2,7 @@ package io.smarthealth.accounting.pricebook.service;
 
 import io.smarthealth.accounting.pricebook.data.PriceBookData;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
+import io.smarthealth.accounting.pricebook.domain.PriceBookItem;
 import io.smarthealth.accounting.pricebook.domain.PriceBookRepository;
 import io.smarthealth.accounting.pricebook.domain.enumeration.PriceCategory;
 import io.smarthealth.accounting.pricebook.domain.enumeration.PriceType;
@@ -12,8 +13,10 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.EnumUtils;
@@ -60,17 +63,15 @@ public class PricebookService {
 //        book.setStatus(priceBook.isStatus() ? "active" : "inactive");
 
         if (priceBook.getPricebookItems() != null) {
-            List<Item> itemlist = new ArrayList<>();
+            Set<PriceBookItem> itemlist = new HashSet<>();
             priceBook.getPricebookItems()
-                    .stream().map(
-                            (pb) -> itemService.findById(pb.getItemId())
-                    ).filter(
-                            (item) -> (item.isPresent())
-                    ).forEachOrdered(
-                            (item) -> {
-                                itemlist.add(item.get());
-                            });
-            book.setPriceBookItems(itemlist);
+                    .stream()
+                     .forEach(x->{
+                       Item item=itemService.findById(x.getItemId()).get();
+                       itemlist.add(new PriceBookItem(item, x.getAmount()));
+                     });
+
+            book.addPriceItems(itemlist);
         }
 
         PriceBook savedBook = priceBookRepository.save(book);

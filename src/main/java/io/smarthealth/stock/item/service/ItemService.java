@@ -91,6 +91,7 @@ public class ItemService {
         }
 
         Item savedItem = itemRepository.save(item);
+        
 
         if (createItem.getItemType().equals("Inventory") && createItem.getInventoryStore() != null) {
             Store store = storeService.getStore(createItem.getInventoryStore())
