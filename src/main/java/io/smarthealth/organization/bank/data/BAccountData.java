@@ -38,11 +38,13 @@ public class BAccountData {
         BAccountData bank = new BAccountData();
         bank.setId(data.getId());
         if(data.getMainBank()!=null){
+            bank.setBankId(data.getMainBank().getId());
             bank.setBankName(data.getMainBank().getBankName());
         }
         bank.setAccountNumber(data.getAccountNumber());
         bank.setAccountName(data.getAccountName());
         if(data.getBankBranch()!=null){
+            bank.setBranchId(data.getBankBranch().getId());
             bank.setBankBranch(data.getBankBranch().getBranchName());
         }
         bank.setIsDefault(data.getIsDefault());

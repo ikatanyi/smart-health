@@ -39,8 +39,9 @@ public class RemitanceService {
         Remitance remitance = RemitanceData.map(data);
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(data.getPayerId());
         remitance.setPayer(payer);    
-        BankAccount bank = bankAccountService.getBankAccountByIdWithFailDetection(data.getBankId());
-        remitance.setBankAccount(bank);
+        Optional<BankAccount> bank = bankAccountService.getBankAccount(data.getBankAccountId());
+        if(bank.isPresent())
+           remitance.setBankAccount(bank.get());
         return remitanceRepository.save(remitance);
     }
     

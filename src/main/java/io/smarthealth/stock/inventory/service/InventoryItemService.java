@@ -1,7 +1,6 @@
 package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.exception.ApiError;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import lombok.RequiredArgsConstructor;
