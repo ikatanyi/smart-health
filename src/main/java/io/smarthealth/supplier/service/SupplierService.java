@@ -3,7 +3,7 @@ package io.smarthealth.supplier.service;
 import io.smarthealth.accounting.pricebook.data.PriceBookData;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.pricebook.service.PricebookService;
-import io.smarthealth.administration.app.data.BankAccountData;
+import io.smarthealth.administration.app.data.BankEmbeddedData;
 import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.domain.Currency;
@@ -79,7 +79,7 @@ public class SupplierService {
         }
 
         if (supplierData.getBank() != null) {
-            supplier.setBankAccount(BankAccountData.map(supplierData.getBank()));
+            supplier.setBankAccount(BankEmbeddedData.map(supplierData.getBank()));
         }
 
         if (supplierData.getAddresses() != null && supplierData.getAddresses() .getPhone()!=null) {

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.administration.app.domain;
+package io.smarthealth.administration.banks.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.util.List;
@@ -23,7 +23,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "ref_banks")
-public class MainBank extends Auditable {
+public class Bank extends Auditable {
 
     @Size(max = 50)
     @Column(name = "bank_name")
@@ -34,9 +34,7 @@ public class MainBank extends Auditable {
     @Size(max = 50)
     @Column(name = "bank_short_name")
     private String bankShortName;
-//    @JoinColumn(name = "account_no_id", referencedColumnName = "id")
-//    @ManyToOne
-//    private Account accountNo;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mainBank")
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bank")
     private List<BankBranch> bankBranch;
 }

@@ -2,12 +2,13 @@ package io.smarthealth.debtor.payer.api;
 
 import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.accounting.acc.service.AccountService;
-import io.smarthealth.administration.app.domain.BankBranch;
+import io.smarthealth.administration.banks.domain.BankBranch;
 import io.smarthealth.accounting.payment.domain.PaymentTerms;
 import io.smarthealth.administration.app.service.AdminService;
 import io.smarthealth.accounting.payment.service.PaymentTermsService;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.pricebook.service.PricebookService;
+import io.smarthealth.administration.banks.service.BankService;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
@@ -38,14 +39,14 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class PayerController {
 
     private final PayerService payerService;
-    private final AdminService adminService;
+    private final BankService bankService;
     private final AccountService accountService;
     private final PaymentTermsService paymentTermsService;
     private final PricebookService pricebookService;
 
-    public PayerController(PayerService payerService, AdminService adminService, AccountService accountService, PaymentTermsService paymentTermsService, PricebookService pricebookService) {
+    public PayerController(PayerService payerService, BankService bankService, AccountService accountService, PaymentTermsService paymentTermsService, PricebookService pricebookService) {
         this.payerService = payerService;
-        this.adminService = adminService;
+        this.bankService = bankService;
         this.accountService = accountService;
         this.paymentTermsService = paymentTermsService;
         this.pricebookService = pricebookService;
@@ -57,7 +58,7 @@ public class PayerController {
         Payer payer = PayerData.map(payerData);
 
         if (payerData.getBranchId() != null) {
-            BankBranch bankBranch = adminService.fetchBankBranchById(payerData.getBranchId());
+            BankBranch bankBranch = bankService.fetchBankBranchById(payerData.getBranchId());
             payer.setBankBranch(bankBranch);
         }
         if (payerData.getDebitAccountNo() != null) {

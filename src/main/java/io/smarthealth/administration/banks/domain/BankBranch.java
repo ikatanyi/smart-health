@@ -1,8 +1,9 @@
-package io.smarthealth.administration.app.domain;
+package io.smarthealth.administration.banks.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -33,7 +34,8 @@ public class BankBranch extends Auditable {
     @Size(max = 50)
     @Column(name = "branch_email")
     private String branchEmail;
-    @JoinColumn(name = "main_bank_id", referencedColumnName = "id"/*, insertable = false, updatable = false*/)
+
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_ref_bank_branch_bank_id"))
     @ManyToOne(optional = false)
-    private MainBank mainBank;
+    private Bank bank;
 }

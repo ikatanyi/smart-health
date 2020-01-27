@@ -1,5 +1,9 @@
 package io.smarthealth.administration.app.service;
 
+import io.smarthealth.administration.banks.domain.BankBranchRepository;
+import io.smarthealth.administration.banks.domain.BankRepository;
+import io.smarthealth.administration.banks.domain.BankBranch;
+import io.smarthealth.administration.banks.domain.Bank;
 import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.*;
@@ -22,14 +26,10 @@ public class AdminService {
 
     private final AddressRepository addressRepository;
     private final ContactRepository contactRepository;
-    private final BankRepository bankRepository;
-    private final BankBranchRepository bankBranchRepository;
-
-    public AdminService(AddressRepository addressRepository, ContactRepository contactRepository, BankRepository bankRepository, BankBranchRepository bankBranchRepository) {
+   
+    public AdminService(AddressRepository addressRepository, ContactRepository contactRepository) {
         this.addressRepository = addressRepository;
-        this.contactRepository = contactRepository;
-        this.bankRepository = bankRepository;
-        this.bankBranchRepository = bankBranchRepository;
+        this.contactRepository = contactRepository; 
     }
 
     public List<Contact> createContacts(List<ContactData> contactList) {
@@ -86,39 +86,7 @@ public class AdminService {
                 .orElseThrow(() -> APIException.notFound("Contact with id {0} not found", id));
     }
 
-    @Transactional
-    public MainBank createBank(MainBank mainBank) {
-        return bankRepository.save(mainBank);
-    }
-
-    public Page<MainBank> fetchAllMainBanks(Pageable pgbl) {
-        return bankRepository.findAll(pgbl);
-    }
-
-    @Transactional
-    public List<BankBranch> createBankBranch(List<BankBranch> branch) {
-        return bankBranchRepository.saveAll(branch);
-    }
-
-    public Optional<MainBank> fetchBankByName(String bankName) {
-        return bankRepository.findByBankName(bankName);
-    }
-
-    public Optional<BankBranch> findByBranchNameAndBank(final String branchName, final MainBank mainBank) {
-        return bankBranchRepository.findByBranchNameAndMainBank(branchName, mainBank);
-    }
-
-    public Page<BankBranch> fetchBranchByMainBank(MainBank mb, Pageable pageable) {
-        return bankBranchRepository.findByMainBank(mb, pageable);
-    }
-
-    public MainBank fetchBankById(Long id) {
-        return bankRepository.findById(id).orElseThrow(() -> APIException.notFound("Bank identified by {0} was not found", id));
-    }
-
-    public BankBranch fetchBankBranchById(Long id) {
-        return bankBranchRepository.findById(id).orElseThrow(() -> APIException.notFound("Bank branch identified by {0} was not found", id));
-    }
+    
 
     public void removeAddressByOrganization(Organization org) {
         if (!org.getAddress().isEmpty()) {

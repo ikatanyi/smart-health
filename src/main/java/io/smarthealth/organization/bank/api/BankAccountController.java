@@ -1,10 +1,5 @@
 package io.smarthealth.organization.bank.api;
 
-import io.smarthealth.accounting.payment.api.*;
-import io.smarthealth.accounting.payment.data.CreateTransactionData;
-import io.smarthealth.accounting.payment.data.FinancialTransactionData;
-import io.smarthealth.accounting.payment.domain.FinancialTransaction;
-import io.smarthealth.accounting.payment.service.PaymentService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -43,7 +38,7 @@ public class BankAccountController {
 
         Pager<BankAccountData> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Payment successfully Created.");
+        pagers.setMessage("Bank Account successfully Created.");
         pagers.setContent(bankAccount);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);

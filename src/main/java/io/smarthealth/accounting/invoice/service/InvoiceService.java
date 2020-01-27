@@ -7,9 +7,12 @@ import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.CreateInvoiceData;
 import io.smarthealth.accounting.invoice.data.CreateInvoiceItemData;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceMergeData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceLineItem;
+import io.smarthealth.accounting.invoice.domain.InvoiceMerge;
+import io.smarthealth.accounting.invoice.domain.InvoiceMergeRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceSpecification;
 import io.smarthealth.debtor.payer.domain.Payer;
@@ -40,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
+    private final InvoiceMergeRepository invoiceMergeRepository;
     private final BillingService billingService;
     private final PayerService payerService;
     private final SchemeService schemeService;
@@ -154,14 +158,58 @@ public class InvoiceService {
         return invoices;
     }
 
-    public InvoiceData updateInvoice(Long id, InvoiceData data) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Invoice updateInvoice(Long id, InvoiceData data) {
+        Invoice invoice = findInvoiceOrThrowException(id);
+        invoice.setBalance(data.getBalance());
+        invoice.setClosed(data.getClosed());
+        invoice.setCurrency(data.getCurrency());
+        invoice.setDisounts(data.getDisounts());
+        invoice.setDraft(data.getDraft());
+        invoice.setDueDate(data.getDueDate());
+        invoice.setNotes(data.getNotes());
+        invoice.setPaid(data.getPaid());
+        Payer payer = payerService.findPayerByIdWithNotFoundDetection(data.getPayerId());
+        invoice.setPayee(data.getPayee());
+        invoice.setPayer(payer);
+        invoice.setReference(data.getReference());
+        invoice.setStatus(data.getStatus());
+        invoice.setSubtotal(data.getSubtotal());
+        invoice.setTaxes(data.getTaxes());
+        invoice.setTerms(data.getTerms());
+        invoice.setTotal(data.getTotal());
+        return invoiceRepository.save(invoice);
     }
     
-     public Invoice findInvoiceByIdWithFailDetection(String invoiceNumber) {
-        return invoiceRepository.findByNumber(invoiceNumber).orElseThrow(() -> APIException.notFound("Invoice with id {0} not found.", invoiceNumber));
+    public Invoice verifyInvoice(Long id, Boolean isVerified) {
+        Invoice invoice = findInvoiceOrThrowException(id);
+        invoice.setIsVerified(isVerified);
+        return invoiceRepository.save(invoice);
     }
-
+    
+     public Invoice findByInvoiceNumberOrThrow(String invoiceNumber) {
+        return invoiceRepository.findByNumber(invoiceNumber).orElseThrow(() -> APIException.notFound("Invoice with invoice number {0} not found.", invoiceNumber));
+    }
+     
+    
+     @javax.transaction.Transactional
+    public InvoiceMerge mergeInvoice(InvoiceMergeData data) {
+        InvoiceMerge invoiceMerge = InvoiceMergeData.map(data);
+        
+        Invoice fromInvoice = findByInvoiceNumberOrThrow(data.getFromInvoiceNumber());
+        Invoice toInvoice = findByInvoiceNumberOrThrow(data.getToInvoiceNumber());
+        
+        fromInvoice.getItems().stream().map((lineItem) -> {
+            lineItem.setInvoice(toInvoice);
+            return lineItem;
+        }).forEachOrdered((lineItem) -> {
+            toInvoice.getItems().add(lineItem);
+        });
+        
+        invoiceRepository.save(toInvoice);
+        invoiceRepository.deleteById(fromInvoice.getId());
+        return invoiceMergeRepository.save(invoiceMerge);
+    }
+  
     public Invoice findInvoiceOrThrowException(Long id) {
         return findById(id)
                 .orElseThrow(() -> APIException.notFound("Invoice with id {0} not found.", id));

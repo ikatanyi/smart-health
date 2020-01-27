@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.appointment.domain.Appointment;
 import io.smarthealth.appointment.domain.enumeration.StatusType;
+import io.smarthealth.debtor.claim.remittance.domain.enumeration.PaymentMode;
 import io.smarthealth.appointment.domain.enumeration.Urgency;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.TIME_PATTERN;

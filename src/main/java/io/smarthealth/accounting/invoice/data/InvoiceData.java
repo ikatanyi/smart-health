@@ -44,6 +44,7 @@ public class InvoiceData {
     private Double total;
     private Double balance;
     private String notes;
+    private Boolean isVerified;
 
     private InvoiceStatus status;
 
@@ -65,6 +66,7 @@ public class InvoiceData {
         data.setTransactionNo(invoice.getTransactionNo());
         data.setReference(invoice.getReference());
         data.setPayee(invoice.getPayee());
+        data.setIsVerified(invoice.getIsVerified());
 
         data.setNotes(invoice.getNotes());
         data.setSubtotal(invoice.getSubtotal());

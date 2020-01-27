@@ -45,7 +45,9 @@ public class PayerData {
         payerData.setLegalName(payer.getLegalName());
         payerData.setPayerName(payer.getPayerName());
         payerData.setPayerType(payer.getPayerType());
+        if(payer.getPaymentTerms()!=null){
         payerData.setPaymentTermId(payer.getPaymentTerms().getId());
+        }
         payerData.setTaxNumber(payer.getTaxNumber());
         payerData.setWebsite(payer.getWebsite());
 

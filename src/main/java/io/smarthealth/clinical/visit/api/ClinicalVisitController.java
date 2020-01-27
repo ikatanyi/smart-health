@@ -102,10 +102,10 @@ public class ClinicalVisitController {
         if (visitService.isPatientVisitActive(patient)) {
             throw APIException.conflict("Patient identified by {0} already has an active visit", patient.getPatientNumber());
         }
-//        Employee employee = null;
-//        if (visitData.getPractitionerCode() != null || !visitData.getPractitionerCode().equals("")) {
-//            employee = employeeService.fetchEmployeeByNumberOrThrow(visitData.getPractitionerCode());
-//        }
+        Employee employee = null;
+        if (visitData.getPractitionerCode() != null) {
+            employee = employeeService.fetchEmployeeByNumberOrThrow(visitData.getPractitionerCode());
+        }
         ServicePoint servicePoint = servicePointService.getServicePoint(visitData.getServicePointIdentifier());
         
         Visit visit = VisitData.map(visitData);

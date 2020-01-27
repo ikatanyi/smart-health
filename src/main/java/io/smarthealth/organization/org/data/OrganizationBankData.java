@@ -1,6 +1,6 @@
 package io.smarthealth.organization.org.data;
 
-import io.smarthealth.administration.app.domain.BankAccount;
+import io.smarthealth.administration.app.domain.BankEmbedded;
 import io.smarthealth.organization.org.domain.OrganizationBank;
 import lombok.Data;
 
@@ -25,7 +25,7 @@ public class OrganizationBankData {
         OrganizationBankData data = new OrganizationBankData();
         data.setId(account.getId());
         if (account.getBank() != null) {
-            BankAccount bank = account.getBank();
+            BankEmbedded bank = account.getBank();
             data.setAccountName(bank.getAccountName());
             data.setAccountNumber(bank.getAccountNumber());
             data.setBankName(bank.getBankName());
@@ -46,7 +46,7 @@ public class OrganizationBankData {
         if (bankData.getId() != null) {
             account.setId(bankData.getId());
         }
-        BankAccount bank = new BankAccount();
+        BankEmbedded bank = new BankEmbedded();
 
         bank.setAccountName(bankData.getAccountName());
         bank.setAccountNumber(bankData.getAccountNumber());

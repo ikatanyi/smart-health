@@ -43,7 +43,7 @@ public class AllocationService {
     @javax.transaction.Transactional
     public Allocation createAllocation(AllocationData data) {
        Allocation allocation = AllocationData.map(data);
-       Invoice invoice = invoiceService.findInvoiceByIdWithFailDetection(data.getInvoiceNo());
+       Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
        invoice.setBalance(invoice.getBalance()-data.getAmount());
        allocation.setInvoice(invoice);
        
@@ -56,7 +56,7 @@ public class AllocationService {
     
     public Allocation updateAllocation(final Long id, AllocationData data) {
         Allocation allocation = getAllocationByIdWithFailDetection(id);
-        Invoice invoice = invoiceService.findInvoiceByIdWithFailDetection(data.getInvoiceNo());
+        Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
         invoice.setBalance((invoice.getBalance()+allocation.getAmount())-data.getAmount());
         allocation.setInvoice(invoice);
         allocation.setAmount(data.getAmount());
