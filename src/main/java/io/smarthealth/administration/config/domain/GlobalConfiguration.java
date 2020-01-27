@@ -18,8 +18,12 @@ public class GlobalConfiguration extends Identifiable {
     @Column(name = "config_name")
     private String name;
     @Column(name = "config_value")
-    private Long value;
+    private String value;
     private String description;
     @Column(name = "enabled", nullable = false)
     private boolean enabled;
+    private String fieldType;
+    
+     @Column(name = "config_group")
+    private String group;
 }

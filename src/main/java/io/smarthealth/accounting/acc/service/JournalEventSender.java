@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.accounting.acc.service;
 
 import io.smarthealth.accounting.acc.events.JournalEvent;
@@ -25,5 +20,9 @@ public class JournalEventSender {
 //    }
     public void process(JournalEvent journalevent) {
         jmsTemplate.convertAndSend("journalQueue", journalevent);
+    }
+
+    public void post(Object journal) {
+        jmsTemplate.convertAndSend("journalQueue", journal);
     }
 }

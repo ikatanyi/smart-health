@@ -85,7 +85,7 @@ public class DoctorRequestController {
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
+        //Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceService.nextNumber(SequenceType.DoctorRequestNumber);
         for (DoctorRequestData data : docRequestData) {
@@ -97,7 +97,7 @@ public class DoctorRequestController {
             doctorRequest.setItemRate(item.getRate());
             doctorRequest.setPatient(visit.getPatient());
             doctorRequest.setVisit(visit);
-            doctorRequest.setRequestedBy(employee);
+//            doctorRequest.setRequestedBy(employee);
             doctorRequest.setOrderNumber(orderNo);
             doctorRequest.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
             doctorRequest.setFulfillerComment(DoctorRequest.FullFillerStatusType.Unfulfilled.name());

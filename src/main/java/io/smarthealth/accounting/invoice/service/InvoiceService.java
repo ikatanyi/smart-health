@@ -1,7 +1,7 @@
 package io.smarthealth.accounting.invoice.service;
 
-import io.smarthealth.accounting.billing.domain.Bill;
-import io.smarthealth.accounting.billing.domain.BillItem;
+import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.CreateInvoiceData;
@@ -20,7 +20,7 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.service.TxnService;
+import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,14 +47,15 @@ public class InvoiceService {
     private final BillingService billingService;
     private final PayerService payerService;
     private final SchemeService schemeService;
-    private final TxnService txnService;
+    private final SequenceNumberGenerator sequenceGenerator;
+//    private final TxnService txnService;
 
     @Transactional
     public String createInvoice(CreateInvoiceData invoiceData) {
 
-        final String trxId = txnService.nextId();// UUID.randomUUID().toString();
+        final String trxId = sequenceGenerator.generateTransactionNumber(); //txnService.nextId();// UUID.randomUUID().toString();
 //        final 
-        Optional<Bill> bill = billingService.findByBillNumber(invoiceData.getBillNumber());
+        Optional<PatientBill> bill = billingService.findByBillNumber(invoiceData.getBillNumber());
         invoiceData.getPayers()
                 .stream()
                 .forEach(debt -> {
@@ -79,8 +80,8 @@ public class InvoiceService {
 
                     invoice.setDueDate(invoiceData.getDate().plusDays(creditDays));
                     invoice.setTerms(terms);
-
                     invoice.setNumber(invoiceNo);
+                    invoice.setInvoiceNumberRequiresAutoGeneration(true);
                     invoice.setSubtotal(debt.getAmount());
                     invoice.setBalance(debt.getAmount());
                     invoice.setDisounts(invoiceData.getDiscount());
@@ -114,8 +115,13 @@ public class InvoiceService {
     @Transactional
     public Invoice saveInvoice(Invoice invoice) {
         Invoice savedInv = invoiceRepository.save(invoice);
+        System.err.println(savedInv.isInvoiceNumberRequiresAutoGeneration());
+//        if (savedInv.isInvoiceNumberRequiresAutoGeneration()) {
+            savedInv.setNumber(sequenceGenerator.generate(savedInv));
+            invoiceRepository.save(invoice);
+//        }
         if (savedInv.getBill() != null) {
-            Bill bill = savedInv.getBill();
+            PatientBill bill = savedInv.getBill();
             bill.setStatus(BillStatus.Final);
             billingService.save(bill);
         }
@@ -124,7 +130,7 @@ public class InvoiceService {
 
     private InvoiceLineItem createItem(String trxId, CreateInvoiceItemData data) {
         InvoiceLineItem lineItem = new InvoiceLineItem();
-        BillItem item = billingService.findBillItemById(data.getBillItemId());
+        PatientBillItem item = billingService.findBillItemById(data.getBillItemId());
         item.setStatus(BillStatus.Final);
 
         lineItem.setBillItem(item);
@@ -133,7 +139,6 @@ public class InvoiceService {
         lineItem.setTransactionId(trxId);
         return lineItem;
     }
-
 
     public Optional<Invoice> findById(final Long id) {
         return invoiceRepository.findById(id);
@@ -181,8 +186,8 @@ public class InvoiceService {
         return invoiceRepository.save(invoice);
     }
     
-     public Invoice findInvoiceByIdWithFailDetection(String invoiceNumber) {
-        return invoiceRepository.findByNumber(invoiceNumber).orElseThrow(() -> APIException.notFound("Invoice with id {0} not found.", invoiceNumber));
+     public Invoice findByInvoiceNumberOrThrow(String invoiceNumber) {
+        return invoiceRepository.findByNumber(invoiceNumber).orElseThrow(() -> APIException.notFound("Invoice with invoice number {0} not found.", invoiceNumber));
     }
      
     
@@ -190,8 +195,8 @@ public class InvoiceService {
     public InvoiceMerge mergeInvoice(InvoiceMergeData data) {
         InvoiceMerge invoiceMerge = InvoiceMergeData.map(data);
         
-        Invoice fromInvoice = findInvoiceByIdWithFailDetection(data.getFromInvoiceNumber());
-        Invoice toInvoice = findInvoiceByIdWithFailDetection(data.getToInvoiceNumber());
+        Invoice fromInvoice = findByInvoiceNumberOrThrow(data.getFromInvoiceNumber());
+        Invoice toInvoice = findByInvoiceNumberOrThrow(data.getToInvoiceNumber());
         
         fromInvoice.getItems().stream().map((lineItem) -> {
             lineItem.setInvoice(toInvoice);
@@ -204,7 +209,7 @@ public class InvoiceService {
         invoiceRepository.deleteById(fromInvoice.getId());
         return invoiceMergeRepository.save(invoiceMerge);
     }
-
+  
     public Invoice findInvoiceOrThrowException(Long id) {
         return findById(id)
                 .orElseThrow(() -> APIException.notFound("Invoice with id {0} not found.", id));

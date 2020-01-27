@@ -1,10 +1,5 @@
 package io.smarthealth.debtor.claim.remittance.data;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 import io.smarthealth.debtor.claim.remittance.domain.Remitance;
 import io.smarthealth.debtor.claim.remittance.domain.enumeration.PaymentMode;
 import java.time.LocalDate;
@@ -72,8 +67,8 @@ public class RemitanceData {
         }
         if(remitance.getBankAccount()!=null){
             data.setBankId(remitance.getBankAccount().getId());
-            if(remitance.getBankAccount().getMainBank()!=null){
-                data.setBankName(remitance.getBankAccount().getMainBank().getBankName());
+            if(remitance.getBankAccount().getBank()!=null){
+                data.setBankName(remitance.getBankAccount().getBank().getBankName());
             }
             data.setBankAccountNumber(remitance.getBankAccount().getAccountNumber());
         }

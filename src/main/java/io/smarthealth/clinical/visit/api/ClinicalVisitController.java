@@ -117,7 +117,7 @@ public class ClinicalVisitController {
         visit.setStartDatetime(visitData.getStartDatetime());
         visit.setPatient(patient);
         visit.setServicePoint(servicePoint);
-        visit.setHealthProvider(employee);
+//        visit.setHealthProvider(employee);
         visit = this.visitService.createAVisit(visit);
         //register payment details 
         if (visitData.getPaymentMethod().equals("Insurance")) {

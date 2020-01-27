@@ -6,8 +6,10 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import org.smarthealth.patient.validation.constraints.ValidIdentifier;
 
+
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Creditor {
+    private String accountName;
   @ValidIdentifier(maxLength = 34)
   private String accountNumber;
   @NotNull
@@ -47,6 +49,14 @@ public final class Creditor {
     return Objects.equals(accountNumber, creditor.accountNumber) &&
             Objects.equals(amount, creditor.amount);
   }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
 
   @Override
   public int hashCode() {

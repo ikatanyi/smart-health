@@ -1,9 +1,9 @@
 package io.smarthealth.stock.inventory.api;
 
 import io.smarthealth.infrastructure.common.PaginationUtil;
-import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.stock.inventory.data.CreateInventoryItem;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
@@ -32,16 +32,17 @@ public class InventoryItemController {
     private final InventoryItemService service;
 
     @PostMapping("/inventoryItem")
-    public ResponseEntity<?> createPricebook(@Valid @RequestBody InventoryItemData itemData) {
+    public ResponseEntity<?> createInventoryItem(@Valid @RequestBody CreateInventoryItem itemData) {
 
-        InventoryItem result = service.createInventoryItem(itemData);
+//        InventoryItem result = 
+                service.createInventoryItem(itemData);
 
-        Pager<InventoryItemData> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Inventory Item created successful");
-        pagers.setContent(result.toData());
+//        Pager<InventoryItemData> pagers = new Pager();
+//        pagers.setCode("0");
+//        pagers.setMessage("Inventory Item created successful");
+//        pagers.setContent(result.toData());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
 
     }
 

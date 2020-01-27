@@ -2,6 +2,7 @@ package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.exception.ApiError;
+import io.smarthealth.stock.inventory.data.CreateInventoryItem;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.Optional;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.stock.inventory.domain.InventoryItemRepository;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -59,6 +62,26 @@ public class InventoryItemService {
                 .findByItemAndStore(item, store)
                 .orElse(InventoryItem.create(store, item));
         return save(inventory);
+    }
+
+    @Transactional
+    public void createInventoryItem(CreateInventoryItem itemData) {
+        List<InventoryItem> items = new ArrayList<>();
+        itemData.getInventoryItems()
+                .stream()
+                .forEach(x -> {
+                    Item item = itemService.findItemEntityOrThrow(x.getItemId());
+                    Store store = storeService.getStoreWithNoFoundDetection(itemData.getStoreId());
+                    InventoryItem inventory = inventoryItemRepository
+                            .findByItemAndStore(item, store)
+                            .orElse(InventoryItem.create(store, item));
+                    if(x.getAvailableStock()>0){
+                        inventory.setAvailableStock(x.getAvailableStock());
+                    }
+                    items.add(inventory);
+                });
+//        return save(inventory);
+            inventoryItemRepository.saveAll(items);
     }
 
     @Transactional

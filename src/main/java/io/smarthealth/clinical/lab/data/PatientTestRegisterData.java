@@ -7,7 +7,7 @@ package io.smarthealth.clinical.lab.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.accounting.billing.data.BillData;
-import io.smarthealth.clinical.lab.domain.PatientTestRegister;
+import io.smarthealth.clinical.lab.domain.LabRegister;
 import io.smarthealth.infrastructure.lang.DateConverter;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
@@ -55,13 +55,13 @@ public class PatientTestRegisterData {
     @ApiModelProperty(required = false, hidden = true)
     private BillData billData;
 
-    public static PatientTestRegister map(PatientTestRegisterData patientregister) {
-        PatientTestRegister e = new PatientTestRegister();
+    public static LabRegister map(PatientTestRegisterData patientregister) {
+        LabRegister e = new LabRegister();
         e.setAccessNo(patientregister.getAccessionNo());
         return e;
     }
 
-    public static PatientTestRegisterData map(PatientTestRegister patientregister) {
+    public static PatientTestRegisterData map(LabRegister patientregister) {
         PatientTestRegisterData data = new PatientTestRegisterData();
         if (patientregister.getVisit() != null) {
             data.setVisitNumber(patientregister.getVisit().getVisitNumber());

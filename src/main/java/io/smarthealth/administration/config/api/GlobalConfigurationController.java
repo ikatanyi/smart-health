@@ -41,6 +41,11 @@ public class GlobalConfigurationController {
         GlobalConfiguration config = service.getWithNonFoundDetection(code);
         return ResponseEntity.ok(config);
     }
+        @GetMapping("/configurations/{configName}/name")
+    public ResponseEntity<?> getConfigurationByName(@PathVariable(value = "id") String configName) {
+        GlobalConfiguration config = service.getByNameOrThrow(configName);
+        return ResponseEntity.ok(config);
+    }
 
     @PutMapping("/configurations/{id}")
     public ResponseEntity<?> updateConfiguration(@PathVariable(value = "id") Long code, @Valid @RequestBody GlobalConfiguration config) {

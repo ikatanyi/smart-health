@@ -48,6 +48,7 @@ public class SchemeData {
     public static SchemeData map(Scheme i) {
         SchemeData d = new SchemeData();
 //        d.setCategory(i.getCategory());
+        d.setSchemeCode(i.getSchemeCode());
         d.setCover(i.getCover());
         d.setEmailAddress(i.getEmailAddress());
         d.setLine1(i.getLine1());
@@ -65,6 +66,7 @@ public class SchemeData {
     public static Scheme map(SchemeData d) {
         Scheme i = new Scheme();
 //        i.setCategory(d.getCategory());
+        i.setSchemeCode(d.getSchemeCode());
         i.setCover(d.getCover());
         i.setEmailAddress(d.getEmailAddress());
         i.setLine1(d.getLine1());

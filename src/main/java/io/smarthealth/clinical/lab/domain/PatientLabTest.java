@@ -35,7 +35,7 @@ public class PatientLabTest extends Identifiable {
     //private String accessNo;
 
     @ManyToOne
-    private PatientTestRegister patientTestRegister;
+    private LabRegister patientTestRegister;
 
 //    @ManyToMany
 //    @JoinTable(name = "patient_lab_test_specimen")

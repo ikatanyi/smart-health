@@ -16,10 +16,13 @@ public class JournalEntryMapper {
   public static JournalEntry map(final JournalEntryEntity journalEntryEntity) {
     final JournalEntry journalEntry = new JournalEntry();
     journalEntry.setJournalNumber(journalEntryEntity.getJournalNumber());
+    journalEntry.setTransactionNo(journalEntryEntity.getTransactionNo());
     journalEntry.setTransactionDate(journalEntryEntity.getTransactionDate());
     journalEntry.setTransactionType(journalEntryEntity.getTransactionType());
     journalEntry.setClerk(journalEntryEntity.getClerk());
     journalEntry.setNote(journalEntryEntity.getNote());
+    journalEntry.setAmount(journalEntryEntity.getJournalAmount());
+    journalEntry.setCreatedBy(journalEntryEntity.getCreatedBy());
     journalEntry.setDebtors(
         journalEntryEntity.getDebtors()
             .stream()
@@ -46,4 +49,6 @@ public class JournalEntryMapper {
     journalEntry.setState(journalEntryEntity.getState());
     return journalEntry;
   }
+ 
+  //do I need
 }

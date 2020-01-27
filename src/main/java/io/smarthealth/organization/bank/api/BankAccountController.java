@@ -3,7 +3,7 @@ package io.smarthealth.organization.bank.api;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.bank.data.BAccountData;
+import io.smarthealth.organization.bank.data.BankAccountData;
 import io.smarthealth.organization.bank.domain.BankAccount;
 import io.smarthealth.organization.bank.domain.enumeration.BankType;
 import io.smarthealth.organization.bank.service.BankAccountService;
@@ -32,11 +32,11 @@ public class BankAccountController {
     }
 
     @PostMapping("/bank-account")
-    public ResponseEntity<?> createBankAccount(@Valid @RequestBody BAccountData bankAccountData) {
+    public ResponseEntity<?> createBankAccount(@Valid @RequestBody BankAccountData bankAccountData) {
 
-        BAccountData bankAccount = BAccountData.map(bankAccountservice.createBankAccount(bankAccountData));
+        BankAccountData bankAccount = BankAccountData.map(bankAccountservice.createBankAccount(bankAccountData));
 
-        Pager<BAccountData> pagers = new Pager();
+        Pager<BankAccountData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Bank Account successfully Created.");
         pagers.setContent(bankAccount);
@@ -45,14 +45,14 @@ public class BankAccountController {
     }
 
     @GetMapping("/bank-account/{id}")
-    public BAccountData getBankAccount(@PathVariable(value = "id") Long id) {
+    public BankAccountData getBankAccount(@PathVariable(value = "id") Long id) {
         BankAccount bankAccount = bankAccountservice.getBankAccountByIdWithFailDetection(id);
-        return BAccountData.map(bankAccount);
+        return BankAccountData.map(bankAccount);
     }
 
     @PatchMapping("/bank-account/{id}")
-    public BAccountData updateBankAccount(@PathVariable(value = "id") Long id, BAccountData bankAccountData) {
-        BAccountData bankAccount = BAccountData.map(bankAccountservice.updateBankAccount(id, bankAccountData));
+    public BankAccountData updateBankAccount(@PathVariable(value = "id") Long id, BankAccountData bankAccountData) {
+        BankAccountData bankAccount = BankAccountData.map(bankAccountservice.updateBankAccount(id, bankAccountData));
         return bankAccount;
     }
 
@@ -65,10 +65,10 @@ public class BankAccountController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<BAccountData> list = bankAccountservice.getBankAccounts(bankName, bankBranch, bankType, pageable)
-                .map(bAccount -> BAccountData.map(bAccount));
+        Page<BankAccountData> list = bankAccountservice.getBankAccounts(bankName, bankBranch, bankType, pageable)
+                .map(bAccount -> BankAccountData.map(bAccount));
 
-        Pager<List<BAccountData>> pagers = new Pager();
+        Pager<List<BankAccountData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());

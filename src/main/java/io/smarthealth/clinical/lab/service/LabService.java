@@ -35,8 +35,7 @@ import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimenRepo;
-import io.smarthealth.clinical.lab.domain.PatientTestRegister;
-import io.smarthealth.clinical.lab.domain.PatientTestRegisterRepository;
+import io.smarthealth.clinical.lab.domain.LabRegister;
 import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
@@ -44,6 +43,8 @@ import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorRequest.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.specification.PatientTestSpecifica;
 import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.infrastructure.utility.UuidGenerator;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -51,7 +52,10 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
+import io.smarthealth.clinical.lab.domain.LabRegisterRepository;
 
 /**
  *
@@ -76,9 +80,9 @@ public class LabService {
 
     private final DoctorsRequestRepository doctorRequestRepository;
 
-    private final PatientTestRegisterRepository patientRegRepository;
+    private final LabRegisterRepository patientRegRepository;
 
-    private final SequenceService seqService;
+    private final SequenceNumberGenerator seqService;
 
     private final EmployeeService employeeService;
 
@@ -91,7 +95,7 @@ public class LabService {
 
     private final PatientLabTestSpecimenRepo patientLabTestSpecimenRepo;
 
-    public LabService(AnalyteRepository analyteRepository, ModelMapper modelMapper, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, PatientTestRegisterRepository patientRegRepository, SequenceService seqService, EmployeeService employeeService, PatientService patientservice, ItemService itemService, VisitService visitService, BillingService billingService, LabTestTypeRepository labTestTypeRepository, PatientLabTestSpecimenRepo patientLabTestSpecimenRepo) {
+    public LabService(AnalyteRepository analyteRepository, ModelMapper modelMapper, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, LabRegisterRepository patientRegRepository, SequenceNumberGenerator seqService, EmployeeService employeeService, PatientService patientservice, ItemService itemService, VisitService visitService, BillingService billingService, LabTestTypeRepository labTestTypeRepository, PatientLabTestSpecimenRepo patientLabTestSpecimenRepo) {
         this.analyteRepository = analyteRepository;
         this.modelMapper = modelMapper;
         this.containerRepository = containerRepository;
@@ -324,25 +328,20 @@ public class LabService {
     c. Update PatientResults
      */
     @Transactional
-    public PatientTestRegister savePatientResults(PatientTestRegisterData patientRegData, final String visitNo, final Long requestId) {
-        PatientTestRegister patientTestReg = PatientTestRegisterData.map(patientRegData);
-        if (visitNo != null) {
-            Visit visit = visitService.findVisitEntityOrThrow(visitNo);
-            patientTestReg.setVisit(visit);
-            patientTestReg.setPatient(visit.getPatient());
-        } else {
-            throw APIException.badRequest("A fully fledged visit session MUST be available", "");
-        }
+    public LabRegister savePatientResults(PatientTestRegisterData patientRegData, final String visitNo, final Long requestId) {
+        LabRegister labRegister = PatientTestRegisterData.map(patientRegData);
+        Visit visit = visitService.findVisitEntityOrThrow(visitNo);
+        labRegister.setVisit(visit);
+        labRegister.setPatient(visit.getPatient());
         Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(patientRegData.getRequestedBy());
         if (emp.isPresent()) {
-            patientTestReg.setRequestedBy(emp.get());
+            labRegister.setRequestedBy(emp.get());
         }
 
         if (patientRegData.getAccessionNo() == null || patientRegData.getAccessionNo().equals("")) {
-            String accessionNo = seqService.nextNumber(SequenceType.LabTestNumber);
-            patientTestReg.setAccessNo(accessionNo);
+//            String accessionNo = seqService.nextNumber(SequenceType.LabTestNumber);
+            labRegister.setAccessNo(UuidGenerator.newUuid());
         }
-
         List<DoctorRequest> req = new ArrayList();
         //PatientTestRegister savedPatientTestRegister = patientRegRepository.save(patientTestReg);
         if (!patientRegData.getItemData().isEmpty()) {
@@ -351,9 +350,9 @@ public class LabService {
                 if (id.getRequestId() != null) {
                     Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
                     if (request.isPresent()) {
-                        patientTestReg.setRequest(request.get());
+                        labRegister.setRequest(request.get());
                         request.get().setFulfillerStatus("Fulfilled");
-                        req.add(request.get());                        
+                        req.add(request.get());
                     }
                 }
 
@@ -365,10 +364,11 @@ public class LabService {
                 pte.setQuantity(id.getQuantity());
                 pte.setTestType(labTestType);
                 return pte;
+
             }).map((pte) -> {
                 //Here I am anticipating for results *I know this is a bad idea that should not be implemented under normal situations, but due to time constraints from some guys, which you will learn later (or maybe by now you know them), I had to do this!*
                 //find annalytes pegged to this patient
-                List<Analyte> analytes = this.filterAnnalytesByPatient(patientTestReg.getPatient(), pte.getTestType());
+                List<Analyte> analytes = this.filterAnnalytesByPatient(labRegister.getPatient(), pte.getTestType());
                 List<Results> results = new ArrayList<>();
                 for (Analyte a : analytes) {
                     Results r = new Results();
@@ -386,7 +386,7 @@ public class LabService {
                 patientLabTest.add(pte);
             });
             doctorRequestRepository.saveAll(req);
-            patientTestReg.addPatientLabTest(patientLabTest);
+            labRegister.addPatientLabTest(patientLabTest);
 
         }
 
@@ -414,11 +414,18 @@ public class LabService {
             patientTestReg.setBill(bill);
         }
          */
-        patientTestReg.setStatus(LabTestState.Scheduled);
-        PatientTestRegister updatedPatientTestRegister = patientRegRepository.save(patientTestReg);
-        return updatedPatientTestRegister;
-    }
+        labRegister.setStatus(LabTestState.Scheduled);
+        LabRegister savedLabRegister = save(labRegister);
 
+        return savedLabRegister;
+    }
+    // work around to generating lab number for now: 2020-01-14. Note I have renamed the class name from PatientTestRegister to Lab Register to ease confusion
+
+    private LabRegister save(LabRegister labRegister) {
+        LabRegister savedLabRegister = patientRegRepository.save(labRegister);
+        savedLabRegister.setAccessNo(seqService.generate(savedLabRegister));
+        return patientRegRepository.save(savedLabRegister);
+    }
 //    
 //    @Transactional
 //    public PatientTestRegister savePatientResults(PatientTestRegisterData patientRegData, final String visitNo) {
@@ -498,16 +505,17 @@ public class LabService {
 //        Page<PatientLabTestData> ptests = PtestsRepository.fetchPatientLabTests(visit.getPatient(), visit, status, pgbl).map(p -> PatientLabTestData.map(p));
 //        return ptests;
 //    }
-    public Page<PatientTestRegister> fetchAllPatientTests(final String visitNo, LabTestState status, Pageable pageable) {
-        Specification<PatientTestRegister> spec = PatientTestSpecifica.createSpecification(visitNo, status);
+
+    public Page<LabRegister> fetchAllPatientTests(final String visitNo, LabTestState status, Pageable pageable) {
+        Specification<LabRegister> spec = PatientTestSpecifica.createSpecification(visitNo, status);
         return patientRegRepository.findAll(spec, pageable);
     }
 
-    public PatientTestRegister findPatientTestRegisterByAccessNoWithNotFoundDetection(final String accessNo) {
+    public LabRegister findPatientTestRegisterByAccessNoWithNotFoundDetection(final String accessNo) {
         return patientRegRepository.findByAccessNo(accessNo).orElseThrow(() -> APIException.notFound("Lab file identifed by {0} not found ", accessNo));
     }
 
-    public List<PatientTestRegister> findPatientTestRegisterByVisit(final Visit visit) {
+    public List<LabRegister> findPatientTestRegisterByVisit(final Visit visit) {
         return patientRegRepository.findByVisit(visit);
     }
 

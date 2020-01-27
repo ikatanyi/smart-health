@@ -1,7 +1,7 @@
 package io.smarthealth.accounting.invoice.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.accounting.billing.domain.BillItem;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.invoice.domain.InvoiceLineItem;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.io.Serializable;
@@ -40,7 +40,7 @@ public class InvoiceLineItemData implements Serializable {
        data.setInvoiceNumber(invoiceLineItem.getInvoice()!=null ? invoiceLineItem.getInvoice().getNumber() : "");
         data.setCreatedBy(invoiceLineItem.getCreatedBy());
         if (invoiceLineItem.getBillItem() != null) {
-            BillItem lineItem = invoiceLineItem.getBillItem();
+            PatientBillItem lineItem = invoiceLineItem.getBillItem();
             data.setId(lineItem.getId());
             if (lineItem.getItem() != null) {
                 data.setItemId(lineItem.getItem().getId());
