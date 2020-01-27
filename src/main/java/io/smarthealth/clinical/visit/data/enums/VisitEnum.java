@@ -24,4 +24,9 @@ public class VisitEnum {
         Inpatient
     }
 
+    public enum PaymentMethod {
+        Cash,
+        Insurance
+    }
+
 }

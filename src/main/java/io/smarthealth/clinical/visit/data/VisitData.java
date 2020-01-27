@@ -7,8 +7,8 @@ package io.smarthealth.clinical.visit.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.VisitType;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -30,7 +30,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public class VisitData {
-
+    
     private String visitNumber;
     @NotBlank
     private String patientNumber;
@@ -45,20 +45,21 @@ public class VisitData {
     private Boolean scheduled;
     @NotNull
     private Long servicePointIdentifier;
-
+    
     @ApiModelProperty(required = false, hidden = true)
     private String servicePointName;
-
+    
     private String practitionerCode;
-
-    private String paymentMethod;
-
+    
+    @Enumerated(EnumType.STRING)
+    private VisitEnum.PaymentMethod paymentMethod;
+    
     private PatientData patientData;
-
+    
     private PaymentDetailsData payment;
-
+    
     private List<PatientQueueData> patientQueueData;
-
+    
     public static Visit map(VisitData visitDTO) {
         Visit visitEntity = new Visit();
         visitEntity.setScheduled(visitDTO.getScheduled());
@@ -67,9 +68,11 @@ public class VisitData {
         visitEntity.setVisitNumber(visitDTO.getVisitNumber());
         visitEntity.setVisitType(visitDTO.getVisitType());
         visitEntity.setStatus(visitDTO.getStatus());
+        visitEntity.setPaymentMethod(visitDTO.getPaymentMethod());
+        
         return visitEntity;
     }
-
+    
     public static VisitData map(Visit visitEntity) {
         VisitData visitDTO = new VisitData();
         visitDTO.setScheduled(visitEntity.getScheduled());
@@ -78,7 +81,8 @@ public class VisitData {
         visitDTO.setStopDatetime(visitEntity.getStopDatetime());
         visitDTO.setVisitNumber(visitEntity.getVisitNumber());
         visitDTO.setVisitType(visitEntity.getVisitType());
+        visitDTO.setPaymentMethod(visitEntity.getPaymentMethod());
         return visitDTO;
     }
-
+    
 }

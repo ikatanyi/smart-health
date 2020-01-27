@@ -12,6 +12,7 @@ import io.smarthealth.debtor.scheme.domain.InsuranceSchemeRepository;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurationsRepository;
 import io.smarthealth.infrastructure.exception.APIException;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -47,6 +48,10 @@ public class SchemeService {
 
     public Page<Scheme> fetchSchemesByPayer(Payer payer, Pageable page) {
         return schemeRepository.findByPayer(payer, page);
+    }
+
+    public Optional<SchemeConfigurations> fetchSchemeConfigByScheme(Scheme scheme) {
+        return configurationsRepository.findByScheme(scheme);
     }
 
     public Scheme fetchSchemeById(Long id) {

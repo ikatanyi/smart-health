@@ -8,8 +8,11 @@ package io.smarthealth.clinical.visit.domain.specification;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -24,7 +27,7 @@ public class VisitSpecification {
         super();
     }
 
-    public static Specification<Visit> createSpecification(Visit visit, Employee employee, ServicePoint servicePoint, Patient patient, boolean visitIsRunning) {
+    public static Specification<Visit> createSpecification(Visit visit, Employee employee, ServicePoint servicePoint, Patient patient, boolean visitIsRunning, DateRange dateRange) {
 
         return (root, query, cb) -> {
 
@@ -59,6 +62,14 @@ public class VisitSpecification {
                                 cb.equal(root.get("status"), VisitEnum.Status.Discharged),
                                 cb.equal(root.get("status"), VisitEnum.Status.CheckOut),
                                 cb.equal(root.get("status"), VisitEnum.Status.Transferred)
+                        )
+                );
+            }
+
+            if (dateRange != null) {
+                predicates.add(
+                        cb.between(
+                                root.get("startDatetime"), dateRange.getStartDateTime(), dateRange.getEndDateTime()
                         )
                 );
             }

@@ -14,11 +14,14 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.clinical.visit.domain.specification.VisitSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -50,7 +53,7 @@ public class VisitService {
         return visits;
     }
 
-    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, String patientNumber, boolean runningStatus, final Pageable pageable) {
+    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, String patientNumber, boolean runningStatus, DateRange range, final Pageable pageable) {
         Visit visit = null;
         Employee employee = null;
         ServicePoint servicePoint = null;
@@ -68,7 +71,8 @@ public class VisitService {
             patient = patientService.findPatientOrThrow(patientNumber);
         }
 
-        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visit, employee, servicePoint, patient, runningStatus);
+//        System.out.println(" LocalDate.now().atStartOfDay() " + LocalDate.now().atStartOfDay());
+        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visit, employee, servicePoint, patient, runningStatus,range);
         Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
         return visits;
     }
