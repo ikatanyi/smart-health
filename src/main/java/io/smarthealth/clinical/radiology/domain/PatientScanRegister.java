@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.radiology.domain;
 
-import io.smarthealth.accounting.billing.domain.Bill;
+import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
@@ -69,6 +69,6 @@ public class PatientScanRegister extends ClinicalRecord {
 
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_bill_id"))
     @OneToOne
-    private Bill bill;
+    private PatientBill bill;
     
 }

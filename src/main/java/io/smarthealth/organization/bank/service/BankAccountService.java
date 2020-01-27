@@ -2,12 +2,12 @@ package io.smarthealth.organization.bank.service;
 
 import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.accounting.acc.service.AccountService;
-import io.smarthealth.administration.app.domain.BankBranch;
-import io.smarthealth.administration.app.domain.MainBank;
-import io.smarthealth.administration.app.service.AdminService;
+import io.smarthealth.administration.banks.domain.BankBranch;
+import io.smarthealth.administration.banks.domain.Bank;
+import io.smarthealth.administration.banks.service.BankService;
 import io.smarthealth.appointment.domain.specification.BankAccountSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.bank.data.BAccountData;
+import io.smarthealth.organization.bank.data.BankAccountData;
 import io.smarthealth.organization.bank.domain.BankAccount;
 import io.smarthealth.organization.bank.domain.BankAccountRepository;
 import io.smarthealth.organization.bank.domain.enumeration.BankType;
@@ -31,49 +31,49 @@ public class BankAccountService {
 
     private final BankAccountRepository bankAccountRepository;
     private final AccountService accountService;
-    private final AdminService adminService;
-
-        
+    private final BankService bankService;
 
     @javax.transaction.Transactional
-    public BankAccount createBankAccount(BAccountData data) {
+    public BankAccount createBankAccount(BankAccountData data) {
         BankAccount bank = new BankAccount();
         Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getLedgerAccount());
-        if(accEntity.isPresent())
-             bank.setLedgerAccount(accEntity.get());
-        MainBank mBank = adminService.fetchBankById(data.getBankId());
-        bank.setMainBank(mBank);
-        BankBranch branch = adminService.fetchBankBranchById(data.getBranchId());
+        if (accEntity.isPresent()) {
+            bank.setLedgerAccount(accEntity.get());
+        }
+        Bank mBank = bankService.fetchBankById(data.getBankId());
+        bank.setBank(mBank);
+        BankBranch branch = bankService.fetchBankBranchById(data.getBranchId());
         bank.setBankBranch(branch);
-        
-        bank.setAccountNumber(data.getAccountNumber());
-        bank.setAccountName(data.getAccountName());        
-        bank.setIsDefault(data.getIsDefault());
-        bank.setCurrency(data.getCurrency());
-        bank.setDescription(data.getDescription()); 
-        bank.setBankType(data.getBankType());
-            
-        return bankAccountRepository.save(bank);
-    }
-    
-    public BankAccount updateBankAccount(final Long id, BAccountData data) {
-        BankAccount bank = getBankAccountByIdWithFailDetection(id);
-        Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getLedgerAccount());
-        if(accEntity.isPresent())
-             bank.setLedgerAccount(accEntity.get());
-        MainBank mBank = adminService.fetchBankById(data.getBankId());
-        bank.setMainBank(mBank);
-        BankBranch branch = adminService.fetchBankBranchById(data.getBranchId());
-        bank.setBankBranch(branch);
-        
+
         bank.setAccountNumber(data.getAccountNumber());
         bank.setAccountName(data.getAccountName());
         bank.setIsDefault(data.getIsDefault());
         bank.setCurrency(data.getCurrency());
-        bank.setDescription(data.getDescription()); 
-       
+        bank.setDescription(data.getDescription());
         bank.setBankType(data.getBankType());
+
         return bankAccountRepository.save(bank);
+    }
+
+    public BankAccount updateBankAccount(final Long id, BankAccountData data) {
+        BankAccount bankAccount = getBankAccountByIdWithFailDetection(id);
+        Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getLedgerAccount());
+        if (accEntity.isPresent()) {
+            bankAccount.setLedgerAccount(accEntity.get());
+        }
+        Bank bank = bankService.fetchBankById(data.getBankId());
+        bankAccount.setBank(bank);
+        BankBranch branch = bankService.fetchBankBranchById(data.getBranchId());
+        bankAccount.setBankBranch(branch);
+
+        bankAccount.setAccountNumber(data.getAccountNumber());
+        bankAccount.setAccountName(data.getAccountName());
+        bankAccount.setIsDefault(data.getIsDefault());
+        bankAccount.setCurrency(data.getCurrency());
+        bankAccount.setDescription(data.getDescription());
+
+        bankAccount.setBankType(data.getBankType());
+        return bankAccountRepository.save(bankAccount);
     }
 
     public BankAccount getBankAccountByIdWithFailDetection(Long id) {
@@ -87,7 +87,6 @@ public class BankAccountService {
 //    public Optional<BankAccount> getBankAccountByName(String name) {
 //        return bankAccountRepository.findByBankName(name);
 //    }
-
     public Page<BankAccount> getBankAccounts(String bankName, String bankBranch, BankType type, Pageable page) {
         Specification spec = BankAccountSpecification.createSpecification(bankName, bankBranch, type);
         return bankAccountRepository.findAll(spec, page);

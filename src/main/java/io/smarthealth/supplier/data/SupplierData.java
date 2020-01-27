@@ -1,7 +1,7 @@
 package io.smarthealth.supplier.data;
 
 import io.smarthealth.administration.app.data.AddressData;
-import io.smarthealth.administration.app.data.BankAccountData;
+import io.smarthealth.administration.app.data.BankEmbeddedData;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.supplier.domain.enumeration.SupplierType;    
 import lombok.Data;
@@ -31,7 +31,7 @@ public class SupplierData {
 
     private  Long creditAccountId;
     private String creditAccount;
-    private BankAccountData bank;
+    private BankEmbeddedData bank;
     private AddressData addresses;
     private ContactData contact;
     private String status;

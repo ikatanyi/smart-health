@@ -8,6 +8,8 @@ import javax.validation.constraints.NotNull;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Debtor {
+    private String accountName;
+    
   @ValidIdentifiers(maxLength = 34)
   private String accountNumber;
   @NotNull
@@ -38,6 +40,14 @@ public final class Debtor {
   public void setAmount(final String amount) {
     this.amount = amount;
   }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
 
   @Override
   public boolean equals(Object o) {

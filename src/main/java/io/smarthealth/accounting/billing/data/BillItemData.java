@@ -34,6 +34,7 @@ public class BillItemData {
 
     private String createdBy;
     private String servicePoint;
+    private Long servicePointId;
 
     private BillStatus status;
     private Boolean paid;

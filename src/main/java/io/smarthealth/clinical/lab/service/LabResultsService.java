@@ -7,7 +7,7 @@ package io.smarthealth.clinical.lab.service;
 
 import io.smarthealth.clinical.lab.data.ResultsData;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
-import io.smarthealth.clinical.lab.domain.PatientTestRegister;
+import io.smarthealth.clinical.lab.domain.LabRegister;
 import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.lab.domain.ResultsRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -56,10 +56,10 @@ public class LabResultsService {
     }
 
     public List<PatientLabTest> findLabResultsByVisit(final Visit visit) {
-        List<PatientTestRegister> labTestFile = labService.findPatientTestRegisterByVisit(visit);
+        List<LabRegister> labTestFile = labService.findPatientTestRegisterByVisit(visit);
         List<PatientLabTest> patientLabTestsDone = new ArrayList<>();
         //find patient tests by labTestFile
-        for (PatientTestRegister testFile : labTestFile) {
+        for (LabRegister testFile : labTestFile) {
             testFile.getPatientLabTest().forEach((testDone) -> {
                 patientLabTestsDone.add(testDone);
             });

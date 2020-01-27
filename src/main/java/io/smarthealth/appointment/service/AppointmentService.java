@@ -93,9 +93,9 @@ public class AppointmentService {
         if (practitioner.isPresent()) {
             entity.setPractitioner(practitioner.get());
         }
-        Optional<Item> procedure = itemService.findByItemCode(appointment.getProcedureCode());
-        if (procedure.isPresent()) {
-            entity.setProcedure(procedure.get());
+        Optional<Item> service = itemService.findByItemCode(appointment.getProcedureCode());
+        if (service.isPresent()) {
+            entity.setService(service.get());
         }
 
         entity.setAppointmentType(appointmentType);
@@ -139,7 +139,7 @@ public class AppointmentService {
             app.setPractitioner(practitioner.get());
         }
         if (procedure.isPresent()) {
-            app.setProcedure(procedure.get());
+            app.setService(procedure.get());
         }
         app.setStartTime(appointment.getStartTime());
         app.setStatus(appointment.getStatus());
@@ -178,8 +178,8 @@ public class AppointmentService {
         newAppointment.setStartTime(appointment.getStartTime());
         newAppointment.setStatus(appointment.getStatus());
         newAppointment.setUrgency(appointment.getUrgency());
-        if (newAppointment.getProcedure() != null) {
-            newAppointment.setProcedure(newAppointment.getProcedure());
+        if (newAppointment.getService()!= null) {
+            newAppointment.setService(newAppointment.getService());
         }
         if (newAppointment.getPractitioner() != null) {
             newAppointment.setPractitioner(newAppointment.getPractitioner());

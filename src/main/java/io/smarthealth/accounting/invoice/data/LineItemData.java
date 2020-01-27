@@ -1,7 +1,5 @@
 package io.smarthealth.accounting.invoice.data;
 
-import io.smarthealth.debtor.claim.processing.data.*;
-import java.io.Serializable;
 import lombok.Data;
 
 /**

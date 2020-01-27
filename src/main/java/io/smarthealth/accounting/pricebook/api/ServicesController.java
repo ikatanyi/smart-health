@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.pricebook.api;
 
+import io.smarthealth.accounting.pricebook.data.CreateServiceItem;
 import io.smarthealth.accounting.pricebook.data.ServiceItemData;
 import io.smarthealth.accounting.pricebook.domain.ServiceItem;
 import io.smarthealth.accounting.pricebook.service.ServiceItemService;
@@ -33,29 +34,26 @@ public class ServicesController {
     }
 
     @PostMapping("/services")
-    public ResponseEntity<?> createServiceParameter(@Valid @RequestBody ServiceItemData data) {
-
-        ServiceItem result = service.createServiceParameter(data);
-
-        Pager<ServiceItemData> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Service parameter created successful");
-        pagers.setContent(result.toData());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    public ResponseEntity<?> createServiceItem(@Valid @RequestBody CreateServiceItem data) {
+        service.createServiceParameter(data);
+//        Pager<ServiceItemData> pagers = new Pager();
+//        pagers.setCode("0");
+//        pagers.setMessage("Service parameter created successful");
+//        pagers.setContent(result.toData());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
 
     }
 
     @GetMapping("/services/{id}")
-    public ServiceItemData getServiceParameter(@PathVariable(value = "id") Long code) {
+    public ServiceItemData getServiceItem(@PathVariable(value = "id") Long code) {
         ServiceItem param = service.getServiceParameterOrThrow(code);
         return param.toData();
     }
 
     @GetMapping("/services")
-    public ResponseEntity<?> getServiceParameters(
+    public ResponseEntity<?> getServiceItems(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
-            @RequestParam(value = "item", required = false) final String item,
+            @RequestParam(value = "queryItem", required = false) final String item,
             @RequestParam(value = "servicePoint", required = false) final Long servicePoint,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {

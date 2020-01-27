@@ -2,6 +2,7 @@ package io.smarthealth.administration.servicepoint.data;
 
 import io.smarthealth.accounting.acc.data.SimpleAccountData;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -12,12 +13,15 @@ import lombok.Data;
 public class ServicePointData {
 
     private Long id;
+    @NotBlank
     private String name;
     private String description;
     private Boolean active;
+    private String pointType;
     private ServicePointType servicePointType;
     private SimpleAccountData incomeAccount;
     private SimpleAccountData expenseAccount;
+    private SimpleAccountData inventoryAssetAccount;
 
     public ServicePointData() {
     }
@@ -28,12 +32,16 @@ public class ServicePointData {
         data.setActive(point.getActive());
         data.setName(point.getName());
         data.setDescription(point.getDescription());
+        data.setPointType(point.getPointType());
         data.setServicePointType(point.getServicePointType());
         if (point.getIncomeAccount() != null) {
             data.setIncomeAccount(SimpleAccountData.map(point.getIncomeAccount()));
         }
         if (point.getExpenseAccount() != null) {
             data.setExpenseAccount(SimpleAccountData.map(point.getExpenseAccount()));
+        }
+        if (point.getInventoryAssetAccount()!= null) {
+            data.setInventoryAssetAccount(SimpleAccountData.map(point.getInventoryAssetAccount()));
         }
 
         return data;

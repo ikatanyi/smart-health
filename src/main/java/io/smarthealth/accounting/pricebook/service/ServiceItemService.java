@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.pricebook.service;
 
+import io.smarthealth.accounting.pricebook.data.CreateServiceItem;
 import io.smarthealth.accounting.pricebook.data.ServiceItemData;
 import io.smarthealth.accounting.pricebook.domain.ServiceItem;
 import io.smarthealth.accounting.pricebook.domain.specification.ServiceItemSpecification;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.pricebook.domain.ServiceItemRepository;
+import java.util.ArrayList;
 
 /**
  *
@@ -43,6 +45,26 @@ public class ServiceItemService {
         service.setRate(data.getRate());
         service.setEffectiveDate(data.getEffectiveDate());
         return save(service);
+    }
+
+    @Transactional
+    public void createServiceParameter(CreateServiceItem data) {
+       List<ServiceItem> list=new ArrayList<>();
+        data.getServiceItems()
+                .stream()
+                .forEach(si -> {
+                    ServiceItem service = new ServiceItem();
+                    Item serviceItem = itemService.findByItemCodeOrThrow(si.getServiceCode());
+                    ServicePoint servicePoint = servicePointService.getServicePoint(data.getServicePointId());
+
+                    service.setServiceType(serviceItem);
+                    service.setServicePoint(servicePoint);
+                    service.setActive(true);
+                    service.setRate(si.getRate());
+                    service.setEffectiveDate(si.getEffectiveDate());
+                    list.add(service);
+                });
+        serviceRepository.saveAll(list);
     }
 
     @Transactional

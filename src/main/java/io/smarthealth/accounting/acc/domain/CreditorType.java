@@ -25,5 +25,16 @@ public class CreditorType extends Identifiable{
   public CreditorType() {
     super();
   }
- 
+
+    public CreditorType(String accountNumber, Double amount) {
+        this.accountNumber = accountNumber;
+        this.amount = amount;
+    }
+
+    public CreditorType(String accountNumber, Double amount, JournalEntryEntity journalEntryEntity) {
+        this.accountNumber = accountNumber;
+        this.amount = amount;
+        this.journalEntryEntity = journalEntryEntity;
+    }
+  
 }

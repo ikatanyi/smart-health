@@ -1,6 +1,6 @@
 package io.smarthealth.accounting.invoice.domain;
 
-import io.smarthealth.accounting.billing.domain.BillItem;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.infrastructure.domain.Auditable;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -28,7 +28,7 @@ public class InvoiceLineItem extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "item_id", foreignKey = @ForeignKey(name = "fk_invoiceline_billitem_id"))
-    private BillItem billItem; 
+    private PatientBillItem billItem; 
     
     private boolean deleted;
     private String transactionId;

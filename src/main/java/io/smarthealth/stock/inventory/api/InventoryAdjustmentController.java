@@ -58,7 +58,7 @@ public class InventoryAdjustmentController {
     public ResponseEntity<?> getStockAdjustment(
             @RequestParam(value = "store", required = false) final Long store,
             @RequestParam(value = "item", required = false) final Long item,
-            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "dateRange", required = false) String dateRange, //2020-01-01..2020-01-24
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 

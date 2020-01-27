@@ -6,7 +6,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.bank.data.BAccountData;
+import io.smarthealth.organization.bank.data.BankAccountData;
 import io.smarthealth.organization.bank.domain.BankAccount;
 import io.smarthealth.organization.bank.domain.enumeration.BankType;
 import io.smarthealth.organization.bank.service.BankAccountService;

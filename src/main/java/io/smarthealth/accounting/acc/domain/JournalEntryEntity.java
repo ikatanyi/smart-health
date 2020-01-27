@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -47,5 +48,12 @@ public class JournalEntryEntity extends Auditable {
     public void addCreditors(Set<CreditorType> creditorTypes){
         this.creditors=creditorTypes;
         this.creditors.forEach(x -> x.setJournalEntryEntity(this));
+    }
+    public Double getJournalAmount() {
+        return this.debtors
+                .stream()
+                .map(x -> x.getAmount())
+                .collect(Collectors.summingDouble(Double::doubleValue));
+//                .reduce(0D, (a, b) -> a + b);
     }
 }

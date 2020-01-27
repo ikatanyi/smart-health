@@ -5,6 +5,7 @@ import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
@@ -29,12 +30,13 @@ public final class JournalEntry {
     private State state;
     @Length(max = 2048)
     private String message;
+    private Double amount;
+    private String createdBy;
 
     public JournalEntry() {
         super();
     }
 
-   
     public LocalDateTime getTransactionDate() {
         return transactionDate;
     }
@@ -121,6 +123,22 @@ public final class JournalEntry {
         PROCESSED
     }
 
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -160,4 +178,5 @@ public final class JournalEntry {
                 + ", message='" + message + '\''
                 + '}';
     }
+ 
 }

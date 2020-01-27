@@ -83,8 +83,8 @@ public class AppointmentData implements Serializable {
             data.setPatientName(appointment.getPatient().getFullName());
         }
         
-        if (appointment.getProcedure() != null) {
-            data.setProcedureData(ItemData.map(appointment.getProcedure()));
+        if (appointment.getService()!= null) {
+            data.setProcedureData(ItemData.map(appointment.getService()));
         }
         
         if (appointment.getPractitioner() != null) {

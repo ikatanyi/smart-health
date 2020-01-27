@@ -24,5 +24,16 @@ public class DebtorType extends Identifiable {
     public DebtorType() {
         super();
     }
+
+    public DebtorType(String accountNumber, Double amount) {
+        this.accountNumber = accountNumber;
+        this.amount = amount;
+    }
+
+    public DebtorType(String accountNumber, Double amount, JournalEntryEntity journalEntryEntity) {
+        this.accountNumber = accountNumber;
+        this.amount = amount;
+        this.journalEntryEntity = journalEntryEntity;
+    }
  
 }

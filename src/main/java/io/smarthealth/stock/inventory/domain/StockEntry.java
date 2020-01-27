@@ -1,5 +1,6 @@
 package io.smarthealth.stock.inventory.domain;
 
+import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.inventory.data.StockEntryData;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
@@ -82,4 +83,28 @@ public class StockEntry extends Auditable {
 
         return data;
     }
+
+    public static StockEntry create(DispensedDrug drug) {
+        StockEntry stockEntry = new StockEntry();
+        Item item = drug.getDrug();
+        Store store = drug.getStore();
+
+        BigDecimal amt = BigDecimal.valueOf(drug.getAmount());
+        BigDecimal price = BigDecimal.valueOf(drug.getPrice());
+
+        StockEntry stock = new StockEntry();
+        stock.setAmount(amt);
+        stock.setQuantity(drug.getQtyIssued());
+        stock.setItem(item);
+        stock.setMoveType(MovementType.Dispensed);
+        stock.setPrice(price);
+        stock.setPurpose(MovementPurpose.Issue);
+        stock.setReferenceNumber(drug.getPatient().getPatientNumber());
+        stock.setStore(store);
+        stock.setTransactionDate(drug.getDispensedDate());
+        stock.setTransactionNumber(drug.getTransactionId());
+        stock.setUnit(drug.getUnits());
+        return stockEntry;
+    }
+
 }

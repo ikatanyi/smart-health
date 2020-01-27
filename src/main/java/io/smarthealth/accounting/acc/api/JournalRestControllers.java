@@ -105,9 +105,7 @@ public class JournalRestControllers {
 
     @GetMapping("/{transactionIdentifier}")
     @ResponseBody
-    ResponseEntity<JournalEntry> findJournalEntry(
-            @PathVariable("transactionIdentifier") final String transactionIdentifier
-    ) {
+    ResponseEntity<JournalEntry> findJournalEntry( @PathVariable("transactionIdentifier") final String transactionIdentifier ) {
         final Optional<JournalEntry> optionalJournalEntry
                 = this.journalEntryService.findJournalEntry(transactionIdentifier);
 

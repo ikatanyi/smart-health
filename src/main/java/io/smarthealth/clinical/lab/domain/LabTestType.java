@@ -8,6 +8,8 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -47,11 +49,13 @@ public class LabTestType extends Identifiable {
     private List<Analyte> analytes = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_test_type_item_id"))
     private Item itemService;
 
 //    @OneToMany(mappedBy = "testtype")
 //    private List<Specimen> specimens = new ArrayList<>();
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_test_type_displine_id"))
     private Discipline discipline;
 
 //    @ManyToMany(cascade = CascadeType.ALL)

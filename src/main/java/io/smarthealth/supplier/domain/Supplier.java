@@ -4,7 +4,7 @@ import io.smarthealth.accounting.payment.domain.PaymentTerms;
 import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.administration.app.data.AddressData;
-import io.smarthealth.administration.app.data.BankAccountData;
+import io.smarthealth.administration.app.data.BankEmbeddedData;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.*;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -41,7 +41,7 @@ public class Supplier extends Auditable {
     private boolean active;
 
     @Embedded
-    private BankAccount bankAccount;
+    private BankEmbedded bankAccount;
 
     @ManyToOne
     @JoinColumn(name = "pricelist_id", foreignKey = @ForeignKey(name = "fk_supplier_pricelist_id"))
@@ -105,7 +105,7 @@ public class Supplier extends Auditable {
         }
 
         if (this.getBankAccount() != null) {
-            data.setBank(BankAccountData.map(this.getBankAccount()));
+            data.setBank(BankEmbeddedData.map(this.getBankAccount()));
         }
         if (this.getAddress() != null) {
             data.setAddresses(AddressData.map(this.getAddress()));

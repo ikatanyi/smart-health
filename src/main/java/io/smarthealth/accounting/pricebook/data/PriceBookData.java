@@ -13,13 +13,8 @@ import lombok.Data;
  *
  * @author Kelsas
  */
-//@Getter
-//@Setter
-//@Accessors(chain = true)
-//@NoArgsConstructor
-//@ToString
-@Data
-//@JsonInclude(value = JsonInclude.Include.NON_NULL)
+ 
+@Data 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PriceBookData {
 
@@ -56,7 +51,10 @@ public class PriceBookData {
         }
 
         if (pricebook.getPriceBookItems() != null && pricebook.getPriceBookItems().size() > 0) {
-            List<ItemSimpleData> list = pricebook.getPriceBookItems().stream().map(item -> ItemSimpleData.map(item)).collect(Collectors.toList());
+            List<ItemSimpleData> list = pricebook.getPriceBookItems()
+                    .stream()
+                    .map(item -> ItemSimpleData.map(item))
+                    .collect(Collectors.toList());
             data.setPricebookItems(list);
         }
         return data;

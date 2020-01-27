@@ -1,6 +1,6 @@
 package io.smarthealth.accounting.invoice.domain;
 
-import io.smarthealth.accounting.billing.domain.Bill;
+import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,7 +44,7 @@ public class Invoice extends Auditable {
     @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_bill_id"))
-    private Bill bill;
+    private PatientBill bill;
 
     @Column(name = "invoice_date")
     private LocalDate date;
@@ -78,6 +79,9 @@ public class Invoice extends Auditable {
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     private List<InvoiceLineItem> items = new ArrayList<>();
 
+     @Transient
+    protected boolean invoiceNumberRequiresAutoGeneration = false;
+     
 //    @ManyToOne
 //    private Address shipTo; // include the supplier address here
     // Inoivce
@@ -90,4 +94,6 @@ public class Invoice extends Auditable {
         this.items = items;
         this.items.forEach(x -> x.setInvoice(this));
     }
+ 
+    
 }

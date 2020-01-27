@@ -7,7 +7,7 @@ import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
 import io.smarthealth.clinical.lab.data.ResultsData;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.lab.domain.PatientLabTestSpecimen;
-import io.smarthealth.clinical.lab.domain.PatientTestRegister;
+import io.smarthealth.clinical.lab.domain.LabRegister;
 import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
@@ -77,7 +77,7 @@ public class PatientTestsController {
     @GetMapping("/patient-test/results/{labAccessionNo}")
     public @ResponseBody
     ResponseEntity<?> fetchPatientTestsByAccessionNo(@PathVariable("labAccessionNo") final String labAccessionNo) {
-        PatientTestRegister labTestFile = labService.findPatientTestRegisterByAccessNoWithNotFoundDetection(labAccessionNo);
+        LabRegister labTestFile = labService.findPatientTestRegisterByAccessNoWithNotFoundDetection(labAccessionNo);
         //find patient tests by labTestFile
         List<PatientLabTestData> patientLabTests = PatientLabTestData.mapConfirmedTests(labTestFile.getPatientLabTest());
 

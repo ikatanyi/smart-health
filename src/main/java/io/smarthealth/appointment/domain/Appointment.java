@@ -30,9 +30,10 @@ public class Appointment extends Auditable {
 
     @NaturalId
     private String appointmentNo;
+    
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_procedure_id"))
-    private Item procedure;    
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_service_id"))
+    private Item service;
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_department_id"))
@@ -47,8 +48,7 @@ public class Appointment extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_empoyee_id"))
     private Employee practitioner;
-   
-    
+
     private LocalTime startTime;
     private LocalTime endTime;
 
