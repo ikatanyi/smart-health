@@ -1,10 +1,8 @@
 package io.smarthealth.debtor.claim.remittance.data;
 
 import io.smarthealth.debtor.claim.remittance.domain.Remitance;
-import io.smarthealth.debtor.claim.remittance.domain.enumeration.PaymentMode;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -19,19 +17,19 @@ public class RemitanceData {
     @NotNull
     private Long payerId;
     private String payerName;
-    @NotNull
-    private Long  bankId;
+    private Long  bankAccountId;
     private String bankName;
+    @ApiModelProperty(required = false, hidden = true)
     private String bankAccountNumber;
     private Double amount;
-    @Enumerated(EnumType.STRING)
-    private PaymentMode paymentMode;
+    private String paymentMode;
     private String paymentCode;
     private LocalDate transactionDate;
     private String receiptNo;
     private Double balance;
 
     private String termsName;
+    private String notes;
     private String termsDescription;
     private Integer creditDays;
     private Boolean termsActive;
@@ -39,6 +37,7 @@ public class RemitanceData {
     public static Remitance map(RemitanceData data) {
         Remitance remitance = new Remitance();
         remitance.setAmount(data.getAmount());
+        remitance.setNotes(data.getNotes());
         remitance.setBalance(data.getBalance());
         remitance.setReceiptNo(data.getReceiptNo());
         remitance.setPaymentMode(data.getPaymentMode());
@@ -54,6 +53,7 @@ public class RemitanceData {
         data.setReceiptNo(remitance.getReceiptNo());
         data.setPaymentCode(remitance.getPaymentCode());
         data.setPaymentMode(remitance.getPaymentMode());
+        data.setNotes(remitance.getNotes());
         data.setTransactionDate(remitance.getTransactionDate());
         if (remitance.getPayer() != null) {
             data.setPayerName(remitance.getPayer().getPayerName());
@@ -66,7 +66,7 @@ public class RemitanceData {
             }
         }
         if(remitance.getBankAccount()!=null){
-            data.setBankId(remitance.getBankAccount().getId());
+            data.setBankAccountId(remitance.getBankAccount().getId());
             if(remitance.getBankAccount().getBank()!=null){
                 data.setBankName(remitance.getBankAccount().getBank().getBankName());
             }
