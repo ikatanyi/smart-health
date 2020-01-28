@@ -42,6 +42,7 @@ public class Visit extends Auditable {
 
     private LocalDateTime startDatetime;
     private LocalDateTime stopDatetime;
+    private String comments;
 
     @Column(length = 50)
     @Enumerated(EnumType.STRING)

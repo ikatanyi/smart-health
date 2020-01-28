@@ -7,8 +7,11 @@ import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,9 +24,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 @Configuration
 @Slf4j
 public class ApplicationAutoConfig {
-
-    @Autowired
-    private DataSource dataSource;
 
     /**
      * Configures a MockMailSender when the property
@@ -64,9 +64,15 @@ public class ApplicationAutoConfig {
         return new ModelMapper();
     }
 
-    @Bean
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource);
+    @Bean(name = "db")
+    @ConfigurationProperties(prefix = "spring.datasource")
+    public DataSource dataSource() {
+        return DataSourceBuilder.create().build();
     }
- 
+
+    @Bean(name = "jdbcTemplate")
+    public JdbcTemplate jdbcTemplate(@Qualifier("db") DataSource ds) {
+        return new JdbcTemplate(ds);
+    }
+
 }

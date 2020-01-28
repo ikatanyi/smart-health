@@ -63,43 +63,43 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api")
 @Api(value = "Patient Visit", description = "Operations pertaining to patient visit in a health facility")
 public class ClinicalVisitController {
-
+    
     @Autowired
     private VisitService visitService;
     @Autowired
     private DepartmentService departmentService;
-
+    
     @Autowired
     PatientService patientService;
     @Autowired
     TriageService triageService;
-
+    
     @Autowired
     PatientQueueService patientQueueService;
-
+    
     @Autowired
     ModelMapper modelMapper;
-
+    
     @Autowired
     private EmployeeService employeeService;
-
+    
     @Autowired
     SequenceService sequenceService;
-
+    
     @Autowired
     ServicePointService servicePointService;
-
+    
     @Autowired
     SchemeService schemeService;
-
+    
     @Autowired
     PaymentDetailsService paymentDetailsService;
-
+    
     @PostMapping("/visits")
     @ApiOperation(value = "Submit a new patient visit", response = VisitData.class)
     public @ResponseBody
     ResponseEntity<?> addVisitRecord(@RequestBody @Valid final VisitData visitData) {
-
+        
         Patient patient = patientService.findPatientOrThrow(visitData.getPatientNumber());
         //check if patient has an active visit
         if (visitService.isPatientVisitActive(patient)) {
@@ -110,7 +110,7 @@ public class ClinicalVisitController {
             employee = employeeService.fetchEmployeeByNumberOrThrow(visitData.getPractitionerCode());
         }
         ServicePoint servicePoint = servicePointService.getServicePoint(visitData.getServicePointIdentifier());
-
+        
         Visit visit = VisitData.map(visitData);
         //generate visit number
         visit.setVisitNumber(sequenceService.nextNumber(SequenceType.VisitNumber));
@@ -120,8 +120,12 @@ public class ClinicalVisitController {
 //        visit.setHealthProvider(employee);
         visit = this.visitService.createAVisit(visit);
         //register payment details 
-        if (visitData.getPaymentMethod().equals("Insurance")) {
+        if (visitData.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
             PaymentDetails pd = PaymentDetailsData.map(visitData.getPayment());
+            pd.setLimitAmount(visitData.getLimitAmount());
+            pd.setMemberName(visitData.getMemberName());
+            pd.setPolicyNo(visitData.getPolicyNo());
+            pd.setRelation(visitData.getRelation());
             Scheme scheme = schemeService.fetchSchemeById(visitData.getPayment().getSchemeId());
             pd.setScheme(scheme);
             pd.setPayer(scheme.getPayer());
@@ -137,14 +141,14 @@ public class ClinicalVisitController {
         patientQueueService.createPatientQueue(patientQueue);
         //Convert to data
         VisitData visitDat = modelMapper.map(visit, VisitData.class);
-
+        
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/visits/{visitNumber}")
                 .buildAndExpand(visit.getVisitNumber()).toUri();
-
+        
         return ResponseEntity.created(location).body(ApiResponse.successMessage("Visit was activated successfully", HttpStatus.CREATED, visitDat));
     }
-
+    
     @PutMapping("/visits/{visitNumber}")
     @ApiOperation(value = "Update patient visit record", response = VisitData.class)
     public @ResponseBody
@@ -161,21 +165,21 @@ public class ClinicalVisitController {
         visit = this.visitService.createAVisit(visit);
         //Convert to data
         VisitData visitDat = modelMapper.map(visit, VisitData.class);
-
+        
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/visits/{visitNumber}")
                 .buildAndExpand(visit.getVisitNumber()).toUri();
-
+        
         return ResponseEntity.created(location).body(visitDat);
     }
-
+    
     @GetMapping("/visits")
-    public ResponseEntity<List<VisitData>> fetchAllVisits(@RequestParam(value = "visitNumber", required = false) final String visitNumber, @RequestParam(value = "staffNumber", required = false) final String staffNumber, @RequestParam(value = "servicePointType", required = false) final String servicePointType, @RequestParam(value = "patientNumber", required = false) final String patientNumber, @RequestParam(value = "runningStatus", required = false, defaultValue = "true") final boolean runningStatus, @RequestParam(value = "startDate", required = false) final  String dateRange, Pageable pageable) {
-         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, runningStatus,range, pageable).map(v -> convertToVisitData(v));
+    public ResponseEntity<List<VisitData>> fetchAllVisits(@RequestParam(value = "visitNumber", required = false) final String visitNumber, @RequestParam(value = "staffNumber", required = false) final String staffNumber, @RequestParam(value = "servicePointType", required = false) final String servicePointType, @RequestParam(value = "patientNumber", required = false) final String patientNumber, @RequestParam(value = "runningStatus", required = false, defaultValue = "true") final boolean runningStatus, @RequestParam(value = "startDate", required = false) final String dateRange, Pageable pageable) {
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, runningStatus, range, pageable).map(v -> convertToVisitData(v));
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
-
+    
     @GetMapping("/visit/{id}/payment-method")
     public ResponseEntity<?> fetchpaymentMethodByVisit(@PathVariable("id") Long visitId) {
         PaymentDetails pde = paymentDetailsService.fetchPaymentDetailsByVisit(visitId);
@@ -183,10 +187,10 @@ public class ClinicalVisitController {
         pagers.setCode("0");
         pagers.setMessage("CashDrawer Success updated");
         pagers.setContent(PaymentDetailsData.map(pde));
-
+        
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
-
+    
     @GetMapping("/patients/{id}/visits")
     public ResponseEntity<List<VisitData>> fetchAllVisitsByPatient(@PathVariable("id") final String patientNumber, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         System.out.println("patientNumber " + patientNumber);
@@ -194,28 +198,28 @@ public class ClinicalVisitController {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-
+    
     @PostMapping("/visits/{visitNumber}/vitals")
     @ApiOperation(value = "Create/Add a new patient vital by visit number", response = VitalRecordData.class)
     public @ResponseBody
     ResponseEntity<VitalRecordData> addVitalRecordByVisit(@PathVariable("visitNumber") String visitNumber, @RequestBody @Valid final VitalRecordData vital) {
         VitalsRecord vitalR = this.triageService.addVitalRecordsByVisit(visitNumber, vital);
-
+        
         VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
-
+        
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/visits/{visitNumber}/vitals/{id}")
                 .buildAndExpand(visitNumber, vitalR.getId()).toUri();
-
+        
         return ResponseEntity.created(location).body(vr);
     }
-
+    
     @PostMapping("/patient/{patientNo}/vitals")
     @ApiOperation(value = "", response = VitalRecordData.class)
     public @ResponseBody
     ResponseEntity<VitalRecordData> addVitalRecordByPatient(@PathVariable("patientNo") String patientNo, @RequestBody @Valid final VitalRecordData vital) {
         Patient patient = patientService.findPatientOrThrow(patientNo);
-
+        
         VitalsRecord vitalR = this.triageService.addVitalRecordsByPatient(patient, vital);
         //log queue
         PatientQueue patientQueue = new PatientQueue(); //patientQueueService.fetchQueueByVisitNumber(vitalR.getVisit());
@@ -243,14 +247,14 @@ public class ClinicalVisitController {
         visitService.createAVisit(vitalR.getVisit());
         patientQueueService.createPatientQueue(patientQueue);
         VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
-
+        
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/patient/{patientNo}/vitals/{id}")
                 .buildAndExpand(patientNo, vitalR.getId()).toUri();
-
+        
         return ResponseEntity.created(location).body(vr);
     }
-
+    
     @GetMapping("/visits/{visitNumber}/vitals")
     @ApiOperation(value = "Fetch all patient vitals by visits", response = VitalRecordData.class)
     public ResponseEntity<List<VitalRecordData>> fetchAllVitalsByVisit(@PathVariable("visitNumber") final String visitNumber, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
@@ -258,16 +262,16 @@ public class ClinicalVisitController {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-
+    
     @GetMapping("/patients/{patientNumber}/vitals")
     @ApiOperation(value = "Fetch all patient vitals by patient", response = VitalRecordData.class)
     public ResponseEntity<List<VitalRecordData>> fetchAllVitalsByPatient(@PathVariable("patientNumber") final String patientNumber, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-
+        
         Page<VitalRecordData> page = triageService.fetchVitalRecordsByPatient(patientNumber, pageable).map(v -> convertToVitalsData(v));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-
+    
     private VisitData convertToVisitData(Visit visit) {
         VisitData visitData = modelMapper.map(visit, VisitData.class);
         if (visit.getServicePoint() != null) {
@@ -287,9 +291,9 @@ public class ClinicalVisitController {
         visitData.setPatientData(patientService.convertToPatientData(patient));
         return visitData;
     }
-
+    
     private VitalRecordData convertToVitalsData(VitalsRecord vitalsRecord) {
         return modelMapper.map(vitalsRecord, VitalRecordData.class);
     }
-
+    
 }
