@@ -22,7 +22,6 @@ public class PaymentDetailsData {
     private String comments;
     private String relation;
     private String memberName;
-    private double limitAmount;
 
     public static PaymentDetailsData map(PaymentDetails e) {
         PaymentDetailsData d = new PaymentDetailsData();
@@ -33,7 +32,6 @@ public class PaymentDetailsData {
         d.setRelation(e.getRelation());
         d.setSchemeId(e.getScheme().getId());
         d.setVisitId(e.getVisit().getId());
-        d.setLimitAmount(0);
         return d;
     }
 

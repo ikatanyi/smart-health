@@ -30,7 +30,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public class VisitData {
-    
+
     private String visitNumber;
     @NotBlank
     private String patientNumber;
@@ -45,21 +45,24 @@ public class VisitData {
     private Boolean scheduled;
     @NotNull
     private Long servicePointIdentifier;
-    
+
     @ApiModelProperty(required = false, hidden = true)
     private String servicePointName;
-    
+
     private String practitionerCode;
-    
+    private String comments;
+
     @Enumerated(EnumType.STRING)
     private VisitEnum.PaymentMethod paymentMethod;
-    
+
     private PatientData patientData;
-    
+
     private PaymentDetailsData payment;
-    
+
     private List<PatientQueueData> patientQueueData;
-    
+    private double limitAmount;
+    private String memberName, relation, policyNo;
+
     public static Visit map(VisitData visitDTO) {
         Visit visitEntity = new Visit();
         visitEntity.setScheduled(visitDTO.getScheduled());
@@ -69,10 +72,10 @@ public class VisitData {
         visitEntity.setVisitType(visitDTO.getVisitType());
         visitEntity.setStatus(visitDTO.getStatus());
         visitEntity.setPaymentMethod(visitDTO.getPaymentMethod());
-        
+        visitEntity.setComments(visitDTO.getComments());
         return visitEntity;
     }
-    
+
     public static VisitData map(Visit visitEntity) {
         VisitData visitDTO = new VisitData();
         visitDTO.setScheduled(visitEntity.getScheduled());
@@ -82,7 +85,8 @@ public class VisitData {
         visitDTO.setVisitNumber(visitEntity.getVisitNumber());
         visitDTO.setVisitType(visitEntity.getVisitType());
         visitDTO.setPaymentMethod(visitEntity.getPaymentMethod());
+        visitDTO.setComments(visitEntity.getComments());
         return visitDTO;
     }
-    
+
 }
