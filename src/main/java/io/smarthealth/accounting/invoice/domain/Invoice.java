@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.invoice.domain;
 
 import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.debtor.claim.creditNote.domain.CreditNote;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
@@ -34,6 +36,9 @@ import org.hibernate.annotations.NaturalId;
 @NoArgsConstructor
 @Table(name = "invoices", uniqueConstraints = { @UniqueConstraint( columnNames = { "number" }, name = "uk_invoice_number")})
 public class Invoice extends Auditable {
+
+    @OneToOne(mappedBy = "invoice")
+    private CreditNote creditNote;
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payer_id"))

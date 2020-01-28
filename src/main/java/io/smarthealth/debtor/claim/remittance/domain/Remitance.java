@@ -36,6 +36,7 @@ public class Remitance extends Auditable {
     private Double amount;
     private String paymentCode;
     private String transactionId;
+    private String remittanceNumber;
     private LocalDate transactionDate;
     private String paymentMode;
     private String receiptNo;

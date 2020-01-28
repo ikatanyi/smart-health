@@ -15,7 +15,10 @@ public enum SequenceType {
     PrescriptionNo("patient_prescription_seq"),
     ScanNumber("patient_scan_seq"),
     ProcedureNumber("patient_procedure_seq"),
-    AppointmentTypeNumber("appointment_type_seq");
+    AppointmentTypeNumber("appointment_type_seq"),
+    CreditNoteNumber("credit_note_seq"),
+    RemittanceNumber("remitance_seq"),
+    DispatchNumber("dispatch_seq");
 
     public final String sequenceName;
 
