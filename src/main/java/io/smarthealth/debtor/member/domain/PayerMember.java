@@ -40,4 +40,5 @@ public class PayerMember extends Auditable {
     private String relation;
     private LocalDate dob;
     private boolean status;
+    private double limitAmount;
 }

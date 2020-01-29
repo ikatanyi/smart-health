@@ -6,6 +6,7 @@ import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.banks.domain.BankBranch;
 import io.smarthealth.administration.app.domain.Contact;
+import io.smarthealth.debtor.claim.dispatch.domain.Dispatch;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.org.domain.Organization;
 import java.util.ArrayList;
@@ -22,6 +23,9 @@ import lombok.Data;
 @Data
 @Table(name = "payers")
 public class Payer extends Auditable {
+
+    @OneToMany(mappedBy = "payer")
+    private List<Dispatch> dispatches;
 
     public enum Type {
         Business,

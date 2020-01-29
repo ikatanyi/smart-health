@@ -7,8 +7,8 @@ package io.smarthealth.clinical.visit.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.VisitType;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -50,14 +50,18 @@ public class VisitData {
     private String servicePointName;
 
     private String practitionerCode;
+    private String comments;
 
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    private VisitEnum.PaymentMethod paymentMethod;
 
     private PatientData patientData;
 
     private PaymentDetailsData payment;
 
     private List<PatientQueueData> patientQueueData;
+    private double limitAmount;
+    private String memberName, relation, policyNo;
 
     public static Visit map(VisitData visitDTO) {
         Visit visitEntity = new Visit();
@@ -67,6 +71,8 @@ public class VisitData {
         visitEntity.setVisitNumber(visitDTO.getVisitNumber());
         visitEntity.setVisitType(visitDTO.getVisitType());
         visitEntity.setStatus(visitDTO.getStatus());
+        visitEntity.setPaymentMethod(visitDTO.getPaymentMethod());
+        visitEntity.setComments(visitDTO.getComments());
         return visitEntity;
     }
 
@@ -78,6 +84,8 @@ public class VisitData {
         visitDTO.setStopDatetime(visitEntity.getStopDatetime());
         visitDTO.setVisitNumber(visitEntity.getVisitNumber());
         visitDTO.setVisitType(visitEntity.getVisitType());
+        visitDTO.setPaymentMethod(visitEntity.getPaymentMethod());
+        visitDTO.setComments(visitEntity.getComments());
         return visitDTO;
     }
 

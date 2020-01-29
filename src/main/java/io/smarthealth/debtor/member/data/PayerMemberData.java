@@ -26,6 +26,7 @@ public class PayerMemberData {
     private String relation;
     private LocalDate dob;
     private boolean status;
+    private double limitAmount;
     
     public static PayerMemberData map(PayerMember member) {
         PayerMemberData data = new PayerMemberData();
@@ -37,6 +38,7 @@ public class PayerMemberData {
         data.setDob(member.getDob());
         data.setMemberId(member.getId());
         data.setStatus(member.isStatus());
+        data.setLimitAmount(member.getLimitAmount());
         return data;
     }
     
@@ -49,6 +51,7 @@ public class PayerMemberData {
         member.setRelation(data.getRelation());
         member.setDob(data.getDob());
         member.setStatus(data.isStatus());
+        member.setLimitAmount(data.getLimitAmount());
         return member;
     }
     

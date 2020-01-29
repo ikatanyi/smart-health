@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[SELECT p.id,p.created_on, pa.patient_number, CONCAT(p.given_name,' ',p.middle_name,' ',p.surname)as full_name,p.gender, TIMESTAMPDIFF( YEAR, p.date_of_birth, CURDATE()) as Age FROM patient AS pa INNER JOIN person AS p ON p.id = pa.id]]>
+	</queryString>
+	<field name="id" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="created_on" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="patient_number" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="full_name" class="java.lang.String"/>
+	<field name="gender" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Age" class="java.lang.Long"/>
+	<variable name="PatientCount" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$F{id}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="58" splitType="Stretch">
+			<staticText>
+				<reportElement x="194" y="10" width="100" height="20" uuid="2fda218e-3d7e-4be3-b709-9e9b80af46fe"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Patient List]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="50" width="554" height="1" uuid="5d2fc52e-b224-419b-992e-58f23cb65a0b"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="29">
+			<staticText>
+				<reportElement x="2" y="1" width="100" height="20" uuid="263ba3f2-4855-4731-84d3-169e3d06d503"/>
+				<textElement textAlignment="Center">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Patient No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="102" y="0" width="100" height="20" uuid="5bc8d71e-0ea9-48b6-8450-068c9c022c4a"/>
+				<textElement textAlignment="Center">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reg Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="202" y="1" width="100" height="20" uuid="75429f40-c5c5-48ce-8a6d-98f5df4271b8"/>
+				<textElement textAlignment="Center">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Patient Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="343" y="0" width="84" height="20" uuid="c026adf4-63dc-4fea-8dc0-19b18a976390"/>
+				<textElement textAlignment="Center">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gender]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="448" y="1" width="100" height="20" uuid="2f17ed8c-afcb-49bb-8d90-95497a115c34"/>
+				<textElement textAlignment="Center">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Age]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="111" y="0" width="111" height="20" uuid="fc3fae2c-4cbb-44a8-89ad-87636b67880e"/>
+				<textFieldExpression><![CDATA[$F{created_on}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="222" y="0" width="111" height="20" uuid="3c105f01-5c48-4446-a091-7fd820d516e9"/>
+				<textFieldExpression><![CDATA[$F{full_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="333" y="0" width="111" height="20" uuid="0797b2f2-15a9-4e18-8546-c0b543e4c3ad"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{gender}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="0" width="111" height="20" uuid="40d3bdb5-d777-4f35-b6c5-1b7665cf387d"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{Age}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="0" width="111" height="20" uuid="aabcb449-0ebb-4ddc-aede-56381b6f08bc"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{patient_number}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="41" splitType="Stretch">
+			<textField>
+				<reportElement x="372" y="21" width="183" height="20" uuid="6dffcabc-3992-4640-a3c4-3efc1e3bb26d"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Total No. : "+$V{PatientCount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="57" y="21" width="100" height="20" uuid="1a859c3e-8e17-4993-8f48-5372470cddf1"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="2" y="22" width="56" height="19" uuid="9f2aaab9-abe1-41df-a20d-32de88a0b28e"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Print Date:]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

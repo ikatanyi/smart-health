@@ -36,9 +36,10 @@ public class Remitance extends Auditable {
     private Double amount;
     private String paymentCode;
     private String transactionId;
+    private String remittanceNumber;
     private LocalDate transactionDate;
-    @Enumerated(EnumType.STRING)
-    private PaymentMode paymentMode;
+    private String paymentMode;
     private String receiptNo;
+    private String notes;
     private Double balance;    
 }

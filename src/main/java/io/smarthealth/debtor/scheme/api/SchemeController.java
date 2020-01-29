@@ -13,6 +13,7 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -101,8 +102,12 @@ public class SchemeController {
 
     @GetMapping("/scheme/{id}")
     public ResponseEntity<?> fetchSchemeById(@PathVariable("id") final Long schemeId) {
-        SchemeData schemeData = SchemeData.map(schemeService.fetchSchemeById(schemeId));
-
+        Scheme scheme = schemeService.fetchSchemeById(schemeId);
+        SchemeData schemeData = SchemeData.map(scheme);
+        Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+        if (config.isPresent()) {
+            schemeData.setConfigData(SchemConfigData.map(config.get()));
+        }
         return ResponseEntity.ok(schemeData);
     }
 

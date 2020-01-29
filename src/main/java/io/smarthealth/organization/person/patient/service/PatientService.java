@@ -12,11 +12,9 @@ import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
-import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.accountnumberformat.service.AccountNumberGenerator;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.FacilityService;
@@ -31,18 +29,30 @@ import io.smarthealth.organization.person.patient.domain.PatientIdentifierReposi
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.organization.person.patient.domain.specification.PatientSpecification;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
@@ -73,7 +83,14 @@ public class PatientService {
     FacilityService facilityService;
 //
     @Autowired
-    VisitService visitService;;
+    VisitService visitService;
+    
+    @Autowired
+    @Qualifier("jdbcTemplate")
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @Autowired
     SequenceService sequenceService;
@@ -94,7 +111,7 @@ public class PatientService {
 
     @Value("${patientimage.upload.dir}")
     private String uploadDir;
-    
+
     @Autowired
     AccountNumberGenerator accountNumberGenerator;
 
@@ -283,7 +300,7 @@ public class PatientService {
             visit.setVisitType(VisitEnum.VisitType.Outpatient);
             //generate visit number
 //            visit.setVisitNumber(sequenceService.nextNumber(SequenceType.VisitNumber));
-            
+
             ServicePoint servicePoint = null;
             if (patient.getVisitType().equals("OPD_VISIT")) {
                 //find service point by service type
@@ -309,7 +326,7 @@ public class PatientService {
             visitService.createAVisit(visit);
             visit.setVisitNumber(accountNumberGenerator.generate(visit, null));
             visitService.createAVisit(visit);
-            
+
             //insert into patient visit log
             PatientQueue queue = new PatientQueue();
             queue.setPatient(savedPatient);
@@ -396,6 +413,21 @@ public class PatientService {
             e.printStackTrace();
             throw APIException.internalError("An error occured while converting patient data ", e.getMessage());
         }
+    }
+
+    public JasperPrint exportPatientPdfFile() throws SQLException, JRException, IOException {
+        Connection conn = jdbcTemplate.getDataSource().getConnection();
+
+        InputStream path = resourceLoader.getResource("classpath:reports/patient/PatientList.jrxml").getInputStream();
+        
+        JasperReport jasperReport = JasperCompileManager.compileReport(path);
+
+        // Parameters for report
+        Map<String, Object> parameters = new HashMap<String, Object>();
+
+        JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, conn);
+
+        return print;
     }
 
 }

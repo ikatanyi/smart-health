@@ -38,6 +38,7 @@ public class SchemeData {
     private String emailAddress;
     private String line1;
     private String line2;
+    private SchemConfigData configData;
 
     @ApiModelProperty(hidden = true, required = false)
     private Long schemeId;
@@ -58,6 +59,7 @@ public class SchemeData {
         d.setSchemeName(i.getSchemeName());
         d.setTelNo(i.getTelNo());
         d.setSchemeId(i.getId());
+        d.setSchemeCode(i.getSchemeCode());
         return d;
     }
 
@@ -72,6 +74,7 @@ public class SchemeData {
         i.setMobileNo(d.getMobileNo());
         i.setSchemeName(d.getSchemeName());
         i.setTelNo(d.getTelNo());
+        i.setSchemeCode(d.getSchemeCode());
         return i;
     }
 }
