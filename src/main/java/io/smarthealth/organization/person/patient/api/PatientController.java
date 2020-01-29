@@ -366,5 +366,4 @@ public class PatientController {
         jasperPrint = patientService.exportPatientPdfFile();
         JasperExportManager.exportReportToPdfStream(jasperPrint, out);
     }
-
 }

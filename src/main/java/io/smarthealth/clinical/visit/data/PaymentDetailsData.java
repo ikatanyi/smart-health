@@ -15,6 +15,7 @@ import lombok.Data;
 @Data
 public class PaymentDetailsData {
 ///api/integration/smart/claim/{memberNumber}
+
     private Long visitId;
     private Long payerId;
     private Long schemeId;
@@ -22,7 +23,8 @@ public class PaymentDetailsData {
     private String comments;
     private String relation;
     private String memberName;
-
+    private double limitAmount;
+    
     public static PaymentDetailsData map(PaymentDetails e) {
         PaymentDetailsData d = new PaymentDetailsData();
         d.setComments(e.getComments());
@@ -32,15 +34,17 @@ public class PaymentDetailsData {
         d.setRelation(e.getRelation());
         d.setSchemeId(e.getScheme().getId());
         d.setVisitId(e.getVisit().getId());
+        d.setLimitAmount(e.getLimitAmount());
         return d;
     }
-
+    
     public static PaymentDetails map(PaymentDetailsData d) {
         PaymentDetails e = new PaymentDetails();
         e.setComments(d.getComments());
         e.setMemberName(d.getMemberName());
         e.setPolicyNo(d.getPolicyNo());
         e.setRelation(d.getRelation());
+        e.setLimitAmount(d.getLimitAmount());
         return e;
     }
 }
