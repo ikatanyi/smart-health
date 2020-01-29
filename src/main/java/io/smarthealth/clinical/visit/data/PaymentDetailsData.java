@@ -18,7 +18,9 @@ public class PaymentDetailsData {
 
     private Long visitId;
     private Long payerId;
+    private String payerName;
     private Long schemeId;
+    private String schemeName;
     private String policyNo;
     private String comments;
     private String relation;
@@ -35,6 +37,8 @@ public class PaymentDetailsData {
         d.setSchemeId(e.getScheme().getId());
         d.setVisitId(e.getVisit().getId());
         d.setLimitAmount(e.getLimitAmount());
+        d.setPayerName(e.getPayer().getPayerName());
+        d.setSchemeName(e.getScheme().getSchemeName());
         return d;
     }
     
