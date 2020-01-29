@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.pharmacy.api;
 
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
@@ -44,9 +39,9 @@ public class DispensingController {
     }
 
     @PostMapping("/pharmacybilling")
-    public ResponseEntity<?> dispenseAndBilling(@Valid @RequestBody PharmacyData billData) {
+    public ResponseEntity<?> dispenseAndBilling(@Valid @RequestBody PharmacyData data) {
 
-        String patientbill = service.dispenseDrug(billData);
+        String patientbill = service.dispense(data);
 
         Pager<TransData> pagers = new Pager();
         pagers.setCode("0");

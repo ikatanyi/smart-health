@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -18,6 +19,7 @@ public class CreditorType extends Identifiable{
  
   private String accountNumber; 
   private Double amount;
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "journal_entry_id", foreignKey = @ForeignKey(name = "fk_creditors_journal_entry_id"))
     private JournalEntryEntity journalEntryEntity;

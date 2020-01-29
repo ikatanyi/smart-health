@@ -3,7 +3,6 @@ package io.smarthealth.clinical.visit.domain;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDateTime;

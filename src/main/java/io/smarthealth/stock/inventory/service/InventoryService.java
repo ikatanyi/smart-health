@@ -21,6 +21,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -72,11 +73,17 @@ public class InventoryService {
         }
         return trxId;
     }
+ 
+    public void save(StockEntry entry) { 
+        stockEntryRepository.saveAndFlush(entry);
 
-    @Transactional
-    public void save(StockEntry entry) {
-        StockEntry savedEntry = stockEntryRepository.save(entry);
-        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), savedEntry.getStore(), savedEntry.getItem(), savedEntry.getQuantity()));
+        inventoryEventSender.process(
+                new InventoryEvent(
+                        getEvent(entry.getMoveType()),
+                        entry.getStore(),
+                        entry.getItem(),
+                        entry.getQuantity())
+        );
     }
 
     @Transactional
@@ -84,12 +91,15 @@ public class InventoryService {
         if (entry.isEmpty()) {
             return;
         }
-        entry.stream()
-                .forEach(se -> {
-                    StockEntry savedEntry = stockEntryRepository.save(se);
-                    inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), savedEntry.getStore(), savedEntry.getItem(), savedEntry.getQuantity()));
-                }
-                );
+        List<StockEntry> savedList = stockEntryRepository.saveAll(entry);
+        stockEntryRepository.flush();
+
+        if (!savedList.isEmpty()) {
+            savedList
+                    .forEach((savedEntry) -> {
+                        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), savedEntry.getStore(), savedEntry.getItem(), savedEntry.getQuantity()));
+                    });
+        }
     }
 
     private InventoryEvent.Type getEvent(MovementType type) {

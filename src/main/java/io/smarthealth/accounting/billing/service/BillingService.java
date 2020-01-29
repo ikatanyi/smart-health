@@ -1,10 +1,10 @@
 package io.smarthealth.accounting.billing.service;
 
-import io.smarthealth.accounting.acc.domain.FinancialActivityAccountRepository;
 import io.smarthealth.accounting.acc.service.JournalEntryService;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.billing.domain.PatientBillGroup;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
@@ -20,26 +20,28 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
-import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.pharmacy.data.PharmacyData;
 import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
 import lombok.RequiredArgsConstructor;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.stock.stores.domain.Store;
-import io.smarthealth.stock.stores.service.StoreService;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author Kelsas
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class BillingService {
 
+    private final ServicePointService servicePointService;
     private final PatientBillRepository patientBillRepository;
     private final PatientBillItemRepository billItemRepository;
     private final VisitRepository visitRepository;
@@ -47,11 +49,8 @@ public class BillingService {
     private final SequenceNumberGenerator sequenceGenerator;
 //    private final TxnService txnService;
     private final JournalEntryService journalService;
-    private final ServicePointService servicePointService;
-    private final StoreService storeService;
-    private final FinancialActivityAccountRepository activityAccountRepository;
 
-    public PatientBill createBill(BillData data) {
+    public PatientBill createPatientBill(BillData data) {
         //check the validity of the patient visit
         Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
 //        String billNumber = RandomStringUtils.randomNumeric(6); //sequenceService.nextNumber(SequenceType.BillNumber);
@@ -78,8 +77,8 @@ public class BillingService {
                     billItem.setBillingDate(lineData.getBillingDate());
                     billItem.setTransactionId(trdId);
 
-                    if (lineData.getItemId() != null) {
-                        Item item = itemService.findItemEntityOrThrow(lineData.getItemId());
+                    if (lineData.getItemCode() != null) {
+                        Item item = itemService.findItemWithNoFoundDetection(lineData.getItemCode());
                         billItem.setItem(item);
                     }
 
@@ -101,18 +100,25 @@ public class BillingService {
         savedBill.setBillNumber(sequenceGenerator.generate(savedBill));
         save(savedBill);
 
-        journalService.createJournalEntry(savedBill);
-
-//        journalService.createJournalEntry(toJournal(trdId, savedBill));
-        //trigger stock balance if items is an inventory
-//         journalSender.postJournal(toJournal(savedBill)); 
+        if (savedBill.getPaymentMode().equals("Insurance")) {
+            journalService.createJournalEntry(savedBill);  
+        }
         return savedBill;
     }
 
-    public PatientBill createBill(Store store, PharmacyData data) {
+    public void createPharmacyBill(Store store, PharmacyData data) {
+        PatientBill bill = createBill(data);
+        if (bill.getPaymentMode().equals("Insurance")) {
+            journalBill(bill, store);
+        }
+    }
+
+    private PatientBill createBill(PharmacyData data) {
+        ServicePoint srvpoint = servicePointService.getServicePointByType(ServicePointType.Pharmacy);
+        log.info("Generating a patient bill from stock item");
         //check the validity of the patient visit
         Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
-       
+
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
         patientbill.setPatient(visit.getPatient());
@@ -130,11 +136,13 @@ public class BillingService {
                 .map(lineData -> {
                     PatientBillItem billItem = new PatientBillItem();
 
-                    billItem.setBillingDate(lineData.getBillingDate());
+                    billItem.setBillingDate(data.getDispenseDate());
                     billItem.setTransactionId(data.getTransactionId());
+                    billItem.setServicePointId(srvpoint.getId());
+                    billItem.setServicePoint(srvpoint.getName());
 
-                    if (lineData.getItemId() != null) {
-                        Item item = itemService.findItemEntityOrThrow(lineData.getItemId());
+                    if (lineData.getItemCode() != null) {
+                        Item item = getItemByCode(lineData.getItemCode());
                         billItem.setItem(item);
                     }
 
@@ -154,17 +162,28 @@ public class BillingService {
 
         PatientBill savedBill = save(patientbill);
         savedBill.setBillNumber(sequenceGenerator.generate(savedBill));
-        save(savedBill);
+        return save(savedBill);
+    }
 
-//        journalService.createJournalEntry(toJournal(trdId, savedBill)); 
-        journalService.createJournalEntry(savedBill, store);
-        //trigger stock balance if items is an inventory
-//         journalSender.postJournal(toJournal(savedBill)); 
-        return savedBill;
+    private void journalBill(PatientBill bill, Store store) {
+        if (bill != null) {
+            log.info("journal posting the stock item ... ");
+            journalService.createJournalEntry(bill, store);
+        }
+    }
+
+    public List<PatientBillGroup> getPatientBillGroups(BillStatus status) {
+        return patientBillRepository.groupBy(status);
+    }
+
+    public Page<PatientBillItem> getPatientBillItemByVisit(String visitNumber, Pageable page) {
+        Visit visit = visitRepository.findByVisitNumber(visitNumber).orElseThrow(() -> APIException.notFound("Visit Number {0} not found", visitNumber));
+
+        return billItemRepository.findPatientBillItemByVisit(visit, page);
     }
 
     public PatientBill save(PatientBill bill) {
-        return patientBillRepository.save(bill);
+        return patientBillRepository.saveAndFlush(bill);
     }
 
     public Optional<PatientBill> findByBillNumber(final String billNumber) {
@@ -222,80 +241,19 @@ public class BillingService {
         return patientbill.getBillNumber();
     }
 
-    public Page<PatientBill> findAllBills(String transactionNo, String visitNo, String patientNo, String paymentMode, String billNo, String status, Pageable page) {
-        BillStatus state = BillStatus.valueOf(status);
-        Specification<PatientBill> spec = BillingSpecification.createSpecification(transactionNo, visitNo, patientNo, paymentMode, billNo, state);
+    public Page<PatientBill> findAllBills(String transactionNo, String visitNo, String patientNo, String paymentMode, String billNo, BillStatus status, Pageable page) {
+
+        Specification<PatientBill> spec = BillingSpecification.createSpecification(transactionNo, visitNo, patientNo, paymentMode, billNo, status);
 
         return patientBillRepository.findAll(spec, page);
 
     }
 
-//    private JournalEntry toJournal(String trxId, PatientBill bill) {
-////        final String roundedAmount = BigDecimal.valueOf(6500D).setScale(2, BigDecimal.ROUND_HALF_EVEN).toString();
-//
-//        Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Patient_Invoice_Control);
-//
-//        if (debitAccount.isPresent()) {
-//            String debitAcc = debitAccount.get().getAccount().getIdentifier();
-//            final JournalEntry je = new JournalEntry();
-//            je.setTransactionDate(LocalDateTime.now());
-//            je.setState("PENDING");;
-//            je.setTransactionNo(trxId);
-//            je.setTransactionType("Billing");
-//            je.setClerk(SecurityUtils.getCurrentUserLogin().get());
-//            je.setNote(bill.getBillNumber());
-//
-//            Set<Creditor> creditors = new HashSet<>();
-//            Set<Debtor> debtors = new HashSet<>();
-//
-//            if (!bill.getBillItems().isEmpty()) {
-//                Map<Long, Double> map = bill.getBillItems()
-//                        .stream()
-//                        .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
-//                                Collectors.summingDouble(PatientBillItem::getAmount)
-//                        )
-//                        );
-//
-//                //then here since we making a revenue
-//                map.forEach((k, v) -> {
-//                    ServicePoint srv = servicePointService.getServicePoint(k);
-//                    AccountEntity credit = srv.getIncomeAccount();
-//                    String amount = roundedAmount(v);
-//                    debtors.add(new Debtor(debitAcc, amount));
-//                    creditors.add(new Creditor(credit.getIdentifier(), amount));
-//                    //expense Inventory
-//
-//                });
-//
-//                bill.getBillItems()
-//                        .stream()
-//                        .forEach(item -> {
-//
-//                        });
-//
-//            }
-//
-//            je.setCreditors(creditors);
-//            je.setDebtors(debtors);
-//
-////            final Debtor cashDebtor = new Debtor();
-////            cashDebtor.setAccountNumber("account to debit");
-////            cashDebtor.setAmount(roundedAmount);
-////            je.setDebtors(Sets.newHashSet(cashDebtor));
-////
-////            final Creditor accrueCreditor = new Creditor();
-////            accrueCreditor.setAccountNumber("account to credit");
-////            accrueCreditor.setAmount(roundedAmount);
-////            je.setCreditors(Sets.newHashSet(accrueCreditor));
-//            return je;
-//        } else {
-//            throw APIException.badRequest("Patient Control Account is Not Mapped");
-//        }
-//    }
     public Visit findVisitEntityOrThrow(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
     }
+
     private String roundedAmount(Double amt) {
         return BigDecimal.valueOf(amt)
                 .setScale(2, BigDecimal.ROUND_HALF_EVEN)

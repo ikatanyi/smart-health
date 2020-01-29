@@ -15,16 +15,17 @@ import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
 import io.smarthealth.clinical.pharmacy.domain.specification.DispensingSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -41,7 +42,53 @@ public class DispensingService {
     private final InventoryService inventoryService;
     private final SequenceNumberGenerator sequenceGenerator;
 
-    public String dispenseDrug(PharmacyData patientDrugs) {;
+    private void dispenseItem(Store store, PharmacyData patientDrugs) {
+        Patient patient = patientService.findPatientOrThrow(patientDrugs.getPatientNumber());
+//        Store store = storeService.getStoreWithNoFoundDetection(patientDrugs.getStoreId());
+        if (!patientDrugs.getDrugItems().isEmpty()) {
+            patientDrugs.getDrugItems()
+                    .stream()
+                    .forEach(drugData -> {
+                        DispensedDrug drugs = new DispensedDrug();
+                        Item item = billingService.getItemByCode(drugData.getItemCode());
+                        drugs.setPatient(patient);
+                        drugs.setDrug(item);
+                        drugs.setStore(store);
+
+                        drugs.setDispensedDate(patientDrugs.getDispenseDate());
+                        drugs.setTransactionId(patientDrugs.getTransactionId());
+                        drugs.setQtyIssued(drugData.getQuantity());
+                        drugs.setPrice(drugData.getPrice());
+                        drugs.setAmount(drugData.getAmount());
+                        drugs.setUnits(drugData.getUnit());
+                        drugs.setDoctorName(drugData.getDoctorName());
+                        drugs.setPaid(false);
+                        drugs.setCollected(true);
+                        drugs.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
+                        drugs.setCollectedBy("");
+
+                        drugs.setInstructions(drugData.getInstructions());
+
+                        DispensedDrug savedDrug = repository.saveAndFlush(drugs);
+                        doStockEntries(savedDrug.getId());
+                    });
+        }
+    }
+
+    @Transactional
+    public String dispense(PharmacyData patientDrugs) {
+        String trdId = sequenceGenerator.generateTransactionNumber();
+        Store store = storeService.getStoreWithNoFoundDetection(patientDrugs.getStoreId());
+        patientDrugs.setTransactionId(trdId);
+
+        dispenseItem(store, patientDrugs);
+
+        billingService.createPharmacyBill(store, patientDrugs);
+
+        return trdId;
+    }
+
+    private String doDispenseDrug(PharmacyData patientDrugs) {;
         String trdId = sequenceGenerator.generateTransactionNumber();
 
         Patient patient = patientService.findPatientOrThrow(patientDrugs.getPatientNumber());
@@ -73,21 +120,25 @@ public class DispensingService {
 
                         drugs.setInstructions(drugData.getInstructions());
                         dispensedlist.add(drugs);
+
+                        DispensedDrug savedDrug = repository.saveAndFlush(drugs);
+                        doStockEntries(savedDrug.getId());
                     });
         }
-
-        // dispense drug
-        List<DispensedDrug> savedList = repository.saveAll(dispensedlist);
-
-        List<StockEntry> stockEntries = savedList.stream()
-                .map(drug -> StockEntry.create(drug))
-                .collect(Collectors.toList());
-        //affect stocks
-        inventoryService.saveAll(stockEntries);
         //billing
-        PatientBill savedBill = billingService.createBill(store, patientDrugs);
+        // billingService.doBilling(store, patientDrugs);
+//        PatientBill savedBill = billingService.createBill(store, patientDrugs);
         //aftect journals
-        return savedBill.getTransactionId();
+        return trdId; //savedBill.getTransactionId();
+    }
+
+    private void doStockEntries(Long drugId) {
+        Optional<DispensedDrug> drug = repository.findById(drugId);
+        if (drug.isPresent()) {
+            inventoryService.save(StockEntry.create(drug.get()));
+        } else {
+            System.err.println("Drug entry is empty");
+        }
     }
 
     public DispensedDrug findDispensedDrugOrThrow(Long id) {

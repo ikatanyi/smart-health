@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
 import io.smarthealth.organization.facility.domain.Facility;
+import java.util.Optional;
 
 /**
  *
@@ -60,6 +61,10 @@ public class ServicePointService {
                 .orElseThrow(() -> APIException.notFound("Service point identified by  {0} not found", servicePointType.name()));
     }
 
+    public Optional<ServicePoint> getServicePoint(final ServicePointType servicePointType) {
+        return repository
+                .findByServicePointType(servicePointType);
+    }
     public Page<ServicePointData> listServicePoints(Pageable page) {
         return repository
                 .findAll(page)

@@ -47,6 +47,7 @@ public class PaymentService {
 
         FinancialTransaction transaction = new FinancialTransaction();
         transaction.setDate(transactionData.getDate());
+        transaction.setAmount(transactionData.getAmount());
         transaction.setTrxType(TrxType.payment);
         transaction.setReceiptNo(RandomStringUtils.randomNumeric(6));
         transaction.setShiftNo("0000");

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Api
 @RestController
-@RequestMapping("/management/audits")
+@RequestMapping("/api/management/audits")
 public class AuditResource {
 
     private final AuditEventService auditEventService;
