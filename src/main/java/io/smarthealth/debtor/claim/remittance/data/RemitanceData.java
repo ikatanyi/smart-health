@@ -1,6 +1,8 @@
 package io.smarthealth.debtor.claim.remittance.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.debtor.claim.remittance.domain.Remitance;
+import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
@@ -24,6 +26,7 @@ public class RemitanceData {
     private Double amount;
     private String paymentMode;
     private String paymentCode;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate transactionDate;
     private String receiptNo;
     private Double balance;

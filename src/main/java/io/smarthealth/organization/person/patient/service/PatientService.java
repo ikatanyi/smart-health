@@ -419,7 +419,7 @@ public class PatientService {
         Connection conn = jdbcTemplate.getDataSource().getConnection();
 
         InputStream path = resourceLoader.getResource("classpath:reports/patient/PatientList.jrxml").getInputStream();
-
+        
         JasperReport jasperReport = JasperCompileManager.compileReport(path);
 
         // Parameters for report

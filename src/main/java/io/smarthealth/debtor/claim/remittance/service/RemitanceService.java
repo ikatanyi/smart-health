@@ -8,6 +8,8 @@ import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.sequence.SequenceType;
+import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.bank.domain.BankAccount;
 import io.smarthealth.organization.bank.service.BankAccountService;
 import java.util.List;
@@ -31,6 +33,7 @@ public class RemitanceService {
     private final RemitanceRepository remitanceRepository;
     private final PayerService payerService;
     private final BankAccountService bankAccountService;
+    private final SequenceService seqService;
 
         
 
@@ -38,6 +41,7 @@ public class RemitanceService {
     public Remitance createRemitance(RemitanceData data) {
         Remitance remitance = RemitanceData.map(data);
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(data.getPayerId());
+        remitance.setRemittanceNumber(seqService.nextNumber(SequenceType.RemittanceNumber));
         remitance.setPayer(payer);    
         Optional<BankAccount> bank = bankAccountService.getBankAccount(data.getBankAccountId());
         if(bank.isPresent())

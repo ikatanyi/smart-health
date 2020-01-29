@@ -6,6 +6,7 @@ import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.domain.Allocation;
 import io.smarthealth.debtor.claim.allocation.domain.AllocationRepository;
 import io.smarthealth.debtor.claim.allocation.domain.specification.AllocationSpecification;
+import io.smarthealth.debtor.claim.creditNote.domain.specification.CreditNoteSpecification;
 import io.smarthealth.debtor.claim.remittance.data.RemitanceData;
 import io.smarthealth.debtor.claim.remittance.domain.Remitance;
 import io.smarthealth.debtor.claim.remittance.domain.RemitanceRepository;
