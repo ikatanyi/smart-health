@@ -185,7 +185,9 @@ public class BillingService {
     public PatientBill save(PatientBill bill) {
         return patientBillRepository.saveAndFlush(bill);
     }
-
+    public PatientBill update(PatientBill bill){
+        return patientBillRepository.save(bill);
+    }
     public Optional<PatientBill> findByBillNumber(final String billNumber) {
         return patientBillRepository.findByBillNumber(billNumber);
     }

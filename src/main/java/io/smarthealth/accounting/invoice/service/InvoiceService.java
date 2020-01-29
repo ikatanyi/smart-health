@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.invoice.service;
 
+import io.smarthealth.accounting.acc.service.JournalEntryService;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
@@ -45,6 +46,7 @@ public class InvoiceService {
     private final InvoiceRepository invoiceRepository;
     private final InvoiceMergeRepository invoiceMergeRepository;
     private final BillingService billingService;
+    private final JournalEntryService journalEntryService;
     private final PayerService payerService;
     private final SchemeService schemeService;
     private final SequenceNumberGenerator sequenceGenerator;
@@ -118,13 +120,16 @@ public class InvoiceService {
         System.err.println(savedInv.isInvoiceNumberRequiresAutoGeneration());
 //        if (savedInv.isInvoiceNumberRequiresAutoGeneration()) {
             savedInv.setNumber(sequenceGenerator.generate(savedInv));
-            invoiceRepository.save(invoice);
+           Invoice savedInvoice= invoiceRepository.save(invoice);
 //        }
-        if (savedInv.getBill() != null) {
-            PatientBill bill = savedInv.getBill();
+        if (savedInvoice.getBill() != null) {
+            PatientBill bill = savedInvoice.getBill();
             bill.setStatus(BillStatus.Final);
-            billingService.save(bill);
+            billingService.update(bill);
         }
+        //
+        journalEntryService.createJournalEntry(savedInvoice);
+        
         return savedInv;
     }
 
@@ -191,7 +196,7 @@ public class InvoiceService {
     }
      
     
-     @javax.transaction.Transactional
+     @Transactional
     public InvoiceMerge mergeInvoice(InvoiceMergeData data) {
         InvoiceMerge invoiceMerge = InvoiceMergeData.map(data);
         
