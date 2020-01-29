@@ -418,7 +418,7 @@ public class PatientService {
     public JasperPrint exportPatientPdfFile() throws SQLException, JRException, IOException {
         Connection conn = jdbcTemplate.getDataSource().getConnection();
 
-        String path = resourceLoader.getResource("classpath:reports/patient/PatientList.jrxml").getURI().getPath();
+        InputStream path = resourceLoader.getResource("classpath:reports/patient/PatientList.jrxml").getInputStream();
 
         JasperReport jasperReport = JasperCompileManager.compileReport(path);
 
