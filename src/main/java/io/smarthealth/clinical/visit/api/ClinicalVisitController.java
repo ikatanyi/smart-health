@@ -180,8 +180,8 @@ public class ClinicalVisitController {
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 
-    @GetMapping("/visits/{visitNo}/payment-method")
-    public ResponseEntity<?> fetchpaymentMethodByVisit(@PathVariable("visitNo") String visitNo) {
+    @GetMapping("/visits/{visitNo}/payment-mode")
+    public ResponseEntity<?> fetchpaymentModeByVisit(@PathVariable("visitNo") String visitNo) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
         PaymentDetails pde = paymentDetailsService.fetchPaymentDetailsByVisit(visit);
         Pager<PaymentDetailsData> pagers = new Pager();
