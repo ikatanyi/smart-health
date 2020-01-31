@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TrialBalance" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4eea6b5f-7ba3-40f7-ac4e-537de38efec1">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="facilityName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="facilityType" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="logo" class="java.lang.Object" isForPrompting="false"/>
+	<parameter name="orgLegalName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="TaxNumber" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressCountry" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressCounty" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressLine1" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressLine2" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgPostalCode" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgTown" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgType" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactEmail" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactFullName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactMobile" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="salutation" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="telephone" class="java.lang.String" isForPrompting="false"/>
+	<field name="amount" class="java.lang.Double"/>
+	<field name="ledger" class="java.lang.Object"/>
+	<field name="type" class="java.lang.String"/>
+	<field name="createdBy" class="java.lang.String"/>
+	<field name="createdOn" class="java.lang.String"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="identifier" class="java.lang.String"/>
+	<field name="lastModifiedBy" class="java.lang.String"/>
+	<field name="lastModifiedOn" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="parentLedgerIdentifier" class="java.lang.String"/>
+	<field name="totalValue" class="java.lang.String"/>
+	<variable name="ledgerName" class="java.lang.String">
+		<variableExpression><![CDATA[$F{identifier}+" - "+$F{name}]]></variableExpression>
+	</variable>
+	<variable name="variable1" class="java.lang.Object">
+		<variableExpression><![CDATA[$F{ledger}.get("identifier")]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="98" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="32" width="236" height="48" uuid="47285da4-b19e-41d6-929c-1fa40d62d612"/>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="224" height="12" uuid="6a164f68-6217-46bc-8eb0-399721510aba"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{facilityName}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="16" y="12" width="161" height="10" uuid="c166b987-bf2b-45a9-bebd-07a3ce2e03e5"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{telephone}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="0" y="22" width="177" height="11" uuid="ae694a2f-7a5b-44cd-9e2c-a32c3d6cd1d9"/>
+					<textElement>
+						<font size="7" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{contactEmail}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="0" y="33" width="177" height="10" uuid="c1b959ea-c559-4ce9-8533-e667d90b14fe"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{orgAddressCountry}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="12" width="16" height="10" uuid="9f837aa5-95f2-470b-a8db-632e4ef4d677"/>
+					<textElement>
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Tel:]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement x="305" y="1" width="100" height="12" uuid="33c8ed2a-ee6f-4369-b69d-94205a0d6073"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Debit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="438" y="1" width="100" height="12" uuid="23ab9476-2f8f-4f6d-b372-9d9aeac97dfd"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Credit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="1" width="100" height="12" uuid="4897cda3-6234-4815-923d-ccc6638d5c0c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ledger]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="13" width="553" height="1" uuid="a2488beb-2b6e-4f20-8734-52dddc5ae5f7"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="3" width="100" height="10" forecolor="#6666FF" uuid="9f536b47-b683-4e36-9f56-2366cb0e4367"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{ledgerName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="305" y="3" width="64" height="10" uuid="4e367c3f-8637-45b9-b511-33b92c249d81">
+					<printWhenExpression><![CDATA[$F{type}.equals( "REVENUE" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totalValue}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="438" y="3" width="52" height="10" uuid="717fc0be-da16-4438-ac76-ef8ee148ae6f">
+					<printWhenExpression><![CDATA[$F{type}.equals( "EXPENSE" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totalValue}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="2" y="13" width="553" height="1" uuid="c0b6095a-1dda-42ff-bfd4-21fd36856b2a"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="14" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="12" splitType="Stretch">
+			<textField>
+				<reportElement x="433" y="0" width="80" height="12" uuid="d1bdd204-c70c-4d59-9023-afc725dd211b"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="513" y="0" width="40" height="12" uuid="3f2c5ca6-37b8-4cfd-a319-a2e53e8a26ad"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="2" y="0" width="553" height="1" uuid="ba93a925-4cb0-4789-8153-741d02bd337d"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageFooter>
+</jasperReport>

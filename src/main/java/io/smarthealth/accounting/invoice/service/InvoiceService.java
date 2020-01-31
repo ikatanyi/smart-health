@@ -20,6 +20,7 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
 import java.util.List;
 import java.util.Optional;
@@ -72,7 +73,7 @@ public class InvoiceService {
 
                     Invoice invoice = new Invoice();
                     invoice.setPayer(payer);
-                    invoice.setPayee(scheme.getSchemeName());
+                    invoice.setPayee(scheme);
                     invoice.setReference(debt.getMemberNo());
                     invoice.setTransactionNo(trxId);
                     invoice.setDate(invoiceData.getDate());
@@ -148,12 +149,12 @@ public class InvoiceService {
         return invoiceRepository.findByNumber(invoiceNo);
     }
 
-    public Page<Invoice> fetchInvoices(String customer, String invoice, String status, Pageable pageable) {
+    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, String status, DateRange range,Pageable pageable) {
         InvoiceStatus state = null;
         if (state != null) {
             state = InvoiceStatus.valueOf(status);
         }
-        Specification<Invoice> spec = InvoiceSpecification.createSpecification(customer, invoice, state);
+        Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, state,range);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
         return invoices;
     }
@@ -169,7 +170,8 @@ public class InvoiceService {
         invoice.setNotes(data.getNotes());
         invoice.setPaid(data.getPaid());
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(data.getPayerId());
-        invoice.setPayee(data.getPayee());
+        Scheme payee = schemeService.fetchSchemeById(data.getPayeeId());
+        invoice.setPayee(payee);
         invoice.setPayer(payer);
         invoice.setReference(data.getReference());
         invoice.setStatus(data.getStatus());

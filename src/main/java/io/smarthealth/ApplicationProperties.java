@@ -29,4 +29,6 @@ public class ApplicationProperties {
     private Resource reportLocation;
  
     private Resource authServer;
+    
+    private String reportLoc;
 }

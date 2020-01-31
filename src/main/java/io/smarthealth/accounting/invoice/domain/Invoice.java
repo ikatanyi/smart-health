@@ -3,6 +3,7 @@ package io.smarthealth.accounting.invoice.domain;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNote;
 import io.smarthealth.debtor.payer.domain.Payer;
+import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,8 +44,10 @@ public class Invoice extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payer_id"))
     private Payer payer;
-
-    private String payee;
+    
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_scheme_id"))
+    private Scheme payee;
 
     @ToString.Exclude
     @ManyToOne

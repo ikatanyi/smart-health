@@ -5,7 +5,7 @@
  */
 package io.smarthealth.infrastructure.lang;
 
-import io.smarthealth.report.service.ExportFormat;
+import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

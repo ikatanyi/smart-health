@@ -23,6 +23,7 @@ import io.smarthealth.organization.person.patient.service.AllergiesService;
 import io.smarthealth.organization.person.patient.service.PatientIdentificationTypeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.organization.person.service.PersonService;
+import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
@@ -355,16 +356,23 @@ public class PatientController {
     }
 
     //PDF Reports
-    @RequestMapping(value = "/patient/export-patient-data", method = RequestMethod.GET)
-    public void export(ModelAndView model, HttpServletResponse response) throws IOException, JRException, SQLException {
-        JasperPrint jasperPrint = null;
-
-        response.setContentType("application/x-download");
-        response.setHeader("Content-Disposition", String.format("attachment; filename=\"patient.pdf\""));
-
-        OutputStream out = response.getOutputStream();
-        jasperPrint = patientService.exportPatientPdfFile();
-        JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+//    @RequestMapping(value = "/patient/export-patient-data", method = RequestMethod.GET)
+//    public void export(ModelAndView model, HttpServletResponse response) throws IOException, JRException, SQLException {
+//        JasperPrint jasperPrint = null;
+//
+//        response.setContentType("application/x-download");
+//        response.setHeader("Content-Disposition", String.format("attachment; filename=\"patient.pdf\""));
+//
+//        OutputStream out = response.getOutputStream();
+//        jasperPrint = patientService.exportPatientPdfFile();
+//        JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+//    }
+    
+    //PDF Reports
+    @RequestMapping(value = "/patient/patientFile", method = RequestMethod.GET)
+    public void exportPatientFile(HttpServletResponse response) throws JRException, SQLException, IOException{
+        String contentType=null;
+        patientService.exportPatientPdfFile(response);
     }
 
 }
