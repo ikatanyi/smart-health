@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.inventory.data.CreateStockEntry;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.StockEntryData;
+import io.smarthealth.stock.inventory.data.SupplierStockEntry;
 import io.smarthealth.stock.inventory.data.TransData;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.service.InventoryService;
@@ -47,6 +48,21 @@ public class InventoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
+    
+     @PostMapping("/inventory-entries/supplier")
+    public ResponseEntity<?> createStockEntrySupplier(@Valid @RequestBody SupplierStockEntry stocks) {
+
+        String result = service.receiveSupplierStocks(stocks);
+
+        Pager<TransData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Stock Movement successful");
+        pagers.setContent(new TransData(result));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+
+    }
+    
     //inventories/{id}
     @GetMapping("/inventory-entries/{id}")
     public StockEntryData searchStockEntry(@PathVariable(value = "id") Long id) {

@@ -2,8 +2,10 @@ package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.infrastructure.sequence.service.TxnService;
 import io.smarthealth.stock.inventory.data.CreateStockEntry;
+import io.smarthealth.stock.inventory.data.SupplierStockEntry;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import io.smarthealth.stock.inventory.domain.specification.StockEntrySpecificati
 import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
+import io.smarthealth.stock.purchase.service.PurchaseInvoiceService;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import java.math.BigDecimal;
@@ -36,12 +39,14 @@ public class InventoryService {
     private final ItemService itemService;
     private final StoreService storeService;
     private final InventoryEventSender inventoryEventSender;
-    private final TxnService txnService;
+    private final PurchaseInvoiceService purchaseInvoiceService;
+//    private final TxnService txnService;
+    private final SequenceNumberGenerator sequenceGenerator;
 
     @Transactional
     public String createStockEntry(CreateStockEntry stockData) {
 
-        String trxId = txnService.nextId();
+        String trdId = sequenceGenerator.generateTransactionNumber();
 
         if (!stockData.getItems().isEmpty()) {
             stockData.getItems()
@@ -63,7 +68,7 @@ public class InventoryService {
                         stock.setReferenceNumber(stockData.getReferenceNumber());
                         stock.setStore(store);
                         stock.setTransactionDate(stockData.getTransactionDate());
-                        stock.setTransactionNumber(trxId);
+                        stock.setTransactionNumber(trdId);
                         stock.setUnit(st.getUnit());
 
                         StockEntry savedEntry = stockEntryRepository.save(stock);
@@ -71,10 +76,51 @@ public class InventoryService {
                     });
 
         }
-        return trxId;
+        return trdId;
     }
- 
-    public void save(StockEntry entry) { 
+
+    @Transactional
+    public String receiveSupplierStocks(SupplierStockEntry stockData) {
+        // we will do stock entry and then create a bill out of this for easy
+        String trdId = sequenceGenerator.generateTransactionNumber();
+        stockData.setTransactionId(trdId);
+        String dnote = stockData.getSupplierInvoiceNumber() != null ? stockData.getSupplierInvoiceNumber() : trdId;
+        Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
+        if (!stockData.getItems().isEmpty()) {
+            stockData.getItems()
+                    .stream()
+                    .forEach(st -> {
+                        Item item = itemService.findItemEntityOrThrow(st.getItemId());
+
+                        BigDecimal qty = BigDecimal.valueOf(st.getQuantity());
+
+                        StockEntry stock = new StockEntry();
+                        stock.setAmount(st.getAmount());
+                        stock.setDeliveryNumber(dnote);
+                        stock.setQuantity(qty.doubleValue());
+                        stock.setItem(item);
+                        stock.setMoveType(MovementType.Purchase);
+                        stock.setPrice(st.getPrice());
+                        stock.setPurpose(MovementPurpose.Receipt);
+                        stock.setReferenceNumber(stockData.getSupplierInvoiceNumber());
+                        stock.setStore(store);
+                        stock.setTransactionDate(stockData.getTransactionDate());
+                        stock.setTransactionNumber(trdId);
+                        stock.setUnit(st.getUnit());
+
+                        StockEntry savedEntry = stockEntryRepository.save(stock);
+                        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), store, item, qty.doubleValue()));
+                    });
+
+        }
+
+        purchaseInvoiceService.createPurchaseInvoice(store, stockData);
+
+        return trdId;
+    }
+
+    //create supplier invoice
+    public void save(StockEntry entry) {
         stockEntryRepository.saveAndFlush(entry);
 
         inventoryEventSender.process(

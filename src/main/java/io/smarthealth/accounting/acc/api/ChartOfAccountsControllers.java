@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.acc.api;
 
 
+import io.smarthealth.accounting.acc.data.SimpleAccountData;
 import io.smarthealth.accounting.acc.data.v1.ChartOfAccountEntry;
 import io.smarthealth.accounting.acc.service.ChartOfAccountServices;
 import io.swagger.annotations.Api;
@@ -30,4 +31,5 @@ public class ChartOfAccountsControllers {
   public ResponseEntity<List<ChartOfAccountEntry>> getChartOfAccounts() {
     return ResponseEntity.ok(this.chartOfAccountsService.getChartOfAccounts());
   }
+   
 }

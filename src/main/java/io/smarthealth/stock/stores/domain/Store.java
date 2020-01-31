@@ -1,6 +1,7 @@
 package io.smarthealth.stock.stores.domain;
 
 import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.*;
 import lombok.Data;
@@ -22,17 +23,24 @@ public class Store extends Identifiable {
     private Type storeType;
     private String storeName;
     private boolean patientStore;
+//    @ManyToOne
+//    @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_sales_account_id"))
+//    private AccountEntity salesAccount;
+//    @ToString.Exclude
+//    @ManyToOne
+//    @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_purchase_account_id"))
+//    private AccountEntity purchaseAccount;
+  
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_sales_account_id"))
-    private AccountEntity salesAccount;
     @ToString.Exclude
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_purchase_account_id"))
-    private AccountEntity purchaseAccount;
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_service_point_id"))
+    private ServicePoint servicePoint;
+    
     @ManyToOne
     @ToString.Exclude
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_inventory_account_id"))
     private AccountEntity inventoryAccount;
+    
     private boolean active;
 
 }

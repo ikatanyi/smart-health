@@ -15,6 +15,7 @@ public class JournalEntryMapper {
 
   public static JournalEntry map(final JournalEntryEntity journalEntryEntity) {
     final JournalEntry journalEntry = new JournalEntry();
+   journalEntry.setId(journalEntryEntity.getId());
     journalEntry.setJournalNumber(journalEntryEntity.getJournalNumber());
     journalEntry.setTransactionNo(journalEntryEntity.getTransactionNo());
     journalEntry.setTransactionDate(journalEntryEntity.getTransactionDate());

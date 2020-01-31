@@ -12,6 +12,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  *
  * @author Kennedy.Imbenzi
  */
-public interface RemitanceRepository extends JpaRepository<Remitance, Long>,JpaSpecificationExecutor<Remitance>{
+public interface RemitanceRepository extends JpaRepository<Remittance, Long>,JpaSpecificationExecutor<Remittance>{
     
 }

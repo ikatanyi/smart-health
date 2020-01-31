@@ -28,7 +28,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "payer_remittance")
-public class Remitance extends Auditable {
+public class Remittance extends Auditable {
     @ManyToOne
     private Payer payer;
     @ManyToOne

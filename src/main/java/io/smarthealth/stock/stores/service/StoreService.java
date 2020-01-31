@@ -3,6 +3,8 @@ package io.smarthealth.stock.stores.service;
 import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.accounting.acc.domain.IncomeExpenseData;
 import io.smarthealth.accounting.acc.service.AccountService;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
@@ -22,12 +24,13 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final AccountService accountService;
+    private final ServicePointService servicePointService;
 
-    public StoreService(StoreRepository storeRepository, AccountService accountService) {
+    public StoreService(StoreRepository storeRepository, AccountService accountService, ServicePointService servicePointService) {
         this.storeRepository = storeRepository;
         this.accountService = accountService;
+        this.servicePointService = servicePointService;
     }
- 
 
     public Store createStore(StoreData data) {
         if (storeRepository.findByStoreName(data.getStoreName()).isPresent()) {
@@ -38,20 +41,23 @@ public class StoreService {
         toSave.setStoreType(Store.Type.valueOf(data.getStoreType()));
         toSave.setStoreName(data.getStoreName());
         toSave.setPatientStore(data.isPatientStore());
-
-        if (data.getSalesAccountNumber()!= null) {
-            Optional< AccountEntity> sales = accountService.findByAccountNumber(data.getSalesAccountNumber());
-            if (sales.isPresent()) {
-                toSave.setSalesAccount(sales.get());
-            }
+        if (data.getServicePointId() != null) {
+            ServicePoint srv = servicePointService.getServicePoint(data.getServicePointId());
+            toSave.setServicePoint(srv);
         }
-
-        if (data.getPurchaseAccountNumber() != null) {
-            Optional< AccountEntity> purchase = accountService.findByAccountNumber(data.getPurchaseAccountNumber());
-            if (purchase.isPresent()) {
-                toSave.setPurchaseAccount(purchase.get());
-            }
-        }
+//        if (data.getSalesAccountNumber()!= null) {
+//            Optional< AccountEntity> sales = accountService.findByAccountNumber(data.getSalesAccountNumber());
+//            if (sales.isPresent()) {
+//                toSave.setSalesAccount(sales.get());
+//            }
+//        }
+//
+//        if (data.getPurchaseAccountNumber() != null) {
+//            Optional< AccountEntity> purchase = accountService.findByAccountNumber(data.getPurchaseAccountNumber());
+//            if (purchase.isPresent()) {
+//                toSave.setPurchaseAccount(purchase.get());
+//            }
+//        }
         if (data.getInventoryAccountNumber() != null) {
             Optional< AccountEntity> inventory = accountService.findByAccountNumber(data.getInventoryAccountNumber());
             if (inventory.isPresent()) {
@@ -62,7 +68,10 @@ public class StoreService {
         return storeRepository.save(toSave);
     }
 
-    public Page<Store> fetchAllStores(Pageable page) {
+    public Page<Store> fetchAllStores(Boolean patientStore, Pageable page) {
+        if (patientStore != null) {
+            return storeRepository.findByPatientStore(patientStore, page);
+        }
         return storeRepository.findAll(page);
     }
 

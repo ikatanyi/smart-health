@@ -16,6 +16,8 @@ public class StockItem implements Serializable {
     private String item;
     private Double quantity;
     private BigDecimal price;
+    private BigDecimal discount;
+    private BigDecimal tax;
     private BigDecimal amount;
     private String unit;
 }

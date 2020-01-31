@@ -13,7 +13,7 @@ import io.smarthealth.debtor.claim.creditNote.domain.CreditNoteItemRepository;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNoteRepository;
 import io.smarthealth.debtor.claim.creditNote.domain.specification.CreditNoteSpecification;
 import io.smarthealth.debtor.claim.remittance.data.RemitanceData;
-import io.smarthealth.debtor.claim.remittance.domain.Remitance;
+import io.smarthealth.debtor.claim.remittance.domain.Remittance;
 import io.smarthealth.debtor.claim.remittance.domain.RemitanceRepository;
 import io.smarthealth.debtor.claim.remittance.domain.specification.RemitanceSpecification;
 import io.smarthealth.debtor.payer.domain.Payer;

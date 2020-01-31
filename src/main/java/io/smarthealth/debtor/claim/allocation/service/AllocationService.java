@@ -8,7 +8,7 @@ import io.smarthealth.debtor.claim.allocation.domain.AllocationRepository;
 import io.smarthealth.debtor.claim.allocation.domain.specification.AllocationSpecification;
 import io.smarthealth.debtor.claim.creditNote.domain.specification.CreditNoteSpecification;
 import io.smarthealth.debtor.claim.remittance.data.RemitanceData;
-import io.smarthealth.debtor.claim.remittance.domain.Remitance;
+import io.smarthealth.debtor.claim.remittance.domain.Remittance;
 import io.smarthealth.debtor.claim.remittance.domain.RemitanceRepository;
 import io.smarthealth.debtor.claim.remittance.domain.specification.RemitanceSpecification;
 import io.smarthealth.debtor.claim.remittance.service.RemitanceService;
@@ -48,7 +48,7 @@ public class AllocationService {
        invoice.setBalance(invoice.getBalance()-data.getAmount());
        allocation.setInvoice(invoice);
        
-       Remitance remitance = remitanceService.getRemitanceByIdWithFailDetection(data.getRemitanceId());
+       Remittance remitance = remitanceService.getRemitanceByIdWithFailDetection(data.getRemitanceId());
        remitance.setBalance(remitance.getAmount()-data.getAmount());       
        remitanceRepository.save(remitance);
          

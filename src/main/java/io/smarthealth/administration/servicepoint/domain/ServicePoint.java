@@ -20,6 +20,7 @@ public class ServicePoint extends Identifiable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ServicePointType servicePointType;
+    
     private String pointType;
     private String name;
     private String description;

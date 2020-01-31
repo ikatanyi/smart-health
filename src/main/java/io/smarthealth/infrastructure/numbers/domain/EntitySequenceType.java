@@ -14,7 +14,8 @@ public enum EntitySequenceType {
     REQUEST(7, "sequenceType.doctorrequest"),
     JOURNAL(8, "sequenceType.journal"),
     LABORATORY(9, "sequenceType.laboratory"),
-    PRESCRITION(10, "sequenceType.prescription");
+    PRESCRITION(10, "sequenceType.prescription"),
+    PURCHASEORDER(11, "sequenceType.purchaseOrder"),;
 
     private final Integer value;
     private final String code;

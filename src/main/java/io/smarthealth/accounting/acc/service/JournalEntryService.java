@@ -14,11 +14,14 @@ import io.smarthealth.accounting.payment.domain.Payment;
 import io.smarthealth.accounting.payment.domain.enumeration.TrxType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.debtor.claim.remittance.domain.Remittance;
 import io.smarthealth.infrastructure.common.SecurityUtils;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
 import io.smarthealth.stock.stores.domain.Store;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * @author Kelsas
  */
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -160,6 +162,7 @@ public class JournalEntryService {
             String debitAcc = debitAccount.get().getAccount().getIdentifier();
             final JournalEntryEntity je = new JournalEntryEntity();
             String journalid = generateJournalNumber();
+            je.setDateBucket(bill.getBillingDate());
             je.setTransactionDate(LocalDateTime.now());
             je.setState(JournalEntry.State.PENDING.name());
             je.setTransactionNo(bill.getTransactionId());
@@ -213,6 +216,7 @@ public class JournalEntryService {
             String debitAcc = debitAccount.get().getAccount().getIdentifier();
             final JournalEntryEntity je = new JournalEntryEntity();
             String journalid = generateJournalNumber();
+            je.setDateBucket(bill.getBillingDate());
             je.setTransactionDate(LocalDateTime.now());
             je.setState(JournalEntry.State.PENDING.name());
             je.setTransactionNo(bill.getTransactionId());
@@ -283,6 +287,7 @@ public class JournalEntryService {
             String debitAcc = debitAccount.get().getAccount().getIdentifier();
             final JournalEntryEntity je = new JournalEntryEntity();
             String journalid = generateJournalNumber();
+            je.setDateBucket(LocalDate.now());
             je.setTransactionDate(LocalDateTime.now());
             je.setState(JournalEntry.State.PENDING.name());
             je.setTransactionNo(trxId);
@@ -342,6 +347,100 @@ public class JournalEntryService {
         } else {
             throw APIException.badRequest("Receipt Control Account is Not Mapped");
         }
+    }
+//Invoicing
+    public JournalEntry createJournalEntry(Invoice invoice) {
+
+        FinancialActivityAccount debitAccount = activityAccountRepository
+                .findByFinancialActivity(FinancialActivity.Accounts_Receivable)
+                .orElseThrow(() -> APIException.notFound("Account Receivable Account is Not Mapped"));
+        FinancialActivityAccount creditAccount = activityAccountRepository
+                .findByFinancialActivity(FinancialActivity.Patient_Invoice_Control)
+                .orElseThrow(() -> APIException.notFound("Account Receivable Account is Not Mapped"));
+
+        String creditAcc = creditAccount.getAccount().getIdentifier();
+        String debitAcc = debitAccount.getAccount().getIdentifier();
+
+        final JournalEntryEntity je = new JournalEntryEntity();
+        String journalid = generateJournalNumber();
+        je.setDateBucket(invoice.getDate());
+        je.setTransactionDate(LocalDateTime.now());
+        je.setState(JournalEntry.State.PENDING.name());
+        je.setTransactionNo(invoice.getTransactionNo());
+        je.setTransactionType("Invoicing");
+        je.setJournalNumber(journalid);
+        je.setClerk(SecurityUtils.getCurrentUserLogin().get());
+        je.setNote(invoice.getNumber());
+
+        Double amount = roundedAmount(invoice.getTotal());
+
+        je.addCreditors(Sets.newHashSet(new CreditorType(creditAcc, amount)));
+        je.addDebtors(Sets.newHashSet(new DebtorType(debitAcc, amount)));
+
+        JournalEntryEntity jee = journalEntryRepository.save(je);
+        journalEntryRepository.flush();
+
+        bookJournalEntry(jee.getJournalNumber());
+        return JournalEntryMapper.map(jee);
+    }
+    
+    public JournalEntry createJournalEntry(Store store,PurchaseInvoice invoice) {
+ 
+
+        String creditAcc = invoice.getSupplier().getCreditAccount().getIdentifier();
+        String debitAcc = store.getInventoryAccount().getIdentifier();
+
+        final JournalEntryEntity je = new JournalEntryEntity();
+        String journalid = generateJournalNumber();
+        je.setDateBucket(invoice.getInvoiceDate());
+        je.setTransactionDate(LocalDateTime.now());
+        je.setState(JournalEntry.State.PENDING.name());
+        je.setTransactionNo(invoice.getTransactionNumber());
+        je.setTransactionType("Purchase");
+        je.setJournalNumber(journalid);
+        je.setClerk(SecurityUtils.getCurrentUserLogin().get());
+        je.setNote(invoice.getInvoiceNumber());
+
+        Double amount = roundedAmount(invoice.getNetAmount().doubleValue());
+
+        je.addCreditors(Sets.newHashSet(new CreditorType(creditAcc, amount)));
+        je.addDebtors(Sets.newHashSet(new DebtorType(debitAcc, amount)));
+
+        //TODO:: if we have discounts and taxes needs to be posted appropriately
+        
+        JournalEntryEntity jee = journalEntryRepository.save(je);
+        journalEntryRepository.flush();
+
+        bookJournalEntry(jee.getJournalNumber());
+        return JournalEntryMapper.map(jee);
+    }
+
+    public JournalEntry createJournalEntry(Remittance remittance) {
+
+        String creditAcc = remittance.getPayer().getDebitAccount().getIdentifier();
+        String debitAcc = remittance.getBankAccount().getLedgerAccount().getIdentifier();
+
+        final JournalEntryEntity je = new JournalEntryEntity();
+        String journalid = generateJournalNumber();
+        je.setDateBucket(remittance.getTransactionDate());
+        je.setTransactionDate(LocalDateTime.now());
+        je.setState(JournalEntry.State.PENDING.name());
+        je.setTransactionNo(remittance.getTransactionId());
+        je.setTransactionType("Payment");
+        je.setJournalNumber(journalid);
+        je.setClerk(SecurityUtils.getCurrentUserLogin().get());
+        je.setNote(remittance.getReceiptNo());
+
+        Double amount = roundedAmount(remittance.getAmount());
+
+        je.addCreditors(Sets.newHashSet(new CreditorType(creditAcc, amount)));
+        je.addDebtors(Sets.newHashSet(new DebtorType(debitAcc, amount)));
+
+        JournalEntryEntity jee = journalEntryRepository.save(je);
+        journalEntryRepository.flush();
+
+        bookJournalEntry(jee.getJournalNumber());
+        return JournalEntryMapper.map(jee);
     }
 
     private String bookJournalEntry(String transactionIdentifier) {
@@ -434,41 +533,7 @@ public class JournalEntryService {
         }
     }
 
-    //Invoicing
-    public JournalEntry createJournalEntry(Invoice invoice) {
-
-        FinancialActivityAccount debitAccount = activityAccountRepository
-                .findByFinancialActivity(FinancialActivity.Accounts_Receivable)
-                .orElseThrow(()->APIException.notFound("Account Receivable Account is Not Mapped"));
-        FinancialActivityAccount creditAccount = activityAccountRepository
-                .findByFinancialActivity(FinancialActivity.Patient_Invoice_Control)
-                .orElseThrow(()->APIException.notFound("Account Receivable Account is Not Mapped"));
- 
-            String creditAcc = creditAccount.getAccount().getIdentifier();
-            String debitAcc = debitAccount.getAccount().getIdentifier();
-            
-            final JournalEntryEntity je = new JournalEntryEntity();
-            String journalid = generateJournalNumber();
-            je.setTransactionDate(LocalDateTime.now());
-            je.setState(JournalEntry.State.PENDING.name());
-            je.setTransactionNo(invoice.getTransactionNo());
-            je.setTransactionType("Invoicing");
-            je.setJournalNumber(journalid);
-            je.setClerk(SecurityUtils.getCurrentUserLogin().get());
-            je.setNote(invoice.getNumber());
-            
-            Double amount = roundedAmount(invoice.getTotal());
-            
-            je.addCreditors(Sets.newHashSet(new CreditorType(creditAcc, amount)));
-            je.addDebtors(Sets.newHashSet(new DebtorType(debitAcc, amount)));
-
-            JournalEntryEntity jee = journalEntryRepository.save(je);
-            journalEntryRepository.flush();
- 
-            bookJournalEntry(jee.getJournalNumber()); 
-            return JournalEntryMapper.map(jee); 
-    }
-
+    
 //    @Transactional
     private String generateJournalNumber() {
         String trxId = RandomStringUtils.randomNumeric(5);//sequenceService.nextNumber(SequenceType.JournalNumber);

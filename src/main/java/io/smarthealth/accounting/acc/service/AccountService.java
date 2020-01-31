@@ -100,7 +100,6 @@ public class AccountService {
             final Pageable pageable) {
 
         final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
-        System.err.println(".... " + accountEntity);
         final Page<AccountEntryEntity> accountEntryEntities;
         if (message == null) {
             accountEntryEntities = this.accountEntryRepository.findByAccountAndTransactionDateBetween(
@@ -272,4 +271,17 @@ public class AccountService {
         return metadata;
     }
 
+    public List<SimpleAccountData> getTransactionalAccounts(AccountType type) {
+        List<AccountEntity> accounts;
+        if (type != null) {
+            accounts = accountRepository.findByType(type.name());
+        } else {
+            accounts = accountRepository.findAll();
+        }
+
+        return accounts
+                .stream()
+                .map(x -> SimpleAccountData.map(x))
+                .collect(Collectors.toList());
+    }
 }

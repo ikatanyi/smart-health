@@ -64,12 +64,14 @@ public class ServicepointApiController {
 
     @GetMapping("/servicepoints")
     public ResponseEntity<?> listServicepoint(
+            @RequestParam(value = "point_type", required = false) String pointType,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<ServicePointData> list = service.listServicePoints(pageable);
+        Page<ServicePointData> list = service.listServicePoints(pointType,pageable);
+        
         Pager<List<ServicePointData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
-import io.smarthealth.organization.facility.domain.Facility;
 import java.util.Optional;
 
 /**
@@ -34,6 +33,7 @@ public class ServicePointService {
         point.setActive(data.getActive());
         point.setDescription(data.getDescription());
         point.setName(data.getName());
+        point.setPointType(data.getPointType());
         point.setServicePointType(data.getServicePointType());
         if (data.getExpenseAccount() != null && data.getExpenseAccount().getAccountNumber() != null) {
             AccountEntity acc = accountService.findOneWithNotFoundDetection(data.getExpenseAccount().getAccountNumber());
@@ -65,9 +65,15 @@ public class ServicePointService {
         return repository
                 .findByServicePointType(servicePointType);
     }
-    public Page<ServicePointData> listServicePoints(Pageable page) {
-        return repository
-                .findAll(page)
+
+    public Page<ServicePointData> listServicePoints(String pointType, Pageable page) {
+        Page<ServicePoint> list;
+        if (pointType != null) {
+            list = repository.findByPointType(pointType, page);
+        } else {
+            list = repository.findAll(page);
+        }
+        return list
                 .map(sd -> sd.toData());
     }
 
