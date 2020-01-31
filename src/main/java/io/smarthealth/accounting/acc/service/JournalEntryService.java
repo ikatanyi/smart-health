@@ -211,7 +211,7 @@ public class JournalEntryService {
 
     public JournalEntry createJournalEntry(PatientBill bill, Store store) {
         Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Patient_Invoice_Control);
-
+        //i can use the store to determine
         if (debitAccount.isPresent()) {
             String debitAcc = debitAccount.get().getAccount().getIdentifier();
             final JournalEntryEntity je = new JournalEntryEntity();
