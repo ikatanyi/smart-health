@@ -1,5 +1,8 @@
 package io.smarthealth.supplier.service;
 
+import io.smarthealth.accounting.acc.data.SimpleAccountData;
+import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.accounting.acc.domain.AccountRepository;
 import io.smarthealth.accounting.pricebook.data.PriceBookData;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.pricebook.service.PricebookService;
@@ -20,6 +23,7 @@ import io.smarthealth.supplier.domain.enumeration.SupplierType;
 import io.smarthealth.supplier.domain.specification.SupplierSpecification;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,14 +42,18 @@ public class SupplierService {
     private final CurrencyService currencyService;
     private final PricebookService pricebookService;
     private final AdminService adminService;
+    private final AccountRepository accountRepository;
 
-    public SupplierService(SupplierRepository supplierRepository, PaymentTermsService paymentService, CurrencyService currencyService, PricebookService pricebookService, AdminService adminService) {
+    public SupplierService(SupplierRepository supplierRepository, PaymentTermsService paymentService, CurrencyService currencyService, PricebookService pricebookService, AdminService adminService, AccountRepository accountRepository) {
         this.supplierRepository = supplierRepository;
         this.paymentService = paymentService;
         this.currencyService = currencyService;
         this.pricebookService = pricebookService;
         this.adminService = adminService;
+        this.accountRepository = accountRepository;
     }
+
+     
 
     public SupplierData createSupplier(SupplierData supplierData) {
         Supplier supplier = new Supplier();
@@ -92,6 +100,11 @@ public class SupplierService {
             Contact contact=adminService.createContact(supplierData.getContact());
             supplier.setContact(contact);
         }
+        
+        if(supplierData.getCreditAccountNo()!=null){
+            AccountEntity acc=accountRepository.findByIdentifier(supplierData.getCreditAccountNo());
+            supplier.setCreditAccount(acc);
+        }
 
         Supplier savedSupplier = supplierRepository.save(supplier);
         return savedSupplier.toData();
@@ -129,6 +142,13 @@ public class SupplierService {
         List<Currency> currency = currencyService.getCurrencies();
         List<PaymentTerms> paymentTerms = paymentService.getPaymentTerms();
         List<PriceBookData> pricebooks = pricebookService.getPricebooks();
+        List<AccountEntity> accounts=accountRepository.findByType("LIABILITY");
+        if(!accounts.isEmpty()){
+            List<SimpleAccountData> acc=accounts
+                    .stream()
+                    .map(x -> SimpleAccountData.map(x)).collect(Collectors.toList());
+            metadata.setAccounts(acc);
+        }
         metadata.setCurrencies(currency);
         metadata.setPaymentTerms(paymentTerms);
         metadata.setPricelists(pricebooks);

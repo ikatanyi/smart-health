@@ -1,7 +1,7 @@
 package io.smarthealth.audit.service;
 
 import io.smarthealth.audit.domain.PersistenceAuditEventRepository;
-import io.smarthealth.auth.config.AuditEventConverter;
+import io.smarthealth.audit.config.AuditEventConverter;
 import java.time.Instant;
 import java.util.Optional;
 import org.springframework.boot.actuate.audit.AuditEvent;

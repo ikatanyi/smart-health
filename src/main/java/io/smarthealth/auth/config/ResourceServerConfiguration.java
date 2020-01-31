@@ -37,7 +37,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                 .antMatchers("/api/user/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
                 .and()
-                .antMatcher("/api/**")
+                .antMatcher("/api/**") 
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/users").permitAll() //<1>
                 .antMatchers(HttpMethod.GET, "/api/users", "/v2/api-docs/**", "/swagger-ui.html*").permitAll() //<1>

@@ -7,6 +7,7 @@ package io.smarthealth.clinical.visit.service;
 
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.PaymentDetailsRepository;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,9 @@ public class PaymentDetailsService {
 
     public PaymentDetails fetchPaymentDetailsByVisit(Long visitId) {
         return paymentDetailsRepository.findById(visitId).orElseThrow(() -> APIException.notFound("Visit payment details identified by {0} not available", visitId));
+    }
+    
+     public PaymentDetails fetchPaymentDetailsByVisit(Visit visit) {
+        return paymentDetailsRepository.findByVisit(visit).orElseThrow(() -> APIException.notFound("Visit payment details identified by visit number {0} not available", visit.getVisitNumber()));
     }
 }

@@ -18,4 +18,7 @@ public class PatientNotes extends ClinicalRecord {
     private String historyNotes; //history of present complaints
     private String examinationNotes;
     private String socialHistory;
+    private String briefNotes;
+    
+    private String encounterForm;
 }

@@ -5,6 +5,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
+import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.stock.purchase.service.PurchaseInvoiceService;
 import io.swagger.annotations.Api;
 import java.util.List;
@@ -54,7 +55,7 @@ public class PurchaseInvoiceRestController {
 
     @GetMapping("/purchaseinvoices")
     public ResponseEntity<?> getAllPurchaseInvoices(
-            @RequestParam(value = "status", required = false) final String status,
+            @RequestParam(value = "status", required = false) final PurchaseInvoiceStatus status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 

@@ -3,6 +3,9 @@ package io.smarthealth.accounting.billing.api;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.billing.domain.PatientBillGroup;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -25,13 +28,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 public class BillingController {
 
-    private final BillingService service; 
+    private final BillingService service;
 
     public BillingController(BillingService service) {
         this.service = service;
     }
-   
- 
+
     /*
     //api/v1/patient-billing    //create invoice and line items
     //api/v1/patient-billing/{billno}/line     
@@ -42,8 +44,8 @@ public class BillingController {
     @PostMapping("/billing")
     public ResponseEntity<?> createPatientBill(@Valid @RequestBody BillData billData) {
 
-        PatientBill patientbill = service.createBill(billData); 
-         
+        PatientBill patientbill = service.createPatientBill(billData);
+
         Pager<BillData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Bill Successfully Created.");
@@ -51,19 +53,19 @@ public class BillingController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-     
-@GetMapping("/billing/{id}")
+
+    @GetMapping("/billing/{id}")
     public BillData getPatientBill(@PathVariable(value = "id") Long code) {
         PatientBill bill = service.findOneWithNoFoundDetection(code);
         return bill.toData();
     }
-    
+
     @PostMapping("/billing/{id}/items")
-    public BillData addPatientBillItem(@PathVariable(value = "id") Long id,  List<BillItemData>billLines) {
+    public BillData addPatientBillItem(@PathVariable(value = "id") Long id, List<BillItemData> billLines) {
         PatientBill bill = service.findOneWithNoFoundDetection(id);
         return bill.toData();
     }
-    
+
     @GetMapping("/billing")
     public ResponseEntity<?> getPatientBills(
             @RequestParam(value = "transactionNo", required = false) String transactionNo,
@@ -71,12 +73,12 @@ public class BillingController {
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
             @RequestParam(value = "paymentMode", required = false) String paymentMode,
             @RequestParam(value = "billNumber", required = false) String billNumber,
-            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "status", required = false) BillStatus status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
-         
-        Pageable pageable = PaginationUtil.createPage(page, size); 
-        Page<BillData> list = service.findAllBills(transactionNo,visitNumber,patientNumber,paymentMode,billNumber,status,pageable)
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        Page<BillData> list = service.findAllBills(transactionNo, visitNumber, patientNumber, paymentMode, billNumber, status, pageable)
                 .map(bill -> bill.toData());
 
         Pager<List<BillData>> pagers = new Pager();
@@ -92,5 +94,33 @@ public class BillingController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-    
+
+    @GetMapping("/bills")
+    public ResponseEntity<?> listBillSummary(
+            @RequestParam(value = "status", defaultValue = "Draft") BillStatus status) {
+        List<PatientBillGroup> list = service.getPatientBillGroups(status);
+
+        return ResponseEntity.ok(list);
+    }
+    @GetMapping("/bills/{visitId}/items")
+    public ResponseEntity<?> listBillSummary(
+            @PathVariable(value = "visitId") String visitId,
+             @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+         Pageable pageable = PaginationUtil.createPage(page, size);
+        Page<PatientBillItem> list = service.getPatientBillItemByVisit(visitId, pageable);
+
+       Pager<List<PatientBillItem>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Patient Bill Items");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+    }
 }

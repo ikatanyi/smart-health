@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.Length;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class JournalEntry {
-
+   private Long id;
     private String journalNumber;
     @NotNull
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
@@ -35,6 +35,14 @@ public final class JournalEntry {
 
     public JournalEntry() {
         super();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public LocalDateTime getTransactionDate() {

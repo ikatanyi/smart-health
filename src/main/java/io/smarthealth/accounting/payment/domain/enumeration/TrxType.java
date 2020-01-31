@@ -8,5 +8,7 @@ public enum TrxType {
     charge,
     payment,
     refund,
-    adjustment
+    adjustment,
+    invoicing,
+    billing
 }

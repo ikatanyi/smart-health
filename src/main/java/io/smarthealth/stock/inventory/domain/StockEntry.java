@@ -84,8 +84,7 @@ public class StockEntry extends Auditable {
         return data;
     }
 
-    public static StockEntry create(DispensedDrug drug) {
-        StockEntry stockEntry = new StockEntry();
+    public static StockEntry create(DispensedDrug drug) { 
         Item item = drug.getDrug();
         Store store = drug.getStore();
 
@@ -104,7 +103,7 @@ public class StockEntry extends Auditable {
         stock.setTransactionDate(drug.getDispensedDate());
         stock.setTransactionNumber(drug.getTransactionId());
         stock.setUnit(drug.getUnits());
-        return stockEntry;
+        return stock;
     }
 
 }

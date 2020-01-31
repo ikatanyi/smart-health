@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.payment.service;
 
 import io.smarthealth.accounting.acc.service.AccountService;
+import io.smarthealth.accounting.acc.service.JournalEntryService;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
@@ -24,8 +25,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.FinancialTransactionRepository;
+import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.infrastructure.utility.UuidGenerator;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -41,16 +44,19 @@ public class PaymentService {
     private final FinancialTransactionRepository transactionRepository;
     private final AccountService accountService;
     private final BillingService billingService;
+    private final JournalEntryService journalEntryService;
+    private final SequenceNumberGenerator sequenceGenerator;
 
     @Transactional
     public FinancialTransactionData createTransaction(CreateTransactionData transactionData) {
-
+        String trdId = sequenceGenerator.generateTransactionNumber();
         FinancialTransaction transaction = new FinancialTransaction();
         transaction.setDate(transactionData.getDate());
+        transaction.setAmount(transactionData.getAmount());
         transaction.setTrxType(TrxType.payment);
         transaction.setReceiptNo(RandomStringUtils.randomNumeric(6));
         transaction.setShiftNo("0000");
-        transaction.setTransactionId(UuidGenerator.newUuid());
+        transaction.setTransactionId(trdId);
         transaction.setInvoice(transactionData.getBillNumber());
 
 //        AccountEntity acc=accountService.findOneWithNotFoundDetection(transactionData.getAccount());
@@ -73,6 +79,8 @@ public class PaymentService {
             billingService.save(b);
         }
 
+        List<PatientBillItem> billedItems = new ArrayList<>();
+
         if (!transactionData.getBillItems().isEmpty()) {
             transactionData.getBillItems()
                     .stream()
@@ -81,10 +89,13 @@ public class PaymentService {
                         item.setPaid(Boolean.TRUE);
                         item.setStatus(BillStatus.Final);
                         item.setBalance(0D);
-                        billingService.updateBillItem(item);
+                        PatientBillItem i = billingService.updateBillItem(item);
+                        billedItems.add(i);
                     });
 
         }
+        
+        journalEntryService.createJournalEntry(trdId, billedItems);
 
         return FinancialTransactionData.map(trans);
 

@@ -374,5 +374,4 @@ public class PatientController {
         String contentType=null;
         patientService.exportPatientPdfFile(response);
     }
-
 }

@@ -6,9 +6,11 @@ import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.service.AdminService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;
+import io.smarthealth.stock.purchase.domain.HtmlData;
 import io.smarthealth.stock.purchase.domain.PurchaseOrder;
 import io.smarthealth.stock.purchase.domain.PurchaseOrderItem;
 import io.smarthealth.stock.purchase.domain.PurchaseOrderRepository;
@@ -17,20 +19,26 @@ import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
+import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.EnumUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 /**
  *
  * @author Kelsas
  */
 @Service
+@RequiredArgsConstructor
 public class PurchaseService {
 
     private final PurchaseOrderRepository orderRepository;
@@ -39,16 +47,10 @@ public class PurchaseService {
     private final PricebookService pricebookService;
     private final StoreService storeService;
     private final ItemService itemService;
+    private final SequenceNumberGenerator sequenceGenerator;
+    private final TemplateEngine htmlTemplateEngine;
 
-    public PurchaseService(PurchaseOrderRepository purchaseOrderRepository, SupplierService supplierService, AdminService adminService, PricebookService pricebookService, StoreService storeService, ItemService itemService) {
-        this.orderRepository = purchaseOrderRepository;
-        this.supplierService = supplierService;
-        this.adminService = adminService;
-        this.pricebookService = pricebookService;
-        this.storeService = storeService;
-        this.itemService = itemService;
-    }
-
+    @Transactional
     public PurchaseOrderData createPurchaseOrder(PurchaseOrderData data) {
         PurchaseOrder order = new PurchaseOrder();
         Supplier supplier = supplierService.findOneWithNoFoundDetection(data.getSupplierId());
@@ -62,7 +64,7 @@ public class PurchaseService {
             Contact contact = adminService.getContact(data.getContactId()).get();
             order.setContact(contact);
         }
-        order.setOrderNumber(UUID.randomUUID().toString()); //this sh
+//        order.setOrderNumber(UUID.randomUUID().toString()); //this sh
         if (data.getPriceListId() != null) {
             PriceBook priceList = pricebookService.getPricebook(data.getPriceListId()).get();
             order.setPriceList(priceList);
@@ -91,6 +93,9 @@ public class PurchaseService {
         order.addOrderItems(orderItems);
         //then we need to save this
         PurchaseOrder savedOrder = orderRepository.save(order);
+        savedOrder.setOrderNumber(sequenceGenerator.generate(savedOrder));
+        orderRepository.save(savedOrder);
+
         return PurchaseOrderData.map(savedOrder);
     }
 
@@ -98,17 +103,41 @@ public class PurchaseService {
         return orderRepository.findByOrderNumber(orderNo);
     }
 
+    public PurchaseOrder findByOrderNumberOrThrow(String orderNo) {
+        return findByOrderNumber(orderNo)
+                .orElseThrow(() -> APIException.notFound("Purchase Order with Id {0} not found", orderNo));
+    }
+
     public PurchaseOrder findOneWithNoFoundDetection(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Purchase Order with Id {0} not found", id));
     }
 
-    public Page<PurchaseOrder> getPurchaseOrders(String status, Pageable page) {
-        PurchaseOrderStatus state = null;
-        if (EnumUtils.isValidEnum(PurchaseOrderStatus.class, status)) {
-            state = PurchaseOrderStatus.valueOf(status);
-            return orderRepository.findByStatus(state, page);
+    public Page<PurchaseOrder> getPurchaseOrders(PurchaseOrderStatus status, Pageable page) {
+        if (status == null) {
+            return orderRepository.findAll(page);
         }
-        return orderRepository.findAll(page);
+        return orderRepository.findByStatus(status, page);
+    }
+
+    public HtmlData toHtml(String orderNo) {
+        Path p = Paths.get("logo-light.png");
+        
+        PurchaseOrder order = findByOrderNumberOrThrow(orderNo);
+        BigDecimal totals=order.getPurchaseOrderLines()
+                .stream()
+                .map(x -> x.getAmount())
+                .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
+        
+        final Context ctx = new Context();
+        ctx.setVariable("orderNumber", order.getOrderNumber());
+        ctx.setVariable("requiredDate", order.getRequiredDate());
+        ctx.setVariable("supplier", order.getSupplier());
+        ctx.setVariable("totals", totals);
+        ctx.setVariable("transactionDate", order.getTransactionDate());
+        ctx.setVariable("purchaseOrderLines", order.getPurchaseOrderLines());
+        ctx.setVariable("imageResourceName", p.getFileName().toString());
+        final String htmlContent = this.htmlTemplateEngine.process("purchaseOrder", ctx);
+        return new HtmlData(htmlContent, PurchaseOrderData.map(order));
     }
 }

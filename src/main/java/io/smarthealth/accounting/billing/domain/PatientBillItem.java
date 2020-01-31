@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.billing.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
@@ -8,6 +9,7 @@ import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
 import javax.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  *
@@ -15,9 +17,11 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "patient_billing_item")
+@Table(name = "patient_billing_item") 
 public class PatientBillItem extends Auditable {
 
+    @JsonIgnore
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_item_bill_id"))
     private PatientBill patientBill;

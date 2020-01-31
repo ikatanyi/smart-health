@@ -52,12 +52,13 @@ public class StoreRestController {
     }
     @GetMapping("/stores")
     public ResponseEntity<?> getAllStorees( 
+             @RequestParam(value = "isPatientStore", required = false) Boolean patientStore,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<StoreData> list = service.fetchAllStores(pageable).map(store -> StoreData.map(store)); 
+        Page<StoreData> list = service.fetchAllStores(patientStore,pageable).map(store -> StoreData.map(store)); 
         Pager<List<StoreData>> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

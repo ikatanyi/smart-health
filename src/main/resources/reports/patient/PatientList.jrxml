@@ -4,7 +4,7 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<queryString>
-		<![CDATA[SELECT p.id,p.created_on, pa.patient_number, CONCAT(p.given_name,' ',p.middle_name,' ',p.surname)as full_name,p.gender, TIMESTAMPDIFF( YEAR, p.date_of_birth, CURDATE()) as Age FROM Patient AS pa INNER JOIN person AS p ON p.id = pa.id]]>
+		<![CDATA[SELECT p.id,p.created_on, pa.patient_number, CONCAT(p.given_name,' ',p.middle_name,' ',p.surname)as full_name,p.gender, TIMESTAMPDIFF( YEAR, p.date_of_birth, CURDATE()) as Age FROM patient AS pa INNER JOIN person AS p ON p.id = pa.id]]>
 	</queryString>
 	<field name="id" class="java.lang.Long">
 		<fieldDescription><![CDATA[]]></fieldDescription>

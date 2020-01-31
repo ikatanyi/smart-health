@@ -14,6 +14,7 @@ import io.smarthealth.infrastructure.numbers.domain.SequenceNumberFormatReposito
 import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.infrastructure.utility.Snowflake;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.stock.purchase.domain.PurchaseOrder;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -108,6 +109,11 @@ public class SequenceNumberGeneratorImpl implements SequenceNumberGenerator {
     @Override
     public String generate(LabRegister lab) {
         return nextVal(lab.getId(), EntitySequenceType.LABORATORY);
+    }
+
+    @Override
+    public String generate(PurchaseOrder order) {
+       return nextVal(order.getId(), EntitySequenceType.PURCHASEORDER);
     }
 
 }

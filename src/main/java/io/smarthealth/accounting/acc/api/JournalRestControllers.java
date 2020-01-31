@@ -33,9 +33,9 @@ public class JournalRestControllers {
     @PostMapping
     @ResponseBody
     ResponseEntity<?> createJournalEntry(@RequestBody @Valid final JournalEntry journalEntry) {
-        if (this.journalEntryService.findJournalEntry(journalEntry.getJournalNumber()).isPresent()) {
-            throw ServiceException.conflict("Journal entry number {0} already exists.", journalEntry.getJournalNumber());
-        }
+//        if (this.journalEntryService.findJournalEntry(journalEntry.getJournalNumber()).isPresent()) {
+//            throw ServiceException.conflict("Journal entry number {0} already exists.", journalEntry.getJournalNumber());
+//        }
 
         if (journalEntry.getDebtors().isEmpty()) {
             throw ServiceException.badRequest("Debtors must be given.");
@@ -94,6 +94,7 @@ public class JournalRestControllers {
     @GetMapping
     @ResponseBody
     ResponseEntity<List<JournalEntry>> fetchJournalEntries(
+             @RequestParam(value = "status", required = false) final JournalEntry.State status,
             @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "account", required = false) final String accountNumber,
             @RequestParam(value = "amount", required = false) final BigDecimal amount

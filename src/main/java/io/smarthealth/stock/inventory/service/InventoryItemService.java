@@ -19,21 +19,21 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.stock.inventory.domain.InventoryItemRepository;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.transaction.annotation.Propagation;
 
 /**
  *
  * @author Kelsas
  */
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor 
 public class InventoryItemService {
 
 //    https://www.devglan.com/spring-boot/spring-boot-jms-activemq-example
     private final ItemService itemService;
     private final StoreService storeService;
     private final InventoryItemRepository inventoryItemRepository;
-
-    @Transactional
+ 
     public void decrease(Item item, Store store, double qty) {
         InventoryItem balance = inventoryItemRepository
                 .findByItemAndStore(item, store)
@@ -42,8 +42,7 @@ public class InventoryItemService {
         balance.decrease(qty);
         inventoryItemRepository.save(balance);
     }
-
-    @Transactional
+ 
     public void increase(Item item, Store store, double qty) {
         InventoryItem balance = inventoryItemRepository
                 .findByItemAndStore(item, store)
@@ -52,8 +51,7 @@ public class InventoryItemService {
         balance.increase(qty);
         inventoryItemRepository.save(balance);
     }
-
-    @Transactional
+ 
     public InventoryItem createInventoryItem(InventoryItemData itemData) {
         Item item = itemService.findItemEntityOrThrow(itemData.getItemId());
         Store store = storeService.getStoreWithNoFoundDetection(itemData.getStoreId());
@@ -62,8 +60,7 @@ public class InventoryItemService {
                 .orElse(InventoryItem.create(store, item));
         return save(inventory);
     }
-
-    @Transactional
+ 
     public void createInventoryItem(CreateInventoryItem itemData) {
         List<InventoryItem> items = new ArrayList<>();
         itemData.getInventoryItems()
@@ -82,13 +79,11 @@ public class InventoryItemService {
 //        return save(inventory);
             inventoryItemRepository.saveAll(items);
     }
-
-    @Transactional
+ 
     public InventoryItem save(InventoryItem item) {
         return inventoryItemRepository.save(item);
     }
-
-    @Transactional
+ 
     public void adjustment(Item item, Store store, double qty) {
         InventoryItem balance = inventoryItemRepository
                 .findByItemAndStore(item, store)

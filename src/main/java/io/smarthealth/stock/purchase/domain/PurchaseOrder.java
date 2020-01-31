@@ -24,7 +24,7 @@ import org.hibernate.annotations.NaturalId;
 @Table(name = "purchase_order")
 public class PurchaseOrder extends Auditable {
 
-    @NaturalId
+//    @NaturalId
     private String orderNumber; //PUR-ORD-2019-00001
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_purch_order_supplier_id"))

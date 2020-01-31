@@ -2,7 +2,7 @@ package io.smarthealth.audit.domain;
 
 
 import io.smarthealth.config.Constants;
-import io.smarthealth.auth.config.AuditEventConverter;
+import io.smarthealth.audit.config.AuditEventConverter;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;

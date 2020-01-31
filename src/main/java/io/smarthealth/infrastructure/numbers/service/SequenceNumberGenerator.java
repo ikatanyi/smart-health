@@ -9,6 +9,7 @@ import io.smarthealth.clinical.lab.domain.LabRegister;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.stock.purchase.domain.PurchaseOrder;
 
 /**
  *
@@ -36,4 +37,5 @@ public interface SequenceNumberGenerator {
 
     public String generate(LabRegister lab);
 
+    public String generate(PurchaseOrder order);
 }

@@ -1,7 +1,7 @@
 package io.smarthealth.debtor.claim.remittance.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.debtor.claim.remittance.domain.Remitance;
+import io.smarthealth.debtor.claim.remittance.domain.Remittance;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
@@ -29,6 +29,7 @@ public class RemitanceData {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate transactionDate;
     private String receiptNo;
+    private String transactionId;
     private Double balance;
 
     private String termsName;
@@ -37,8 +38,8 @@ public class RemitanceData {
     private Integer creditDays;
     private Boolean termsActive;
 
-    public static Remitance map(RemitanceData data) {
-        Remitance remitance = new Remitance();
+    public static Remittance map(RemitanceData data) {
+        Remittance remitance = new Remittance();
         remitance.setAmount(data.getAmount());
         remitance.setNotes(data.getNotes());
         remitance.setBalance(data.getBalance());
@@ -49,7 +50,7 @@ public class RemitanceData {
         return remitance;
     }
 
-    public static RemitanceData map(Remitance remitance) {
+    public static RemitanceData map(Remittance remitance) {
         RemitanceData data = new RemitanceData();
         data.setAmount(remitance.getAmount());
         data.setBalance(remitance.getBalance());
@@ -58,6 +59,7 @@ public class RemitanceData {
         data.setPaymentMode(remitance.getPaymentMode());
         data.setNotes(remitance.getNotes());
         data.setTransactionDate(remitance.getTransactionDate());
+       data.setTransactionId(remitance.getTransactionId());
         if (remitance.getPayer() != null) {
             data.setPayerName(remitance.getPayer().getPayerName());
             data.setPayerId(remitance.getPayer().getId());

@@ -1,5 +1,6 @@
 package io.smarthealth.supplier.domain;
 
+import io.smarthealth.accounting.acc.data.SimpleAccountData;
 import io.smarthealth.accounting.pricebook.data.PriceBookData;
 import io.smarthealth.administration.app.domain.Currency;
 import io.smarthealth.accounting.payment.domain.PaymentTerms;
@@ -19,5 +20,5 @@ public class SupplierMetadata {
     private List<PriceBookData> pricelists;
     private List<Currency> currencies;
     private List<PaymentTerms> paymentTerms;
-    
+    private List<SimpleAccountData> accounts;
 }

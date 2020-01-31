@@ -1,5 +1,6 @@
 package io.smarthealth.administration.config.api;
 
+import io.smarthealth.administration.config.domain.GlobalConfigNum;
 import io.smarthealth.administration.config.domain.GlobalConfiguration;
 import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -42,8 +43,8 @@ public class GlobalConfigurationController {
         return ResponseEntity.ok(config);
     }
         @GetMapping("/configurations/{configName}/name")
-    public ResponseEntity<?> getConfigurationByName(@PathVariable(value = "id") String configName) {
-        GlobalConfiguration config = service.getByNameOrThrow(configName);
+    public ResponseEntity<?> getConfigurationByName(@PathVariable(value = "configName") GlobalConfigNum configName) {
+        GlobalConfiguration config = service.getByNameOrThrow(configName.name());
         return ResponseEntity.ok(config);
     }
 

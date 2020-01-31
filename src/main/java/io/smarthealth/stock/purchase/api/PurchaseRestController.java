@@ -4,7 +4,9 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;
+import io.smarthealth.stock.purchase.domain.HtmlData;
 import io.smarthealth.stock.purchase.domain.PurchaseOrder;
+import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.purchase.service.PurchaseService;
 import io.swagger.annotations.Api;
 import java.util.List;
@@ -47,15 +49,20 @@ public class PurchaseRestController {
     }
 
     @GetMapping("/purchaseorders/{id}")
-    public PurchaseOrderData getPurchaseOrder(@PathVariable(value = "id") Long code) {
-        PurchaseOrder po = service.findOneWithNoFoundDetection(code);
+    public PurchaseOrderData getPurchaseOrder(@PathVariable(value = "id") String code) {
+        PurchaseOrder po = service.findByOrderNumberOrThrow(code);
         return PurchaseOrderData.map(po);
+    }
+     @GetMapping("/purchaseorders/{id}/html")
+    public ResponseEntity<?> getPurchaseOrderHtml(@PathVariable(value = "id") String code) {
+        HtmlData data=service.toHtml(code);
+        return ResponseEntity.ok(data);
     }
 
     @GetMapping("/purchaseorders")
     public ResponseEntity<?> getAllPurchaseOrders(  
              @RequestParam(value = "showItems", required = false) boolean  showItems,
-            @RequestParam(value = "status", required = false) final String status,
+            @RequestParam(value = "status", required = false) final PurchaseOrderStatus status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 

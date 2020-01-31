@@ -64,8 +64,7 @@ public class Invoice extends Auditable {
     private String transactionNo;
 
     private String reference;
-
-    @NaturalId
+//    @NaturalId
     private String number;  //invoice number
     private String currency;
     private Boolean draft; // Outstanding true or false 

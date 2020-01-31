@@ -1,6 +1,7 @@
 package io.smarthealth.stock.purchase.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.stock.inventory.data.SupplierStockItem;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.supplier.domain.Supplier;
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ public class PurchaseInvoice extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_purchase_invoice_supplier_id"))
     private Supplier supplier;
+    
     private String purchaseOrderNumber;
     private String serialNumber; //ACC-PINV-2019-00001
     private Boolean paid;
@@ -38,5 +40,5 @@ public class PurchaseInvoice extends Auditable {
     
     @Enumerated(EnumType.STRING)
     private PurchaseInvoiceStatus status;
-
+ 
 }

@@ -4,6 +4,7 @@ import io.smarthealth.accounting.acc.api.paging.PageableBuilder;
 import io.smarthealth.accounting.acc.data.v1.Account;
 import io.smarthealth.accounting.acc.data.v1.AccountEntryPage;
 import io.smarthealth.accounting.acc.data.v1.AccountPage;
+import io.smarthealth.accounting.acc.data.v1.AccountType;
 import io.smarthealth.accounting.acc.data.v1.Ledger;
 import io.smarthealth.accounting.acc.service.AccountService;
 import io.smarthealth.accounting.acc.service.LedgerService;
@@ -58,7 +59,7 @@ public class AccountRestControllers {
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "term", required = false) final String term,
             @RequestParam(value = "type", required = false) final String type,
-            @RequestParam(value = "includeCustomerAccounts", required = false, defaultValue = "false") final boolean includeCustomerAccounts,
+            @RequestParam(value = "includeDetails", required = false, defaultValue = "false") final boolean includeCustomerAccounts,
             @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
             @RequestParam(value = "size", required = false) final Integer size,
             @RequestParam(value = "sortColumn", required = false) final String sortColumn,
@@ -154,6 +155,11 @@ public class AccountRestControllers {
     @GetMapping("/accounts/income-expenses")
     public ResponseEntity<?> getIncomeExpenseAccount() {
         return ResponseEntity.ok(accountService.getIncomeExpenseAccounts());
+    }
+
+    @GetMapping("/accounts/lite")
+    public ResponseEntity<?> geTransactionalAccounts(@RequestParam(value = "type", required = false) final AccountType type) {
+        return ResponseEntity.ok(accountService.getTransactionalAccounts(type));
     }
 
     private void validateLedger(final @RequestBody @Valid Account account) {

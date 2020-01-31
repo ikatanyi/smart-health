@@ -26,7 +26,7 @@ public class PharmacyItemData {
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate billingDate;
     private String transactionId;
-
+    private Double qtyIssued;
     private Double quantity;
     private Double price;
     private Double discount;

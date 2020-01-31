@@ -31,6 +31,7 @@ public class SupplierData {
 
     private  Long creditAccountId;
     private String creditAccount;
+     private String creditAccountNo;
     private BankEmbeddedData bank;
     private AddressData addresses;
     private ContactData contact;
