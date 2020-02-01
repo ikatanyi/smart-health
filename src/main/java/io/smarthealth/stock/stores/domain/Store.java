@@ -1,5 +1,6 @@
 package io.smarthealth.stock.stores.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.infrastructure.domain.Identifiable;
@@ -30,12 +31,14 @@ public class Store extends Identifiable {
 //    @ManyToOne
 //    @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_purchase_account_id"))
 //    private AccountEntity purchaseAccount;
-  
+  @JsonIgnore
     @ManyToOne
     @ToString.Exclude
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_service_point_id"))
     private ServicePoint servicePoint;
     
+    
+    @JsonIgnore
     @ManyToOne
     @ToString.Exclude
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_inventory_account_id"))

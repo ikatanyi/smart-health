@@ -47,13 +47,14 @@ public class InventoryService {
     public String createStockEntry(CreateStockEntry stockData) {
 
         String trdId = sequenceGenerator.generateTransactionNumber();
-
+         Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
+         
         if (!stockData.getItems().isEmpty()) {
             stockData.getItems()
                     .stream()
                     .forEach(st -> {
                         Item item = itemService.findItemEntityOrThrow(st.getItemId());
-                        Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
+                        
                         BigDecimal qty = BigDecimal.valueOf(st.getQuantity());
                         Double qtyAmt = stockData.getMovementType() == MovementType.Dispensed ? qty.negate().doubleValue() : qty.doubleValue();
 

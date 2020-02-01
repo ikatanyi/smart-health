@@ -40,7 +40,7 @@
                 UNION
             SELECT i.id, i.item_code as itemCode,i.item_name as itemName, i.item_type as itemType, i.rate AS defaultRate,(i.rate) AS specialRate,si.effective_date as effectiveDate, sp.id as servicePointId,sp.name AS servicePoint, 
                 0, 'Defult Price' AS pricebook FROM service_items si,  product_services i, service_points sp, price_book pb 
-                    WHERE si.service_type_id=i.id AND si.service_point_id=sp.id AND i.item_name LIKE :item;
+                    WHERE si.service_type_id=i.id AND si.service_point_id=sp.id AND i.item_name LIKE :item
          ]]>
         </query>
     </named-native-query>
