@@ -1,6 +1,9 @@
 package io.smarthealth.clinical.record.domain;
 
+import io.smarthealth.clinical.record.data.enums.EncounterFormType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -19,6 +22,7 @@ public class PatientNotes extends ClinicalRecord {
     private String examinationNotes;
     private String socialHistory;
     private String briefNotes;
-    
-    private String encounterForm;
+
+    @Enumerated(EnumType.STRING)
+    private EncounterFormType encounterForm;
 }

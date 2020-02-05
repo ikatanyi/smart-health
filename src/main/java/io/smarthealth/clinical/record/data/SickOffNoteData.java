@@ -6,9 +6,8 @@
 package io.smarthealth.clinical.record.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.record.domain.SickOffNote;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
-import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import java.time.LocalDate;
 import lombok.Data;
 
@@ -19,7 +18,7 @@ import lombok.Data;
 @Data
 public class SickOffNoteData {
 
-    private Long visitId;
+    private String visitNo;
 
     private String sickOffNumber;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
@@ -28,4 +27,22 @@ public class SickOffNoteData {
     private LocalDate endDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate reviewDate;
+
+    public static SickOffNoteData map(SickOffNote s) {
+        SickOffNoteData data = new SickOffNoteData();
+        data.setEndDate(s.getEndDate());
+        data.setStartDate(s.getStartDate());
+        data.setReviewDate(s.getReviewDate());
+        data.setSickOffNumber(s.getSickOffNumber());
+        return data;
+    }
+
+    public static SickOffNote map(SickOffNoteData data) {
+        SickOffNote s = new SickOffNote();
+        s.setEndDate(data.getEndDate());
+        s.setStartDate(data.getStartDate());
+        s.setReviewDate(data.getReviewDate());
+        s.setSickOffNumber(data.getSickOffNumber());
+        return s;
+    }
 }
