@@ -5,10 +5,8 @@
  */
 package io.smarthealth.accounting.pettycash.service;
 
-import io.smarthealth.accounting.pettycash.domain.PettyCashApprovals;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
-import io.smarthealth.accounting.pettycash.domain.repository.PettyCashApprovalsRepository;
 import io.smarthealth.accounting.pettycash.domain.repository.PettyCashItemsRepository;
 import io.smarthealth.accounting.pettycash.domain.repository.PettyCashRequestsRepository;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -33,9 +31,7 @@ public class PettyCashRequestsService {
     @Autowired
     PettyCashItemsRepository pettyCashItemsRepository;
 
-    @Autowired
-    PettyCashApprovalsRepository pettyCashApprovalsRepository;
-
+  
     @Transactional
     public PettyCashRequests createCashRequests(PettyCashRequests cashRequest) {
         return cashRequestsRepository.saveAndFlush(cashRequest);
@@ -58,10 +54,7 @@ public class PettyCashRequestsService {
         return pettyCashItemsRepository.findByRequestNo(requestItems);
     }
 
-    public List<PettyCashApprovals> createPettyCashApprovals(List<PettyCashApprovals> a) {
-        return pettyCashApprovalsRepository.saveAll(a);
-    }
-
+  
     public String generatepettyCashRequestNo() {
         //Format yyyy-mm-number
         String date = DateFormatUtil.generateDateStringInSpecificFormat("yyyy-MM-dd");

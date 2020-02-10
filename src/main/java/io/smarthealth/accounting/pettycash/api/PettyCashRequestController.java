@@ -5,11 +5,14 @@
  */
 package io.smarthealth.accounting.pettycash.api;
 
+import io.smarthealth.accounting.pettycash.data.PettyCashApprovalsData;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestItemsData;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
+import io.smarthealth.accounting.pettycash.domain.PettyCashApprovals;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
+import io.smarthealth.accounting.pettycash.service.PettyCashApprovalsService;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
 import io.smarthealth.administration.config.data.enums.ApprovalModule;
 import io.smarthealth.administration.config.domain.ApprovalConfig;
@@ -61,6 +64,8 @@ public class PettyCashRequestController {
 
     @Autowired
     EmployeeService employeeService;
+    @Autowired
+    PettyCashApprovalsService approvalsService;
 
     @PostMapping("/petty-cash")
     public ResponseEntity<?> createPettyCash(@Valid @RequestBody List<PettyCashRequestItemsData> data, Authentication authentication, @RequestParam(value = "staffNo", required = false) final String staffNo) {
@@ -141,19 +146,55 @@ public class PettyCashRequestController {
 
     //update petty cash status
     @PutMapping("/petty-cash/{requestNo}/process")
-    public ResponseEntity<?> processPettyCash(@PathVariable("requestNo") final String requestNo, @RequestParam(value = "status", required = true) final String status) {
+    public ResponseEntity<?> processPettyCash(@PathVariable("requestNo") final String requestNo, @Valid @RequestBody PettyCashApprovalsData data, Authentication authentication) {
+
         PettyCashRequests e = pettyCashRequestsService.fetchCashRequestByRequestNo(requestNo);
         //fetch approval settings by petty cash
         ApprovalConfig config = approvalConfigService.fetchApprovalConfigByModuleName(ApprovalModule.PettyCash);
 
-        //fetch list of approvers
-        List<ModuleApprovers> approvers = approvalConfigService.fetchModuleApproversByModule(ApprovalModule.PettyCash);
+        String username = authentication.getName();
 
-        //insert unto approvals table
-        
-       // e.setStatus(PettyCashStatus.Approved);
-//        e.set
+        User user = service.findUserByUsernameOrEmail(username)
+                .orElseThrow(() -> APIException.badRequest("User not found"));
+        Employee employee = employeeService.fetchEmployeeByUser(user);
 
+        //validate approver availability
+        ModuleApprovers app = approvalConfigService.fetchModuleApproversByModule(ApprovalModule.PettyCash, employee);
+        //check if employee has already processed
+        if (approvalsService.fetchApproverByEmployeeAndRequestNo(employee, e).isPresent()) {
+            throw APIException.conflict("You had already sent your approval response. ", employee.getFullName());
+        }
+
+        //insert into approvals table 
+        PettyCashApprovals approve = new PettyCashApprovals();
+        approve.setApprovalComments(data.getApprovalComments());
+        approve.setApprovalStatus(data.getApprovalStatus());
+        approve.setEmployee(employee);
+        approve.setRequestNo(e);
+        PettyCashApprovals savedApproval = approvalsService.createNewApproval(approve);
+        // fetch list of the approvals
+        List<PettyCashApprovals> cashApprovals = approvalsService.fetchPettyCashApprovalsByRequestNo(e);
+        if (cashApprovals.size() >= config.getMinNoOfApprovers()) {
+            int agreed = 0, declined = 0;
+            for (PettyCashApprovals approved : cashApprovals) {
+                if (approved.getApprovalStatus().equals(PettyCashStatus.Approved)) {
+                    agreed = agreed + 1;
+                }
+                if (approved.getApprovalStatus().equals(PettyCashStatus.Declined)) {
+                    declined = declined + 1;
+                }
+            }
+            if (agreed >= config.getMinNoOfApprovers()) {
+                e.setStatus(PettyCashStatus.Approved);
+                pettyCashRequestsService.createCashRequests(e);
+            }
+            if (declined > agreed) {
+                e.setStatus(PettyCashStatus.Declined);
+                pettyCashRequestsService.createCashRequests(e);
+            }
+        }
+        // e.setStatus(PettyCashStatus.Approved);
+//e.set
         Pager<PettyCashRequestsData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Approvals");
