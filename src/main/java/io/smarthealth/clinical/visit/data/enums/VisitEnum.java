@@ -16,7 +16,8 @@ public class VisitEnum {
         CheckOut,
         Admitted,
         Transferred,
-        Discharged
+        Discharged,
+        Booked
     }
 
     public enum VisitType {

@@ -96,6 +96,12 @@ public class TriageService {
         return this.triageRepository.findByPatient(patient, paging);
     }
 
+    public Optional<VitalsRecord> fetchLastVitalRecordsByPatient(String patientNumber) {
+        Patient patient = this.patientService.findPatientOrThrow(patientNumber);
+        //Sort.by(Sort.Direction.ASC, "dateRecorded")
+        return triageRepository.findFirstByPatientOrderByIdDesc(patient);
+    }
+
     public ContentPage<VitalRecordData> fetchVitalRecords(String patientNumber, Pageable page) {
 
         Page<VitalsRecord> triageEntities;

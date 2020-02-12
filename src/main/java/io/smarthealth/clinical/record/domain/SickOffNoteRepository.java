@@ -18,12 +18,9 @@ import org.springframework.stereotype.Repository;
  * @author Simon.waweru
  */
 @Repository
-public interface TriageRepository extends JpaRepository<VitalsRecord, Long> {
+public interface SickOffNoteRepository extends JpaRepository<SickOffNote, Long> {
 
-    Page<VitalsRecord> findByVisit(final Visit visit, Pageable page);
+    Optional<SickOffNote> findByVisit(final Visit visit);
 
-    Page<VitalsRecord> findByPatient(final Patient patient, Pageable page);
-
-    Optional<VitalsRecord> findFirstByPatientOrderByIdDesc(final Patient patient);
-
+    Page<SickOffNote> findByPatient(final Patient patient, final Pageable pageable);
 }
