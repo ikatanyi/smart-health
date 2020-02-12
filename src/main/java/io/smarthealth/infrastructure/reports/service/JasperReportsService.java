@@ -7,7 +7,6 @@ import io.smarthealth.organization.facility.service.FacilityService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.storage.StorageService;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,18 +23,15 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.export.JRRtfExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.export.AbstractXlsReportConfiguration;
 import net.sf.jasperreports.export.Exporter;
-import net.sf.jasperreports.export.HtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimpleRtfExporterConfiguration;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,7 +150,7 @@ public class JasperReportsService  {
                 jasperReport = JasperCompileManager.compileReport(jrxml);
             }
             // Get your data source
-            JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(dataList);
+            JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(dataList,false);
             // Add parameters
             param.putAll(param);
             // Fill the report
@@ -163,7 +159,7 @@ public class JasperReportsService  {
             else
                 jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
 
-            export(jasperPrint, format, "PatientList", response);
+            export(jasperPrint, format, inputFileName, response);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -181,20 +177,20 @@ public class JasperReportsService  {
                 exporter = new HtmlExporter();
                 response.setContentType("text/html");
                 exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
-                response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name()));
+                response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
             case "CSV":
                 exporter = new JRCsvExporter();
                 exporter.setExporterOutput(new SimpleWriterExporterOutput(out));
                 response.setContentType("text/csv");
-                response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name()));
+                response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
             case "XML":
                 exporter = new JRXmlExporter();
                 response.setContentType("text/xml");
-                response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name()));
+                response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
             case "XLS":
@@ -214,14 +210,14 @@ public class JasperReportsService  {
                 config.setSheetNames(new String[]{"Sheet1"});
                 exporter.setConfiguration(config);
                 response.setContentType("application/vnd.ms-excel");
-                response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name()));
+                response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
 
                 break;
 
             case "PDF":
                 exporter = new JRPdfExporter();
                 response.setContentType("application/pdf");
-                response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name()));
+                response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
             default:
@@ -270,7 +266,11 @@ public class JasperReportsService  {
             jasperParameter.put("salutation", facility.getOrganization().getContact().get(0).getSalutation());
             jasperParameter.put("telephone", facility.getOrganization().getContact().get(0).getTelephone());
         }
-
+        
+         if(facility.getLogo()==null)
+             jasperParameter.put("IMAGE_DIR", appProperties.getReportLoc()+"/logo.png");
+         else
+             jasperParameter.put("IMAGE", facility.getLogo());
         return jasperParameter;
     }
 

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice_LineItems_subreport" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9475d90f-4bc3-492f-b99e-9861c828c69b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="item" class="java.lang.String"/>
+	<field name="quantity" class="java.lang.Double"/>
+	<field name="price" class="java.lang.Double"/>
+	<field name="discount" class="java.lang.Double"/>
+	<field name="taxes" class="java.lang.Double"/>
+	<field name="amount" class="java.lang.Double"/>
+	<field name="servicePoint" class="java.lang.String"/>
+	<field name="balance" class="java.lang.Double"/>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="111" height="20" uuid="c03f057a-dad3-486f-bc76-0692ef26937c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{servicePoint}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="111" y="0" width="150" height="20" uuid="c8c0fd8d-b5af-4df5-8ca7-8b0e4413f1c8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="261" y="0" width="87" height="20" uuid="f9582ba0-636b-43d7-8827-74fc551fbb2e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="348" y="0" width="96" height="20" uuid="20c53067-d5ae-424e-9714-ed7243ef2d4a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="0" width="111" height="20" uuid="fb4c66a6-83e6-424a-90b2-39e50c176c59"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

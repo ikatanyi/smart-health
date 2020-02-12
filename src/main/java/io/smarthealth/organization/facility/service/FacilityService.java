@@ -6,6 +6,7 @@ import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.domain.FacilityRepository;
 import io.smarthealth.organization.org.domain.Organization;
 import io.smarthealth.organization.org.service.OrganizationService;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -29,7 +30,8 @@ public class FacilityService {
     }
 
     @Transactional
-    public Facility createFacility(String id, FacilityData facilityData) {
+    public Facility createFacility(String id, FacilityData facilityData) throws IOException {
+        byte[] bytes = null;
         Organization org = orgService.getOrganization(id);
         Facility facility = new Facility();
         if (facilityData.getParentFacilityId() != null) {
@@ -38,12 +40,16 @@ public class FacilityService {
                 facility.setParentFacility(pf.get());
             }
         }
+        if(facilityData.getFile()!=null){
+           bytes = facilityData.getFile().getBytes();
+           facility.setLogo(bytes);
+        }        
         facility.setFacilityType(facilityData.getFacilityType());
         facility.setTaxNumber(facilityData.getTaxNumber());
         facility.setFacilityClass(facilityData.getFacilityClass());
         facility.setFacilityName(facilityData.getFacilityName());
         facility.setEnabled(facilityData.isEnabled());
-        facility.setLogo(facilityData.getLogo());
+        
         facility.setOrganization(org);
         facility.setRegistrationNumber(facilityData.getRegistrationNumber());
         return facilityRepository.save(facility);
@@ -61,7 +67,7 @@ public class FacilityService {
         facility.setFacilityClass(facilityData.getFacilityClass());
         facility.setFacilityName(facilityData.getFacilityName());
         facility.setEnabled(facilityData.isEnabled());
-        facility.setLogo(facilityData.getLogo());
+        facility.setLogo(FacilityData.decodeImage(facilityData.getLogo()));
         facility.setRegistrationNumber(facilityData.getRegistrationNumber());
         return facilityRepository.save(facility);
     }

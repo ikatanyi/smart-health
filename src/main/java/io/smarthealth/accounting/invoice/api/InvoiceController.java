@@ -70,13 +70,14 @@ public class InvoiceController {
             @RequestParam(value = "scheme", required = false) Long scheme,
             @RequestParam(value = "number", required = false) String invoice,
             @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "patientNo", required = false) String patientNo,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, range, pageable)
+        Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, patientNo, range, pageable)
                 .map(bill -> InvoiceData.map(bill));
 
         Pager<List<InvoiceData>> pagers = new Pager();

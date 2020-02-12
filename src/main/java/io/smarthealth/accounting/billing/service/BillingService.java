@@ -29,6 +29,7 @@ import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.stock.stores.domain.Store;
 import lombok.extern.slf4j.Slf4j;
 
@@ -243,9 +244,9 @@ public class BillingService {
         return patientbill.getBillNumber();
     }
 
-    public Page<PatientBill> findAllBills(String transactionNo, String visitNo, String patientNo, String paymentMode, String billNo, BillStatus status, Pageable page) {
+    public Page<PatientBill> findAllBills(String transactionNo, String visitNo, String patientNo, String paymentMode, String billNo, BillStatus status, DateRange range, Pageable page) {
 
-        Specification<PatientBill> spec = BillingSpecification.createSpecification(transactionNo, visitNo, patientNo, paymentMode, billNo, status);
+        Specification<PatientBill> spec = BillingSpecification.createSpecification(transactionNo, visitNo, patientNo, paymentMode, billNo, status, range);
 
         return patientBillRepository.findAll(spec, page);
 

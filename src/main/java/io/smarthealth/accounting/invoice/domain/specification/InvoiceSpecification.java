@@ -13,17 +13,17 @@ public class InvoiceSpecification {
         super();
     }
 
-    public static Specification<Invoice> createSpecification(Long payer, Long scheme, String invoice, InvoiceStatus status, DateRange range) {
+    public static Specification<Invoice> createSpecification(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo,DateRange range) {
 
         return (root, query, cb) -> {
 
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
             if (payer != null) {
-                predicates.add(cb.equal(root.get("Payer").get("id"), payer));
+                predicates.add(cb.equal(root.get("payer").get("id"), payer));
             }
             if (scheme != null) {
-                predicates.add(cb.equal(root.get("Scheme").get("id"), payer));
+                predicates.add(cb.equal(root.get("payee").get("id"), payer));
             }
             
 //             if (customer != null) {
@@ -42,9 +42,12 @@ public class InvoiceSpecification {
             if (status != null) {
                 predicates.add(cb.equal(root.get("status"), status));
             }
+            if (patientNo != null) {
+                predicates.add(cb.equal(root.get("bill").get("patient").get("patientNumber"), patientNo));
+            }
             if(range!=null){
                   predicates.add(
-                     cb.between(root.get("createdOn"), range.getStartDateTime(), range.getEndDateTime())
+                     cb.between(root.get("createdOn"), range.getStartDate(), range.getEndDate())
                   );
               }
 

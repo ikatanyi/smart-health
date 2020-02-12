@@ -42,7 +42,50 @@ public class ReportController {
         }
         
     }
+    @PostMapping("/report/accounts/daily-income-statement")
+    public void generateDailyIncomeStatement(
+            @RequestBody ReportData reportData,
+            HttpServletResponse response) {
+        try {
+            reportService.getDailyPayment(reportData, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(ReportController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    @PostMapping("/report/accounts/daily-insurance-statement")
+    public void generateDailyInsuranceStatement(
+            @RequestBody ReportData reportData,
+            HttpServletResponse response) {
+        try {
+            reportService.genInsuranceStatement(reportData, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(ReportController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    @PostMapping("/report/accounts/invoice-statement")
+    public void generateInvoiceStatement(
+            @RequestBody ReportData reportData, 
+            HttpServletResponse response) {
+        try {
+            reportService.getInvoiceStatement(reportData, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(ReportController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
     
-    
+    @PostMapping("/report/accounts/invoice-")
+    public void generateInvoice(
+            @RequestBody ReportData reportData, 
+            HttpServletResponse response) {
+        try {
+            reportService.getInvoice(reportData, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(ReportController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }   
 
 }

@@ -154,12 +154,12 @@ public class InvoiceService {
         return invoiceRepository.findByNumber(invoiceNo);
     }
 
-    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, String status, DateRange range,Pageable pageable) {
+    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice,  String status, String patientNo,DateRange range,Pageable pageable) {
         InvoiceStatus state = null;
         if (state != null) {
             state = InvoiceStatus.valueOf(status);
         }
-        Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, state,range);
+        Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, state,patientNo,range);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
         return invoices;
     }

@@ -45,9 +45,13 @@ public interface DateConverter {
 
 //    @Nonnull
     static LocalDate dateFromIsoString(final String isoDateString) {  //2019-02-01
+         String shortenedString=null;
         Assert.notNull(isoDateString, "ISO date time must be given.");
         final int zIndex = isoDateString.indexOf("Z");
-        final String shortenedString = isoDateString.substring(0, zIndex);
+        if(zIndex>0)
+           shortenedString = isoDateString.substring(0, zIndex);
+        else
+            shortenedString  =isoDateString;
         return LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(shortenedString));
     }
     
