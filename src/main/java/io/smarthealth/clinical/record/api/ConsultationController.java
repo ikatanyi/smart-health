@@ -16,6 +16,7 @@ import io.smarthealth.clinical.record.domain.PatientNotes;
 import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.DiseaseService;
 import io.smarthealth.clinical.record.service.PatientNotesService;
+import io.smarthealth.clinical.record.service.SickOffNoteService;
 import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -63,16 +64,17 @@ public class ConsultationController {
 
     private final DiagnosisService diagnosisService;
     private final DepartmentService departmentService;
+    private final SickOffNoteService sickOffNoteService;
 
-    public ConsultationController(PatientNotesService patientNotesService, PatientService patientService, VisitService visitService, EmployeeService employeeService, DiseaseService diseaseService, DiagnosisService diagnosisService, DepartmentService departmentService) {
+    public ConsultationController(PatientNotesService patientNotesService, PatientService patientService, VisitService visitService, EmployeeService employeeService, DiseaseService diseaseService, DiagnosisService diagnosisService, DepartmentService departmentService, SickOffNoteService sickOffNoteService) {
         this.patientNotesService = patientNotesService;
         this.patientService = patientService;
         this.visitService = visitService;
         this.employeeService = employeeService;
-//        this.userService = userService;
         this.diseaseService = diseaseService;
         this.diagnosisService = diagnosisService;
         this.departmentService = departmentService;
+        this.sickOffNoteService = sickOffNoteService;
     }
 
     /* Patient Notes */

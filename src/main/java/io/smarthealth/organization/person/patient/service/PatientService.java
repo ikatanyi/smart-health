@@ -34,12 +34,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -421,8 +425,13 @@ public class PatientService {
 
         InputStream path = resourceLoader.getResource("classpath:reports/patient/PatientList.jrxml").getInputStream();
         
-//        JasperReport jasperReport = JasperCompileManager.compileReport(path);
+        JasperReport jasperReport = JasperCompileManager.compileReport(path);
 
+        // Parameters for report
+        Map<String, Object> parameters = new HashMap<String, Object>();
+
+//        JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, conn);
+//
 //        return print;
     }
 

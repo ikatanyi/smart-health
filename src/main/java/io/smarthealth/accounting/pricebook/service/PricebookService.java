@@ -4,6 +4,7 @@ import io.smarthealth.accounting.pricebook.data.PriceBookData;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.pricebook.domain.PriceBookItem;
 import io.smarthealth.accounting.pricebook.domain.PriceBookRepository;
+import io.smarthealth.accounting.pricebook.domain.PriceListDTO;
 import io.smarthealth.accounting.pricebook.domain.enumeration.PriceCategory;
 import io.smarthealth.accounting.pricebook.domain.enumeration.PriceType;
 import io.smarthealth.accounting.pricebook.domain.specification.PriceBookSpecification;
@@ -12,7 +13,6 @@ import io.smarthealth.administration.app.domain.CurrencyRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -66,10 +66,10 @@ public class PricebookService {
             Set<PriceBookItem> itemlist = new HashSet<>();
             priceBook.getPricebookItems()
                     .stream()
-                     .forEach(x->{
-                       Item item=itemService.findById(x.getItemId()).get();
-                       itemlist.add(new PriceBookItem(item, x.getAmount()));
-                     });
+                    .forEach(x -> {
+                        Item item = itemService.findById(x.getItemId()).get();
+                        itemlist.add(new PriceBookItem(item, x.getAmount()));
+                    });
 
             book.addPriceItems(itemlist);
         }
@@ -111,4 +111,10 @@ public class PricebookService {
                 .collect(Collectors.toList());
     }
     //
+    public List<PriceListDTO> getPricelist() {
+        return priceBookRepository.getPriceLists();
+    }
+    public List<PriceListDTO> searchPricelistByItem(String item) {
+        return priceBookRepository.searchPriceListByItem(item);
+    }
 }

@@ -172,10 +172,16 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
+        <!--https://www.sipios.com/blog-tech/how-to-generate-an-advanced-search-api-spring-boot-->
+<!--        <dependency>
+            <groupId>com.sipios</groupId>
+            <artifactId>spring-search</artifactId>
+            <version>0.2.0</version>
+        </dependency>-->
         <!--         caching 
         <dependency>
             <groupId>javax.cache</groupId>
@@ -185,7 +191,7 @@
             <groupId>org.ehcache</groupId>
             <artifactId>ehcache</artifactId>
         </dependency>-->
-         
+
     </dependencies>
 
     <!--    <dependencyManagement>

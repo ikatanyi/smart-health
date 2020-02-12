@@ -7,6 +7,7 @@ package io.smarthealth.clinical.record.domain;
 
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,5 +23,7 @@ public interface TriageRepository extends JpaRepository<VitalsRecord, Long> {
     Page<VitalsRecord> findByVisit(final Visit visit, Pageable page);
 
     Page<VitalsRecord> findByPatient(final Patient patient, Pageable page);
+
+    Optional<VitalsRecord> findFirstByPatientOrderByIdDesc(final Patient patient);
 
 }

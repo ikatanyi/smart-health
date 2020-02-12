@@ -12,6 +12,7 @@ import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.VisitType;
 import io.smarthealth.clinical.visit.domain.Visit;
+import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.swagger.annotations.ApiModelProperty;
@@ -36,6 +37,8 @@ public class VisitData {
     private String patientNumber;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime startDatetime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
+    private LocalDateTime startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime stopDatetime;
     @Enumerated(EnumType.STRING)
@@ -86,6 +89,7 @@ public class VisitData {
         visitDTO.setVisitType(visitEntity.getVisitType());
         visitDTO.setPaymentMethod(visitEntity.getPaymentMethod());
         visitDTO.setComments(visitEntity.getComments());
+        visitDTO.setStartDate(visitEntity.getStartDatetime());
         return visitDTO;
     }
 

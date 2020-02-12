@@ -42,6 +42,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,6 +174,20 @@ public class ClinicalVisitController {
         return ResponseEntity.created(location).body(visitDat);
     }
 
+    @PutMapping("/visits/{visitNumber}/status/{status}")
+    @ApiOperation(value = "Update patient visit status", response = VisitData.class)
+    public @ResponseBody
+    ResponseEntity<?> updateVisitStatus(@PathVariable("visitNumber") final String visitNumber, @PathVariable("status") final String status) {
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+
+        visit.setStatus(VisitEnum.Status.valueOf(status));
+        visit = this.visitService.createAVisit(visit);
+        //Convert to data
+        VisitData visitDat = modelMapper.map(visit, VisitData.class);
+
+        return ResponseEntity.status(HttpStatus.OK).body(visitDat);
+    }
+
     @GetMapping("/visits")
     public ResponseEntity<List<VisitData>> fetchAllVisits(@RequestParam(value = "visitNumber", required = false) final String visitNumber, @RequestParam(value = "staffNumber", required = false) final String staffNumber, @RequestParam(value = "servicePointType", required = false) final String servicePointType, @RequestParam(value = "patientNumber", required = false) final String patientNumber, @RequestParam(value = "runningStatus", required = false, defaultValue = "true") final boolean runningStatus, @RequestParam(value = "startDate", required = false) final String dateRange, Pageable pageable) {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
@@ -186,7 +201,7 @@ public class ClinicalVisitController {
         PaymentDetails pde = paymentDetailsService.fetchPaymentDetailsByVisit(visit);
         Pager<PaymentDetailsData> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Payment Method");
+        pagers.setMessage("Payment Mode");
         pagers.setContent(PaymentDetailsData.map(pde));
 
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
@@ -271,6 +286,19 @@ public class ClinicalVisitController {
         Page<VitalRecordData> page = triageService.fetchVitalRecordsByPatient(patientNumber, pageable).map(v -> convertToVitalsData(v));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/patients/{patientNumber}/vitals/last")
+    @ApiOperation(value = "Fetch all patient's last vitals by patient", response = VitalRecordData.class)
+    public ResponseEntity<?> fetchLatestVitalsByPatient(@PathVariable("patientNumber") final String patientNumber) {
+
+        Optional<VitalsRecord> vr = triageService.fetchLastVitalRecordsByPatient(patientNumber);
+        if (vr.isPresent()) {
+            return ResponseEntity.ok(VitalRecordData.map(vr.get()));
+        } else {
+            return ResponseEntity.ok(new VitalRecordData());
+        }
+
     }
 
     private VisitData convertToVisitData(Visit visit) {

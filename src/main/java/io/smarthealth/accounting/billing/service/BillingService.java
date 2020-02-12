@@ -116,6 +116,7 @@ public class BillingService {
 
     private PatientBill createBill(PharmacyData data) {
         ServicePoint srvpoint = servicePointService.getServicePointByType(ServicePointType.Pharmacy);
+       
         log.info("Generating a patient bill from stock item");
         //check the validity of the patient visit
         Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
