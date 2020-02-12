@@ -18,7 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Data
 @Entity
 @Table(name = "acc_journal_entries")
-@EqualsAndHashCode(exclude={"debtors", "creditors"}, callSuper = false)
+@EqualsAndHashCode(exclude = {"debtors", "creditors"}, callSuper = false)
 public class JournalEntryEntity extends Auditable {
 
     @DateTimeFormat(pattern = Constants.DATE_PATTERN)
@@ -40,15 +40,17 @@ public class JournalEntryEntity extends Auditable {
     public JournalEntryEntity() {
         super();
     }
-    public void addDebtors(Set<DebtorType> debtorTypes){
-        this.debtors=debtorTypes;
-        this.debtors.forEach(x->x.setJournalEntryEntity(this));
+
+    public void addDebtors(Set<DebtorType> debtorTypes) {
+        this.debtors = debtorTypes;
+        this.debtors.forEach(x -> x.setJournalEntryEntity(this));
     }
 
-    public void addCreditors(Set<CreditorType> creditorTypes){
-        this.creditors=creditorTypes;
+    public void addCreditors(Set<CreditorType> creditorTypes) {
+        this.creditors = creditorTypes;
         this.creditors.forEach(x -> x.setJournalEntryEntity(this));
     }
+
     public Double getJournalAmount() {
         return this.debtors
                 .stream()

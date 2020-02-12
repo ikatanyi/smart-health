@@ -5,7 +5,6 @@ import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
