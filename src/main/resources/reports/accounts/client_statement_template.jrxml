@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice_template" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="4aae1193-a82d-4555-b88f-e537201ac06a">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Kent\\Documents\\NetBeansProjects\\csrim\\src\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Kent\\Documents\\NetBeansProjects\\csrim\\src\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CompanyName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Phone" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Address" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Email" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Web" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="State" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="City" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="invoiceNo" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="CustomerName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="customerId" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orderNo" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orderDate" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="serviceDate" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="dueDate" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="shipto" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="remarks" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="discount" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="shippingCost" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="VAT" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Total" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="payment_mode" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="date" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kennedy.ikatanyi\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="header" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer"/>
+	<field name="customerid" class="java.lang.String"/>
+	<field name="Item" class="java.lang.String"/>
+	<field name="Insurance" class="java.lang.String"/>
+	<field name="Invoice#" class="java.lang.String"/>
+	<field name="Patient" class="java.lang.String"/>
+	<field name="Amount" class="java.lang.Double"/>
+	<field name="Date" class="java.util.Date"/>
+	<field name="Due Date" class="java.util.Date"/>
+	<field name="Payment Status" class="java.lang.Boolean"/>
+	<field name="Company/Scheme" class="java.lang.String"/>
+	<variable name="Price_1" class="java.lang.Double" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{Amount}.equals( null )?0.00:$F{Amount}]]></variableExpression>
+	</variable>
+	<background>
+		<band height="802" splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="169" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="66" width="311" height="13" isRemoveLineWhenBlank="true" uuid="137701b9-10c9-4a7a-8c8e-a2fdf1a6014c"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CompanyName}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="83" width="294" height="13" isRemoveLineWhenBlank="true" uuid="79e4950f-feb5-46a5-8a42-432686f2c267"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Address}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="99" width="294" height="13" isRemoveLineWhenBlank="true" uuid="b364c982-465a-4f80-94c1-325af8c18f78"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Phone}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="48" y="115" width="146" height="13" isRemoveLineWhenBlank="true" uuid="48b9f450-5211-49cd-a3a3-949bdab25bb4"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{State}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="115" width="47" height="13" isRemoveLineWhenBlank="true" uuid="0a4e80b5-9914-482f-b463-f4fd48b0fc16"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{City}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="312" y="58" width="90" height="31" forecolor="#000000" backcolor="#9966FF" uuid="9404741d-3395-4f62-ba54-71373cf13be6"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Amount Due :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="390" y="97" width="70" height="14" uuid="dd747499-49e1-47a0-a0b4-e243aaeacf1d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Invoice Date :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="390" y="117" width="70" height="14" uuid="a96f51b0-d973-4154-be54-e8d55f89d177"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Due Date ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="390" y="137" width="70" height="14" uuid="fe562e29-aad3-45dd-b0c4-fa8ba349ed98"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Cust ID]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="460" y="97" width="95" height="14" isRemoveLineWhenBlank="true" uuid="6e8ee49e-9160-41cb-a7bb-1e225794004c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="460" y="137" width="95" height="14" uuid="7b771f1c-81bf-4855-879b-ce820683808a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{customerid}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="460" y="117" width="95" height="14" uuid="2e4e90db-5eab-4157-87a3-9e889dab7366"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[]]></textFieldExpression>
+			</textField>
+			<textField pattern="KSH #,##0.00">
+				<reportElement mode="Transparent" x="402" y="58" width="153" height="31" forecolor="#000000" backcolor="#9966FF" uuid="e3a1e47d-5f02-4b8c-aeed-4be0763e1d28"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Total}.equals( null )?0.00:$P{Total}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="0" width="555" height="20" forecolor="#000000" backcolor="#9966FF" uuid="cfc4fb8d-4b3e-452b-a7fb-509a6b44a8de"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payment Statement]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="22" width="555" height="1" uuid="c27f7329-e66b-4094-8818-0212ccceebb3"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#6666FF"/>
+				</graphicElement>
+			</line>
+			<image>
+				<reportElement x="2" y="23" width="234" height="36" uuid="b2f50cd0-3b6d-4069-baa3-9874e1c9a93e">
+					<printWhenExpression><![CDATA[$P{header}==false||$P{header}==null]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="71" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="10" width="183" height="20" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bill To :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="360" y="10" width="183" height="20" forecolor="#000000" backcolor="#9966FF" uuid="e480ec8a-e6de-414a-8827-42d638720712"/>
+				<textElement>
+					<font fontName="Trebuchet MS" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Client Name :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="2" y="31" width="276" height="14" uuid="87435761-8924-4f0f-bbe1-b317dbb6e237"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Insurance}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="360" y="31" width="183" height="14" uuid="7e765550-08ca-4c6c-8679-28fd1048dd0f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Company/Scheme}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="45" splitType="Stretch">
+			<staticText>
+				<reportElement x="166" y="23" width="81" height="20" uuid="cea91abf-a41c-4493-b978-f2a196e8167e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Invoice#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="38" y="23" width="128" height="20" uuid="6a94bd07-010e-4af7-84df-c7865d7ece43"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="472" y="23" width="73" height="20" uuid="c2d85bb1-0557-4398-a0e4-7d8f2a7bcc1e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="247" y="23" width="72" height="20" uuid="6ce1307f-fb10-4dca-a4d6-d1fe04fa2319"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="319" y="23" width="74" height="20" uuid="0fa46c55-f600-4ccf-979a-43fe35806bb9"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Due Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="393" y="23" width="79" height="20" uuid="d04dab5d-d240-4650-99b8-4b411c520066"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payment Status]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="23" width="38" height="20" uuid="ba932466-ab02-472f-871f-8346065071c4"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="44" width="555" height="1" uuid="4303b33e-af1f-42c8-aae5-5195554a0762"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#6666FF"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="17" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="38" height="17" uuid="dc301b14-24f4-48c0-b3c4-f75988f8a8bc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Item}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="166" y="0" width="81" height="17" uuid="e61ff826-54f1-4ed5-b17a-dfb806e769e3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Invoice#}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="38" y="0" width="128" height="17" uuid="0eff5c6f-155d-4f1c-8c5c-e459481d3652"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Patient}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="475" y="0" width="70" height="17" uuid="72ae2f39-d679-4236-a8a7-8aefb5de518f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Amount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yyyy" isBlankWhenNull="true">
+				<reportElement x="247" y="0" width="69" height="17" uuid="8c66d854-15ee-429f-8904-4ed25ebc25cf"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Date}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yyyy" isBlankWhenNull="true">
+				<reportElement x="319" y="0" width="74" height="17" uuid="5bd4052b-b7fb-401f-9656-e24e8b371e52"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Due Date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="393" y="0" width="82" height="17" forecolor="#000000" uuid="9f103319-c6bc-4b2d-b399-56ead2d625d2"/>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Payment Status}.equals( true )?"Paid":"<html><font color='red'>Pending</font></html>"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="16" width="554" height="1" uuid="c17c0a91-8192-418c-a3ac-63222159f084"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Dashed" lineColor="#6666FF"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="117" splitType="Stretch">
+			<staticText>
+				<reportElement x="374" y="13" width="86" height="13" uuid="8faf028c-a4d3-469c-a85b-643104fb335e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL :]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="13" width="294" height="100" uuid="99b06ddb-a38f-4030-9e13-984e5eaed750"/>
+			</rectangle>
+			<textField>
+				<reportElement x="0" y="71" width="294" height="17" uuid="f1fb3bf5-f597-44ea-993a-6cdd7a514a7a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{remarks}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="39" width="294" height="32" uuid="befe1fca-44e9-4912-ae25-8f28bb29bc1c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[1. Total payment due in 30 days
+2. Please include the invoice number on your check
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="13" width="294" height="20" forecolor="#000000" backcolor="#9966FF" uuid="4bb3ddc8-9b93-46e6-af64-0cf4e805150e"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Other comments or Special Instructions]]></text>
+			</staticText>
+			<textField pattern="KSH #,##0.00">
+				<reportElement x="460" y="13" width="95" height="13" uuid="c932f3de-d592-4733-bd3b-cf904407985f"/>
+				<textElement textAlignment="Right">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Price_1}.equals( null )?0.00:$V{Price_1}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="1" width="555" height="1" uuid="7f4e7e95-0fac-4d05-82d3-df9cd5bd2375"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#6666FF"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="78" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="11" width="259" height="14" uuid="17f31811-0ef9-4546-b89f-1122b3500a8c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[If you have any questions about this Statement, please contact
+[Name, Phone #, E-mail]
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="390" y="11" width="143" height="14" uuid="e29a706a-6346-45c6-a5e6-5ed96d75aaf5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Make all checks payable to		]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="390" y="25" width="143" height="20" uuid="beb90d54-4781-4030-acc5-b0fbb9c92b85"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CompanyName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="25" y="25" width="65" height="14" uuid="ec64deab-6d80-42b7-8925-4f1f8faba389"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Phone}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="90" y="25" width="169" height="14" uuid="a208491d-c7f0-47a1-b762-8c7438647332"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Email}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="25" width="24" height="14" uuid="94f5baf5-cebd-433e-9d89-4c81fdfd5760"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tel:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

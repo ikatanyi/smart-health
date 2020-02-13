@@ -24,6 +24,7 @@ public class InvoiceData {
     private String payer;
     private Long payerId;
     private String payee;
+    private Long payeeId;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate date;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
@@ -65,7 +66,6 @@ public class InvoiceData {
         data.setTerms(invoice.getTerms());
         data.setTransactionNo(invoice.getTransactionNo());
         data.setReference(invoice.getReference());
-        data.setPayee(invoice.getPayee());
         data.setIsVerified(invoice.getIsVerified());
 
         data.setNotes(invoice.getNotes());
@@ -76,6 +76,10 @@ public class InvoiceData {
         if (invoice.getPayer() != null) {
             data.setPayer(invoice.getPayer().getPayerName());
             data.setPayerId(invoice.getPayer().getId());
+        }
+        if (invoice.getPayee() != null) {
+            data.setPayeeId(invoice.getPayee().getId());
+            data.setPayee(invoice.getPayee().getSchemeName());
         }
 
         if (!invoice.getItems().isEmpty()) {

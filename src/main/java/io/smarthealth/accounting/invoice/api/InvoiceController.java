@@ -5,6 +5,7 @@ import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.service.InvoiceService; 
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.inventory.data.TransData;
@@ -65,14 +66,18 @@ public class InvoiceController {
 
     @GetMapping("/invoices")
     public ResponseEntity<?> getInvoices(
-            @RequestParam(value = "payer", required = false) String customer,
+            @RequestParam(value = "payer", required = false) Long payer,
+            @RequestParam(value = "scheme", required = false) Long scheme,
             @RequestParam(value = "number", required = false) String invoice,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "patientNo", required = false) String patientNo,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<InvoiceData> list = service.fetchInvoices(customer, invoice, status, pageable)
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, patientNo, range, pageable)
                 .map(bill -> InvoiceData.map(bill));
 
         Pager<List<InvoiceData>> pagers = new Pager();

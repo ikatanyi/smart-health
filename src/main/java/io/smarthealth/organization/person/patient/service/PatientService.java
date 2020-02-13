@@ -28,6 +28,7 @@ import io.smarthealth.organization.person.patient.domain.PatientIdentifier;
 import io.smarthealth.organization.person.patient.domain.PatientIdentifierRepository;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.organization.person.patient.domain.specification.PatientSpecification;
+import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -91,6 +93,9 @@ public class PatientService {
 
     @Autowired
     private ResourceLoader resourceLoader;
+    
+    @Autowired
+    private JasperReportsService reportService;
 
     @Autowired
     SequenceService sequenceService;
@@ -415,7 +420,7 @@ public class PatientService {
         }
     }
 
-    public JasperPrint exportPatientPdfFile() throws SQLException, JRException, IOException {
+    public void exportPatientPdfFile(HttpServletResponse response) throws SQLException, JRException, IOException {
         Connection conn = jdbcTemplate.getDataSource().getConnection();
 
         InputStream path = resourceLoader.getResource("classpath:reports/patient/PatientList.jrxml").getInputStream();
@@ -425,9 +430,9 @@ public class PatientService {
         // Parameters for report
         Map<String, Object> parameters = new HashMap<String, Object>();
 
-        JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, conn);
-
-        return print;
+//        JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, conn);
+//
+//        return print;
     }
 
 }

@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rpt_org_payment" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="bank" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="month" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="year" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CompanyName" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Email" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Phone" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Address" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="State" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Web" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="City" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cheque" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="branch_id" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="total" class="java.lang.Double"/>
+	<parameter name="bill_to" class="java.lang.String"/>
+	<parameter name="from" class="java.util.Date"/>
+	<parameter name="to" class="java.util.Date"/>
+	<parameter name="deptCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     ac_cash_collection.`activity_code` AS activity_code,
+     ac_cash_collection.`patient_no` AS patient_no,
+     ac_cash_collection.`payment_mode` AS payment_mode,
+     ac_cash_collection.`id` AS id,
+     ac_cash_collection.`account_no` AS account_no,
+     ac_cash_collection.`debit` AS debit,
+     ac_cash_collection.`credit` AS credit,
+     ac_cash_collection.`date` AS date,
+     ac_cash_collection.`transaction_no` AS transaction_no,
+     ac_cash_collection.`drawer_bank` AS drawer_bank,
+     CONCAT(dt_patientdetails.`surname`," ",dt_patientdetails.`Fname`," ",dt_patientdetails.`Lname`) AS patientname,
+     ac_cash_collection.`cash_point` AS cash_point
+FROM
+     `ac_cash_collection` ac_cash_collection LEFT JOIN `dt_patientdetails` dt_patientdetails ON ac_cash_collection.`patient_no` = dt_patientdetails.`patient_id`
+where credit=0 AND ($P{deptCode} ='' OR ac_cash_collection.`cash_point`=$P{deptCode}) AND ac_cash_collection.`date` BETWEEN $P{from} AND $P{to}
+GROUP BY ac_cash_collection.`cash_point`,ac_cash_collection.`payment_mode`, ac_cash_collection.`id`
+order by ac_cash_collection.`cash_point` ASC]]>
+	</queryString>
+	<field name="activity_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="patient_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="payment_mode" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="account_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="debit" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="credit" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="transaction_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="drawer_bank" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="patientname" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cash_point" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="debit_1" class="java.math.BigDecimal" resetType="Group" resetGroup="paymentMode" calculation="Sum">
+		<variableExpression><![CDATA[$F{debit}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	</variable>
+	<variable name="debit_2" class="java.math.BigDecimal" resetType="Group" resetGroup="cashPoint" calculation="Sum">
+		<variableExpression><![CDATA[$F{debit}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	</variable>
+	<group name="cashPoint">
+		<groupExpression><![CDATA[$F{cash_point}]]></groupExpression>
+		<groupHeader>
+			<band height="19">
+				<line>
+					<reportElement x="3" y="18" width="239" height="1" uuid="01ac476d-a029-4541-a9e6-9a7c3857a241"/>
+					<graphicElement>
+						<pen lineWidth="0.25" lineColor="#6666FF"/>
+					</graphicElement>
+				</line>
+				<textField isBlankWhenNull="true">
+					<reportElement x="1" y="4" width="118" height="15" uuid="7a4cbca5-7baf-433a-bcd2-ef7ea630f976"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cash_point}.equals( "doc_004" )?"CONSULTATION":
+$F{cash_point}.equals( "pharm_002" )?"PHARMACY":
+$F{cash_point}.equals( "lab_003" )?"LABORATORY":
+$F{cash_point}.equals( "tri_008" )?"NURSING":
+$F{cash_point}.equals( "tri_007" )?"TRIAGE":
+$F{cash_point}.equals( "scan_006" )?"RADIOLOGY":"RECEPTION"]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="18">
+				<staticText>
+					<reportElement x="0" y="0" width="50" height="14" uuid="24dc744f-ee69-4052-a990-6da4153528bb"/>
+					<textElement verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total Person;]]></text>
+				</staticText>
+				<line>
+					<reportElement x="2" y="14" width="552" height="1" forecolor="#9999FF" uuid="85bf21a9-0520-4034-84c0-ef8997b41f33"/>
+					<graphicElement>
+						<pen lineWidth="0.25" lineStyle="Solid" lineColor="#CCCCCC"/>
+					</graphicElement>
+				</line>
+				<textField>
+					<reportElement x="493" y="0" width="44" height="13" uuid="e87a71f2-d438-49a2-a294-2825c4c780f6"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{debit_2}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="paymentMode">
+		<groupExpression><![CDATA[$F{payment_mode}]]></groupExpression>
+		<groupHeader>
+			<band height="19">
+				<textField isBlankWhenNull="true">
+					<reportElement x="21" y="4" width="100" height="15" uuid="82dd0257-f197-4660-aa10-46ac766fdb9c"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{payment_mode}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="3" y="18" width="161" height="1" uuid="64438402-2192-4b34-8508-853e72c45ab5"/>
+					<graphicElement>
+						<pen lineWidth="0.25" lineColor="#6666FF"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<textField>
+					<reportElement x="472" y="0" width="65" height="20" uuid="55fa349c-e873-4614-b7a5-f77353080eff"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{debit_1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="232" y="7" width="78" height="13" uuid="8fcb286d-8a15-43d3-8997-49ae1e84ed38"/>
+					<textElement textAlignment="Justified" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total :]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="163" splitType="Stretch">
+			<staticText>
+				<reportElement x="1" y="132" width="53" height="13" uuid="f1fd54da-faf2-4775-b58e-a9e8655f80f5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Phone :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="106" width="53" height="13" uuid="c333dee0-3d98-47bd-bb35-e11759432517"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[State :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="54" y="132" width="123" height="13" uuid="3f5dac2f-569e-443a-8fe5-393d6141f371"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Phone}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="54" y="119" width="123" height="13" uuid="26ecf24b-27aa-43ff-9eab-d313373196d1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Address}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="119" width="53" height="13" uuid="1c79b574-811a-488d-af95-6e361f93ec5c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Address :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="1" y="63" width="131" height="19" uuid="7a43192b-7457-4aa3-a526-8a2d18d2b252"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Email}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="54" y="105" width="123" height="14" uuid="e15e3a63-fc79-4977-baa3-bbf556a03b2f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{State}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="43" width="310" height="20" uuid="c2ce6e22-2e52-4658-b51b-239e9649ab86"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CompanyName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="75" width="131" height="20" uuid="79667928-b339-489f-bf17-693cc6a9bd92"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Web}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="3" y="0" width="161" height="33" uuid="8c85dd95-1ee2-41ad-b984-89aa60c6facf"/>
+				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="97" splitType="Stretch">
+			<staticText>
+				<reportElement x="1" y="10" width="231" height="20" uuid="2128f471-bc78-4bea-b26b-955f270cde40"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payment Statement between The given Dates]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="96" width="552" height="1" forecolor="#6666FF" uuid="14761926-4c06-4d35-ba7c-e283b165fa1a"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="1" y="77" width="20" height="20" uuid="b3e1e8e9-9c7e-498f-9741-2657e9e45f3a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="33" width="50" height="15" uuid="6ae293a2-064a-4450-a97d-aa5796c28340"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[From :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="53" width="50" height="15" uuid="5213d4a9-fb97-4c2c-b669-5ab8864cb4c2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[To :]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="50" y="33" width="104" height="15" uuid="296dd85b-0679-49de-80e7-b8bed8a46890"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{from}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="50" y="53" width="104" height="15" uuid="de78c19e-69c4-4e30-9d7d-f421671a32b0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{to}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="21" y="77" width="111" height="19" uuid="ee9202ec-4e18-4839-9980-63f7dc2fe0e9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PatientId]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="132" y="77" width="76" height="19" uuid="d702938d-697e-42cf-aa85-e77113e7716e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AccountNo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="208" y="77" width="155" height="19" uuid="c9cf068c-f456-474f-9b79-6b06600cd5e1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PatientName]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="471" y="77" width="79" height="19" uuid="1f838f42-24d4-4eaf-ab13-405aed1330f3"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="375" y="77" width="88" height="19" uuid="9f6967f0-d9ea-4cd5-abbf-f79192760966"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<line>
+				<reportElement x="3" y="15" width="552" height="1" forecolor="#9999FF" uuid="0857bc25-5cba-42f9-920c-2039555116dd"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="0" y="0" width="21" height="15" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="21" y="0" width="111" height="15" uuid="491595bf-03f2-4046-a37f-3fc4da7a1c26"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{patient_no}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="132" y="0" width="75" height="15" uuid="e895d42a-b43c-450a-bddd-dab8d70bf3a8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{account_no}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="208" y="0" width="155" height="15" uuid="29cc3f64-082c-4174-9125-b8aba6a7ab58"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{patientname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="471" y="0" width="66" height="15" uuid="068c606c-69ea-42f3-a293-ddd9aa433ce1"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{debit}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MM-yyyy">
+				<reportElement x="375" y="0" width="88" height="15" uuid="a80bb75d-c421-41e0-8988-6119d55a46e1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<lastPageFooter>
+		<band height="49">
+			<staticText>
+				<reportElement x="1" y="21" width="53" height="20" uuid="f1382228-b219-4b5f-b04b-331ed6c3e4c3"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Printed on:]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="54" y="21" width="169" height="20" uuid="6209b4d2-0151-4289-9a72-cadb1ac26a27"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+</jasperReport>
