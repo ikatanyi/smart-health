@@ -44,4 +44,8 @@ public class Referrals extends Auditable {
     private String doctorSpeciality;
     private String referralNotes;
 
+    private boolean includeVisitClinalNotes;
+    private String chiefComplaints;
+    private String examinationNotes;
+
 }

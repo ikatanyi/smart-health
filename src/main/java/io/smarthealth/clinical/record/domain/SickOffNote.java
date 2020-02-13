@@ -36,5 +36,8 @@ public class SickOffNote extends Auditable {
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDate reviewDate;
+    
+    private String recommendation;
+    private String reason;
 
 }

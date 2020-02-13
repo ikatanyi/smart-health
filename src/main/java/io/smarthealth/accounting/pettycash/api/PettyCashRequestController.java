@@ -187,6 +187,8 @@ public class PettyCashRequestController {
             if (agreed >= config.getMinNoOfApprovers()) {
                 e.setStatus(PettyCashStatus.Approved);
                 pettyCashRequestsService.createCashRequests(e);
+                //TODO POST JOURNAL ENTRY
+
             }
             if (declined > agreed) {
                 e.setStatus(PettyCashStatus.Declined);
