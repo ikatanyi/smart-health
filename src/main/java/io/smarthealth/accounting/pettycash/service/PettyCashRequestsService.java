@@ -11,6 +11,7 @@ import io.smarthealth.accounting.pettycash.domain.repository.PettyCashItemsRepos
 import io.smarthealth.accounting.pettycash.domain.repository.PettyCashRequestsRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.DateFormatUtil;
+import io.smarthealth.organization.facility.domain.Employee;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,10 @@ public class PettyCashRequestsService {
 
     public Optional<PettyCashRequestItems> findRequestedItemById(Long id) {
         return pettyCashItemsRepository.findById(id);
+    }
+
+    public Page<PettyCashRequests> findPettyCashRequestsByEmployeeWhoRequested(final Employee employee, final Pageable pageable) {
+        return cashRequestsRepository.findByRequestedBy(employee, pageable);
     }
 
     public Page<PettyCashRequests> fetchAllPettyCashRequestsByPendingApprovalLevel(final int level, final Pageable pageable) {

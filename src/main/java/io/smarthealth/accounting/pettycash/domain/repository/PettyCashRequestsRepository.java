@@ -6,6 +6,7 @@
 package io.smarthealth.accounting.pettycash.domain.repository;
 
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
+import io.smarthealth.organization.facility.domain.Employee;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,5 +21,7 @@ public interface PettyCashRequestsRepository extends JpaRepository<PettyCashRequ
     Optional<PettyCashRequests> findByRequestNo(String requestNo);
 
     Page<PettyCashRequests> findByApprovalPendingLevel(final int pendingLevel, final Pageable pageable);
+
+    Page<PettyCashRequests> findByRequestedBy(final Employee employee, final Pageable pageable);
 
 }

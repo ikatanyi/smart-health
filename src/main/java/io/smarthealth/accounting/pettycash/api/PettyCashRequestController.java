@@ -142,11 +142,31 @@ public class PettyCashRequestController {
 
     }
 
+    @GetMapping("/petty-cash-request/me")
+    public ResponseEntity<?> findMyPettyCashRequests(Authentication authentication, final Pageable pageable) {
+        String username = authentication.getName();
+        User user = service.findUserByUsernameOrEmail(username)
+                .orElseThrow(() -> APIException.badRequest("User not found"));
+        Employee employee = employeeService.fetchEmployeeByUser(user);
+
+        Page<PettyCashRequestsData> list = pettyCashRequestsService.findPettyCashRequestsByEmployeeWhoRequested(employee, pageable).map(r -> PettyCashRequestsData.map(r));
+        Pager<List<PettyCashRequestsData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("My petty cash requests");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+    }
+
     @GetMapping("/petty-cash-request")
     public ResponseEntity<?> fetchPettyCashRequestsPendingApproval(Authentication authentication, final Pageable pageable) {
-
         String username = authentication.getName();
-
         User user = service.findUserByUsernameOrEmail(username)
                 .orElseThrow(() -> APIException.badRequest("User not found"));
         Employee employee = employeeService.fetchEmployeeByUser(user);
@@ -166,7 +186,6 @@ public class PettyCashRequestController {
         details.setReportName("Petty cash requests");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
-
     }
 
     @GetMapping("/petty-cash-request/{requestNo}")
