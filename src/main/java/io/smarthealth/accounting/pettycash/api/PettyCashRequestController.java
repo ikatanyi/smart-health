@@ -181,7 +181,7 @@ public class PettyCashRequestController {
 
     //update petty cash status
     @PutMapping("/petty-cash-request/{requestNo}/process")
-    public ResponseEntity<?> processPettyCash(@PathVariable("itemNo") final String requestNo, @Valid @RequestBody List<PettyCashApprovalsData> dataList, Authentication authentication) {
+    public ResponseEntity<?> processPettyCashItem(@PathVariable("requestNo") final String requestNo, @Valid @RequestBody List<PettyCashApprovalsData> dataList, Authentication authentication) {
         PettyCashRequests pettyCashRequests = pettyCashRequestsService.fetchCashRequestByRequestNo(requestNo);
 //        PettyCashRequestItems e = pettyCashRequestsService.findRequestedItemById(itemNo).orElseThrow(() -> APIException.notFound("Item not found << {0} >> ", itemNo));
         //fetch approval settings by petty cash
