@@ -12,6 +12,7 @@ import io.smarthealth.accounting.pettycash.domain.repository.PettyCashRequestsRe
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.DateFormatUtil;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +32,6 @@ public class PettyCashRequestsService {
     @Autowired
     PettyCashItemsRepository pettyCashItemsRepository;
 
-  
     @Transactional
     public PettyCashRequests createCashRequests(PettyCashRequests cashRequest) {
         return cashRequestsRepository.saveAndFlush(cashRequest);
@@ -41,8 +41,12 @@ public class PettyCashRequestsService {
         return cashRequestsRepository.findByRequestNo(requestNo).orElseThrow(() -> APIException.notFound("Request identified by {0} was not found", requestNo));
     }
 
-    public Page<PettyCashRequests> fetchAllPettyCashRequests(final Pageable pageable) {
-        return cashRequestsRepository.findAll(pageable);
+    public Optional<PettyCashRequestItems> findRequestedItemById(Long id) {
+        return pettyCashItemsRepository.findById(id);
+    }
+
+    public Page<PettyCashRequests> fetchAllPettyCashRequestsByPendingApprovalLevel(final int level, final Pageable pageable) {
+        return cashRequestsRepository.findByApprovalPendingLevel(level, pageable);
     }
 
     @Transactional
@@ -54,7 +58,6 @@ public class PettyCashRequestsService {
         return pettyCashItemsRepository.findByRequestNo(requestItems);
     }
 
-  
     public String generatepettyCashRequestNo() {
         //Format yyyy-mm-number
         String date = DateFormatUtil.generateDateStringInSpecificFormat("yyyy-MM-dd");

@@ -35,6 +35,8 @@ public class PettyCashRequests extends Auditable {
     @Enumerated(EnumType.STRING)
     private PettyCashStatus status;
 
+    private int approvalPendingLevel;
+
     @ManyToOne(optional = false)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_requests_request_by"))
     private Employee requestedBy;

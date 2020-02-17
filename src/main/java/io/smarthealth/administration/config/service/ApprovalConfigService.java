@@ -45,7 +45,12 @@ public class ApprovalConfigService {
     }
 
     public ModuleApprovers fetchModuleApproversByModule(final ApprovalModule module, final Employee employee) {
-        return moduleApproversRepository.findByModuleNameAndEmployee(module, employee).orElseThrow(() -> APIException.notFound("Approver identified by {0} not found. ", employee.getFullName()));
+        return moduleApproversRepository.findByModuleNameAndEmployee(module, employee).orElseThrow(() -> APIException.notFound("No approval rights found", employee.getFullName()));
+    }
+
+    public List<ModuleApprovers> fetchModuleApproversByModuleAndLevel(final ApprovalModule module, int level) {
+        return moduleApproversRepository.findByModuleNameAndApprovalLevel(module, level);
+        //  return moduleApproversRepository.findByModuleNameAndApprovalLevel(module, level).orElseThrow(() -> APIException.notFound("Approver identified by level {0} not found. ", level));
     }
 
     @Transactional

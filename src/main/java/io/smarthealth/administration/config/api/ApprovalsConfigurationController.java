@@ -7,8 +7,8 @@ package io.smarthealth.administration.config.api;
 
 import io.smarthealth.administration.config.data.ApprovalConfigData;
 import io.smarthealth.administration.config.data.ModuleApproversData;
+import io.smarthealth.administration.config.data.enums.ApprovalModule;
 import io.smarthealth.administration.config.domain.ApprovalConfig;
-import io.smarthealth.administration.config.domain.GlobalConfiguration;
 import io.smarthealth.administration.config.domain.ModuleApprovers;
 import io.smarthealth.administration.config.service.ApprovalConfigService;
 import io.smarthealth.organization.facility.service.EmployeeService;
@@ -18,8 +18,6 @@ import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -35,27 +33,32 @@ import org.springframework.web.bind.annotation.RestController;
 @Api("Api controlling the approval settings for modules such as petty cash and stock transfer")
 @RequestMapping("/api")
 public class ApprovalsConfigurationController {
-
+    
     @Autowired
     ApprovalConfigService approvalConfigService;
-
+    
     @Autowired
     EmployeeService employeeService;
-
+    
     @PostMapping("/approval-settings")
     public ResponseEntity<?> createApprovalConfiguration(@Valid @RequestBody ApprovalConfigData configData) {
         ApprovalConfig config = ApprovalConfigData.map(configData);
         return ResponseEntity.ok(ApprovalConfigData.map(approvalConfigService.saveApprovalConfig(config)));
     }
-
+    
+    @PostMapping("/approval-settings/{moduleName}")
+    public ResponseEntity<?> fetchApprovalConfiguration(@PathVariable("moduleName") final String moduleName) {
+        return ResponseEntity.ok(ApprovalConfigData.map(approvalConfigService.fetchApprovalConfigByModuleName(ApprovalModule.valueOf(moduleName))));
+    }
+    
     @PutMapping("/approval-settings")
     public ResponseEntity<?> updateApprovalConfigurations(@PathVariable(value = "id") Long approvalId, @Valid @RequestBody ApprovalConfigData configData) {
         ApprovalConfig config = approvalConfigService.fetchApprovalConfigById(approvalId);
-
+        
         config.setApprovalModule(configData.getModuleName());
         config.setMinNoOfApprovers(configData.getMinNoOfApprovers());
         config.setNoOfApproveres(configData.getNoOfApproveres());
-
+        
         return ResponseEntity.ok(ApprovalConfigData.map(approvalConfigService.saveApprovalConfig(config)));
     }
 
@@ -63,24 +66,24 @@ public class ApprovalsConfigurationController {
     @PostMapping("/module-approver")
     public ResponseEntity<?> createApprovalConfiguration(@Valid @RequestBody List<ModuleApproversData> approversData) {
         List<ModuleApprovers> approvers = new ArrayList<>();
-
+        
         for (ModuleApproversData data : approversData) {
             ModuleApprovers approver = new ModuleApprovers();
             approver.setEmployee(employeeService.fetchEmployeeByNumberOrThrow(data.getStaffNumber()));
             approver.setModuleName(data.getModuleName());
-            approver.setPriority(data.getPriority());
+            approver.setApprovalLevel(data.getApprovalLevel());
             approvers.add(approver);
         }
-
+        
         List<ModuleApprovers> approver = approvalConfigService.createModuleApprovers(approvers);
-
+        
         List<ModuleApproversData> data = new ArrayList<>();
-
+        
         approver.forEach((a) -> {
             ModuleApproversData d = ModuleApproversData.map(a);
             data.add(d);
         });
-
+        
         return ResponseEntity.ok(data);
     }
 }

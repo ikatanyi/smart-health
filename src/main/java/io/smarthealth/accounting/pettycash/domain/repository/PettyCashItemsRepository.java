@@ -17,4 +17,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface PettyCashItemsRepository extends JpaRepository<PettyCashRequestItems, Long> {
 
     List<PettyCashRequestItems> findByRequestNo(final PettyCashRequests requestNo);
+    //Optional<PettyCashRequestItems>findBy
 }

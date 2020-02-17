@@ -7,6 +7,7 @@ package io.smarthealth.infrastructure.sequence;
  */
 public enum SequenceType {
     PatientNumber("patient_number_seq"),
+    WalkingNumber("walking_number_seq"),
     VisitNumber("visit_number_seq"),
     JournalNumber("journal_seq"),
     DoctorRequestNumber("doctor_request_seq"),
