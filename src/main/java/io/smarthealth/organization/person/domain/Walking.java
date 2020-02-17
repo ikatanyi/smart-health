@@ -31,6 +31,6 @@ public class Walking extends Auditable {
 
     private int age;
 
-    @Formula(value = " concat(firstName, ' ', secondName, ' ', surname) ")
+    @Formula(value = " concat(first_name, ' ', second_name, ' ', surname) ")
     private String fullName;
 }
