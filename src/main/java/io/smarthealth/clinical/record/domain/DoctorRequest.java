@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.record.domain;
 
+import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -27,13 +28,8 @@ public class DoctorRequest extends Auditable {
         PartiallyFullfilled
     }
 
-    public enum RequestType {
-        Laboratory,
-        Radiology,
-        Pharmacy,
-        Procedure
-    }
-    private String requestType;
+    @Enumerated(EnumType.STRING)
+    private RequestType requestType;
 
     //the doctors oders
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -63,8 +59,5 @@ public class DoctorRequest extends Auditable {
     private String patientNumber;
     @Transient
     private String visitNumber;
-
-    private double itemCostRate;
-    private double itemRate;
 
 }

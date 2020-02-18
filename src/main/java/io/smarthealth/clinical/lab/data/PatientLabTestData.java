@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EnumType;
@@ -22,12 +23,10 @@ public class PatientLabTestData {
     
     @ApiModelProperty(required = false, hidden = true)
     private Long patientLabTestId;
-
-//    @ApiModelProperty(required = false, hidden = true)
-//    private LabTestType labTestType;
-    //@ApiModelProperty(required = false, hidden = true)
     private Long labTestTypeId;
     private String testName;
+    private LocalDate createdOn;
+    private String createdBy;
     private int quantity;
     
     private double testPrice;
@@ -35,7 +34,7 @@ public class PatientLabTestData {
     private LabTestState status;
     
     @ApiModelProperty(hidden = true, required = false)
-    List<SpecimenData> specimenData;
+    private String specimen;
     @ApiModelProperty(hidden = true, required = false)
     private String accessNo;
     private List<PatientLabTestSpecimenData> patientLabTestSpecimen;
@@ -92,11 +91,14 @@ public class PatientLabTestData {
             p.setTestName(labTest.getTestType().getTestType());
             p.setQuantity(labTest.getQuantity());
             p.setTestPrice(labTest.getTestPrice());
+            p.setCreatedOn(LocalDate.from(labTest.getCreatedOn()));
+            p.setCreatedBy(labTest.getCreatedBy());
             if(labTest.getTestType()!=null)
                p.setWithRef(labTest.getTestType().getWithRef());
 
             //Display possible specimen
-            p.setSpecimenData(SpecimenData.map(labTest.getTestType().getSpecimen()));
+            if(!labTest.getTestType().getSpecimen().isEmpty())
+                p.setSpecimen(labTest.getTestType().getSpecimen().get(0).getSpecimen());
             
             patientLabTestsData.add(p);
             

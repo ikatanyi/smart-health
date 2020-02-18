@@ -9,6 +9,8 @@ import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.clinical.radiology.domain.PatientRadiologyTest;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -22,6 +24,7 @@ public class PatientRadiologyTestData {
     private Long scanId;
     private RadiologyTestData testData;
     private String scanNumber;
+    @Enumerated(EnumType.STRING)
     private ScanTestState state;
     private Long requestId;
     private DoctorRequestData requestData;    

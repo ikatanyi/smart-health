@@ -16,11 +16,13 @@ import io.smarthealth.clinical.radiology.domain.PatientScanTestRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyTest;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
+import io.smarthealth.clinical.radiology.domain.specification.RadiologySpecification;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -36,6 +38,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -177,6 +180,12 @@ public class RadiologyService {
     
     public List<PatientScanRegister> findPatientScanRegisterByVisit(final Visit visit) {
         return patientradiologyRepository.findByVisit(visit);
+    }
+    
+    @Transactional
+    public Page<PatientScanRegister> findAll(String PatientNumber,String scanNo, String visitId, DateRange range,Pageable pgbl) {
+        Specification spec=RadiologySpecification.createSpecification(PatientNumber, scanNo, visitId, range);
+        return patientradiologyRepository.findAll(spec, pgbl);
     }
 
     public List<PatientScanTest> findScanResultsByVisit(final Visit visit) {

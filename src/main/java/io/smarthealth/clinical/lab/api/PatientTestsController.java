@@ -110,28 +110,7 @@ public class PatientTestsController {
                 .body(pagers);
     }
 
-//    @GetMapping("/patient-test/result")
-//    public ResponseEntity<?> fetchAllPatientTests(
-//            @RequestParam(value = "visitNumber", required = false) String visitNumber,
-//            @RequestParam(value = "state", required = false) LabTestState status,
-//            @RequestParam(value = "page", required = false) Integer page1,
-//            @RequestParam(value = "pageSize", required = false) Integer size
-//    ) {
-//        Pageable pageable = PaginationUtil.createPage(page1, size);
-//        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-//        Page<PatientLabTestData> pag = labService.fetchAllPatientTests(visit, status, pageable);
-//        Pager page = new Pager();
-//        page.setCode("200");
-//        page.setContent(pag.getContent());
-//        page.setMessage("Patient tests fetched successfully");
-//        PageDetails details = new PageDetails();
-//        details.setPage(1);
-//        details.setPerPage(25);
-//        details.setReportName("Patient Labtests");
-//        details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
-//        page.setPageDetails(details);
-//        return ResponseEntity.ok(page);
-//    }
+   
     @GetMapping("/patient-test")
     public ResponseEntity<?> fetchAllPatientLabTests(
             @RequestParam(value = "visitNo", required = false) String visitNumber,
@@ -147,8 +126,6 @@ public class PatientTestsController {
         page.setContent(pag.getContent());
         page.setMessage("Patient tests fetched successfully");
         PageDetails details = new PageDetails();
-        details.setPage(1);
-        details.setPerPage(25);
         details.setReportName("Patient Labtests");
         details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
         page.setPageDetails(details);

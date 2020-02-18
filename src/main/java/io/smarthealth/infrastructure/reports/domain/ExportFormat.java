@@ -2,8 +2,8 @@ package io.smarthealth.infrastructure.reports.domain;
 
 /**
  *
- * @author Kelsas
+ * @author Kennedy.Ikatanyi
  */
 public enum ExportFormat {
-	PDF, XLSX, HTML,CSV,XML,XLS
+    PDF, XLSX,XLS,HTML,CSV,XML
 }

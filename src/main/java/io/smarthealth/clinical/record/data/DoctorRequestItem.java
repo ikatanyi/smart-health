@@ -25,10 +25,8 @@ public class DoctorRequestItem {
     public static DoctorRequestItem map(DoctorRequest d) {
         DoctorRequestItem requestItem = new DoctorRequestItem();
         requestItem.setCode(d.getItem().getItemCode());
-        requestItem.setCostRate(d.getItemCostRate());
         requestItem.setItemId(d.getItem().getId());
         requestItem.setItemName(d.getItem().getItemName());
-        requestItem.setRate(d.getItemRate());
         requestItem.setRequestItemId(d.getId());
         return requestItem;
     }

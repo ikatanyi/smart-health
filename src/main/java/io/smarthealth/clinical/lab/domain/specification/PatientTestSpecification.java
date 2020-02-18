@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.record.domain.specification;
+package io.smarthealth.clinical.lab.domain.specification;
 
 import io.smarthealth.clinical.lab.domain.LabRegister;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
@@ -15,9 +15,9 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Simon.Waweru
  */
-public class PatientTestSpecifica {
+public class PatientTestSpecification {
 
-    public PatientTestSpecifica() {
+    public PatientTestSpecification() {
         super();
     }
 

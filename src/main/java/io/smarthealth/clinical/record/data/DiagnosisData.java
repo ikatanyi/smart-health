@@ -59,7 +59,7 @@ public class DiagnosisData {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime recorded = LocalDateTime.now();
 
-    public PatientDiagnosis map(DiagnosisData diagnosis) {
+    public static PatientDiagnosis map(DiagnosisData diagnosis) {
         PatientDiagnosis entity = new PatientDiagnosis();
         System.out.println(diagnosis.toString());
         Diagnosis diagnosis1 = new Diagnosis();
@@ -72,7 +72,7 @@ public class DiagnosisData {
         return entity;
     }
 
-    public DiagnosisData map(PatientDiagnosis entity) {
+    public static DiagnosisData map(PatientDiagnosis entity) {
         DiagnosisData diagnos = new DiagnosisData();
         diagnos.setId(entity.getId());
         diagnos.setPatientNumber(entity.getPatient().getPatientNumber());

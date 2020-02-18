@@ -5,14 +5,13 @@
  */
 package io.smarthealth.clinical.radiology.domain;
 
-import io.smarthealth.clinical.lab.data.LabTestTypeData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.item.domain.Item;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -32,5 +31,6 @@ public class RadiologyTest extends Identifiable{
     private Boolean status; 
     private String notes;
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_radiology_test_item_id"))
     private Item item;
 }

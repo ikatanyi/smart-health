@@ -11,6 +11,7 @@ import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
+import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
@@ -61,7 +62,7 @@ public class DoctorRequestService implements DateConverter {
         for (DoctorRequest docRequest : docReqs) {
             PatientQueue patientQueue = new PatientQueue();
 //            Department department = departmentService.findByServicePointTypeAndloggedFacility(docRequest.getRequestType());      
-            ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(docRequest.getRequestType()));
+            ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(docRequest.getRequestType().name()));
             //check if patient is already queued
             if (patientQueueService.patientIsQueued(servicePoint, docRequest.getPatient())) {
                 continue;
@@ -88,7 +89,7 @@ public class DoctorRequestService implements DateConverter {
 //        }.getType());
 //        return docReqData;
 //    }
-    public Page<DoctorRequest> findAllRequestsByVisitAndRequestType(final Visit visit, final String requestType, Pageable pageable) {
+    public Page<DoctorRequest> findAllRequestsByVisitAndRequestType(final Visit visit, final RequestType requestType, Pageable pageable) {
         Page<DoctorRequest> docReqs = doctorRequestRepository.findByVisitAndRequestType(visit, requestType, pageable);
         return docReqs;
     }

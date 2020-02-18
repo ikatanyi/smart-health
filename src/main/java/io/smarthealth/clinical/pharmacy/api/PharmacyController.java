@@ -12,6 +12,8 @@ import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
+import io.smarthealth.clinical.record.data.DoctorRequestData;
+import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.PrescriptionData;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.service.PrescriptionService;
@@ -113,12 +115,10 @@ public class PharmacyController {
             p.setPatient(visit.getPatient());
             Item item = itemService.findItemWithNoFoundDetection(pd.getItemCode());
             p.setItem(item);
-            p.setItemCostRate(item.getCostRate());
-            p.setItemRate(item.getRate());
             p.setVisit(visit);
             p.setOrderNumber(prescriptionNo);
 //            p.setRequestedBy(employee);
-            p.setRequestType("Pharmacy");
+            p.setRequestType(RequestType.Pharmacy);
             prescriptions.add(p);
         }
 

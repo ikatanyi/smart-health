@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientLab_report_tests" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b3381605-b0c8-42fa-9eeb-f8ba94fce080">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\clinical\\"]]></defaultValueExpression>
+	</parameter>
+	<field name="patientLabTestId" class="java.lang.Long"/>
+	<field name="testName" class="java.lang.String"/>
+	<field name="createdOn" class="java.lang.String"/>
+	<field name="createdBy" class="java.lang.String"/>
+	<field name="specimen" class="java.lang.String"/>
+	<field name="accessNo" class="java.lang.String"/>
+	<field name="status" class="java.lang.String"/>
+	<field name="ResultsData" class="java.util.List"/>
+	<columnHeader>
+		<band height="48" splitType="Stretch">
+			<staticText>
+				<reportElement x="360" y="17" width="91" height="14" uuid="e83091c0-858a-4e8a-a1fe-5bd1c97300d8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Reported :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="16" width="69" height="15" uuid="d367d4ed-94f0-4b99-9918-e1ce57b6cdc4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Specimen :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="451" y="1" width="104" height="15" uuid="135ebb32-b8d6-478b-8dab-f10d13c2b763"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{accessNo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="360" y="1" width="91" height="16" uuid="67303c2a-87ee-41db-9b69-acb699ac149e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Lab Transaction.No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="1" y="0" width="68" height="17" forecolor="#000000" uuid="1a8461b2-fa61-41cb-b26e-fee39503e7bc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[TestName :]]></text>
+			</staticText>
+			<textField pattern="dd-MM-yyyy">
+				<reportElement x="451" y="17" width="104" height="14" uuid="22f110f5-45be-4e34-bc1a-8635dcc6957f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{createdOn}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="67" y="1" width="156" height="15" uuid="788c4112-84a4-41d8-9826-37c9db2fc205"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{testName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="67" y="17" width="156" height="15" uuid="7938b1ef-f429-40f4-b9ec-8ec5a854d8ce"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{specimen}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="32" width="66" height="15" uuid="6a1af588-72d6-43a4-acf2-3218bd0987f1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Reported By:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="67" y="32" width="156" height="16" uuid="6c6a9d4f-f8ea-4710-98f1-ac6c622da9cc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="360" y="31" width="91" height="15" uuid="5f173801-00c0-4e94-b3e0-3ad4714b843b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Status :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="451" y="31" width="104" height="15" forecolor="#FF3300" uuid="1d282bd5-188f-434f-a792-b069b76410bc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement positionType="Float" x="1" y="47" width="555" height="1" forecolor="#CC0000" uuid="9c05c8dd-41ec-44ef-b45d-3567633bdd03"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="19" uuid="35feb96b-a123-4909-bb65-cbbedb7a67da"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{ResultsData})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.record.domain;
 
+import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.List;
@@ -16,7 +17,7 @@ import org.springframework.data.repository.query.Param;
  */
 public interface DoctorsRequestRepository extends JpaRepository<DoctorRequest, Long>, JpaSpecificationExecutor<DoctorRequest> {
 
-    Page<DoctorRequest> findByVisitAndRequestType(final Visit visit, final String requestType, final Pageable pageable);
+    Page<DoctorRequest> findByVisitAndRequestType(final Visit visit, final RequestType requestType, final Pageable pageable);
 
     Page<DoctorRequest> findByOrderNumberAndRequestType(final String orderNumber, final String requestType, final Pageable pageable);
 

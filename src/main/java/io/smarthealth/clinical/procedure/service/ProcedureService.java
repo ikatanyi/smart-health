@@ -16,11 +16,14 @@ import io.smarthealth.clinical.procedure.domain.ProcedureRepository;
 import io.smarthealth.clinical.procedure.domain.ProcedureTest;
 import io.smarthealth.clinical.procedure.domain.ProcedureTestRepository;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
+import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
+import io.smarthealth.clinical.radiology.domain.specification.RadiologySpecification;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -36,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,14 +51,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProcedureService {
 
-    @Autowired
-    ProcedureRepository procedureRepository;
-    @Autowired
-    PatientProcedureTestRepository patientprocedureRepository;
-    @Autowired
-    DoctorsRequestRepository doctorRequestRepository;
-    @Autowired
-    ProcedureTestRepository procTestRepository;
+    private final ProcedureRepository procedureRepository;
+    
+    private final PatientProcedureTestRepository patientprocedureRepository;
+    
+    private final DoctorsRequestRepository doctorRequestRepository;
+    
+    private final ProcedureTestRepository procTestRepository;
 
     private final EmployeeService employeeService;
     private final PatientService patientservice;
@@ -175,12 +178,19 @@ public class ProcedureService {
         return patientprocedureRepository.findByAccessNo(accessNo).orElseThrow(() -> APIException.notFound("Patient Procedure identified by procedureN Number {0} not found ", accessNo));
     }
     
-    public List<PatientProcedureRegister> findPatientProcedureRegisterByVisit(final Visit visit) {
+    public List<PatientProcedureRegister> findPatientProcedureRegisterByVisit(String VisitNumber) {
+        Visit visit = visitService.findVisitEntityOrThrow(VisitNumber);
         return patientprocedureRepository.findByVisit(visit);
     }
+    
+    @Transactional
+    public Page<PatientProcedureRegister> findAll(String PatientNumber,String scanNo, String visitId, DateRange range,Pageable pgbl) {
+        Specification spec=RadiologySpecification.createSpecification(PatientNumber, scanNo, visitId, range);
+        return patientprocedureRepository.findAll(spec, pgbl);
+    }
 
-    public List<PatientProcedureTest> findProcedureResultsByVisit(final Visit visit) {
-        List<PatientProcedureRegister> procedureTestFile = findPatientProcedureRegisterByVisit(visit);
+    public List<PatientProcedureTest> findProcedureResultsByVisit(final String visitNumber) {
+        List<PatientProcedureRegister> procedureTestFile = findPatientProcedureRegisterByVisit(visitNumber);
         List<PatientProcedureTest> patientProceduresDone = new ArrayList<>();
         //find patient procedures by labTestFile
         for (PatientProcedureRegister procedureFile : procedureTestFile) {

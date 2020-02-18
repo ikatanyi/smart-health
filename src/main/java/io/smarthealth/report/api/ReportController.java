@@ -1,8 +1,7 @@
 package io.smarthealth.report.api;
 
-import io.smarthealth.report.data.ReportData;
-import io.smarthealth.report.provider.ReportSpecificationProvider;
-import io.smarthealth.infrastructure.reports.service.JasperReportsService;
+import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
+import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.report.service.ReportService;
 import io.swagger.annotations.Api;
 import java.sql.SQLException;
@@ -32,59 +31,102 @@ public class ReportController {
     
     @PostMapping("/report/accounts/trial")
     public void generateTrialBalReport(
-            @RequestBody ReportData reportData, 
-            @RequestParam(value = "includeEmptyEntries", required = false) Boolean includeEmptyEntries,
-            HttpServletResponse response) {
-        try {
-            reportService.getTrialBalance(reportData, includeEmptyEntries, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(ReportController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            @RequestParam(value = "format", required = false) ExportFormat format, 
+            @RequestParam(value = "includeEmptyEntries", required = false) Boolean includeEmptyEntries,            
+            HttpServletResponse response) throws SQLException {
+        reportService.getTrialBalance(includeEmptyEntries, format, response);
         
     }
     @PostMapping("/report/accounts/daily-income-statement")
     public void generateDailyIncomeStatement(
-            @RequestBody ReportData reportData,
-            HttpServletResponse response) {
-        try {
-            reportService.getDailyPayment(reportData, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(ReportController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            @RequestParam(value = "format", required = false) ExportFormat format,
+            @RequestParam(value = "transactionNo", required = false) String transactionNo,
+            @RequestParam(value = "visitNo", required = false) String visitNo,
+            @RequestParam(value = "patientNo", required = false) String patientNo,
+            @RequestParam(value = "paymentMode", required = false) String paymentMode,
+            @RequestParam(value = "billNo", required = false) String billNo,
+            @RequestParam(value = "billStatus", required = false) String billStatus,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            HttpServletResponse response) throws SQLException {
+        reportService.getDailyPayment(transactionNo, visitNo, patientNo, paymentMode, billNo, dateRange, billStatus, format, response);
         
     }
-    @PostMapping("/report/accounts/daily-insurance-statement")
+    @GetMapping("/report/accounts/daily-insurance-statement")
     public void generateDailyInsuranceStatement(
-            @RequestBody ReportData reportData,
-            HttpServletResponse response) {
-        try {
-            reportService.genInsuranceStatement(reportData, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(ReportController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            @RequestParam(value = "format", required = false) ExportFormat format,
+            @RequestParam(value = "transactionNo", required = false) String transactionNo,
+            @RequestParam(value = "payer", required = false) Long payer,
+            @RequestParam(value = "payee", required = false) Long payee,
+            @RequestParam(value = "patientNo", required = false) String patientNo,
+            @RequestParam(value = "invoiceNo", required = false) String invoiceNo,
+            @RequestParam(value = "billNo", required = false) String billNo,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            HttpServletResponse response) throws SQLException {
+            reportService.genInsuranceStatement(payer, payee, invoiceNo, dateRange, patientNo, format, response);
+        
         
     }
     @PostMapping("/report/accounts/invoice-statement")
     public void generateInvoiceStatement(
-            @RequestBody ReportData reportData, 
+            @RequestParam(value = "format", required = false) ExportFormat format,
+            @RequestParam(value = "transactionNo", required = false) String transactionNo,
+            @RequestParam(value = "payer", required = false) Long payer,
+            @RequestParam(value = "payee", required = false) Long payee,
+            @RequestParam(value = "patientNo", required = false) String patientNo,
+            @RequestParam(value = "invoiceNo", required = false) String invoiceNo,
+            @RequestParam(value = "billNo", required = false) String billNo,
+            @RequestParam(value = "invoiceStatus", required = false) String invoiceStatus,
+            @RequestParam(value = "dateRange", required = false) String dateRange, 
             HttpServletResponse response) {
         try {
-            reportService.getInvoiceStatement(reportData, response);
+            reportService.getInvoiceStatement(payer, payee, invoiceNo, patientNo, dateRange, invoiceStatus, format, response);
         } catch (SQLException ex) {
             Logger.getLogger(ReportController.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
     
-    @PostMapping("/report/accounts/invoice-")
+    @PostMapping("/report/accounts/invoice")
     public void generateInvoice(
-            @RequestBody ReportData reportData, 
-            HttpServletResponse response) {
-        try {
-            reportService.getInvoice(reportData, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(ReportController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            @RequestParam(value = "format", required = false) ExportFormat format,
+            @RequestParam(value = "transactionNo", required = false) String transactionNo,
+            @RequestParam(value = "payer", required = false) Long payer,
+            @RequestParam(value = "scheme", required = false) Long scheme,
+            @RequestParam(value = "patientNo", required = false) String patientNo,
+            @RequestParam(value = "invoiceNo", required = false) String invoiceNo,
+            @RequestParam(value = "billNo", required = false) String billNo,
+            @RequestParam(value = "invoiceStatus", required = false) String invoiceStatus,
+            @RequestParam(value = "dateRange", required = false) String dateRange, 
+            HttpServletResponse response) throws SQLException {
+        reportService.getInvoice(transactionNo, payer, scheme, patientNo, invoiceNo, dateRange, invoiceStatus, format, response);
+        
+    }   
+    
+     @PostMapping("/report/patient/{patientId}/patient-file")
+    public void generatePatientFile(
+            @PathVariable String patientId,
+            @RequestParam(value = "format", required = false) ExportFormat format,
+            HttpServletResponse response) throws SQLException {
+        reportService.getPatientFile(patientId, format,response);
+        
+    } 
+    
+    @PostMapping("/report/laboratory/{visitNumber}/patient-file")
+    public void generatePatientLabFile(
+            @PathVariable String visitNumber,
+            @RequestParam(value = "format", required = false) ExportFormat format,
+            HttpServletResponse response) throws SQLException {
+        reportService.getPatientLabReport(visitNumber, format, response);
+        
+    }   
+    
+    @PostMapping("/report/clinical/{visitNumber}/request-form/{requestType}")
+    public void generatePatientRequestFile(
+            @PathVariable String visitNumber,
+            @PathVariable RequestType requestType,
+            @RequestParam(value = "format", required = false) ExportFormat format,
+            HttpServletResponse response) throws SQLException {
+        reportService.getPatientRequest(visitNumber, requestType, format, response);
         
     }   
 
