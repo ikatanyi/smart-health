@@ -18,7 +18,7 @@ import org.hibernate.annotations.Formula;
  */
 @Entity
 @Data
-public class Walking extends Auditable {
+public class WalkIn extends Auditable {
 
     private String firstName;
     private String secondName;

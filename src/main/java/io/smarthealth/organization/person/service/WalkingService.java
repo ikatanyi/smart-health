@@ -7,7 +7,7 @@ package io.smarthealth.organization.person.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.data.specification.WalkingSpecification;
-import io.smarthealth.organization.person.domain.Walking;
+import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.domain.WalkingRepository;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.Optional;
@@ -28,32 +28,32 @@ public class WalkingService {
     @Autowired
     WalkingRepository walkingRepository;
 
-    public Walking createWalking(final Walking walking) {
+    public WalkIn createWalking(final WalkIn walking) {
         return walkingRepository.save(walking);
     }
 
-    public Optional<Walking> fetchWalkingById(Long id) {
+    public Optional<WalkIn> fetchWalkingById(Long id) {
         return walkingRepository.findById(id);
     }
 
-    public Walking fetchWalkingByIdWithNotFoundDetection(Long id) {
+    public WalkIn fetchWalkingByIdWithNotFoundDetection(Long id) {
         return walkingRepository.findById(id).orElseThrow(() -> APIException.notFound("Walking identified by id {0} not found", id));
     }
 
-    public Optional<Walking> fetchWalkingByWalkingNo(String walkingNo) {
+    public Optional<WalkIn> fetchWalkingByWalkingNo(String walkingNo) {
         return walkingRepository.findByWalkingIdentitificationNo(walkingNo);
     }
 
-    public Walking fetchWalkingByWalkingNoWithNotFoundDetection(String walkingNo) {
+    public WalkIn fetchWalkingByWalkingNoWithNotFoundDetection(String walkingNo) {
         return walkingRepository.findByWalkingIdentitificationNo(walkingNo).orElseThrow(() -> APIException.notFound("Walking identified by {0} not found", walkingNo));
     }
 
-    public Page<Walking> fetchWalkingPatients(MultiValueMap<String, String> queryParams, final Pageable pageable) {
-        Specification<Walking> spec = WalkingSpecification.createSpecification(queryParams.getFirst("searchValue"));
+    public Page<WalkIn> fetchWalkingPatients(MultiValueMap<String, String> queryParams, final Pageable pageable) {
+        Specification<WalkIn> spec = WalkingSpecification.createSpecification(queryParams.getFirst("searchValue"));
         return walkingRepository.findAll(spec, pageable);
     }
 
-    public void removeWalking(final Walking w) {
+    public void removeWalking(final WalkIn w) {
         walkingRepository.delete(w);
     }
 

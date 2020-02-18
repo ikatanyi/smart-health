@@ -9,6 +9,7 @@ import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.debtor.payer.domain.Payer;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
@@ -30,6 +31,8 @@ public class PayerData {
     private Long paymentTermId;
     private Long priceBookId;
     private boolean insurance;
+    @ApiModelProperty(hidden = true)
+    private String priceBookName;
 
     private String debitAccountNo;
     private List<AddressData> address;
@@ -45,8 +48,8 @@ public class PayerData {
         payerData.setLegalName(payer.getLegalName());
         payerData.setPayerName(payer.getPayerName());
         payerData.setPayerType(payer.getPayerType());
-        if(payer.getPaymentTerms()!=null){
-        payerData.setPaymentTermId(payer.getPaymentTerms().getId());
+        if (payer.getPaymentTerms() != null) {
+            payerData.setPaymentTermId(payer.getPaymentTerms().getId());
         }
         payerData.setTaxNumber(payer.getTaxNumber());
         payerData.setWebsite(payer.getWebsite());
@@ -68,6 +71,10 @@ public class PayerData {
             payerData.setContact(contactDataList);
         }
         payerData.setPayerId(payer.getId());
+        if (payer.getPriceBook() != null) {
+            payerData.setPriceBookId(payer.getPriceBook().getId());
+            payerData.setPriceBookName(payer.getPriceBook().getName());
+        }
 
         return payerData;
     }

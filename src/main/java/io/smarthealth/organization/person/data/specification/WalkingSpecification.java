@@ -5,7 +5,7 @@
  */
 package io.smarthealth.organization.person.data.specification;
 
-import io.smarthealth.organization.person.domain.Walking;
+import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
  */
 public class WalkingSpecification {
 
-    public static Specification<Walking> createSpecification(final String term) {
+    public static Specification<WalkIn> createSpecification(final String term) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (term != null) {

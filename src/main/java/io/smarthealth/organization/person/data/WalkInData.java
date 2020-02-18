@@ -5,7 +5,7 @@
  */
 package io.smarthealth.organization.person.data;
 
-import io.smarthealth.organization.person.domain.Walking;
+import io.smarthealth.organization.person.domain.WalkIn;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,7 +14,7 @@ import lombok.Data;
  * @author Simon.waweru
  */
 @Data
-public class WalkingData {
+public class WalkInData {
 
     private String firstName;
     private String secondName;
@@ -28,8 +28,8 @@ public class WalkingData {
     private String fullName;
     private int age;
 
-    public static WalkingData convertToWalkingData(Walking w) {
-        WalkingData d = new WalkingData();
+    public static WalkInData convertToWalkingData(WalkIn w) {
+        WalkInData d = new WalkInData();
         d.setAge(w.getAge());
         d.setFirstName(w.getFirstName());
         d.setFullName(w.getFullName());
@@ -42,8 +42,8 @@ public class WalkingData {
         return d;
     }
 
-    public static Walking convertToWalkingEntity(WalkingData w) {
-        Walking e = new Walking();
+    public static WalkIn convertToWalkingEntity(WalkInData w) {
+        WalkIn e = new WalkIn();
         e.setAge(w.getAge());
         e.setFirstName(w.getFirstName());
         e.setFullName(w.getFullName());

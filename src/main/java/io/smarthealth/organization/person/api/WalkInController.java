@@ -9,8 +9,8 @@ import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.person.data.WalkingData;
-import io.smarthealth.organization.person.domain.Walking;
+import io.smarthealth.organization.person.data.WalkInData;
+import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.swagger.annotations.Api;
 import java.util.List;
@@ -41,40 +41,40 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Slf4j
 @RestController
 @RequestMapping("/api")
-public class WalkingController {
+public class WalkInController {
 
     @Autowired
-    WalkingService walkingService;
+    WalkingService walkInService;
 
     @Autowired
     SequenceService sequenceService;
 
-    @PostMapping("/walking")
-    public ResponseEntity<?> createWalkingPatient(@Valid @RequestBody WalkingData walkingData) {
+    @PostMapping("/walk-in")
+    public ResponseEntity<?> createWalkingPatient(@Valid @RequestBody WalkInData WalkInData) {
 
-        Walking w = WalkingData.convertToWalkingEntity(walkingData);
+        WalkIn w = WalkInData.convertToWalkingEntity(WalkInData);
         w.setWalkingIdentitificationNo(sequenceService.nextNumber(SequenceType.WalkingNumber));
-        Walking savedWalking = walkingService.createWalking(w);
-        Pager<WalkingData> pagers = new Pager();
+        WalkIn savedWalking = walkInService.createWalking(w);
+        Pager<WalkInData> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Walking Successfully Created.");
-        pagers.setContent(WalkingData.convertToWalkingData(savedWalking));
+        pagers.setMessage("WalkIn Successfully Created.");
+        pagers.setContent(WalkInData.convertToWalkingData(savedWalking));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
-    @GetMapping("/walking/{walkingNo}")
-    public ResponseEntity<?> createWalkingPatient(@PathVariable("walkingNo") final String walkingNo) {
-        Walking w = walkingService.fetchWalkingByWalkingNoWithNotFoundDetection(walkingNo);
-        Pager<WalkingData> pagers = new Pager();
+    @GetMapping("/walk-in/{WalkInNo}")
+    public ResponseEntity<?> createWalkingPatient(@PathVariable("WalkInNo") final String WalkInNo) {
+        WalkIn w = walkInService.fetchWalkingByWalkingNoWithNotFoundDetection(WalkInNo);
+        Pager<WalkInData> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Walking Data");
-        pagers.setContent(WalkingData.convertToWalkingData(w));
+        pagers.setMessage("WalkIn Data");
+        pagers.setContent(WalkInData.convertToWalkingData(w));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
-    @GetMapping("/walking")
+    @GetMapping("/walk-in")
     public ResponseEntity<?> fetchAllWalkingPatients(@RequestParam(required = false) MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         int pageNo = 1;
         int size = 10;
@@ -86,8 +86,8 @@ public class WalkingController {
         }
         pageNo = pageNo - 1;
         pageable = PageRequest.of(pageNo, size, Sort.by("id").descending());
-        Page<WalkingData> page = walkingService.fetchWalkingPatients(queryParams, pageable).map(p -> WalkingData.convertToWalkingData(p));
-        Pager<List<WalkingData>> pagers = new Pager();
+        Page<WalkInData> page = walkInService.fetchWalkingPatients(queryParams, pageable).map(p -> WalkInData.convertToWalkingData(p));
+        Pager<List<WalkInData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(page.getContent());
@@ -96,7 +96,7 @@ public class WalkingController {
         details.setPerPage(page.getSize());
         details.setTotalElements(page.getTotalElements());
         details.setTotalPage(page.getTotalPages());
-        details.setReportName("Walking Register");
+        details.setReportName("WalkIn Register");
         pagers.setPageDetails(details);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pagers);

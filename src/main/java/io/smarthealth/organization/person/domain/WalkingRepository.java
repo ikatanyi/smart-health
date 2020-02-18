@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
  * @author Simon.waweru
  */
 @Repository
-public interface WalkingRepository extends JpaRepository<Walking, Long>, JpaSpecificationExecutor<Walking> {
+public interface WalkingRepository extends JpaRepository<WalkIn, Long>, JpaSpecificationExecutor<WalkIn> {
     
-    Optional<Walking> findByWalkingIdentitificationNo(final String walkingIdentitificationNo);
+    Optional<WalkIn> findByWalkingIdentitificationNo(final String walkingIdentitificationNo);
 }

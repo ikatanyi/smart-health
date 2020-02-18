@@ -37,13 +37,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -86,14 +85,14 @@ public class PatientService {
 //
     @Autowired
     VisitService visitService;
-    
+
     @Autowired
     @Qualifier("jdbcTemplate")
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private ResourceLoader resourceLoader;
-    
+
     @Autowired
     private JasperReportsService reportService;
 
@@ -277,21 +276,28 @@ public class PatientService {
         }
         //save patient identifier
         if (patient.getIdentifiers() != null) {
-            List<PatientIdentifier> patientIdentifiersList = new ArrayList<>();
-            patientIdentifierRepository.saveAll(patient.getIdentifiers()
+            // List<PatientIdentifier> patientIdentifiersList = new ArrayList<>();
+            List<PatientIdentifier> values = patient.getIdentifiers()
                     .stream()
                     .map(identity -> {
                         if (identity.getId_type().equals("")) {
-                            return new PatientIdentifier();
+                            return null;
+                        }
+                        if (identity.getId_type().equals("-Select-")) {
+                            return null;
                         }
                         final PatientIdentifier patientIdentifier = patientIdentifierService.convertIdentifierDataToEntity(identity) /*modelMapper.map(identity, PatientIdentifier.class)*/;
-                        patientIdentifiersList.add(patientIdentifier);
+                        //patientIdentifiersList.add(patientIdentifier);
                         patientIdentifier.setPatient(savedPatient);
                         return patientIdentifier;
-                    })
-                    .collect(Collectors.toList())
-            );
-            savedPatient.setIdentifications(patientIdentifiersList);
+                    }).filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            patientIdentifierRepository.saveAll(values);
+            /*
+            if (!patientIdentifiersList.isEmpty()) {
+                savedPatient.setIdentifications(patientIdentifiersList);
+            }*/
+
         }
 
         Facility facilityLogged = facilityService.loggedFacility();
@@ -424,7 +430,7 @@ public class PatientService {
         Connection conn = jdbcTemplate.getDataSource().getConnection();
 
         InputStream path = resourceLoader.getResource("classpath:reports/patient/PatientList.jrxml").getInputStream();
-        
+
         JasperReport jasperReport = JasperCompileManager.compileReport(path);
 
         // Parameters for report
