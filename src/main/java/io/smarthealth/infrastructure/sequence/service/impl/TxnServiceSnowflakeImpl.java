@@ -1,13 +1,14 @@
 package io.smarthealth.infrastructure.sequence.service.impl;
 
 import io.smarthealth.infrastructure.sequence.service.TxnService;
-import io.smarthealth.infrastructure.utility.Snowflake;
+import io.smarthealth.sequence.Snowflake;
 import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Kelsas
  */
+@Deprecated
 @Service
 public class TxnServiceSnowflakeImpl implements TxnService {
 

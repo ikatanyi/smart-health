@@ -22,9 +22,14 @@ public class RequisitionData {
     private LocalDate transactionDate;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate requiredDate;
-    private Long storeid;
+    private Long storeId;
     private String store;
+    
+    private Long requestingStoreId;
+    private String requestingStore;
+    
     private String requestionNo;
+    
     private RequisitionType requisitionType;
     private RequisitionStatus requisitionStatus;
     private String requestedBy;
@@ -38,7 +43,7 @@ public class RequisitionData {
         data.setTransactionDate(requisition.getTransactionDate());
         data.setRequiredDate(requisition.getRequiredDate());
         if(requisition.getStore()!=null){
-            data.setStoreid(requisition.getStore().getId());
+            data.setStoreId(requisition.getStore().getId());
             data.setStore(requisition.getStore().getStoreName());
         }
         data.setRequestionNo(requisition.getRequestionNumber());

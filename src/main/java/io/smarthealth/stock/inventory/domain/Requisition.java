@@ -26,6 +26,11 @@ public class Requisition extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_requisition_store_id"))
     private Store store;
+    
+     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_requisition_req_store_id"))
+    private Store requestingStore;
+     
     private String requestionNumber; //RQ-2019-00002
     @Enumerated(EnumType.STRING)
     private RequisitionType type;

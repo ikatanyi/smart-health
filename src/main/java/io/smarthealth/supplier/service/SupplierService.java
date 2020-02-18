@@ -1,8 +1,9 @@
 package io.smarthealth.supplier.service;
 
-import io.smarthealth.accounting.acc.data.SimpleAccountData;
-import io.smarthealth.accounting.acc.domain.AccountEntity;
-import io.smarthealth.accounting.acc.domain.AccountRepository;
+import io.smarthealth.accounting.accounts.data.SimpleAccountData;
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.domain.AccountRepository;
+import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.pricebook.data.PriceBookData;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.pricebook.service.PricebookService;
@@ -53,8 +54,6 @@ public class SupplierService {
         this.accountRepository = accountRepository;
     }
 
-     
-
     public SupplierData createSupplier(SupplierData supplierData) {
         Supplier supplier = new Supplier();
         if (supplierData.getSupplierType() != null) {
@@ -90,19 +89,19 @@ public class SupplierService {
             supplier.setBankAccount(BankEmbeddedData.map(supplierData.getBank()));
         }
 
-        if (supplierData.getAddresses() != null && supplierData.getAddresses() .getPhone()!=null) {
+        if (supplierData.getAddresses() != null && supplierData.getAddresses().getPhone() != null) {
             Address addresses = adminService.createAddress(supplierData.getAddresses());
             addresses.setType(Address.Type.Office);
             supplier.setAddress(addresses);
         }
-        
+
         if (supplierData.getContact() != null) {
-            Contact contact=adminService.createContact(supplierData.getContact());
+            Contact contact = adminService.createContact(supplierData.getContact());
             supplier.setContact(contact);
         }
-        
-        if(supplierData.getCreditAccountNo()!=null){
-            AccountEntity acc=accountRepository.findByIdentifier(supplierData.getCreditAccountNo());
+
+        if (supplierData.getCreditAccountNo() != null) {
+            Account acc = accountRepository.findByIdentifier(supplierData.getCreditAccountNo()).get();
             supplier.setCreditAccount(acc);
         }
 
@@ -142,9 +141,9 @@ public class SupplierService {
         List<Currency> currency = currencyService.getCurrencies();
         List<PaymentTerms> paymentTerms = paymentService.getPaymentTerms();
         List<PriceBookData> pricebooks = pricebookService.getPricebooks();
-        List<AccountEntity> accounts=accountRepository.findByType("LIABILITY");
-        if(!accounts.isEmpty()){
-            List<SimpleAccountData> acc=accounts
+        List<Account> accounts = accountRepository.findByType(AccountType.LIABILITY);
+        if (!accounts.isEmpty()) {
+            List<SimpleAccountData> acc = accounts
                     .stream()
                     .map(x -> SimpleAccountData.map(x)).collect(Collectors.toList());
             metadata.setAccounts(acc);

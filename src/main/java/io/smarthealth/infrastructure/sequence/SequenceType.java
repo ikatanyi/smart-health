@@ -5,6 +5,7 @@ package io.smarthealth.infrastructure.sequence;
  *
  * @author Kelsas
  */
+@Deprecated
 public enum SequenceType {
     PatientNumber("patient_number_seq"),
     VisitNumber("visit_number_seq"),

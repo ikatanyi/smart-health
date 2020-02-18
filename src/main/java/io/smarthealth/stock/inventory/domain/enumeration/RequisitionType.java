@@ -10,7 +10,7 @@ package io.smarthealth.stock.inventory.domain.enumeration;
  * @author Kelsas
  */
 public enum RequisitionType {
-      Purchase,
-        Transfer,
-        Issue
+    Purchase,
+    Transfer,
+    Issue
 }

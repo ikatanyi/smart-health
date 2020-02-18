@@ -1,6 +1,6 @@
 package io.smarthealth.infrastructure.numbers.service.impl;
-
-import io.smarthealth.accounting.acc.domain.JournalEntryEntity;
+ 
+import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.payment.domain.Payment;
@@ -12,7 +12,7 @@ import io.smarthealth.infrastructure.numbers.domain.EntitySequenceType;
 import io.smarthealth.infrastructure.numbers.domain.SequenceNumberFormat;
 import io.smarthealth.infrastructure.numbers.domain.SequenceNumberFormatRepository;
 import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
-import io.smarthealth.infrastructure.utility.Snowflake;
+import io.smarthealth.sequence.Snowflake;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.stock.purchase.domain.PurchaseOrder;
 import java.util.Optional;
@@ -102,7 +102,7 @@ public class SequenceNumberGeneratorImpl implements SequenceNumberGenerator {
     }
 
     @Override
-    public String generate(JournalEntryEntity journal) {
+    public String generate(JournalEntry journal) {
         return nextVal(journal.getId(), EntitySequenceType.JOURNAL);
     }
 

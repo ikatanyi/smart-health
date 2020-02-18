@@ -1,13 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.organization.facility.service;
 
-import io.smarthealth.auth.domain.Role;
-import io.smarthealth.auth.domain.User;
-import io.smarthealth.auth.service.UserService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.mail.EmailData;
 import io.smarthealth.infrastructure.mail.MailService;
@@ -19,6 +11,9 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.domain.EmployeeRepository;
 import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.patient.service.PersonContactService;
+import io.smarthealth.security.domain.Role;
+import io.smarthealth.security.domain.User;
+import io.smarthealth.security.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  *
@@ -79,7 +76,7 @@ public class EmployeeService {
         //save contact received as the primary contact
         //create a user 
         //find roles by group
-        List<Role> roles = new ArrayList<>();
+        Set<Role> roles = new HashSet<>();
         //find roles by employee category/ employee group from the database
         List<String> employeeRoles = new ArrayList<>();
         for (String roleData : employeeRoles) {
@@ -93,6 +90,7 @@ public class EmployeeService {
         PersonContact savedContact = personContactService.fetchPersonPrimaryContact(employee);
 
         //generate password
+       
         String password = PassayPassword.generatePassayPassword();
         User user = new User(
                 savedContact.getEmail(),

@@ -3,7 +3,8 @@ package io.smarthealth.stock.inventory.service;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
-import io.smarthealth.infrastructure.sequence.service.TxnService;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.data.CreateStockEntry;
 import io.smarthealth.stock.inventory.data.SupplierStockEntry;
 import io.smarthealth.stock.inventory.domain.StockEntry;
@@ -24,7 +25,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -42,6 +42,8 @@ public class InventoryService {
     private final PurchaseInvoiceService purchaseInvoiceService;
 //    private final TxnService txnService;
     private final SequenceNumberGenerator sequenceGenerator;
+    
+    private final SequenceNumberService sequenceNumberService;
 
     @Transactional
     public String createStockEntry(CreateStockEntry stockData) {
@@ -82,8 +84,8 @@ public class InventoryService {
 
     @Transactional
     public String receiveSupplierStocks(SupplierStockEntry stockData) {
-        // we will do stock entry and then create a bill out of this for easy
-        String trdId = sequenceGenerator.generateTransactionNumber();
+        // we will do stock entry and then create a bill out of this for easy 
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name()); 
         stockData.setTransactionId(trdId);
         String dnote = stockData.getSupplierInvoiceNumber() != null ? stockData.getSupplierInvoiceNumber() : trdId;
         Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());

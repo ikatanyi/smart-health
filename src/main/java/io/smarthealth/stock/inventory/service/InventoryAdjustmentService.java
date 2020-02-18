@@ -3,7 +3,7 @@ package io.smarthealth.stock.inventory.service;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.sequence.service.TxnService;
-import io.smarthealth.infrastructure.utility.UuidGenerator;
+import io.smarthealth.sequence.UuidGenerator;
 import io.smarthealth.stock.inventory.data.AdjustmentData;
 import io.smarthealth.stock.inventory.data.StockAdjustmentData;
 import io.smarthealth.stock.inventory.domain.StockAdjustment;

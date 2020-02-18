@@ -13,7 +13,7 @@ import io.smarthealth.debtor.claim.allocation.domain.*;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.item.data.ItemDatas;
 import io.smarthealth.stock.item.domain.Item;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -30,6 +30,6 @@ import lombok.Data;
 public class CreditNoteItemData {  
     private Long id;
     private Long billItemId;
-    private ItemData itemData;
+    private ItemDatas itemData;
     private Double amount;
 }

@@ -42,8 +42,8 @@ public class RequisitionService {
         Requisition data = new Requisition();
         data.setTransactionDate(requisition.getTransactionDate());
         data.setRequiredDate(requisition.getRequiredDate());
-        if (requisition.getStoreid() != null) {
-            Store store = storeService.getStore(requisition.getStoreid()).get();
+        if (requisition.getStoreId() != null) {
+            Store store = storeService.getStore(requisition.getStoreId()).get();
             data.setStore(store);
         }
         data.setRequestionNumber(requisition.getRequestionNo());
@@ -62,10 +62,10 @@ public class RequisitionService {
                                 item.setItem(i);
                                 item.setQuantity(d.getQuantity());
                                 item.setReceivedQuantity(0);
-                                if(d.getUom()!=null){
-                                    Uom um=uomService.fetchUomById(d.getUomId());
-                                    item.setUom(um);
-                                }
+//                                if(d.getUom()!=null){
+//                                    Uom um=uomService.fetchUomById(d.getUomId());
+//                                    item.setUom(um);
+//                                }
 
                                 return item;
                             }).collect(Collectors.toList())

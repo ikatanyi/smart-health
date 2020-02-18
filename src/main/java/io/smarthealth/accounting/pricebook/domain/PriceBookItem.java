@@ -8,7 +8,6 @@ package io.smarthealth.accounting.pricebook.domain;
 import io.smarthealth.stock.item.domain.Item;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.Id;
@@ -16,10 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 /**
  *

@@ -11,5 +11,6 @@ package io.smarthealth.stock.inventory.domain.enumeration;
  */
 public enum RequisitionStatus {
     Draft,
-    Pending
+    Pending,
+    Processed
 }

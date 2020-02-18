@@ -1,7 +1,7 @@
 package io.smarthealth.organization.bank.service;
 
-import io.smarthealth.accounting.acc.domain.AccountEntity;
-import io.smarthealth.accounting.acc.service.AccountService;
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.administration.banks.domain.BankBranch;
 import io.smarthealth.administration.banks.domain.Bank;
 import io.smarthealth.administration.banks.service.BankService;
@@ -36,7 +36,7 @@ public class BankAccountService {
     @javax.transaction.Transactional
     public BankAccount createBankAccount(BankAccountData data) {
         BankAccount bank = new BankAccount();
-        Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getLedgerAccount());
+        Optional<Account> accEntity = accountService.findByAccountNumber(data.getLedgerAccount());
         if (accEntity.isPresent()) {
             bank.setLedgerAccount(accEntity.get());
         }
@@ -57,7 +57,7 @@ public class BankAccountService {
 
     public BankAccount updateBankAccount(final Long id, BankAccountData data) {
         BankAccount bankAccount = getBankAccountByIdWithFailDetection(id);
-        Optional<AccountEntity> accEntity = accountService.findByAccountNumber(data.getLedgerAccount());
+        Optional<Account> accEntity = accountService.findByAccountNumber(data.getLedgerAccount());
         if (accEntity.isPresent()) {
             bankAccount.setLedgerAccount(accEntity.get());
         }

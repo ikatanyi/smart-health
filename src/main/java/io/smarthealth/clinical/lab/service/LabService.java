@@ -44,7 +44,7 @@ import io.smarthealth.clinical.record.domain.DoctorRequest.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.specification.PatientTestSpecifica;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
-import io.smarthealth.infrastructure.utility.UuidGenerator;
+import io.smarthealth.sequence.UuidGenerator;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;

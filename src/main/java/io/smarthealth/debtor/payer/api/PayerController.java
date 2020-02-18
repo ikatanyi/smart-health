@@ -1,10 +1,9 @@
 package io.smarthealth.debtor.payer.api;
-
-import io.smarthealth.accounting.acc.domain.AccountEntity;
-import io.smarthealth.accounting.acc.service.AccountService;
+ 
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.administration.banks.domain.BankBranch;
-import io.smarthealth.accounting.payment.domain.PaymentTerms;
-import io.smarthealth.administration.app.service.AdminService;
+import io.smarthealth.accounting.payment.domain.PaymentTerms; 
 import io.smarthealth.accounting.payment.service.PaymentTermsService;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.pricebook.service.PricebookService;
@@ -62,7 +61,7 @@ public class PayerController {
             payer.setBankBranch(bankBranch);
         }
         if (payerData.getDebitAccountNo() != null) {
-            AccountEntity debitAccount = accountService.findOneWithNotFoundDetection(payerData.getDebitAccountNo());
+            Account debitAccount = accountService.findByAccountNumberOrThrow(payerData.getDebitAccountNo());
             payer.setDebitAccount(debitAccount);
         }
         if (payerData.getPaymentTermId() != null) {

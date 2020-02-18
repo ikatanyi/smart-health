@@ -5,7 +5,7 @@
  */
 package io.smarthealth.organization.facility.domain;
 
-import io.smarthealth.auth.domain.User;
+import io.smarthealth.security.domain.User;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;

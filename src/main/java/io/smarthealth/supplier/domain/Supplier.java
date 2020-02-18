@@ -1,7 +1,7 @@
 package io.smarthealth.supplier.domain;
 
+import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.payment.domain.PaymentTerms;
-import io.smarthealth.accounting.acc.domain.AccountEntity;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.BankEmbeddedData;
@@ -18,16 +18,16 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.Table; 
+import javax.persistence.Table;
 import lombok.Data;
 
 /**
  * Supplier - Creditors - Vendor
  *
  * @author Kelsas
- */ 
+ */
 @Data
-@Entity 
+@Entity
 @Table(name = "supplier")
 public class Supplier extends Auditable {
 
@@ -62,24 +62,10 @@ public class Supplier extends Auditable {
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_supplier_contacts_id"))
     private Contact contact;
-    
+
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_supplier_account_id"))
     @ManyToOne
-    private AccountEntity creditAccount;
-
-//    @ManyToMany
-//    @JoinTable(name = "supplier_address", joinColumns = {
-//        @JoinColumn(name = "supplier_id", referencedColumnName = "id")}, inverseJoinColumns = {
-//        @JoinColumn(name = "address_id", referencedColumnName = "id")})
-//    private List<Address> address = new ArrayList<>(); // this can be a shared addresses
-//
-//    @ManyToMany
-//    @JoinTable(name = "supplier_contacts", joinColumns = {
-//        @JoinColumn(name = "supplier_id", referencedColumnName = "id")}, inverseJoinColumns = {
-//        @JoinColumn(name = "contact_id", referencedColumnName = "id")})
-//    private List<Contact> contacts = new ArrayList<>();
-
-    
+    private Account creditAccount;
 
     public SupplierData toData() {
         SupplierData data = new SupplierData();
@@ -113,10 +99,10 @@ public class Supplier extends Auditable {
         if (this.getContact() != null) {
             data.setContact(ContactData.map(this.getContact()));
         }
-       if(this.getCreditAccount()!=null){
-           data.setCreditAccountId(this.getCreditAccount().getId());
-           data.setCreditAccount(this.getCreditAccount().getName());
-       }
+        if (this.getCreditAccount() != null) {
+            data.setCreditAccountId(this.getCreditAccount().getId());
+            data.setCreditAccount(this.getCreditAccount().getName());
+        }
         data.setStatus(this.isActive() ? "Active" : "Inactive");
         data.setNotes(this.getNotes());
 

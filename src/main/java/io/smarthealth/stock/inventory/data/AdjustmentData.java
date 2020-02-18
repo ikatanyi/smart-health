@@ -1,5 +1,7 @@
 package io.smarthealth.stock.inventory.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ public class AdjustmentData {
     private String adjustmentMode;
     
     private String referenceNo;
-    
+    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime dateRecorded;
     
     private String stockAccountNumber;

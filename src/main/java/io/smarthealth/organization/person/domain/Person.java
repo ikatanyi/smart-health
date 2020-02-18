@@ -28,10 +28,7 @@ public class Person extends Auditable {
     @Column(length = 1)
     private String gender;
     private LocalDate dateOfBirth;
-  
-
     //@Transient
-  
     @Column(length = 50)
     private String maritalStatus;
     private LocalDate dateRegistered = LocalDate.now();

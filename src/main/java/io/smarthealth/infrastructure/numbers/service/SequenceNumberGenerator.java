@@ -1,6 +1,6 @@
 package io.smarthealth.infrastructure.numbers.service;
 
-import io.smarthealth.accounting.acc.domain.JournalEntryEntity;
+import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.payment.domain.Payment;
@@ -15,6 +15,7 @@ import io.smarthealth.stock.purchase.domain.PurchaseOrder;
  *
  * @author Kelsas
  */
+@Deprecated
 public interface SequenceNumberGenerator {
 
     public String generateTransactionNumber();
@@ -33,7 +34,7 @@ public interface SequenceNumberGenerator {
 
     public String generate(DoctorRequest request);
 
-    public String generate(JournalEntryEntity journal);
+    public String generate(JournalEntry journal);
 
     public String generate(LabRegister lab);
 
