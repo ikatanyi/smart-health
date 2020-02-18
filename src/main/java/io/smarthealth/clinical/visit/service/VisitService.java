@@ -71,7 +71,7 @@ public class VisitService {
         }
 
 //        System.out.println(" LocalDate.now().atStartOfDay() " + LocalDate.now().atStartOfDay());
-        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visit, employee, servicePoint, patient, runningStatus,range);
+        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visit, employee, servicePoint, patient, runningStatus, range);
         Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
         return visits;
     }

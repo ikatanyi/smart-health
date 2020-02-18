@@ -43,7 +43,7 @@ public class AppointmentTypeService {
     @Transactional
     public AppointmentType createAppointmentType(AppointmentTypeData data) {
         AppointmentType appointmentType = AppointmentTypeData.map(data);
-        Employee practitioner = employeeService.fetchEmployeeByNumberOrThrow(data.getStaffNumber());        
+         
         String appTypeNumber = data.getAppointmentTypeNumber()!=null?data.getAppointmentTypeNumber():sequenceService.nextNumber(SequenceType.AppointmentTypeNumber);
 //        appointmentType.setPractitioner(practitioner);
         appointmentType.setAppointmentTypeNumber(appTypeNumber);

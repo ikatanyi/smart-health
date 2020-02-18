@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.organization.person.patient.domain.specification;
+package io.smarthealth.organization.person.data.specification;
 
+import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
@@ -14,21 +15,19 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Simon.waweru
  */
-public class PatientSpecification {
+public class WalkingSpecification {
 
-    public static Specification<Patient> createSpecification(final String term) {
+    public static Specification<WalkIn> createSpecification(final String term) {
         return (root, query, cb) -> {
-            Patient patient = new Patient();
-            patient.getGivenName();
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (term != null) {
                 final String likeExpression = "%" + term + "%";
                 predicates.add(
                         cb.or(
-                                cb.like(root.get("givenName"), likeExpression),
-                                cb.like(root.get("middleName"), likeExpression),
+                                cb.like(root.get("firstName"), likeExpression),
+                                cb.like(root.get("secondName"), likeExpression),
                                 cb.like(root.get("surname"), likeExpression),
-                                cb.like(root.get("patientNumber"), likeExpression)
+                                cb.like(root.get("walkingIdentitificationNo"), likeExpression)
                         )
                 );
             }

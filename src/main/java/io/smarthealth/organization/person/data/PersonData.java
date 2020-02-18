@@ -46,6 +46,7 @@ public class PersonData {
     private String fullName;
 
     private boolean isPatient;
+    private String primaryContact, residence, religion, nationalIdNumber;
 
     public static Person map(final PersonData personDTO) {
         Person person = new Person();
@@ -67,6 +68,11 @@ public class PersonData {
             person.setContacts(personDTO.getContact().stream().map(ContactData::map).collect(Collectors.toList()));
         }
         person.setMaritalStatus(personDTO.getMaritalStatus().name());
+
+        person.setPrimaryContact(personDTO.getPrimaryContact());
+        person.setResidence(personDTO.getResidence());
+        person.setNationalIdNumber(personDTO.getNationalIdNumber());
+        person.setReligion(personDTO.getReligion());
         return person;
     }
 
@@ -88,7 +94,11 @@ public class PersonData {
         if (person.getContacts() != null) {
             persondto.setContact(person.getContacts().stream().map(ContactData::map).collect(Collectors.toList()));
         }
-        person.setMaritalStatus(person.getMaritalStatus());
+        persondto.setMaritalStatus(MaritalStatus.valueOf(person.getMaritalStatus()));
+        persondto.setPrimaryContact(person.getPrimaryContact());
+        persondto.setResidence(person.getResidence());
+        persondto.setNationalIdNumber(person.getNationalIdNumber());
+        persondto.setReligion(person.getReligion());
         return persondto;
     }
 }

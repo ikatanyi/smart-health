@@ -5,26 +5,33 @@
  */
 package io.smarthealth.administration.config.api;
 
+import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.administration.config.data.ApprovalConfigData;
 import io.smarthealth.administration.config.data.ModuleApproversData;
+import io.smarthealth.administration.config.data.enums.ApprovalModule;
 import io.smarthealth.administration.config.domain.ApprovalConfig;
-import io.smarthealth.administration.config.domain.GlobalConfiguration;
 import io.smarthealth.administration.config.domain.ModuleApprovers;
 import io.smarthealth.administration.config.service.ApprovalConfigService;
+import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.utility.PageDetails;
+import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -45,7 +52,51 @@ public class ApprovalsConfigurationController {
     @PostMapping("/approval-settings")
     public ResponseEntity<?> createApprovalConfiguration(@Valid @RequestBody ApprovalConfigData configData) {
         ApprovalConfig config = ApprovalConfigData.map(configData);
-        return ResponseEntity.ok(ApprovalConfigData.map(approvalConfigService.saveApprovalConfig(config)));
+        config.setApprovalModule(configData.getModuleName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApprovalConfigData.map(approvalConfigService.saveApprovalConfig(config)));
+    }
+
+    @GetMapping("/approval-settings/{moduleName}")
+    public ResponseEntity<?> fetchApprovalConfigurationByModuleName(@PathVariable("moduleName") final String moduleName, @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+
+        Page<ApprovalConfigData> list = approvalConfigService.fetchAllApprovalConfigByModuleName(ApprovalModule.valueOf(moduleName), pageable).map(r -> ApprovalConfigData.map(r));
+        Pager<List<ApprovalConfigData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Approval settings for " + moduleName);
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/approval-settings")
+    public ResponseEntity<?> fetchAllApprovalConfiguration(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+
+        Page<ApprovalConfigData> list = approvalConfigService.fetchApprovalConfigurations(pageable).map(r -> ApprovalConfigData.map(r));
+        Pager<List<ApprovalConfigData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Approval settings");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
     }
 
     @PutMapping("/approval-settings")
@@ -61,14 +112,14 @@ public class ApprovalsConfigurationController {
 
     /* Start of module approvers end points */
     @PostMapping("/module-approver")
-    public ResponseEntity<?> createApprovalConfiguration(@Valid @RequestBody List<ModuleApproversData> approversData) {
+    public ResponseEntity<?> addNewModuleApprovers(@Valid @RequestBody List<ModuleApproversData> approversData) {
         List<ModuleApprovers> approvers = new ArrayList<>();
 
         for (ModuleApproversData data : approversData) {
             ModuleApprovers approver = new ModuleApprovers();
             approver.setEmployee(employeeService.fetchEmployeeByNumberOrThrow(data.getStaffNumber()));
             approver.setModuleName(data.getModuleName());
-            approver.setPriority(data.getPriority());
+            approver.setApprovalLevel(data.getApprovalLevel());
             approvers.add(approver);
         }
 
@@ -81,6 +132,21 @@ public class ApprovalsConfigurationController {
             data.add(d);
         });
 
-        return ResponseEntity.ok(data);
+        return ResponseEntity.status(HttpStatus.CREATED).body(data);
+    }
+
+    @GetMapping("/module-approver/{moduleName}")
+    public ResponseEntity<?> fetchModuleApprovers(@PathVariable("moduleName") final String moduleName) {
+
+        List<ModuleApprovers> entities = approvalConfigService.fetchModuleApproversByModule(ApprovalModule.valueOf(moduleName));
+        List<ModuleApproversData> list = new ArrayList<>();
+        entities.stream().map((a) -> ModuleApproversData.map(a)).forEachOrdered((d) -> {
+            list.add(d);
+        });
+        Pager<List<ModuleApproversData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list);
+        return ResponseEntity.ok(pagers);
     }
 }

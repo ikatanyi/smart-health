@@ -92,7 +92,7 @@ public class PaymentController {
         FinancialTransactionData trans = service.refund(id, amount);
         return ResponseEntity.status(HttpStatus.CREATED).body(trans);
     }
-    
+
     /*Charging external payment gateways like M-pesa, Credit card */
     @PostMapping("/payments/charge")
     public ResponseEntity<?> charge(@RequestParam(name = "type") String type, FinancialTransactionData transaction) {
@@ -101,5 +101,5 @@ public class PaymentController {
     //TODO
     /*
       Provide mpesa integrations, credit cards,
-    */
+     */
 }

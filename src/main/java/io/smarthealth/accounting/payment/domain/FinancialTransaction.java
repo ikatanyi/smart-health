@@ -49,7 +49,7 @@ public class FinancialTransaction extends Auditable {
     private String transactionId;
 
     private Double amount;
-    
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_payment_trx_account_id"))
     private AccountEntity account;
@@ -57,7 +57,7 @@ public class FinancialTransaction extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_transaction", foreignKey = @ForeignKey(name = "fk_payment_trx_parent_trx_id"))
     private FinancialTransaction parentTransaction;
-    
+
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     private List<Payment> payments = new ArrayList<>();
 

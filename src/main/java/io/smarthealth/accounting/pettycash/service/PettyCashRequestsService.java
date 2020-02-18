@@ -11,7 +11,9 @@ import io.smarthealth.accounting.pettycash.domain.repository.PettyCashItemsRepos
 import io.smarthealth.accounting.pettycash.domain.repository.PettyCashRequestsRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.DateFormatUtil;
+import io.smarthealth.organization.facility.domain.Employee;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +33,6 @@ public class PettyCashRequestsService {
     @Autowired
     PettyCashItemsRepository pettyCashItemsRepository;
 
-  
     @Transactional
     public PettyCashRequests createCashRequests(PettyCashRequests cashRequest) {
         return cashRequestsRepository.saveAndFlush(cashRequest);
@@ -41,8 +42,16 @@ public class PettyCashRequestsService {
         return cashRequestsRepository.findByRequestNo(requestNo).orElseThrow(() -> APIException.notFound("Request identified by {0} was not found", requestNo));
     }
 
-    public Page<PettyCashRequests> fetchAllPettyCashRequests(final Pageable pageable) {
-        return cashRequestsRepository.findAll(pageable);
+    public Optional<PettyCashRequestItems> findRequestedItemById(Long id) {
+        return pettyCashItemsRepository.findById(id);
+    }
+
+    public Page<PettyCashRequests> findPettyCashRequestsByEmployeeWhoRequested(final Employee employee, final Pageable pageable) {
+        return cashRequestsRepository.findByRequestedBy(employee, pageable);
+    }
+
+    public Page<PettyCashRequests> fetchAllPettyCashRequestsByPendingApprovalLevel(final int level, final Pageable pageable) {
+        return cashRequestsRepository.findByApprovalPendingLevel(level, pageable);
     }
 
     @Transactional
@@ -54,7 +63,6 @@ public class PettyCashRequestsService {
         return pettyCashItemsRepository.findByRequestNo(requestItems);
     }
 
-  
     public String generatepettyCashRequestNo() {
         //Format yyyy-mm-number
         String date = DateFormatUtil.generateDateStringInSpecificFormat("yyyy-MM-dd");
