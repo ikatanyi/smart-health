@@ -17,7 +17,7 @@ import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
 import io.smarthealth.administration.config.data.enums.ApprovalModule;
 import io.smarthealth.administration.config.domain.ApprovalConfig;
 import io.smarthealth.administration.config.domain.ModuleApprovers;
-import io.smarthealth.administration.config.service.ApprovalConfigService;
+import io.smarthealth.administration.config.service.ApprovalConfigService1;
 import io.smarthealth.auth.domain.User;
 import io.smarthealth.auth.service.UserService;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -57,7 +57,7 @@ public class PettyCashRequestController {
     PettyCashRequestsService pettyCashRequestsService;
 
     @Autowired
-    ApprovalConfigService approvalConfigService;
+    ApprovalConfigService1 approvalConfigService;
 
     @Autowired
     UserService service;

@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Simon.waweru
  */
 @Service
-public class ApprovalConfigService {
+public class ApprovalConfigService1 {
 
     @Autowired
     ApprovalConfigRepository approvalConfigRepository;
