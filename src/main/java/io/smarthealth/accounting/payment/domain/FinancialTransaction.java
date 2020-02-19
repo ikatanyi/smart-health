@@ -1,7 +1,7 @@
 package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.payment.domain.enumeration.TrxType;
-import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.payment.domain.enumeration.PaymentStatus;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDateTime;
@@ -49,15 +49,17 @@ public class FinancialTransaction extends Auditable {
     private String transactionId;
 
     private Double amount;
-
+    
+    private Boolean isRefund;
+    
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_payment_trx_account_id"))
-    private AccountEntity account;
+    private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_transaction", foreignKey = @ForeignKey(name = "fk_payment_trx_parent_trx_id"))
     private FinancialTransaction parentTransaction;
-
+    
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     private List<Payment> payments = new ArrayList<>();
 

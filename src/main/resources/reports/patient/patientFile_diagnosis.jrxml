@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientFile_diagnosis" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="910cfe1f-354f-4091-a481-8dff699f2b94">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="Certainty" class="java.lang.String"/>
+	<field name="order" class="java.lang.String"/>
+	<field name="patientNumber" class="java.lang.String"/>
+	<field name="visitNumber" class="java.lang.String"/>
+	<field name="code" class="java.lang.String"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="notes" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="17" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="1" width="138" height="16" uuid="4f0e2840-62e3-4292-b438-2c4e198dac8f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Certainty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="138" y="1" width="138" height="16" uuid="b2f02710-e238-4776-84c9-c0449c233bcc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="276" y="1" width="138" height="16" uuid="ae83c938-ab89-4a64-9587-324239d885c2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="414" y="1" width="138" height="16" uuid="0b50c001-4313-4522-aecf-55c4de3a81c2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[notes]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="16" width="552" height="1" forecolor="#CC3300" uuid="f559b0b8-54d5-483f-a246-6a0a5cfdda94"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="19" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="138" height="16" uuid="6615e84a-db3e-4c56-afc5-becef3d742c9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Certainty}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="138" y="0" width="138" height="16" uuid="6569cf4e-d5c5-4fa1-95b8-ce9919350b9a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{code}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="276" y="0" width="138" height="16" uuid="d92add6b-f242-41a6-8dd2-9c4260eb09a5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="414" y="0" width="138" height="16" uuid="b338a71f-44fb-4828-a8ca-2b012b7f697d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{notes}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="17" width="552" height="1" forecolor="#CC0000" uuid="11629bc1-82ed-4a68-b0ae-1dc6309c1f96"/>
+				<graphicElement>
+					<pen lineWidth="0.2" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

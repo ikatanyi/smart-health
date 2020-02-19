@@ -1,6 +1,14 @@
 package io.smarthealth.accounting.billing.service;
 
-import io.smarthealth.accounting.acc.service.JournalEntryService;
+import io.smarthealth.accounting.accounts.data.FinancialActivity;
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
+import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
+import io.smarthealth.accounting.accounts.domain.JournalEntry;
+import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
+import io.smarthealth.accounting.accounts.domain.JournalState;
+import io.smarthealth.accounting.accounts.domain.TransactionType;
+import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
@@ -21,16 +29,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
-import io.smarthealth.clinical.pharmacy.data.PharmacyData;
-import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
 import lombok.RequiredArgsConstructor;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
-import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.stores.domain.Store;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -49,21 +61,25 @@ public class BillingService {
     private final ItemService itemService;
     private final SequenceNumberGenerator sequenceGenerator;
 //    private final TxnService txnService;
-    private final JournalEntryService journalService;
+    private final JournalService journalService;
+    private final SequenceNumberService sequenceNumberService;
+    private final FinancialActivityAccountRepository activityAccountRepository;
 
+    //Create service bill
     public PatientBill createPatientBill(BillData data) {
         //check the validity of the patient visit
         Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
 //        String billNumber = RandomStringUtils.randomNumeric(6); //sequenceService.nextNumber(SequenceType.BillNumber);
-        String trdId = sequenceGenerator.generateTransactionNumber();
-
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());  //sequenceGenerator.generateTransactionNumber();
+        String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
+     
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
         patientbill.setPatient(visit.getPatient());
         patientbill.setAmount(data.getAmount());
         patientbill.setDiscount(data.getDiscount());
         patientbill.setBalance(data.getAmount());
-//        patientbill.setBillNumber(billNumber);
+        patientbill.setBillNumber(bill_no);
         patientbill.setBillingDate(data.getBillingDate());
         patientbill.setReferenceNo(data.getReferenceNo());
         patientbill.setPaymentMode(data.getPaymentMode());
@@ -98,98 +114,30 @@ public class BillingService {
         patientbill.addBillItems(lineItems);
 
         PatientBill savedBill = save(patientbill);
-        savedBill.setBillNumber(sequenceGenerator.generate(savedBill));
-        save(savedBill);
 
         if (savedBill.getPaymentMode().equals("Insurance")) {
-            journalService.createJournalEntry(savedBill);  
+            journalService.save(toJournal(savedBill, null));
         }
         return savedBill;
     }
 
-    public void createPharmacyBill(Store store, PharmacyData data) {
-        PatientBill bill = createBill(data);
-        if (bill.getPaymentMode().equals("Insurance")) {
-            journalBill(bill, store);
+    public void createPatientBill(PatientBill bill, Store store) {
+        String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
+        bill.setBillNumber(bill_no);
+        PatientBill savedBill = save(bill);
+        if (savedBill.getPaymentMode().equals("Insurance")) {
+            journalService.save(toJournal(savedBill, store));
         }
-    }
-
-    private PatientBill createBill(PharmacyData data) {
-        ServicePoint srvpoint = servicePointService.getServicePointByType(ServicePointType.Pharmacy);
-       
-        log.info("Generating a patient bill from stock item");
-        //check the validity of the patient visit
-        Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
-
-        PatientBill patientbill = new PatientBill();
-        patientbill.setVisit(visit);
-        patientbill.setPatient(visit.getPatient());
-        patientbill.setAmount(data.getAmount());
-        patientbill.setDiscount(data.getDiscount());
-        patientbill.setBalance(data.getAmount());
-        patientbill.setBillingDate(data.getDispenseDate());
-        patientbill.setReferenceNo(data.getReferenceNo());
-        patientbill.setPaymentMode(data.getPaymentMode());
-        patientbill.setTransactionId(data.getTransactionId());
-        patientbill.setStatus(BillStatus.Draft);
-
-        List<PatientBillItem> lineItems = data.getDrugItems()
-                .stream()
-                .map(lineData -> {
-                    PatientBillItem billItem = new PatientBillItem();
-
-                    billItem.setBillingDate(data.getDispenseDate());
-                    billItem.setTransactionId(data.getTransactionId());
-                    billItem.setServicePointId(srvpoint.getId());
-                    billItem.setServicePoint(srvpoint.getName());
-
-                    if (lineData.getItemCode() != null) {
-                        Item item = getItemByCode(lineData.getItemCode());
-                        billItem.setItem(item);
-                    }
-
-                    billItem.setPrice(lineData.getPrice());
-                    billItem.setQuantity(lineData.getQuantity());
-                    billItem.setAmount(lineData.getAmount());
-                    billItem.setDiscount(lineData.getDiscount());
-                    billItem.setBalance(lineData.getAmount());
-                    billItem.setServicePoint(lineData.getServicePoint());
-                    billItem.setServicePointId(lineData.getServicePointId());
-                    billItem.setStatus(BillStatus.Draft);
-
-                    return billItem;
-                })
-                .collect(Collectors.toList());
-        patientbill.addBillItems(lineItems);
-
-        PatientBill savedBill = save(patientbill);
-        savedBill.setBillNumber(sequenceGenerator.generate(savedBill));
-        return save(savedBill);
-    }
-
-    private void journalBill(PatientBill bill, Store store) {
-        if (bill != null) {
-            log.info("journal posting the stock item ... ");
-            journalService.createJournalEntry(bill, store);
-        }
-    }
-
-    public List<PatientBillGroup> getPatientBillGroups(BillStatus status) {
-        return patientBillRepository.groupBy(status);
-    }
-
-    public Page<PatientBillItem> getPatientBillItemByVisit(String visitNumber, Pageable page) {
-        Visit visit = visitRepository.findByVisitNumber(visitNumber).orElseThrow(() -> APIException.notFound("Visit Number {0} not found", visitNumber));
-
-        return billItemRepository.findPatientBillItemByVisit(visit, page);
     }
 
     public PatientBill save(PatientBill bill) {
         return patientBillRepository.saveAndFlush(bill);
     }
-    public PatientBill update(PatientBill bill){
+
+    public PatientBill update(PatientBill bill) {
         return patientBillRepository.save(bill);
     }
+
     public Optional<PatientBill> findByBillNumber(final String billNumber) {
         return patientBillRepository.findByBillNumber(billNumber);
     }
@@ -258,10 +206,75 @@ public class BillingService {
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
     }
 
-    private String roundedAmount(Double amt) {
-        return BigDecimal.valueOf(amt)
-                .setScale(2, BigDecimal.ROUND_HALF_EVEN)
-                .toString();
+    public List<PatientBillGroup> getPatientBillGroups(BillStatus status) {
+        return patientBillRepository.groupBy(status);
     }
 
+    public Page<PatientBillItem> getPatientBillItemByVisit(String visitNumber, Pageable page) {
+        Visit visit = findVisitEntityOrThrow(visitNumber);
+
+        return billItemRepository.findPatientBillItemByVisit(visit, page);
+    }
+
+    private JournalEntry toJournal(PatientBill bill, Store store) {
+        String description = "Patient Billing";
+        if (bill.getPatient() != null) {
+            Patient patient = bill.getPatient();
+            description = patient.getPatientNumber() + " " + patient.getFullName();
+        }
+
+        Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Patient_Control);
+        if (!debitAccount.isPresent()) {
+            throw APIException.badRequest("Patient Control Account is Not Mapped");
+        }
+        String debitAcc = debitAccount.get().getAccount().getIdentifier();
+
+        List<JournalEntryItem> items = new ArrayList<>();
+
+        if (!bill.getBillItems().isEmpty()) {
+            Map<Long, Double> map = bill.getBillItems()
+                    .stream()
+                    .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
+                            Collectors.summingDouble(PatientBillItem::getAmount)
+                    )
+                    );
+            //then here since we making a revenue
+            map.forEach((k, v) -> {
+                ServicePoint srv = servicePointService.getServicePoint(k);
+                Account credit = srv.getIncomeAccount();
+                BigDecimal amount = BigDecimal.valueOf(v);
+                items.add(new JournalEntryItem(debitAcc, JournalEntryItem.Type.DEBIT, amount));
+                items.add(new JournalEntryItem(credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
+            });
+            //if inventory expenses this shit!
+            if (store != null) {
+                Map<Long, Double> inventory = bill.getBillItems()
+                        .stream()
+                        .filter(x -> x.getItem().isInventoryItem())
+                        .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
+                                Collectors.summingDouble(x -> (x.getItem().getCostRate() * x.getQuantity()))
+                        )
+                        );
+                if (!inventory.isEmpty()) {
+                    inventory.forEach((k, v) -> {
+                        //revenue
+                        ServicePoint srv = servicePointService.getServicePoint(k);
+                        Account debit = srv.getExpenseAccount(); // cost of sales
+                        Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
+                        BigDecimal amount = BigDecimal.valueOf(v);
+                        items.add(new JournalEntryItem(debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
+                        items.add(new JournalEntryItem(credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
+                    });
+                }
+
+            }
+
+        }
+
+        JournalEntry toSave = new JournalEntry(bill.getBillingDate(), description, items);
+        toSave.setTransactionNo(bill.getTransactionId());
+        toSave.setTransactionType(TransactionType.Billing);
+        toSave.setStatus(JournalState.PENDING);
+        return toSave;
+    }
 }

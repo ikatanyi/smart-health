@@ -26,13 +26,16 @@ public class PatientRadiologyTest extends ClinicalRecord{
     
     private String results;
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_radiology_test_id"))
     private RadiologyTest test;
     private String scanNumber;
     private ScanTestState state;
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_radiology_request_id"))
     private DoctorRequest request;    
     private String scanImagePath;    
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_radiology_bill_id"))
+    
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_radiology_bill_id"))
     private PatientBill bill;    
 }

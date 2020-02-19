@@ -9,13 +9,11 @@ import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
-import io.smarthealth.clinical.queue.service.PatientQueueService;
+import io.smarthealth.clinical.queue.domain.PatientQueueRepository;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
-import io.smarthealth.clinical.visit.service.VisitService;
-import io.smarthealth.infrastructure.accountnumberformat.service.AccountNumberGenerator;
+import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.FacilityService;
 import io.smarthealth.organization.person.data.AddressData;
@@ -28,7 +26,8 @@ import io.smarthealth.organization.person.patient.domain.PatientIdentifier;
 import io.smarthealth.organization.person.patient.domain.PatientIdentifierRepository;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.organization.person.patient.domain.specification.PatientSpecification;
-import io.smarthealth.infrastructure.reports.service.JasperReportsService;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,6 +40,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
@@ -66,64 +66,41 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Simon.waweru
  */
 @Service
+@RequiredArgsConstructor
 public class PatientService {
 
-    @Autowired
-    PatientRepository patientRepository;
-    @Autowired
-    PersonContactRepository personContactRepository;
-    @Autowired
-    PersonAddressRepository personAddressRepository;
-    @Autowired
-    PatientIdentifierRepository patientIdentifierRepository;
+    private final PatientRepository patientRepository;
+    private final PersonContactRepository personContactRepository;
+    private final PersonAddressRepository personAddressRepository;
+    private final PatientIdentifierRepository patientIdentifierRepository;
+    private final PatientQueueRepository patientQueueRepository;
+    private final VisitRepository visitRepository;
+    
+    private final ServicePointService servicePointService;
+    private final FacilityService facilityService;
+//    private final VisitService visitService;
+     
+    private final SequenceNumberService sequenceNumberService;
 
-    @Autowired
-    ServicePointService servicePointService;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    FacilityService facilityService;
-//
-    @Autowired
-    VisitService visitService;
+    private final PortraitRepository portraitRepository;
 
-    @Autowired
+    private final PatientIdentifierService patientIdentifierService;
+  
+    private File patientImageDirRoot;
+    
+      @Autowired
     @Qualifier("jdbcTemplate")
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private ResourceLoader resourceLoader;
 
-    @Autowired
-    private JasperReportsService reportService;
-
-    @Autowired
-    SequenceService sequenceService;
-
-    @Autowired
-    ModelMapper modelMapper;
-
-    @Autowired
-    PortraitRepository portraitRepository;
-
-    @Autowired
-    PatientIdentifierService patientIdentifierService;
-
-    @Autowired
-    PatientQueueService patientQueueService;
-
-    private final File patientImageDirRoot;
-
+    
     @Value("${patientimage.upload.dir}")
     private String uploadDir;
-
-    @Autowired
-    AccountNumberGenerator accountNumberGenerator;
-
-    @Autowired
-    PatientService(@Value("${patientimage.upload.dir}") String uploadDir) {
-        this.patientImageDirRoot = new File(uploadDir);
-    }
-
+ 
     public Page<Patient> fetchAllPatients(MultiValueMap<String, String> queryParams, final Pageable pageable) {
         Specification<Patient> spec = PatientSpecification.createSpecification(queryParams.getFirst("term"));
         return patientRepository.findAll(spec, pageable);
@@ -181,16 +158,12 @@ public class PatientService {
                 });
     }
 
-    /**
-     * Delete patient's photo
-     */
     public String deletePortrait(String patientNumber) throws IOException {
         final Person person = findPatientOrThrow(patientNumber);
         Portrait portrait = portraitRepository.findByPerson(person);
-        //remove file if exists on folder
-        /*Delete patient file*/
+         patientImageDirRoot = new File(uploadDir);
         System.out.println("-------------Deleting patient portrait--------------");
-        File file = new File(this.patientImageDirRoot, portrait.getImageName());
+        File file = new File(patientImageDirRoot, portrait.getImageName());
         if (file.exists()) {
             if (file.delete()) {
                 System.out.println("File deleted successfully");
@@ -232,8 +205,8 @@ public class PatientService {
 
     @Transactional
     public Patient createPatient(final PatientData patient) {
-
-        throwifDuplicatePatientNumber(patient.getPatientNumber());
+        String patientNo = sequenceNumberService.next(1L, Sequences.Patient.name());
+        throwifDuplicatePatientNumber(patientNo);
 
         // use strict to prevent over eager matching (happens with ID fields)
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -242,6 +215,7 @@ public class PatientService {
         patientEntity.setAlive(true);
         patientEntity.setPatient(true);
         patientEntity.setStatus("Active");
+        patientEntity.setPatientNumber(patientNo);
 
         final Patient savedPatient = this.patientRepository.save(patientEntity);
         //save patients contact details
@@ -302,10 +276,11 @@ public class PatientService {
 
         Facility facilityLogged = facilityService.loggedFacility();
         if (patient.getVisitType() != null) {
+            String visitid = sequenceNumberService.next(1L, Sequences.Visit.name());
             Visit visit = new Visit();
+            visit.setVisitNumber(visitid);
             visit.setPatient(savedPatient);
             visit.setScheduled(Boolean.TRUE);
-
             visit.setStartDatetime(LocalDateTime.now());
             visit.setStatus(VisitEnum.Status.CheckIn);
             visit.setVisitType(VisitEnum.VisitType.Outpatient);
@@ -333,10 +308,8 @@ public class PatientService {
                 //send to inpatient
 
             }
-
-            visitService.createAVisit(visit);
-            visit.setVisitNumber(accountNumberGenerator.generate(visit, null));
-            visitService.createAVisit(visit);
+            visitRepository.save(visit);
+//            visitService.createAVisit(visit);
 
             //insert into patient visit log
             PatientQueue queue = new PatientQueue();
@@ -347,7 +320,8 @@ public class PatientService {
             queue.setUrgency(PatientQueue.QueueUrgency.Normal);
             queue.setVisit(visit);
 
-            patientQueueService.createPatientQueue(queue);
+            patientQueueRepository.save(queue);
+//            patientQueueService.createPatientQueue(queue);
         }
 
         return savedPatient;
@@ -440,5 +414,4 @@ public class PatientService {
 //
 //        return print;
     }
-
 }

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Api
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class BillingController {
 
     private final BillingService service;

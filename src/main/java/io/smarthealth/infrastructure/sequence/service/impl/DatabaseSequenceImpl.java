@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
  * @author Kelsas
  */
 @Service
+@Deprecated
 public class DatabaseSequenceImpl implements SequenceService {
 
     private final SequenceRepository repository;

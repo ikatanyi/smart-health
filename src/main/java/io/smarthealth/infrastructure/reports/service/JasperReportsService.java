@@ -133,20 +133,20 @@ public class JasperReportsService  {
         try {
             ExportFormat format = reportData.getFormat();
             if (format == null) {
-                format = ExportFormat.XLSX;
+                format = ExportFormat.PDF;
             }
             List dataList = reportData.getData();
-            String inputFileName = reportData.getReportName();
+            String template = reportData.getTemplate();
+            String reportName = reportData.getReportName();
             JasperReport jasperReport = null;
             HashMap param = reportConfig();
-            InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() +inputFileName +".jasper").getInputStream();
+            InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() +template +".jasper").getInputStream();
             // Check if a compiled report exists
             if (reportInputStream != null) {
                 jasperReport = (JasperReport) JRLoader.loadObject(reportInputStream);
             } // Compile report from source and save
             else {
-                String jrxml = storageService.loadJrxmlFile(inputFileName + ".jrxml");
-                log.info("{} loaded. Compiling report", jrxml);
+                String jrxml = storageService.loadJrxmlFile(template + ".jrxml");
                 jasperReport = JasperCompileManager.compileReport(jrxml);
             }
             // Get your data source
@@ -158,8 +158,8 @@ public class JasperReportsService  {
                 jasperPrint = JasperFillManager.fillReport(jasperReport, param, conn);
             else
                 jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
-
-            export(jasperPrint, format, inputFileName, response);
+            
+            export(jasperPrint, format, reportName, response);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -172,29 +172,29 @@ public class JasperReportsService  {
         SimpleOutputStreamExporterOutput exporterOutput = null;
         boolean html = false;
 
-        switch (type.name()) {
-            case "HTML":
+        switch (type) {
+            case HTML:  
                 exporter = new HtmlExporter();
                 response.setContentType("text/html");
                 exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
-            case "CSV":
+            case CSV:    
                 exporter = new JRCsvExporter();
                 exporter.setExporterOutput(new SimpleWriterExporterOutput(out));
                 response.setContentType("text/csv");
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
-            case "XML":
+            case XML:  
                 exporter = new JRXmlExporter();
                 response.setContentType("text/xml");
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
-            case "XLS":
-            case "XLSX":
+            case XLS:
+            case XLSX:  
                 exporter = new JRXlsxExporter();
                 AbstractXlsReportConfiguration config = new SimpleXlsxReportConfiguration();
                 config.setOnePagePerSheet(false);
@@ -211,10 +211,9 @@ public class JasperReportsService  {
                 exporter.setConfiguration(config);
                 response.setContentType("application/vnd.ms-excel");
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
-
                 break;
 
-            case "PDF":
+            case PDF:
                 exporter = new JRPdfExporter();
                 response.setContentType("application/pdf");
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));

@@ -8,6 +8,8 @@ package io.smarthealth.clinical.procedure.data;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureTest;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 
@@ -21,19 +23,22 @@ public class PatientProcedureTestData {
     private String results;
     private String comments;
     private Long procId;
+    private String procedureName;
     private ProcedureTestData testData;
+    @Enumerated(EnumType.STRING)
     private ProcedureTestState state;
-    private Long requestId;
-//    private DoctorRequestData requestData;    
+    private Long requestId; 
     private BillData billData;    
     
     public static PatientProcedureTestData map (PatientProcedureTest scan){
         PatientProcedureTestData entity = new PatientProcedureTestData();
         entity.setResults(scan.getResult());        
         entity.setState(scan.getStatus());
+       
         if(scan.getProcedureTest()!=null){
             entity.setProcId(scan.getProcedureTest().getId());
-            entity.setTestData(ProcedureTestData.map(scan.getProcedureTest()));
+            entity.setTestData(ProcedureTestData.map(scan.getProcedureTest())); 
+            entity.setProcedureName(scan.getProcedureTest().getProcedureName());
         }  
         return entity;
     }

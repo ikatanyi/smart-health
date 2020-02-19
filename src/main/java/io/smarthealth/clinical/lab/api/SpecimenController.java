@@ -2,6 +2,7 @@ package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.SpecimenData;
 import io.smarthealth.clinical.lab.service.LabService;
+import io.smarthealth.clinical.lab.service.LabSetupService;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -31,7 +32,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class SpecimenController {
 
     @Autowired
-    LabService specimenService;
+    LabSetupService specimenService;
     
     @Autowired
     ModelMapper modelMapper;

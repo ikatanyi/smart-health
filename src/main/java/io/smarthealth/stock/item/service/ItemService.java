@@ -3,7 +3,7 @@ package io.smarthealth.stock.item.service;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.accounting.taxes.domain.TaxRepository;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.utility.UuidGenerator;
+import io.smarthealth.sequence.UuidGenerator;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.domain.StockEntryRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
@@ -11,7 +11,7 @@ import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.inventory.service.InventoryEventSender;
 import io.smarthealth.stock.item.data.CreateItem;
-import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.item.data.ItemDatas;
 import io.smarthealth.stock.item.data.Uoms;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemMetadata;
@@ -59,7 +59,7 @@ public class ItemService {
 
     @Transactional
     @CachePut
-    public ItemData createItem(CreateItem createItem) {
+    public ItemDatas createItem(CreateItem createItem) {
         Item item = new Item();
         item.setActive(Boolean.TRUE);
         item.setCategory(createItem.getStockCategory());
@@ -132,7 +132,7 @@ public class ItemService {
             }
         }
 
-        return ItemData.map(savedItem);
+        return ItemDatas.map(savedItem);
     }
 
     public Optional<Item> findById(final Long itemId) {

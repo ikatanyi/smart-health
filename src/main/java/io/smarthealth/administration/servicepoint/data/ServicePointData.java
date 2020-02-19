@@ -1,6 +1,6 @@
 package io.smarthealth.administration.servicepoint.data;
-
-import io.smarthealth.accounting.acc.data.SimpleAccountData;
+ 
+import io.smarthealth.accounting.accounts.data.SimpleAccountData;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;

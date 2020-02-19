@@ -44,6 +44,8 @@ public class PatientTestRegisterData {
     @ApiModelProperty(hidden = true, required = false)
     private String physicianName;
     private LocalDate receivedDate;
+    private LocalDate dateOfBith;
+    private Integer age;
 
     private String servicePoint;
 
@@ -67,6 +69,8 @@ public class PatientTestRegisterData {
             data.setVisitNumber(patientregister.getVisit().getVisitNumber());
             data.setPatientName(patientregister.getVisit().getPatient().getFullName());
             data.setPatientNumber(patientregister.getVisit().getPatient().getPatientNumber());
+            data.setDateOfBith(patientregister.getVisit().getPatient().getDateOfBirth());
+            data.setAge(patientregister.getVisit().getPatient().getAge());
         }
         if (patientregister.getRequest() != null) {
             data.setRequestId(String.valueOf(patientregister.getRequest().getId()));
@@ -75,10 +79,7 @@ public class PatientTestRegisterData {
         }
         data.setAccessionNo(patientregister.getAccessNo());
 
-        //data.setClinicalDetails(patientregister.getClinicalDetails());
-//        for (PatientLabTest ttype : patientregister.getPatientLabTest()) {
-//            data.getPatientLabTestData().add(PatientLabTestData.map(ttype));
-//        }
+      
         if (patientregister.getBill() != null) {
             data.setBillNumber(patientregister.getBill().getBillNumber());
             data.setBillData(patientregister.getBill().toData());
@@ -87,9 +88,7 @@ public class PatientTestRegisterData {
         if (patientregister.getPatientLabTest() != null) {
             data.setPatientLabTestData(PatientLabTestData.map(patientregister.getPatientLabTest()));
         }
-        //data.setOrderedDate(DateConverter.toIsoString(LocalDateTime.ofInstant(patientregister.getCreatedOn(), ZoneOffset.UTC)));
-
-        //System.out.println("Date converted " + DateConverter.toLocalDate(LocalDateTime.ofInstant(patientregister.getCreatedOn(), ZoneOffset.UTC)));
+        
         data.setOrderedDate(DateConverter.toLocalDate(LocalDateTime.ofInstant(patientregister.getCreatedOn(), ZoneOffset.UTC)));
 
         return data;

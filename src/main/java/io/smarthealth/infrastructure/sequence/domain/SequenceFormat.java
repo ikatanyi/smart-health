@@ -19,6 +19,7 @@ import lombok.Data;
  */
 @Entity
 @Data
+@Deprecated
 public class SequenceFormat extends Identifiable {
 
     @Enumerated(EnumType.STRING)

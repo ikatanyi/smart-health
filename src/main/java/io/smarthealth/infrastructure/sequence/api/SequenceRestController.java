@@ -1,5 +1,6 @@
 package io.smarthealth.infrastructure.sequence.api;
 
+import com.google.gson.annotations.Since;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.sequence.domain.SequenceData;
 import io.smarthealth.infrastructure.sequence.service.SequenceManagerService;
@@ -20,9 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Kelsas
  */
+@Deprecated
 @RestController
 @Slf4j
-@Api
 @RequestMapping("/api/v1")
 public class SequenceRestController {
     private final SequenceManagerService service;

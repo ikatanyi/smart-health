@@ -9,6 +9,7 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.facility.domain.Employee;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -42,6 +43,10 @@ public class LabRegister extends ClinicalRecord {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_test_register_request_id"))
     @OneToOne
     private DoctorRequest request;
+    
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_test_register_visit_id"))
+    private Visit visit;
 
     @Column(nullable = false, unique = false)
     @Enumerated(EnumType.STRING)

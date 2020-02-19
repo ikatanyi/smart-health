@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="presc_label" language="groovy" pageWidth="220" pageHeight="185" columnWidth="210" leftMargin="5" rightMargin="5" topMargin="4" bottomMargin="5" uuid="f77ce829-3b55-4ede-b9ad-5197103c52e2">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="drugname" class="java.lang.String"/>
+	<parameter name="qty" class="java.lang.String"/>
+	<parameter name="expiry_date" class="java.lang.String"/>
+	<parameter name="directions" class="java.lang.String"/>
+	<parameter name="precaution" class="java.lang.String"/>
+	<parameter name="name" class="java.lang.String"/>
+	<parameter name="patientId" class="java.lang.String"/>
+	<parameter name="company" class="java.lang.String"/>
+	<pageHeader>
+		<band height="45" splitType="Stretch">
+			<textField>
+				<reportElement x="4" y="0" width="206" height="12" uuid="8747dd88-7eac-4b3a-84ca-e417909355f7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{company}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="4" y="15" width="38" height="13" uuid="01d5e240-90c9-4334-9f30-746f6a92f9bd"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="42" y="15" width="62" height="13" uuid="0d96cfac-6871-48dd-b20c-b5d847d7b9cb"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="42" y="28" width="62" height="14" uuid="b81870cc-966a-4fb9-96f7-d37920961bb5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Patient Id :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="28" width="40" height="14" uuid="357aac06-0a39-4ab6-930a-399ddde04d2a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[File No.]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="13">
+			<staticText>
+				<reportElement x="0" y="4" width="62" height="9" uuid="35c82e77-4fd1-4a59-8210-6c48ce70189d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Drug Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="67" y="4" width="62" height="9" uuid="e3b605ad-28b1-4e60-9d21-94b724a077bd"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="134" y="4" width="62" height="9" uuid="6289ae0e-ea77-4442-8a8f-171306d6a7f6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Expiry Date]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="12" width="194" height="1" uuid="ba0e8201-fc8d-4c85-a5fb-a95b21e26a88"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="46" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="-1" width="62" height="13" uuid="27f119c5-b114-406b-b1fa-7929252ed797"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{drugname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="67" y="-1" width="62" height="13" uuid="fcb5bb61-8a88-4d00-abb2-8be55673f478"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{qty}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="134" y="0" width="62" height="12" uuid="f46ee81f-a24c-400e-bea5-57d220688058"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{expiry_date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="22" y="18" width="154" height="13" uuid="e3d68d87-3a8e-4795-aee6-5fc4dafd910a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{directions}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="33" width="184" height="13" uuid="8b52fea4-aa2f-429b-9ff6-7451aec0d6d8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{precaution}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="5" width="42" height="13" uuid="96084eab-3ca5-46cb-a46d-ddf329b02e49"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Printed On:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="41" y="5" width="62" height="13" uuid="67950256-8aad-4e08-b90f-40d0cf9ca784"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

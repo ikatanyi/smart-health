@@ -5,7 +5,7 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.item.data.CreateItem;
-import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.item.data.ItemDatas;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemMetadata;
 import io.smarthealth.stock.item.service.ItemService;
@@ -41,9 +41,9 @@ public class ItemRestController {
             throw APIException.conflict("Item with code {0} already exists.", itemData.getSku());
         }
 
-        ItemData result = service.createItem(itemData);
+        ItemDatas result = service.createItem(itemData);
 
-        Pager<ItemData> pagers = new Pager();
+        Pager<ItemDatas> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Item created successful");
         pagers.setContent(result);
@@ -53,10 +53,10 @@ public class ItemRestController {
     }
 
     @GetMapping("/items/{code}")
-    public ItemData getItem(@PathVariable(value = "code") String code) {
+    public ItemDatas getItem(@PathVariable(value = "code") String code) {
         Item item = service.findByItemCode(code)
                 .orElseThrow(() -> APIException.notFound("Account {0} not found.", code));
-        return ItemData.map(item);
+        return ItemDatas.map(item);
     }
 
     @GetMapping("/items")
@@ -70,9 +70,9 @@ public class ItemRestController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<ItemData> list = service.fetchItems(category, type, includeClosed, term, pageable).map(u -> ItemData.map(u));
+        Page<ItemDatas> list = service.fetchItems(category, type, includeClosed, term, pageable).map(u -> ItemDatas.map(u));
 
-        Pager<List<ItemData>> pagers = new Pager();
+        Pager<List<ItemDatas>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());

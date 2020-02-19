@@ -22,42 +22,39 @@ import org.springframework.validation.ObjectError;
  * @author Kelsas
  */
 @Data
-//@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.CUSTOM, property = "error", visible = true)
-//@JsonTypeIdResolver(LowerCaseClassNameResolver.class)
 @JsonInclude(Include.NON_NULL)
-public class ApiError {
-//    private String title;
+public class ApiError { 
     private String code;
     @JsonIgnore
      private HttpStatus httpStatus; 
     private String message;
     private String debugMessage;
     private List<ApiSubError> errors; 
-    private ApiError() { 
+    public ApiError() { 
     }
 
-    ApiError(HttpStatus status) {
+    public ApiError(HttpStatus status) {
         this();
         this.httpStatus = status;
         this.code=String.valueOf(status.value());
         this.message=status.getReasonPhrase();
     }
 
-    ApiError(HttpStatus status, Throwable ex) {
+    public ApiError(HttpStatus status, Throwable ex) {
         this();
         this.httpStatus = status;
         this.code=String.valueOf(status.value());
         this.message=ex.getLocalizedMessage();
     }
 
-    ApiError(HttpStatus status, String message, Throwable ex) {
+   public ApiError(HttpStatus status, String message, Throwable ex) {
         this();
          this.code=String.valueOf(status.value());
         this.message=message;
         this.httpStatus = status;
     }
     
-    ApiError(HttpStatus status, String message) {
+    public ApiError(HttpStatus status, String message) {
         this();
         this.httpStatus = status;
          this.code=String.valueOf(status.value());

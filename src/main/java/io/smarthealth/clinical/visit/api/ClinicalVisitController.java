@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.visit.api;
 
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
@@ -27,19 +22,16 @@ import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.domain.Employee;
-import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.net.URI;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -66,9 +58,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class ClinicalVisitController {
 
     @Autowired
-    private VisitService visitService;
-    @Autowired
-    private DepartmentService departmentService;
+    private VisitService visitService; 
 
     @Autowired
     PatientService patientService;
@@ -83,10 +73,7 @@ public class ClinicalVisitController {
 
     @Autowired
     private EmployeeService employeeService;
-
-    @Autowired
-    SequenceService sequenceService;
-
+ 
     @Autowired
     ServicePointService servicePointService;
 
@@ -95,6 +82,9 @@ public class ClinicalVisitController {
 
     @Autowired
     PaymentDetailsService paymentDetailsService;
+    
+    @Autowired
+    private  SequenceNumberService sequenceNumberService; 
 
     @PostMapping("/visits")
     @ApiOperation(value = "Submit a new patient visit", response = VisitData.class)
@@ -114,7 +104,8 @@ public class ClinicalVisitController {
 
         Visit visit = VisitData.map(visitData);
         //generate visit number
-        visit.setVisitNumber(sequenceService.nextNumber(SequenceType.VisitNumber));
+         String visitNo = sequenceNumberService.next(1L, Sequences.Visit.name());
+        visit.setVisitNumber(visitNo);
         visit.setStartDatetime(visitData.getStartDatetime());
         visit.setPatient(patient);
         visit.setServicePoint(servicePoint);

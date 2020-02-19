@@ -10,13 +10,13 @@ import lombok.Data;
 @Data
 public class RequisitionItemData {
 
-    private Long requisitionId;
     private Long itemId;
     private String itemCode;
     private String item;
     private double quantity;
     private double receivedQuantity;
-    private Long uomId;
+    private double price;
+    private double total;
     private String uom;
 
     public static RequisitionItemData map(RequisitionItem item) {
@@ -28,10 +28,6 @@ public class RequisitionItemData {
         }
         data.setQuantity(item.getQuantity());
         data.setReceivedQuantity(item.getReceivedQuantity());
-        if(item.getUom()!=null){
-            data.setUomId(item.getUom().getId());
-            data.setUom(item.getUom().getName());
-        }
 
         return data;
     }

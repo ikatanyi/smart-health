@@ -2,6 +2,7 @@ package io.smarthealth.clinical.lab.api;
 
 import io.smarthealth.clinical.lab.data.ContainerData;
 import io.smarthealth.clinical.lab.service.LabService;
+import io.smarthealth.clinical.lab.service.LabSetupService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.swagger.annotations.Api;
@@ -28,7 +29,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class ContainerController {
 
     @Autowired
-    LabService labService;
+    LabSetupService labService;
 
     @Autowired
     ModelMapper modelMapper;
@@ -39,7 +40,7 @@ public class ContainerController {
         List<ContainerData> conatinerList = labService.createContainers(ContainerData);
         HttpHeaders headers = null;//PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(conatinerList, headers, HttpStatus.OK);
-     
+
     }
 
     @GetMapping("/container/{id}")

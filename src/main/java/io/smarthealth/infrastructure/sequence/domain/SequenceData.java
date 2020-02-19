@@ -14,6 +14,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "sequence_data")
+@Deprecated
 public class SequenceData implements Serializable {
 
     private static final long serialVersionUID = 1L;

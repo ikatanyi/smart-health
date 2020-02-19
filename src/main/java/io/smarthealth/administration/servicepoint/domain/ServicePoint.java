@@ -1,7 +1,7 @@
 package io.smarthealth.administration.servicepoint.domain;
 
-import io.smarthealth.accounting.acc.data.SimpleAccountData;
-import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.accounting.accounts.data.SimpleAccountData;
+import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.infrastructure.domain.Identifiable;
@@ -27,15 +27,15 @@ public class ServicePoint extends Identifiable {
     
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_income_account_id"))
-    private AccountEntity incomeAccount;
+    private Account incomeAccount;
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_expense_account_id"))
-    private AccountEntity expenseAccount;
+    private Account expenseAccount;
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_inventory_asset_account_id"))
-    private AccountEntity inventoryAssetAccount;
+    private Account inventoryAssetAccount;
 //    @ManyToOne
 //    @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_facility"))
 //    private Facility facility;

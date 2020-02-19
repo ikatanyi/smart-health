@@ -1,7 +1,7 @@
 package io.smarthealth.organization.facility.domain;
 
-import io.smarthealth.auth.domain.User;
 import io.smarthealth.organization.person.domain.Person;
+import io.smarthealth.security.domain.User;
 import javax.persistence.*;
 import lombok.Data;
 

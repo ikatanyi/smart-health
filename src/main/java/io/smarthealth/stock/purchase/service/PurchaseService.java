@@ -6,7 +6,7 @@ import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.service.AdminService;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;

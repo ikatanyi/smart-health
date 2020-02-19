@@ -1,7 +1,15 @@
 package io.smarthealth.accounting.payment.service;
 
-import io.smarthealth.accounting.acc.service.AccountService;
-import io.smarthealth.accounting.acc.service.JournalEntryService;
+import io.smarthealth.accounting.accounts.data.FinancialActivity;
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
+import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
+import io.smarthealth.accounting.accounts.domain.JournalEntry;
+import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
+import io.smarthealth.accounting.accounts.domain.JournalState;
+import io.smarthealth.accounting.accounts.domain.TransactionType;
+import io.smarthealth.accounting.accounts.service.AccountService;
+import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
@@ -25,10 +33,17 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.FinancialTransactionRepository;
-import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
-import io.smarthealth.infrastructure.utility.UuidGenerator;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.stores.domain.Store;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -42,25 +57,31 @@ import org.apache.commons.lang3.RandomStringUtils;
 public class PaymentService {
 
     private final FinancialTransactionRepository transactionRepository;
+    private final FinancialActivityAccountRepository activityAccountRepository;
     private final AccountService accountService;
     private final BillingService billingService;
-    private final JournalEntryService journalEntryService;
+    private final JournalService journalEntryService;
+
     private final SequenceNumberGenerator sequenceGenerator;
+
+    private final SequenceNumberService sequenceNumberService;
+    private final ServicePointService servicePointService;
 
     @Transactional
     public FinancialTransactionData createTransaction(CreateTransactionData transactionData) {
-        String trdId = sequenceGenerator.generateTransactionNumber();
+        
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        String receipt = sequenceNumberService.next(1L, Sequences.Receipt.name());
+
         FinancialTransaction transaction = new FinancialTransaction();
         transaction.setDate(transactionData.getDate());
         transaction.setAmount(transactionData.getAmount());
         transaction.setTrxType(TrxType.payment);
-        transaction.setReceiptNo(RandomStringUtils.randomNumeric(6));
+        transaction.setReceiptNo(receipt);
         transaction.setShiftNo("0000");
         transaction.setTransactionId(trdId);
         transaction.setInvoice(transactionData.getBillNumber());
-
-//        AccountEntity acc=accountService.findOneWithNotFoundDetection(transactionData.getAccount());
-//        transaction.setAccount(acc);
+        
         if (!transactionData.getPayment().isEmpty()) {
             List<Payment> paylist = transactionData.getPayment()
                     .stream()
@@ -94,9 +115,8 @@ public class PaymentService {
                     });
 
         }
-        
-        journalEntryService.createJournalEntry(trdId, billedItems);
-
+        journalEntryService.save(toJournal(transactionData.getDate().toLocalDate(), trdId, receipt, billedItems));
+//        journalEntryService.createJournalEntry(trdId, billedItems);
         return FinancialTransactionData.map(trans);
 
     }
@@ -159,6 +179,61 @@ public class PaymentService {
     public FinancialTransaction findTransactionOrThrowException(Long id) {
         return findById(id)
                 .orElseThrow(() -> APIException.notFound("Transaction with id {0} not found.", id));
+    }
+
+    private JournalEntry toJournal(LocalDate receiptDate, String trxId, String receipt, List<PatientBillItem> billedItems) {
+        Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
+
+        if (debitAccount.isPresent()) {
+            throw APIException.badRequest("Receipt Control Account is Not Mapped");
+        }
+        String debitAcc = debitAccount.get().getAccount().getIdentifier();
+        List<JournalEntryItem> items = new ArrayList<>();
+
+        if (!billedItems.isEmpty()) {
+            Map<Long, Double> map = billedItems
+                    .stream()
+                    .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
+                            Collectors.summingDouble(PatientBillItem::getAmount)
+                    )
+                    );
+            //then here since we making a revenue
+            map.forEach((k, v) -> {
+                //revenue
+                ServicePoint srv = servicePointService.getServicePoint(k);
+                Account credit = srv.getIncomeAccount();
+                BigDecimal amount = BigDecimal.valueOf(v);
+
+                items.add(new JournalEntryItem(debitAcc, JournalEntryItem.Type.DEBIT, amount));
+                items.add(new JournalEntryItem(credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
+
+            });
+            //expenses
+            Map<Long, Double> inventory = billedItems
+                    .stream()
+                    .filter(x -> x.getItem().isInventoryItem())
+                    .collect(
+                            Collectors.groupingBy(PatientBillItem::getServicePointId,
+                                    Collectors.summingDouble(x -> (x.getItem().getCostRate() * x.getQuantity())))
+                    );
+            if (!inventory.isEmpty()) {
+                inventory.forEach((k, v) -> {
+                    //revenue
+                    ServicePoint srv = servicePointService.getServicePoint(k);
+                    Account debit = srv.getExpenseAccount();//store.getInventoryAccount();// srv.getExpenseAccount();// cost of sales
+                    Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
+                    BigDecimal amount = BigDecimal.valueOf(v);
+                    items.add(new JournalEntryItem(debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
+                    items.add(new JournalEntryItem(credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
+                });
+            }
+        }
+        String description = "Patient Receipting - " + receipt;
+        JournalEntry toSave = new JournalEntry(receiptDate, description, items);
+        toSave.setTransactionType(TransactionType.Receipting);
+        toSave.setTransactionNo(trxId);
+        toSave.setStatus(JournalState.PENDING);
+        return toSave;
     }
 
 }

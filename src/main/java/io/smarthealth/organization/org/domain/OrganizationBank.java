@@ -1,6 +1,6 @@
 package io.smarthealth.organization.org.domain;
 
-import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.administration.app.domain.BankEmbedded;
 import io.smarthealth.infrastructure.domain.Auditable;
 import javax.persistence.*;
@@ -20,9 +20,9 @@ public class OrganizationBank extends Auditable {
 
     @Embedded
     private BankEmbedded bank;
- 
+
     @JoinColumn(name = "ledger_account_id", foreignKey = @ForeignKey(name = "fk_bank_account_id"))
     @ManyToOne
-    private AccountEntity ledgerAccount;
+    private Account ledgerAccount;
     private Boolean defaultAccount;
 }

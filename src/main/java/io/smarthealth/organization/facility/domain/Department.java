@@ -1,6 +1,6 @@
 package io.smarthealth.organization.facility.domain;
 
-import io.smarthealth.accounting.acc.domain.AccountEntity;
+import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Column;
@@ -45,11 +45,11 @@ public class Department extends Identifiable {
     private Department parent;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_income_account_id"))
-    private AccountEntity incomeAccount;
-    
+    private Account incomeAccount;
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_expense_account_id"))
-    private AccountEntity expenseAccount;
+    private Account expenseAccount;
 
     private Boolean isStore; // the department can be store location
 

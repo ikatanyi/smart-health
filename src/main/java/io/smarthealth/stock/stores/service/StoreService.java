@@ -1,8 +1,8 @@
 package io.smarthealth.stock.stores.service;
-
-import io.smarthealth.accounting.acc.domain.AccountEntity;
-import io.smarthealth.accounting.acc.domain.IncomeExpenseData;
-import io.smarthealth.accounting.acc.service.AccountService;
+ 
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.domain.IncomeExpenseData;
+import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -44,22 +44,10 @@ public class StoreService {
         if (data.getServicePointId() != null) {
             ServicePoint srv = servicePointService.getServicePoint(data.getServicePointId());
             toSave.setServicePoint(srv);
-        }
-//        if (data.getSalesAccountNumber()!= null) {
-//            Optional< AccountEntity> sales = accountService.findByAccountNumber(data.getSalesAccountNumber());
-//            if (sales.isPresent()) {
-//                toSave.setSalesAccount(sales.get());
-//            }
-//        }
-//
-//        if (data.getPurchaseAccountNumber() != null) {
-//            Optional< AccountEntity> purchase = accountService.findByAccountNumber(data.getPurchaseAccountNumber());
-//            if (purchase.isPresent()) {
-//                toSave.setPurchaseAccount(purchase.get());
-//            }
-//        }
+        } 
+        
         if (data.getInventoryAccountNumber() != null) {
-            Optional< AccountEntity> inventory = accountService.findByAccountNumber(data.getInventoryAccountNumber());
+            Optional< Account> inventory = accountService.findByAccountNumber(data.getInventoryAccountNumber());
             if (inventory.isPresent()) {
                 toSave.setInventoryAccount(inventory.get());
             }

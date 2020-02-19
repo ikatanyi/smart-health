@@ -58,7 +58,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 @RestController
 @RequestMapping("/api")
-@Api(value = "Patient Controller", description = "Operations pertaining to patient entity")
+@Api
 public class PatientController {
 
     @Value("${upload.image.max-size:524288}")
@@ -77,15 +77,13 @@ public class PatientController {
     @Autowired
     ModelMapper modelMapper;
 
-    @Autowired
-    SequenceService sequenceService;
 
     @PostMapping("/patients")
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestBody @Valid final PatientData patientData) {
         LocalDate dateOfBirth = LocalDate.now().minusYears(Long.valueOf(patientData.getAge()));
         patientData.setDateOfBirth(dateOfBirth);
-        patientData.setPatientNumber(sequenceService.nextNumber(SequenceType.PatientNumber));
+        
         Patient patient = this.patientService.createPatient(patientData);
 
         PatientData savedpatientData = patientService.convertToPatientData(patient);

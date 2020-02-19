@@ -1,7 +1,7 @@
 package io.smarthealth.audit.config;
 
 import io.smarthealth.config.Constants;
-import io.smarthealth.infrastructure.common.SecurityUtils;
+import io.smarthealth.security.util.SecurityUtils;
 import java.util.Optional;
 import org.springframework.data.domain.AuditorAware;
 

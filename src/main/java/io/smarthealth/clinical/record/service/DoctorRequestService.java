@@ -11,13 +11,12 @@ import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
+import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.lang.DateConverter;
-import io.smarthealth.organization.facility.domain.Department;
-import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.List;
 import java.util.Optional;
@@ -61,7 +60,7 @@ public class DoctorRequestService implements DateConverter {
         for (DoctorRequest docRequest : docReqs) {
             PatientQueue patientQueue = new PatientQueue();
 //            Department department = departmentService.findByServicePointTypeAndloggedFacility(docRequest.getRequestType());      
-            ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(docRequest.getRequestType()));
+            ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(docRequest.getRequestType().name()));
             //check if patient is already queued
             if (patientQueueService.patientIsQueued(servicePoint, docRequest.getPatient())) {
                 continue;
@@ -88,7 +87,7 @@ public class DoctorRequestService implements DateConverter {
 //        }.getType());
 //        return docReqData;
 //    }
-    public Page<DoctorRequest> findAllRequestsByVisitAndRequestType(final Visit visit, final String requestType, Pageable pageable) {
+    public Page<DoctorRequest> findAllRequestsByVisitAndRequestType(final Visit visit, final RequestType requestType, Pageable pageable) {
         Page<DoctorRequest> docReqs = doctorRequestRepository.findByVisitAndRequestType(visit, requestType, pageable);
         return docReqs;
     }
@@ -110,11 +109,11 @@ public class DoctorRequestService implements DateConverter {
         return docReqs;
     }
     
-    public Page<DoctorRequest> fetchDoctorRequestLine(final String fulfillerStatus, final String requestType, Pageable pageable) {
+    public Page<DoctorRequest> fetchDoctorRequestLine(final String fulfillerStatus, final RequestType requestType, Pageable pageable) {
         return doctorRequestRepository.findRequestLine(fulfillerStatus, requestType, pageable);
     }
     
-    public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final String fullfillerStatus, final String requestType) {
+    public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final String fullfillerStatus, final RequestType requestType) {
         return doctorRequestRepository.findServiceRequestsByPatient(patient, fullfillerStatus, requestType);
     }
     

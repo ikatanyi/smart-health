@@ -76,6 +76,7 @@ public class StoreRestController {
     
      @GetMapping("/stores/$metadata")
     public ResponseEntity<?> getStoresMetadata(){
+        
         return ResponseEntity.ok(service.getStoreMetadata());
     }
 }
