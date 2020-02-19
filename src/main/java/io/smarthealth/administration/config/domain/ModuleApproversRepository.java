@@ -22,4 +22,6 @@ public interface ModuleApproversRepository extends JpaRepository<ModuleApprovers
     List<ModuleApprovers> findByModuleName(ApprovalModule moduleName);
 
     Optional<ModuleApprovers> findByModuleNameAndEmployee(final ApprovalModule moduleName, final Employee employee);
+
+    List<ModuleApprovers> findByModuleNameAndApprovalLevel(final ApprovalModule moduleName, int approvalLevel);
 }

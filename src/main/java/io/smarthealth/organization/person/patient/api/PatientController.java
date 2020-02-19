@@ -26,7 +26,6 @@ import io.smarthealth.organization.person.service.PersonService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -36,8 +35,6 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperPrint;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +48,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -62,7 +58,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 @RestController
 @RequestMapping("/api")
-@Api(value = "Patient Controller", description = "Operations pertaining to patient entity")
+@Api
 public class PatientController {
 
     @Value("${upload.image.max-size:524288}")
@@ -81,15 +77,13 @@ public class PatientController {
     @Autowired
     ModelMapper modelMapper;
 
-    @Autowired
-    SequenceService sequenceService;
 
     @PostMapping("/patients")
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestBody @Valid final PatientData patientData) {
         LocalDate dateOfBirth = LocalDate.now().minusYears(Long.valueOf(patientData.getAge()));
         patientData.setDateOfBirth(dateOfBirth);
-        patientData.setPatientNumber(sequenceService.nextNumber(SequenceType.PatientNumber));
+        
         Patient patient = this.patientService.createPatient(patientData);
 
         PatientData savedpatientData = patientService.convertToPatientData(patient);
@@ -355,15 +349,22 @@ public class PatientController {
     }
 
     //PDF Reports
-    @RequestMapping(value = "/patient/export-patient-data", method = RequestMethod.GET)
-    public void export(ModelAndView model, HttpServletResponse response) throws IOException, JRException, SQLException {
-        JasperPrint jasperPrint = null;
-
-        response.setContentType("application/x-download");
-        response.setHeader("Content-Disposition", String.format("attachment; filename=\"patient.pdf\""));
-
-        OutputStream out = response.getOutputStream();
-        jasperPrint = patientService.exportPatientPdfFile();
-        JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+//    @RequestMapping(value = "/patient/export-patient-data", method = RequestMethod.GET)
+//    public void export(ModelAndView model, HttpServletResponse response) throws IOException, JRException, SQLException {
+//        JasperPrint jasperPrint = null;
+//
+//        response.setContentType("application/x-download");
+//        response.setHeader("Content-Disposition", String.format("attachment; filename=\"patient.pdf\""));
+//
+//        OutputStream out = response.getOutputStream();
+//        jasperPrint = patientService.exportPatientPdfFile();
+//        JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+//    }
+    
+    //PDF Reports
+    @RequestMapping(value = "/patient/patientFile", method = RequestMethod.GET)
+    public void exportPatientFile(HttpServletResponse response) throws JRException, SQLException, IOException{
+        String contentType=null;
+        patientService.exportPatientPdfFile(response);
     }
 }

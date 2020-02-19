@@ -1,7 +1,7 @@
  package io.smarthealth.clinical.lab.api;
 
  import io.smarthealth.clinical.lab.data.DisciplineData;
- import io.smarthealth.clinical.lab.service.LabService;
+import io.smarthealth.clinical.lab.service.LabSetupService;
  import io.smarthealth.infrastructure.common.PaginationUtil;
  import io.smarthealth.infrastructure.exception.APIException;
  import io.swagger.annotations.Api;
@@ -28,7 +28,7 @@
 public class DisciplineController {
 
     @Autowired
-    LabService labService;
+    LabSetupService labService;
     
     @Autowired
     ModelMapper modelMapper;

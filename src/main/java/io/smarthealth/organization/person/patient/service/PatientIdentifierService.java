@@ -32,7 +32,9 @@ public class PatientIdentifierService {
 
     public PatientIdentifier convertIdentifierDataToEntity(PatientIdentifierData patientIdentifierData) {
         PatientIdentifier patientIdentifier = new PatientIdentifier();
-
+        if (patientIdentifierData.getId_type().equals("-Select-")) {
+            return null;
+        }
         patientIdentifier.setType(patientIdentificationTypeService.fetchIdType(Long.valueOf(patientIdentifierData.getId_type())));
         patientIdentifier.setValue(patientIdentifierData.getIdentification_value());
 

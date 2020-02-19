@@ -18,24 +18,34 @@ import lombok.Data;
  */
 @Data
 public class PettyCashApprovalsData {
-    
+
     @ApiModelProperty(hidden = true)
     private String staffNumber;
-    
+
     @ApiModelProperty(hidden = true)
     private String staffName;
-    
+
     @Enumerated(EnumType.STRING)
     private PettyCashStatus approvalStatus;
-    
+
     private String approvalComments;
-    
+
+    private Long itemNo;
+
+    private double pricePerUnit;
+    private int quantity;
+    private double amount;
+
     public static PettyCashApprovalsData map(PettyCashApprovals entity) {
         PettyCashApprovalsData data = new PettyCashApprovalsData();
         data.setApprovalComments(entity.getApprovalComments());
         data.setApprovalStatus(entity.getApprovalStatus());
-        data.setStaffName(entity.getEmployee().getFullName());
-        data.setStaffNumber(entity.getEmployee().getStaffNumber());
+        data.setStaffName(entity.getApprovedBy().getFullName());
+        data.setStaffNumber(entity.getApprovedBy().getStaffNumber());
+
+        data.setPricePerUnit(entity.getPricePerUnit());
+        data.setQuantity(entity.getQuantity());
+        data.setAmount(entity.getAmount());
         return data;
     }
 }

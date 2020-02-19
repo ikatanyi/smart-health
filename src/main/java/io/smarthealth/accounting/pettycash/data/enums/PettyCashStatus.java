@@ -12,5 +12,6 @@ package io.smarthealth.accounting.pettycash.data.enums;
 public enum PettyCashStatus {
     Pending,
     Approved,
-    Declined
+    Declined,
+    PartiallyApproved
 }

@@ -6,6 +6,7 @@
 package io.smarthealth.accounting.pettycash.service;
 
 import io.smarthealth.accounting.pettycash.domain.PettyCashApprovals;
+import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
 import io.smarthealth.accounting.pettycash.domain.repository.PettyCashApprovalsRepository;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -26,20 +27,24 @@ public class PettyCashApprovalsService {
     PettyCashApprovalsRepository pettyCashApprovalsRepository;
 
     @Transactional
-    public PettyCashApprovals createNewApproval(PettyCashApprovals app) {
-        return pettyCashApprovalsRepository.save(app);
+    public List<PettyCashApprovals> createNewApproval(List<PettyCashApprovals> app) {
+        return pettyCashApprovalsRepository.saveAll(app);
     }
 
     public List<PettyCashApprovals> createPettyCashApprovals(List<PettyCashApprovals> a) {
         return pettyCashApprovalsRepository.saveAll(a);
     }
 
-    public List<PettyCashApprovals> fetchPettyCashApprovalsByRequestNo(final PettyCashRequests p) {
-        return pettyCashApprovalsRepository.findByRequestNo(p);
+    public List<PettyCashApprovals> fetchPettyCashApprovalsByItemNo(final PettyCashRequestItems p) {
+        return pettyCashApprovalsRepository.findByItemNo(p);
     }
 
-    public Optional<PettyCashApprovals> fetchApproverByEmployeeAndRequestNo(final Employee employee, final PettyCashRequests request) {
-        return pettyCashApprovalsRepository.findByEmployeeAndRequestNo(employee, request);
+    public List<PettyCashApprovals> fetchPettyCashApprovalsByRequisitionNo(final PettyCashRequests request) {
+        return pettyCashApprovalsRepository.fetchPettyCashApprovalsByRequestNo(request);
+    }
+
+    public Optional<PettyCashApprovals> fetchApproverByEmployeeAndRequestNo(final Employee employee, final PettyCashRequestItems request) {
+        return pettyCashApprovalsRepository.findByApprovedByAndItemNo(employee, request);
     }
 
 }

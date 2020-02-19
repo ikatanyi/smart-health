@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.FinancialTransactionRepository;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
-import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.stores.domain.Store;

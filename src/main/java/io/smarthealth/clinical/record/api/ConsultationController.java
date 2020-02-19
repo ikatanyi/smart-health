@@ -258,4 +258,10 @@ public class ConsultationController {
 
         return ResponseEntity.ok(pagers);
     }
+    //prepare sick-off note
+//    @PostMapping("/diagnosis")
+//    public @ResponseBody
+//    ResponseEntity<?>  saveSickOffNote(){
+//        
+//    }
 }

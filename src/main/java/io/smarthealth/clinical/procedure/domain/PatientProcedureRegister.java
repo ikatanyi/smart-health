@@ -9,7 +9,9 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +44,10 @@ public class PatientProcedureRegister extends ClinicalRecord {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_request_id"))
     @OneToOne
     private DoctorRequest request;
+    
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_patient_id"))
+    private Patient patient;
 
     @Column(nullable = false, unique = false)
     @Enumerated(EnumType.STRING)
@@ -66,9 +72,14 @@ public class PatientProcedureRegister extends ClinicalRecord {
         proc.setPatientProcedureRegister(this);
         patientProcedureTest.add(proc);
     }
-
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_bill_id"))
+    
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_bill_id"))
     private PatientBill bill;
+    
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_visit_id"))
+    private Visit visit;
+
     
 }

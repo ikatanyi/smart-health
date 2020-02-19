@@ -29,8 +29,7 @@ public class ModuleApprovers extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_module_approvers_employee_id"))
     private Employee employee;
 
-    @Enumerated(EnumType.STRING)
-    private ApproversPriority priority;
+    private int approvalLevel;
 
     @Enumerated(EnumType.STRING)
     private ApprovalModule moduleName;

@@ -9,7 +9,9 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +39,18 @@ public class PatientScanRegister extends ClinicalRecord {
 
     @Column(nullable = false, unique = true)
     private String accessNo;
-    //private String clinicalDetails;
-
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_request_id"))
+    
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_patient_id"))
+    private Patient patient;
+   
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_request_id"))
     private DoctorRequest request;
+    
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_visit_id"))    
+    private Visit visit;
 
     @Column(nullable = false, unique = false)
     @Enumerated(EnumType.STRING)

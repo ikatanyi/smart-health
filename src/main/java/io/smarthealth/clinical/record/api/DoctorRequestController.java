@@ -8,8 +8,8 @@ package io.smarthealth.clinical.record.api;
 import io.smarthealth.clinical.lab.data.PatientLabTestData;
 import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.lab.service.LabResultsService;
-import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
+import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.DoctorRequestItem;
 import io.smarthealth.clinical.record.data.WaitingRequestsData;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
@@ -18,12 +18,12 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.swagger.annotations.Api;
@@ -56,28 +56,27 @@ public class DoctorRequestController {
     private final ModelMapper modelMapper;
 
     private final EmployeeService employeeService;
-
-    private final SequenceService sequenceService;
+ 
 
     private final ItemService itemService;
-
-    private final PatientQueueService patientQueueService;
+ 
 
     private final PatientService patientService;
 
     private final LabResultsService labResultsService;
+   private final SequenceNumberService sequenceNumberService; 
 
-    public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, SequenceService sequenceService, ItemService itemService, PatientQueueService patientQueueService, PatientService patientService, LabResultsService labResultsService) {
+    public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, ItemService itemService, PatientService patientService, LabResultsService labResultsService, SequenceNumberService sequenceNumberService) {
         this.requestService = requestService;
         this.visitService = visitService;
         this.modelMapper = modelMapper;
         this.employeeService = employeeService;
-        this.sequenceService = sequenceService;
         this.itemService = itemService;
-        this.patientQueueService = patientQueueService;
         this.patientService = patientService;
         this.labResultsService = labResultsService;
+        this.sequenceNumberService = sequenceNumberService;
     }
+
 
     @PostMapping("/visit/{visitNo}/doctor-request")
     public @ResponseBody
@@ -85,21 +84,19 @@ public class DoctorRequestController {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         //Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
         List<DoctorRequest> docRequests = new ArrayList<>();
-        String orderNo = sequenceService.nextNumber(SequenceType.DoctorRequestNumber);
+        String orderNo = sequenceNumberService.next(1L, Sequences.DoctorRequest.name());
         for (DoctorRequestData data : docRequestData) {
             DoctorRequest doctorRequest = DoctorRequestData.map(data);
             Item item = itemService.findById(Long.valueOf(data.getItemCode())).get();
             //doctorRequest.setDoctorRequestItem(itemService);
             doctorRequest.setItem(item);
-            doctorRequest.setItemCostRate(item.getCostRate());
-            doctorRequest.setItemRate(item.getRate());
             doctorRequest.setPatient(visit.getPatient());
             doctorRequest.setVisit(visit);
 //            doctorRequest.setRequestedBy(employee);
             doctorRequest.setOrderNumber(orderNo);
             doctorRequest.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
             doctorRequest.setFulfillerComment(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
-            doctorRequest.setRequestType(data.getRequestType().name());
+            doctorRequest.setRequestType(data.getRequestType());
             docRequests.add(doctorRequest);
         }
 
@@ -155,7 +152,7 @@ public class DoctorRequestController {
 
     @GetMapping("/doctor-request")
     public ResponseEntity<?> waitingListByRequestType(
-            @RequestParam(value = "requestType", required = false) final String requestType,
+            @RequestParam(value = "requestType", required = false) final RequestType requestType,
             @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final String fulfillerStatus,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer size
@@ -204,13 +201,13 @@ public class DoctorRequestController {
     @GetMapping("/visit/{visitNo}/doctor-request/{requestType}")
     public ResponseEntity<?> fetchAllRequestsByVisitAndRequestType(
             @PathVariable("visitNo") final String visitNo,
-            @PathVariable("requestType") final String requestType,
+            @PathVariable("requestType") final RequestType requestType,
             @RequestParam(value = "fulfillerStatus", required = false) final String fulfillerStatus,
             Pageable pageable) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
 
 //        Page<DoctorRequest> page = requestService.findAllRequestsByOrderNoAndRequestType(visitNo, requestType, pageable);
-        Page<DoctorRequest> page = requestService.fetchAllDoctorRequests(visit.getVisitNumber(), requestType, fulfillerStatus, pageable);
+        Page<DoctorRequest> page = requestService.fetchAllDoctorRequests(visit.getVisitNumber(), requestType.name(), fulfillerStatus, pageable);
 
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);

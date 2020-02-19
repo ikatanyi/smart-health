@@ -13,7 +13,7 @@ import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.bank.domain.BankAccount;
@@ -43,10 +43,7 @@ public class RemitanceService {
     private final RemitanceRepository remitanceRepository;
     private final PayerService payerService;
     private final BankAccountService bankAccountService;
-    private final SequenceService seqService;
     private final JournalService journalService;
-    private final SequenceNumberGenerator sequenceGenerator;
-
     private final SequenceNumberService sequenceNumberService;
 
     @Transactional
@@ -72,8 +69,7 @@ public class RemitanceService {
     }
 
     private Remittance save(Remittance remittance) {
-        String trdId = sequenceGenerator.generateTransactionNumber();
-        remittance.setTransactionId(trdId);
+        
         return remitanceRepository.save(remittance);
     }
 

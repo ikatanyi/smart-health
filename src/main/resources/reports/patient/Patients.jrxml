@@ -3,8 +3,6 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<subDataset name="New Dataset 1" uuid="3a0ade78-21a9-410c-80e6-048fdc9c3bd4"/>
-	<parameter name="parameter1" class="java.lang.String"/>
 	<field name="patientNumber" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>

@@ -15,6 +15,8 @@ import io.smarthealth.organization.facility.domain.Employee;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +47,12 @@ public class ApprovalConfigService {
     }
 
     public ModuleApprovers fetchModuleApproversByModule(final ApprovalModule module, final Employee employee) {
-        return moduleApproversRepository.findByModuleNameAndEmployee(module, employee).orElseThrow(() -> APIException.notFound("Approver identified by {0} not found. ", employee.getFullName()));
+        return moduleApproversRepository.findByModuleNameAndEmployee(module, employee).orElseThrow(() -> APIException.notFound("No approval rights found", employee.getFullName()));
+    }
+
+    public List<ModuleApprovers> fetchModuleApproversByModuleAndLevel(final ApprovalModule module, int level) {
+        return moduleApproversRepository.findByModuleNameAndApprovalLevel(module, level);
+        //  return moduleApproversRepository.findByModuleNameAndApprovalLevel(module, level).orElseThrow(() -> APIException.notFound("Approver identified by level {0} not found. ", level));
     }
 
     @Transactional
@@ -57,7 +64,15 @@ public class ApprovalConfigService {
         return approvalConfigRepository.findById(id).orElseThrow(() -> APIException.notFound("Approval configuration settings identified by {0} not found ", id));
     }
 
-    public ApprovalConfig fetchApprovalConfigByModuleName(ApprovalModule module) {
-        return approvalConfigRepository.findByApprovalModule(module).orElseThrow(() -> APIException.notFound("Approval configuration settings identified by {0} not available", module.name()));
+    public Page<ApprovalConfig> fetchAllApprovalConfigByModuleName(final ApprovalModule module, final Pageable pageable) {
+        return approvalConfigRepository.findByApprovalModule(module, pageable);
+    }
+
+    public ApprovalConfig fetchApprovalConfigByModuleName(final ApprovalModule module) {
+        return approvalConfigRepository.findByApprovalModule(module).orElseThrow(() -> APIException.notFound("Approval configuration identified by {0} not found ", module.name()));
+    }
+
+    public Page<ApprovalConfig> fetchApprovalConfigurations(final Pageable pageable) {
+        return approvalConfigRepository.findAll(pageable);
     }
 }

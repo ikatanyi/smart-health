@@ -13,6 +13,7 @@ import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.lab.service.LabResultsService;
 import io.smarthealth.clinical.lab.service.LabService;
+import io.smarthealth.clinical.lab.service.LabSetupService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -47,6 +48,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "Patient Tests Controller", description = "Operations pertaining to Patient lab results maintenance")
 public class PatientTestsController {
 
+    @Autowired
+   private  LabSetupService labSetupService;
+    
     @Autowired
     LabService labService;
 
@@ -110,28 +114,7 @@ public class PatientTestsController {
                 .body(pagers);
     }
 
-//    @GetMapping("/patient-test/result")
-//    public ResponseEntity<?> fetchAllPatientTests(
-//            @RequestParam(value = "visitNumber", required = false) String visitNumber,
-//            @RequestParam(value = "state", required = false) LabTestState status,
-//            @RequestParam(value = "page", required = false) Integer page1,
-//            @RequestParam(value = "pageSize", required = false) Integer size
-//    ) {
-//        Pageable pageable = PaginationUtil.createPage(page1, size);
-//        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-//        Page<PatientLabTestData> pag = labService.fetchAllPatientTests(visit, status, pageable);
-//        Pager page = new Pager();
-//        page.setCode("200");
-//        page.setContent(pag.getContent());
-//        page.setMessage("Patient tests fetched successfully");
-//        PageDetails details = new PageDetails();
-//        details.setPage(1);
-//        details.setPerPage(25);
-//        details.setReportName("Patient Labtests");
-//        details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
-//        page.setPageDetails(details);
-//        return ResponseEntity.ok(page);
-//    }
+   
     @GetMapping("/patient-test")
     public ResponseEntity<?> fetchAllPatientLabTests(
             @RequestParam(value = "visitNo", required = false) String visitNumber,
@@ -147,8 +130,6 @@ public class PatientTestsController {
         page.setContent(pag.getContent());
         page.setMessage("Patient tests fetched successfully");
         PageDetails details = new PageDetails();
-        details.setPage(1);
-        details.setPerPage(25);
         details.setReportName("Patient Labtests");
         details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
         page.setPageDetails(details);
@@ -164,7 +145,7 @@ public class PatientTestsController {
     @PostMapping("/patient-test/specimen-details")
     public ResponseEntity<?> addLabtestSpecimenDetails(@Valid @RequestBody PatientLabTestSpecimenData patientLabTestSpecimen) {
         PatientLabTest plt = labService.fetchPatientTestsById(patientLabTestSpecimen.getPatientLabtestId());
-        Specimen specimen = labService.fetchSpecimenById(patientLabTestSpecimen.getSpecimenId());
+        Specimen specimen = labSetupService.fetchSpecimenById(patientLabTestSpecimen.getSpecimenId());
         PatientLabTestSpecimen testSpecimen = PatientLabTestSpecimenData.map(patientLabTestSpecimen);
         plt.setStatus(patientLabTestSpecimen.getStatus());
         testSpecimen.setPatientLabTest(plt);

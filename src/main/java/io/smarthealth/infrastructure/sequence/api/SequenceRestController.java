@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Deprecated
 @RestController
 @Slf4j
-@Api
 @RequestMapping("/api/v1")
 public class SequenceRestController {
     private final SequenceManagerService service;

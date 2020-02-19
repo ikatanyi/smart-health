@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="lab_request_form" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bbd5603c-8b63-46fc-ad66-90e001e5559c">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="dataset1" uuid="6032399e-b410-45c6-a741-6ecc992eba01"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Kent\\Documents\\NetBeansProjects\\ClinicMangement\\src\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CompanyName" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Phone" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Email" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Web" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Address" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="City" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="State" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Physician" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="patientname" class="java.lang.String"/>
+	<parameter name="PAddress" class="java.lang.String"/>
+	<parameter name="Pphone" class="java.lang.String"/>
+	<parameter name="dob" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="data" class="java.util.Collection"/>
+	<parameter name="patientId" class="java.lang.String"/>
+	<parameter name="treatmentNo" class="java.lang.String"/>
+	<parameter name="HEADER_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="header" class="java.lang.Boolean" isForPrompting="false">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="visitCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="hospitalId" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     CONCAT(dt_users_A.`Fname`," ",dt_users_A.`Lname`) AS physician,
+     CONCAT(dt_patientdetails.`Fname`," ",dt_patientdetails.`surname`," ",dt_patientdetails.`Fname`) AS patientName,
+     dt_scan_request.`Id` AS dt_scan_request_Id,
+     dt_scan_request.`patient_id` AS dt_scan_request_patient_id,
+     dt_scan_request.`scan_name` AS dt_scan_request_scan_name,
+     dt_scan_request.`scan_remarks` AS dt_scan_request_scan_remarks,
+     dt_scan_request.`physician_id` AS dt_scan_request_physician_id,
+     dt_scan_request.`date` AS dt_scan_request_date,
+     dt_scan_request.`state` AS dt_scan_request_state,
+     dt_scan_request.`diagnosis_no` AS dt_scan_request_diagnosis_no,
+     dt_scan_request.`scan_id` AS dt_scan_request_scan_id,
+     dt_scan_request.`sess_scan_no` AS dt_scan_request_sess_scan_no,
+     dt_scan_request.`visit_code` AS dt_scan_request_visit_code,
+     dt_patientdetails.`Lname` AS dt_patientdetails_Lname,
+     dt_users_A.`hospital_id` AS hospital_id,
+     dt_users_A.`department` AS department,
+     dt_users_A.`Speciality` AS Speciality,
+     dt_patientdetails.`gender` AS gender,
+     dt_patientdetails.`phone` AS phone,
+     dt_patientdetails.`email` AS email,
+     dt_patientdetails.`country` AS country,
+     dt_patientdetails.`DOB` AS DOB,
+     dt_patientdetails.`city` AS city,
+     CONCAT(dt_patientdetails.`Fname`," ",dt_patientdetails.`surname`," ",dt_patientdetails.`surname`) AS city,
+     dt_patientdetails.`physical_address` AS physical_address,
+     dt_patientdetails.`occupation` AS occupation
+FROM
+     `dt_scan_request` dt_scan_request INNER JOIN `dt_patientdetails` dt_patientdetails ON dt_scan_request.`patient_id` = dt_patientdetails.`patient_id` AND dt_scan_request.`hospital_id`=dt_patientdetails.`hospital_id`
+     INNER JOIN `dt_users` dt_users_A ON dt_scan_request.`physician_id` = dt_users_A.`IdNo`
+WHERE
+   dt_scan_request.`visit_code`=$P{visitCode} AND dt_scan_request.`hospital_id`=$P{hospitalId}]]>
+	</queryString>
+	<field name="physician" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="patientName" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="dt_scan_request_Id" class="java.lang.Integer"/>
+	<field name="dt_scan_request_patient_id" class="java.lang.String"/>
+	<field name="dt_scan_request_scan_name" class="java.lang.String"/>
+	<field name="dt_scan_request_scan_remarks" class="java.lang.String"/>
+	<field name="dt_scan_request_physician_id" class="java.lang.String"/>
+	<field name="dt_scan_request_date" class="java.sql.Date"/>
+	<field name="dt_scan_request_state" class="java.lang.Boolean"/>
+	<field name="dt_scan_request_diagnosis_no" class="java.lang.String"/>
+	<field name="dt_scan_request_scan_id" class="java.lang.String"/>
+	<field name="dt_scan_request_sess_scan_no" class="java.lang.Integer"/>
+	<field name="dt_scan_request_visit_code" class="java.lang.String"/>
+	<field name="dt_patientdetails_Lname" class="java.lang.String"/>
+	<field name="hospital_id" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="department" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Speciality" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="gender" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="phone" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="email" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="country" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="DOB" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="city" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="physical_address" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="occupation" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<group name="visitId">
+		<groupExpression><![CDATA[$F{dt_scan_request_visit_code}]]></groupExpression>
+		<groupFooter>
+			<band height="50">
+				<staticText>
+					<reportElement x="2" y="24" width="19" height="13" uuid="d2d8c250-dce1-412f-a01d-bfad7fb904b8"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Date :]]></text>
+				</staticText>
+				<line>
+					<reportElement x="390" y="34" width="165" height="1" uuid="3e07d5a5-bd6c-4ce4-bf70-4b13c42e6440"/>
+					<graphicElement>
+						<pen lineWidth="0.25" lineStyle="Dashed"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="317" y="24" width="100" height="13" uuid="fbf22571-90d2-4ed6-8ac8-d64f050120f9"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Physician Signature :]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="14" width="557" height="1" uuid="6f3fd117-c296-4b4d-b8fe-86961346dbbc"/>
+					<graphicElement>
+						<pen lineWidth="0.15" lineStyle="Solid" lineColor="#000000"/>
+					</graphicElement>
+				</line>
+				<textField pattern="dd/MM/yyyy">
+					<reportElement x="21" y="24" width="122" height="13" uuid="acbe8696-8664-43a5-94fe-72190e878a88"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="214" y="0" width="161" height="20" uuid="d1a3c2bb-56f7-4ac6-a756-534b282fb325"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Scan Request Form]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="412" y="0" width="56" height="20" uuid="35d042d6-8892-4dd3-8c72-34044f0b64e4"/>
+				<text><![CDATA[Received :]]></text>
+			</staticText>
+			<textField pattern="dd-MM-yyyy">
+				<reportElement x="468" y="0" width="100" height="20" uuid="9c299bff-9bb5-4adc-8de7-571c47df06b1"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="144" splitType="Stretch">
+			<line>
+				<reportElement x="352" y="57" width="199" height="1" uuid="9740c0da-6e77-41c1-80b2-e2c013cbbaef"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="291" y="20" width="100" height="16" uuid="eb3d8d50-2459-47d2-9a87-2f1a479a8b49"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Patient Details]]></text>
+			</staticText>
+			<line>
+				<reportElement x="352" y="71" width="199" height="1" uuid="241981ff-9525-49b8-94fc-51afc7b5f0fe"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="352" y="86" width="199" height="1" uuid="0b5e1191-15e0-4912-b212-e7190c9cf868"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="299" y="47" width="54" height="11" uuid="97ac1cef-4e6c-4dcd-a4ce-a65f2567b721"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="299" y="62" width="54" height="11" uuid="f685ace0-68db-456a-a018-50cec6afcbc6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Address :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="299" y="77" width="54" height="11" uuid="90f1f8d6-d2b1-4f57-9a84-71d53578dccd"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Telephone No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="299" y="93" width="54" height="11" uuid="6abea8d4-cc19-4649-b1b6-6fd31ece4cd3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DOB :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="299" y="107" width="54" height="11" uuid="351777e7-2707-4de2-9b34-585266f77ef4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gender :]]></text>
+			</staticText>
+			<line>
+				<reportElement x="352" y="102" width="199" height="1" uuid="9aade023-a4e6-4e03-9c33-10d321eb54a7"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="2" y="95" width="54" height="11" uuid="f52ae472-e64c-4aba-8ad8-c7bbbc11aee4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Telephone No.]]></text>
+			</staticText>
+			<line>
+				<reportElement x="55" y="70" width="199" height="1" uuid="abb03ae1-fb7f-4145-a2c5-7ec6a763f22d"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="2" y="49" width="54" height="11" uuid="e3ae681e-fdc4-43bc-8de5-49bc31f4fdb8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="79" width="54" height="11" uuid="8ccc2d12-5516-4d66-a3ab-20f89b7da8fe"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Address :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="64" width="54" height="11" uuid="ef6f9053-05c5-4e88-975b-a674d65f7949"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Organization]]></text>
+			</staticText>
+			<line>
+				<reportElement x="55" y="101" width="199" height="1" uuid="b8faba96-f592-4332-86ff-a8c48c43026b"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="55" y="85" width="199" height="1" uuid="22c54362-67ae-4627-b67d-7e12c04eb319"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="55" y="57" width="199" height="1" uuid="03f19a0e-5769-4c05-b143-984490aa24ad"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="56" y="62" width="198" height="11" uuid="f660d6fe-0b5a-422d-b771-118c3a07605d"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CompanyName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="57" y="77" width="197" height="11" uuid="8f0457a5-73ab-4d47-abb1-82285cfcf16a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Address}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="57" y="92" width="197" height="15" uuid="cbb3a2d6-b735-4ba8-b22a-78e34d6d9108"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Phone}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="57" y="49" width="197" height="13" uuid="1c908e5f-5bb4-482f-a9ce-25ac9a7954ef"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{physician}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="352" y="60" width="199" height="11" uuid="aa4af45a-3282-4208-b5b7-a03fa62e6281"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{physical_address}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="352" y="76" width="199" height="13" uuid="5eac86ab-e107-4a7a-8d66-42770b2f8702"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{phone}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
+				<reportElement x="352" y="92" width="199" height="11" uuid="f948355d-5e95-4ea3-86c8-bba98063f339"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DOB}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement mode="Transparent" x="0" y="39" width="287" height="90" uuid="c9ce6ca9-533f-4ecc-933c-57144cf6e9d3"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<image>
+				<reportElement x="1" y="0" width="142" height="36" uuid="96c6dfce-6c1c-4d9f-9433-e6c278a29612">
+					<printWhenExpression><![CDATA[$P{header}==false||$P{header}==null]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
+			</image>
+			<rectangle>
+				<reportElement mode="Transparent" x="296" y="39" width="259" height="90" uuid="565bfba9-3221-498f-b651-6d2dca36c2fc"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<textField>
+				<reportElement x="353" y="106" width="126" height="12" uuid="55ca2ec8-51af-4891-a4c6-78a0274cae69"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{gender}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="352" y="47" width="199" height="11" uuid="d1f128e6-2be3-4981-8f5d-1329b77fd634"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="38" splitType="Stretch">
+			<staticText>
+				<reportElement x="132" y="21" width="185" height="14" uuid="10adf450-059c-4b6f-bf0b-aa9ea562dcb3"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Scan Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="335" y="21" width="220" height="14" uuid="626129c0-9edb-40b2-bc52-f42e19800991"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Remarks]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="27" y="21" width="86" height="14" uuid="979665c7-38c7-4cc8-99d1-ab3207491273"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Requested]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="21" width="21" height="14" uuid="dc050ee2-3516-4f0e-91f3-931b9e1e54c9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16">
+			<line>
+				<reportElement x="0" y="15" width="554" height="1" uuid="23861744-8baf-4aab-ae36-80ce297161a4"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed" lineColor="#9999FF"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="0" y="0" width="21" height="13" uuid="a816f2bd-a23c-437c-b7e8-ae80c7961489"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}+"."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="134" y="0" width="183" height="13" uuid="d1226c92-210a-4bff-b7f0-dbf8af511e90"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dt_scan_request_scan_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="334" y="0" width="223" height="13" uuid="220da137-2adf-49aa-8b56-f4c4f9f8ca2b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dt_scan_request_scan_remarks}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="557" height="1" uuid="ed4cebc0-d4e5-4b34-bc61-dc08b1300704"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Solid" lineColor="#000000"/>
+				</graphicElement>
+			</line>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="27" y="0" width="86" height="15" uuid="7f1a2d3b-7b04-40c5-a201-ad55e8d0f69a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dt_scan_request_date}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="1" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="5" splitType="Stretch"/>
+	</pageFooter>
+</jasperReport>

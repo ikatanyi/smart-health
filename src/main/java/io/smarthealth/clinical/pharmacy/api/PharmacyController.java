@@ -12,6 +12,8 @@ import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
+import io.smarthealth.clinical.record.data.DoctorRequestData;
+import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.PrescriptionData;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.service.PrescriptionService;
@@ -30,6 +32,8 @@ import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.facility.service.FacilityService;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.swagger.annotations.Api;
@@ -65,7 +69,7 @@ public class PharmacyController {
 
     final ItemService itemService;
 
-    final SequenceService sequenceService;
+     SequenceService sequenceService;
 
     final EmployeeService employeeService;
 
@@ -76,20 +80,23 @@ public class PharmacyController {
     final FacilityService facilityService;
 
     final ServicePointService servicePointService;
+    private final SequenceNumberService sequenceNumberService; 
 
-    public PharmacyController(PharmacyService pharmService, ModelMapper modelMapper, VisitService visitService, PrescriptionService prescriptionService, ItemService itemService, SequenceService sequenceService, EmployeeService employeeService, PatientQueueService patientQueueService, DepartmentService departmentService, FacilityService facilityService, ServicePointService servicePointService) {
+    public PharmacyController(PharmacyService pharmService, ModelMapper modelMapper, VisitService visitService, PrescriptionService prescriptionService, ItemService itemService, EmployeeService employeeService, PatientQueueService patientQueueService, DepartmentService departmentService, FacilityService facilityService, ServicePointService servicePointService, SequenceNumberService sequenceNumberService) {
         this.pharmService = pharmService;
         this.modelMapper = modelMapper;
         this.visitService = visitService;
         this.prescriptionService = prescriptionService;
         this.itemService = itemService;
-        this.sequenceService = sequenceService;
         this.employeeService = employeeService;
         this.patientQueueService = patientQueueService;
         this.departmentService = departmentService;
         this.facilityService = facilityService;
         this.servicePointService = servicePointService;
+        this.sequenceNumberService = sequenceNumberService;
     }
+
+    
 
     @PostMapping("/patient-drug")
     public @ResponseBody
@@ -106,19 +113,17 @@ public class PharmacyController {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
 //        Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
         List<Prescription> prescriptions = new ArrayList<>();
-        String prescriptionNo = sequenceService.nextNumber(SequenceType.PrescriptionNo);
+        String prescriptionNo =  sequenceNumberService.next(1L, Sequences.Prescription.name());
 
         for (PrescriptionData pd : prescriptionData) {
             Prescription p = PrescriptionData.map(pd);
             p.setPatient(visit.getPatient());
             Item item = itemService.findItemWithNoFoundDetection(pd.getItemCode());
             p.setItem(item);
-            p.setItemCostRate(item.getCostRate());
-            p.setItemRate(item.getRate());
             p.setVisit(visit);
             p.setOrderNumber(prescriptionNo);
 //            p.setRequestedBy(employee);
-            p.setRequestType("Pharmacy");
+            p.setRequestType(RequestType.Pharmacy);
             prescriptions.add(p);
         }
 

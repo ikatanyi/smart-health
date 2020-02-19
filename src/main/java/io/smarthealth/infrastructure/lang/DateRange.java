@@ -37,6 +37,14 @@ public class DateRange {
   public LocalDateTime getStartDateTime() {
     return start.atStartOfDay();
   }
+  
+  public LocalDate getStartDate() {
+    return start;
+  }
+  
+  public LocalDate getEndDate() {
+    return end;
+  }
 
   public LocalDateTime getEndDateTime() {
     return end.plusDays(1).atStartOfDay();

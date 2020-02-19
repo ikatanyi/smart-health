@@ -2,7 +2,7 @@ package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.data.CreateStockEntry;

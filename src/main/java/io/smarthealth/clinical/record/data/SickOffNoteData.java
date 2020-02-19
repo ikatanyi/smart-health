@@ -17,9 +17,9 @@ import lombok.Data;
  */
 @Data
 public class SickOffNoteData {
-
+    
     private String visitNo;
-
+    
     private String sickOffNumber;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate startDate;
@@ -27,22 +27,29 @@ public class SickOffNoteData {
     private LocalDate endDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate reviewDate;
-
+    
+    private String recommendation;
+    private String reason;
+    
     public static SickOffNoteData map(SickOffNote s) {
         SickOffNoteData data = new SickOffNoteData();
         data.setEndDate(s.getEndDate());
         data.setStartDate(s.getStartDate());
         data.setReviewDate(s.getReviewDate());
         data.setSickOffNumber(s.getSickOffNumber());
+        data.setRecommendation(s.getRecommendation());
+        data.setReason(s.getReason());
         return data;
     }
-
+    
     public static SickOffNote map(SickOffNoteData data) {
         SickOffNote s = new SickOffNote();
         s.setEndDate(data.getEndDate());
         s.setStartDate(data.getStartDate());
         s.setReviewDate(data.getReviewDate());
         s.setSickOffNumber(data.getSickOffNumber());
+        s.setRecommendation(data.getRecommendation());
+        s.setReason(data.getReason());
         return s;
     }
 }

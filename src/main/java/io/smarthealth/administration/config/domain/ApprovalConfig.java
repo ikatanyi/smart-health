@@ -7,6 +7,7 @@ package io.smarthealth.administration.config.domain;
 
 import io.smarthealth.administration.config.data.enums.ApprovalModule;
 import io.smarthealth.infrastructure.domain.Auditable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -24,6 +25,7 @@ public class ApprovalConfig extends Auditable {
 
     private int minNoOfApprovers;
 
+    @Column(nullable = false, unique = true)
     @Enumerated(EnumType.STRING)
     private ApprovalModule approvalModule;
 

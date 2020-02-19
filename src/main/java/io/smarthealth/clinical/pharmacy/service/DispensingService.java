@@ -23,7 +23,7 @@ import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
 import io.smarthealth.clinical.pharmacy.domain.specification.DispensingSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.stock.item.domain.ItemRepository;
 import java.util.Optional;
 import java.util.stream.Collectors;

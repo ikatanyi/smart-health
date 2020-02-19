@@ -10,6 +10,7 @@ import io.smarthealth.organization.facility.data.FacilityData;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.FacilityService;
 import io.swagger.annotations.Api;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -34,7 +35,7 @@ public class FacilityController {
 
     @PostMapping("/organization/{orgId}/facility")
     public @ResponseBody
-    ResponseEntity<?> createFacility(@PathVariable(name = "orgId") String id, @RequestBody @Valid final FacilityData facilityData) {
+    ResponseEntity<?> createFacility(@PathVariable(name = "orgId") String id, @RequestBody @Valid final FacilityData facilityData) throws IOException {
 
         Facility result = service.createFacility(id, facilityData);
         Pager<FacilityData> pagers = new Pager();

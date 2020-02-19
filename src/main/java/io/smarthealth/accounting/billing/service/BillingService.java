@@ -29,17 +29,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
-import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
 import lombok.RequiredArgsConstructor;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.stores.domain.Store;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,7 +72,7 @@ public class BillingService {
 //        String billNumber = RandomStringUtils.randomNumeric(6); //sequenceService.nextNumber(SequenceType.BillNumber);
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());  //sequenceGenerator.generateTransactionNumber();
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
-
+     
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
         patientbill.setPatient(visit.getPatient());
@@ -191,9 +193,9 @@ public class BillingService {
         return patientbill.getBillNumber();
     }
 
-    public Page<PatientBill> findAllBills(String transactionNo, String visitNo, String patientNo, String paymentMode, String billNo, BillStatus status, Pageable page) {
+    public Page<PatientBill> findAllBills(String transactionNo, String visitNo, String patientNo, String paymentMode, String billNo, BillStatus status, DateRange range, Pageable page) {
 
-        Specification<PatientBill> spec = BillingSpecification.createSpecification(transactionNo, visitNo, patientNo, paymentMode, billNo, status);
+        Specification<PatientBill> spec = BillingSpecification.createSpecification(transactionNo, visitNo, patientNo, paymentMode, billNo, status, range);
 
         return patientBillRepository.findAll(spec, page);
 

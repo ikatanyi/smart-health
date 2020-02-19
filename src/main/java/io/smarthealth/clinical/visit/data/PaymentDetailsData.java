@@ -26,6 +26,8 @@ public class PaymentDetailsData {
     private String relation;
     private String memberName;
     private double limitAmount;
+    private Long priceBookId;
+    private String priceBookName;
     
     public static PaymentDetailsData map(PaymentDetails e) {
         PaymentDetailsData d = new PaymentDetailsData();
@@ -39,6 +41,12 @@ public class PaymentDetailsData {
         d.setLimitAmount(e.getLimitAmount());
         d.setPayerName(e.getPayer().getPayerName());
         d.setSchemeName(e.getScheme().getSchemeName());
+        if (e.getPayer() != null) {
+            if (e.getPayer().getPriceBook() != null) {
+                d.setPriceBookId(e.getPayer().getId());
+                d.setPriceBookName(e.getPayer().getPriceBook().getName());
+            }
+        }
         return d;
     }
     

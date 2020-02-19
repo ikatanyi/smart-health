@@ -12,6 +12,7 @@ import io.smarthealth.organization.facility.domain.EmployeeRepository;
 import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.patient.service.PersonContactService;
 import io.smarthealth.security.domain.Role;
+import io.smarthealth.security.domain.RoleName;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -23,11 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  *
@@ -76,29 +75,23 @@ public class EmployeeService {
         //save contact received as the primary contact
         //create a user 
         //find roles by group
-        Set<Role> roles = new HashSet<>();
-        //find roles by employee category/ employee group from the database
-        List<String> employeeRoles = new ArrayList<>();
-        for (String roleData : employeeRoles) {
-            Role role = userService.findRoleByName(roleData)
-                    .orElseThrow(
-                            () -> APIException.notFound("No Role exisit with the name {0}", roleData)
-                    );
-            roles.add(role);
-        }
+     
         //fetch primary contact details
         PersonContact savedContact = personContactService.fetchPersonPrimaryContact(employee);
 
         //generate password
-       
         String password = PassayPassword.generatePassayPassword();
         User user = new User(
                 savedContact.getEmail(),
                 savedContact.getEmail(),
                 password,
-                savedContact.getPerson().getGivenName().concat(" ").concat(savedContact.getPerson().getSurname()),
-                roles
+                savedContact.getPerson().getGivenName().concat(" ").concat(savedContact.getPerson().getSurname())
         );
+         Role userRole = userService.findRoleByName(RoleName.ROLE_USER.name())
+                .orElseThrow(() -> APIException.internalError("User Role not set."));
+
+        user.setRoles(Collections.singleton(userRole));
+        
 
         User userSaved = userService.saveUser(user);
 
@@ -111,7 +104,7 @@ public class EmployeeService {
 
         return savedEmployee;
     }
-
+   
     public Page<Employee> fetchAllEmployees(final MultiValueMap<String, String> queryParams, final Pageable pg) {
         return employeeRepository.findAll(pg);
     }
@@ -140,7 +133,6 @@ public class EmployeeService {
     public Employee fetchEmployeeByNumberOrThrow(final String staffNumber) {
         return employeeRepository.findByStaffNumber(staffNumber).orElseThrow(() -> APIException.notFound("Employee identified by number {0} was not found ", staffNumber));
     }
-    
 
     public Employee convertEmployeeDataToEntity(EmployeeData employeeData) {
         // use strict to prevent over eager matching (happens with ID fields)
@@ -155,6 +147,7 @@ public class EmployeeService {
     }
 
     public EmployeeData convertEmployeeEntityToEmployeeData(Employee employee) {
+        System.out.println("Employee "+employee.getFullName());
         EmployeeData employeeData = modelMapper.map(employee, EmployeeData.class);
         employeeData.setDepartmentCode(employee.getDepartment().getCode());
         return employeeData;

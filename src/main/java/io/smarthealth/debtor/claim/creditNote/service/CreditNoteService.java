@@ -9,21 +9,12 @@ import io.smarthealth.debtor.claim.creditNote.data.CreditNoteItemData;
 import io.smarthealth.debtor.claim.creditNote.data.CreditNoteData;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNote;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNoteItem;
-import io.smarthealth.debtor.claim.creditNote.domain.CreditNoteItemRepository;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNoteRepository;
 import io.smarthealth.debtor.claim.creditNote.domain.specification.CreditNoteSpecification;
-import io.smarthealth.debtor.claim.remittance.data.RemitanceData;
-import io.smarthealth.debtor.claim.remittance.domain.Remittance;
-import io.smarthealth.debtor.claim.remittance.domain.RemitanceRepository;
-import io.smarthealth.debtor.claim.remittance.domain.specification.RemitanceSpecification;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
-import io.smarthealth.organization.bank.domain.BankAccount;
-import io.smarthealth.organization.bank.service.BankAccountService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,19 +36,16 @@ import org.springframework.stereotype.Service;
 public class CreditNoteService {
 
     private final CreditNoteRepository creditNoteRepository;
-    private final InvoiceRepository invoiceRepository;
-    private final CreditNoteItemRepository creditNoteItemRepository;
+    private final InvoiceRepository invoiceRepository; 
     private final InvoiceService invoiceService;
     private final BillingService billService;
-    private final PayerService payerService;
-    private final SequenceService seqService;
+    private final PayerService payerService; 
 
         
 
     @javax.transaction.Transactional
     public CreditNote createCreditNote(CreditNoteData data) {
-        CreditNote creditNote = CreditNoteData.map(data);
-        creditNote.setCreditNoteNo(seqService.nextNumber(SequenceType.CreditNoteNumber));
+        CreditNote creditNote = CreditNoteData.map(data); 
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(data.getPayerId());
         Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
         creditNote.setInvoice(invoice);   

@@ -7,6 +7,8 @@ package io.smarthealth.administration.config.domain;
 
 import io.smarthealth.administration.config.data.enums.ApprovalModule;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ApprovalConfigRepository extends JpaRepository<ApprovalConfig, Long> {
 
-    Optional<ApprovalConfig> findByApprovalModule(final ApprovalModule approvalModule
-    );
+    Page<ApprovalConfig> findByApprovalModule(final ApprovalModule approvalModule, final Pageable pageable);
+
+    Optional<ApprovalConfig> findByApprovalModule(final ApprovalModule approvalModule);
 }

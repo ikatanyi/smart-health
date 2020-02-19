@@ -17,7 +17,7 @@ import lombok.Data;
  */
 @Data
 public class ReferralData {
-
+    
     @Enumerated(EnumType.STRING)
     private ReferralType referralType;
     private String staffNumber;
@@ -25,7 +25,10 @@ public class ReferralData {
     private String doctorSpeciality;
     private String referralNotes;
     private String visitNo;
-
+    private boolean includeVisitClinalNotes;
+    private String chiefComplaints;
+    private String examinationNotes;
+    
     public static ReferralData map(Referrals r) {
         ReferralData data = new ReferralData();
         if (r.getDoctor() != null) {
@@ -36,14 +39,20 @@ public class ReferralData {
         data.setReferralNotes(r.getReferralNotes());
         data.setReferralType(r.getReferralType());
         data.setVisitNo(r.getVisit().getVisitNumber());
+        data.setIncludeVisitClinalNotes(r.isIncludeVisitClinalNotes());
+        data.setChiefComplaints(r.getChiefComplaints());
+        data.setExaminationNotes(r.getExaminationNotes());
         return data;
     }
-
+    
     public static Referrals map(ReferralData data) {
         Referrals r = new Referrals();
         r.setDoctorSpeciality(data.getDoctorSpeciality());
         r.setReferralNotes(data.getReferralNotes());
         r.setReferralType(data.getReferralType());
+        r.setChiefComplaints(data.getChiefComplaints());
+        r.setExaminationNotes(data.getExaminationNotes());
+        r.setIncludeVisitClinalNotes(data.includeVisitClinalNotes);
         return r;
     }
 }

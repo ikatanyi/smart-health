@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientFile_procedures_results" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="8737ae69-12d3-4b71-92f5-f55a4b380697">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="procedureName" class="java.lang.String"/>
+	<field name="procId" class="java.lang.Long"/>
+	<field name="comments" class="java.lang.String"/>
+	<field name="results" class="java.lang.String"/>
+	<field name="state" class="java.lang.String"/>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="17" height="14" uuid="e07b12b2-bad2-4092-979d-9ba414141e2e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="17" y="0" width="99" height="14" uuid="a1a8db23-d241-4b92-a6d1-0964e4b93673"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ProcedureName]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="116" y="0" width="143" height="14" uuid="5a4bfa4d-7c7a-47b5-be28-1621249b49f8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Results]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="269" y="0" width="163" height="14" uuid="a6d8245c-ada1-4f42-9c16-944c534a9c24"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Comments]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="444" y="0" width="111" height="14" uuid="f72b30a8-6b40-4490-bcc3-2615d42c8e1f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[State]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="12" width="555" height="1" uuid="f006c02e-4165-435f-ad15-f1e2d7fb533d"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="17" height="14" uuid="a7ca0367-3ca2-4c5a-851c-020c7fddce6f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{procId}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="17" y="0" width="99" height="14" uuid="6dd901a5-d20e-44ee-9cec-e8c315976a30"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{procedureName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="116" y="0" width="143" height="14" uuid="1ec7b631-6fc6-4620-938d-a7aed3861f4a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{results}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="269" y="0" width="163" height="14" uuid="9be39948-ba37-4fa1-83bd-b351e3c07276"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{comments}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="0" width="111" height="14" uuid="18db2592-da40-40ac-b1dc-99dc918d36e7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{state}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="13" width="555" height="1" uuid="17238942-49a4-4b6c-b093-67484e1f6d15"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Dashed" lineColor="#CC3300"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

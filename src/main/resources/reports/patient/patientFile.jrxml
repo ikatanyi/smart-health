@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientFile" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="7f5d1719-2150-4099-8058-82165eccb7fc">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<style name="table 3">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<style name="table 4">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<style name="table 5">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="orgLegalName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="TaxNumber" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressCountry" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressCounty" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressLine1" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressLine2" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgPostalCode" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgTown" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgType" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactEmail" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactFullName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactMobile" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="salutation" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="telephone" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="HEADER_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\patient\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="title" class="java.lang.String"/>
+	<field name="dateOfBirth" class="java.lang.String"/>
+	<field name="gender" class="java.lang.String"/>
+	<field name="maritalStatus" class="java.lang.String"/>
+	<field name="addressLine1" class="java.lang.String"/>
+	<field name="addressLine2" class="java.lang.String"/>
+	<field name="addressTown" class="java.lang.String"/>
+	<field name="addressCounty" class="java.lang.String"/>
+	<field name="addressPostalCode" class="java.lang.String"/>
+	<field name="addressCountry" class="java.lang.String"/>
+	<field name="contactEmail" class="java.lang.String"/>
+	<field name="contactTelephone" class="java.lang.String"/>
+	<field name="contactMobile" class="java.lang.String"/>
+	<field name="fullName" class="java.lang.String"/>
+	<field name="visitNumber" class="java.lang.String"/>
+	<field name="chiefComplaint" class="java.lang.String"/>
+	<field name="historyNotes" class="java.lang.String"/>
+	<field name="examinationNotes" class="java.lang.String"/>
+	<field name="socialHistory" class="java.lang.String"/>
+	<field name="briefNotes" class="java.lang.String"/>
+	<field name="radiologyTests" class="java.util.List"/>
+	<field name="procedures" class="java.util.List"/>
+	<field name="labTests" class="java.util.List"/>
+	<field name="diagnosis" class="java.util.List"/>
+	<field name="patientId" class="java.lang.String"/>
+	<field name="createdOn" class="java.lang.String"/>
+	<field name="practitionerName" class="java.lang.String"/>
+	<field name="PatientDrugsData" class="java.util.List"/>
+	<pageHeader>
+		<band height="169" splitType="Stretch">
+			<line>
+				<reportElement x="1" y="114" width="570" height="1" forecolor="#CC3300" uuid="7e277ce6-dea7-4eae-833f-c62ef75773b2"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="-1" y="135" width="76" height="15" uuid="6cb1679a-c82f-4d29-933c-671b50cef065"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Segoe UI" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DOB :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="-1" y="120" width="76" height="15" uuid="149825ac-ddd3-4b50-ba2e-1ef0aad39770"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Segoe UI" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Patient Id :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="199" y="137" width="35" height="13" uuid="c6650f4c-23e7-46f0-9595-15acb2cef716"/>
+				<textElement>
+					<font fontName="Segoe UI" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Email :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="151" width="34" height="13" uuid="58524e6e-56c9-4e40-8dc7-5e226ea9cca1"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Segoe UI" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Phone :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="199" y="120" width="35" height="15" uuid="e1b45f3f-f674-4e17-943c-5c6c6ac372fb"/>
+				<textElement>
+					<font fontName="Segoe UI" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Address :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="5" y="101" width="256" height="15" forecolor="#CC0000" uuid="b53264ca-ffc3-4dc6-a3ea-ccddd07a5473"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fullName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="77" y="120" width="100" height="16" isRemoveLineWhenBlank="true" uuid="f1beff5a-cbd2-42fe-a506-44d590e14a9d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{patientId}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
+				<reportElement x="77" y="136" width="100" height="15" isRemoveLineWhenBlank="true" uuid="df75e2c0-e89a-4f92-bb8c-58f07353a6a3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dateOfBirth}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="238" y="151" width="112" height="13" isRemoveLineWhenBlank="true" uuid="91e0a0b2-3ca1-45ce-bf29-366e94a5a859"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{contactMobile}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="238" y="120" width="112" height="15" isRemoveLineWhenBlank="true" uuid="0012f2a4-b720-4ee4-b8d1-eb60121736f1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{addressPostalCode}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="238" y="135" width="112" height="15" isRemoveLineWhenBlank="true" uuid="e7b21e1f-d509-49e2-992b-dd5f06cc2b01"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{contactEmail}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="265" y="101" width="47" height="14" forecolor="#000000" backcolor="#9999FF" uuid="517a5f65-69a8-4666-ab67-a8befa8d2ef5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date :]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="-1" y="168" width="573" height="1" forecolor="#CC3300" uuid="5f46f972-c1e9-4a16-bea9-62717a522a18"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<textField pattern="MM/dd/yyyy" isBlankWhenNull="true">
+				<reportElement x="289" y="101" width="123" height="13" isRemoveLineWhenBlank="true" uuid="2ecd4ddf-adc3-4633-bb7c-761e29e4d171"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{createdOn}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="447" y="100" width="49" height="14" uuid="d08d520c-1413-4901-b651-ba71a37981b6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VisitNumber:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="1" y="68" width="309" height="13" uuid="62886a44-d15a-4ed9-b06b-73727df7de83"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{orgAddressLine1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="38" width="309" height="18" uuid="a4733a96-6d14-42fb-8638-932bf8876061"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{orgLegalName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="81" width="309" height="13" uuid="346d7eaa-f8c7-4f97-8633-c560d9ab92e4"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{telephone}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="56" width="309" height="12" uuid="f586c9d1-bfad-4025-abbe-80dfdc4c4716"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{contactEmail}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="1" width="219" height="36" uuid="da0cab7a-4830-4826-8a71-43bcb13fe8dd"/>
+				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="496" y="100" width="73" height="14" uuid="c406cb24-3876-4d0d-a680-c2c502fd5756"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{visitNumber}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="-1" y="151" width="76" height="13" uuid="613e9144-ddfe-4ac7-b6dd-ca1459029ee5"/>
+				<textElement>
+					<font fontName="Segoe UI" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gender :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="77" y="150" width="100" height="14" uuid="1a93d009-b480-4a41-ad8a-177c144aef63"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{gender}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="140" splitType="Stretch">
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="11" width="150" height="14" forecolor="#CC0000" backcolor="#9999FF" uuid="23ad1106-8065-430e-98de-da2f964c1d65"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Symptoms]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="290" y="12" width="118" height="14" forecolor="#CC0000" backcolor="#9999FF" uuid="3134bc4c-c16b-449b-bbbe-cc495db20cec"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Diagnosis:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="47" width="152" height="14" forecolor="#CC0000" backcolor="#9999FF" uuid="5642e2ce-5f8e-4226-8776-4bb00ab5ba91"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Examination Notes :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="82" width="67" height="14" forecolor="#CC0000" backcolor="#9999FF" uuid="d594ffbd-3f66-44d1-8479-1945f5faf59e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Doctor Notes]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="2" y="120" width="569" height="1" forecolor="#CC3300" uuid="78443940-e497-4600-8593-625c64c53113"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="2" y="62" width="287" height="11" uuid="e734a80d-3b79-4608-867e-a7242e6439d1"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{examinationNotes}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="2" y="24" width="287" height="13" uuid="05b0a740-0f91-4c41-a628-87e8c1d06ea9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{chiefComplaint}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="2" y="95" width="287" height="13" uuid="b1cc5c90-ac41-4796-b515-ef4775a4152b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{historyNotes}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement positionType="Float" x="290" y="27" width="282" height="20" uuid="67471f2a-899b-48d4-af08-642768966e44"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{diagnosis})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_diagnosis.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="1" y="121" width="571" height="19" uuid="fb2c190b-7735-4627-900e-6077a2e91339"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labTests})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_lab_tests.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement positionType="Float" x="5" y="139" width="569" height="1" forecolor="#CC3300" uuid="4cce6c86-e7c4-442a-a9dd-2153e32c518b"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+		</band>
+		<band height="21">
+			<subreport>
+				<reportElement x="1" y="0" width="571" height="21" uuid="c04830be-f0cf-4eb7-b361-da150e0d2665"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{procedures})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_procedures.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="21">
+			<subreport>
+				<reportElement x="0" y="0" width="572" height="21" uuid="f3dbde4b-af9a-47c2-b2a4-190b850ae81b"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{PatientDrugsData})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_drugList.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="20" splitType="Stretch">
+			<textField pattern="MM/dd/yyyy">
+				<reportElement x="44" y="5" width="123" height="12" uuid="5e2705b7-f768-4a79-8fbb-003b4a4349cc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="5" width="76" height="12" uuid="d78588ba-5d48-4a88-af90-e2b670438a59"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Printed On :]]></text>
+			</staticText>
+			<line>
+				<reportElement x="2" y="0" width="570" height="1" forecolor="#CC3300" uuid="4e1ad707-0329-452d-988f-2fd4b37ba5bc"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<break>
+				<reportElement x="0" y="19" width="570" height="1" uuid="105e355e-9a01-44b3-8d77-14b7afb9a203"/>
+			</break>
+			<break>
+				<reportElement x="0" y="1" width="572" height="1" uuid="8316eb6d-aef1-4f87-929e-21fb9987bf3a"/>
+			</break>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="28" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
