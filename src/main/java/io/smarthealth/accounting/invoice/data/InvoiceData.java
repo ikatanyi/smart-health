@@ -49,6 +49,10 @@ public class InvoiceData {
 
     private InvoiceStatus status;
 
+    private String patientName;
+    private String patientNo;
+    private double amtAllocated;
+
     private List<InvoiceLineItemData> items = new ArrayList<>();
 
     public static InvoiceData map(Invoice invoice) {
@@ -89,6 +93,10 @@ public class InvoiceData {
                             .map(inv -> InvoiceLineItemData.map(inv))
                             .collect(Collectors.toList())
             );
+        }
+        if (invoice.getBill() != null) {
+            data.setPatientName(invoice.getBill().getPatient().getFullName());
+            data.setPatientNo(invoice.getBill().getPatient().getPatientNumber());
         }
         return data;
     }

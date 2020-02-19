@@ -34,7 +34,6 @@ public class RemitanceController {
         this.remitanceservice = remitanceservice;
     }
 
-    
     @PostMapping("/remittance")
     public ResponseEntity<?> createRemittance(@Valid @RequestBody RemitanceData remitanceData) {
 

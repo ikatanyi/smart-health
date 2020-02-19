@@ -17,11 +17,13 @@ import io.smarthealth.clinical.record.service.DoctorRequestService;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.common.SecurityUtils;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.stock.item.domain.Item;
@@ -83,19 +85,19 @@ public class DoctorRequestController {
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        //Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
+        Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceService.nextNumber(SequenceType.DoctorRequestNumber);
         for (DoctorRequestData data : docRequestData) {
             DoctorRequest doctorRequest = DoctorRequestData.map(data);
             Item item = itemService.findById(Long.valueOf(data.getItemCode())).get();
-            //doctorRequest.setDoctorRequestItem(itemService);
+//            doctorRequest.setDoctorRequestItem(itemService);
             doctorRequest.setItem(item);
             doctorRequest.setItemCostRate(item.getCostRate());
             doctorRequest.setItemRate(item.getRate());
             doctorRequest.setPatient(visit.getPatient());
             doctorRequest.setVisit(visit);
-//            doctorRequest.setRequestedBy(employee);
+            doctorRequest.setRequestedBy(employee);
             doctorRequest.setOrderNumber(orderNo);
             doctorRequest.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
             doctorRequest.setFulfillerComment(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
@@ -155,14 +157,14 @@ public class DoctorRequestController {
 
     @GetMapping("/doctor-request")
     public ResponseEntity<?> waitingListByRequestType(
-            @RequestParam(value = "requestType", required = false) final String requestType,
+            @RequestParam(value = "requestType", required = false) final DoctorRequest.RequestType requestType,
             @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final String fulfillerStatus,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
         //Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(null, requestType, fulfillerStatus, pageable);
-        Page<DoctorRequest> pageList = requestService.fetchDoctorRequestLine(fulfillerStatus, requestType, pageable);
+        Page<DoctorRequest> pageList = requestService.fetchDoctorRequestLine(fulfillerStatus, requestType == null ? null : requestType.name(), pageable);
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
 
         for (DoctorRequest docReq : pageList.getContent()) {
@@ -172,8 +174,12 @@ public class DoctorRequestController {
             waitingRequest.setVisitData(visitService.convertVisitEntityToData(docReq.getVisit()));
             waitingRequest.setVisitNumber(docReq.getVisit().getVisitNumber());
             waitingRequest.setRequestId(docReq.getId());
+            if (docReq.getRequestedBy() != null) {
+                waitingRequest.setRequestedByName(docReq.getRequestedBy().getFullName());
+                waitingRequest.setRequestedByNo(docReq.getRequestedBy().getStaffNumber());
+            }
             //find line items by request_id
-            List<DoctorRequest> serviceItems = requestService.fetchServiceRequestsByPatient(docReq.getPatient(), fulfillerStatus, requestType);
+            List<DoctorRequest> serviceItems = requestService.fetchServiceRequestsByPatient(docReq.getPatient(), fulfillerStatus, requestType.name());
             List<DoctorRequestItem> requestItems = new ArrayList<>();
             for (DoctorRequest r : serviceItems) {
                 requestItems.add(DoctorRequestItem.map(r));

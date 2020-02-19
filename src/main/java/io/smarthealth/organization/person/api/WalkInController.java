@@ -64,7 +64,7 @@ public class WalkInController {
     }
 
     @GetMapping("/walk-in/{WalkInNo}")
-    public ResponseEntity<?> createWalkingPatient(@PathVariable("WalkInNo") final String WalkInNo) {
+    public ResponseEntity<?> fetchWalkingPatientByWalkingNo(@PathVariable("WalkInNo") final String WalkInNo) {
         WalkIn w = walkInService.fetchWalkingByWalkingNoWithNotFoundDetection(WalkInNo);
         Pager<WalkInData> pagers = new Pager();
         pagers.setCode("0");
