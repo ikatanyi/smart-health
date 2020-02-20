@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @Api
 @RestController
 @Slf4j
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class GlobalConfigurationController {
 
     private final ConfigService service;
