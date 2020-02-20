@@ -22,12 +22,15 @@ public class SupplierStockEntry {
 
     private Long storeId;
     private String store;
+    
     @Enumerated(EnumType.STRING)
     private PurchaseType purchaseType;
+    
     private String orderNumber;
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDate transactionDate;
     private String transactionId;
+    
     private Long supplierId;
     private String supplierName;
 

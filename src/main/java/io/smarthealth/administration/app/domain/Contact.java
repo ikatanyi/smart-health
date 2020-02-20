@@ -17,7 +17,7 @@ public class Contact extends Identifiable {
     private String salutation;
     private String fullName; 
     private String email;
-     @Digits(fraction = 0, integer = 10)
+//     @Digits(fraction = 0, integer = 10)
     private String telephone;
     private String mobile;
 }

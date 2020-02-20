@@ -6,7 +6,8 @@ import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.service.AdminService;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;
@@ -47,12 +48,14 @@ public class PurchaseService {
     private final PricebookService pricebookService;
     private final StoreService storeService;
     private final ItemService itemService;
-    private final SequenceNumberGenerator sequenceGenerator;
+     private final SequenceNumberService sequenceNumberService;
     private final TemplateEngine htmlTemplateEngine;
 
     @Transactional
     public PurchaseOrderData createPurchaseOrder(PurchaseOrderData data) {
+        String lpo=sequenceNumberService.next(1L, Sequences.PurchaseOrder.name());
         PurchaseOrder order = new PurchaseOrder();
+        order.setOrderNumber(lpo);
         Supplier supplier = supplierService.findOneWithNoFoundDetection(data.getSupplierId());
         order.setSupplier(supplier);
         if (data.getAddressId() != null) {
@@ -93,9 +96,6 @@ public class PurchaseService {
         order.addOrderItems(orderItems);
         //then we need to save this
         PurchaseOrder savedOrder = orderRepository.save(order);
-        savedOrder.setOrderNumber(sequenceGenerator.generate(savedOrder));
-        orderRepository.save(savedOrder);
-
         return PurchaseOrderData.map(savedOrder);
     }
 

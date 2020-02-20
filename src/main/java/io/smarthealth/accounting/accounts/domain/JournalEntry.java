@@ -43,9 +43,9 @@ public class JournalEntry extends Auditable {
     protected JournalEntry() {
     }
 
-    public JournalEntry(LocalDate date, String description, JournalEntryItem items[]) {
-
-        this.items = Arrays.asList(items);
+    public JournalEntry(LocalDate date, String description, JournalEntryItem journalEntryItems[]) {
+           List<JournalEntryItem> journalsClone =new ArrayList<>(Arrays.asList(journalEntryItems));
+        this.items = journalsClone;
         if (!JournalEntry.isBalanced(this.items)) {
             throw new IllegalArgumentException(
                     "The total of debits must equal the total of credits");
@@ -67,16 +67,6 @@ public class JournalEntry extends Auditable {
     }
 
     public static boolean isBalanced(List<JournalEntryItem> items) {
-//        BigDecimal total = BigDecimal.ZERO;
-//        for (JournalEntryItem item : items) {
-//            if (item.getType() == Type.DEBIT) {
-//                total = total.subtract(item.getAmount());
-//            } else { // item.type() == Type.CREDIT
-//                total = total.add(item.getAmount());
-//            }
-//        }
-//        return total.equals(BigDecimal.ZERO);
-
         BigDecimal d = items
                 .stream()
                 .filter(x -> x.isDebit())
