@@ -17,8 +17,8 @@ public final class JournalEntryData {
 
     private Long id;
     @NotNull
-     @JsonFormat(pattern = Constants.DATE_PATTERN)
-    private LocalDate date=LocalDate.now();
+    @JsonFormat(pattern = Constants.DATE_PATTERN)
+    private LocalDate date = LocalDate.now();
     private String transactionNo;
     private TransactionType transactionType;
     private String description;
@@ -47,10 +47,10 @@ public final class JournalEntryData {
                 .stream()
                 .forEach(item -> {
                     if (item.isDebit()) {
-                        debtors.add(new Debtor(item.getAccountNumber(), item.getAmount()));
+                        debtors.add(new Debtor(item.getDescription(), item.getAccountNumber(), item.getAmount()));
                     }
                     if (item.isCredit()) {
-                        creditors.add(new Creditor(item.getAccountNumber(), item.getAmount()));
+                        creditors.add(new Creditor(item.getDescription(), item.getAccountNumber(), item.getAmount()));
                     }
                 });
 

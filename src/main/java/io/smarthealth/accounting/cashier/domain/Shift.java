@@ -73,6 +73,7 @@ public class Shift extends Identifiable {
 
     public ShiftData toData() {
         ShiftData data = new ShiftData();
+        data.setId(this.getId());
         data.setCashPoint(this.cashPoint.getName());
         data.setCashier(this.cashier.getUser().getName());
         data.setEndDate(this.getEndDate());

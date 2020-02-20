@@ -69,7 +69,7 @@ public class RemitanceService {
     }
 
     private Remittance save(Remittance remittance) {
-        
+
         return remitanceRepository.save(remittance);
     }
 
@@ -113,10 +113,11 @@ public class RemitanceService {
         String debitAcc = remittance.getBankAccount().getLedgerAccount().getIdentifier();
         String creditAcc = remittance.getPayer().getDebitAccount().getIdentifier();
         BigDecimal amount = BigDecimal.valueOf(remittance.getAmount());
+        String narration = "Payments for " + remittance.getPayer().getPayerName();
         JournalEntry toSave = new JournalEntry(remittance.getTransactionDate(), "Remittance Advice - " + remittance.getRemittanceNumber(),
                 new JournalEntryItem[]{
-                    new JournalEntryItem(debitAcc, JournalEntryItem.Type.DEBIT, amount),
-                    new JournalEntryItem(creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
+                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
                 }
         );
         toSave.setTransactionNo(remittance.getTransactionId());

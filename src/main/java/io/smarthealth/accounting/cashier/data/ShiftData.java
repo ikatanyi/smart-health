@@ -5,16 +5,10 @@
  */
 package io.smarthealth.accounting.cashier.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.cashier.domain.*;
-import io.smarthealth.accounting.cashier.domain.CashPoint;
-import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.security.domain.User;
+import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDateTime;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import lombok.Data;
 
 /**
@@ -23,9 +17,12 @@ import lombok.Data;
  */
 @Data
 public class ShiftData {
+   private Long id;
     private String cashPoint;
     private String cashier;
+    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime startDate;
+    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime endDate;
     private String shiftNo;
     private ShiftStatus status;

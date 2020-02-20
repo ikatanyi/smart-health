@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public final class Creditor {
+    private String description;
     private String accountName;
   private String accountNumber; 
   private BigDecimal amount;
@@ -15,7 +16,8 @@ public final class Creditor {
     super();
   }
 
-  public Creditor(String accountNumber, BigDecimal amount) {
+  public Creditor(String description,String accountNumber, BigDecimal amount) {
+      this.description=description;
     this.accountNumber = accountNumber;
     this.amount = amount;
   }

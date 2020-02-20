@@ -40,12 +40,12 @@ public class JournalService {
 
         List<JournalEntryItem> items = data.getDebtors()
                 .stream()
-                .map(x -> new JournalEntryItem(x.getAccountNumber(), JournalEntryItem.Type.DEBIT, x.getAmount()))
+                .map(x -> new JournalEntryItem(x.getDescription(),x.getAccountNumber(), JournalEntryItem.Type.DEBIT, x.getAmount()))
                 .collect(Collectors.toList());
 
         items.addAll(data.getCreditors()
                 .stream()
-                .map(x -> new JournalEntryItem(x.getAccountNumber(), JournalEntryItem.Type.CREDIT, x.getAmount()))
+                .map(x -> new JournalEntryItem(x.getDescription(),x.getAccountNumber(), JournalEntryItem.Type.CREDIT, x.getAmount()))
                 .collect(Collectors.toList())
         );
 

@@ -35,31 +35,18 @@ public class CashierController {
 
     public CashierController(CashierService service) {
         this.service = service;
-
     }
 
     @PostMapping("/cashiers")
     public ResponseEntity<?> createCashier(@Valid @RequestBody CashierData cashierData) {
-
-        Cashier result = service.createCashier(cashierData);
-
-        Pager<CashierData> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Cashier Success Created");
-        pagers.setContent(result.toData());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+        Cashier result = service.createCashier(cashierData); 
+        return ResponseEntity.status(HttpStatus.CREATED).body(result.toData());
     }
 
     @GetMapping("/cashiers/{id}")
     public ResponseEntity<?> getCashier(@PathVariable(value = "id") Long code) {
         Cashier result = service.getCashier(code);
-        Pager<Cashier> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Cashier Success updated");
-        pagers.setContent(result);
-
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(result.toData());
     }
 
     @PostMapping("/cashiers/{id}/shift")
@@ -71,13 +58,7 @@ public class CashierController {
         } else {
             shift = service.closeShift(result);
         }
-
-        Pager<ShiftData> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Shift Details");
-        pagers.setContent(shift.toData());
-
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(shift.toData());
     }
 
     @GetMapping("/cashiers/{id}/shift")
@@ -86,14 +67,23 @@ public class CashierController {
         List<Shift> shifts = service.getShiftsByCashier(result, status);
         List<ShiftData> shiftData = shifts.stream()
                 .map(x -> x.toData())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()); 
 
-        Pager<List<ShiftData>> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Shift Details");
-        pagers.setContent(shiftData);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(shiftData);
+    }
+      @GetMapping("/cashiers/{id}/shift/{shiftNo}/status")
+    public ResponseEntity<?> getCashierShiftStatus(@PathVariable(value = "id") Long code,@PathVariable(value = "shiftNo") String shiftNo) {
+        Cashier cashier = service.getCashier(code);
+        Shift shift=service.findByCashierAndShiftNo(cashier, shiftNo);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
+        return  ResponseEntity.ok("{ \"status\": \"" + shift.getStatus() + "\" }\n");
+    }
+    @PutMapping("/cashiers/{id}/shift/{shiftNo}/close")
+    public ResponseEntity<?> endCashierShift(@PathVariable(value = "id") Long code,@PathVariable(value = "shiftNo") String shiftNo) {
+        Cashier cashier = service.getCashier(code);
+        Shift shift=service.closeShift( shiftNo);
+
+        return  ResponseEntity.ok(shift.toData());
     }
 
     @PutMapping("/cashiers/{id}")
@@ -105,12 +95,14 @@ public class CashierController {
     @GetMapping("/cashiers")
     public ResponseEntity<?> getAllCashiers(
             @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "pageSize", required = false, defaultValue = "1000") Integer size) {
+            @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<Cashier> list = service.fetchAllCashiers(pageable);
-        Pager<List<Cashier>> pagers = new Pager();
+        Page<CashierData> list = service.fetchAllCashiers(pageable)
+                .map(x -> x.toData());
+        
+        Pager<List<CashierData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());
@@ -124,4 +116,31 @@ public class CashierController {
 
         return ResponseEntity.ok(pagers);
     }
+    
+    @GetMapping("/cashiers/shifts")
+    public ResponseEntity<?> getAllCashierShifts(
+            @RequestParam(value = "status", required = false) ShiftStatus status,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+
+        Page<ShiftData> list = service.fetchAllShifts(status,pageable)
+                .map(x -> x.toData());
+        
+        Pager<List<ShiftData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Cashier Shifts");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
+    
 }
