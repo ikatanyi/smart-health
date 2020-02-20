@@ -60,10 +60,7 @@ public class JournalService {
         return je;
     }
 
-    public JournalEntry save(JournalEntry journal) {
-//        if (journal.getTransactionNo() == null) {
-//            journal.setTransactionNo(sequenceNumberService.next(1L, Sequences.Transactions.name()));
-//        }
+    public JournalEntry save(JournalEntry journal) { 
          JournalEntry je = journalRepository.save(journal);
         bookJournalEntry(je.getId());
         return je;
