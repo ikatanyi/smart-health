@@ -2,9 +2,16 @@ package io.smarthealth.infrastructure.reports.service;
 
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.ApplicationProperties;
+import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.domain.Facility;
+import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.facility.service.FacilityService;
+import io.smarthealth.organization.person.patient.data.PatientData;
+import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
+import io.smarthealth.report.data.clinical.EmployeeBanner;
+import io.smarthealth.report.data.clinical.PatientBanner;
+import io.smarthealth.report.domain.Header;
 import io.smarthealth.report.storage.StorageService;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,9 +19,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +69,9 @@ public class JasperReportsService  {
 
     @Autowired
     private ApplicationProperties appProperties;
+    
+    private final PatientService patientService;
+    private final EmployeeService employeeService;
 
     @Autowired
     @Qualifier("jdbcTemplate")
@@ -137,9 +149,11 @@ public class JasperReportsService  {
             }
             List dataList = reportData.getData();
             String template = reportData.getTemplate();
+            String patientNumber = reportData.getPatientNumber();
+            String employeeId = reportData.getEmployeeId();
             String reportName = reportData.getReportName();
             JasperReport jasperReport = null;
-            HashMap param = reportConfig();
+            HashMap param = reportConfig(patientNumber,employeeId);
             InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() +template +".jasper").getInputStream();
             // Check if a compiled report exists
             if (reportInputStream != null) {
@@ -236,11 +250,18 @@ public class JasperReportsService  {
      *
      */
     
-    private HashMap reportConfig() {
+    private HashMap reportConfig(String patientNumber, String staffNumber) {
+        List<PatientBanner> patientDataArray = new ArrayList();
+        List<EmployeeBanner> employeeDataArray = new ArrayList();
+        List<Header> header = new ArrayList();
         HashMap jasperParameter = new HashMap();
 
         Facility facility = facilityService.loggedFacility();
 
+        Header headerData = Header.map(facility);
+        header.add(headerData);
+        jasperParameter.put("Header_Data", header);
+        
         jasperParameter.put("facilityName", facility.getFacilityName());
         jasperParameter.put("facilityType", facility.getFacilityType());
         jasperParameter.put("logo", facility.getLogo());
@@ -265,6 +286,26 @@ public class JasperReportsService  {
             jasperParameter.put("salutation", facility.getOrganization().getContact().get(0).getSalutation());
             jasperParameter.put("telephone", facility.getOrganization().getContact().get(0).getTelephone());
         }
+        
+        
+        if(patientNumber!=null){
+            PatientBanner patient=null;
+            Optional<PatientData> patientData = patientService.fetchPatientByPatientNumber(patientNumber);
+            if(patientData.isPresent())
+               patient = PatientBanner.map(patientData.get());
+            patientDataArray.add(patient);
+        }
+        
+        if(staffNumber!=null){
+            EmployeeBanner employeeData = null;
+            Optional<Employee> employee = employeeService.findEmployeeByStaffNumber(staffNumber);
+            if(employee.isPresent())
+               employeeData = EmployeeBanner.map(employeeService.convertEmployeeEntityToEmployeeData(employee.get()));
+            employeeDataArray.add(employeeData);
+        }
+        
+        jasperParameter.put("Patient_Data",patientDataArray);
+        jasperParameter.put("Employee_Data",employeeDataArray);
         
          if(facility.getLogo()==null)
              jasperParameter.put("IMAGE_DIR", appProperties.getReportLoc()+"/logo.png");

@@ -24,6 +24,8 @@ public class ReportData {
     @ApiModelProperty(required = false, hidden = false)
     private String reportName;
     private String template;
+    private String patientNumber;
+    private String employeeId;
     private Map<String, Object> filters=new HashMap();
     @Enumerated(EnumType.STRING)
     private ExportFormat format;

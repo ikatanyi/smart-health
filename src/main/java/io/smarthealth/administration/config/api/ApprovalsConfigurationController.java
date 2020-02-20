@@ -11,7 +11,7 @@ import io.smarthealth.administration.config.data.ModuleApproversData;
 import io.smarthealth.administration.config.data.enums.ApprovalModule;
 import io.smarthealth.administration.config.domain.ApprovalConfig;
 import io.smarthealth.administration.config.domain.ModuleApprovers;
-import io.smarthealth.administration.config.service.ApprovalConfigService1;
+import io.smarthealth.administration.config.service.ApprovalConfigService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApprovalsConfigurationController {
 
     @Autowired
-    ApprovalConfigService1 approvalConfigService;
+    ApprovalConfigService approvalConfigService;
 
     @Autowired
     EmployeeService employeeService;

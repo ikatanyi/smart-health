@@ -436,6 +436,10 @@ public class ReportService {
                                                       .map((test)->DoctorRequestData.map(test))
                                                       .collect(Collectors.toList());
 
+        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        if(!requestData.isEmpty())
+            if(requestData.get(0).getEmployeeData()!=null)
+                reportData.setEmployeeId(requestData.get(0).getEmployeeData().getStaffNumber());
         reportData.getFilters().put("SUBREPORT_DIR", "/clinical/");
         reportData.setData(requestData);
         reportData.setFormat(format);
