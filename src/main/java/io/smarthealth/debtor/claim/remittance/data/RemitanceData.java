@@ -14,7 +14,7 @@ import lombok.Data;
  */
 @Data
 public class RemitanceData {
-
+    
     private Long id;
     @NotNull
     private Long payerId;
@@ -26,18 +26,18 @@ public class RemitanceData {
     private Double amount;
     private String paymentMode;
     private String paymentCode;
-    @JsonFormat(pattern = DATE_PATTERN)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate transactionDate;
     private String receiptNo;
     private String transactionId;
     private Double balance;
-
+    
     private String termsName;
     private String notes;
     private String termsDescription;
     private Integer creditDays;
     private Boolean termsActive;
-
+    
     public static Remittance map(RemitanceData data) {
         Remittance remitance = new Remittance();
         remitance.setAmount(data.getAmount());
@@ -49,9 +49,10 @@ public class RemitanceData {
         remitance.setTransactionDate(data.getTransactionDate());
         return remitance;
     }
-
+    
     public static RemitanceData map(Remittance remitance) {
         RemitanceData data = new RemitanceData();
+        data.setId(remitance.getId());
         data.setAmount(remitance.getAmount());
         data.setBalance(remitance.getBalance());
         data.setReceiptNo(remitance.getReceiptNo());
