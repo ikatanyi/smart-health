@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
  *
  * @author Kelsas
  */
+@Deprecated
 @Repository
 public interface SequenceRepository extends CrudRepository<SequenceFormat, Long>{
      Optional<SequenceFormat> findByIdType(SequenceType type);

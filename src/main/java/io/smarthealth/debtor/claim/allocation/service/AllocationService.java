@@ -11,6 +11,7 @@ import io.smarthealth.debtor.claim.remittance.domain.RemitanceRepository;
 import io.smarthealth.debtor.claim.remittance.service.RemitanceService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -32,31 +33,30 @@ public class AllocationService {
     private final AllocationRepository allocationRepository;
     private final RemitanceRepository remitanceRepository;
     private final InvoiceService invoiceService;
-    private final RemitanceService remitanceService;
-
-        
 
     @javax.transaction.Transactional
-    public Allocation createAllocation(AllocationData data) {
-       Allocation allocation = AllocationData.map(data);
-       Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
-       invoice.setBalance(invoice.getBalance()-data.getAmount());
-       allocation.setInvoice(invoice);
-       
-       Remittance remitance = remitanceService.getRemitanceByIdWithFailDetection(data.getRemitanceId());
-       remitance.setBalance(remitance.getAmount()-data.getAmount());       
-       remitanceRepository.save(remitance);
-         
-        return allocationRepository.save(allocation);
+    public List<Allocation> createAllocation(List<AllocationData> dataList, Remittance remitance) {
+        List<Allocation> allocations = new ArrayList<>();
+        for (AllocationData data : dataList) {
+            Allocation allocation = AllocationData.map(data);
+            Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
+            invoice.setBalance(invoice.getBalance() - data.getAmount());
+            allocation.setInvoice(invoice);
+
+            remitance.setBalance(remitance.getAmount() - data.getAmount());
+            remitanceRepository.save(remitance);
+            allocations.add(allocation);
+        }
+        return allocationRepository.saveAll(allocations);
     }
-    
+
     public Allocation updateAllocation(final Long id, AllocationData data) {
         Allocation allocation = getAllocationByIdWithFailDetection(id);
         Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
-        invoice.setBalance((invoice.getBalance()+allocation.getAmount())-data.getAmount());
+        invoice.setBalance((invoice.getBalance() + allocation.getAmount()) - data.getAmount());
         allocation.setInvoice(invoice);
         allocation.setAmount(data.getAmount());
-        allocation.setBalance(invoice.getBalance()+allocation.getAmount()-data.getAmount());
+        allocation.setBalance(invoice.getBalance() + allocation.getAmount() - data.getAmount());
         allocation.setReceiptNo(data.getReceiptNo());
         allocation.setRemittanceNo(data.getRemittanceNo());
         return allocationRepository.save(allocation);
@@ -70,7 +70,7 @@ public class AllocationService {
         return allocationRepository.findById(id);
     }
 
-    public Page<Allocation> getAllocations(String invoiceNo,String receiptNo, String remittanceNo, Long payerId, Long schemeId, DateRange range, Pageable page) {
+    public Page<Allocation> getAllocations(String invoiceNo, String receiptNo, String remittanceNo, Long payerId, Long schemeId, DateRange range, Pageable page) {
         Specification spec = AllocationSpecification.createSpecification(invoiceNo, receiptNo, remittanceNo, payerId, schemeId, range);
         return allocationRepository.findAll(spec, page);
     }

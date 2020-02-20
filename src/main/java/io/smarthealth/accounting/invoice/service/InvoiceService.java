@@ -1,6 +1,14 @@
 package io.smarthealth.accounting.invoice.service;
 
-import io.smarthealth.accounting.acc.service.JournalEntryService;
+import io.smarthealth.accounting.accounts.data.FinancialActivity;
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
+import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
+import io.smarthealth.accounting.accounts.domain.JournalEntry;
+import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
+import io.smarthealth.accounting.accounts.domain.JournalState;
+import io.smarthealth.accounting.accounts.domain.TransactionType;
+import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
@@ -22,7 +30,10 @@ import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,22 +58,27 @@ public class InvoiceService {
     private final InvoiceRepository invoiceRepository;
     private final InvoiceMergeRepository invoiceMergeRepository;
     private final BillingService billingService;
-    private final JournalEntryService journalEntryService;
+    private final JournalService journalService;
     private final PayerService payerService;
     private final SchemeService schemeService;
+
     private final SequenceNumberGenerator sequenceGenerator;
+    private final SequenceNumberService sequenceNumberService;
+    private final FinancialActivityAccountRepository activityAccountRepository;
 //    private final TxnService txnService;
 
     @Transactional
     public String createInvoice(CreateInvoiceData invoiceData) {
 
-        final String trxId = sequenceGenerator.generateTransactionNumber(); //txnService.nextId();// UUID.randomUUID().toString();
+        String trxId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+
 //        final 
         Optional<PatientBill> bill = billingService.findByBillNumber(invoiceData.getBillNumber());
         invoiceData.getPayers()
                 .stream()
                 .forEach(debt -> {
-                    String invoiceNo = RandomStringUtils.randomNumeric(5);
+                    String invoiceNo = sequenceNumberService.next(1L, Sequences.Invoice.name());
+
                     Payer payer = payerService.findPayerByIdWithNotFoundDetection(debt.getPayerId());
                     Scheme scheme = schemeService.fetchSchemeById(debt.getSchemeId());
 
@@ -117,21 +133,20 @@ public class InvoiceService {
 
     @Transactional
     public Invoice saveInvoice(Invoice invoice) {
-        Invoice savedInv = invoiceRepository.save(invoice);
-        System.err.println(savedInv.isInvoiceNumberRequiresAutoGeneration());
-//        if (savedInv.isInvoiceNumberRequiresAutoGeneration()) {
-            savedInv.setNumber(sequenceGenerator.generate(savedInv));
-           Invoice savedInvoice= invoiceRepository.save(invoice);
+//        Invoice savedInv = invoiceRepository.save(invoice);
+//        System.err.println(savedInv.isInvoiceNumberRequiresAutoGeneration());
+////        if (savedInv.isInvoiceNumberRequiresAutoGeneration()) {
+//            savedInv.setNumber(sequenceGenerator.generate(savedInv));
+        Invoice savedInvoice = invoiceRepository.save(invoice);
 //        }
         if (savedInvoice.getBill() != null) {
             PatientBill bill = savedInvoice.getBill();
             bill.setStatus(BillStatus.Final);
             billingService.update(bill);
         }
-        //
-        journalEntryService.createJournalEntry(savedInvoice);
-        
-        return savedInv;
+        journalService.save(toJournal(invoice));
+
+        return savedInvoice;
     }
 
     private InvoiceLineItem createItem(String trxId, CreateInvoiceItemData data) {
@@ -186,37 +201,36 @@ public class InvoiceService {
         invoice.setTotal(data.getTotal());
         return invoiceRepository.save(invoice);
     }
-    
+
     public Invoice verifyInvoice(Long id, Boolean isVerified) {
         Invoice invoice = findInvoiceOrThrowException(id);
         invoice.setIsVerified(isVerified);
         return invoiceRepository.save(invoice);
     }
-    
-     public Invoice findByInvoiceNumberOrThrow(String invoiceNumber) {
+
+    public Invoice findByInvoiceNumberOrThrow(String invoiceNumber) {
         return invoiceRepository.findByNumber(invoiceNumber).orElseThrow(() -> APIException.notFound("Invoice with invoice number {0} not found.", invoiceNumber));
     }
-     
-    
-     @Transactional
+
+    @Transactional
     public InvoiceMerge mergeInvoice(InvoiceMergeData data) {
         InvoiceMerge invoiceMerge = InvoiceMergeData.map(data);
-        
+
         Invoice fromInvoice = findByInvoiceNumberOrThrow(data.getFromInvoiceNumber());
         Invoice toInvoice = findByInvoiceNumberOrThrow(data.getToInvoiceNumber());
-        
+
         fromInvoice.getItems().stream().map((lineItem) -> {
             lineItem.setInvoice(toInvoice);
             return lineItem;
         }).forEachOrdered((lineItem) -> {
             toInvoice.getItems().add(lineItem);
         });
-        
+
         invoiceRepository.save(toInvoice);
         invoiceRepository.deleteById(fromInvoice.getId());
         return invoiceMergeRepository.save(invoiceMerge);
     }
-  
+
     public Invoice findInvoiceOrThrowException(Long id) {
         return findById(id)
                 .orElseThrow(() -> APIException.notFound("Invoice with id {0} not found.", id));
@@ -228,6 +242,37 @@ public class InvoiceService {
 
     public InvoiceData invoiceToEDI(Long id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private JournalEntry toJournal(Invoice invoice) {
+
+        Account debitAccount;
+        if (invoice.getPayer().getDebitAccount() != null) {
+            debitAccount = invoice.getPayer().getDebitAccount();
+        } else {
+            FinancialActivityAccount debit = activityAccountRepository
+                    .findByFinancialActivity(FinancialActivity.Accounts_Receivable)
+                    .orElseThrow(() -> APIException.notFound("Account Receivable Account is Not Mapped"));
+            debitAccount = debit.getAccount();
+        }
+        FinancialActivityAccount creditAccount = activityAccountRepository
+                .findByFinancialActivity(FinancialActivity.Patient_Control)
+                .orElseThrow(() -> APIException.notFound("Patient Control Account is Not Mapped"));
+
+        String creditAcc = creditAccount.getAccount().getIdentifier();
+        String debitAcc = debitAccount.getIdentifier();
+        BigDecimal amount = BigDecimal.valueOf(invoice.getTotal());
+
+        JournalEntry toSave = new JournalEntry(invoice.getDate(), "Raise Invoice - " + invoice.getNumber(),
+                new JournalEntryItem[]{
+                    new JournalEntryItem(debitAcc, JournalEntryItem.Type.DEBIT, amount),
+                    new JournalEntryItem(creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                }
+        );
+        toSave.setTransactionNo(invoice.getTransactionNo());
+        toSave.setTransactionType(TransactionType.Invoicing);
+        toSave.setStatus(JournalState.PENDING);
+        return toSave;
     }
 
 }

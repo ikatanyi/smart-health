@@ -14,12 +14,12 @@ import lombok.Data;
  */
 @Data
 public class RemitanceData {
-
+    
     private Long id;
     @NotNull
     private Long payerId;
     private String payerName;
-    private Long  bankAccountId;
+    private Long bankAccountId;
     private String bankName;
     @ApiModelProperty(required = false, hidden = true)
     private String bankAccountNumber;
@@ -31,13 +31,13 @@ public class RemitanceData {
     private String receiptNo;
     private String transactionId;
     private Double balance;
-
+    
     private String termsName;
     private String notes;
     private String termsDescription;
     private Integer creditDays;
     private Boolean termsActive;
-
+    
     public static Remittance map(RemitanceData data) {
         Remittance remitance = new Remittance();
         remitance.setAmount(data.getAmount());
@@ -49,9 +49,10 @@ public class RemitanceData {
         remitance.setTransactionDate(data.getTransactionDate());
         return remitance;
     }
-
+    
     public static RemitanceData map(Remittance remitance) {
         RemitanceData data = new RemitanceData();
+        data.setId(remitance.getId());
         data.setAmount(remitance.getAmount());
         data.setBalance(remitance.getBalance());
         data.setReceiptNo(remitance.getReceiptNo());
@@ -59,7 +60,7 @@ public class RemitanceData {
         data.setPaymentMode(remitance.getPaymentMode());
         data.setNotes(remitance.getNotes());
         data.setTransactionDate(remitance.getTransactionDate());
-       data.setTransactionId(remitance.getTransactionId());
+        data.setTransactionId(remitance.getTransactionId());
         if (remitance.getPayer() != null) {
             data.setPayerName(remitance.getPayer().getPayerName());
             data.setPayerId(remitance.getPayer().getId());
@@ -70,9 +71,9 @@ public class RemitanceData {
                 data.setTermsActive(remitance.getPayer().getPaymentTerms().getActive());
             }
         }
-        if(remitance.getBankAccount()!=null){
+        if (remitance.getBankAccount() != null) {
             data.setBankAccountId(remitance.getBankAccount().getId());
-            if(remitance.getBankAccount().getBank()!=null){
+            if (remitance.getBankAccount().getBank() != null) {
                 data.setBankName(remitance.getBankAccount().getBank().getBankName());
             }
             data.setBankAccountNumber(remitance.getBankAccount().getAccountNumber());

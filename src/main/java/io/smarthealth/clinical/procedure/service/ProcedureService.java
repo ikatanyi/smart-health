@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package io.smarthealth.clinical.procedure.service;
- 
+
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
 import io.smarthealth.clinical.procedure.data.ProcedureItemData;
@@ -29,6 +29,8 @@ import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.util.ArrayList;
@@ -52,20 +54,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProcedureService {
 
     private final ProcedureRepository procedureRepository;
-    
+
     private final PatientProcedureTestRepository patientprocedureRepository;
-    
+
     private final DoctorsRequestRepository doctorRequestRepository;
-    
+
     private final ProcedureTestRepository procTestRepository;
 
     private final EmployeeService employeeService;
-    private final PatientService patientservice;
-    private final BillingService billService;
     private final ItemService itemService;
     private final VisitService visitService;
     private final SequenceService seqService;
-
+    private final SequenceNumberService sequenceNumberService;
 
     @Transactional
     public List<ProcedureTest> createProcedureTest(List<ProcedureTestData> procedureTestData) {
@@ -101,7 +101,7 @@ public class ProcedureService {
         return procedureRepository.save(test);
 
     }
-    
+
     public ProcedureTest findProcedureByItem(final Item item) {
         return procedureRepository.findByItem(item).orElseThrow(() -> {
             return APIException.notFound("Procedure Test not Registered in Procedure Department");
@@ -112,12 +112,12 @@ public class ProcedureService {
     public ProcedureTest getById(Long id) {
         return procedureRepository.findById(id).orElseThrow(() -> APIException.notFound("Procedure Test identified by {0} not found", id));
     }
-    
+
     @Transactional
     public Page<ProcedureTest> findAll(Pageable pgbl) {
         return procedureRepository.findAll(pgbl);
     }
-    
+
     @Transactional
     public PatientProcedureRegister savePatientResults(PatientProcedureRegisterData patientProcRegData, final String visitNo, final Long requestId) {
         PatientProcedureRegister patientProcReg = PatientProcedureRegisterData.map(patientProcRegData);
@@ -141,7 +141,7 @@ public class ProcedureService {
 
         }
         if (patientProcRegData.getAccessionNo() == null || patientProcRegData.getAccessionNo().equals("")) {
-            String accessionNo = seqService.nextNumber(SequenceType.ProcedureNumber);
+            String accessionNo = sequenceNumberService.next(1L, Sequences.Procedure.name());
             patientProcReg.setAccessNo(accessionNo);
         }
 
@@ -156,14 +156,14 @@ public class ProcedureService {
                 pte.setTestPrice(id.getItemPrice());
                 pte.setQuantity(id.getQuantity());
                 pte.setProcedureTest(labTestType);
-                
+
                 patientProcTest.add(pte);
             }
             patientProcReg.addPatientProcedures(patientProcTest);
 
         }
         return patientprocedureRepository.save(patientProcReg);
-    }    
+    }
 
     @Transactional
     public PatientProcedureTest updateProcedureResult(PatientProcedureTest r) {
@@ -173,19 +173,19 @@ public class ProcedureService {
     public PatientProcedureTest findResultsByIdWithNotFoundDetection(Long id) {
         return procTestRepository.findById(id).orElseThrow(() -> APIException.notFound("Results identified by id {0} not found ", id));
     }
-    
+
     public PatientProcedureRegister findProceduresByIdWithNotFoundDetection(String accessNo) {
         return patientprocedureRepository.findByAccessNo(accessNo).orElseThrow(() -> APIException.notFound("Patient Procedure identified by procedureN Number {0} not found ", accessNo));
     }
-    
+
     public List<PatientProcedureRegister> findPatientProcedureRegisterByVisit(String VisitNumber) {
         Visit visit = visitService.findVisitEntityOrThrow(VisitNumber);
         return patientprocedureRepository.findByVisit(visit);
     }
-    
+
     @Transactional
-    public Page<PatientProcedureRegister> findAll(String PatientNumber,String scanNo, String visitId, DateRange range,Pageable pgbl) {
-        Specification spec=RadiologySpecification.createSpecification(PatientNumber, scanNo, visitId, range);
+    public Page<PatientProcedureRegister> findAll(String PatientNumber, String scanNo, String visitId, DateRange range, Pageable pgbl) {
+        Specification spec = RadiologySpecification.createSpecification(PatientNumber, scanNo, visitId, range);
         return patientprocedureRepository.findAll(spec, pgbl);
     }
 

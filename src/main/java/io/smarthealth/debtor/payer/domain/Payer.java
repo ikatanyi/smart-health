@@ -1,6 +1,6 @@
 package io.smarthealth.debtor.payer.domain;
-
-import io.smarthealth.accounting.acc.domain.AccountEntity;
+ 
+import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.payment.domain.PaymentTerms;
 import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.administration.app.domain.Address;
@@ -53,7 +53,7 @@ public class Payer extends Auditable {
 
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_payer_account_id"))
     @ManyToOne
-    private AccountEntity debitAccount;
+    private Account debitAccount;
 
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_price_book_id"))
     @ManyToOne

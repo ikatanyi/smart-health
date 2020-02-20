@@ -1,12 +1,16 @@
 package io.smarthealth.debtor.claim.allocation.api;
 
 import io.smarthealth.debtor.claim.allocation.data.AllocationData;
+import io.smarthealth.debtor.claim.allocation.domain.Allocation;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
+import io.smarthealth.debtor.claim.remittance.domain.Remittance;
+import io.smarthealth.debtor.claim.remittance.service.RemitanceService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -25,23 +29,27 @@ import org.springframework.web.bind.annotation.*;
 public class AllocationController {
 
     private final AllocationService allocationService;
+    private final RemitanceService remitanceService;
 
-    public AllocationController(AllocationService allocationService) {
+    public AllocationController(AllocationService allocationService, RemitanceService remitanceService) {
         this.allocationService = allocationService;
+        this.remitanceService = remitanceService;
     }
 
-    
+    @PostMapping("/allocation/{remmitanceId}")
+    public ResponseEntity<?> createAllocation(@PathVariable("remmitanceId") final Long remmitanceId, @Valid @RequestBody List<AllocationData> allocationData) {
+        Remittance remitance = remitanceService.getRemitanceByIdWithFailDetection(remmitanceId);
+        List<Allocation> allocatedAmount = allocationService.createAllocation(allocationData, remitance);
+        List<AllocationData> dataList = new ArrayList<>();
+        for (Allocation a : allocatedAmount) {
+            AllocationData remittance = AllocationData.map(a);
+            dataList.add(remittance);
+        }
 
-    
-    @PostMapping("/allocation")
-    public ResponseEntity<?> createAllocation(@Valid @RequestBody AllocationData allocationData) {
-
-        AllocationData remittance = AllocationData.map(allocationService.createAllocation(allocationData));
-
-        Pager<AllocationData> pagers = new Pager();
+        Pager<List<AllocationData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Allocation successfully Created.");
-        pagers.setContent(remittance);
+        pagers.setContent(dataList);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
@@ -63,7 +71,7 @@ public class AllocationController {
             @RequestParam(value = "invoiceNo", required = false) String invoiceNo,
             @RequestParam(value = "receiptNo", required = false) String receiptNo,
             @RequestParam(value = "payerId", required = false) Long payerId,
-            @RequestParam(value = "schemeId", required = false) Long schemeId,         
+            @RequestParam(value = "schemeId", required = false) Long schemeId,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {

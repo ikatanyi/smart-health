@@ -17,8 +17,6 @@ import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.lang.DateConverter;
-import io.smarthealth.organization.facility.domain.Department;
-import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.List;
 import java.util.Optional;
@@ -111,11 +109,11 @@ public class DoctorRequestService implements DateConverter {
         return docReqs;
     }
     
-    public Page<DoctorRequest> fetchDoctorRequestLine(final String fulfillerStatus, final String requestType, Pageable pageable) {
+    public Page<DoctorRequest> fetchDoctorRequestLine(final String fulfillerStatus, final RequestType requestType, Pageable pageable) {
         return doctorRequestRepository.findRequestLine(fulfillerStatus, requestType, pageable);
     }
     
-    public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final String fullfillerStatus, final String requestType) {
+    public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final String fullfillerStatus, final RequestType requestType) {
         return doctorRequestRepository.findServiceRequestsByPatient(patient, fullfillerStatus, requestType);
     }
     

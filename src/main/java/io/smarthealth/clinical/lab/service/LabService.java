@@ -1,16 +1,13 @@
 package io.smarthealth.clinical.lab.service;
 
-import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.lab.data.AnalyteData;
 import io.smarthealth.clinical.lab.data.ContainerData;
-import io.smarthealth.clinical.lab.data.DisciplineData;
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
 import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
 import io.smarthealth.clinical.lab.data.SpecimenData;
 import io.smarthealth.clinical.lab.domain.Analyte;
 import io.smarthealth.clinical.lab.domain.AnalyteRepository;
 import io.smarthealth.clinical.lab.domain.Container;
-import io.smarthealth.clinical.lab.domain.ContainerRepository;
 import io.smarthealth.clinical.lab.domain.Discipline;
 import io.smarthealth.clinical.lab.domain.DisciplineRepository;
 import io.smarthealth.clinical.lab.domain.LabTestType;
@@ -23,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,31 +34,31 @@ import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.service.VisitService;
-import io.smarthealth.infrastructure.numbers.service.SequenceNumberGenerator;
-import io.smarthealth.infrastructure.utility.UuidGenerator;
+import io.smarthealth.sequence.UuidGenerator;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.util.stream.Collectors;
 import org.springframework.data.jpa.domain.Specification;
 import io.smarthealth.clinical.lab.domain.LabRegisterRepository;
 import io.smarthealth.clinical.lab.domain.specification.PatientTestSpecification;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
  * @author Kennedy.Imbenzi
  */
 @Service
+@RequiredArgsConstructor
 public class LabService {
 
     private final AnalyteRepository analyteRepository;
 
     private final ModelMapper modelMapper;
-
-    private final ContainerRepository containerRepository;
 
     private final DisciplineRepository disciplineRepository;
 
@@ -76,38 +72,19 @@ public class LabService {
 
     private final LabRegisterRepository patientRegRepository;
 
-    private final SequenceNumberGenerator seqService;
-
+//    private final SequenceNumberGenerator seqService;
     private final EmployeeService employeeService;
 
-    private final PatientService patientservice;
+//    private final PatientService patientservice;
     private final ItemService itemService;
+    
     private final VisitService visitService;
-    private final BillingService billingService;
 
     private final LabTestTypeRepository labTestTypeRepository;
 
     private final PatientLabTestSpecimenRepo patientLabTestSpecimenRepo;
 
-    public LabService(AnalyteRepository analyteRepository, ModelMapper modelMapper, ContainerRepository containerRepository, DisciplineRepository disciplineRepository, LabTestTypeRepository ttypeRepository, LabTestRepository PtestsRepository, SpecimenRepository specimenRepository, DoctorsRequestRepository doctorRequestRepository, LabRegisterRepository patientRegRepository, SequenceNumberGenerator seqService, EmployeeService employeeService, PatientService patientservice, ItemService itemService, VisitService visitService, BillingService billingService, LabTestTypeRepository labTestTypeRepository, PatientLabTestSpecimenRepo patientLabTestSpecimenRepo) {
-        this.analyteRepository = analyteRepository;
-        this.modelMapper = modelMapper;
-        this.containerRepository = containerRepository;
-        this.disciplineRepository = disciplineRepository;
-        this.ttypeRepository = ttypeRepository;
-        this.PtestsRepository = PtestsRepository;
-        this.specimenRepository = specimenRepository;
-        this.doctorRequestRepository = doctorRequestRepository;
-        this.patientRegRepository = patientRegRepository;
-        this.seqService = seqService;
-        this.employeeService = employeeService;
-        this.patientservice = patientservice;
-        this.itemService = itemService;
-        this.visitService = visitService;
-        this.billingService = billingService;
-        this.labTestTypeRepository = labTestTypeRepository;
-        this.patientLabTestSpecimenRepo = patientLabTestSpecimenRepo;
-    }
+    private final SequenceNumberService sequenceNumberService;
 
     @Transactional
     public Long createTestType(LabTestTypeData testtypeData) {
@@ -204,49 +181,9 @@ public class LabService {
     c. Read Specimens by Id
     c. Update Specimens
      */
-    @Transactional
-    public List<SpecimenData> createSpecimens(List<SpecimenData> specimenDatalist) {
+   
 
-        List<Specimen> specs = new ArrayList();
-        for (SpecimenData specData : specimenDatalist) {
-            Specimen specimen = SpecimenData.map(specData);
-            Optional<Container> cont = containerRepository.findById(specData.getContainerId());
-
-            if (cont.isPresent()) {
-                specimen.setContainer(cont.get());
-            }
-            specs.add(specimen);
-        }
-
-        List<Specimen> saved = specimenRepository.saveAll(specs);
-
-        List<SpecimenData> savedlist = new ArrayList<>();
-        saved.forEach((s) -> {
-            savedlist.add(SpecimenData.map(s));
-        });
-        return savedlist;
-    }
-
-    public Page<SpecimenData> fetchAllSpecimens(Pageable pgbl) {
-        return specimenRepository.findAll(pgbl).map(p -> SpecimenData.map(p));
-    }
-
-    public Specimen fetchSpecimenById(Long id) {
-        return specimenRepository.findById(id)
-                .orElseThrow(() -> APIException.notFound("Specimen identified by {0} not found.", id));//.map(p -> SpecimenData.map(p)).orElseThrow(() -> APIException.notFound("Specimen identified by {0} not found.", id));
-    }
-
-    public void deleteTestById(Long id) {
-        ttypeRepository.deleteById(id);
-    }
-
-    public void deleteContainerById(Long id) {
-        containerRepository.deleteById(id);
-    }
-
-    public void deleteDisciplineById(Long id) {
-        disciplineRepository.deleteById(id);
-    }
+   
 
 //    public SpecimenData convertSpecimenToData(Specimen specimen) {
 //        SpecimenData specimenData = modelMapper.map(specimen, SpecimenData.class);
@@ -268,35 +205,9 @@ public class LabService {
     c. Read department by Id
     c. Update department
      */
-    @Transactional
-    public List<DisciplineData> createDisciplines(List<DisciplineData> disciplineData) {
+    
 
-        java.lang.reflect.Type listType = new TypeToken<List<Discipline>>() {
-        }.getType();
-        List<Discipline> disciplines = modelMapper.map(disciplineData, listType);
-
-        List<Discipline> disciplineList = disciplineRepository.saveAll(disciplines);
-        return modelMapper.map(disciplineList, new TypeToken<List<DisciplineData>>() {
-        }.getType());
-    }
-
-    public Page<DisciplineData> fetchAllDisciplines(Pageable pgbl) {
-        return disciplineRepository.findAll(pgbl).map(p -> convertDisciplineToData(p));
-    }
-
-    public DisciplineData fetchDisciplineById(Long id) {
-        return disciplineRepository.findById(id).map(p -> convertDisciplineToData(p)).orElseThrow(() -> APIException.notFound("Discipline identified by {0} not found.", id));
-    }
-
-    public DisciplineData convertDisciplineToData(Discipline discipline) {
-        DisciplineData disciplineData = modelMapper.map(discipline, DisciplineData.class);
-        return disciplineData;
-    }
-
-    public Discipline convertDataToSpecimen(DisciplineData disciplineData) {
-        Discipline discipline = modelMapper.map(disciplineData, Discipline.class);
-        return discipline;
-    }
+    
 
     /*
     a. Create a new PatientResults
@@ -375,9 +286,9 @@ public class LabService {
     // work around to generating lab number for now: 2020-01-14. Note I have renamed the class name from PatientTestRegister to Lab Register to ease confusion
 
     private LabRegister save(LabRegister labRegister) {
-        LabRegister savedLabRegister = patientRegRepository.save(labRegister);
-        savedLabRegister.setAccessNo(seqService.generate(savedLabRegister));
-        return patientRegRepository.save(savedLabRegister);
+        String labNo = sequenceNumberService.next(1L, Sequences.LabNumber.name());
+        labRegister.setAccessNo(labNo);
+        return patientRegRepository.save(labRegister);
     }
 
     public Page<LabRegister> fetchAllPatientTests(final String visitNo, LabTestState status, Pageable pageable) {
@@ -428,25 +339,7 @@ public class LabService {
     c. Read Containers by Id
     c. Update Containers
      */
-    @Transactional
-    public List<ContainerData> createContainers(List<ContainerData> containerData) {
-        java.lang.reflect.Type listType = new TypeToken<List<Container>>() {
-        }.getType();
-        List<Container> containers = modelMapper.map(containerData, listType);
-
-        List<Container> containerList = containerRepository.saveAll(containers);
-        return modelMapper.map(containerList, new TypeToken<List<ContainerData>>() {
-        }.getType());
-    }
-
-    public Page<ContainerData> fetchAllContainers(Pageable pgbl) {
-        return containerRepository.findAll(pgbl).map(p -> convertContainerToData(p));
-    }
-
-    public ContainerData fetchContainerById(Long id) {
-        return containerRepository.findById(id).map(p -> convertContainerToData(p)).orElseThrow(() -> APIException.notFound("Container identified by {0} not found.", id));
-    }
-
+    
     public ContainerData convertContainerToData(Container container) {
         ContainerData containerData = modelMapper.map(container, ContainerData.class);
         return containerData;
@@ -480,7 +373,7 @@ public class LabService {
     public Page<AnalyteData> fetchAnalytesByAgeAndGender(String testCode, String patientNumber, Pageable pgbl) {
         Item item = itemService.findItemWithNoFoundDetection(testCode);
         LabTestType ttype = this.findTestTypeByItemService(item).orElseThrow(() -> APIException.notFound("Test type identifid by {0}  not found", testCode));
-        Patient patient = patientservice.findPatientOrThrow(patientNumber);
+        Patient patient = visitService.findPatientOrThrow(patientNumber);
         return analyteRepository.findAnalytesByGenderAndAge(ttype, patient.getGender(), patient.getAge(), pgbl).map(p -> convertAnalyteToData(p));
     }
 
@@ -510,5 +403,7 @@ public class LabService {
         return PtestsRepository.save(labtest);
 
     }
-
+ public void deleteTestById(Long id) {
+        ttypeRepository.deleteById(id);
+    }
 }

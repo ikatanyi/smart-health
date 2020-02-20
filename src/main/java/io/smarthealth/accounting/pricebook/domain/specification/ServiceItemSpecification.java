@@ -1,10 +1,6 @@
 package io.smarthealth.accounting.pricebook.domain.specification;
 
-import io.smarthealth.accounting.acc.domain.AccountEntity;
-import io.smarthealth.accounting.pricebook.domain.PriceBook;
 import io.smarthealth.accounting.pricebook.domain.ServiceItem;
-import io.smarthealth.accounting.pricebook.domain.enumeration.PriceCategory;
-import io.smarthealth.accounting.pricebook.domain.enumeration.PriceType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;

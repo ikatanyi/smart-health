@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
  *
  * @author Kelsas
  */
+@Deprecated
 @Service
 @Slf4j
 public class SequenceManagerService {

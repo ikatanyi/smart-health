@@ -17,6 +17,8 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -37,20 +40,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DispatchService {
 
-    private final DispatchRepository dispatchRepository;
-    private final InvoiceRepository invoiceRepository;
-    private final CreditNoteItemRepository creditNoteItemRepository;
-    private final InvoiceService invoiceService;
-    private final BillingService billService;
+    private final DispatchRepository dispatchRepository; 
+    private final InvoiceService invoiceService; 
     private final PayerService payerService;
-    private final SequenceService seqService;
-
-        
-
-    @javax.transaction.Transactional
+      private final SequenceNumberService sequenceNumberService; 
+ 
+    @Transactional
     public Dispatch createDispatch(DispatchData dispatchData) {
         Dispatch dispatch = DispatchData.map(dispatchData);
-        dispatch.setDispatchNo(seqService.nextNumber(SequenceType.DispatchNumber));
+        dispatch.setDispatchNo(sequenceNumberService.next(1L, Sequences.DispatchNumber.name()));
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(dispatchData.getPayerId());
         dispatch.setPayer(payer);
         List<DispatchedInvoice>dispatchInvoiceArr = new ArrayList();

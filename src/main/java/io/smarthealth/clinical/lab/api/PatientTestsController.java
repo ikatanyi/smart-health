@@ -13,6 +13,7 @@ import io.smarthealth.clinical.lab.domain.Specimen;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.smarthealth.clinical.lab.service.LabResultsService;
 import io.smarthealth.clinical.lab.service.LabService;
+import io.smarthealth.clinical.lab.service.LabSetupService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -47,6 +48,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "Patient Tests Controller", description = "Operations pertaining to Patient lab results maintenance")
 public class PatientTestsController {
 
+    @Autowired
+   private  LabSetupService labSetupService;
+    
     @Autowired
     LabService labService;
 
@@ -141,7 +145,7 @@ public class PatientTestsController {
     @PostMapping("/patient-test/specimen-details")
     public ResponseEntity<?> addLabtestSpecimenDetails(@Valid @RequestBody PatientLabTestSpecimenData patientLabTestSpecimen) {
         PatientLabTest plt = labService.fetchPatientTestsById(patientLabTestSpecimen.getPatientLabtestId());
-        Specimen specimen = labService.fetchSpecimenById(patientLabTestSpecimen.getSpecimenId());
+        Specimen specimen = labSetupService.fetchSpecimenById(patientLabTestSpecimen.getSpecimenId());
         PatientLabTestSpecimen testSpecimen = PatientLabTestSpecimenData.map(patientLabTestSpecimen);
         plt.setStatus(patientLabTestSpecimen.getStatus());
         testSpecimen.setPatientLabTest(plt);

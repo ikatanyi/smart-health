@@ -1,11 +1,9 @@
 package io.smarthealth.debtor.claim.writeOff.service;
 
-import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
-import io.smarthealth.debtor.claim.creditNote.domain.CreditNoteItemRepository;
 import io.smarthealth.debtor.claim.writeOff.domain.specification.WriteOffSpecification;
 import io.smarthealth.debtor.claim.writeOff.data.WriteOffData;
 import io.smarthealth.debtor.claim.writeOff.domain.WriteOff;
@@ -16,7 +14,6 @@ import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -36,17 +34,14 @@ import org.springframework.stereotype.Service;
 public class WriteOffService {
 
     private final WriteOffRepository writeOffRepository;
-    private final InvoiceRepository invoiceRepository;
-    private final CreditNoteItemRepository creditNoteItemRepository;
-    private final InvoiceService invoiceService;
-    private final BillingService billService;
+    private final InvoiceRepository invoiceRepository; 
+    private final InvoiceService invoiceService; 
     private final PayerService payerService;
-    private final SchemeService schemeService;
-    private final SequenceService seqService;
+    private final SchemeService schemeService; 
 
         
 
-    @javax.transaction.Transactional
+    @Transactional
     public WriteOff createWriteOff(WriteOffData writeOffData) {
         WriteOff writeOff = WriteOffData.map(writeOffData);
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(writeOffData.getPayerId());

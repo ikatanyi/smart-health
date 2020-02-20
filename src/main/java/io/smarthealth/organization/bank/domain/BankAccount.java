@@ -1,6 +1,6 @@
 package io.smarthealth.organization.bank.domain;
-
-import io.smarthealth.accounting.acc.domain.AccountEntity;
+ 
+import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.administration.banks.domain.BankBranch;
 import io.smarthealth.administration.banks.domain.Bank;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -22,7 +22,7 @@ public class BankAccount extends Auditable {
     
     @ManyToOne(optional = false)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_bank_account_ledger_account_id"))
-    private AccountEntity ledgerAccount;
+    private Account ledgerAccount;
 
 //    @Column(nullable = false, unique = true)
     @ManyToOne

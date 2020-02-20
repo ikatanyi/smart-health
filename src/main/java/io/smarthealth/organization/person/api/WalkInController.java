@@ -1,12 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.organization.person.api;
 
-import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.data.WalkInData;
@@ -42,18 +35,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/api")
 public class WalkInController {
-
+ 
     @Autowired
-    WalkingService walkInService;
-
-    @Autowired
-    SequenceService sequenceService;
+    private  WalkingService walkInService; 
+    
 
     @PostMapping("/walk-in")
     public ResponseEntity<?> createWalkingPatient(@Valid @RequestBody WalkInData WalkInData) {
 
         WalkIn w = WalkInData.convertToWalkingEntity(WalkInData);
-        w.setWalkingIdentitificationNo(sequenceService.nextNumber(SequenceType.WalkingNumber));
         WalkIn savedWalking = walkInService.createWalking(w);
         Pager<WalkInData> pagers = new Pager();
         pagers.setCode("0");

@@ -9,10 +9,9 @@ import io.smarthealth.appointment.data.AppointmentTypeData;
 import io.smarthealth.appointment.domain.AppointmentType;
 import io.smarthealth.appointment.domain.AppointmentTypeRepository;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
-import io.smarthealth.organization.facility.domain.Employee;
-import io.smarthealth.organization.facility.service.EmployeeService;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,30 +25,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AppointmentTypeService {
 
-   
-    AppointmentTypeRepository appointmentTypeRepository;
-    
-    EmployeeService employeeService;
+    private final AppointmentTypeRepository appointmentTypeRepository;
+    private final SequenceNumberService sequenceNumberService; 
     SequenceService sequenceService;
 
-    public AppointmentTypeService(AppointmentTypeRepository appointmentTypeRepository, EmployeeService employeeService, SequenceService sequenceService) {
+    public AppointmentTypeService(AppointmentTypeRepository appointmentTypeRepository, SequenceNumberService sequenceNumberService) {
         this.appointmentTypeRepository = appointmentTypeRepository;
-        this.employeeService = employeeService;
-        this.sequenceService =  sequenceService;
+        this.sequenceNumberService = sequenceNumberService;
     }
-        
 
-    
+
     @Transactional
     public AppointmentType createAppointmentType(AppointmentTypeData data) {
+        String apptNo = sequenceNumberService.next(1L, Sequences.Appointment.name());
+
         AppointmentType appointmentType = AppointmentTypeData.map(data);
-         
-        String appTypeNumber = data.getAppointmentTypeNumber()!=null?data.getAppointmentTypeNumber():sequenceService.nextNumber(SequenceType.AppointmentTypeNumber);
+
+        String appTypeNumber = data.getAppointmentTypeNumber() != null ? data.getAppointmentTypeNumber() : apptNo;
 //        appointmentType.setPractitioner(practitioner);
         appointmentType.setAppointmentTypeNumber(appTypeNumber);
         return appointmentTypeRepository.save(appointmentType);
     }
-    
+
     @Transactional
     public AppointmentType updateAppointmentType(Long id, AppointmentTypeData data) {
         this.fetchAppointmentTypeById(id);
@@ -64,7 +61,7 @@ public class AppointmentTypeService {
     public AppointmentType fetchAppointmentTypeWithNoFoundDetection(final Long appId) {
         return appointmentTypeRepository.findById(appId).orElseThrow(() -> APIException.notFound("Appointment type identified by " + appId + " not found ", appId));
     }
-    
+
     public Optional<AppointmentType> fetchAppointmentTypeById(final Long appId) {
         return appointmentTypeRepository.findById(appId);
     }
@@ -76,7 +73,7 @@ public class AppointmentTypeService {
             throw APIException.internalError("There was an error deleting appointment type identified by " + appId, e.getMessage());
         }
     }
-    
+
     public AppointmentTypeData toData(AppointmentType appointment) {
         AppointmentTypeData data = new AppointmentTypeData();//mapper.map(appointment, AppointmentData.class);        
         data.setId(appointment.getId());

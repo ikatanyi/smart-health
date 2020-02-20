@@ -28,6 +28,8 @@ import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.util.ArrayList;
@@ -65,6 +67,7 @@ public class RadiologyService {
     private final ItemService itemService;
     private final VisitService visitService;
     private final SequenceService seqService;
+    private final SequenceNumberService sequenceNumberService; 
 
 
     @Transactional
@@ -141,7 +144,7 @@ public class RadiologyService {
 
         }
         if (patientScanRegData.getAccessionNo() == null || patientScanRegData.getAccessionNo().equals("")) {
-            String accessionNo = seqService.nextNumber(SequenceType.ScanNumber);
+            String accessionNo = sequenceNumberService.next(1L, Sequences.RadiologyNumber.name()); 
             patientScanReg.setAccessNo(accessionNo);
         }
 

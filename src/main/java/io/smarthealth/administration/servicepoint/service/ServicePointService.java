@@ -1,7 +1,7 @@
 package io.smarthealth.administration.servicepoint.service;
 
-import io.smarthealth.accounting.acc.domain.AccountEntity;
-import io.smarthealth.accounting.acc.service.AccountService;
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
@@ -35,13 +35,13 @@ public class ServicePointService {
         point.setName(data.getName());
         point.setPointType(data.getPointType());
         point.setServicePointType(data.getServicePointType());
-        if (data.getExpenseAccount() != null && data.getExpenseAccount().getAccountNumber() != null) {
-            AccountEntity acc = accountService.findOneWithNotFoundDetection(data.getExpenseAccount().getAccountNumber());
+        if (data.getExpenseAccount() != null && data.getExpenseAccount().getAccountNumber() != null || !"".equals(data.getExpenseAccount().getAccountNumber())) {
+            Account acc = accountService.findByAccountNumberOrThrow(data.getExpenseAccount().getAccountNumber());
             point.setExpenseAccount(acc);
         }
 
         if (data.getIncomeAccount() != null && data.getIncomeAccount().getAccountNumber() != null) {
-            AccountEntity acc = accountService.findOneWithNotFoundDetection(data.getIncomeAccount().getAccountNumber());
+            Account acc = accountService.findByAccountNumberOrThrow(data.getIncomeAccount().getAccountNumber());
             point.setIncomeAccount(acc);
         }
 

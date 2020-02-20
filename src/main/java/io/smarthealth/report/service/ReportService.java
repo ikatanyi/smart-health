@@ -5,11 +5,8 @@
  */
 package io.smarthealth.report.service;
 
-import io.smarthealth.accounting.acc.data.v1.AccountEntry;
-import io.smarthealth.accounting.acc.data.v1.AccountEntryPage;
-import io.smarthealth.accounting.acc.data.v1.financial.statement.TrialBalance;
-import io.smarthealth.accounting.acc.service.AccountService;
-import io.smarthealth.accounting.acc.service.TrialBalancesServices;
+import io.smarthealth.accounting.accounts.data.financial.statement.TrialBalance;
+import io.smarthealth.accounting.accounts.service.TrialBalanceService;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
@@ -18,9 +15,7 @@ import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceLineItem;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
-import io.smarthealth.accounting.payment.service.PaymentService;
 import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
-import io.smarthealth.clinical.lab.service.LabResultsService;
 import io.smarthealth.clinical.lab.service.LabService;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
@@ -42,9 +37,7 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
-import io.smarthealth.organization.person.data.PersonData;
 import io.smarthealth.organization.person.patient.data.PatientData;
-import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.accounts.DailyBillingData;
@@ -79,11 +72,9 @@ import org.springframework.stereotype.Service;
 public class ReportService {
 
     private final JasperReportsService reportService;
-    private final TrialBalancesServices trialBalanceService;
-    private final BillingService billService;
-    private final PaymentService paymentService;
-    private final InvoiceService invoiceService;
-    private final AccountService accountService;
+    private final TrialBalanceService trialBalanceService;
+    private final BillingService billService; 
+    private final InvoiceService invoiceService; 
     private final VisitService visitService;
     private final PatientService patientService;
     private final RadiologyService radiologyService;
@@ -104,11 +95,11 @@ public class ReportService {
             TrialBalanceData data = new TrialBalanceData();
             data.setCreditTotal(trialBalance.getCreditTotal());
             data.setDebitTotal(trialBalance.getDebitTotal());
-            data.setCreatedBy(trialBalEntry.getLedger().getType());
+//            data.setCreatedBy(trialBalEntry.getLedger().getType());
             data.setCreatedOn(trialBalEntry.getLedger().getCreatedOn());
             data.setDescription(trialBalEntry.getLedger().getDescription());
-            data.setLastModifiedBy(trialBalEntry.getLedger().getLastModifiedBy());
-            data.setLastModifiedOn(trialBalEntry.getLedger().getLastModifiedOn());
+//            data.setLastModifiedBy(trialBalEntry.getLedger().getLastModifiedBy());
+//            data.setLastModifiedOn(trialBalEntry.getLedger().getLastModifiedOn());
             data.setName(trialBalEntry.getLedger().getIdentifier() + " - " + trialBalEntry.getLedger().getName());
             data.setParentLedgerIdentifier(trialBalEntry.getLedger().getParentLedgerIdentifier());
             data.setTotalValue(trialBalEntry.getLedger().getTotalValue());
@@ -331,15 +322,15 @@ public class ReportService {
         reportData.setFormat(format);
         reportService.generateReport(reportData, response);
     }
-     
-     public void getAccountEntries(final String identifier,
-            final DateRange range,
-            final String message,
-            final Pageable pageable){
-         List<AccountEntry> accountEntries = accountService.fetchAccountEntries(identifier, range, message, pageable).getAccountEntries();
-         
-     }
-     
+//     
+//     public void getAccountEntries(final String identifier,
+//            final DateRange range,
+//            final String message,
+//            final Pageable pageable){
+//         List<Account> accountEntries = accountService.fetchAccountEntries(identifier, range, message, pageable).getAccountEntries();
+//         
+//     }
+//     
      public void getPatientFile(final String PatientId, ExportFormat format, HttpServletResponse response) throws SQLException{
          List<PatientVisitData>visitData = new ArrayList();
          PatientVisitData patientVisitData = new PatientVisitData();

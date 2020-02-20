@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package io.github.jhipster.web.util;
+package io.smarthealth.infrastructure.common;
 
 import java.util.ArrayList;
 import java.util.List;
