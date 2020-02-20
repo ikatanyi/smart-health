@@ -3,7 +3,8 @@ package io.smarthealth.stock.inventory.service;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.sequence.service.TxnService;
-import io.smarthealth.sequence.UuidGenerator;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.data.AdjustmentData;
 import io.smarthealth.stock.inventory.data.StockAdjustmentData;
 import io.smarthealth.stock.inventory.domain.StockAdjustment;
@@ -34,11 +35,12 @@ public class InventoryAdjustmentService {
     private final StockAdjustmentRepository stockAdjustmentRepository;
     private final InventoryEventSender inventoryEventSender;
     private final TxnService txnService;
+    private final SequenceNumberService sequenceNumberService;
 
     // create Invariance
     @Transactional
     public String createStockAdjustment(AdjustmentData data) {
-        String trdId = txnService.nextId();
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
 
         if (!data.getAdjustments().isEmpty()) {
 

@@ -18,6 +18,7 @@ public enum Sequences {
     Prescription,
     RadiologyNumber,
     Procedure,
+    ShiftNumber,
     BillNumber;
 }
 

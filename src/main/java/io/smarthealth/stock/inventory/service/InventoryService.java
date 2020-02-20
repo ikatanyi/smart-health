@@ -2,7 +2,6 @@ package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.data.CreateStockEntry;
@@ -41,14 +40,14 @@ public class InventoryService {
     private final InventoryEventSender inventoryEventSender;
     private final PurchaseInvoiceService purchaseInvoiceService;
 //    private final TxnService txnService;
-    private final SequenceNumberGenerator sequenceGenerator;
+//    private final SequenceNumberGenerator sequenceGenerator;
     
     private final SequenceNumberService sequenceNumberService;
 
     @Transactional
     public String createStockEntry(CreateStockEntry stockData) {
 
-        String trdId = sequenceGenerator.generateTransactionNumber();
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name()); 
          Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
          
         if (!stockData.getItems().isEmpty()) {
