@@ -128,6 +128,23 @@ public class ReportController {
             HttpServletResponse response) throws SQLException {
         reportService.getPatientRequest(visitNumber, requestType, format, response);
         
-    }   
+    } 
+    @PostMapping("/report/clinical/prescription/{visitNumber}")
+    public void generatePrescription(
+            @PathVariable String visitNumber,
+            @RequestParam(value = "format", required = false) ExportFormat format,
+            HttpServletResponse response) throws SQLException {
+        reportService.getPrescription(visitNumber,format, response);
+        
+    } 
+    
+    @PostMapping("/report/clinical/sick-off-note/{visitNumber}")
+    public void generateSickOffNote(
+            @PathVariable String visitNumber,
+            @RequestParam(value = "format", required = false) ExportFormat format,
+            HttpServletResponse response) throws SQLException {
+        reportService.getSickOff(visitNumber,format, response);
+        
+    } 
 
 }

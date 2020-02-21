@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="insurance_statement" pageWidth="555" pageHeight="802" orientation="Landscape" columnWidth="515" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="240"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="from" class="java.util.Date"/>
 	<parameter name="to" class="java.util.Date"/>
 	<parameter name="HEADER_DIR" class="java.lang.String">
@@ -29,6 +29,13 @@
 	<parameter name="contactMobile" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="salutation" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="telephone" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Header_Data" class="java.util.List"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -81,46 +88,22 @@
 		</band>
 	</background>
 	<pageHeader>
-		<band height="114" splitType="Stretch">
-			<textField>
-				<reportElement x="1" y="81" width="309" height="13" uuid="3f5dac2f-569e-443a-8fe5-393d6141f371"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{telephone}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="68" width="310" height="13" uuid="26ecf24b-27aa-43ff-9eab-d313373196d1"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{orgAddressLine1}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="1" y="56" width="309" height="12" uuid="7a43192b-7457-4aa3-a526-8a2d18d2b252"/>
-				<textElement>
-					<font size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{contactEmail}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="1" y="38" width="309" height="18" uuid="c2ce6e22-2e52-4658-b51b-239e9649ab86"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{orgLegalName}]]></textFieldExpression>
-			</textField>
-			<image>
-				<reportElement x="3" y="2" width="210" height="36" uuid="033a181e-ba3a-4e10-82ca-4b4c071c0546"/>
-				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
-			</image>
+		<band height="74" splitType="Stretch">
 			<staticText>
-				<reportElement x="390" y="94" width="125" height="20" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
+				<reportElement x="390" y="53" width="125" height="20" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Daily Insurance Statement]]></text>
 			</staticText>
+			<subreport>
+				<reportElement x="1" y="0" width="514" height="30" isRemoveLineWhenBlank="true" uuid="d5663e66-4dfa-428f-81da-2c92b9ffa357"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</pageHeader>
 	<columnHeader>

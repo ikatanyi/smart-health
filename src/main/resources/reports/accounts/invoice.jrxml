@@ -4,7 +4,7 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\accounts\\"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["C:\\Users\\Kent\\Documents\\NetBeansProjects\\csrim\\src\\reports\\"]]></defaultValueExpression>
@@ -30,6 +30,7 @@
 	<parameter name="contactMobile" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="salutation" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="telephone" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Header_Data" class="java.util.List"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -141,153 +142,118 @@
 			</line>
 		</band>
 	</background>
-	<columnHeader>
-		<band height="206" splitType="Stretch">
+	<pageHeader>
+		<band height="50">
+			<subreport>
+				<reportElement x="0" y="0" width="434" height="50" isRemoveLineWhenBlank="true" uuid="78f24680-cb31-4708-88df-0e755a338bb6"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
 			<staticText>
-				<reportElement mode="Transparent" x="3" y="143" width="41" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
+				<reportElement x="442" y="0" width="113" height="32" forecolor="#000000" uuid="91b75921-363c-4c3f-a77e-daeb37ee9cc8"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="18" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<text><![CDATA[INVOICE]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="100" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Transparent" x="1" y="60" width="41" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Insurance :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="3" y="160" width="41" height="16" forecolor="#000000" backcolor="#9966FF" uuid="e480ec8a-e6de-414a-8827-42d638720712"/>
+				<reportElement mode="Transparent" x="1" y="77" width="41" height="16" forecolor="#000000" backcolor="#9966FF" uuid="e480ec8a-e6de-414a-8827-42d638720712"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Scheme :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="44" y="143" width="310" height="16" uuid="1eafd5cb-179e-4783-9fb9-933e46d441d7"/>
+				<reportElement x="41" y="60" width="310" height="16" uuid="1eafd5cb-179e-4783-9fb9-933e46d441d7"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{payer}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="44" y="160" width="310" height="16" uuid="35b60930-d90e-4906-8708-e0d617ece117"/>
+				<reportElement x="41" y="77" width="310" height="16" uuid="35b60930-d90e-4906-8708-e0d617ece117"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{payee}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="358" y="52" width="194" height="19" isRemoveLineWhenBlank="true" uuid="137701b9-10c9-4a7a-8c8e-a2fdf1a6014c">
-					<printWhenExpression><![CDATA[]]></printWhenExpression>
-				</reportElement>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{orgLegalName}]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="358" y="69" width="194" height="17" isRemoveLineWhenBlank="true" uuid="79e4950f-feb5-46a5-8a42-432686f2c267">
-					<printWhenExpression><![CDATA[]]></printWhenExpression>
-				</reportElement>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{orgAddressLine1}]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="358" y="87" width="194" height="18" isRemoveLineWhenBlank="true" uuid="b364c982-465a-4f80-94c1-325af8c18f78">
-					<printWhenExpression><![CDATA[]]></printWhenExpression>
-				</reportElement>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{telephone}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement x="2" y="0" width="113" height="32" forecolor="#000000" uuid="91b75921-363c-4c3f-a77e-daeb37ee9cc8"/>
+				<reportElement x="1" y="27" width="60" height="11" uuid="fe562e29-aad3-45dd-b0c4-fa8ba349ed98"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="18" isBold="true"/>
-				</textElement>
-				<text><![CDATA[INVOICE]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="393" y="122" width="159" height="20" uuid="08efbb7d-2b3c-4b7d-bfdf-69068db32774"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{TaxNumber}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="3" y="87" width="93" height="19" uuid="fe562e29-aad3-45dd-b0c4-fa8ba349ed98"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient Name :]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="358" y="105" width="194" height="17" isRemoveLineWhenBlank="true" uuid="a208491d-c7f0-47a1-b762-8c7438647332"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{contactEmail}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement x="3" y="69" width="93" height="18" uuid="dd747499-49e1-47a0-a0b4-e243aaeacf1d"/>
+				<reportElement x="1" y="15" width="60" height="11" uuid="dd747499-49e1-47a0-a0b4-e243aaeacf1d"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Invoice Date :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="3" y="106" width="93" height="19" uuid="3ca0e4ed-78c6-4055-b598-3535412fe202"/>
+				<reportElement x="1" y="39" width="60" height="11" uuid="3ca0e4ed-78c6-4055-b598-3535412fe202"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Member No :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" pattern="dd-MM-yyyy" isBlankWhenNull="true">
-				<reportElement x="96" y="69" width="213" height="18" isRemoveLineWhenBlank="true" uuid="6e8ee49e-9160-41cb-a7bb-1e225794004c"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="false"/>
+				<reportElement x="62" y="15" width="132" height="11" isRemoveLineWhenBlank="true" uuid="6e8ee49e-9160-41cb-a7bb-1e225794004c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="96" y="52" width="213" height="17" forecolor="#000000" uuid="66ddc2a0-8061-4fa8-8c7d-b5a0c6704846"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="false"/>
+				<reportElement x="62" y="3" width="132" height="11" forecolor="#000000" uuid="66ddc2a0-8061-4fa8-8c7d-b5a0c6704846"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{invoiceNo}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="358" y="122" width="35" height="20" uuid="6b8abd9e-d44f-4c31-aa17-5f9f5c975354"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true" isItalic="false"/>
-				</textElement>
-				<text><![CDATA[PIN No.]]></text>
-			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="96" y="87" width="213" height="19" uuid="6c43b589-8dbc-4cfd-8621-63c6e3c5eb39"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="false"/>
+				<reportElement x="62" y="27" width="132" height="11" uuid="6c43b589-8dbc-4cfd-8621-63c6e3c5eb39"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="96" y="106" width="213" height="19" uuid="357516ad-e8d0-4046-9359-0e36ab26475a"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="false"/>
+				<reportElement x="62" y="39" width="132" height="11" uuid="357516ad-e8d0-4046-9359-0e36ab26475a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientId}]]></textFieldExpression>
 			</textField>
-			<image isUsingCache="true">
-				<reportElement x="358" y="0" width="194" height="45" isRemoveLineWhenBlank="true" uuid="1131900f-bf7a-485b-ac37-a9d9aa877782">
-					<printWhenExpression><![CDATA[]]></printWhenExpression>
-				</reportElement>
-				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
-			</image>
 			<staticText>
-				<reportElement x="3" y="52" width="93" height="17" forecolor="#000000" uuid="f65afb30-85e4-4d6b-b5f7-c1786359a0fb"/>
+				<reportElement x="1" y="3" width="60" height="11" forecolor="#000000" uuid="f65afb30-85e4-4d6b-b5f7-c1786359a0fb"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Invoice No :]]></text>
 			</staticText>
+			<line>
+				<reportElement positionType="Float" x="3" y="0" width="552" height="1" uuid="b384c05c-cf32-45c7-b4b4-32132cee5059"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineColor="#333333"/>
+				</graphicElement>
+			</line>
 		</band>
 	</columnHeader>
 	<detail>

@@ -26,10 +26,14 @@ import io.smarthealth.clinical.radiology.service.RadiologyService;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
+import io.smarthealth.clinical.record.data.PrescriptionData;
+import io.smarthealth.clinical.record.data.SickOffNoteData;
 import io.smarthealth.clinical.record.domain.PatientNotes;
 import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.DoctorRequestService;
 import io.smarthealth.clinical.record.service.PatientNotesService;
+import io.smarthealth.clinical.record.service.PrescriptionService;
+import io.smarthealth.clinical.record.service.SickOffNoteService;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -48,6 +52,7 @@ import io.smarthealth.report.data.accounts.TrialBalanceData;
 import io.smarthealth.report.data.clinical.PatientVisitData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,6 +89,8 @@ public class ReportService {
     private final PatientNotesService patientNotesService;
     private final PharmacyService pharmacyService;
     private final DoctorRequestService doctorRequestService;
+    private final PrescriptionService prescriptionService;
+    private final SickOffNoteService sickOffNoteService;
     
 
     public void getTrialBalance(final boolean includeEmptyEntries, ExportFormat format, HttpServletResponse response) throws SQLException {
@@ -162,7 +169,7 @@ public class ReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.getFilters().put("SUBREPORT_DIR", "/accounts/");
+        
         reportData.setData(billData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/payment_statement");
@@ -380,6 +387,7 @@ public class ReportService {
                 pVisitData.setChiefComplaint(notes.getChiefComplaint());
                 pVisitData.setExaminationNotes(notes.getExaminationNotes());
                 pVisitData.setHistoryNotes(notes.getHistoryNotes());
+                pVisitData.setPractitionerName(notes.getHealthProvider().getFullName());
             }
             
              List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(visit, pageable)
@@ -389,9 +397,11 @@ public class ReportService {
              List<PatientDrugsData> pharmacyData = pharmacyService.getByVisitIdAndPatientId(visit.getVisitNumber(), PatientId);
              
              pVisitData.setVisitNumber(visit.getVisitNumber());
-             pVisitData.setLabTests(labTests);
+             pVisitData.setCreatedOn(String.valueOf(visit.getCreatedOn()));
+             pVisitData.setLabTests(labTests);             
              pVisitData.setProcedures(procedures);
              pVisitData.setRadiologyTests(scanData);
+             pVisitData.setDrugsData(pharmacyData);
              pVisitData.setDiagnosis(diagnosisData);
              pVisitData.setAge(patient.getAge());
              
@@ -400,13 +410,13 @@ public class ReportService {
          
         List<JRSortField> sortList = new ArrayList();
         ReportData reportData = new ReportData();
+        reportData.setPatientNumber(PatientId);
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("visitNumber");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.getFilters().put("SUBREPORT_DIR", "/patient");
         reportData.setData(visitData);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/patientFile");
@@ -461,6 +471,42 @@ public class ReportService {
         reportData.setReportName("Lab-report");
         reportService.generateReport(reportData, response);
     }
+     
+     public void getPrescription(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException {
+        ReportData reportData = new ReportData();
+        
+        Visit visit =visitService.findVisitEntityOrThrow(visitNumber);
+        Pageable pageable = PaginationUtil.createPage(1, 500);
+        List<PrescriptionData> requestData = prescriptionService.fetchAllPrescriptionsByVisit(visit, pageable)
+                                                      .getContent()
+                                                      .stream()
+                                                      .map((test)->PrescriptionData.map(test))
+                                                      .collect(Collectors.toList());
+
+        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        if(!requestData.isEmpty())
+            if(requestData.get(0).getEmployeeData()!=null)
+                reportData.setEmployeeId(requestData.get(0).getEmployeeData().getStaffNumber());
+        reportData.setData(requestData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/clinical/prescription");
+        reportData.setReportName("prescription");
+        reportService.generateReport(reportData, response);
+    }
+     
+    public void getSickOff(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException {
+        ReportData reportData = new ReportData();
+        
+        Visit visit =visitService.findVisitEntityOrThrow(visitNumber);
+        List<SickOffNoteData> requestData = Arrays.asList(SickOffNoteData.map(sickOffNoteService.fetchSickNoteByVisitWithNotFoundThrow(visit)));
+        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        reportData.setData(requestData);
+        reportData.setFormat(format);
+        reportData.getFilters().put("requestedBy", requestData.get(0).getCreatedBy());
+        reportData.setTemplate("/clinical/sick_off_note");
+        reportData.setReportName("sick-off-note");
+        reportService.generateReport(reportData, response);
+    } 
 
     private BillStatus statusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {

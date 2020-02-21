@@ -8,7 +8,9 @@ package io.smarthealth.clinical.record.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.record.domain.SickOffNote;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import lombok.Data;
 
 /**
@@ -30,6 +32,11 @@ public class SickOffNoteData {
     
     private String recommendation;
     private String reason;
+    @ApiModelProperty(required = false, hidden = true)
+    private Long duration;
+    @ApiModelProperty(required = false, hidden = true)
+    private String createdBy;
+    
     
     public static SickOffNoteData map(SickOffNote s) {
         SickOffNoteData data = new SickOffNoteData();
@@ -39,6 +46,9 @@ public class SickOffNoteData {
         data.setSickOffNumber(s.getSickOffNumber());
         data.setRecommendation(s.getRecommendation());
         data.setReason(s.getReason());
+        data.setDuration(ChronoUnit.DAYS.between(s.getEndDate(),s.getStartDate()));
+        data.setCreatedBy(s.getCreatedBy());
+        
         return data;
     }
     

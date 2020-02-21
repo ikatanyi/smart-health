@@ -26,6 +26,13 @@
 	<parameter name="contactMobile" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="salutation" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="telephone" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Header_Data" class="java.util.List"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -38,6 +45,11 @@
 	<field name="balance" class="java.lang.Double"/>
 	<field name="amount" class="java.lang.Double"/>
 	<field name="type" class="java.lang.String"/>
+	<field name="payer" class="java.lang.String"/>
+	<field name="payee" class="java.lang.String"/>
+	<field name="invoiceNo" class="java.lang.String"/>
+	<field name="patientName" class="java.lang.String"/>
+	<field name="date" class="java.lang.String"/>
 	<variable name="total" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
 		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>
@@ -76,42 +88,22 @@
 			</rectangle>
 		</band>
 	</background>
+	<title>
+		<band height="50">
+			<subreport>
+				<reportElement x="0" y="0" width="515" height="50" isRemoveLineWhenBlank="true" uuid="adf9c079-2ac8-4c21-bc2b-78ad1788d994"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
 	<pageHeader>
-		<band height="114" splitType="Stretch">
-			<textField>
-				<reportElement x="1" y="81" width="309" height="13" uuid="3f5dac2f-569e-443a-8fe5-393d6141f371"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{telephone}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="68" width="310" height="13" uuid="26ecf24b-27aa-43ff-9eab-d313373196d1"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{orgAddressLine1}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="1" y="56" width="309" height="12" uuid="7a43192b-7457-4aa3-a526-8a2d18d2b252"/>
-				<textElement>
-					<font size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{contactEmail}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="1" y="38" width="309" height="18" uuid="c2ce6e22-2e52-4658-b51b-239e9649ab86"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{orgLegalName}]]></textFieldExpression>
-			</textField>
-			<image>
-				<reportElement x="3" y="2" width="210" height="36" uuid="033a181e-ba3a-4e10-82ca-4b4c071c0546"/>
-				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
-			</image>
+		<band height="23" splitType="Stretch">
 			<staticText>
-				<reportElement x="390" y="94" width="125" height="20" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
+				<reportElement x="390" y="0" width="125" height="20" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>

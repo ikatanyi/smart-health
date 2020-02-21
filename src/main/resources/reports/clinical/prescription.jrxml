@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="request_form" pageWidth="420" pageHeight="595" columnWidth="380" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Key" uuid="9ef051fc-7a45-4737-84cd-a3c577095002">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="orgLegalName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="TaxNumber" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressCountry" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressCounty" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressLine1" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressLine2" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgPostalCode" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgTown" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgType" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactEmail" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactFullName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactMobile" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="salutation" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="telephone" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="HEADER_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PatientData" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Employee_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Patient_Data" class="java.util.List" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="itemName" class="java.lang.String"/>
+	<field name="quantity" class="java.lang.Double"/>
+	<field name="quantityUnits" class="java.lang.Double"/>
+	<field name="dosingInstructions" class="java.lang.String"/>
+	<field name="route" class="java.lang.String"/>
+	<field name="numRefills" class="java.lang.Integer"/>
+	<field name="prescriptionNo" class="java.lang.String"/>
+	<field name="doseUnits" class="java.lang.String"/>
+	<field name="dose" class="java.lang.Double"/>
+	<field name="urgency" class="java.lang.String"/>
+	<field name="notes" class="java.lang.String"/>
+	<field name="frequency" class="java.lang.Double"/>
+	<field name="duration" class="java.lang.Integer"/>
+	<field name="durationUnits" class="java.lang.Integer"/>
+	<variable name="duration" class="java.lang.String">
+		<variableExpression><![CDATA[$F{duration}.toString().concat(" ").concat(($F{durationUnits}==1?" Day(s)":$F{durationUnits}==7?" Week(s)":
+                 $F{durationUnits}==30?" Month(s)":""))
+]]></variableExpression>
+	</variable>
+	<variable name="amount" class="java.lang.String">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<group name="d_no">
+		<groupExpression><![CDATA[]]></groupExpression>
+		<groupFooter>
+			<band height="56">
+				<staticText>
+					<reportElement x="260" y="15" width="41" height="14" uuid="55ded749-3598-4032-b601-f823b9f25674"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Printed On :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="18" width="100" height="11" uuid="a828130b-d2e4-4223-9f7b-b722d11713ba"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Physician Signature]]></text>
+				</staticText>
+				<textField pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
+					<reportElement x="301" y="15" width="76" height="14" uuid="235e121a-e3bb-408e-a7b4-aa2b47957627"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="-1" y="41" width="381" height="13" uuid="e682a494-5a4c-4795-b1e2-9bc9316621b5"/>
+					<textElement textAlignment="Center">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Do not substitute. Dispense as prescribed]]></text>
+				</staticText>
+				<line>
+					<reportElement x="75" y="27" width="121" height="1" uuid="321348a3-011e-4025-a7a5-8437cd9309ee"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Dashed" lineColor="#666666"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band height="245" splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="45">
+			<subreport>
+				<reportElement x="0" y="0" width="290" height="44" isRemoveLineWhenBlank="true" uuid="adfc9a30-3824-4d61-94f1-3e899ffa0ccc"/>
+				<subreportParameter name="PIC_DIR"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement positionType="Float" x="318" y="0" width="59" height="13" uuid="5b4e4a1b-f2ab-4e8e-a3f8-feedecf66f08"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Prescription]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="1" y="44" width="379" height="1" uuid="e20e4fe8-69a4-4ff4-bd43-b92f9ed0dc6e"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineColor="#666666"/>
+				</graphicElement>
+			</line>
+			<image>
+				<reportElement positionType="Float" x="318" y="13" width="64" height="28" uuid="f2cc8d71-3ef5-46bf-bdd9-d98861714846"/>
+				<imageExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\art-rx.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="50">
+			<subreport>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="379" height="49" isRemoveLineWhenBlank="true" uuid="5a3d7add-cd31-463f-8ede-5b40a21393c7"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement positionType="Float" x="-1" y="49" width="383" height="1" uuid="c7ed67e7-b231-4316-b7a0-4d26d13c7758"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineColor="#666666"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="5" width="85" height="15" forecolor="#000000" uuid="0049eb58-ff0e-479c-add6-18dfd4165ed0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Medication]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="301" y="5" width="78" height="15" forecolor="#000000" uuid="00bd2919-53f6-49f1-8679-45d9c56a166f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Duration]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="0" y="20" width="380" height="1" uuid="38a91fa0-e8a9-4bc5-b7be-6675ece0ffec"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineColor="#666666"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="85" y="6" width="80" height="15" uuid="38d44647-d466-4a52-a4bf-0a321b4d368e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Route]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="165" y="6" width="136" height="14" uuid="6f5c2855-1416-48af-87b2-f36a1be9bbdb"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Frequency]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="10" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="85" height="9" uuid="3dcd6e53-0e7d-4d13-9c1d-a8f6aabdcda1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="301" y="0" width="79" height="9" uuid="5b45f281-3039-49d6-a8a0-d8ee70e88675"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{duration}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="2" y="9" width="380" height="1" uuid="b73efa33-1508-49f4-bdb7-325472d01891"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Dotted" lineColor="#9999FF"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="85" y="0" width="80" height="9" uuid="ffc5e769-72b9-4196-9dc0-e09df4dd93c4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{route}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="165" y="0" width="136" height="9" uuid="69773cae-cd6a-40c0-876b-eef49682deba"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{frequency}==1)?"Take "+$F{dose}+" "+$F{doseUnits}+" every 1 Hour":""]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="50"/>
+	</columnFooter>
+</jasperReport>
