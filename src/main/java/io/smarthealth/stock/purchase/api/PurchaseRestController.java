@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Api
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class PurchaseRestController {
 
     private final PurchaseService service;

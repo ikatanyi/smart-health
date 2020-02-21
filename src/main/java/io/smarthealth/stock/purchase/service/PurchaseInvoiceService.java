@@ -111,10 +111,11 @@ public class PurchaseInvoiceService {
         String creditAcc = invoice.getSupplier().getCreditAccount().getIdentifier();
         String debitAcc = store.getInventoryAccount().getIdentifier();
         BigDecimal amount = invoice.getNetAmount();
+        String narration ="Stocks delivery for the invoice "+invoice.getInvoiceNumber();
         JournalEntry toSave = new JournalEntry(invoice.getInvoiceDate(), "Purchase Invoice - " + invoice.getInvoiceNumber(),
                 new JournalEntryItem[]{
-                    new JournalEntryItem(debitAcc, JournalEntryItem.Type.DEBIT, amount),
-                    new JournalEntryItem(creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                    new JournalEntryItem(narration,debitAcc, JournalEntryItem.Type.DEBIT, amount),
+                    new JournalEntryItem(narration,creditAcc, JournalEntryItem.Type.CREDIT, amount)
                 }
         );
         toSave.setTransactionNo(invoice.getTransactionNumber());

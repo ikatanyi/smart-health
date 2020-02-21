@@ -69,7 +69,7 @@ public class PaymentService {
 
     @Transactional
     public FinancialTransactionData createTransaction(CreateTransactionData transactionData) {
-        
+
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String receipt = sequenceNumberService.next(1L, Sequences.Receipt.name());
 
@@ -81,7 +81,7 @@ public class PaymentService {
         transaction.setShiftNo("0000");
         transaction.setTransactionId(trdId);
         transaction.setInvoice(transactionData.getBillNumber());
-        
+
         if (!transactionData.getPayment().isEmpty()) {
             List<Payment> paylist = transactionData.getPayment()
                     .stream()
@@ -201,11 +201,12 @@ public class PaymentService {
             map.forEach((k, v) -> {
                 //revenue
                 ServicePoint srv = servicePointService.getServicePoint(k);
+                String narration = "Receipting for " + srv.getName();
                 Account credit = srv.getIncomeAccount();
                 BigDecimal amount = BigDecimal.valueOf(v);
 
-                items.add(new JournalEntryItem(debitAcc, JournalEntryItem.Type.DEBIT, amount));
-                items.add(new JournalEntryItem(credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
+                items.add(new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount));
+                items.add(new JournalEntryItem(narration, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
 
             });
             //expenses
@@ -220,11 +221,12 @@ public class PaymentService {
                 inventory.forEach((k, v) -> {
                     //revenue
                     ServicePoint srv = servicePointService.getServicePoint(k);
+                    String narration = "Expensing Inventory for " + srv.getName();
                     Account debit = srv.getExpenseAccount();//store.getInventoryAccount();// srv.getExpenseAccount();// cost of sales
                     Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
                     BigDecimal amount = BigDecimal.valueOf(v);
-                    items.add(new JournalEntryItem(debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
-                    items.add(new JournalEntryItem(credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
+                    items.add(new JournalEntryItem(narration, debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
+                    items.add(new JournalEntryItem(narration, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
                 });
             }
         }

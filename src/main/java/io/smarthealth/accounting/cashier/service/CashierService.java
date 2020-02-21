@@ -59,6 +59,13 @@ public class CashierService {
     public Page<Cashier> fetchAllCashiers(Pageable page) {
         return repository.findAll(page);
     }
+    
+    public Page<Shift> fetchAllShifts(ShiftStatus status,Pageable page) {
+        if(status!=null){
+            return shiftRepository.findByStatus(status,page);
+        }
+        return shiftRepository.findAll(page);
+    }
 
     public Cashier getCashier(Long id) {
         return repository.findById(id)
@@ -66,7 +73,11 @@ public class CashierService {
     }
 
     public Shift startShift(Cashier cashier) {
-
+          //check if this guy has a running shift
+          Optional<Shift> currentShift=shiftRepository.findByStatusAndCashier(ShiftStatus.Running, cashier);
+          if(currentShift.isPresent()){
+              throw APIException.badRequest("There's already Running Shift for the Cashier. Shift Number: "+currentShift.get().getShiftNo());
+          }
         String shiftNo = sequenceNumberService.next(1L, Sequences.ShiftNumber.name());
         Shift shift = new Shift(cashier, shiftNo);
         return shiftRepository.save(shift);
@@ -91,6 +102,11 @@ public class CashierService {
         shift.setStatus(ShiftStatus.Closed);
         return shiftRepository.save(shift);
     }
+    public Shift closeShift(String shiftNo) {
+        Shift shift =  findByShiftNo(shiftNo);
+        shift.setStatus(ShiftStatus.Closed);
+        return shiftRepository.save(shift);
+    }
 
     public Cashier updateCashier(Long id, Cashier data) {
         Cashier cashDrawer = getCashier(id);
@@ -98,5 +114,14 @@ public class CashierService {
             cashDrawer.setCashPoint(data.getCashPoint());
         }
         return repository.save(cashDrawer);
+    }
+    public Shift findByCashierAndShiftNo(Cashier cashier, String shiftNo){
+        return shiftRepository.findByCashierAndShiftNo(cashier, shiftNo)
+                .orElseThrow(()-> APIException.notFound("Shift Number {0} Not Found", shiftNo));
+    }
+    
+     public Shift findByShiftNo(String shiftNo){
+        return shiftRepository.findByShiftNo(shiftNo)
+                .orElseThrow(()-> APIException.notFound("Shift Number {0} Not Found", shiftNo));
     }
 }

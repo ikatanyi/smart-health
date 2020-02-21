@@ -169,12 +169,12 @@ public class InvoiceService {
         return invoiceRepository.findByNumber(invoiceNo);
     }
 
-    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice,  String status, String patientNo,DateRange range,Pageable pageable) {
+    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, String status, String patientNo, DateRange range, Pageable pageable) {
         InvoiceStatus state = null;
         if (state != null) {
             state = InvoiceStatus.valueOf(status);
         }
-        Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, state,patientNo,range);
+        Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, state, patientNo, range);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
         return invoices;
     }
@@ -262,11 +262,11 @@ public class InvoiceService {
         String creditAcc = creditAccount.getAccount().getIdentifier();
         String debitAcc = debitAccount.getIdentifier();
         BigDecimal amount = BigDecimal.valueOf(invoice.getTotal());
-
-        JournalEntry toSave = new JournalEntry(invoice.getDate(), "Raise Invoice - " + invoice.getNumber(),
+        String narration = "Raise Invoice - " + invoice.getNumber();
+        JournalEntry toSave = new JournalEntry(invoice.getDate(), narration,
                 new JournalEntryItem[]{
-                    new JournalEntryItem(debitAcc, JournalEntryItem.Type.DEBIT, amount),
-                    new JournalEntryItem(creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
+                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
                 }
         );
         toSave.setTransactionNo(invoice.getTransactionNo());

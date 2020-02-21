@@ -1,7 +1,5 @@
 package io.smarthealth.debtor.claim.creditNote.api;
 
-import io.smarthealth.debtor.claim.allocation.data.AllocationData;
-import io.smarthealth.debtor.claim.allocation.service.AllocationService;
 import io.smarthealth.debtor.claim.creditNote.data.CreditNoteData;
 import io.smarthealth.debtor.claim.creditNote.service.CreditNoteService;
 import io.smarthealth.infrastructure.common.PaginationUtil;

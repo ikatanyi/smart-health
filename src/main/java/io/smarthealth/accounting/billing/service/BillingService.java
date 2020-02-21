@@ -240,11 +240,13 @@ public class BillingService {
                     );
             //then here since we making a revenue
             map.forEach((k, v) -> {
+               
                 ServicePoint srv = servicePointService.getServicePoint(k);
+                String desc=srv.getName()+" Patient Billing";
                 Account credit = srv.getIncomeAccount();
                 BigDecimal amount = BigDecimal.valueOf(v);
-                items.add(new JournalEntryItem(debitAcc, JournalEntryItem.Type.DEBIT, amount));
-                items.add(new JournalEntryItem(credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
+                items.add(new JournalEntryItem(desc,debitAcc, JournalEntryItem.Type.DEBIT, amount));
+                items.add(new JournalEntryItem(desc,credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
             });
             //if inventory expenses this shit!
             if (store != null) {
@@ -258,12 +260,13 @@ public class BillingService {
                 if (!inventory.isEmpty()) {
                     inventory.forEach((k, v) -> {
                         //revenue
+                        String desc= "Issuing Stocks";
                         ServicePoint srv = servicePointService.getServicePoint(k);
                         Account debit = srv.getExpenseAccount(); // cost of sales
                         Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
                         BigDecimal amount = BigDecimal.valueOf(v);
-                        items.add(new JournalEntryItem(debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
-                        items.add(new JournalEntryItem(credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
+                        items.add(new JournalEntryItem(desc,debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
+                        items.add(new JournalEntryItem(desc,credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
                     });
                 }
 

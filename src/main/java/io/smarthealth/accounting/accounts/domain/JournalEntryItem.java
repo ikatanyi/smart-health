@@ -27,6 +27,8 @@ public class JournalEntryItem extends Auditable {
     public static enum Type {
         DEBIT, CREDIT
     }
+    private String description;
+
     private String accountNumber;
     @Enumerated(EnumType.STRING)
     private Type type;
@@ -35,10 +37,11 @@ public class JournalEntryItem extends Auditable {
     protected JournalEntryItem() {
     }
 
-    public JournalEntryItem(String accountNumber, Type type, BigDecimal amount) {
+    public JournalEntryItem(String description, String accountNumber, Type type, BigDecimal amount) {
         Validate.notNull(accountNumber, "Account Number is required");
         Validate.notNull(type, "Journal Entry Type is required");
         Validate.notNull(amount, "Amount is required");
+        this.description = description;
         this.accountNumber = accountNumber;
         this.type = type;
         this.amount = amount;
