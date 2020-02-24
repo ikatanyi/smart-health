@@ -166,7 +166,8 @@ public class JasperReportsService  {
             // Get your data source
             JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(dataList,false);
             // Add parameters
-            param.putAll(param);
+//            param.putAll(param);
+            param.putAll(reportData.getFilters());
             // Fill the report
             if(dataList.isEmpty())
                 jasperPrint = JasperFillManager.fillReport(jasperReport, param, conn);
@@ -261,6 +262,8 @@ public class JasperReportsService  {
         Header headerData = Header.map(facility);
         header.add(headerData);
         jasperParameter.put("Header_Data", header);
+        jasperParameter.put("SUBREPORT_DIR", appProperties.getReportLoc()+"/subreports/");
+        jasperParameter.put("PIC_DIR", appProperties.getReportLoc()+"/");
         
         jasperParameter.put("facilityName", facility.getFacilityName());
         jasperParameter.put("facilityType", facility.getFacilityType());

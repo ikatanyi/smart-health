@@ -6,6 +6,7 @@ import io.smarthealth.clinical.lab.domain.PatientLabTest;
 import io.smarthealth.clinical.lab.domain.enumeration.LabTestState;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EnumType;
@@ -91,7 +92,7 @@ public class PatientLabTestData {
             p.setTestName(labTest.getTestType().getTestType());
             p.setQuantity(labTest.getQuantity());
             p.setTestPrice(labTest.getTestPrice());
-            p.setCreatedOn(LocalDate.from(labTest.getCreatedOn()));
+            p.setCreatedOn(LocalDate.from(labTest.getCreatedOn().atZone(ZoneId.of("UTC"))));
             p.setCreatedBy(labTest.getCreatedBy());
             if(labTest.getTestType()!=null)
                p.setWithRef(labTest.getTestType().getWithRef());

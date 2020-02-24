@@ -24,6 +24,13 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\accounts\\"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="Header_Data" class="java.util.List"/>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+	</parameter>
 	<field name="type" class="java.lang.String"/>
 	<field name="description" class="java.lang.String"/>
 	<field name="name" class="java.lang.String"/>
@@ -45,45 +52,15 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="98" splitType="Stretch">
-			<frame>
-				<reportElement x="0" y="32" width="236" height="48" uuid="47285da4-b19e-41d6-929c-1fa40d62d612"/>
-				<textField isBlankWhenNull="true">
-					<reportElement x="0" y="0" width="224" height="12" uuid="6a164f68-6217-46bc-8eb0-399721510aba"/>
-					<textElement>
-						<font size="7" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$P{facilityName}]]></textFieldExpression>
-				</textField>
-				<textField isBlankWhenNull="true">
-					<reportElement x="16" y="12" width="161" height="10" uuid="c166b987-bf2b-45a9-bebd-07a3ce2e03e5"/>
-					<textElement>
-						<font size="7" isBold="false"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$P{telephone}]]></textFieldExpression>
-				</textField>
-				<textField isBlankWhenNull="true">
-					<reportElement x="0" y="22" width="177" height="11" uuid="ae694a2f-7a5b-44cd-9e2c-a32c3d6cd1d9"/>
-					<textElement>
-						<font size="7" isBold="false"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$P{contactEmail}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="0" y="33" width="177" height="10" uuid="c1b959ea-c559-4ce9-8533-e667d90b14fe"/>
-					<textElement>
-						<font size="7" isBold="false"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$P{orgAddressCountry}]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement x="0" y="12" width="16" height="10" uuid="9f837aa5-95f2-470b-a8db-632e4ef4d677"/>
-					<textElement>
-						<font size="7" isBold="true"/>
-					</textElement>
-					<text><![CDATA[Tel:]]></text>
-				</staticText>
-			</frame>
+		<band height="32" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="30" isRemoveLineWhenBlank="true" uuid="e5cc4fb5-82b1-4127-8e31-84e95854f84f"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</title>
 	<pageHeader>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sick_off_note" pageWidth="420" pageHeight="595" whenNoDataType="AllSectionsNoDetail" columnWidth="380" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Key" uuid="68296f96-ca94-47a9-b01b-b335bed808e6">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kennedy.ikatanyi\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PIC_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\Users\\kennedy.ikatanyi\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Patient_Data" class="java.util.List"/>
+	<parameter name="Header_Data" class="java.util.List"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="requestedBy" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="reason" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="startDate" class="java.lang.Object"/>
+	<field name="recommendation" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="endDate" class="java.lang.Object"/>
+	<field name="reviewDate" class="java.lang.Object">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="sickOffNumber" class="java.lang.String"/>
+	<field name="duration" class="java.lang.Long"/>
+	<variable name="noDays" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="35" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="211" height="34" uuid="8badccb3-6b16-40a3-94f1-5bc66f2a8eba"/>
+				<subreportParameter name="PIC_DIR"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement positionType="Float" x="0" y="34" width="379" height="1" uuid="ef40ff2f-d4c9-457d-a218-8df82e0290c5"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineColor="#000000"/>
+				</graphicElement>
+			</line>
+			<subreport>
+				<reportElement x="251" y="0" width="129" height="34" uuid="1915c257-be86-4506-882c-0ecb5e1a2f18"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="14">
+			<staticText>
+				<reportElement x="1" y="0" width="103" height="14" uuid="ff875595-9667-43bd-accc-22f2310b62fa"/>
+				<textElement verticalAlignment="Bottom">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sick-Off-Note]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<summary>
+		<band height="196">
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="74" y="136" width="102" height="19" uuid="c2396187-5e74-46a2-b92a-e16ad7b1e5ca"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{requestedBy}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="30" width="379" height="22" uuid="5d51b7eb-19c5-46ad-aa51-e748e69ef079"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[recuperate with effect from.........................................................To.............................................]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="52" width="377" height="22" uuid="8c838f11-604f-456f-9bf4-018f32903c04"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[He/she is due for review on ....................................................................................]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="1" y="136" width="377" height="21" uuid="b0b0d5d1-c9b0-437b-ba88-7556397ab170"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Doctors's name....................................    Signature : ..............................................]]></text>
+			</staticText>
+			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
+				<reportElement x="166" y="53" width="163" height="20" uuid="ae6b39d9-a2d5-450b-8081-014aad692561"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reviewDate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
+				<reportElement x="118" y="30" width="120" height="20" uuid="33c40fea-6048-4912-948c-d287cf9f800f"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{startDate}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="176" y="3" width="91" height="20" uuid="66683e12-e24d-4aec-a1cd-f453fd7dd0e1"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{duration}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement positionType="Float" x="1" y="195" width="379" height="1" uuid="aa0040ae-e1a8-4809-99ce-f5a7f94058bf"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineColor="#000000"/>
+				</graphicElement>
+			</line>
+			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
+				<reportElement x="279" y="30" width="80" height="20" uuid="9196951b-0052-4c39-8a80-a589794cd39a"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{endDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="1" width="380" height="26" uuid="f8c7c31a-e7be-49dc-95f4-35a668227325"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[The above named patient has been allowed...................................... days/weeks off duty to]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="75" width="63" height="13" uuid="ae52f517-66e3-4ed0-bd9a-7cbf5eab8580"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reason :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1" y="88" width="377" height="12" isRemoveLineWhenBlank="true" uuid="ac097733-a8a3-4279-bc85-7e1672c6f015"/>
+				<textFieldExpression><![CDATA[$F{reason}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="1" y="105" width="92" height="13" uuid="95da2916-df3d-4c72-ba8c-10f6bee795dc"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Recommendations:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="1" y="119" width="377" height="13" isRemoveLineWhenBlank="true" uuid="1d29bfb8-0007-4bcb-93e7-ced6e288c9da"/>
+				<textFieldExpression><![CDATA[$F{recommendation}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

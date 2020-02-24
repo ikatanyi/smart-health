@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientFile_lab_tests_tests" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="fffaea99-4bbd-48c5-aa59-9de992215a93">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\patient\\"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
 	<field name="testName" class="java.lang.String"/>
 	<field name="withRef" class="java.lang.Integer"/>
-	<field name="status" class="java.lang.String"/>
+	<field name="status" class="java.lang.Object"/>
 	<field name="resultsData" class="java.util.Collection"/>
 	<columnHeader>
 		<band height="42" splitType="Stretch">
 			<textField>
 				<reportElement x="57" y="25" width="166" height="13" uuid="acfa8963-e46a-43a6-9ca4-ac0f9990dad3"/>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{testName}]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -33,15 +35,18 @@
 			</staticText>
 			<textField>
 				<reportElement x="42" y="10" width="115" height="15" uuid="53b91980-19ce-4b02-857f-27545e1552cc"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="37" splitType="Stretch">
+		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement x="0" y="0" width="555" height="37" uuid="4b6ac294-ad6a-4c48-a1ce-c38029314ed9"/>
-				<dataSourceExpression><![CDATA[$F{resultsData}]]></dataSourceExpression>
+				<reportElement x="0" y="0" width="555" height="12" uuid="4b6ac294-ad6a-4c48-a1ce-c38029314ed9"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{resultsData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_lab_tests_tests_profiles.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
