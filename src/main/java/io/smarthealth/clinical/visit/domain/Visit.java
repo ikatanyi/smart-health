@@ -57,4 +57,7 @@ public class Visit extends Auditable {
     @Enumerated(EnumType.STRING)
     private VisitEnum.PaymentMethod paymentMethod;
 
+    @Enumerated(EnumType.STRING)
+    private VisitEnum.ServiceType serviceType;
+
 }

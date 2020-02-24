@@ -28,6 +28,8 @@ public class JournalEntryItem extends Auditable {
         DEBIT, CREDIT
     }
     private String description;
+    
+    //TODO:: I thought we needed transaction type here :) 
 
     private String accountNumber;
     @Enumerated(EnumType.STRING)

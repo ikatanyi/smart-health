@@ -44,6 +44,7 @@ public class AllocationData {
         data.setRemittanceNo(allocation.getRemittanceNo());
         data.setTransactionId(allocation.getTransactionId());
         data.setRemitanceId(allocation.getId());
+        data.setBalance(allocation.getBalance());
         return data;
     }
 

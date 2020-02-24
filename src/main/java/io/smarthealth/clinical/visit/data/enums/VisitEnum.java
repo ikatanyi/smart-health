@@ -30,4 +30,10 @@ public class VisitEnum {
         Insurance
     }
 
+    public enum ServiceType {
+        Consultation,
+        Review,
+        Other
+    }
+
 }
