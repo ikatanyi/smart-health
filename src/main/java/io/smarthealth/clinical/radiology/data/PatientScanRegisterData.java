@@ -46,6 +46,7 @@ public class PatientScanRegisterData {
     @ApiModelProperty(hidden = true, required = false)
     private String physicianName;
     private LocalDate receivedDate;
+    private LocalDate createdOn;
 
     private String servicePoint;
 
