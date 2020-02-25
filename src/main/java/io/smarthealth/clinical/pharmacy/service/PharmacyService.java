@@ -68,8 +68,7 @@ public class PharmacyService {
                 if (!Objects.equals(saveddrug.getDurationUnits(), saveddrug.getIssuedQuantity())) {
                     System.out.println("saveddrug.getDurationUnits()  "+saveddrug.getDurationUnits() );
                     System.out.println("saveddrug.getIssuedQuantity()  "+saveddrug.getIssuedQuantity());
-                    presc.setDurationUnits(saveddrug.getDurationUnits() - saveddrug.getIssuedQuantity());
-                    presc.setIssuedQuantity(presc.getIssuedQuantity() + saveddrug.getIssuedQuantity());
+//                    presc.setIssuedQuantity(presc.getIssuedQuantity() + saveddrug.getIssuedQuantity());
                     presc.setFulfillerStatus(FullFillerStatusType.PartiallyFullfilled.name());
                 } else {
                     presc.setFulfillerStatus(FullFillerStatusType.Fulfilled.name());

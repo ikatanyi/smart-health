@@ -17,6 +17,7 @@
 			<staticText>
 				<reportElement x="0" y="0" width="79" height="20" uuid="2eb469f3-04c8-4246-a018-512e8814c874"/>
 				<textElement verticalAlignment="Middle">
+					<font size="8"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Analyte]]></text>
@@ -24,6 +25,7 @@
 			<staticText>
 				<reportElement x="79" y="0" width="79" height="20" uuid="a43b3821-fb79-45ac-bc23-42a6bb135012"/>
 				<textElement verticalAlignment="Middle">
+					<font size="8"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Units]]></text>
@@ -31,6 +33,7 @@
 			<staticText>
 				<reportElement x="158" y="0" width="79" height="20" uuid="72a36f91-5c77-403c-bddb-e0f7343dc68e"/>
 				<textElement verticalAlignment="Middle">
+					<font size="8"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[L.Limit]]></text>
@@ -38,6 +41,7 @@
 			<staticText>
 				<reportElement x="237" y="0" width="79" height="20" uuid="b14ee31b-41ee-4f70-8fcd-2582bea06737"/>
 				<textElement verticalAlignment="Middle">
+					<font size="8"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[U.Limit]]></text>
@@ -45,6 +49,7 @@
 			<staticText>
 				<reportElement x="316" y="0" width="79" height="20" uuid="37b922cf-ab32-425c-ad69-0b05b0e57a7c"/>
 				<textElement verticalAlignment="Middle">
+					<font size="8"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Result]]></text>
@@ -52,6 +57,7 @@
 			<staticText>
 				<reportElement x="395" y="0" width="79" height="20" uuid="de473a79-64d0-410b-b2c4-d4e700310383"/>
 				<textElement verticalAlignment="Middle">
+					<font size="8"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Status]]></text>
@@ -59,6 +65,7 @@
 			<staticText>
 				<reportElement x="474" y="0" width="79" height="20" uuid="19f3f296-1654-4275-8496-a0c7a3a2addb"/>
 				<textElement verticalAlignment="Middle">
+					<font size="8"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Comments]]></text>

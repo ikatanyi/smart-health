@@ -18,7 +18,7 @@ public class Prescription extends DoctorRequest {
     private Double dose;
     private String doseUnits; //TODO:: create an entity for dose unit
     private Integer duration;
-    private Double durationUnits;
+    private Integer durationUnits;
     private Double frequency;
     private Double quantity;
     private String quantityUnits; //TODO:: create an entity for quantity unit
