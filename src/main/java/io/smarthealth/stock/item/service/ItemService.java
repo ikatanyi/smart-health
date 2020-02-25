@@ -3,6 +3,8 @@ package io.smarthealth.stock.item.service;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.accounting.taxes.domain.TaxRepository;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.sequence.UuidGenerator;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.domain.StockEntryRepository;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -56,16 +59,20 @@ public class ItemService {
     private final ReorderRuleRepository reorderRuleRepository;
     private final StockEntryRepository stockEntryRepository;
     private final InventoryEventSender inventoryEventSender;
+    private final SequenceNumberService sequenceNumberService;
 
     @Transactional
     @CachePut
     public ItemDatas createItem(CreateItem createItem) {
+
+        String sku = StringUtils.isBlank(createItem.getSku()) ?  sequenceNumberService.next(1L, Sequences.StockItem.name()) : createItem.getSku().trim();
+
         Item item = new Item();
         item.setActive(Boolean.TRUE);
         item.setCategory(createItem.getStockCategory());
         item.setCostRate(createItem.getPurchaseRate());
         item.setDescription(createItem.getDescription());
-        item.setItemCode(createItem.getSku());
+        item.setItemCode(sku);
         item.setItemName(createItem.getItemName());
         item.setItemType(createItem.getItemType());
         item.setRate(createItem.getRate());
@@ -91,7 +98,6 @@ public class ItemService {
         }
 
         Item savedItem = itemRepository.save(item);
-        
 
         if (createItem.getItemType().equals("Inventory") && createItem.getInventoryStore() != null) {
             Store store = storeService.getStore(createItem.getInventoryStore())

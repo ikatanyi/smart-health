@@ -40,7 +40,7 @@ public class Requisition extends Auditable {
     //we need a status for this
     private String terms;
 
-    @OneToMany(mappedBy = "requistion")
+    @OneToMany(mappedBy = "requistion", cascade = CascadeType.ALL)
     private List<RequisitionItem> requistionLines = new ArrayList<>();
     
     public void addRequsitionItem(RequisitionItem item) {

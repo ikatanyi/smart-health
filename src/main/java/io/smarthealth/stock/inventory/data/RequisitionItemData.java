@@ -26,6 +26,7 @@ public class RequisitionItemData {
             data.setItemCode(item.getItem().getItemCode());
             data.setItem(item.getItem().getItemName());
         }
+        data.setPrice(item.getPrice());
         data.setQuantity(item.getQuantity());
         data.setReceivedQuantity(item.getReceivedQuantity());
 

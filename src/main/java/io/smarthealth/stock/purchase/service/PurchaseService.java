@@ -74,6 +74,8 @@ public class PurchaseService {
         }
         order.setRequiredDate(data.getRequiredDate());
         order.setStatus(PurchaseOrderStatus.Draft);
+        order.setReceived(Boolean.FALSE);
+        order.setBilled(Boolean.FALSE);
         if (data.getStoreId() != null) {
             Store store = storeService.getStore(data.getStoreId()).get();
             order.setStore(store);
