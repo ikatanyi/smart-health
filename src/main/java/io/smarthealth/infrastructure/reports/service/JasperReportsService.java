@@ -56,7 +56,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JasperReportsService  {
+public class JasperReportsService {
 
     @Autowired
     private final StorageService storageService;
@@ -69,7 +69,7 @@ public class JasperReportsService  {
 
     @Autowired
     private ApplicationProperties appProperties;
-    
+
     private final PatientService patientService;
     private final EmployeeService employeeService;
 
@@ -77,17 +77,14 @@ public class JasperReportsService  {
     @Qualifier("jdbcTemplate")
     private JdbcTemplate jdbcTemplate;
 
-    
     public byte[] generatePDFReport(String inputFileName, Map<String, Object> params) {
         return generatePDFReport(ExportFormat.PDF, inputFileName, params, new JREmptyDataSource());
     }
 
-    
     public byte[] generatePDFReport(ExportFormat format, String inputFileName, Map<String, Object> params) {
         return generatePDFReport(format, inputFileName, params, new JREmptyDataSource());
     }
 
-    
     public byte[] generatePDFReport(ExportFormat format, String inputFileName, Map<String, Object> params,
             JRDataSource dataSource) {
         byte[] bytes = null;
@@ -139,46 +136,43 @@ public class JasperReportsService  {
         return bytes;
     }
 
-    public void generateReport(ReportData reportData, HttpServletResponse response) throws SQLException {
+    public void generateReport(ReportData reportData, HttpServletResponse response) throws SQLException, JRException, IOException {
         Connection conn = jdbcTemplate.getDataSource().getConnection();
         JasperPrint jasperPrint = null;
-        try {
-            ExportFormat format = reportData.getFormat();
-            if (format == null) {
-                format = ExportFormat.PDF;
-            }
-            List dataList = reportData.getData();
-            String template = reportData.getTemplate();
-            String patientNumber = reportData.getPatientNumber();
-            String employeeId = reportData.getEmployeeId();
-            String reportName = reportData.getReportName();
-            JasperReport jasperReport = null;
-            HashMap param = reportConfig(patientNumber,employeeId);
-            InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() +template +".jasper").getInputStream();
-            // Check if a compiled report exists
-            if (reportInputStream != null) {
-                jasperReport = (JasperReport) JRLoader.loadObject(reportInputStream);
-            } // Compile report from source and save
-            else {
-                String jrxml = storageService.loadJrxmlFile(template + ".jrxml");
-                jasperReport = JasperCompileManager.compileReport(jrxml);
-            }
-            // Get your data source
-            JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(dataList,false);
-            // Add parameters
-//            param.putAll(param);
-            param.putAll(reportData.getFilters());
-            // Fill the report
-            if(dataList.isEmpty())
-                jasperPrint = JasperFillManager.fillReport(jasperReport, param, conn);
-            else
-                jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
-            
-            export(jasperPrint, format, reportName, response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        ExportFormat format = reportData.getFormat();
+        if (format == null) {
+            format = ExportFormat.PDF;
         }
+        List dataList = reportData.getData();
+        String template = reportData.getTemplate();
+        String patientNumber = reportData.getPatientNumber();
+        String employeeId = reportData.getEmployeeId();
+        String reportName = reportData.getReportName();
+        JasperReport jasperReport = null;
+        HashMap param = reportConfig(patientNumber, employeeId);
+        InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
+        // Check if a compiled report exists
+        if (reportInputStream != null) {
+            jasperReport = (JasperReport) JRLoader.loadObject(reportInputStream);
+        } // Compile report from source and save
+        else {
+            String jrxml = storageService.loadJrxmlFile(template + ".jrxml");
+            jasperReport = JasperCompileManager.compileReport(jrxml);
+        }
+        // Get your data source
+        JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(dataList, false);
+        // Add parameters
+//            param.putAll(param);
+        param.putAll(reportData.getFilters());
+        // Fill the report
+        if (dataList.isEmpty()) {
+            jasperPrint = JasperFillManager.fillReport(jasperReport, param, conn);
+        } else {
+            jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
+        }
+
+        export(jasperPrint, format, reportName, response);
+
     }
 
     public void export(final JasperPrint jprint, ExportFormat type, String reportName, HttpServletResponse response) throws JRException, IOException {
@@ -188,28 +182,28 @@ public class JasperReportsService  {
         boolean html = false;
 
         switch (type) {
-            case HTML:  
+            case HTML:
                 exporter = new HtmlExporter();
                 response.setContentType("text/html");
                 exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
-            case CSV:    
+            case CSV:
                 exporter = new JRCsvExporter();
                 exporter.setExporterOutput(new SimpleWriterExporterOutput(out));
                 response.setContentType("text/csv");
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
-            case XML:  
+            case XML:
                 exporter = new JRXmlExporter();
                 response.setContentType("text/xml");
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
             case XLS:
-            case XLSX:  
+            case XLSX:
                 exporter = new JRXlsxExporter();
                 AbstractXlsReportConfiguration config = new SimpleXlsxReportConfiguration();
                 config.setOnePagePerSheet(false);
@@ -250,7 +244,6 @@ public class JasperReportsService  {
     /**
      *
      */
-    
     private HashMap reportConfig(String patientNumber, String staffNumber) {
         List<PatientBanner> patientDataArray = new ArrayList();
         List<EmployeeBanner> employeeDataArray = new ArrayList();
@@ -262,9 +255,9 @@ public class JasperReportsService  {
         Header headerData = Header.map(facility);
         header.add(headerData);
         jasperParameter.put("Header_Data", header);
-        jasperParameter.put("SUBREPORT_DIR", appProperties.getReportLoc()+"/subreports/");
-        jasperParameter.put("PIC_DIR", appProperties.getReportLoc()+"/");
-        
+        jasperParameter.put("SUBREPORT_DIR", appProperties.getReportLoc() + "/subreports/");
+        jasperParameter.put("PIC_DIR", appProperties.getReportLoc() + "/");
+
         jasperParameter.put("facilityName", facility.getFacilityName());
         jasperParameter.put("facilityType", facility.getFacilityType());
         jasperParameter.put("logo", facility.getLogo());
@@ -289,31 +282,33 @@ public class JasperReportsService  {
             jasperParameter.put("salutation", facility.getOrganization().getContact().get(0).getSalutation());
             jasperParameter.put("telephone", facility.getOrganization().getContact().get(0).getTelephone());
         }
-        
-        
-        if(patientNumber!=null){
-            PatientBanner patient=null;
+
+        if (patientNumber != null) {
+            PatientBanner patient = null;
             Optional<PatientData> patientData = patientService.fetchPatientByPatientNumber(patientNumber);
-            if(patientData.isPresent())
-               patient = PatientBanner.map(patientData.get());
+            if (patientData.isPresent()) {
+                patient = PatientBanner.map(patientData.get());
+            }
             patientDataArray.add(patient);
         }
-        
-        if(staffNumber!=null){
+
+        if (staffNumber != null) {
             EmployeeBanner employeeData = null;
             Optional<Employee> employee = employeeService.findEmployeeByStaffNumber(staffNumber);
-            if(employee.isPresent())
-               employeeData = EmployeeBanner.map(employeeService.convertEmployeeEntityToEmployeeData(employee.get()));
+            if (employee.isPresent()) {
+                employeeData = EmployeeBanner.map(employeeService.convertEmployeeEntityToEmployeeData(employee.get()));
+            }
             employeeDataArray.add(employeeData);
         }
-        
-        jasperParameter.put("Patient_Data",patientDataArray);
-        jasperParameter.put("Employee_Data",employeeDataArray);
-        
-         if(facility.getLogo()==null)
-             jasperParameter.put("IMAGE_DIR", appProperties.getReportLoc()+"/logo.png");
-         else
-             jasperParameter.put("IMAGE", facility.getLogo());
+
+        jasperParameter.put("Patient_Data", patientDataArray);
+        jasperParameter.put("Employee_Data", employeeDataArray);
+
+        if (facility.getLogo() == null) {
+            jasperParameter.put("IMAGE_DIR", appProperties.getReportLoc() + "/logo.png");
+        } else {
+            jasperParameter.put("IMAGE", facility.getLogo());
+        }
         return jasperParameter;
     }
 

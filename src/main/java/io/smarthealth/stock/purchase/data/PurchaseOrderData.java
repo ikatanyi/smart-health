@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.stock.purchase.domain.PurchaseOrder;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +29,9 @@ public class PurchaseOrderData {
     private String address;
     private Long contactId;
     private String contact;
-
+    private BigDecimal purchaseAmount;
+    private Boolean received;
+    private Boolean billed;
     private Long storeId;
     private String store;
     private Long priceListId;
@@ -64,13 +67,16 @@ public class PurchaseOrderData {
             data.setPriceList(order.getPriceList().getName());
         }
         data.setStatus(order.getStatus());
+        data.setPurchaseAmount(order.getPurchaseAmount());
+        data.setBilled(order.getBilled());
+        data.setReceived(order.getReceived());
         data.setCreatedBy(order.getCreatedBy());
-          
+
         List<PurchaseOrderItemData> list = order.getPurchaseOrderLines()
                 .stream()
                 .map(item -> PurchaseOrderItemData.map(item))
                 .collect(Collectors.toList());
-        
+
         data.setPurchaseOrderItems(list);
 
         return data;

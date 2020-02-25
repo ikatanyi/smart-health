@@ -11,6 +11,7 @@ import io.smarthealth.clinical.lab.domain.LabRegister;
 import io.smarthealth.clinical.lab.domain.Results;
 import io.smarthealth.clinical.lab.domain.ResultsRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,8 @@ public class LabResultsService {
 
     @Autowired
     ResultsRepository resultsRepository;
+    @Autowired
+    VisitService visitService;
 
     @Transactional
     public List<Results> updateLabResult(List<ResultsData> resultsData) {
@@ -55,7 +58,8 @@ public class LabResultsService {
         return resultsRepository.findById(id).orElseThrow(() -> APIException.notFound("Results identified by id {0} not found ", id));
     }
 
-    public List<PatientLabTest> findLabResultsByVisit(final Visit visit) {
+    public List<PatientLabTest> findLabResultsByVisit(final String  visitNumber) {
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         List<LabRegister> labTestFile = labService.findPatientTestRegisterByVisit(visit);
         List<PatientLabTest> patientLabTestsDone = new ArrayList<>();
         //find patient tests by labTestFile

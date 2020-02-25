@@ -1,19 +1,21 @@
 package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.security.util.SecurityUtils;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.data.RequisitionData;
 import io.smarthealth.stock.inventory.domain.Requisition;
 import io.smarthealth.stock.inventory.domain.RequisitionItem;
 import io.smarthealth.stock.inventory.domain.RequisitionRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.RequisitionStatus;
 import io.smarthealth.stock.item.domain.Item;
-import io.smarthealth.stock.item.domain.Uom;
 import io.smarthealth.stock.item.service.ItemService;
-import io.smarthealth.stock.item.service.UomService;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,21 +26,17 @@ import org.springframework.stereotype.Service;
  * @author Kelsas
  */
 @Service
+@RequiredArgsConstructor
 public class RequisitionService {
 
-    private final RequisitionRepository requisitionRepository; 
+    private final RequisitionRepository requisitionRepository;
     private final StoreService storeService;
     private final ItemService itemService;
-    private final UomService uomService;
+    private final SequenceNumberService sequenceNumberService;
 
-    public RequisitionService(RequisitionRepository requisitionRepository, StoreService storeService, ItemService itemService, UomService uomService) {
-        this.requisitionRepository = requisitionRepository;
-        this.storeService = storeService;
-        this.itemService = itemService;
-        this.uomService = uomService;
-    }
- 
     public RequisitionData createRequisition(RequisitionData requisition) {
+        String reqNo = sequenceNumberService.next(1L, Sequences.RequistionNumber.name());
+
         Requisition data = new Requisition();
         data.setTransactionDate(requisition.getTransactionDate());
         data.setRequiredDate(requisition.getRequiredDate());
@@ -46,14 +44,18 @@ public class RequisitionService {
             Store store = storeService.getStore(requisition.getStoreId()).get();
             data.setStore(store);
         }
-        data.setRequestionNumber(requisition.getRequestionNo());
+        if (requisition.getRequestingStoreId() != null) {
+            Store store = storeService.getStore(requisition.getRequestingStoreId()).get();
+            data.setRequestingStore(store);
+        }
+        data.setRequestionNumber(reqNo);
         data.setStatus(RequisitionStatus.Draft);
         data.setType(requisition.getRequisitionType());
-        data.setRequestedBy(requisition.getRequestedBy());
+        data.setRequestedBy(requisition.getRequestedBy()!=null ? requisition.getRequestedBy() : SecurityUtils.getCurrentUserLogin().get());
         data.setTerms(requisition.getTerms());
 
         if (requisition.getRequistionLines() != null) {
-            data.addRequsitionItems( 
+            data.addRequsitionItems(
                     requisition.getRequistionLines()
                             .stream()
                             .map(d -> {
@@ -62,10 +64,7 @@ public class RequisitionService {
                                 item.setItem(i);
                                 item.setQuantity(d.getQuantity());
                                 item.setReceivedQuantity(0);
-//                                if(d.getUom()!=null){
-//                                    Uom um=uomService.fetchUomById(d.getUomId());
-//                                    item.setUom(um);
-//                                }
+                                item.setPrice(d.getPrice());
 
                                 return item;
                             }).collect(Collectors.toList())

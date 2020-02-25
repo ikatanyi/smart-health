@@ -26,11 +26,11 @@ import org.springframework.web.bind.annotation.*;
 @Api
 @RestController
 @RequestMapping("/api")
-public class PurchaseRestController {
+public class PurchaseOrderController {
 
     private final PurchaseService service;
 
-    public PurchaseRestController(PurchaseService service) {
+    public PurchaseOrderController(PurchaseService service) {
         this.service = service;
     }
 

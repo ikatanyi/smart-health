@@ -96,6 +96,9 @@ public class PatientLabTestData {
             p.setCreatedBy(labTest.getCreatedBy());
             if(labTest.getTestType()!=null)
                p.setWithRef(labTest.getTestType().getWithRef());
+            if(!labTest.getResults().isEmpty()){
+                p.setResultsData(ResultsData.map(labTest.getResults()));
+            }
 
             //Display possible specimen
             if(!labTest.getTestType().getSpecimen().isEmpty())

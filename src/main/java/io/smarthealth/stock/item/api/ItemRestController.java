@@ -37,7 +37,7 @@ public class ItemRestController {
 
     @PostMapping("/items")
     public ResponseEntity<?> createItems(@Valid @RequestBody CreateItem itemData) {
-        if (service.findByItemCode(itemData.getSku()).isPresent()) {
+        if (itemData.getSku()!=null && service.findByItemCode(itemData.getSku()).isPresent()) {
             throw APIException.conflict("Item with code {0} already exists.", itemData.getSku());
         }
 

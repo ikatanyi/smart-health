@@ -110,11 +110,14 @@ public class PricebookService {
                 .map(price -> PriceBookData.map(price))
                 .collect(Collectors.toList());
     }
+
     //
     public List<PriceListDTO> getPricelist() {
         return priceBookRepository.getPriceLists();
     }
+
     public List<PriceListDTO> searchPricelistByItem(String item) {
-        return priceBookRepository.searchPriceListByItem(item);
+        final String likeExpression = "%" + item + "%";
+        return priceBookRepository.searchPriceListByItem(likeExpression);
     }
 }

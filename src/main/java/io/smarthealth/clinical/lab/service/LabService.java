@@ -227,8 +227,7 @@ public class LabService {
         }
 
         if (patientRegData.getAccessionNo() == null || patientRegData.getAccessionNo().equals("")) {
-//            String accessionNo = seqService.nextNumber(SequenceType.LabTestNumber);
-            labRegister.setAccessNo(UuidGenerator.newUuid());
+            labRegister.setAccessNo(sequenceNumberService.next(1L, Sequences.LabNumber.name()));
         }
         List<DoctorRequest> req = new ArrayList();
         //PatientTestRegister savedPatientTestRegister = patientRegRepository.save(patientTestReg);

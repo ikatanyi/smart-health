@@ -24,14 +24,14 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "ac_cashiers")
+@Table(name = "acc_cashiers")
 public class Cashier extends Identifiable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_ac_cashier_user_id"))
     private User user;
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_ac_cashier_cashdrawer_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_ac_cashier_cashpoint_id"))
     private CashPoint cashPoint;
     private LocalDate startDate;
     private LocalDate endDate;

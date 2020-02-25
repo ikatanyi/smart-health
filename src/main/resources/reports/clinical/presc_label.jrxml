@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="presc_label" language="groovy" pageWidth="220" pageHeight="185" columnWidth="210" leftMargin="5" rightMargin="5" topMargin="4" bottomMargin="5" uuid="f77ce829-3b55-4ede-b9ad-5197103c52e2">
-	<property name="ireport.zoom" value="1.0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="presc_label" pageWidth="220" pageHeight="185" columnWidth="210" leftMargin="5" rightMargin="5" topMargin="4" bottomMargin="5" uuid="f77ce829-3b55-4ede-b9ad-5197103c52e2">
+	<property name="ireport.zoom" value="4.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="drugname" class="java.lang.String"/>
@@ -11,112 +11,89 @@
 	<parameter name="name" class="java.lang.String"/>
 	<parameter name="patientId" class="java.lang.String"/>
 	<parameter name="company" class="java.lang.String"/>
-	<pageHeader>
-		<band height="45" splitType="Stretch">
-			<textField>
-				<reportElement x="4" y="0" width="206" height="12" uuid="8747dd88-7eac-4b3a-84ca-e417909355f7"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{company}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="4" y="15" width="38" height="13" uuid="01d5e240-90c9-4334-9f30-746f6a92f9bd"/>
-				<textElement verticalAlignment="Middle">
-					<font size="6" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Name :]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="42" y="15" width="62" height="13" uuid="0d96cfac-6871-48dd-b20c-b5d847d7b9cb"/>
-				<textElement verticalAlignment="Middle">
-					<font size="6"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{name}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="42" y="28" width="62" height="14" uuid="b81870cc-966a-4fb9-96f7-d37920961bb5"/>
-				<textElement verticalAlignment="Middle">
-					<font size="6"/>
-				</textElement>
-				<text><![CDATA[Patient Id :]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="4" y="28" width="40" height="14" uuid="357aac06-0a39-4ab6-930a-399ddde04d2a"/>
-				<textElement verticalAlignment="Middle">
-					<font size="6" isBold="true"/>
-				</textElement>
-				<text><![CDATA[File No.]]></text>
-			</staticText>
-		</band>
-	</pageHeader>
-	<columnHeader>
-		<band height="13">
-			<staticText>
-				<reportElement x="0" y="4" width="62" height="9" uuid="35c82e77-4fd1-4a59-8210-6c48ce70189d"/>
-				<textElement verticalAlignment="Middle">
-					<font size="6" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Drug Name]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="67" y="4" width="62" height="9" uuid="e3b605ad-28b1-4e60-9d21-94b724a077bd"/>
-				<textElement verticalAlignment="Middle">
-					<font size="6" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Qty]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="134" y="4" width="62" height="9" uuid="6289ae0e-ea77-4442-8a8f-171306d6a7f6"/>
-				<textElement verticalAlignment="Middle">
-					<font size="6" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Expiry Date]]></text>
-			</staticText>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Patient_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="IMAGE_DIR" class="java.lang.String"/>
+	<field name="itemName" class="java.lang.String"/>
+	<field name="quantity" class="java.lang.Double"/>
+	<field name="quantityUnits" class="java.lang.Double"/>
+	<field name="dosingInstructions" class="java.lang.String"/>
+	<field name="route" class="java.lang.String"/>
+	<field name="numRefills" class="java.lang.Integer"/>
+	<field name="prescriptionNo" class="java.lang.String"/>
+	<field name="doseUnits" class="java.lang.String"/>
+	<field name="dose" class="java.lang.Double"/>
+	<field name="urgency" class="java.lang.String"/>
+	<field name="notes" class="java.lang.String"/>
+	<field name="frequency" class="java.lang.Double"/>
+	<field name="duration" class="java.lang.Integer"/>
+	<field name="durationUnits" class="java.lang.Integer"/>
+	<variable name="duration" class="java.lang.String">
+		<variableExpression><![CDATA[$F{duration}.toString().concat(" ").concat(($F{durationUnits}==1?" Day(s)":$F{durationUnits}==7?" Week(s)":
+                 $F{durationUnits}==30?" Month(s)":""))]]></variableExpression>
+	</variable>
+	<title>
+		<band height="19">
+			<subreport>
+				<reportElement x="0" y="0" width="210" height="19" uuid="420f6fe6-2f77-418e-8515-5e4ed9f8e34b"/>
+				<subreportParameter name="PIC_DIR">
+					<subreportParameterExpression><![CDATA[]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
 			<line>
-				<reportElement x="0" y="12" width="194" height="1" uuid="ba0e8201-fc8d-4c85-a5fb-a95b21e26a88"/>
+				<reportElement positionType="Float" x="0" y="18" width="210" height="1" uuid="7cb5c5a9-719f-44c7-a6ac-01310d5410a8"/>
 				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#999999"/>
+					<pen lineWidth="0.15" lineColor="#000000"/>
 				</graphicElement>
 			</line>
 		</band>
-	</columnHeader>
+	</title>
+	<pageHeader>
+		<band height="14" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="210" height="14" uuid="78381bfd-523c-47eb-bdd9-5bf7b43ba3bb"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageHeader>
 	<detail>
-		<band height="46" splitType="Stretch">
+		<band height="38" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="-1" width="62" height="13" uuid="27f119c5-b114-406b-b1fa-7929252ed797"/>
+				<reportElement x="26" y="19" width="162" height="9" uuid="b4e15c13-4b0b-4816-850c-c80450affd4c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{drugname}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{frequency}==1)?"Take "+$F{dose}+" "+$F{doseUnits}+" every 1 Hour":""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="67" y="-1" width="62" height="13" uuid="fcb5bb61-8a88-4d00-abb2-8be55673f478"/>
+				<reportElement x="26" y="28" width="162" height="9" uuid="073762c6-b6d4-4232-b967-9753361a52f2"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{qty}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{duration}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="134" y="0" width="62" height="12" uuid="f46ee81f-a24c-400e-bea5-57d220688058"/>
+				<reportElement x="26" y="1" width="162" height="9" uuid="dd0e4c22-dc94-4841-aa4f-9d5aa1ed3d29"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{expiry_date}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="22" y="18" width="154" height="13" uuid="e3d68d87-3a8e-4795-aee6-5fc4dafd910a"/>
+				<reportElement x="26" y="10" width="162" height="9" uuid="f0696195-4234-4e05-906f-febdc89c01af"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{directions}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="10" y="33" width="184" height="13" uuid="8b52fea4-aa2f-429b-9ff6-7451aec0d6d8"/>
-				<textElement verticalAlignment="Middle">
-					<font size="6"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{precaution}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{route}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

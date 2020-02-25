@@ -238,8 +238,8 @@ public class DoctorRequestController {
 
     @GetMapping("/lab-results/{visitNo}")
     public ResponseEntity<?> fetchLabRequestByVisit(@PathVariable("visitNo") final String visitNo) {
-        Visit visit = visitService.findVisitEntityOrThrow(visitNo);
-        List<PatientLabTest> results = labResultsService.findLabResultsByVisit(visit);
+//        Visit visit = visitService.findVisitEntityOrThrow(visitNo);
+        List<PatientLabTest> results = labResultsService.findLabResultsByVisit(visitNo);
         return ResponseEntity.status(HttpStatus.OK).body(PatientLabTestData.mapConfirmedTests(results));
     }
 

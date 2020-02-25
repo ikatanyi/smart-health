@@ -6,6 +6,7 @@
 package io.smarthealth.clinical.lab.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -20,12 +21,10 @@ import lombok.Data;
 @Entity
 @Table(name = "patient_lab_results")
 public class Results extends Identifiable {
-
-    private Long id;
     @ManyToOne
     @JoinColumn(name="fk_results_analyte_id")
     private Analyte analyte;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="fk_results_patient_lab_test_id")
     private PatientLabTest patientLabTest;
     

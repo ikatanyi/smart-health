@@ -7,7 +7,6 @@ package io.smarthealth.accounting.cashier.domain;
 
 import io.smarthealth.accounting.cashier.data.ShiftData;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.security.domain.User;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -24,7 +23,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "ac_cashiers_shifts")
+@Table(name = "acc_cashiers_shifts")
 public class Shift extends Identifiable {
 //    Cashpoint,status, start_date,end_date,user,shiftno
 

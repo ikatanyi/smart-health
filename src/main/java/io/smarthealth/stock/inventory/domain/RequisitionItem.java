@@ -21,6 +21,7 @@ public class RequisitionItem extends Identifiable {
     @ManyToOne
      @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_requisition_item_item_id"))
     private Item item;
+    private double price;
     private double quantity;
     private double receivedQuantity;
     @ManyToOne

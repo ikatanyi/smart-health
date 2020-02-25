@@ -8,6 +8,7 @@ import io.smarthealth.stock.inventory.domain.enumeration.RequisitionType;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -30,6 +31,8 @@ public class RequisitionData {
     
     private String requestionNo;
     
+    private Integer totalItemRequested;
+    
     private RequisitionType requisitionType;
     private RequisitionStatus requisitionStatus;
     private String requestedBy;
@@ -46,6 +49,10 @@ public class RequisitionData {
             data.setStoreId(requisition.getStore().getId());
             data.setStore(requisition.getStore().getStoreName());
         }
+        if(requisition.getRequestingStore()!=null){
+            data.setRequestingStore(requisition.getRequestingStore().getStoreName());
+            data.setRequestingStoreId(requisition.getRequestingStore().getId());
+        }
         data.setRequestionNo(requisition.getRequestionNumber());
         data.setRequisitionStatus(requisition.getStatus());
         data.setRequisitionType(requisition.getType());
@@ -60,6 +67,7 @@ public class RequisitionData {
                     .collect(Collectors.toList())
            );
         }
+        data.setTotalItemRequested(requisition.getRequistionLines().size());
         return data; 
     }
 }
