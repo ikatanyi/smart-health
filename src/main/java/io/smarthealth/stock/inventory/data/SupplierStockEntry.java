@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -19,7 +20,7 @@ import lombok.Data;
 public class SupplierStockEntry {
 
     private Long id;
-
+     @NotNull
     private Long storeId;
     private String store;
     
@@ -27,7 +28,7 @@ public class SupplierStockEntry {
     private PurchaseType purchaseType;
     
     private String orderNumber;
-    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate transactionDate;
     private String transactionId;
     
@@ -35,7 +36,9 @@ public class SupplierStockEntry {
     private String supplierName;
 
     private String supplierInvoiceNumber;
+     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate supplierInvoiceDate;
+      @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate supplierInvoiceDueDate;
 
     private String deliveredBy;

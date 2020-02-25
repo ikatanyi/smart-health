@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.io.Serializable;
 import java.time.LocalDate;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -18,9 +19,11 @@ import lombok.Data;
 @Data 
 public class CashierData implements Serializable {
     private Long id;
+    @NotNull(message = "User is Required")
     private Long userId;
     private String username;
     private String user;
+     @NotNull(message = "Cashpoint is Required")
     private Long cashPointId;
     private String cashPoint; 
     @JsonFormat(pattern = Constants.DATE_PATTERN)

@@ -19,6 +19,8 @@ public enum Sequences {
     RadiologyNumber,
     Procedure,
     ShiftNumber,
+    StockItem,
+    RequistionNumber,
     PurchaseOrder,
     BillNumber;
 }

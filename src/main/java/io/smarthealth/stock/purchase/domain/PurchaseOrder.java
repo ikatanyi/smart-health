@@ -7,13 +7,13 @@ import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.supplier.domain.Supplier;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.NaturalId;
 
 /**
  *
@@ -29,6 +29,8 @@ public class PurchaseOrder extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_purch_order_supplier_id"))
     private Supplier supplier;
+     private Boolean received;
+    private Boolean billed;
     private LocalDate transactionDate;
     private LocalDate requiredDate;
     @ManyToOne
@@ -46,7 +48,7 @@ public class PurchaseOrder extends Auditable {
     @Enumerated(EnumType.STRING)
     private PurchaseOrderStatus status;
     //payment details that can be defined here that contains the terms and conditions for this and the rest will have to made
-    @OneToMany(mappedBy = "purchaseOrder",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL)
     private List<PurchaseOrderItem> purchaseOrderLines;
 
     public PurchaseOrder() {
@@ -76,4 +78,10 @@ public class PurchaseOrder extends Auditable {
         this.purchaseOrderLines.forEach(x -> x.setPurchaseOrder(this));
     }
 
+    public BigDecimal getPurchaseAmount() {
+        return this.purchaseOrderLines
+                .stream()
+                .map(x -> x.getAmount())
+                .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
+    }
 }
