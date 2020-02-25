@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.record.data;
 
+import io.smarthealth.clinical.record.domain.TriageNotes;
 import lombok.Data;
 
 /**
@@ -19,4 +20,24 @@ public class TriageNotesData {
             LMP,
             dehydration,
             cardex;
+
+    public static TriageNotes map(TriageNotesData data) {
+        TriageNotes note = new TriageNotes();
+        note.setBleeding(data.getBleeding());
+        note.setCardex(data.getCardex());
+        note.setDehydration(data.getDehydration());
+        note.setLMP(data.getLMP());
+        note.setMentalStatus(data.getMentalStatus());
+        return note;
+    }
+
+    public static TriageNotesData map(TriageNotes e) {
+        TriageNotesData data = new TriageNotesData();
+        data.setBleeding(e.getBleeding());
+        data.setCardex(e.getCardex());
+        data.setDehydration(e.getDehydration());
+        data.setLMP(e.getLMP());
+        data.setMentalStatus(e.getMentalStatus());
+        return data;
+    }
 }

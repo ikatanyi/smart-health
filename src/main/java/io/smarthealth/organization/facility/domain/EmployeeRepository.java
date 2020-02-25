@@ -5,6 +5,7 @@
  */
 package io.smarthealth.organization.facility.domain;
 
+import io.smarthealth.administration.employeespecialization.data.enums.EmployeeCategory.Category;
 import io.smarthealth.security.domain.User;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +30,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     List<Employee> findAllByDepartment(Department department, Pageable pageable);
 
-    List<Employee> findAllByEmployeeCategory(Employee.Category employeeCategory, Pageable pageable);
+    List<Employee> findAllByEmployeeCategory(Category employeeCategory, Pageable pageable);
 
     Optional<Employee> findByLoginAccount(User user);
 }
