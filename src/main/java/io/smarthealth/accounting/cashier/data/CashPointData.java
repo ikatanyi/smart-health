@@ -1,10 +1,5 @@
 package io.smarthealth.accounting.cashier.data;
 
-import io.smarthealth.accounting.cashier.domain.*;
-import io.smarthealth.infrastructure.domain.Identifiable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table; 
 import lombok.Data;
 
 /**

@@ -75,7 +75,6 @@ public class EmployeeService {
         //save contact received as the primary contact
         //create a user 
         //find roles by group
-     
         //fetch primary contact details
         PersonContact savedContact = personContactService.fetchPersonPrimaryContact(employee);
 
@@ -87,11 +86,10 @@ public class EmployeeService {
                 password,
                 savedContact.getPerson().getGivenName().concat(" ").concat(savedContact.getPerson().getSurname())
         );
-         Role userRole = userService.findRoleByName(RoleName.ROLE_USER.name())
+        Role userRole = userService.findRoleByName(RoleName.ROLE_USER.name())
                 .orElseThrow(() -> APIException.internalError("User Role not set."));
 
         user.setRoles(Collections.singleton(userRole));
-        
 
         User userSaved = userService.saveUser(user);
 
@@ -104,7 +102,7 @@ public class EmployeeService {
 
         return savedEmployee;
     }
-   
+
     public Page<Employee> fetchAllEmployees(final MultiValueMap<String, String> queryParams, final Pageable pg) {
         return employeeRepository.findAll(pg);
     }
@@ -123,6 +121,13 @@ public class EmployeeService {
 
     public Employee fetchEmployeeByUser(final User user) {
         return employeeRepository.findByLoginAccount(user).orElseThrow(() -> APIException.notFound("Employee identified by user {0} was not found ", user.getEmail()));
+    }
+
+    public Employee findEmployeeByIdOrThrow(Long id) {
+        System.err.println("am searching  ... "+id);
+        
+     return   employeeRepository.findById(id)
+                .orElseThrow(()-> APIException.notFound("Employee with ID not found", id));
     }
 
     public Employee fetchEmployeeByAccountUsername(final String username) {
@@ -147,7 +152,7 @@ public class EmployeeService {
     }
 
     public EmployeeData convertEmployeeEntityToEmployeeData(Employee employee) {
-        System.out.println("Employee "+employee.getFullName());
+        System.out.println("Employee " + employee.getFullName());
         EmployeeData employeeData = modelMapper.map(employee, EmployeeData.class);
         employeeData.setDepartmentCode(employee.getDepartment().getCode());
         return employeeData;

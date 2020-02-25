@@ -1,0 +1,65 @@
+package io.smarthealth.accounting.doctors.domain;
+
+import io.smarthealth.accounting.doctors.data.DoctorItemData;
+import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.stock.item.domain.Item;
+import java.math.BigDecimal;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ *
+ * @author Kelsas
+ */
+@Data
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "acc_doctor_items")
+public class DoctorItem extends Auditable {
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_doctor_service_staff_id"))
+    private Employee doctor;
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_doctor_service_service_id"))
+    private Item serviceType;
+    
+    private BigDecimal amount;
+    private Boolean isPercentage;
+    private Boolean active;
+
+    public DoctorItemData toData() {
+        DoctorItemData data = new DoctorItemData();
+        data.setId(this.getId());
+        if(this.doctor!=null){
+            data.setDoctorId(this.doctor.getId());
+            data.setDoctorName(this.doctor.getFullName());
+            
+        }
+        if (this.serviceType != null) {
+            data.setServiceId(this.serviceType.getId());
+            data.setServiceCode(this.getServiceType().getItemCode());
+            data.setServiceName(this.getServiceType().getItemName());
+        }
+        if (this.isPercentage) {
+            BigDecimal sp = BigDecimal.valueOf(this.serviceType.getRate());
+            BigDecimal doctorRate = this.amount.divide(BigDecimal.valueOf(100)).multiply(sp);
+            this.amount = doctorRate;
+        }
+        data.setIsPercentage(this.isPercentage);
+        
+        data.setAmount(this.amount);
+        data.setActive(this.active);
+
+        return data;
+    }
+}
