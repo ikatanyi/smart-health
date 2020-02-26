@@ -29,7 +29,7 @@ public class CreateStockEntry {
     private String deliveryNumber; //GRN| transaction reference
     private String transactionNumber; //auto generated ST-2019-00002 
 
-    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate transactionDate;
     private MovementType movementType;
     private MovementPurpose movementPurpose;
