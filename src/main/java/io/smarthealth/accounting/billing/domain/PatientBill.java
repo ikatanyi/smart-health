@@ -44,8 +44,7 @@ public class PatientBill extends Auditable {
     private String referenceNo;
      
     @Enumerated(EnumType.STRING)
-    private BillStatus status;
-
+    private BillStatus status; 
     @OneToMany(mappedBy = "patientBill", cascade = CascadeType.ALL)
     private List<PatientBillItem> billItems = new ArrayList<>();
     //

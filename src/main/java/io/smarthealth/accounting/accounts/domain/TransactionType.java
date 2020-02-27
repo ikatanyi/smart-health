@@ -14,5 +14,6 @@ public enum TransactionType {
     Refund,
     Journal_Entry,
     Petty_Cash,
+    Stock_Issuing,
     Bill_Reversal;
 }

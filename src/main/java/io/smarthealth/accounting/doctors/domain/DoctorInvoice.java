@@ -43,6 +43,7 @@ public class DoctorInvoice extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_doctor_invoice_service_id"))
     private DoctorItem serviceItem;
     private String invoiceNumber;
+    private Long billItemId;
     private Boolean paid;
     private BigDecimal amount;
     private BigDecimal balance;
@@ -50,28 +51,28 @@ public class DoctorInvoice extends Auditable {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
     private String transactionId;
-    
-    public DoctorInvoiceData toData(){
-        DoctorInvoiceData data =new DoctorInvoiceData();
+
+    public DoctorInvoiceData toData() {
+        DoctorInvoiceData data = new DoctorInvoiceData();
         data.setId(this.getId());
         data.setAmount(this.amount);
         data.setBalance(this.balance);
-        if(this.doctor!=null){
+        if (this.doctor != null) {
             data.setDoctorId(this.doctor.getId());
             data.setDoctorName(this.doctor.getFullName());
-            
+
         }
         data.setInvoiceDate(this.invoiceDate);
         data.setInvoiceNumber(this.invoiceNumber);
         data.setPaid(this.paid);
-        if(this.patient!=null){
-        data.setPatientName(this.patient.getFullName());
-        data.setPatientNumber(this.patient.getPatientNumber());
+        if (this.patient != null) {
+            data.setPatientName(this.patient.getFullName());
+            data.setPatientNumber(this.patient.getPatientNumber());
         }
         data.setPaymentMode(this.paymentMode);
-        if(this.serviceItem!=null){
-        data.setServiceId(this.serviceItem.getId());
-        data.setServiceName(this.serviceItem.getServiceType().getItemName());
+        if (this.serviceItem != null) {
+            data.setServiceId(this.serviceItem.getId());
+            data.setServiceName(this.serviceItem.getServiceType().getItemName());
         }
         data.setTransactionId(this.transactionId);
         data.setTransactionType(this.transactionType);

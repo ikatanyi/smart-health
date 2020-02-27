@@ -1,5 +1,10 @@
 package io.smarthealth.stock.inventory.service;
 
+import io.smarthealth.accounting.accounts.domain.JournalEntry;
+import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
+import io.smarthealth.accounting.accounts.domain.JournalState;
+import io.smarthealth.accounting.accounts.domain.TransactionType;
+import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -20,7 +25,9 @@ import io.smarthealth.stock.purchase.service.PurchaseInvoiceService;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -39,52 +46,110 @@ public class InventoryService {
     private final StoreService storeService;
     private final InventoryEventSender inventoryEventSender;
     private final PurchaseInvoiceService purchaseInvoiceService;
-//    private final TxnService txnService;
-//    private final SequenceNumberGenerator sequenceGenerator;
-    
+
     private final SequenceNumberService sequenceNumberService;
+    private final JournalService journalService;
 
     @Transactional
     public String createStockEntry(CreateStockEntry stockData) {
 
-        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name()); 
-         Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
-         
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        final String referenceNo = sequenceNumberService.next(1L, Sequences.StockTransferNumber.name());
+
+        Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());
+
+//        BigDecimal costAmount = BigDecimal.ZERO;
         if (!stockData.getItems().isEmpty()) {
             stockData.getItems()
                     .stream()
                     .forEach(st -> {
                         Item item = itemService.findItemEntityOrThrow(st.getItemId());
-                        
-                        BigDecimal qty = BigDecimal.valueOf(st.getQuantity());
-                        Double qtyAmt = stockData.getMovementType() == MovementType.Dispensed ? qty.negate().doubleValue() : qty.doubleValue();
 
+                        BigDecimal qty = BigDecimal.valueOf(st.getQuantity());
+                        BigDecimal cost = qty.multiply(st.getPrice());
+
+//                        Double qtyAmt = stockData.getMovementPurpose() == MovementPurpose.Issue ? qty.negate().doubleValue() : qty.doubleValue();
+//                        Double qtyAmt = qty.negate().doubleValue()
                         StockEntry stock = new StockEntry();
                         stock.setAmount(st.getAmount());
                         stock.setDeliveryNumber(stockData.getDeliveryNumber());
-                        stock.setQuantity(qtyAmt);
+                        stock.setQuantity(qty.negate().doubleValue());
                         stock.setItem(item);
                         stock.setMoveType(stockData.getMovementType());
                         stock.setPrice(st.getPrice());
                         stock.setPurpose(stockData.getMovementPurpose());
-                        stock.setReferenceNumber(stockData.getReferenceNumber());
+                        stock.setReferenceNumber(referenceNo);
                         stock.setStore(store);
                         stock.setTransactionDate(stockData.getTransactionDate());
                         stock.setTransactionNumber(trdId);
                         stock.setUnit(st.getUnit());
 
-                        StockEntry savedEntry = stockEntryRepository.save(stock);
-                        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), store, item, qty.doubleValue()));
+//                        stockEntryRepository.save(stock);
+//                        inventoryEventSender.process(new InventoryEvent(InventoryEvent.Type.Decrease, store, item, qty.doubleValue()));
+                        doStockEntry(InventoryEvent.Type.Decrease, stock, store, item, qty.doubleValue());
+
+                        if (stockData.getMovementPurpose() == MovementPurpose.Transfer) {
+                            Store destinationStore = storeService.getStoreWithNoFoundDetection(stockData.getDestinationStoreId());
+                            StockEntry receivingStock = new StockEntry();
+                            receivingStock.setAmount(st.getAmount());
+                            receivingStock.setDeliveryNumber(stockData.getDeliveryNumber());
+                            receivingStock.setItem(item);
+                            receivingStock.setMoveType(stockData.getMovementType());
+                            receivingStock.setPrice(st.getPrice());
+                            receivingStock.setPurpose(MovementPurpose.Receipt);
+                            receivingStock.setQuantity(qty.doubleValue());
+                            receivingStock.setStore(destinationStore);
+                            receivingStock.setReferenceNumber(referenceNo);
+                            receivingStock.setTransactionDate(stockData.getTransactionDate());
+                            receivingStock.setTransactionNumber(trdId);
+                            receivingStock.setUnit(st.getUnit());
+                            doStockEntry(InventoryEvent.Type.Increase, receivingStock, destinationStore, item, qty.doubleValue());
+                        }
+
                     });
 
         }
+
+        if (stockData.getMovementPurpose() == MovementPurpose.Issue) {
+            BigDecimal costAmount = stockData.getItems()
+                    .stream()
+                    .map(x -> (x.getPrice().multiply(BigDecimal.valueOf(x.getQuantity()))))
+                            .reduce(BigDecimal.ZERO, (x,y) -> (x.add(y)));
+
+            journalService.save(toJournal(store, stockData.getTransactionDate(), trdId, costAmount));
+        }
         return trdId;
+    }
+
+    private void doStockEntry(InventoryEvent.Type type, StockEntry stock, Store store, Item item, Double qty) {
+        stockEntryRepository.save(stock);
+        inventoryEventSender.process(new InventoryEvent(type, store, item, qty));
+    }
+
+    private JournalEntry toJournal(Store store, LocalDate date, String trdId, BigDecimal amount) {
+        if (store.getExpenseAccount() == null) {
+            throw APIException.notFound("Expense Account is Not Defined for the Store " + store.getStoreName());
+        }
+        String debitAcc = store.getExpenseAccount().getIdentifier();
+        String creditAcc = store.getInventoryAccount().getIdentifier();
+
+        String narration = "Issuing Stocks for  - " + store.getStoreName();
+        JournalEntry toSave = new JournalEntry(date, narration,
+                new JournalEntryItem[]{
+                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
+                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                }
+        );
+        toSave.setTransactionNo(trdId);
+        toSave.setTransactionType(TransactionType.Stock_Issuing);
+        toSave.setStatus(JournalState.PENDING);
+        return toSave;
     }
 
     @Transactional
     public String receiveSupplierStocks(SupplierStockEntry stockData) {
         // we will do stock entry and then create a bill out of this for easy 
-        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name()); 
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         stockData.setTransactionId(trdId);
         String dnote = stockData.getSupplierInvoiceNumber() != null ? stockData.getSupplierInvoiceNumber() : trdId;
         Store store = storeService.getStoreWithNoFoundDetection(stockData.getStoreId());

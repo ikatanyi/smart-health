@@ -32,7 +32,6 @@ public class StockEntry extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_entry_item_id"))
     private Item item;
-
     private Double quantity;
     private BigDecimal price;
     private BigDecimal amount;
