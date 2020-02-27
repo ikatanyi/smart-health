@@ -1,5 +1,6 @@
 package io.smarthealth.organization.facility.service;
 
+import io.smarthealth.administration.employeespecialization.data.enums.EmployeeCategory.Category;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.mail.EmailData;
 import io.smarthealth.infrastructure.mail.MailService;
@@ -112,7 +113,7 @@ public class EmployeeService {
     }
 
     public List<Employee> findEmployeeByCategory(final MultiValueMap<String, String> queryParams, final String category, final Pageable pg) {
-        return employeeRepository.findAllByEmployeeCategory(Employee.Category.valueOf(category), pg);
+        return employeeRepository.findAllByEmployeeCategory(Category.valueOf(category), pg);
     }
 
     Page<Employee> fetchEmployeeByCategory(final String categoryName, final Pageable pg) {

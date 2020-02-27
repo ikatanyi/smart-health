@@ -6,8 +6,11 @@ import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
+import io.smarthealth.clinical.record.data.TriageNotesData;
 import io.smarthealth.clinical.record.data.VitalRecordData;
+import io.smarthealth.clinical.record.domain.TriageNotes;
 import io.smarthealth.clinical.record.domain.VitalsRecord;
+import io.smarthealth.clinical.record.service.TriageNotesService;
 import io.smarthealth.clinical.record.service.TriageService;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.VisitData;
@@ -22,6 +25,7 @@ import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
@@ -58,7 +62,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class ClinicalVisitController {
 
     @Autowired
-    private VisitService visitService; 
+    private VisitService visitService;
 
     @Autowired
     PatientService patientService;
@@ -73,7 +77,7 @@ public class ClinicalVisitController {
 
     @Autowired
     private EmployeeService employeeService;
- 
+
     @Autowired
     ServicePointService servicePointService;
 
@@ -82,9 +86,12 @@ public class ClinicalVisitController {
 
     @Autowired
     PaymentDetailsService paymentDetailsService;
-    
+
     @Autowired
-    private  SequenceNumberService sequenceNumberService; 
+    TriageNotesService triageNotesService;
+
+    @Autowired
+    private SequenceNumberService sequenceNumberService;
 
     @PostMapping("/visits")
     @ApiOperation(value = "Submit a new patient visit", response = VisitData.class)
@@ -104,7 +111,7 @@ public class ClinicalVisitController {
 
         Visit visit = VisitData.map(visitData);
         //generate visit number
-         String visitNo = sequenceNumberService.next(1L, Sequences.Visit.name());
+        String visitNo = sequenceNumberService.next(1L, Sequences.Visit.name());
         visit.setVisitNumber(visitNo);
         visit.setStartDatetime(visitData.getStartDatetime());
         visit.setPatient(patient);
@@ -219,6 +226,54 @@ public class ClinicalVisitController {
                 .buildAndExpand(visitNumber, vitalR.getId()).toUri();
 
         return ResponseEntity.created(location).body(vr);
+    }
+
+    @PostMapping("/visits/{visitNumber}/triage-notes")
+    @ApiOperation(value = "Create/Add a new patient triage notes by visit number", response = VitalRecordData.class)
+    public @ResponseBody
+    ResponseEntity<?> addTriageNotesByVisit(@PathVariable("visitNumber") String visitNumber, @RequestBody @Valid final TriageNotesData triageNotesData) {
+        final Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        TriageNotes e = TriageNotesData.map(triageNotesData);
+        e.setVisit(visit);
+
+        Pager<TriageNotesData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Triage notes has successfully been saved");
+        pagers.setContent(TriageNotesData.map(triageNotesService.createNewTriageNotes(e)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+
+    @GetMapping("/visits/{visitNumber}/triage-notes")
+    @ApiOperation(value = "Create/Add a new patient triage notes by visit number", response = VitalRecordData.class)
+    public @ResponseBody
+    ResponseEntity<?> fetchTriageNotesByVisit(@PathVariable("visitNumber") String visitNumber, final Pageable pageable) {
+        final Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        Page<TriageNotesData> page = triageNotesService.fethAllTriageNotesByVisit(visit, pageable).map(n -> TriageNotesData.map(n));
+        Pager<List<TriageNotesData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(page.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(page.getNumber());
+        details.setPerPage(page.getSize());
+        details.setTotalElements(page.getTotalElements());
+        details.setTotalPage(page.getTotalPages());
+        details.setReportName("Triage Notes ");
+        pagers.setPageDetails(details);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(pagers);
+    }
+
+    @GetMapping("/triage-notes/{id}")
+    @ApiOperation(value = "Fetch triage notes by id", response = VitalRecordData.class)
+    public @ResponseBody
+    ResponseEntity<?> findTriageNotesById(@PathVariable("v") final Long id) {
+        TriageNotes e = triageNotesService.fetchTriageNoteById(id);
+        Pager<TriageNotesData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Triage notes");
+        pagers.setContent(TriageNotesData.map(e));
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
     @PostMapping("/patient/{patientNo}/vitals")

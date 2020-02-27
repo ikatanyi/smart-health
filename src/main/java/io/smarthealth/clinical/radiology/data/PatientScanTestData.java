@@ -18,6 +18,7 @@ import lombok.Data;
 public class PatientScanTestData {
 
     private Long id;
+    private String scanName;
     private RadiologyTestData radiologyTestData;
     private double testPrice;
     private int quantity;
@@ -50,10 +51,13 @@ public class PatientScanTestData {
         entity.setResult(patScan.getResult());
         entity.setStatus(patScan.getStatus());
         entity.setTestPrice(patScan.getTestPrice());
+        
 //        if(patScan.getPatientScanRegister()!=null)
 //            entity.setPatientScanRegisterData(PatientScanRegisterData.map(patScan.getPatientScanRegister()));
-        if(patScan.getRadiologyTest()!=null)
+        if(patScan.getRadiologyTest()!=null){
             entity.setRadiologyTestData(RadiologyTestData.map(patScan.getRadiologyTest()));
+            entity.setScanName(patScan.getRadiologyTest().getScanName());
+        }
         return entity;
     }
 

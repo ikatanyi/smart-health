@@ -163,5 +163,15 @@ public class PatientTestsController {
         List<PatientLabTestSpecimenData> list = pltsList.stream().map(p -> PatientLabTestSpecimenData.map(p)).collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }
+    
+    @GetMapping("/patient-test/result/{visitNumber}")
+    public ResponseEntity<?> fetchLabtestResults(
+            @PathVariable("visitNumber") final String visitNumber) {
+        List<PatientLabTestData> test = labResultsService.findLabResultsByVisit(visitNumber)
+                                        .stream()
+                                        .map((x)->PatientLabTestData.map(x))
+                                        .collect(Collectors.toList());
+        return ResponseEntity.ok(test);
+    }
 
 }

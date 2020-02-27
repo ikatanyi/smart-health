@@ -1,6 +1,5 @@
 package io.smarthealth.accounting.accounts.domain;
 
-import io.smarthealth.accounting.accounts.domain.JournalEntryItem.Type;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -8,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
