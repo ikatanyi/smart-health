@@ -2,32 +2,33 @@ package io.smarthealth.accounting.pricebook.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+import io.smarthealth.stock.item.domain.enumeration.ItemType;
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  *
  * @author Kelsas
  */
-@Deprecated
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ServiceItemData {
+public class PriceListData {
 
     private Long id;
-
-    private Long serviceId;
-    private String serviceCode;
-    private String serviceName;
-
-    private Double rate;
+    private Long itemId;
+    private String itemCode;
+    private String itemName;
+    private ItemCategory itemCategory;
+    private ItemType itemType;
+    private BigDecimal sellingRate;
+    private BigDecimal costRate;
 
     private Long servicePointId;
     private String servicePoint;
 
+    private Boolean defaultPrice;
+    
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate effectiveDate;
 

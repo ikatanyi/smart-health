@@ -32,9 +32,11 @@ public class PriceListController {
         this.pricebookService = pricebookService;
     }
 //service point id, payer, scheme : query like
-    
+ 
     @GetMapping("/pricelist")
     public ResponseEntity<?> getPricelist(
+            @RequestParam(value = "servicePointId", required = false) final Long servicePointId,
+            @RequestParam(value = "priceBookId", required = false) final Long priceBookId,
             @RequestParam(value = "item", required = false) final String item
     ) {
         List<PriceListDTO> list;

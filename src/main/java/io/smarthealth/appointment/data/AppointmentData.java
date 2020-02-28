@@ -9,7 +9,7 @@ import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.TIME_PATTERN;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.administration.employeespecialization.data.enums.EmployeeCategory.Category;
-import io.smarthealth.stock.item.data.ItemDatas;
+import io.smarthealth.stock.item.data.SimpleItemData;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -60,7 +60,7 @@ public class AppointmentData implements Serializable {
     private String phoneNumber;
 
     @ApiModelProperty(required = false, hidden = true)
-    private ItemDatas procedureData;
+    private SimpleItemData procedureData;
 
     @ApiModelProperty(required = false, hidden = true)
     private EmployeeData practitionerData;
@@ -83,7 +83,7 @@ public class AppointmentData implements Serializable {
         }
 
         if (appointment.getService() != null) {
-            data.setProcedureData(ItemDatas.map(appointment.getService()));
+            data.setProcedureData(appointment.getService().toSimpleData());
         }
 
         if (appointment.getPractitioner() != null) {

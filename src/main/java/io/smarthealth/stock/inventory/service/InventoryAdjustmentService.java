@@ -82,8 +82,16 @@ public class InventoryAdjustmentService {
     }
 
     public Page<StockAdjustmentData> getStockAdjustments(Long storeId, Long itemId, DateRange range, Pageable pageable) {
-        Item item = itemService.findItemEntityOrThrow(itemId);
-        Store store = storeService.getStoreWithNoFoundDetection(storeId);
+          Item item=null;
+          Store store=null;
+        if(itemId!=null){
+              item = itemService.findItemEntityOrThrow(itemId);
+        }
+        if(storeId!=null){
+              store = storeService.getStoreWithNoFoundDetection(storeId);
+        }
+       
+       
         Specification<StockAdjustment> spec = StockAdjustmentSpecification.createSpecification(store, item, range);
         Page<StockAdjustmentData> adjstments = stockAdjustmentRepository.findAll(spec, pageable).map(itm -> itm.toData());
 

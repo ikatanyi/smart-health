@@ -38,14 +38,12 @@ import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
-import io.smarthealth.stock.stores.domain.Store;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  *
@@ -215,7 +213,7 @@ public class PaymentService {
                     .filter(x -> x.getItem().isInventoryItem())
                     .collect(
                             Collectors.groupingBy(PatientBillItem::getServicePointId,
-                                    Collectors.summingDouble(x -> (x.getItem().getCostRate() * x.getQuantity())))
+                                    Collectors.summingDouble(x -> (x.getItem().getCostRate().doubleValue() * x.getQuantity())))
                     );
             if (!inventory.isEmpty()) {
                 inventory.forEach((k, v) -> {

@@ -25,6 +25,7 @@ import java.util.ArrayList;
  *
  * @author Kelsas
  */
+@Deprecated
 @Service
 @RequiredArgsConstructor
 public class ServiceItemService {

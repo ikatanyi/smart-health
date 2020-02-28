@@ -23,11 +23,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Slf4j
 @RequestMapping("/api")
-public class ServicepointApiController {
+public class ServicePointController {
 
     private final ServicePointService service;
 
-    public ServicepointApiController(ServicePointService service) {
+    public ServicePointController(ServicePointService service) {
         this.service = service;
     }
 

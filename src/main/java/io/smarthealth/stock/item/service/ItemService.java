@@ -1,11 +1,15 @@
 package io.smarthealth.stock.item.service;
 
+import io.smarthealth.accounting.pricebook.domain.PriceList;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.accounting.taxes.domain.TaxRepository;
+import io.smarthealth.administration.servicepoint.data.ServicePointData;
+import io.smarthealth.administration.servicepoint.data.SimpleServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
-import io.smarthealth.sequence.UuidGenerator;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.domain.StockEntryRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
@@ -13,23 +17,26 @@ import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.inventory.service.InventoryEventSender;
 import io.smarthealth.stock.item.data.CreateItem;
-import io.smarthealth.stock.item.data.ItemDatas;
+import io.smarthealth.stock.item.data.ItemData;
 import io.smarthealth.stock.item.data.Uoms;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemMetadata;
 import io.smarthealth.stock.item.domain.ItemRepository;
 import io.smarthealth.stock.item.domain.ReorderRule;
 import io.smarthealth.stock.item.domain.ReorderRuleRepository;
-import io.smarthealth.stock.item.domain.Uom;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import io.smarthealth.stock.item.domain.specification.ItemSpecification;
 import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -60,12 +67,13 @@ public class ItemService {
     private final StockEntryRepository stockEntryRepository;
     private final InventoryEventSender inventoryEventSender;
     private final SequenceNumberService sequenceNumberService;
+    private final ServicePointRepository servicePointRepository;
 
     @Transactional
     @CachePut
-    public ItemDatas createItem(CreateItem createItem) {
+    public ItemData createItem(CreateItem createItem) {
 
-        String sku = StringUtils.isBlank(createItem.getSku()) ?  sequenceNumberService.next(1L, Sequences.StockItem.name()) : createItem.getSku().trim();
+        String sku = StringUtils.isBlank(createItem.getSku()) ? sequenceNumberService.next(1L, Sequences.StockItem.name()) : createItem.getSku().trim();
 
         Item item = new Item();
         item.setActive(Boolean.TRUE);
@@ -76,36 +84,47 @@ public class ItemService {
         item.setItemName(createItem.getItemName());
         item.setItemType(createItem.getItemType());
         item.setRate(createItem.getRate());
-        //check the category
-        if (createItem.getItemUnit() != null) {
-            Optional<Uom> uom = uomService.findUomById(Long.valueOf(createItem.getItemUnit()));
-            if (uom.isPresent()) {
-                item.setUom(uom.get());
-            }
-        }
+        item.setUnit(createItem.getItemUnit());
+
         if (createItem.getTaxId() != null) {
             Optional<Tax> tax = taxRepository.findById(createItem.getTaxId());
             if (tax.isPresent()) {
                 item.setTax(tax.get());
             }
         }
-        if (createItem.getStockCategory() != null && createItem.getStockCategory().equals("drug")) {
-            item.setDrug(createItem.getStockCategory().equals("drug"));
+        if (createItem.getStockCategory() != null && createItem.getStockCategory() == ItemCategory.Drug) {
+            item.setDrug(Boolean.TRUE);
             item.setDrugCategory(createItem.getDrugCategory());
             item.setDrugForm(createItem.getDoseForm());
             item.setRoute(createItem.getDrugRoute());
             item.setStrength(createItem.getDrugStrength());
         }
+        if (!createItem.getExpenseTo().isEmpty()) {
+            createItem.getExpenseTo()
+                    .stream()
+                    .forEach(x -> {
+                        Optional<ServicePoint> sp = servicePointRepository.findById(x);
+                        if (sp.isPresent()) {
+                            PriceList price = new PriceList();
+                            price.setServicePoint(sp.get());
+                            price.setSellingRate(item.getRate());
+                            price.setEffectiveDate(LocalDate.now());
+                            price.setDefaultPrice(Boolean.TRUE);
+                            price.setActive(Boolean.TRUE);
+                            item.addPricelist(price);
+                        }
+                    });
+        }
 
         Item savedItem = itemRepository.save(item);
 
-        if (createItem.getItemType().equals("Inventory") && createItem.getInventoryStore() != null) {
+        if (createItem.getItemType() == ItemType.Inventory && createItem.getInventoryStore() != null) {
             Store store = storeService.getStore(createItem.getInventoryStore())
                     .orElseThrow(() -> APIException.notFound("Store with Identifier {0} not found ", createItem.getInventoryStore()));
 
             if (createItem.getStockBalance() > 0) {
                 log.info("Receiving the initial stock");
-                String trxId = UuidGenerator.newUuid();
+                String trxId = sequenceNumberService.next(1L, Sequences.Transactions.name());
                 //determine the stock
                 StockEntry stock = new StockEntry();
                 stock.setQuantity(Double.valueOf(createItem.getStockBalance()));
@@ -134,11 +153,11 @@ public class ItemService {
                 rule.setReorderLevel(createItem.getReorderLevel());
                 rule.setReorderQty(createItem.getOrderQuantity());
                 reorderRuleRepository.save(rule);
-
             }
+
         }
 
-        return ItemDatas.map(savedItem);
+        return savedItem.toData();
     }
 
     public Optional<Item> findById(final Long itemId) {
@@ -154,7 +173,7 @@ public class ItemService {
                 .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", itemCode));
     }
 
-    public Page<Item> fetchItems(String category, String type, boolean includeClosed, String term, Pageable pageable) {
+    public Page<Item> fetchItems(ItemCategory category, ItemType type, boolean includeClosed, String term, Pageable pageable) {
         Specification<Item> spec = ItemSpecification.createSpecification(category, type, includeClosed, term);
         Page<Item> items = itemRepository.findAll(spec, pageable);
         return items;
@@ -182,10 +201,15 @@ public class ItemService {
     }
 
     //this should be cached
+    @Cacheable
     public ItemMetadata getItemMetadata() {
         List<StoreData> stores = storeService.getAllStores();
         List<Tax> tax = taxRepository.findAll();
         List<Uoms> uoms = uomService.getAllUnitofMeasure();
+        List<SimpleServicePoint> servicePoint = servicePointRepository.findAll()
+                .stream()
+                .map(x -> x.toSimpleData())
+                .collect(Collectors.toList());
 
         ItemMetadata data = new ItemMetadata();
         data.setCode("0");
@@ -193,6 +217,8 @@ public class ItemService {
         data.setStores(stores);
         data.setTaxes(tax);
         data.setUom(uoms);
+        data.setServicePoints(servicePoint);
+        data.setCategories(Arrays.asList(ItemCategory.values()));
         return data;
     }
 

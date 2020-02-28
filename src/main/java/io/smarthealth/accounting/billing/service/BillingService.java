@@ -262,7 +262,7 @@ public class BillingService {
                         .stream()
                         .filter(x -> x.getItem().isInventoryItem())
                         .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
-                                Collectors.summingDouble(x -> (x.getItem().getCostRate() * x.getQuantity()))
+                                Collectors.summingDouble(x -> (x.getItem().getCostRate().doubleValue() * x.getQuantity()))
                         )
                         );
                 if (!inventory.isEmpty()) {
@@ -328,9 +328,8 @@ public class BillingService {
     }
 
     private BigDecimal computeDoctorFee(DoctorItem item) {
-        if (item.getIsPercentage()) {
-            BigDecimal sp = BigDecimal.valueOf(item.getServiceType().getRate());
-            BigDecimal doctorRate = item.getAmount().divide(BigDecimal.valueOf(100)).multiply(sp);
+        if (item.getIsPercentage()) { 
+            BigDecimal doctorRate = item.getAmount().divide(BigDecimal.valueOf(100)).multiply(item.getServiceType().getRate());
             return doctorRate;
         }
         return item.getAmount();

@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "service_items")
+@Deprecated
 public class ServiceItem extends Auditable {
 
     @ManyToOne

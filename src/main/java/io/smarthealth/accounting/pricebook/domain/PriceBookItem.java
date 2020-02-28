@@ -7,6 +7,7 @@ package io.smarthealth.accounting.pricebook.domain;
 
 import io.smarthealth.stock.item.domain.Item;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -37,33 +38,14 @@ public class PriceBookItem implements Serializable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pricebook_item_item_id"))
     private Item item;
 
-    private Double amount;
+    private BigDecimal amount;
 
     private LocalDateTime createDate;
 
-    public PriceBookItem(Item item, Double amount) {
+    public PriceBookItem(Item item, BigDecimal amount) {
         this.item = item;
         this.amount = amount;
         this.createDate = LocalDateTime.now();
     }
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) {
-//            return true;
-//        }
-//        if (!(o instanceof PriceBookItem)) {
-//            return false;
-//        }
-//        PriceBookItem that = (PriceBookItem) o;
-//        return Objects.equals(priceBook.getName(), that.priceBook.getName())
-//                && Objects.equals(item.getItemName(), that.item.getItemName())
-//                && Objects.equals(amount, that.amount)
-//                && Objects.equals(createDate, that.createDate);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(priceBook.getName(), item.getItemName(), amount, createDate);
-//    }
+ 
 }

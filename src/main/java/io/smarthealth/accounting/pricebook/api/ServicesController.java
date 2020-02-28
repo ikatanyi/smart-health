@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Api
 @RequestMapping("/api")
+@Deprecated
 public class ServicesController {
 
     private final ServiceItemService service;

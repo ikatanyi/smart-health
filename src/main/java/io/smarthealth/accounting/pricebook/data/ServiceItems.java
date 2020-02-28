@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
  *
  * @author Kelsas
  */
+@Deprecated
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

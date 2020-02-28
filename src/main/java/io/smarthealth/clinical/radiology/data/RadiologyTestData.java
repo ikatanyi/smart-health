@@ -7,7 +7,7 @@ package io.smarthealth.clinical.radiology.data;
 
 import io.smarthealth.clinical.lab.data.LabTestTypeData;
 import io.smarthealth.clinical.radiology.domain.RadiologyTest;
-import io.smarthealth.stock.item.data.ItemDatas;
+import io.smarthealth.stock.item.data.SimpleItemData;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -26,7 +26,7 @@ public class RadiologyTestData {
     private Boolean supervisorConfirmation;
     @Enumerated(EnumType.STRING)
     private LabTestTypeData.Gender gender;  
-    private ItemDatas itemData;
+    private SimpleItemData itemData;
     
     public static RadiologyTestData map(RadiologyTest rtd){
         RadiologyTestData entity = new RadiologyTestData();
@@ -34,7 +34,7 @@ public class RadiologyTestData {
         entity.setNotes(rtd.getNotes());
         entity.setScanName(rtd.getScanName());
         if(rtd.getItem()!=null)
-           entity.setItemData(ItemDatas.map(rtd.getItem()));
+           entity.setItemData(rtd.getItem().toSimpleData());
         entity.setActive(rtd.getStatus());     
         
         return entity;
