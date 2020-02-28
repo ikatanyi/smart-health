@@ -72,6 +72,11 @@ public class PatientNotesService {
         return patientNotesRepository.findAll(pageable);
     }
 
+    //c. Read all patient notes by patient number
+    public Page<PatientNotes> fetchAllPatientNotesByPatient(final Patient patient, final Pageable pageable) {
+        return patientNotesRepository.findByPatient(patient, pageable);
+    }
+
     //d. Read patient notes by doctor and by patient number
     public Page<PatientNotes> fetchAllPatientsNotesByDoctorAndPatient(final String doctorNumber, final String patientNo, final Pageable pageable) {
         Patient patient = patientService.findPatientOrThrow(patientNo);
@@ -97,6 +102,9 @@ public class PatientNotesService {
         patientNotesData.setExaminationNotes(patientNotes.getExaminationNotes());
         patientNotesData.setHistoryNotes(patientNotes.getHistoryNotes());
         patientNotesData.setSocialHistory(patientNotes.getSocialHistory());
+        if (patientNotes.getHealthProvider() != null) {
+            patientNotesData.setHealthProvider(patientNotes.getHealthProvider().getFullName());
+        }
         return patientNotesData;
     }
 

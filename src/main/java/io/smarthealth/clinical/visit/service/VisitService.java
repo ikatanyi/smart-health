@@ -19,6 +19,7 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,7 +35,7 @@ public class VisitService {
 
     private final VisitRepository visitRepository;
     private final ServicePointService servicePointService;
-    private final PatientRepository patientRepository; 
+    private final PatientRepository patientRepository;
     private final EmployeeService employeeService;
 
     public VisitService(VisitRepository visitRepository, ServicePointService servicePointService, PatientRepository patientRepository, EmployeeService employeeService) {
@@ -42,7 +43,8 @@ public class VisitService {
         this.servicePointService = servicePointService;
         this.patientRepository = patientRepository;
         this.employeeService = employeeService;
-    } 
+    }
+
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
         Patient patient = findPatientOrThrow(patientNumber);
         Page<Visit> visits = visitRepository.findByPatient(patient, pageable);
@@ -64,7 +66,7 @@ public class VisitService {
             servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(servicePointType));
         }
         if (patientNumber != null) {
-            patient =  findPatientOrThrow(patientNumber);
+            patient = findPatientOrThrow(patientNumber);
         }
 
 //        System.out.println(" LocalDate.now().atStartOfDay() " + LocalDate.now().atStartOfDay());
@@ -98,7 +100,7 @@ public class VisitService {
         return visitRepository.isPatientVisitActive(patient);
     }
 
-   public Patient findPatientOrThrow(String patientNumber) {
+    public Patient findPatientOrThrow(String patientNumber) {
         return this.patientRepository.findByPatientNumber(patientNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Number {0} not found.", patientNumber));
     }
@@ -108,7 +110,7 @@ public class VisitService {
     }
 
     public Page<Visit> findVisitByServicePoint(final ServicePoint servicePoint, Pageable pageable) {
-        return visitRepository.findByServicePoint(servicePoint, pageable);
+        return visitRepository.findByServicePointAndStatusNot(servicePoint, VisitEnum.Status.CheckOut, pageable);
     }
 
     public Visit findVisitEntityOrThrow(String visitNumber) {
@@ -118,6 +120,10 @@ public class VisitService {
 
     public VisitData convertVisitEntityToData(Visit visit) {
         return VisitData.map(visit);
+    }
+
+    public List<Employee> practionersByActiveVisits() {
+        return visitRepository.practionersByActiveVisits();
     }
 
 }

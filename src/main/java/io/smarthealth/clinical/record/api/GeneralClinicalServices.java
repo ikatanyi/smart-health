@@ -17,11 +17,13 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.swagger.annotations.Api;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,6 +148,35 @@ public class GeneralClinicalServices {
         pagers.setMessage("Patient Referral Details");
         pagers.setContent(note);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
+    @GetMapping("/visits/requested-practioners")
+    public @ResponseBody
+    ResponseEntity<?> fetchDistinctPractionersRequestedByActiveVisits() {
+        List<Employee> empList = visitService.practionersByActiveVisits();
+        List<EmployeeData> employeeData = new ArrayList<>();
+        for (Employee e : empList) {
+            EmployeeData d = new EmployeeData();
+            d.setText(e.getFullName());
+            d.setValue(e.getFullName());
+            d.setFullName(e.getFullName());
+            d.setStaffNumber(e.getStaffNumber());
+            d.setSpecialization(e.getSpecialization());
+            employeeData.add(d);
+        }
+        Pager<List<EmployeeData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(employeeData);
+        PageDetails details = new PageDetails();
+        details.setPage(employeeData.size());
+        details.setPerPage(1);
+        details.setTotalElements(Long.valueOf(employeeData.size()));
+        details.setTotalPage(1);
+        details.setReportName("Employee data");
+        pagers.setPageDetails(details);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(pagers);
     }
 
 }

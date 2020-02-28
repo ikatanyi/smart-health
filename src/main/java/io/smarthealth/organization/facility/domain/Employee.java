@@ -30,4 +30,7 @@ public class Employee extends Person {
     @Column(length = 25, unique = true)
     private String staffNumber;
 
+    private String specialization;
+    private String licenseNo;
+
 }
