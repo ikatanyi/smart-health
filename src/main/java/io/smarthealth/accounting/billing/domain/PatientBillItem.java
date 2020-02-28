@@ -44,6 +44,10 @@ public class PatientBillItem extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private BillStatus status;
+    
+    @Transient
+    private Long medicId;
+
 
     public BillItemData toData() {
         BillItemData data = new BillItemData();
@@ -70,7 +74,7 @@ public class PatientBillItem extends Auditable {
         }
         data.setServicePoint(this.getServicePoint());
         data.setPaid(this.getPaid());
-
+        
         return data;
     }
 

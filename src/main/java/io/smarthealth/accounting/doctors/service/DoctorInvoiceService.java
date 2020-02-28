@@ -1,6 +1,12 @@
 package io.smarthealth.accounting.doctors.service;
 
+import io.smarthealth.accounting.accounts.data.FinancialActivity;
+import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
+import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
 import io.smarthealth.accounting.accounts.domain.JournalEntry;
+import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
+import io.smarthealth.accounting.accounts.domain.JournalState;
+import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.infrastructure.exception.APIException;
 import org.springframework.data.domain.Page;
@@ -21,6 +27,9 @@ import io.smarthealth.sequence.Sequences;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import io.smarthealth.accounting.doctors.domain.DoctorItemRepository;
+import io.smarthealth.stock.item.domain.Item;
+import java.math.BigDecimal;
+import java.util.Optional;
 
 /**
  *
@@ -30,12 +39,13 @@ import io.smarthealth.accounting.doctors.domain.DoctorItemRepository;
 @RequiredArgsConstructor
 public class DoctorInvoiceService {
 
-    private DoctorInvoiceRepository repository;
-    private DoctorItemRepository doctorServicesItemRepository;
-    private EmployeeService employeeService;
-    private PatientRepository patientRepository;
-    private SequenceNumberService sequenceNumberService;
-    private JournalService journalService;
+    private final DoctorInvoiceRepository repository;
+    private final DoctorItemRepository doctorServicesItemRepository;
+    private final EmployeeService employeeService;
+    private final PatientRepository patientRepository;
+    private final SequenceNumberService sequenceNumberService;
+    private final JournalService journalService;
+    private final FinancialActivityAccountRepository activityAccountRepository;
 
     public DoctorInvoice createDoctorInvoice(DoctorInvoiceData data) {
 
@@ -64,9 +74,12 @@ public class DoctorInvoiceService {
         return savedInvoice;
     }
 
-    public DoctorInvoice save(DoctorInvoice items) {
-        return repository.save(items);
+    public DoctorInvoice save(DoctorInvoice invoice) {
+        DoctorInvoice savedInvoice = repository.save(invoice);
+        journalService.save(toJournal(savedInvoice));
+        return savedInvoice;
     }
+ 
 
     public DoctorInvoice getDoctorInvoice(Long id) {
         return repository.findById(id)
@@ -107,8 +120,40 @@ public class DoctorInvoiceService {
                 .orElseThrow(() -> APIException.notFound("Patient with number {0} Not Found"));
     }
 
-    //TODO
     private JournalEntry toJournal(DoctorInvoice invoice) {
-        throw new UnsupportedOperationException("Not supported yet.");
+
+        Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Cost_Of_Consultancy);
+        if (!debitAccount.isPresent()) {
+            throw APIException.badRequest("Cost of Consultancy Account is Not Mapped");
+        }
+        String debitAcc = debitAccount.get().getAccount().getIdentifier();
+
+        Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Doctors_Fee);
+        if (!creditAccount.isPresent()) {
+            throw APIException.badRequest("Doctors Ledger Account is Not Mapped");
+        }
+        String creditAcc = creditAccount.get().getAccount().getIdentifier();
+
+        BigDecimal amount = invoice.getAmount();
+        String narration = "Doctor " + invoice.getDoctor().getFullName() + " invoicing for patient " + invoice.getPatient().getPatientNumber() + " Bill Number: " + invoice.getInvoiceNumber();
+        JournalEntry toSave = new JournalEntry(invoice.getInvoiceDate(), narration,
+                new JournalEntryItem[]{
+                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
+                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                }
+        );
+        toSave.setTransactionNo(invoice.getTransactionId());
+        toSave.setTransactionType(TransactionType.Invoicing);
+        toSave.setStatus(JournalState.PENDING);
+        return toSave;
     }
+
+    public Optional<DoctorItem> getDoctorItem(Employee doctor, Item serviceType) {
+        return doctorServicesItemRepository.findByDoctorAndServiceType(doctor, serviceType);
+    }
+
+    public Employee getDoctorById(Long medicId) {
+        return employeeService.findEmployeeByIdOrThrow(medicId);
+    }
+     
 }

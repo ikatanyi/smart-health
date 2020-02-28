@@ -32,7 +32,6 @@ public class BillData {
     private Double taxes;
     private Double discount;
     private String referenceNo;//receipt or invoice no
-
     @Enumerated(EnumType.STRING)
     private BillStatus status;
 

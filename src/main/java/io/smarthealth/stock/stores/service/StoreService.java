@@ -1,5 +1,5 @@
 package io.smarthealth.stock.stores.service;
- 
+
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.IncomeExpenseData;
 import io.smarthealth.accounting.accounts.service.AccountService;
@@ -44,12 +44,19 @@ public class StoreService {
         if (data.getServicePointId() != null) {
             ServicePoint srv = servicePointService.getServicePoint(data.getServicePointId());
             toSave.setServicePoint(srv);
-        } 
-        
+        }
+
         if (data.getInventoryAccountNumber() != null) {
             Optional< Account> inventory = accountService.findByAccountNumber(data.getInventoryAccountNumber());
             if (inventory.isPresent()) {
                 toSave.setInventoryAccount(inventory.get());
+            }
+        }
+
+        if (data.getExpenseAccountNumber() != null) {
+            Optional< Account> expense = accountService.findByAccountNumber(data.getExpenseAccountNumber());
+            if (expense.isPresent()) {
+                toSave.setExpenseAccount(expense.get());
             }
         }
 
