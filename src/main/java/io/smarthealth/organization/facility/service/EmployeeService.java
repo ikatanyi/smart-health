@@ -125,10 +125,10 @@ public class EmployeeService {
     }
 
     public Employee findEmployeeByIdOrThrow(Long id) {
-        System.err.println("am searching  ... "+id);
-        
-     return   employeeRepository.findById(id)
-                .orElseThrow(()-> APIException.notFound("Employee with ID not found", id));
+        System.err.println("am searching  ... " + id);
+
+        return employeeRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Employee with ID not found", id));
     }
 
     public Employee fetchEmployeeByAccountUsername(final String username) {
@@ -155,7 +155,11 @@ public class EmployeeService {
     public EmployeeData convertEmployeeEntityToEmployeeData(Employee employee) {
         System.out.println("Employee " + employee.getFullName());
         EmployeeData employeeData = modelMapper.map(employee, EmployeeData.class);
+        employeeData.setEmployeeId(employee.getId());
         employeeData.setDepartmentCode(employee.getDepartment().getCode());
+        if (employee.getLoginAccount() != null) {
+            employeeData.setUsername(employee.getLoginAccount().getUsername());
+        }
         return employeeData;
     }
 

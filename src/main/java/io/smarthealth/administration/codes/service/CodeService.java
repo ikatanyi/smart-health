@@ -158,6 +158,10 @@ public class CodeService {
         Page<CodeValueData> lists = codeValueRepository.findAll(page).map(c -> CodeValueData.map(c));
         return lists;
     }
+    public Page<CodeValueData> fetchCodeValuesByName(final String name,final Pageable page) {
+        Page<CodeValueData> lists = codeValueRepository.findByCodeName(name, page).map(c -> CodeValueData.map(c));
+        return lists;
+    }
 
     public List<CodeValueData> getCodeValues(Long codeId) {
         Code code = getWithNotFoundDetection(codeId);

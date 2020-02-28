@@ -20,8 +20,10 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
@@ -56,15 +58,13 @@ public class DoctorRequestController {
     private final ModelMapper modelMapper;
 
     private final EmployeeService employeeService;
- 
 
     private final ItemService itemService;
- 
 
     private final PatientService patientService;
 
     private final LabResultsService labResultsService;
-   private final SequenceNumberService sequenceNumberService; 
+    private final SequenceNumberService sequenceNumberService;
 
     public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, ItemService itemService, PatientService patientService, LabResultsService labResultsService, SequenceNumberService sequenceNumberService) {
         this.requestService = requestService;
@@ -77,22 +77,23 @@ public class DoctorRequestController {
         this.sequenceNumberService = sequenceNumberService;
     }
 
-
     @PostMapping("/visit/{visitNo}/doctor-request")
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        //Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
+        Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceNumberService.next(1L, Sequences.DoctorRequest.name());
         for (DoctorRequestData data : docRequestData) {
             DoctorRequest doctorRequest = DoctorRequestData.map(data);
             Item item = itemService.findById(Long.valueOf(data.getItemCode())).get();
-            //doctorRequest.setDoctorRequestItem(itemService);
+//            doctorRequest.setDoctorRequestItem(itemService);
             doctorRequest.setItem(item);
+            doctorRequest.setItemCostRate(item.getCostRate());
+            doctorRequest.setItemRate(item.getRate());
             doctorRequest.setPatient(visit.getPatient());
             doctorRequest.setVisit(visit);
-//            doctorRequest.setRequestedBy(employee);
+            doctorRequest.setRequestedBy(employee);
             doctorRequest.setOrderNumber(orderNo);
             doctorRequest.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
             doctorRequest.setFulfillerComment(DoctorRequest.FullFillerStatusType.Unfulfilled.name());

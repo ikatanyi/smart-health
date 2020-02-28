@@ -59,5 +59,8 @@ public class DoctorRequest extends Auditable {
     private String patientNumber;
     @Transient
     private String visitNumber;
+    
+    private double itemCostRate;
+    private double itemRate;
 
 }
