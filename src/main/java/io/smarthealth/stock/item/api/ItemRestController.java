@@ -57,7 +57,7 @@ public class ItemRestController {
     @GetMapping("/items/{code}")
     public ItemData getItem(@PathVariable(value = "code") String code) {
         Item item = service.findByItemCode(code)
-                .orElseThrow(() -> APIException.notFound("Account {0} not found.", code));
+                .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", code));
         return item.toData();
     }
 

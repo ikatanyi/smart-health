@@ -89,8 +89,8 @@ public class DoctorRequestController {
             Item item = itemService.findById(Long.valueOf(data.getItemCode())).get();
 //            doctorRequest.setDoctorRequestItem(itemService);
             doctorRequest.setItem(item);
-            doctorRequest.setItemCostRate(item.getCostRate());
-            doctorRequest.setItemRate(item.getRate());
+            doctorRequest.setItemCostRate(item.getCostRate().doubleValue());
+            doctorRequest.setItemRate(item.getRate().doubleValue());
             doctorRequest.setPatient(visit.getPatient());
             doctorRequest.setVisit(visit);
             doctorRequest.setRequestedBy(employee);

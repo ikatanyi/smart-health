@@ -1,8 +1,8 @@
 package io.smarthealth.stock.item.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.smarthealth.accounting.pricebook.domain.PriceBookItem;
-import io.smarthealth.accounting.pricebook.domain.PriceList;
+import io.smarthealth.accounting.pricelist.domain.PriceBookItem;
+import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.item.data.ItemData;
