@@ -36,9 +36,9 @@
                  $F{durationUnits}==30?" Month(s)":""))]]></variableExpression>
 	</variable>
 	<title>
-		<band height="19">
+		<band height="12">
 			<subreport>
-				<reportElement x="0" y="0" width="210" height="19" uuid="420f6fe6-2f77-418e-8515-5e4ed9f8e34b"/>
+				<reportElement x="0" y="0" width="210" height="12" uuid="420f6fe6-2f77-418e-8515-5e4ed9f8e34b"/>
 				<subreportParameter name="PIC_DIR">
 					<subreportParameterExpression><![CDATA[]]></subreportParameterExpression>
 				</subreportParameter>
@@ -49,7 +49,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<line>
-				<reportElement positionType="Float" x="0" y="18" width="210" height="1" uuid="7cb5c5a9-719f-44c7-a6ac-01310d5410a8"/>
+				<reportElement positionType="Float" x="0" y="11" width="210" height="1" uuid="7cb5c5a9-719f-44c7-a6ac-01310d5410a8"/>
 				<graphicElement>
 					<pen lineWidth="0.15" lineColor="#000000"/>
 				</graphicElement>
@@ -68,28 +68,28 @@
 	<detail>
 		<band height="38" splitType="Stretch">
 			<textField>
-				<reportElement x="26" y="19" width="162" height="9" uuid="b4e15c13-4b0b-4816-850c-c80450affd4c"/>
+				<reportElement x="41" y="19" width="147" height="9" uuid="b4e15c13-4b0b-4816-850c-c80450affd4c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[($F{frequency}==1)?"Take "+$F{dose}+" "+$F{doseUnits}+" every 1 Hour":""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="26" y="28" width="162" height="9" uuid="073762c6-b6d4-4232-b967-9753361a52f2"/>
+				<reportElement x="41" y="28" width="147" height="9" uuid="073762c6-b6d4-4232-b967-9753361a52f2"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{duration}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="26" y="1" width="162" height="9" uuid="dd0e4c22-dc94-4841-aa4f-9d5aa1ed3d29"/>
+				<reportElement x="41" y="1" width="147" height="9" uuid="dd0e4c22-dc94-4841-aa4f-9d5aa1ed3d29"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="26" y="10" width="162" height="9" uuid="f0696195-4234-4e05-906f-febdc89c01af"/>
+				<reportElement x="42" y="10" width="146" height="9" uuid="f0696195-4234-4e05-906f-febdc89c01af"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
