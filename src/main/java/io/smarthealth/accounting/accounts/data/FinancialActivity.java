@@ -13,6 +13,8 @@ public enum FinancialActivity {
     Receipt_Control("Receipt Control Account", AccountType.ASSET),
     Patient_Control("Patient Control Account", AccountType.ASSET),
     Surplus_And_Loss("Surplus And Loss", AccountType.LIABILITY),
+    Cost_Of_Consultancy("Cost of Consultancy", AccountType.EXPENSE),
+    Doctors_Fee("Doctor Fee", AccountType.LIABILITY),
     Cost_Of_Sales("Cost of Sales", AccountType.EXPENSE);
 
     private final String activityName;

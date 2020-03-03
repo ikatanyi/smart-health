@@ -5,8 +5,9 @@
  */
 package io.smarthealth.organization.facility.data;
 
-import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.administration.employeespecialization.data.enums.EmployeeCategory.Category;
 import io.smarthealth.organization.person.data.PersonData;
+import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -18,8 +19,10 @@ import lombok.Data;
 @Data
 public class EmployeeData extends PersonData {
 
+    @ApiModelProperty(hidden = true)
+    private Long employeeId;
     @Enumerated(EnumType.STRING)
-    private Employee.Category employeeCategory;
+    private Category employeeCategory;
     private String departmentName;
     private DepartmentData department;
     private DepartmentUnitData departmentUnit;
@@ -30,5 +33,9 @@ public class EmployeeData extends PersonData {
     private String email;
     private String mobile;
     private String telephone;
+    private String specialization;
+    private String licenseNo;
+    private String username;
+    private String text, value;
 
 }

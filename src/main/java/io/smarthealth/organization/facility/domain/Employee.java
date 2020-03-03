@@ -1,5 +1,6 @@
 package io.smarthealth.organization.facility.domain;
 
+import io.smarthealth.administration.employeespecialization.data.enums.EmployeeCategory;
 import io.smarthealth.organization.person.domain.Person;
 import io.smarthealth.security.domain.User;
 import javax.persistence.*;
@@ -14,15 +15,8 @@ import lombok.Data;
 @Table(name = "facility_employee")
 public class Employee extends Person {
 
-    public enum Category {
-        Doctor,
-        Nurse,
-        Radiographer,
-        Lab_Technologist,
-        Pharmacist
-    }
     @Enumerated(EnumType.STRING)
-    private Category employeeCategory;
+    private EmployeeCategory.Category employeeCategory;
     @ManyToOne
     private Department department;
 
@@ -35,6 +29,8 @@ public class Employee extends Person {
 
     @Column(length = 25, unique = true)
     private String staffNumber;
-    
-   
+
+    private String specialization;
+    private String licenseNo;
+
 }

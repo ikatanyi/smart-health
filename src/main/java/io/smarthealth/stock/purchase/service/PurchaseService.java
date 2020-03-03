@@ -1,7 +1,7 @@
 package io.smarthealth.stock.purchase.service;
 
-import io.smarthealth.accounting.pricebook.domain.PriceBook;
-import io.smarthealth.accounting.pricebook.service.PricebookService;
+import io.smarthealth.accounting.pricelist.domain.PriceBook;
+import io.smarthealth.accounting.pricelist.service.PricebookService;
 import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.service.AdminService;

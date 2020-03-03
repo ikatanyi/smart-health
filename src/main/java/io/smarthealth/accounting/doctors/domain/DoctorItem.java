@@ -50,9 +50,8 @@ public class DoctorItem extends Auditable {
             data.setServiceCode(this.getServiceType().getItemCode());
             data.setServiceName(this.getServiceType().getItemName());
         }
-        if (this.isPercentage) {
-            BigDecimal sp = BigDecimal.valueOf(this.serviceType.getRate());
-            BigDecimal doctorRate = this.amount.divide(BigDecimal.valueOf(100)).multiply(sp);
+        if (this.isPercentage) { 
+            BigDecimal doctorRate = this.amount.divide(BigDecimal.valueOf(100)).multiply(this.serviceType.getRate());
             this.amount = doctorRate;
         }
         data.setIsPercentage(this.isPercentage);

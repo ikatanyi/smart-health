@@ -1,5 +1,6 @@
 package io.smarthealth.organization.facility.service;
 
+import io.smarthealth.administration.employeespecialization.data.enums.EmployeeCategory.Category;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.mail.EmailData;
 import io.smarthealth.infrastructure.mail.MailService;
@@ -112,7 +113,7 @@ public class EmployeeService {
     }
 
     public List<Employee> findEmployeeByCategory(final MultiValueMap<String, String> queryParams, final String category, final Pageable pg) {
-        return employeeRepository.findAllByEmployeeCategory(Employee.Category.valueOf(category), pg);
+        return employeeRepository.findAllByEmployeeCategory(Category.valueOf(category), pg);
     }
 
     Page<Employee> fetchEmployeeByCategory(final String categoryName, final Pageable pg) {
@@ -124,10 +125,10 @@ public class EmployeeService {
     }
 
     public Employee findEmployeeByIdOrThrow(Long id) {
-        System.err.println("am searching  ... "+id);
-        
-     return   employeeRepository.findById(id)
-                .orElseThrow(()-> APIException.notFound("Employee with ID not found", id));
+        System.err.println("am searching  ... " + id);
+
+        return employeeRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Employee with ID not found", id));
     }
 
     public Employee fetchEmployeeByAccountUsername(final String username) {
@@ -154,7 +155,11 @@ public class EmployeeService {
     public EmployeeData convertEmployeeEntityToEmployeeData(Employee employee) {
         System.out.println("Employee " + employee.getFullName());
         EmployeeData employeeData = modelMapper.map(employee, EmployeeData.class);
+        employeeData.setEmployeeId(employee.getId());
         employeeData.setDepartmentCode(employee.getDepartment().getCode());
+        if (employee.getLoginAccount() != null) {
+            employeeData.setUsername(employee.getLoginAccount().getUsername());
+        }
         return employeeData;
     }
 

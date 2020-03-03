@@ -40,19 +40,19 @@ public class JournalService {
 
         List<JournalEntryItem> items = data.getDebtors()
                 .stream()
-                .map(x -> new JournalEntryItem(x.getDescription(),x.getAccountNumber(), JournalEntryItem.Type.DEBIT, x.getAmount()))
+                .map(x -> new JournalEntryItem(x.getDescription(), x.getAccountNumber(), JournalEntryItem.Type.DEBIT, x.getAmount()))
                 .collect(Collectors.toList());
 
         items.addAll(data.getCreditors()
                 .stream()
-                .map(x -> new JournalEntryItem(x.getDescription(),x.getAccountNumber(), JournalEntryItem.Type.CREDIT, x.getAmount()))
+                .map(x -> new JournalEntryItem(x.getDescription(), x.getAccountNumber(), JournalEntryItem.Type.CREDIT, x.getAmount()))
                 .collect(Collectors.toList())
         );
 
         JournalEntry toSave = new JournalEntry(data.getDate(), data.getDescription(), items);
         toSave.setTransactionType(data.getTransactionType());
         toSave.setStatus(JournalState.PENDING);
-        if(data.getTransactionNo()==null){
+        if (data.getTransactionNo() == null) {
             toSave.setTransactionNo(sequenceNumberService.next(1L, Sequences.Transactions.name()));
         }
         JournalEntry je = save(toSave);
@@ -60,8 +60,8 @@ public class JournalService {
         return je;
     }
 
-    public JournalEntry save(JournalEntry journal) { 
-         JournalEntry je = journalRepository.save(journal);
+    public JournalEntry save(JournalEntry journal) {
+        JournalEntry je = journalRepository.save(journal);
         bookJournalEntry(je.getId());
         return je;
     }

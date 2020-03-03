@@ -109,7 +109,7 @@ public final class PaginationUtil {
         }
 
         if (size == null) {
-            size = 10;
+            size = 25;
         }
 
         Pageable pageable = PageRequest.of(page, size);

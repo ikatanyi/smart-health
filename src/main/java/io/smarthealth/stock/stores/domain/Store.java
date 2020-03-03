@@ -36,6 +36,12 @@ public class Store extends Identifiable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_inventory_account_id"))
     private Account inventoryAccount;
     
+    @JsonIgnore
+    @ManyToOne
+    @ToString.Exclude
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_inventory_expense_account_id"))
+    private Account expenseAccount;
+    
     private boolean active;
 
 }

@@ -4,6 +4,7 @@ import io.smarthealth.accounting.accounts.data.SimpleAccountData;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.data.SimpleServicePoint;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.*;
 import lombok.Data;
@@ -20,11 +21,11 @@ public class ServicePoint extends Identifiable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ServicePointType servicePointType;
-    
+
     private String pointType;
     private String name;
     private String description;
-    
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_income_account_id"))
     private Account incomeAccount;
@@ -55,10 +56,17 @@ public class ServicePoint extends Identifiable {
         if (this.getExpenseAccount() != null) {
             data.setExpenseAccount(SimpleAccountData.map(this.getExpenseAccount()));
         }
-        if(this.getInventoryAssetAccount()!=null){ 
+        if (this.getInventoryAssetAccount() != null) {
             data.setInventoryAssetAccount(SimpleAccountData.map(this.getInventoryAssetAccount()));
         }
 
+        return data;
+    }
+
+    public SimpleServicePoint toSimpleData() {
+        SimpleServicePoint data = new SimpleServicePoint();
+        data.setId(this.getId());
+        data.setName(this.getName());
         return data;
     }
 }

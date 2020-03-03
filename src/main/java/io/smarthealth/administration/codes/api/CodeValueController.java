@@ -66,6 +66,30 @@ public class CodeValueController {
         return ResponseEntity.ok(pagers);
     }
 
+    @GetMapping("/codes/{codeName}/codevalues-byname")
+    public ResponseEntity<?> getAllCodeValueByName(
+            @PathVariable("codeName") final String codeName,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+
+        Page<CodeValueData> list = service.fetchCodeValuesByName(codeName, pageable);
+        Pager<List<CodeValueData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Codes");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
+
     @PutMapping("/codes/{codeId}/codevalues/{codevalueId}")
     public CodeValueData updateCode(@PathVariable(value = "codeId") Long codeId, @PathVariable(value = "codevalueId") Long codevalueId, @Valid @RequestBody CodeValueData codeData) {
         CodeValueData code = service.updateCodeValue(codeId, codevalueId, codeData);

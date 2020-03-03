@@ -1,6 +1,8 @@
 package io.smarthealth.stock.item.domain.specification;
 
 import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,7 +18,7 @@ public class ItemSpecification {
         super();
     }
 
-    public static Specification<Item> createSpecification(String category, String type, final boolean includeClosed, final String term) {
+    public static Specification<Item> createSpecification(ItemCategory category, ItemType type, final boolean includeClosed, final String term) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 

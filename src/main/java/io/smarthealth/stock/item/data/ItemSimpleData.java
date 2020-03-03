@@ -1,7 +1,8 @@
 package io.smarthealth.stock.item.data;
 
-import io.smarthealth.accounting.pricebook.domain.PriceBookItem;
-import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.accounting.pricelist.domain.PriceBookItem;
+import io.smarthealth.stock.item.domain.enumeration.ItemType;
+import java.math.BigDecimal;
 import lombok.Data;
 
 /**
@@ -12,11 +13,11 @@ import lombok.Data;
 public class ItemSimpleData {
 
     private Long itemId;
-    private String itemType;
+    private ItemType itemType;
     private String itemName;
     private String itemCode;
-    private Double amount;
-    private Double defaultAmount;
+    private BigDecimal amount;
+    private BigDecimal defaultAmount;
 
     public static ItemSimpleData map(PriceBookItem bookItem) {
         ItemSimpleData data = new ItemSimpleData();

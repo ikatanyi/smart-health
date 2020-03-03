@@ -53,6 +53,7 @@ public class VisitData {
     private String servicePointName;
 
     private String practitionerCode;
+    private String practitionerName;
     private String comments;
 
     @Enumerated(EnumType.STRING)
@@ -65,6 +66,8 @@ public class VisitData {
     private List<PatientQueueData> patientQueueData;
     private double limitAmount;
     private String memberName, relation, policyNo;
+    @Enumerated(EnumType.STRING)
+    private VisitEnum.ServiceType serviceType;
 
     public static Visit map(VisitData visitDTO) {
         Visit visitEntity = new Visit();
@@ -76,6 +79,7 @@ public class VisitData {
         visitEntity.setStatus(visitDTO.getStatus());
         visitEntity.setPaymentMethod(visitDTO.getPaymentMethod());
         visitEntity.setComments(visitDTO.getComments());
+        visitEntity.setServiceType(visitDTO.getServiceType());
         return visitEntity;
     }
 
@@ -90,6 +94,11 @@ public class VisitData {
         visitDTO.setPaymentMethod(visitEntity.getPaymentMethod());
         visitDTO.setComments(visitEntity.getComments());
         visitDTO.setStartDate(visitEntity.getStartDatetime());
+        visitDTO.setServiceType(visitEntity.getServiceType());
+        if (visitEntity.getHealthProvider() != null) {
+            visitDTO.setPractitionerCode(visitEntity.getHealthProvider().getStaffNumber());
+            visitDTO.setPractitionerName(visitEntity.getHealthProvider().getFullName());
+        }
         return visitDTO;
     }
 

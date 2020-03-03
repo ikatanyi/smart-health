@@ -1,7 +1,10 @@
 package io.smarthealth.stock.item.domain;
 
 import io.smarthealth.accounting.taxes.domain.Tax;
+import io.smarthealth.administration.servicepoint.data.ServicePointData;
+import io.smarthealth.administration.servicepoint.data.SimpleServicePoint;
 import io.smarthealth.stock.item.data.Uoms;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.stores.data.StoreData;
 import java.util.List;
 import lombok.Data;
@@ -18,4 +21,6 @@ public class ItemMetadata {
     private List<Uoms> uom;
     private List<Tax> taxes;
     private List<StoreData> stores; 
+    private List<SimpleServicePoint> servicePoints;
+    private List<ItemCategory> categories;
 }

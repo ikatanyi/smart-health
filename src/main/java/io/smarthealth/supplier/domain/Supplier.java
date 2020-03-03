@@ -2,7 +2,7 @@ package io.smarthealth.supplier.domain;
 
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.payment.domain.PaymentTerms;
-import io.smarthealth.accounting.pricebook.domain.PriceBook;
+import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.BankEmbeddedData;
 import io.smarthealth.administration.app.data.ContactData;

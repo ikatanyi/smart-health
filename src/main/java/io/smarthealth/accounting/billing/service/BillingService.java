@@ -29,19 +29,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
-import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
 import lombok.RequiredArgsConstructor;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
+import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
+import io.smarthealth.accounting.doctors.domain.DoctorItem;
+import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.stores.domain.Store;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,20 +61,20 @@ public class BillingService {
     private final PatientBillItemRepository billItemRepository;
     private final VisitRepository visitRepository;
     private final ItemService itemService;
-    private final SequenceNumberGenerator sequenceGenerator;
-//    private final TxnService txnService;
     private final JournalService journalService;
     private final SequenceNumberService sequenceNumberService;
     private final FinancialActivityAccountRepository activityAccountRepository;
+    private final DoctorInvoiceService doctorInvoiceService;
 
     //Create service bill
     public PatientBill createPatientBill(BillData data) {
+
         //check the validity of the patient visit
         Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
 //        String billNumber = RandomStringUtils.randomNumeric(6); //sequenceService.nextNumber(SequenceType.BillNumber);
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());  //sequenceGenerator.generateTransactionNumber();
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
-     
+
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
         patientbill.setPatient(visit.getPatient());
@@ -107,6 +109,7 @@ public class BillingService {
                     billItem.setServicePoint(lineData.getServicePoint());
                     billItem.setServicePointId(lineData.getServicePointId());
                     billItem.setStatus(BillStatus.Draft);
+                    billItem.setMedicId(lineData.getMedicId());
 
                     return billItem;
                 })
@@ -131,7 +134,12 @@ public class BillingService {
     }
 
     public PatientBill save(PatientBill bill) {
-        return patientBillRepository.saveAndFlush(bill);
+        PatientBill savedBill = patientBillRepository.saveAndFlush(bill);
+        List<DoctorInvoice> doctorInvoices = toDoctorInvoice(savedBill);
+        if (doctorInvoices.size() > 0) {
+            doctorInvoices.forEach(inv -> doctorInvoiceService.save(inv));
+        }
+        return savedBill;
     }
 
     public PatientBill update(PatientBill bill) {
@@ -240,13 +248,13 @@ public class BillingService {
                     );
             //then here since we making a revenue
             map.forEach((k, v) -> {
-               
+
                 ServicePoint srv = servicePointService.getServicePoint(k);
-                String desc=srv.getName()+" Patient Billing";
+                String desc = srv.getName() + " Patient Billing";
                 Account credit = srv.getIncomeAccount();
                 BigDecimal amount = BigDecimal.valueOf(v);
-                items.add(new JournalEntryItem(desc,debitAcc, JournalEntryItem.Type.DEBIT, amount));
-                items.add(new JournalEntryItem(desc,credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
+                items.add(new JournalEntryItem(desc, debitAcc, JournalEntryItem.Type.DEBIT, amount));
+                items.add(new JournalEntryItem(desc, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
             });
             //if inventory expenses this shit!
             if (store != null) {
@@ -254,19 +262,24 @@ public class BillingService {
                         .stream()
                         .filter(x -> x.getItem().isInventoryItem())
                         .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
-                                Collectors.summingDouble(x -> (x.getItem().getCostRate() * x.getQuantity()))
+                                Collectors.summingDouble(x -> (x.getItem().getCostRate().doubleValue() * x.getQuantity()))
                         )
                         );
                 if (!inventory.isEmpty()) {
                     inventory.forEach((k, v) -> {
                         //revenue
-                        String desc= "Issuing Stocks";
+                        String pat = "";
+                        if (bill.getPatient() != null) {
+                            pat = bill.getPatient().getPatientNumber() + " - " + bill.getPatient().getFullName();
+                        }
+                        //TODO                      
+                        String desc = "Issuing Stocks to " + pat;
                         ServicePoint srv = servicePointService.getServicePoint(k);
                         Account debit = srv.getExpenseAccount(); // cost of sales
                         Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
                         BigDecimal amount = BigDecimal.valueOf(v);
-                        items.add(new JournalEntryItem(desc,debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
-                        items.add(new JournalEntryItem(desc,credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
+                        items.add(new JournalEntryItem(desc, debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
+                        items.add(new JournalEntryItem(desc, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
                     });
                 }
 
@@ -279,5 +292,46 @@ public class BillingService {
         toSave.setTransactionType(TransactionType.Billing);
         toSave.setStatus(JournalState.PENDING);
         return toSave;
+    }
+
+    private List<DoctorInvoice> toDoctorInvoice(PatientBill bill) {
+
+        return bill.getBillItems()
+                .stream()
+                .map(billItem -> {
+                    Employee doctor = doctorInvoiceService.getDoctorById(billItem.getMedicId());
+                    Optional<DoctorItem> doctorItem = doctorInvoiceService.getDoctorItem(doctor, billItem.getItem());
+
+                    if (doctorItem.isPresent()) {
+                        DoctorItem docItem = doctorItem.get();
+                        if (docItem.getActive()) {
+                            BigDecimal amt=computeDoctorFee(docItem);
+                            DoctorInvoice invoice = new DoctorInvoice();
+                            invoice.setAmount(amt);
+                            invoice.setBalance(amt);
+                            invoice.setDoctor(doctor);
+                            invoice.setInvoiceDate(billItem.getBillingDate());
+                            invoice.setInvoiceNumber(billItem.getPatientBill().getBillNumber());
+                            invoice.setBillItemId(billItem.getId());
+                            invoice.setPaid(Boolean.FALSE);
+                            invoice.setPatient(billItem.getPatientBill().getPatient());
+                            invoice.setPaymentMode(billItem.getPatientBill().getPaymentMode());
+                            invoice.setServiceItem(docItem);
+                            invoice.setTransactionId(billItem.getTransactionId());
+                            return invoice;
+                        }
+                    }
+                    return null;
+                })
+                .filter(x -> x != null)
+                .collect(Collectors.toList());
+    }
+
+    private BigDecimal computeDoctorFee(DoctorItem item) {
+        if (item.getIsPercentage()) { 
+            BigDecimal doctorRate = item.getAmount().divide(BigDecimal.valueOf(100)).multiply(item.getServiceType().getRate());
+            return doctorRate;
+        }
+        return item.getAmount();
     }
 }

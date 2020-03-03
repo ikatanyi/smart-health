@@ -81,6 +81,7 @@ public class DoctorRequestData {
         doctorRequest.setDrug(doctorRequestData.getDrug());
         doctorRequest.setUrgency(doctorRequestData.getUrgency().name());
         doctorRequest.setRequestType(doctorRequestData.requestType);
+          
         return doctorRequest;
     }
 

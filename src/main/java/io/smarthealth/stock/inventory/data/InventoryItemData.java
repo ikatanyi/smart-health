@@ -1,6 +1,7 @@
 package io.smarthealth.stock.inventory.data;
 
 import io.smarthealth.stock.item.domain.Item;
+import java.math.BigDecimal;
 import lombok.Data;
 
 /**
@@ -21,8 +22,8 @@ public class InventoryItemData {
     private String item;
     private String itemCode;
 
-    private double costPrice;
-    private double sellingPrice;
+    private BigDecimal costPrice;
+    private BigDecimal sellingPrice;
 
     private double availableStock;
 }

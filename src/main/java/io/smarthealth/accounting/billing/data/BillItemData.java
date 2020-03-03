@@ -36,7 +36,12 @@ public class BillItemData {
     private String servicePoint;
     private Long servicePointId;
 
+    //bill item to a medic 
+    private Long medicId;
+    private String medicName;
+    
     private BillStatus status;
     private Boolean paid;
+    
 
 }

@@ -1,6 +1,11 @@
 package io.smarthealth.stock.item.data;
 
+import io.smarthealth.administration.servicepoint.data.SimpleServicePoint;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 
 /**
@@ -10,15 +15,15 @@ import lombok.Data;
 @Data
 public class CreateItem {
 
-    private String itemType;
+    private ItemType itemType;
     private String itemName;
     private String sku;
-    private double rate;
+    private BigDecimal rate;
     private String itemUnit;
     private String description;
     private Long taxId; //tax
-    private double purchaseRate; //cost rate
-    private String stockCategory;
+    private BigDecimal purchaseRate; //cost rate
+    private ItemCategory stockCategory;
     private String drugCategory;
     private String drugStrength;
     private String drugRoute;
@@ -27,6 +32,6 @@ public class CreateItem {
     private BigDecimal stockRatePerUnit;
     private Integer stockBalance;
     private Integer reorderLevel;
-    private Integer orderQuantity;
-
+    private Integer orderQuantity; 
+    private List<Long> expenseTo = new ArrayList<>();
 }

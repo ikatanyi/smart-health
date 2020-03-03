@@ -17,11 +17,13 @@ public class PatientBillGroup {
     private Double amount;
     private Double balance;
     private String paymentMethod;
+    private String billNumber;
+    private String transactionNo;
 
     public PatientBillGroup() {
     }
 
-    public PatientBillGroup(String patientNumber, String patientName, LocalDate date, String visitNumber, Double amount, Double balance, String paymentMethod) {
+    public PatientBillGroup(String patientNumber, String patientName, LocalDate date, String visitNumber, Double amount, Double balance, String paymentMethod,String billNumber,String transactionNo) {
         this.patientNumber = patientNumber;
         this.patientName = patientName;
         this.date = date;
@@ -29,6 +31,8 @@ public class PatientBillGroup {
         this.amount = amount;
         this.balance = balance;
         this.paymentMethod = paymentMethod;
+        this.billNumber=billNumber;
+        this.transactionNo=transactionNo;
     }
 
      

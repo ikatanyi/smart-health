@@ -17,6 +17,8 @@ public class StoreData {
     private String servicePoint; 
     private String inventoryAccountNumber;
     private String inventoryAccount;
+    private String expenseAccountNumber;
+    private String expenseAccount;
     private boolean active;
     
     public static StoreData map(Store store ){
@@ -29,6 +31,10 @@ public class StoreData {
         if(store.getInventoryAccount()!=null){
             data.setInventoryAccount(store.getInventoryAccount().getName());
             data.setInventoryAccountNumber(store.getInventoryAccount().getIdentifier());
+        }
+         if(store.getExpenseAccount()!=null){
+            data.setExpenseAccount(store.getExpenseAccount().getName());
+            data.setExpenseAccountNumber(store.getExpenseAccount().getIdentifier());
         }
         if(store.getServicePoint()!=null){
             data.setServicePoint(store.getServicePoint().getName());

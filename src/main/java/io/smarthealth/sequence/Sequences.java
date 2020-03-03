@@ -22,5 +22,6 @@ public enum Sequences {
     StockItem,
     RequistionNumber,
     PurchaseOrder,
+    StockTransferNumber,
     BillNumber;
 }
