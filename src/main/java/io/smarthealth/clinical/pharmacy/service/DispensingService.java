@@ -24,6 +24,8 @@ import io.smarthealth.clinical.pharmacy.domain.specification.DispensingSpecifica
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.ItemRepository;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,7 +48,7 @@ public class DispensingService {
     private final StoreService storeService;
     private final BillingService billingService;
     private final InventoryService inventoryService;
-    private final SequenceNumberGenerator sequenceGenerator;
+    private final SequenceNumberService sequenceNumberService;
 
     private void dispenseItem(Store store, PharmacyData patientDrugs) {
         Patient patient = patientService.findPatientOrThrow(patientDrugs.getPatientNumber());
@@ -83,14 +85,15 @@ public class DispensingService {
 
     @Transactional
     public String dispense(PharmacyData patientDrugs) {
-        String trdId = sequenceGenerator.generateTransactionNumber();
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+
         Store store = storeService.getStoreWithNoFoundDetection(patientDrugs.getStoreId());
         patientDrugs.setTransactionId(trdId);
-        
+
         dispenseItem(store, patientDrugs);
 
         billingService.save(toBill(patientDrugs, store));
-   
+
         return trdId;
     }
 
@@ -122,7 +125,7 @@ public class DispensingService {
         ServicePoint srvpoint = store.getServicePoint();
 
         PatientBill patientbill = new PatientBill();
-         patientbill.setVisit(visit);
+        patientbill.setVisit(visit);
         patientbill.setPatient(visit.getPatient());
         patientbill.setAmount(data.getAmount());
         patientbill.setDiscount(data.getDiscount());
@@ -136,17 +139,21 @@ public class DispensingService {
         List<PatientBillItem> lineItems = data.getDrugItems()
                 .stream()
                 .map(lineData -> {
+                    System.err.println("Testing ... "+lineData.getItemCode()+" ID "+lineData.getItemId());
+                    System.err.println("Service point ");
                     PatientBillItem billItem = new PatientBillItem();
-
+                    Item item = getItemByCode(lineData.getItemCode());
+                    
                     billItem.setBillingDate(data.getDispenseDate());
                     billItem.setTransactionId(data.getTransactionId());
                     billItem.setServicePointId(srvpoint.getId());
                     billItem.setServicePoint(srvpoint.getName());
-
-                    if (lineData.getItemCode() != null) {
-                        Item item = getItemByCode(lineData.getItemCode());
-                        billItem.setItem(item);
-                    }
+                    
+                    billItem.setItem(item);
+//                    if (lineData.getItemId() != null) {
+//                        Item item = getItemByCode(lineData.getItemCode());
+//                        billItem.setItem(item);
+//                    }
 
                     billItem.setPrice(lineData.getPrice());
                     billItem.setQuantity(lineData.getQuantity());
@@ -167,5 +174,10 @@ public class DispensingService {
     private Item getItemByCode(String code) {
         return itemRepository.findByItemCode(code)
                 .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", code));
+    }
+
+    private Item getItemById(Long id) {
+        return itemRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", id));
     }
 }

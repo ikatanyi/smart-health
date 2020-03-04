@@ -80,8 +80,9 @@ public class CashierController {
     }
     @PutMapping("/cashiers/{id}/shift/{shiftNo}/close")
     public ResponseEntity<?> endCashierShift(@PathVariable(value = "id") Long code,@PathVariable(value = "shiftNo") String shiftNo) {
-        Cashier cashier = service.getCashier(code);
-        Shift shift=service.closeShift( shiftNo);
+       
+        //check if this shift exist
+        Shift shift=service.closeShift(code,shiftNo);
 
         return  ResponseEntity.ok(shift.toData());
     }

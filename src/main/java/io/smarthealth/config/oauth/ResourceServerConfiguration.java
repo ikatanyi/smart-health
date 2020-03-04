@@ -4,8 +4,8 @@ import io.kelsas.accounting.security.service.CustomAccessDeniedHandler;
 import io.smarthealth.security.service.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
@@ -16,20 +16,19 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
  */
 @Configuration
 @EnableResourceServer
-public class ResourceServer extends ResourceServerConfigurerAdapter {
+public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
+private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-
-    public ResourceServer(CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+    public ResourceServerConfiguration(CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
+
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
         resources.resourceId("api");
     }
-
-    @Override
+  @Override
     public void configure(HttpSecurity http) throws Exception {
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -37,13 +36,12 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
                 .authorizeRequests() 
                 .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                 .antMatchers("/api/user/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE").and()
-                .antMatcher("/api/**").authorizeRequests()      
+                .antMatcher("/api/**").authorizeRequests() 
                 .antMatchers(HttpMethod.GET, "/api/users", "/v2/api-docs/**", "/swagger-ui.html*").permitAll()  
-                 .antMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()  
+                 .antMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()   
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint)
                 .accessDeniedHandler(new CustomAccessDeniedHandler());
     }
-
 }

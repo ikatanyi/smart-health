@@ -299,13 +299,16 @@ public class BillingService {
         return bill.getBillItems()
                 .stream()
                 .map(billItem -> {
+                    if (billItem.getMedicId()== null) {
+                        return null;
+                    }
                     Employee doctor = doctorInvoiceService.getDoctorById(billItem.getMedicId());
                     Optional<DoctorItem> doctorItem = doctorInvoiceService.getDoctorItem(doctor, billItem.getItem());
 
                     if (doctorItem.isPresent()) {
                         DoctorItem docItem = doctorItem.get();
                         if (docItem.getActive()) {
-                            BigDecimal amt=computeDoctorFee(docItem);
+                            BigDecimal amt = computeDoctorFee(docItem);
                             DoctorInvoice invoice = new DoctorInvoice();
                             invoice.setAmount(amt);
                             invoice.setBalance(amt);
@@ -328,7 +331,7 @@ public class BillingService {
     }
 
     private BigDecimal computeDoctorFee(DoctorItem item) {
-        if (item.getIsPercentage()) { 
+        if (item.getIsPercentage()) {
             BigDecimal doctorRate = item.getAmount().divide(BigDecimal.valueOf(100)).multiply(item.getServiceType().getRate());
             return doctorRate;
         }

@@ -1,15 +1,13 @@
 package io.smarthealth.administration.codes.service;
 
-import io.smarthealth.administration.codes.data.CodeData;
 import io.smarthealth.administration.codes.data.CodeValueData;
-import io.smarthealth.administration.codes.data.CodeValues;
 import io.smarthealth.administration.codes.domain.Code;
-import io.smarthealth.administration.codes.domain.CodeRepository;
 import io.smarthealth.administration.codes.domain.CodeValue;
 import io.smarthealth.administration.codes.domain.CodeValueRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,156 +17,59 @@ import org.springframework.stereotype.Service;
  * @author Kelsas
  */
 @Service
+@RequiredArgsConstructor
 public class CodeService {
 
-    private final CodeRepository codeRepository;
-    private final CodeValueRepository codeValueRepository;
+    private final CodeValueRepository repository;
 
-    public CodeService(CodeRepository codeRepository, CodeValueRepository codeValueRepository) {
-        this.codeRepository = codeRepository;
-        this.codeValueRepository = codeValueRepository;
+    public CodeValue createCodeValue(CodeValueData data) {
+        CodeValue codeValue = new CodeValue();
+        codeValue.setActive(Boolean.TRUE);
+        codeValue.setCode(data.getCode());
+        codeValue.setCodeValue(data.getCodeValue());
+        codeValue.setPosition(data.getPosition());
+        return repository.save(codeValue);
     }
 
-    public Code getWithNotFoundDetection(Long id) {
-        return codeRepository.findById(id)
-                .orElseThrow(() -> APIException.notFound("Code with id  {0} not found.", id));
+    public CodeValue getCodeValueById(Long id) {
+        return getCodeValue(id)
+                .orElseThrow(() -> APIException.notFound("Code Value with Id {0} not Found", id));
     }
 
-    public Code getCodeByNameWithNotFoundDetection(String name) {
-        return codeRepository.findOneByName(name)
-                .orElseThrow(() -> APIException.notFound("Code with id  {0} not found.", name));
-    }
-    
-    public CodeValue getCodeValueWithNotFoundDetection(Long id) {
-        return codeValueRepository.findById(id)
-                .orElseThrow(() -> APIException.notFound("Code Value with id  {0} not found.", id));
+    public Optional<CodeValue> getCodeValue(Long id) {
+        return repository.findById(id);
     }
 
-    public CodeData createCode(CodeData data) {
-        if (codeRepository.findOneByName(data.getName()).isPresent()) {
-            throw APIException.conflict("Code with name {0} already exisits", data.getName());
+    public List<CodeValue> getCodeValues(Code code) {
+        if (code == null) {
+            return repository.findAll();
         }
-        Code code = new Code();
-        code.setName(data.getName());
-        code.setSystemDefined(data.isSystemDefined());
-        Code saved = codeRepository.save(code);
-        return CodeData.map(saved);
+        return repository.findByCode(code);
     }
 
-    public CodeData getCode(Long id) {
-        Code codes = getWithNotFoundDetection(id);
-        return CodeData.map(codes);
+    public List<CodeValue> getCodeValues(Code code, boolean active) {
+        return repository.findByCodeAndIsActive(code, active);
     }
 
-    public CodeValues getValuesByCode(Long id) {
-        Code codes = getWithNotFoundDetection(id);
-        CodeValues values = new CodeValues();
-        values.setName(codes.getName());
-        if (codes.getValues().size() > 0) {
-            codes.getValues()
-                    .stream()
-                    .forEach(x -> {
-                        values.getValues().add(CodeValueData.map(x));
-                    });
-        }
-        return values;
-    }
-     public CodeValues getValuesByName(String name) {
-        Code codes = getCodeByNameWithNotFoundDetection(name);
-        CodeValues values = new CodeValues();
-        values.setName(codes.getName());
-        if (codes.getValues().size() > 0) {
-            codes.getValues()
-                    .stream()
-                    .forEach(x -> {
-                        values.getValues().add(CodeValueData.map(x));
-                    });
-        }
-        return values;
+    public List<CodeValue> getCodeValues() {
+        return repository.findAll();
     }
 
-    public CodeData updateCode(Long id, CodeData data) {
-        Code codes = getWithNotFoundDetection(id);
-
-        if (codes.isSystemDefined()) {
-            throw APIException.badRequest("This code is system defined and cannot be modified or deleted.");
-        }
-        codes.setName(data.getName());
-        Code saved = codeRepository.save(codes);
-        return CodeData.map(saved);
+    public Page<CodeValue> getCodeValues(Pageable page) {
+        return repository.findAll(page);
     }
 
-    public Long deleteCode(Long id) {
-        Code codes = getWithNotFoundDetection(id);
-
-        if (codes.isSystemDefined()) {
-            throw APIException.badRequest("This code is system defined and cannot be modified or deleted.");
-        }
-        codeRepository.delete(codes);
-        return id;
+    public CodeValue updateCodeValue(Long id, CodeValueData data) {
+        CodeValue cValue = getCodeValueById(id);
+        cValue.setActive(data.isActive());
+        cValue.setCode(data.getCode());
+        cValue.setCodeValue(data.getCodeValue());
+        cValue.setPosition(data.getPosition());
+        return repository.save(cValue);
     }
 
-    public Page<CodeData> getCodes(Pageable page) {
-        Page<CodeData> lists = codeRepository.findAll(page).map(c -> CodeData.map(c));
-        return lists;
-    }
-
-    public CodeValueData createCodeValue(Long codeId, CodeValueData codeValueData) {
-        Code code = getWithNotFoundDetection(codeId);
-
-        CodeValue val = new CodeValue();
-        val.setCode(code);
-        val.setActive(codeValueData.isActive());
-        val.setDescription(codeValueData.getDescription());
-        val.setLabel(codeValueData.getName());
-        //val.setPosition(codeValueData.getPosition());
-        val.setMandatory(codeValueData.isMandatory());
-
-        CodeValue cv = codeValueRepository.save(val);
-
-        return CodeValueData.map(cv);
-    }
-
-    public CodeValueData getCodeValue(Long codeId, Long codeValueId) {
-        getWithNotFoundDetection(codeId);
-        CodeValue cv = getCodeValueWithNotFoundDetection(codeValueId);
-        return CodeValueData.map(cv);
-    }
-
-    public CodeValueData updateCodeValue(Long codeId, Long codeValueId, CodeValueData data) {
-        getWithNotFoundDetection(codeId);
-        CodeValue cv = getCodeValueWithNotFoundDetection(codeValueId);
-        cv.setActive(data.isActive());
-        cv.setMandatory(data.isMandatory());
-        cv.setDescription(data.getDescription());
-        cv.setLabel(data.getName());
-        cv.setPosition(data.getPosition());
-        CodeValue saved = codeValueRepository.save(cv);
-        return CodeValueData.map(saved);
-    }
-
-    public Long deleteCodeValue(Long codeId, Long codeValueId) {
-        getWithNotFoundDetection(codeId);
-        CodeValue cv = getCodeValueWithNotFoundDetection(codeValueId);
-        codeValueRepository.delete(cv);
-        return codeValueId;
-    }
-
-    public Page<CodeValueData> getCodeValues(Pageable page) {
-        Page<CodeValueData> lists = codeValueRepository.findAll(page).map(c -> CodeValueData.map(c));
-        return lists;
-    }
-    public Page<CodeValueData> fetchCodeValuesByName(final String name,final Pageable page) {
-        Page<CodeValueData> lists = codeValueRepository.findByCodeName(name, page).map(c -> CodeValueData.map(c));
-        return lists;
-    }
-
-    public List<CodeValueData> getCodeValues(Long codeId) {
-        Code code = getWithNotFoundDetection(codeId);
-        List<CodeValueData> codes = codeValueRepository.findByCode(code)
-                .stream()
-                .map(cv -> CodeValueData.map(cv))
-                .collect(Collectors.toList());
-        return codes;
+    public void deleteCodeValue(Long id) {
+        CodeValue cValue = getCodeValueById(id);
+        repository.delete(cValue);
     }
 }

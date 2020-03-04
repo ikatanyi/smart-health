@@ -1,5 +1,7 @@
-package io.smarthealth.config.oauth;
+package io.smarthealth.config.oauth.delete;
 
+//package io.smarthealth.config.oauth;
+//
 import java.security.KeyPair;
 import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Kelsas
  */
-@Component
+//@Component
 public class AuthenticationConfig {
  @Autowired
     private ClientDetailsService clientDetailsService;
