@@ -121,7 +121,7 @@ public class CodeService {
         val.setActive(codeValueData.isActive());
         val.setDescription(codeValueData.getDescription());
         val.setLabel(codeValueData.getName());
-        val.setPosition(codeValueData.getPosition());
+        //val.setPosition(codeValueData.getPosition());
         val.setMandatory(codeValueData.isMandatory());
 
         CodeValue cv = codeValueRepository.save(val);
