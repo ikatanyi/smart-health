@@ -415,7 +415,8 @@ public class ReportService {
              pVisitData.setDrugsData(pharmacyData);
              pVisitData.setDiagnosis(diagnosisData);
              pVisitData.setAge(patient.getAge());
-             pVisitData.setPractitionerName(visit.getHealthProvider().getFullName());
+             if(visit.getHealthProvider()!=null)
+                pVisitData.setPractitionerName(visit.getHealthProvider().getFullName());
              
              visitData.add(pVisitData);
          }
