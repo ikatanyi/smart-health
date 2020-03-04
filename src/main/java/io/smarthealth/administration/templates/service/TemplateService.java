@@ -14,7 +14,6 @@ import io.smarthealth.stock.item.data.CreateItem;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
@@ -64,18 +63,14 @@ public class TemplateService {
     }
 
     private List getFieldDescriptions(Class<?> componentClass) {
-        Field[] fields = componentClass.getFields();
+        Field[] fields = componentClass.getDeclaredFields();
         List<String> lines = new ArrayList<>(fields.length);
 
-        Arrays.stream(fields).forEach(field -> {
+        for(Field field:fields){
             field.setAccessible(true);
-            try {
-                lines.add(field.getName() + " = " + field.get(this));
-            } catch (final IllegalAccessException e) {
-                lines.add(field.getName() + " > " + e.getClass().getSimpleName());
-            }
-        });
-
+            lines.add(field.getName().toUpperCase());
+            
+        }
         return lines;//.toArray(new String[lines.size()]);
     }
 }
