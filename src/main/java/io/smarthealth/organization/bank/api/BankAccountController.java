@@ -33,9 +33,9 @@ public class BankAccountController {
 
     @PostMapping("/bank-account")
     public ResponseEntity<?> createBankAccount(@Valid @RequestBody BankAccountData bankAccountData) {
-
+//   bankAccountData.setAccountNumber("70-14-003");
         BankAccountData bankAccount = BankAccountData.map(bankAccountservice.createBankAccount(bankAccountData));
-
+         
         Pager<BankAccountData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Bank Account successfully Created.");

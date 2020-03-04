@@ -28,7 +28,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
  */
 @Configuration
 @EnableAuthorizationServer
-public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
+public class OAuthConfiguration extends AuthorizationServerConfigurerAdapter {
 
     private final DataSource dataSource;
     private final PasswordEncoder passwordEncoder;
@@ -56,7 +56,7 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
     @Value("${jwt.refreshTokenValiditySeconds:2592000}") // 30 days
     private int refreshTokenValiditySeconds;
 
-    public AuthorizationServer(DataSource dataSource, PasswordEncoder passwordEncoder, TokenStore tokenStore, CustomUserDetailsService userDetailsService,
+    public OAuthConfiguration(DataSource dataSource, PasswordEncoder passwordEncoder, TokenStore tokenStore, CustomUserDetailsService userDetailsService,
             CustomTokenEnhancer customTokenEnhancer, JwtAccessTokenConverter jwtAccessTokenConverter) {
         this.dataSource = dataSource;
         this.passwordEncoder = passwordEncoder;

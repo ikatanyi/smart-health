@@ -124,9 +124,7 @@ public class EmployeeService {
         return employeeRepository.findByLoginAccount(user).orElseThrow(() -> APIException.notFound("Employee identified by user {0} was not found ", user.getEmail()));
     }
 
-    public Employee findEmployeeByIdOrThrow(Long id) {
-        System.err.println("am searching  ... " + id);
-
+    public Employee findEmployeeByIdOrThrow(Long id) { 
         return employeeRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Employee with ID not found", id));
     }

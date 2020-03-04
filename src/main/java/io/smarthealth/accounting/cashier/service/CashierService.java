@@ -16,6 +16,7 @@ import io.smarthealth.sequence.Sequences;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -102,8 +103,12 @@ public class CashierService {
         shift.setStatus(ShiftStatus.Closed);
         return shiftRepository.save(shift);
     }
-    public Shift closeShift(String shiftNo) {
+    public Shift closeShift(Long cashierId,String shiftNo) {
+         Cashier cashier = getCashier(cashierId);
         Shift shift =  findByShiftNo(shiftNo);
+        if(!Objects.equals(shift.getCashier().getId(), cashier.getId())){
+            throw APIException.badRequest("Shift {0} does not belong to cashier {1}", shiftNo, cashierId);
+        }
         shift.setStatus(ShiftStatus.Closed);
         return shiftRepository.save(shift);
     }
