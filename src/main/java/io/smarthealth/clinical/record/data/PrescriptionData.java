@@ -70,7 +70,10 @@ public class PrescriptionData extends DoctorRequestData {
         pd.setQuantityUnits(p.getQuantityUnits());
         pd.setRequestType(RequestType.valueOf(p.getRequestType().name()));
         pd.setRoute(p.getRoute());
-        pd.setUrgency(Urgency.valueOf(p.getUrgency()));
+        if (p.getUrgency() != null) {
+            pd.setUrgency(Urgency.valueOf(p.getUrgency()));
+        }
+
         pd.setVisitNumber(p.getVisitNumber());
         pd.setPrescriptionNo(p.getOrderNumber());
         pd.setPrescriptionId(p.getId());
@@ -102,7 +105,9 @@ public class PrescriptionData extends DoctorRequestData {
         pd.setQuantityUnits(p.getQuantityUnits());
         pd.setRequestType(pd.getRequestType());
         pd.setRoute(p.getRoute());
-        pd.setUrgency(p.getUrgency().name());
+        if (p.getUrgency() != null) {
+            pd.setUrgency(p.getUrgency().name());
+        }
         pd.setVisitNumber(p.getVisitNumber());
         return pd;
     }
