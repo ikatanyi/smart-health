@@ -45,6 +45,7 @@ public class DispensedDrug extends Auditable {
     private String units;
     private String doctorName;
     private Boolean paid;
+    private Boolean isReturn;
     private Boolean collected;
     private String dispensedBy;
     private String collectedBy;

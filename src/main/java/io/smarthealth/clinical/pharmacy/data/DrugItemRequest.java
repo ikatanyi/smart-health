@@ -16,7 +16,7 @@ import lombok.Data;
  * @author Kelsas
  */
 @Data
-public class PharmacyItemData {
+public class DrugItemRequest {
 
     private Long id;
     private String billNumber;

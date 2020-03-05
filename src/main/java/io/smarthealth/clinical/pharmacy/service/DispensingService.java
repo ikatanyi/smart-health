@@ -5,7 +5,7 @@ import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
-import io.smarthealth.clinical.pharmacy.data.PharmacyData;
+import io.smarthealth.clinical.pharmacy.data.DrugRequest;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -15,7 +15,6 @@ import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
 import io.smarthealth.clinical.pharmacy.domain.specification.DispensingSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.ItemRepository;
@@ -50,27 +48,28 @@ public class DispensingService {
     private final InventoryService inventoryService;
     private final SequenceNumberService sequenceNumberService;
 
-    private void dispenseItem(Store store, PharmacyData patientDrugs) {
-        Patient patient = patientService.findPatientOrThrow(patientDrugs.getPatientNumber());
+    private void dispenseItem(Store store, DrugRequest drugRequest) {
+        Patient patient = patientService.findPatientOrThrow(drugRequest.getPatientNumber());
+        
 //        Store store = storeService.getStoreWithNoFoundDetection(patientDrugs.getStoreId());
-        if (!patientDrugs.getDrugItems().isEmpty()) {
-            patientDrugs.getDrugItems()
+        if (!drugRequest.getDrugItems().isEmpty()) {
+            drugRequest.getDrugItems()
                     .stream()
                     .forEach(drugData -> {
                         DispensedDrug drugs = new DispensedDrug();
                         Item item = billingService.getItemByCode(drugData.getItemCode());
                         drugs.setPatient(patient);
                         drugs.setDrug(item);
-                        drugs.setStore(store);
-
-                        drugs.setDispensedDate(patientDrugs.getDispenseDate());
-                        drugs.setTransactionId(patientDrugs.getTransactionId());
+                        drugs.setStore(store); 
+                        drugs.setDispensedDate(drugRequest.getDispenseDate());
+                        drugs.setTransactionId(drugRequest.getTransactionId());
                         drugs.setQtyIssued(drugData.getQuantity());
                         drugs.setPrice(drugData.getPrice());
                         drugs.setAmount(drugData.getAmount());
                         drugs.setUnits(drugData.getUnit());
                         drugs.setDoctorName(drugData.getDoctorName());
                         drugs.setPaid(false);
+                        drugs.setIsReturn(Boolean.FALSE);
                         drugs.setCollected(true);
                         drugs.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
                         drugs.setCollectedBy("");
@@ -84,16 +83,16 @@ public class DispensingService {
     }
 
     @Transactional
-    public String dispense(PharmacyData patientDrugs) {
+    public String dispense(DrugRequest drugRequest) {
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
 
-        Store store = storeService.getStoreWithNoFoundDetection(patientDrugs.getStoreId());
-        patientDrugs.setTransactionId(trdId);
+        Store store = storeService.getStoreWithNoFoundDetection(drugRequest.getStoreId());
+        drugRequest.setTransactionId(trdId);
 
-        dispenseItem(store, patientDrugs);
-
-        billingService.save(toBill(patientDrugs, store));
-
+        billingService.save(toBill(drugRequest, store));
+        
+        dispenseItem(store, drugRequest); 
+        
         return trdId;
     }
 
@@ -111,15 +110,15 @@ public class DispensingService {
                 .orElseThrow(() -> APIException.notFound("Dispensed Drug with id {0} not found", id));
     }
 
-    public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, String status, Pageable page) {
-        BillStatus state = BillStatus.valueOf(status);
-        Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo, state);
+    public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, BillStatus status, Pageable page) {
+//        BillStatus state = BillStatus.valueOf(status);
+        Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo, status);
 
         return repository.findAll(spec, page);
 
     }
 
-    private PatientBill toBill(PharmacyData data, Store store) {
+    private PatientBill toBill(DrugRequest data, Store store) {
         //get the service point from store
         Visit visit = billingService.findVisitEntityOrThrow(data.getVisitNumber());
         ServicePoint srvpoint = store.getServicePoint();
@@ -139,22 +138,14 @@ public class DispensingService {
         List<PatientBillItem> lineItems = data.getDrugItems()
                 .stream()
                 .map(lineData -> {
-                    System.err.println("Testing ... "+lineData.getItemCode()+" ID "+lineData.getItemId());
-                    System.err.println("Service point ");
                     PatientBillItem billItem = new PatientBillItem();
                     Item item = getItemByCode(lineData.getItemCode());
-                    
+
                     billItem.setBillingDate(data.getDispenseDate());
                     billItem.setTransactionId(data.getTransactionId());
                     billItem.setServicePointId(srvpoint.getId());
                     billItem.setServicePoint(srvpoint.getName());
-                    
                     billItem.setItem(item);
-//                    if (lineData.getItemId() != null) {
-//                        Item item = getItemByCode(lineData.getItemCode());
-//                        billItem.setItem(item);
-//                    }
-
                     billItem.setPrice(lineData.getPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getAmount());

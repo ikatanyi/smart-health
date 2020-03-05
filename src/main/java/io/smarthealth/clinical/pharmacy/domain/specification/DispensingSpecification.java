@@ -40,6 +40,7 @@ public class DispensingSpecification {
             }
             if (status != null) {
                 predicates.add(cb.equal(root.get("status"), status));
+                 
             }
 
 //            if (term != null) {

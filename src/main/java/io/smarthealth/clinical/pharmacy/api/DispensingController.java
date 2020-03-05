@@ -1,7 +1,8 @@
 package io.smarthealth.clinical.pharmacy.api;
 
+import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
-import io.smarthealth.clinical.pharmacy.data.PharmacyData;
+import io.smarthealth.clinical.pharmacy.data.DrugRequest;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
 import io.smarthealth.clinical.pharmacy.service.DispensingService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -39,7 +40,19 @@ public class DispensingController {
     }
 
     @PostMapping("/pharmacybilling")
-    public ResponseEntity<?> dispenseAndBilling(@Valid @RequestBody PharmacyData data) {
+    public ResponseEntity<?> dispenseAndBilling(@Valid @RequestBody DrugRequest data) {
+
+        String patientbill = service.dispense(data);
+
+        Pager<TransData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Bill Successfully Created.");
+        pagers.setContent(new TransData(patientbill));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+    @PostMapping("/pharmacybilling/{}/return")
+    public ResponseEntity<?> dispenseReturns(@Valid @RequestBody DrugRequest data) {
 
         String patientbill = service.dispense(data);
 
@@ -64,7 +77,7 @@ public class DispensingController {
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
             @RequestParam(value = "prescriptionNo", required = false) String prescription,
             @RequestParam(value = "billNumber", required = false) String billNumber,
-            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "status", required = false) BillStatus status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
