@@ -154,13 +154,14 @@ public class DoctorRequestController {
     @GetMapping("/doctor-request")
     public ResponseEntity<?> waitingListByRequestType(
             @RequestParam(value = "visitNo", required = false) final String visitNo,
+            @RequestParam(value = "patientNo", required = false) final String patientNo,
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
             @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final String fulfillerStatus,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, requestType, fulfillerStatus, "patient", pageable);
+        Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable);
         //Page<DoctorRequest> pageList = requestService.fetchDoctorRequestLine(fulfillerStatus, requestType, pageable);
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
 
@@ -203,13 +204,14 @@ public class DoctorRequestController {
     @GetMapping("/visit/{visitNo}/doctor-request/{requestType}")
     public ResponseEntity<?> fetchAllRequestsByVisitAndRequestType(
             @PathVariable("visitNo") final String visitNo,
+            @RequestParam(value = "patientNo", required = false) final String patientNo,
             @PathVariable("requestType") final RequestType requestType,
             @RequestParam(value = "fulfillerStatus", required = false) final String fulfillerStatus,
             Pageable pageable) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
 
 //        Page<DoctorRequest> page = requestService.findAllRequestsByOrderNoAndRequestType(visitNo, requestType, pageable);
-        Page<DoctorRequest> page = requestService.fetchAllDoctorRequests(visit.getVisitNumber(), requestType, fulfillerStatus, null, pageable);
+        Page<DoctorRequest> page = requestService.fetchAllDoctorRequests(visit.getVisitNumber(), patientNo, requestType, fulfillerStatus, null, pageable);
 
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);
