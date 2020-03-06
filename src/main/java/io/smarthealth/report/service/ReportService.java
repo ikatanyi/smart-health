@@ -86,8 +86,8 @@ public class ReportService {
 
     private final JasperReportsService reportService;
     private final TrialBalanceService trialBalanceService;
-    private final BillingService billService; 
-    private final InvoiceService invoiceService; 
+    private final BillingService billService;
+    private final InvoiceService invoiceService;
     private final VisitService visitService;
     private final PatientService patientService;
     private final RadiologyService radiologyService;
@@ -100,7 +100,6 @@ public class ReportService {
     private final PrescriptionService prescriptionService;
     private final SickOffNoteService sickOffNoteService;
     private final LabSetupService labSetUpService;
-    
 
     public void getTrialBalance(final boolean includeEmptyEntries, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         List<TrialBalanceData> dataList = new ArrayList();
@@ -178,23 +177,23 @@ public class ReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+
         reportData.setData(billData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/payment_statement");
         reportData.setReportName("payement_statement");
         reportService.generateReport(reportData, response);
     }
-    
-    public void getInvoiceStatement(Long payer, Long scheme, String invoiceNo, String patientNo, String dateRange, String invoiceStatus, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+    public void getInvoiceStatement(Long payer, Long scheme, String invoiceNo, String patientNo, String dateRange, String invoiceStatus, ExportFormat format, double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo, HttpServletResponse response) throws SQLException, JRException, IOException {
         List<InsuranceInvoiceData> invoiceData = new ArrayList();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         ReportData reportData = new ReportData();
         InvoiceStatus status = invoiceStatusToEnum(invoiceStatus);
-        
+
         Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<Invoice> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, dateRange, patientNo, range, pageable).getContent();
-        
+        List<Invoice> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable).getContent();
+
         for (Invoice invoice : invoices) {
             InsuranceInvoiceData data = new InsuranceInvoiceData();
             data.setAmount(invoice.getTotal());
@@ -241,36 +240,39 @@ public class ReportService {
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.getFilters().put("SUBREPORT_DIR", "/accounts/");
-        reportData.setData(invoiceData);reportData.setFormat(format);
+        reportData.setData(invoiceData);
+        reportData.setFormat(format);
         reportData.setTemplate("/accounts/insurance_invoice_statement");
         reportData.setReportName("invoice_statement");
         reportService.generateReport(reportData, response);
     }
-    
-    public void genInsuranceStatement(Long payer, Long scheme, String invoiceNo, String dateRange, String patientNo, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+
+    public void genInsuranceStatement(Long payer, Long scheme, String invoiceNo, String dateRange, String patientNo, ExportFormat format, double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo, HttpServletResponse response) throws SQLException, IOException, JRException {
         List<InsuranceInvoiceData> invoiceData = new ArrayList();
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
         InvoiceStatus status = invoiceStatusToEnum(String.valueOf(map.get("billStatus")));
-        DateRange  range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<Invoice> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, dateRange, patientNo, range, pageable).getContent();
-        
+        List<Invoice> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable).getContent();
+
         for (Invoice invoice : invoices) {
             InsuranceInvoiceData data = new InsuranceInvoiceData();
             data.setAmount(invoice.getTotal());
             data.setBalance(invoice.getBalance());
             data.setDiscount(invoice.getDisounts());
-            if(invoice.getBill()!=null){
+            if (invoice.getBill() != null) {
                 data.setPatientId(invoice.getBill().getPatient().getPatientNumber());
                 data.setPatientName(invoice.getBill().getPatient().getFullName());
             }
             data.setDueDate(String.valueOf(invoice.getDueDate()));
             data.setInvoiceNo(invoice.getNumber());
-            if(invoice.getPayer()!=null)
+            if (invoice.getPayer() != null) {
                 data.setPayer(invoice.getPayer().getPayerName());
-            if(invoice.getPayee()!=null)    
+            }
+            if (invoice.getPayee() != null) {
                 data.setPayee(invoice.getPayee().getSchemeName());
+            }
             data.setStatus(invoice.getStatus().name());
             data.setDate(String.valueOf(invoice.getDate()));
             invoiceData.add(data);
@@ -288,17 +290,17 @@ public class ReportService {
         reportData.setReportName("insurance_statement");
         reportService.generateReport(reportData, response);
     }
-    
-     public void getInvoice(String transactionNo, Long payer, Long scheme, String patientNo, String invoiceNo, String dateRange, String invoiceStatus, ExportFormat format,  HttpServletResponse response) throws SQLException, JRException, IOException {
+
+    public void getInvoice(String transactionNo, Long payer, Long scheme, String patientNo, String invoiceNo, String dateRange, String invoiceStatus, ExportFormat format, double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo, HttpServletResponse response) throws SQLException, JRException, IOException {
         List<InvoiceData> invoiceData = new ArrayList();
         ReportData reportData = new ReportData();
         InvoiceStatus status = invoiceStatusToEnum(invoiceStatus);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<Invoice> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, dateRange, patientNo, range, pageable).getContent();
-        
+        List<Invoice> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable).getContent();
+
         for (Invoice invoice : invoices) {
-            List<InvoiceItemData>itemArray = new ArrayList();
+            List<InvoiceItemData> itemArray = new ArrayList();
             InvoiceData data = new InvoiceData();
             data.setAmount(invoice.getTotal());
             data.setBalance(invoice.getBalance());
@@ -311,20 +313,20 @@ public class ReportService {
             data.setPayee(invoice.getPayee().getSchemeName());
             data.setDate(String.valueOf(invoice.getDate()));
             data.setCreatedBy(invoice.getCreatedBy());
-            for(InvoiceLineItem invoiceLineItem:invoice.getItems()){
+            for (InvoiceLineItem invoiceLineItem : invoice.getItems()) {
                 InvoiceItemData item = new InvoiceItemData();
                 item.setQuantity(invoiceLineItem.getBillItem().getQuantity());
                 item.setAmount(invoiceLineItem.getBillItem().getAmount());
                 item.setBalance(invoiceLineItem.getBillItem().getBalance());
                 item.setDiscount(invoiceLineItem.getBillItem().getDiscount());
-                item.setItem(invoiceLineItem.getBillItem().getItem()!=null?invoiceLineItem.getBillItem().getItem().getItemName():"");
+                item.setItem(invoiceLineItem.getBillItem().getItem() != null ? invoiceLineItem.getBillItem().getItem().getItemName() : "");
                 item.setPrice(invoiceLineItem.getBillItem().getPrice());
                 item.setServicePoint(invoiceLineItem.getBillItem().getServicePoint());
                 item.setTaxes(invoiceLineItem.getBillItem().getTaxes());
                 item.setBillingDate(String.valueOf(invoiceLineItem.getBillItem().getBillingDate()));
                 itemArray.add(item);
             }
-            data.setItems(itemArray);            
+            data.setItems(itemArray);
             invoiceData.add(data);
         }
         List<JRSortField> sortList = new ArrayList<>();
@@ -349,78 +351,81 @@ public class ReportService {
 //         
 //     }
 //     
-     public void getPatientFile(final String PatientId, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException{
-         List<PatientVisitData>visitData = new ArrayList();
-         PatientVisitData patientVisitData = new PatientVisitData();
-         PatientData patient = patientService.convertToPatientData(patientService.findPatientOrThrow(PatientId));
-         if(!patient.getAddress().isEmpty()){
+
+    public void getPatientFile(final String PatientId, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        List<PatientVisitData> visitData = new ArrayList();
+        PatientVisitData patientVisitData = new PatientVisitData();
+        PatientData patient = patientService.convertToPatientData(patientService.findPatientOrThrow(PatientId));
+        if (!patient.getAddress().isEmpty()) {
             patientVisitData.setAddressCountry(patient.getAddress().get(0).getCountry());
             patientVisitData.setAddressCounty(patient.getAddress().get(0).getCounty());
             patientVisitData.setAddressLine1(patient.getAddress().get(0).getLine1());
             patientVisitData.setAddressLine2(patient.getAddress().get(0).getLine2());
             patientVisitData.setAddressPostalCode(patient.getAddress().get(0).getPostalCode());
             patientVisitData.setAddressTown(patient.getAddress().get(0).getTown());
-         }
-         if(!patient.getContact().isEmpty()){
+        }
+        if (!patient.getContact().isEmpty()) {
             patientVisitData.setContactEmail(patient.getContact().get(0).getEmail());
             patientVisitData.setContactMobile(patient.getContact().get(0).getMobile());
             patientVisitData.setContactTelephone(patient.getContact().get(0).getTelephone());
-         }
-         patientVisitData.setDateOfBirth(String.valueOf(patient.getDateOfBirth()));
-         patientVisitData.setFullName(patient.getFullName());
-         patientVisitData.setGender(String.valueOf(patient.getGender()));
-         patientVisitData.setTitle(patient.getTitle());
-         patientVisitData.setPatientId(patient.getPatientNumber());         
-         Pageable pageable = PaginationUtil.createPage(1, 500);
-         List<Visit>visits = visitService.fetchVisitByPatientNumber(PatientId, pageable).getContent();
-         if(visits.isEmpty())
-             visitData.add(patientVisitData);
-         for(Visit visit:visits){
-             PatientVisitData pVisitData = patientVisitData;
-             List<PatientScanRegisterData> scanData= radiologyService.findPatientScanRegisterByVisit(visit)
-                                                .stream()
-                                                .map((scan)->PatientScanRegisterData.map(scan))
-                                                .collect(Collectors.toList());
+        }
+        patientVisitData.setDateOfBirth(String.valueOf(patient.getDateOfBirth()));
+        patientVisitData.setFullName(patient.getFullName());
+        patientVisitData.setGender(String.valueOf(patient.getGender()));
+        patientVisitData.setTitle(patient.getTitle());
+        patientVisitData.setPatientId(patient.getPatientNumber());
+        Pageable pageable = PaginationUtil.createPage(1, 500);
+        List<Visit> visits = visitService.fetchVisitByPatientNumber(PatientId, pageable).getContent();
+        if (visits.isEmpty()) {
+            visitData.add(patientVisitData);
+        }
+        for (Visit visit : visits) {
+            PatientVisitData pVisitData = patientVisitData;
+            List<PatientScanRegisterData> scanData = radiologyService.findPatientScanRegisterByVisit(visit)
+                    .stream()
+                    .map((scan) -> PatientScanRegisterData.map(scan))
+                    .collect(Collectors.toList());
             List<PatientProcedureRegisterData> procedures = procedureService.findPatientProcedureRegisterByVisit(visit.getVisitNumber())
-                                                            .stream()
-                                                            .map((proc)->PatientProcedureRegisterData.map(proc))
-                                                            .collect(Collectors.toList());
-            
+                    .stream()
+                    .map((proc) -> PatientProcedureRegisterData.map(proc))
+                    .collect(Collectors.toList());
+
             List<PatientTestRegisterData> labTests = labService.findPatientTestRegisterByVisit(visit)
-                                                      .stream()
-                                                      .map((test)->PatientTestRegisterData.map(test))
-                                                      .collect(Collectors.toList());
-            
+                    .stream()
+                    .map((test) -> PatientTestRegisterData.map(test))
+                    .collect(Collectors.toList());
+
             Optional<PatientNotes> patientNotes = patientNotesService.fetchPatientNotesByVisit(visit);
-            if(patientNotes.isPresent()){
-                PatientNotes notes=patientNotes.get();
+            if (patientNotes.isPresent()) {
+                PatientNotes notes = patientNotes.get();
                 pVisitData.setBriefNotes(notes.getBriefNotes());
                 pVisitData.setChiefComplaint(notes.getChiefComplaint());
                 pVisitData.setExaminationNotes(notes.getExaminationNotes());
                 pVisitData.setHistoryNotes(notes.getHistoryNotes());
-                
+
             }
-            
-             List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(visit, pageable)
-                                                  .stream()
-                                                  .map((diag)->DiagnosisData.map(diag))
-                                                  .collect(Collectors.toList());
-             List<PatientDrugsData> pharmacyData = pharmacyService.getByVisitIdAndPatientId(visit.getVisitNumber(), PatientId);
-             
-             pVisitData.setVisitNumber(visit.getVisitNumber());
-             pVisitData.setCreatedOn(String.valueOf(visit.getCreatedOn()));
-             pVisitData.setLabTests(labTests);             
-             pVisitData.setProcedures(procedures);
-             pVisitData.setRadiologyTests(scanData);
-             pVisitData.setDrugsData(pharmacyData);
-             pVisitData.setDiagnosis(diagnosisData);
-             pVisitData.setAge(patient.getAge());
-             if(visit.getHealthProvider()!=null)
+
+            List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(visit, pageable)
+                    .stream()
+                    .map((diag) -> DiagnosisData.map(diag))
+                    .collect(Collectors.toList());
+            List<PatientDrugsData> pharmacyData = pharmacyService.getByVisitIdAndPatientId(visit.getVisitNumber(), PatientId);
+
+            pVisitData.setVisitNumber(visit.getVisitNumber());
+            pVisitData.setCreatedOn(String.valueOf(visit.getCreatedOn()));
+            pVisitData.setLabTests(labTests);
+            pVisitData.setProcedures(procedures);
+            pVisitData.setRadiologyTests(scanData);
+            pVisitData.setDrugsData(pharmacyData);
+            pVisitData.setDiagnosis(diagnosisData);
+            pVisitData.setAge(patient.getAge());
+            if (visit.getHealthProvider() != null) {
                 pVisitData.setPractitionerName(visit.getHealthProvider().getFullName());
-             
-             visitData.add(pVisitData);
-         }
-         
+            }
+
+            visitData.add(pVisitData);
+        }
+
         List<JRSortField> sortList = new ArrayList();
         ReportData reportData = new ReportData();
         reportData.setPatientNumber(PatientId);
@@ -435,41 +440,40 @@ public class ReportService {
         reportData.setTemplate("/patient/patientFile");
         reportData.setReportName("Patient-file");
         reportService.generateReport(reportData, response);
-        
-                  
-     }
-     
-     public void getPatientRequest(String visitNumber, RequestType requestType, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+    }
+
+    public void getPatientRequest(String visitNumber, RequestType requestType, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        
-        Visit visit =visitService.findVisitEntityOrThrow(visitNumber);
+
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         Pageable pageable = PaginationUtil.createPage(1, 500);
         List<DoctorRequestData> requestData = doctorRequestService.findAllRequestsByVisitAndRequestType(visit, requestType, pageable)
-                                                      .getContent()
-                                                      .stream()
-                                                      .map((test)->DoctorRequestData.map(test))
-                                                      .collect(Collectors.toList());
-        
-         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
-         if(visit.getHealthProvider()!=null){
-           reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
-           
-         }
+                .getContent()
+                .stream()
+                .map((test) -> DoctorRequestData.map(test))
+                .collect(Collectors.toList());
+
+        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        if (visit.getHealthProvider() != null) {
+            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
+
+        }
         reportData.getFilters().put("SUBREPORT_DIR", "/clinical/");
         reportData.setData(requestData);
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/request_form");
-        reportData.setReportName(requestType.name()+"_request_form");
+        reportData.setReportName(requestType.name() + "_request_form");
         reportService.generateReport(reportData, response);
     }
-     
-     public void getPatientLabReport(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+    public void getPatientLabReport(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        Visit visit =visitService.findVisitEntityOrThrow(visitNumber);
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         List<PatientTestRegisterData> labTests = labService.findPatientTestRegisterByVisit(visit)
-                                                      .stream()
-                                                      .map((test)->PatientTestRegisterData.map(test))
-                                                      .collect(Collectors.toList());
+                .stream()
+                .map((test) -> PatientTestRegisterData.map(test))
+                .collect(Collectors.toList());
 
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
@@ -480,22 +484,22 @@ public class ReportService {
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         reportData.setData(labTests);
-         if(visit.getHealthProvider()!=null){
-           reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());           
-         }
+        if (visit.getHealthProvider() != null) {
+            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
+        }
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/patientLab_report");
         reportData.setReportName("Lab-report");
         reportService.generateReport(reportData, response);
     }
-     
+
     public void getPatientProcedureReport(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        Visit visit =visitService.findVisitEntityOrThrow(visitNumber);
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         List<PatientProcedureRegisterData> procTests = procedureService.findPatientProcedureRegisterByVisit(visitNumber)
-                                                      .stream()
-                                                      .map((test)->PatientProcedureRegisterData.map(test))
-                                                      .collect(Collectors.toList());
+                .stream()
+                .map((test) -> PatientProcedureRegisterData.map(test))
+                .collect(Collectors.toList());
 
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
@@ -506,22 +510,22 @@ public class ReportService {
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         reportData.setData(procTests);
-         if(visit.getHealthProvider()!=null){
-           reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());           
-         }
+        if (visit.getHealthProvider() != null) {
+            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
+        }
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/patient_procedure_report");
         reportData.setReportName("procedure-report");
         reportService.generateReport(reportData, response);
-    } 
-    
+    }
+
     public void getPatientRadiologyReport(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        Visit visit =visitService.findVisitEntityOrThrow(visitNumber);
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         List<PatientScanRegisterData> scans = radiologyService.findPatientScanRegisterByVisit(visit)
-                                                      .stream()
-                                                      .map((test)->PatientScanRegisterData.map(test))
-                                                      .collect(Collectors.toList());
+                .stream()
+                .map((test) -> PatientScanRegisterData.map(test))
+                .collect(Collectors.toList());
 
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
@@ -532,82 +536,81 @@ public class ReportService {
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         reportData.setData(scans);
-         if(visit.getHealthProvider()!=null){
-           reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());           
-         }
+        if (visit.getHealthProvider() != null) {
+            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
+        }
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/patient_radiology_report");
         reportData.setReportName("radiology-report");
         reportService.generateReport(reportData, response);
-    } 
-     
-     public void getPrescription(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    }
+
+    public void getPrescription(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        
-        Visit visit =visitService.findVisitEntityOrThrow(visitNumber);
+
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         Pageable pageable = PaginationUtil.createPage(1, 500);
         List<PrescriptionData> requestData = prescriptionService.fetchAllPrescriptionsByVisit(visit, pageable)
-                                                      .getContent()
-                                                      .stream()
-                                                      .map((test)->PrescriptionData.map(test))
-                                                      .collect(Collectors.toList());
+                .getContent()
+                .stream()
+                .map((test) -> PrescriptionData.map(test))
+                .collect(Collectors.toList());
 
-        
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
-         if(visit.getHealthProvider()!=null){
-           reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());           
-         }
+        if (visit.getHealthProvider() != null) {
+            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
+        }
         reportData.setData(requestData);
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/prescription");
         reportData.setReportName("prescription");
         reportService.generateReport(reportData, response);
     }
-     
+
     public void getSickOff(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        
-        Visit visit =visitService.findVisitEntityOrThrow(visitNumber);
+
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         List<SickOffNoteData> requestData = Arrays.asList(SickOffNoteData.map(sickOffNoteService.fetchSickNoteByVisitWithNotFoundThrow(visit)));
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         reportData.setData(requestData);
         reportData.setFormat(format);
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
-         if(visit.getHealthProvider()!=null){
-           reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());           
-         }
+        if (visit.getHealthProvider() != null) {
+            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
+        }
         reportData.setTemplate("/clinical/sick_off_note");
         reportData.setReportName("sick-off-note");
         reportService.generateReport(reportData, response);
-    } 
-    
-    public void genSpecimenLabel(String patientNumber,Long specimenId, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    }
+
+    public void genSpecimenLabel(String patientNumber, Long specimenId, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         specimenLabelData labelData = new specimenLabelData();
         Optional<PatientData> patientData = patientService.fetchPatientByPatientNumber(patientNumber);
-        if(patientData.isPresent()){
+        if (patientData.isPresent()) {
             labelData.setDateOfBitrh(patientData.get().getDateOfBirth());
-            labelData.setPatientName(patientData.get().getPatientNumber()+", "+patientData.get().getFullName());
-            
+            labelData.setPatientName(patientData.get().getPatientNumber() + ", " + patientData.get().getFullName());
+
         }
         Specimen specimen = labSetUpService.fetchSpecimenById(specimenId);
         labelData.setSpecimenCode(specimen.getId().toString());
         labelData.setSpecimenName(specimen.getSpecimen());
-        
+
         List<specimenLabelData> requestData = Arrays.asList(labelData);
         reportData.setData(requestData);
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/specimen_label");
         reportData.setReportName("specimen-label");
         reportService.generateReport(reportData, response);
-    } 
-    
+    }
+
     public void getPrescriptionLabel(Long prescriptionId, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         PrescriptionData prescriptionData = null;
-        
+
         Optional<Prescription> prescription = prescriptionService.fetchPrescriptionById(prescriptionId);
-        if(prescription.isPresent()){
+        if (prescription.isPresent()) {
             prescriptionData = PrescriptionData.map(prescription.get());
             reportData.setPatientNumber(prescriptionData.getPatientNumber());
         }
@@ -627,7 +630,7 @@ public class ReportService {
         }
         throw APIException.internalError("Provide a Valid Bill Status");
     }
-    
+
     private ExportFormat ExportFormatToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;
@@ -637,7 +640,7 @@ public class ReportService {
         }
         throw APIException.internalError("Provide a Valid Export Status");
     }
-    
+
     private InvoiceStatus invoiceStatusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;

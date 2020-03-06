@@ -1,7 +1,5 @@
 package io.smarthealth.debtor.claim.dispatch.api;
 
-import io.smarthealth.debtor.claim.dispatch.api.*;
-import io.smarthealth.debtor.claim.dispatch.data.DispatchData;
 import io.smarthealth.debtor.claim.dispatch.service.DispatchService;
 import io.smarthealth.debtor.claim.dispatch.data.DispatchData;
 import io.smarthealth.infrastructure.common.PaginationUtil;

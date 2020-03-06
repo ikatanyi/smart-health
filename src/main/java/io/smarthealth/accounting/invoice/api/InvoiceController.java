@@ -3,7 +3,8 @@ package io.smarthealth.accounting.invoice.api;
 import io.smarthealth.accounting.invoice.data.CreateInvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
-import io.smarthealth.accounting.invoice.service.InvoiceService; 
+import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
+import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -57,7 +58,7 @@ public class InvoiceController {
         InvoiceData trans = InvoiceData.map(service.updateInvoice(id, transactionData));
         return trans;
     }
-    
+
     @PatchMapping("/invoices/{id}/verify")
     public InvoiceData updateInvoice(@PathVariable(value = "id") Long id, Boolean Isverified) {
         InvoiceData trans = InvoiceData.map(service.verifyInvoice(id, Isverified));
@@ -71,13 +72,16 @@ public class InvoiceController {
             @RequestParam(value = "number", required = false) String invoice,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "patientNo", required = false) String patientNo,
-            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "status", required = false) InvoiceStatus status,
+            @RequestParam(value = "filterPastDue", required = false, defaultValue = "false") boolean filterPastDue,
+            @RequestParam(value = "amountGreaterThan", required = false, defaultValue = "0.00") double amountGreaterThan,
+            @RequestParam(value = "amountLessThanOrEqualTo", required = false, defaultValue = "0.00") double amountLessThanOrEqualTo,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, patientNo, range, pageable)
+        Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable)
                 .map(bill -> InvoiceData.map(bill));
 
         Pager<List<InvoiceData>> pagers = new Pager();
@@ -92,7 +96,8 @@ public class InvoiceController {
         details.setReportName("Invoices");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
-    } 
+    }
+
     @PostMapping("/invoices/{id}/emails")
     public String sendReceipt(@PathVariable(value = "id") Long id) {
         return service.emailInvoice(id);
@@ -106,5 +111,5 @@ public class InvoiceController {
     //TODO
     /*
       Provide mpesa integrations, credit cards,
-    */
+     */
 }
