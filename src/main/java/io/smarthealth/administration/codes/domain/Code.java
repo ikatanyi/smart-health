@@ -13,5 +13,8 @@ public enum Code {
     DrugClass,
     DrugDoseForm,
     DrugRoute,
-    Frequency
+    Frequency,
+    DurationUnit,
+    DoseUnit,
+    DrugInstruction
 }

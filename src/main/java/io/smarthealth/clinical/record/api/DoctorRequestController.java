@@ -81,7 +81,7 @@ public class DoctorRequestController {
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-//        Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
+        Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceNumberService.next(1L, Sequences.DoctorRequest.name());
         for (DoctorRequestData data : docRequestData) {
@@ -93,7 +93,7 @@ public class DoctorRequestController {
             doctorRequest.setItemRate(item.getRate().doubleValue());
             doctorRequest.setPatient(visit.getPatient());
             doctorRequest.setVisit(visit);
-//            doctorRequest.setRequestedBy(employee);
+            doctorRequest.setRequestedBy(employee);
             doctorRequest.setOrderNumber(orderNo);
             doctorRequest.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
             doctorRequest.setFulfillerComment(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
@@ -153,14 +153,15 @@ public class DoctorRequestController {
 
     @GetMapping("/doctor-request")
     public ResponseEntity<?> waitingListByRequestType(
+            @RequestParam(value = "visitNo", required = false) final String visitNo,
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
             @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final String fulfillerStatus,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-        //Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(null, requestType, fulfillerStatus, pageable);
-        Page<DoctorRequest> pageList = requestService.fetchDoctorRequestLine(fulfillerStatus, requestType, pageable);
+        Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, requestType, fulfillerStatus, "patient", pageable);
+        //Page<DoctorRequest> pageList = requestService.fetchDoctorRequestLine(fulfillerStatus, requestType, pageable);
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
 
         for (DoctorRequest docReq : pageList.getContent()) {
@@ -208,7 +209,7 @@ public class DoctorRequestController {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
 
 //        Page<DoctorRequest> page = requestService.findAllRequestsByOrderNoAndRequestType(visitNo, requestType, pageable);
-        Page<DoctorRequest> page = requestService.fetchAllDoctorRequests(visit.getVisitNumber(), requestType.name(), fulfillerStatus, pageable);
+        Page<DoctorRequest> page = requestService.fetchAllDoctorRequests(visit.getVisitNumber(), requestType, fulfillerStatus, null, pageable);
 
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);
