@@ -1,6 +1,8 @@
 package io.smarthealth.clinical.pharmacy.domain;
 
+
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
+import io.smarthealth.clinical.pharmacy.domain.enumeration.TransactionType;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -8,6 +10,8 @@ import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
 import java.time.LocalDate;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -48,10 +52,14 @@ public class DispensedDrug extends Auditable {
     private Boolean collected;
     private String dispensedBy;
     private String collectedBy;
+    private String returnReason;
+    private LocalDate returnDate;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharm_dispensed_drugs_store_id"))
     private Store store;
     private String instructions;
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
 
     public DispensedDrugData toData() {
         DispensedDrugData data = new DispensedDrugData();
@@ -74,6 +82,7 @@ public class DispensedDrug extends Auditable {
         data.setDispensedBy(this.dispensedBy);
         data.setCollectedBy(this.collectedBy);
         data.setTransactionId(this.transactionId);
+        data.setTransactionType(this.transactionType);
         if (this.store != null) {
             data.setStoreId(this.store.getId());
             data.setStoreName(this.store.getStoreName());

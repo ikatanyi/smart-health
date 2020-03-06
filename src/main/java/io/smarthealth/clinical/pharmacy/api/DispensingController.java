@@ -2,7 +2,9 @@ package io.smarthealth.clinical.pharmacy.api;
 
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
 import io.smarthealth.clinical.pharmacy.data.PharmacyData;
+import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
+import io.smarthealth.clinical.pharmacy.domain.enumeration.TransactionType;
 import io.smarthealth.clinical.pharmacy.service.DispensingService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -10,6 +12,7 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.inventory.data.TransData;
 import io.swagger.annotations.Api;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -65,11 +68,12 @@ public class DispensingController {
             @RequestParam(value = "prescriptionNo", required = false) String prescription,
             @RequestParam(value = "billNumber", required = false) String billNumber,
             @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "transactionType", required = false) TransactionType transactionType,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<DispensedDrugData> list = service.findDispensedDrugs(referenceNumber, visitNumber, patientNumber, prescription, billNumber, status, pageable)
+        Page<DispensedDrugData> list = service.findDispensedDrugs(referenceNumber, visitNumber, patientNumber, prescription, billNumber, status, transactionType, pageable)
                 .map(drug -> drug.toData());
 
         Pager<List<DispensedDrugData>> pagers = new Pager();
@@ -84,5 +88,21 @@ public class DispensingController {
         details.setReportName("Patient Dispensed drugs");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
+    }
+    
+    @PostMapping("/pharmacybilling/{visitNumber}/returns")
+    public ResponseEntity<?> DrugsReturn(@PathVariable String visitNumber, @Valid @RequestBody List<ReturnedDrugData> data) {
+
+        List<DispensedDrugData> returned = service.returnItems(visitNumber, data)
+                              .stream()
+                              .map((returnItem)->returnItem.toData())
+                              .collect(Collectors.toList());
+
+        Pager<List<DispensedDrugData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Drugs Successfully returned");
+        pagers.setContent(returned);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 }

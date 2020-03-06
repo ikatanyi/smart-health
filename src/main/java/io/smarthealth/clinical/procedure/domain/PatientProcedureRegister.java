@@ -37,10 +37,9 @@ import lombok.Data;
 @Table(name = "patient_procedure_register")
 public class PatientProcedureRegister extends ClinicalRecord {
 
+    
     @Column(nullable = false, unique = true)
     private String accessNo;
-    //private String clinicalDetails;
-
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_request_id"))
     @OneToOne
     private DoctorRequest request;
@@ -52,15 +51,28 @@ public class PatientProcedureRegister extends ClinicalRecord {
     @Column(nullable = false, unique = false)
     @Enumerated(EnumType.STRING)
     private ProcedureTestState status = ProcedureTestState.Scheduled;
-
-    @OneToMany(mappedBy = "patientProcedureRegister", cascade = CascadeType.ALL)
+    
+    private String billNumber;
+    private String transactionId; //Receipt n. or Invoice No
+    private String paymentMode;
+    private Double balance;
+    private Double amount;
+    private Double taxes;
+    private Double discount;
+    
+    
+    @OneToMany(mappedBy = "patientProcedureRegister")
     private List<PatientProcedureTest> patientProcedureTest = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_bill_id"))
     private Employee requestedBy;
 
     private LocalDate receivedDate;
 
+    @OneToOne
+    private PatientBill bill;
+    
     public void addPatientProcedures(List<PatientProcedureTest> procs) {
         for (PatientProcedureTest proc : procs) {
             proc.setPatientProcedureRegister(this);
@@ -73,13 +85,8 @@ public class PatientProcedureRegister extends ClinicalRecord {
         patientProcedureTest.add(proc);
     }
     
-    @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_bill_id"))
-    private PatientBill bill;
     
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_visit_id"))
-    private Visit visit;
+    
 
     
 }

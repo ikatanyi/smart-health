@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author Kennedy.Imbenzi
  */
-public interface ProcedureRepository extends JpaRepository<ProcedureTest, Long>{
-    Optional<ProcedureTest> findByItem(final Item item);
+public interface ProcedureRepository extends JpaRepository<Procedure, Long>{
+    Optional<Procedure> findByItem(final Item item);
     
 }

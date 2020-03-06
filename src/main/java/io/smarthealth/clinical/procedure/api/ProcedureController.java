@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.procedure.api;
 
-import io.smarthealth.clinical.procedure.data.ProcedureTestData;
+import io.smarthealth.clinical.procedure.data.ProcedureData;
 import io.smarthealth.clinical.procedure.service.ProcedureService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -46,14 +46,14 @@ public class ProcedureController {
 
     @PostMapping("/procedure")
     public @ResponseBody
-    ResponseEntity<?> createTests(@RequestBody @Valid final List<ProcedureTestData> radiologyTestData) {
-        List<ProcedureTestData> radiologyTestList = radiologyService.createProcedureTest(radiologyTestData)
+    ResponseEntity<?> createTests(@RequestBody @Valid final List<ProcedureData> procedureData) {
+        List<ProcedureData> radiologyTestList = radiologyService.createProcedureTest(procedureData)
                 .stream()
                 .map((radiology)->{
-                 ProcedureTestData testdata =  ProcedureTestData.map(radiology);
+                 ProcedureData testdata =  ProcedureData.map(radiology);
             return testdata;
             }).collect(Collectors.toList());
-        Pager<List<ProcedureTestData>> pagers = new Pager();        
+        Pager<List<ProcedureData>> pagers = new Pager();        
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(radiologyTestList);
@@ -65,7 +65,7 @@ public class ProcedureController {
 
     @GetMapping("/procedure/{id}")
     public ResponseEntity<?> fetchProcedureTest(@PathVariable("id") final Long id) {
-        ProcedureTestData radiologyTests = ProcedureTestData.map(radiologyService.getById(id));
+        ProcedureData radiologyTests = ProcedureData.map(radiologyService.getById(id));
         if (radiologyTests != null) {
             return ResponseEntity.ok(radiologyTests);
         } else {
@@ -80,10 +80,10 @@ public class ProcedureController {
     ) {
 
         Pageable pageable = PaginationUtil.createPage(page1, size);
-        List<ProcedureTestData> testData = radiologyService.findAll(pageable)
+        List<ProcedureData> testData = radiologyService.findAll(pageable)
                 .stream()
                 .map((radiology)->{
-                 ProcedureTestData testdata =  ProcedureTestData.map(radiology);
+                 ProcedureData testdata =  ProcedureData.map(radiology);
             return testdata;
             }).collect(Collectors.toList());
         Pager page = new Pager();

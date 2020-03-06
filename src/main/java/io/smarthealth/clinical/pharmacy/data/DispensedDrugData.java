@@ -6,9 +6,12 @@
 package io.smarthealth.clinical.pharmacy.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.clinical.pharmacy.domain.enumeration.TransactionType;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.io.Serializable;
 import java.time.LocalDate;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -42,5 +45,7 @@ public class DispensedDrugData implements Serializable {
     private Boolean collected;
     private String dispensedBy;
     private String collectedBy;
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
 
 }
