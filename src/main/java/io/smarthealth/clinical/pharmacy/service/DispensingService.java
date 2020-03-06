@@ -33,6 +33,7 @@ import io.smarthealth.stock.item.domain.ItemRepository;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -131,15 +132,16 @@ public class DispensingService {
             returnedDrugs
            .stream()
            .forEach(drugData -> {
-               DispensedDrug drugs = findDispensedDrugOrThrow(drugData.getId());
-               drugs.setAmount(-1*(drugData.getQuantity())*(drugs.getPrice()));
-               drugs.setQtyIssued(-1*(drugData.getQuantity()));
-               drugs.setCollectedBy("");
-               drugs.setReturnDate(LocalDate.now());
-               drugs.setReturnReason(drugData.getReason());
-               drugs.setId(null);
-               drugs.setTransactionType(TransactionType.Returned);
-               returnedArray.add(drugs);                        
+               DispensedDrug drugs = findDispensedDrugOrThrow(drugData.getDrugId());
+               DispensedDrug drug1 = ObjectUtils.clone(drugs);
+               drug1.setAmount(-1*(drugData.getQuantity())*(drugs.getPrice()));
+               drug1.setQtyIssued(-1*(drugData.getQuantity()));
+               drug1.setCollectedBy("");
+               drug1.setReturnDate(LocalDate.now());
+               drug1.setReturnReason(drugData.getReason());
+               drug1.setId(null);
+               drug1.setTransactionType(TransactionType.Returned);
+               returnedArray.add(drug1);                        
            });           
                      
         }
