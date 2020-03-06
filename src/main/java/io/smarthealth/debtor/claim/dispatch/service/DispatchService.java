@@ -3,6 +3,7 @@ package io.smarthealth.debtor.claim.dispatch.service;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
+import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNoteItemRepository;
 import io.smarthealth.debtor.claim.dispatch.data.DispatchData;
@@ -40,22 +41,25 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DispatchService {
 
-    private final DispatchRepository dispatchRepository; 
-    private final InvoiceService invoiceService; 
+    private final DispatchRepository dispatchRepository;
+    private final InvoiceRepository invoiceRepository;
+    private final InvoiceService invoiceService;
     private final PayerService payerService;
-      private final SequenceNumberService sequenceNumberService; 
- 
+    private final SequenceNumberService sequenceNumberService;
+
     @Transactional
     public Dispatch createDispatch(DispatchData dispatchData) {
         Dispatch dispatch = DispatchData.map(dispatchData);
         dispatch.setDispatchNo(sequenceNumberService.next(1L, Sequences.DispatchNumber.name()));
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(dispatchData.getPayerId());
         dispatch.setPayer(payer);
-        List<DispatchedInvoice>dispatchInvoiceArr = new ArrayList();
+        List<DispatchedInvoice> dispatchInvoiceArr = new ArrayList();
         dispatchData.getDispatchInvoiceData().stream().map((item) -> {
             DispatchedInvoice dispatchInvoice = new DispatchedInvoice();
             Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(item.getInvoiceNumber());
             dispatchInvoice.setInvoice(invoice);
+            invoice.setStatus(InvoiceStatus.sent);
+//            invoiceRepository.save(invoice);
             return dispatchInvoice;
         }).forEachOrdered((dispatchInvoice) -> {
             dispatchInvoiceArr.add(dispatchInvoice);
@@ -63,12 +67,12 @@ public class DispatchService {
         dispatch.setDispatchedInvoice(dispatchInvoiceArr);
         return dispatchRepository.save(dispatch);
     }
-    
+
     public Dispatch updateDispatch(final Long id, DispatchData dispatchData) {
         Dispatch dispatch = getDispatchByIdWithFailDetection(id);
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(dispatchData.getPayerId());
         dispatch.setPayer(payer);
-        List<DispatchedInvoice>dispatchInvoiceArr = new ArrayList();
+        List<DispatchedInvoice> dispatchInvoiceArr = new ArrayList();
         dispatchData.getDispatchInvoiceData().stream().map((item) -> {
             DispatchedInvoice dispatchInvoice = new DispatchedInvoice();
             Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(item.getInvoiceNumber());
@@ -89,7 +93,7 @@ public class DispatchService {
         return dispatchRepository.findById(id);
     }
 
-    public Page<Dispatch> getAllDispatches(Long payerId,  DateRange range, Pageable page) {
+    public Page<Dispatch> getAllDispatches(Long payerId, DateRange range, Pageable page) {
         Specification spec = DispatchSpecification.createSpecification(payerId, range);
         return dispatchRepository.findAll(spec, page);
     }
@@ -97,19 +101,19 @@ public class DispatchService {
     public List<Dispatch> getAllDispatchesNotes() {
         return dispatchRepository.findAll();
     }
-    
-    public static DispatchData map(Dispatch dispatch){
+
+    public static DispatchData map(Dispatch dispatch) {
         DispatchData data = new DispatchData();
         data.setDispatchNo(dispatch.getDispatchNo());
         data.setComments(dispatch.getComments());
         dispatch.getDispatchedInvoice().stream().map((invoice) -> {
-            DispatchedInvoiceData dispInvoice=new DispatchedInvoiceData();
+            DispatchedInvoiceData dispInvoice = new DispatchedInvoiceData();
             dispInvoice.setInvoiceNumber(invoice.getInvoice().getNumber());
             return dispInvoice;
         }).forEachOrdered((dispInvoice) -> {
             data.getDispatchInvoiceData().add(dispInvoice);
         });
-        if(dispatch.getPayer()!=null){
+        if (dispatch.getPayer() != null) {
             data.setPayerId(dispatch.getPayer().getId());
             data.setPayer(dispatch.getPayer().getPayerName());
         }
