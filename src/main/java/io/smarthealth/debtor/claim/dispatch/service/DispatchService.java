@@ -46,15 +46,15 @@ public class DispatchService {
     private final InvoiceRepository invoiceRepository;
     private final InvoiceService invoiceService;
     private final PayerService payerService;
-    private final SequenceNumberService sequenceNumberService;
-
+    private final SequenceNumberService sequenceNumberService; 
+ 
     @Transactional
     public Dispatch createDispatch(DispatchData dispatchData) {
         Dispatch dispatch = DispatchData.map(dispatchData);
         dispatch.setDispatchNo(sequenceNumberService.next(1L, Sequences.DispatchNumber.name()));
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(dispatchData.getPayerId());
         dispatch.setPayer(payer);
-        List<Invoice> dispatchInvoiceArr = new ArrayList();
+        List<Invoice>dispatchInvoiceArr = new ArrayList();
         dispatchData.getDispatchInvoiceData().stream().map((item) -> {
             Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(item.getInvoiceNumber());
             invoice.setStatus(InvoiceStatus.sent);
@@ -71,7 +71,7 @@ public class DispatchService {
         Dispatch dispatch = getDispatchByIdWithFailDetection(id);
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(dispatchData.getPayerId());
         dispatch.setPayer(payer);
-        List<Invoice> dispatchInvoiceArr = new ArrayList();
+        List<Invoice>dispatchInvoiceArr = new ArrayList();
         dispatchData.getDispatchInvoiceData().stream().map((item) -> {
             Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(item.getInvoiceNumber());
             invoiceRepository.save(invoice);
@@ -105,9 +105,9 @@ public class DispatchService {
         data.setDispatchNo(dispatch.getDispatchNo());
         data.setComments(dispatch.getComments());
         dispatch.getDispatchedInvoice().stream().map((invoice) -> {
-            DispatchedInvoiceData dispInvoice = new DispatchedInvoiceData();
+            DispatchedInvoiceData dispInvoice=new DispatchedInvoiceData();
             dispInvoice.setInvoiceNumber(invoice.getNumber());
-            return dispInvoice;
+            return dispInvoice;                               
         }).forEachOrdered((dispInvoice) -> {
             data.getDispatchInvoiceData().add(dispInvoice);
         });
