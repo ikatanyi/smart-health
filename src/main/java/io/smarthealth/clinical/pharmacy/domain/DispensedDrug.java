@@ -4,6 +4,7 @@ package io.smarthealth.clinical.pharmacy.domain;
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
 import io.smarthealth.clinical.pharmacy.domain.enumeration.TransactionType;
 import io.smarthealth.clinical.record.domain.Prescription;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.stock.item.domain.Item;
@@ -30,6 +31,10 @@ public class DispensedDrug extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharm_dispensed_drugs_patient_id"))
     private Patient patient;
+    
+    @ManyToOne
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_pharmacy_dispensed_drugs_visit_id"))
+    private Visit visit;
 
     private LocalDate dispensedDate;
 
