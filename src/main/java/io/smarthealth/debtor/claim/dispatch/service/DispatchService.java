@@ -42,11 +42,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DispatchService {
 
-    private final DispatchRepository dispatchRepository; 
-    private final InvoiceService invoiceService; 
+    private final DispatchRepository dispatchRepository;
+    private final InvoiceRepository invoiceRepository;
+    private final InvoiceService invoiceService;
     private final PayerService payerService;
     private final SequenceNumberService sequenceNumberService; 
-    private final InvoiceRepository invoiceRepository;
  
     @Transactional
     public Dispatch createDispatch(DispatchData dispatchData) {
@@ -67,7 +67,7 @@ public class DispatchService {
         dispatch.setDispatchedInvoice(dispatchInvoiceArr);
         return dispatchRepository.save(dispatch);
     }
-    
+
     public Dispatch updateDispatch(final Long id, DispatchData dispatchData) {
         Dispatch dispatch = getDispatchByIdWithFailDetection(id);
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(dispatchData.getPayerId());
@@ -92,7 +92,7 @@ public class DispatchService {
         return dispatchRepository.findById(id);
     }
 
-    public Page<Dispatch> getAllDispatches(Long payerId,  DateRange range, Pageable page) {
+    public Page<Dispatch> getAllDispatches(Long payerId, DateRange range, Pageable page) {
         Specification spec = DispatchSpecification.createSpecification(payerId, range);
         return dispatchRepository.findAll(spec, page);
     }
@@ -100,8 +100,8 @@ public class DispatchService {
     public List<Dispatch> getAllDispatchesNotes() {
         return dispatchRepository.findAll();
     }
-    
-    public static DispatchData map(Dispatch dispatch){
+
+    public static DispatchData map(Dispatch dispatch) {
         DispatchData data = new DispatchData();
         data.setDispatchNo(dispatch.getDispatchNo());
         data.setComments(dispatch.getComments());
@@ -112,7 +112,7 @@ public class DispatchService {
         }).forEachOrdered((dispInvoice) -> {
             data.getDispatchInvoiceData().add(dispInvoice);
         });
-        if(dispatch.getPayer()!=null){
+        if (dispatch.getPayer() != null) {
             data.setPayerId(dispatch.getPayer().getId());
             data.setPayer(dispatch.getPayer().getPayerName());
         }

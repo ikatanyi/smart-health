@@ -3,7 +3,10 @@ package io.smarthealth.accounting.invoice.domain.specification;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.infrastructure.lang.DateRange;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -13,7 +16,7 @@ public class InvoiceSpecification {
         super();
     }
 
-    public static Specification<Invoice> createSpecification(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo,DateRange range) {
+    public static Specification<Invoice> createSpecification(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo) {
 
         return (root, query, cb) -> {
 
@@ -23,9 +26,9 @@ public class InvoiceSpecification {
                 predicates.add(cb.equal(root.get("payer").get("id"), payer));
             }
             if (scheme != null) {
-                predicates.add(cb.equal(root.get("payee").get("id"), payer));
+                predicates.add(cb.equal(root.get("payee").get("id"), scheme));
             }
-            
+
 //             if (customer != null) {
 //                final String likeExpression = "%" + customer + "%";
 //                predicates.add(
@@ -35,7 +38,6 @@ public class InvoiceSpecification {
 //                        )
 //                );
 //            }
-             
             if (invoice != null) {
                 predicates.add(cb.equal(root.get("number"), invoice));
             }
@@ -45,12 +47,20 @@ public class InvoiceSpecification {
             if (patientNo != null) {
                 predicates.add(cb.equal(root.get("bill").get("patient").get("patientNumber"), patientNo));
             }
-            if(range!=null){
-                  predicates.add(
-                     cb.between(root.get("createdOn"), range.getStartDate(), range.getEndDate())
-                  );
-              }
-
+            if (range != null) {
+                predicates.add(
+                        cb.between(root.get("createdOn"), range.getStartDate(), range.getEndDate())
+                );
+            }
+            if (amountGreaterThan > 0) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("balance"), amountGreaterThan));
+            }
+            if (amountLessThanOrEqualTo > 0) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("balance"), amountLessThanOrEqualTo));
+            }
+            if (filterPastDue) {
+                predicates.add(cb.greaterThan(root.get("dueDate"), LocalDate.now()));
+            }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
