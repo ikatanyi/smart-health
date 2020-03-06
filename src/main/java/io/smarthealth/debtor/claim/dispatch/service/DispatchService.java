@@ -58,7 +58,10 @@ public class DispatchService {
         dispatchData.getDispatchInvoiceData().stream().map((item) -> {
             Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(item.getInvoiceNumber());
             invoice.setStatus(InvoiceStatus.sent);
-            invoice.setDueDate(LocalDate.now().plusDays(payer.getPaymentTerms().getCreditDays()));
+            if(payer.getPaymentTerms()!=null)
+              invoice.setDueDate(LocalDate.now().plusDays(payer.getPaymentTerms().getCreditDays()));
+            else
+              invoice.setDueDate(LocalDate.now().plusDays(30));
             invoiceRepository.save(invoice);
             return invoice;
         }).forEachOrdered((invoice) -> {
