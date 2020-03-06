@@ -25,18 +25,14 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "procedure_test",uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"procedureName", "item_id"}, name="unique_procedure_name_item_id")})
+    @UniqueConstraint(columnNames = {"item_id"}, name="unique_item")})
 @Inheritance(strategy = InheritanceType.JOINED)
-public class ProcedureTest extends Identifiable{
-    private String procedureName; //government classifications
-    private Boolean consent; 
-    private Boolean withRef; 
-    private Boolean refOut; 
+public class Procedure extends Identifiable{
+    private String procedureName;
     private Boolean status; 
     private String notes;
     @OneToOne
     private Item item;
-    private Boolean supervisorConfirmation;
     @Enumerated(EnumType.STRING)
     private Gender gender;  
 }

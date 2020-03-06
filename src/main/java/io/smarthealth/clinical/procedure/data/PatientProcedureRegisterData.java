@@ -7,6 +7,8 @@ package io.smarthealth.clinical.procedure.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.accounting.billing.data.BillData;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureRegister;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.infrastructure.lang.DateConverter;
@@ -32,26 +34,42 @@ public class PatientProcedureRegisterData {
 
     @ApiModelProperty(hidden = true, required = false)
     private String visitNumber;
-    @ApiModelProperty(hidden = true, required = false)
     private Long requestId;
+    @ApiModelProperty(hidden = true, required = false)
     private String accessionNo;
+    @ApiModelProperty(hidden = true, required = false)
     private String patientNumber;
 
     @ApiModelProperty(hidden = true, required = false)
     private String patientName;
-    @ApiModelProperty(hidden = true, required = false)
-    private String billNumber;
     @ApiModelProperty(required = false)
     private String requestedBy;
     @ApiModelProperty(hidden = true, required = false)
     private String physicianName;
+    @ApiModelProperty(required = false, hidden = true)
     private LocalDate receivedDate;
+    @ApiModelProperty(required = false, hidden = true)
     private LocalDate createdOn;
+    @ApiModelProperty(required = false, hidden = true)
     private String createdBy;
     
+    @ApiModelProperty(required = false, hidden = true)
     private DoctorRequestData requestData;
 
-    private String servicePoint;
+    private Long servicePointId;
+    
+    @ApiModelProperty(required = false, hidden = true)
+    private String billNumber;
+    @ApiModelProperty(required = false, hidden = true)
+    private String transactionId; //Receipt n. or Invoice No
+    private String paymentMode;
+    @ApiModelProperty(required = false, hidden = true)
+    private Double balance;
+    @ApiModelProperty(required = false, hidden = true)
+    private Double Amount;
+    @ApiModelProperty(required = false, hidden = true)
+    private Double taxes;
+    private Double discount;
 
     @ApiModelProperty(hidden = true, required = false)
     private List<PatientProcedureTestData> patientProcecedureTestData = new ArrayList();
@@ -64,6 +82,8 @@ public class PatientProcedureRegisterData {
     public static PatientProcedureRegister map(PatientProcedureRegisterData patientregister) {
         PatientProcedureRegister e = new PatientProcedureRegister();
         e.setAccessNo(patientregister.getAccessionNo());
+        e.setAmount(patientregister.getAmount());
+        e.setDiscount(patientregister.getDiscount());
         return e;
     }
 

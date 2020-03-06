@@ -10,10 +10,12 @@ package io.smarthealth.debtor.claim.dispatch.data;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.debtor.claim.allocation.domain.*;
 import io.smarthealth.debtor.claim.dispatch.domain.Dispatch;
 import io.smarthealth.debtor.claim.dispatch.domain.DispatchedInvoice;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +27,12 @@ import lombok.Data;
  */
 @Data
 public class DispatchData {  
+    @ApiModelProperty(required=false,hidden=true)
     private String dispatchNo;
+    @ApiModelProperty(required=false,hidden=true)
     private Long id;
     private Long payerId;
+    @ApiModelProperty(required=false,hidden=true)
     private String payer;
     private String comments;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
@@ -43,9 +48,13 @@ public class DispatchData {
             data.setPayer(dispatch.getPayer().getPayerName());
             data.setPayerId(dispatch.getPayer().getId());
         }
-        for(DispatchedInvoice dispInvoice:dispatch.getDispatchedInvoice()){
+        for(Invoice dispInvoice:dispatch.getDispatchedInvoice()){
             DispatchedInvoiceData invoiceData=new DispatchedInvoiceData();
-            invoiceData.setInvoiceNumber(dispInvoice.getInvoice().getNumber());
+            invoiceData.setInvoiceNumber(dispInvoice.getNumber());
+            invoiceData.setDueDate(dispInvoice.getDueDate());
+            invoiceData.setInvoiceAmount(dispInvoice.getTotal());
+            invoiceData.setPayerName(dispInvoice.getPayer().getPayerName());
+            invoiceData.setSchemeName(dispInvoice.getPayee().getSchemeName());
             data.getDispatchInvoiceData().add(invoiceData);
         }
         return data;

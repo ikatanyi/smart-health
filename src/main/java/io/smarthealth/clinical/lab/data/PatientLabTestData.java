@@ -92,7 +92,7 @@ public class PatientLabTestData {
             p.setTestName(labTest.getTestType().getTestType());
             p.setQuantity(labTest.getQuantity());
             p.setTestPrice(labTest.getTestPrice());
-            p.setCreatedOn(LocalDate.from(labTest.getCreatedOn().atZone(ZoneId.of("UTC"))));
+            p.setCreatedOn(LocalDate.from(labTest.getCreatedOn().atZone(ZoneId.systemDefault())));
             p.setCreatedBy(labTest.getCreatedBy());
             if(labTest.getTestType()!=null)
                p.setWithRef(labTest.getTestType().getWithRef());

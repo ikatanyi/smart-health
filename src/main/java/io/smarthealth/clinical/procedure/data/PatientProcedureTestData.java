@@ -4,14 +4,14 @@
  * and open the template in the editor.
  */
 package io.smarthealth.clinical.procedure.data;
- 
+
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureTest;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
+import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
-
 
 /**
  *
@@ -19,34 +19,43 @@ import lombok.Data;
  */
 @Data
 public class PatientProcedureTestData {
+
+    @ApiModelProperty(required = false, hidden = true)
     private Long id;
     private String results;
     private String comments;
-    private Long procId;
     private String procedureName;
-    private ProcedureTestData testData;
+    @ApiModelProperty(required = false, hidden = true)
+    private ProcedureData testData;
     @Enumerated(EnumType.STRING)
     private ProcedureTestState state;
-    private Long requestId; 
-    private BillData billData;    
+    private Long requestId;
+    private double testPrice;
+    private double discount;
+    private String paymentMode;  
+    private String billNumber;
+    private double quantity;
+    @ApiModelProperty(required = false, hidden = true)
+    private BillData billData;
     
-    public static PatientProcedureTestData map (PatientProcedureTest scan){
+
+    public static PatientProcedureTestData map(PatientProcedureTest scan) {
         PatientProcedureTestData entity = new PatientProcedureTestData();
-        entity.setResults(scan.getResult());        
+        entity.setResults(scan.getResult());
         entity.setState(scan.getStatus());
-       
-        if(scan.getProcedureTest()!=null){
-            entity.setProcId(scan.getProcedureTest().getId());
-            entity.setTestData(ProcedureTestData.map(scan.getProcedureTest())); 
-            entity.setProcedureName(scan.getProcedureTest().getProcedureName());
-        }  
+        entity.setId(scan.getId());        
+        entity.setComments(scan.getComments());
+        entity.setQuantity(scan.getQuantity());
+        entity.setTestPrice(scan.getTestPrice());
+        if (scan.getProcedureTest() != null) {
+            entity.setProcedureName(scan.getProcedureTest().getProcedureName());            
+        }
         return entity;
     }
-    
-    public static PatientProcedureTest map (PatientProcedureTestData scan){
+
+    public static PatientProcedureTest map(PatientProcedureTestData scan) {
         PatientProcedureTest entity = new PatientProcedureTest();
-        entity.setResult(scan.getResults());        
-//        entity.setScanNumber(scan.getScanNumber());
+        entity.setResult(scan.getResults());
         entity.setStatus(scan.getState());
         return entity;
     }

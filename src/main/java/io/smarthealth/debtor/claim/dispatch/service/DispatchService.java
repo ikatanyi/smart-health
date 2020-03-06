@@ -21,6 +21,7 @@ import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,16 +54,14 @@ public class DispatchService {
         dispatch.setDispatchNo(sequenceNumberService.next(1L, Sequences.DispatchNumber.name()));
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(dispatchData.getPayerId());
         dispatch.setPayer(payer);
-        List<DispatchedInvoice> dispatchInvoiceArr = new ArrayList();
+        List<Invoice> dispatchInvoiceArr = new ArrayList();
         dispatchData.getDispatchInvoiceData().stream().map((item) -> {
-            DispatchedInvoice dispatchInvoice = new DispatchedInvoice();
             Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(item.getInvoiceNumber());
-            dispatchInvoice.setInvoice(invoice);
             invoice.setStatus(InvoiceStatus.sent);
-//            invoiceRepository.save(invoice);
-            return dispatchInvoice;
-        }).forEachOrdered((dispatchInvoice) -> {
-            dispatchInvoiceArr.add(dispatchInvoice);
+            invoiceRepository.save(invoice);
+            return invoice;
+        }).forEachOrdered((invoice) -> {
+            dispatchInvoiceArr.add(invoice);
         });
         dispatch.setDispatchedInvoice(dispatchInvoiceArr);
         return dispatchRepository.save(dispatch);
@@ -72,14 +71,13 @@ public class DispatchService {
         Dispatch dispatch = getDispatchByIdWithFailDetection(id);
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(dispatchData.getPayerId());
         dispatch.setPayer(payer);
-        List<DispatchedInvoice> dispatchInvoiceArr = new ArrayList();
+        List<Invoice> dispatchInvoiceArr = new ArrayList();
         dispatchData.getDispatchInvoiceData().stream().map((item) -> {
-            DispatchedInvoice dispatchInvoice = new DispatchedInvoice();
             Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(item.getInvoiceNumber());
-            dispatchInvoice.setInvoice(invoice);
-            return dispatchInvoice;
-        }).forEachOrdered((dispatchInvoice) -> {
-            dispatchInvoiceArr.add(dispatchInvoice);
+            invoiceRepository.save(invoice);
+            return invoice;
+        }).forEachOrdered((invoice) -> {
+            dispatchInvoiceArr.add(invoice);
         });
         dispatch.setDispatchedInvoice(dispatchInvoiceArr);
         return dispatchRepository.save(dispatch);
@@ -108,7 +106,7 @@ public class DispatchService {
         data.setComments(dispatch.getComments());
         dispatch.getDispatchedInvoice().stream().map((invoice) -> {
             DispatchedInvoiceData dispInvoice = new DispatchedInvoiceData();
-            dispInvoice.setInvoiceNumber(invoice.getInvoice().getNumber());
+            dispInvoice.setInvoiceNumber(invoice.getNumber());
             return dispInvoice;
         }).forEachOrdered((dispInvoice) -> {
             data.getDispatchInvoiceData().add(dispInvoice);
@@ -117,7 +115,7 @@ public class DispatchService {
             data.setPayerId(dispatch.getPayer().getId());
             data.setPayer(dispatch.getPayer().getPayerName());
         }
-        data.setDispatchDate(LocalDate.from(dispatch.getCreatedOn()));
+        data.setDispatchDate(LocalDate.from(dispatch.getCreatedOn().atZone(ZoneId.systemDefault())));
         return data;
     }
 }
