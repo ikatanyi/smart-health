@@ -51,14 +51,14 @@ public class VisitService {
         return visits;
     }
 
-    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, String patientNumber, boolean runningStatus, DateRange range, final Pageable pageable) {
-        Visit visit = null;
+    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Pageable pageable) {
+        // Visit visit = null;
         Employee employee = null;
         ServicePoint servicePoint = null;
         Patient patient = null;
-        if (visitNumber != null) {
-            visit = this.findVisitEntityOrThrow(visitNumber);
-        }
+//        if (visitNumber != null) {
+//           // visit = this.findVisitEntityOrThrow(visitNumber);
+//        }
         if (staffNumber != null) {
             employee = employeeService.fetchEmployeeByNumberOrThrow(staffNumber);
         }
@@ -70,7 +70,7 @@ public class VisitService {
         }
 
 //        System.out.println(" LocalDate.now().atStartOfDay() " + LocalDate.now().atStartOfDay());
-        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visit, employee, servicePoint, patient, runningStatus, range);
+        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visitNumber, employee, servicePoint, patient, patientName, runningStatus, range);
         Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
         return visits;
     }

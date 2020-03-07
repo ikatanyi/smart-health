@@ -30,15 +30,15 @@ public class ReportController {
 ////         reportService.generateReport(reportData, response);
 //        
 //    }
-    
     @GetMapping("/report/accounts/trial")
     public void generateTrialBalReport(
-            @RequestParam(value = "format", required = false) ExportFormat format, 
-            @RequestParam(value = "includeEmptyEntries", required = false) Boolean includeEmptyEntries,            
+            @RequestParam(value = "format", required = false) ExportFormat format,
+            @RequestParam(value = "includeEmptyEntries", required = false) Boolean includeEmptyEntries,
             HttpServletResponse response) throws SQLException, JRException, IOException {
         reportService.getTrialBalance(includeEmptyEntries, format, response);
-        
+
     }
+
     @GetMapping("/report/accounts/daily-income-statement")
     public void generateDailyIncomeStatement(
             @RequestParam(value = "format", required = false) ExportFormat format,
@@ -51,8 +51,9 @@ public class ReportController {
             @RequestParam(value = "dateRange", required = false) String dateRange,
             HttpServletResponse response) throws SQLException, JRException, IOException {
         reportService.getDailyPayment(transactionNo, visitNo, patientNo, paymentMode, billNo, dateRange, billStatus, format, response);
-        
+
     }
+
     @GetMapping("/report/accounts/daily-insurance-statement")
     public void generateDailyInsuranceStatement(
             @RequestParam(value = "format", required = false) ExportFormat format,
@@ -64,10 +65,10 @@ public class ReportController {
             @RequestParam(value = "billNo", required = false) String billNo,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             HttpServletResponse response) throws SQLException, IOException, JRException {
-            reportService.genInsuranceStatement(payer, payee, invoiceNo, dateRange, patientNo, format, response);
-        
-        
+        reportService.genInsuranceStatement(payer, payee, invoiceNo, dateRange, patientNo, format, 0, false, 0, response);
+
     }
+
     @GetMapping("/report/accounts/invoice-statement")
     public void generateInvoiceStatement(
             @RequestParam(value = "format", required = false) ExportFormat format,
@@ -78,16 +79,16 @@ public class ReportController {
             @RequestParam(value = "invoiceNo", required = false) String invoiceNo,
             @RequestParam(value = "billNo", required = false) String billNo,
             @RequestParam(value = "invoiceStatus", required = false) String invoiceStatus,
-            @RequestParam(value = "dateRange", required = false) String dateRange, 
+            @RequestParam(value = "dateRange", required = false) String dateRange,
             HttpServletResponse response) throws JRException, IOException {
         try {
-            reportService.getInvoiceStatement(payer, payee, invoiceNo, patientNo, dateRange, invoiceStatus, format, response);
+            reportService.getInvoiceStatement(payer, payee, invoiceNo, patientNo, dateRange, invoiceStatus, format, 0, false, 0, response);
         } catch (SQLException ex) {
             Logger.getLogger(ReportController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
-    
+
     @GetMapping("/report/accounts/invoice")
     public void generateInvoice(
             @RequestParam(value = "format", required = false) ExportFormat format,
@@ -98,30 +99,30 @@ public class ReportController {
             @RequestParam(value = "invoiceNo", required = false) String invoiceNo,
             @RequestParam(value = "billNo", required = false) String billNo,
             @RequestParam(value = "invoiceStatus", required = false) String invoiceStatus,
-            @RequestParam(value = "dateRange", required = false) String dateRange, 
+            @RequestParam(value = "dateRange", required = false) String dateRange,
             HttpServletResponse response) throws SQLException, JRException, IOException {
-        reportService.getInvoice(transactionNo, payer, scheme, patientNo, invoiceNo, dateRange, invoiceStatus, format, response);
-        
-    }   
-    
-     @GetMapping("/report/patient/{patientId}/patient-file")
+        reportService.getInvoice(transactionNo, payer, scheme, patientNo, invoiceNo, dateRange, invoiceStatus, format, 0, false, 0, response);
+
+    }
+
+    @GetMapping("/report/patient/{patientId}/patient-file")
     public void generatePatientFile(
             @PathVariable String patientId,
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
-        reportService.getPatientFile(patientId, format,response);
-        
-    } 
-    
+        reportService.getPatientFile(patientId, format, response);
+
+    }
+
     @GetMapping("/report/laboratory/{visitNumber}/lab-report")
     public void generatePatientLabFile(
             @PathVariable String visitNumber,
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
         reportService.getPatientLabReport(visitNumber, format, response);
-        
-    }   
-    
+
+    }
+
     @GetMapping("/report/clinical/{visitNumber}/request-form/{requestType}")
     public void generatePatientRequestFile(
             @PathVariable String visitNumber,
@@ -129,42 +130,45 @@ public class ReportController {
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
         reportService.getPatientRequest(visitNumber, requestType, format, response);
-        
-    } 
+
+    }
+
     @GetMapping("/report/clinical/prescription/{visitNumber}")
     public void generatePrescription(
             @PathVariable String visitNumber,
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
-        reportService.getPrescription(visitNumber,format, response);
-        
-    } 
+        reportService.getPrescription(visitNumber, format, response);
+
+    }
+
     @GetMapping("/report/clinical/procedure-report/{visitNumber}")
     public void generateProcedureReport(
             @PathVariable String visitNumber,
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
-        reportService.getPatientProcedureReport(visitNumber,format, response);
-        
-    } 
+        reportService.getPatientProcedureReport(visitNumber, format, response);
+
+    }
+
     @GetMapping("/report/clinical/radiology-report/{visitNumber}")
     public void generateRadiologyReport(
             @PathVariable String visitNumber,
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
-        reportService.getPatientRadiologyReport(visitNumber,format, response);
-        
-    } 
-    
+        reportService.getPatientRadiologyReport(visitNumber, format, response);
+
+    }
+
     @GetMapping("/report/clinical/sick-off-note/{visitNumber}")
     public void generateSickOffNote(
             @PathVariable String visitNumber,
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
-        reportService.getSickOff(visitNumber,format, response);
-        
-    } 
-    
+        reportService.getSickOff(visitNumber, format, response);
+
+    }
+
     @GetMapping("/report/clinical/specimen-label/{specimenId}/patient/{patientNumber}")
     public void generateSpecimenLabel(
             @PathVariable Long specimenId,
@@ -172,16 +176,16 @@ public class ReportController {
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
         reportService.genSpecimenLabel(patientNumber, specimenId, format, response);
-        
-    } 
-    
+
+    }
+
     @GetMapping("/report/clinical/prescription-label/{prescriptionId}")
     public void generatePrescriptionLabel(
             @PathVariable Long prescriptionId,
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
         reportService.getPrescriptionLabel(prescriptionId, format, response);
-        
-    } 
+
+    }
 
 }

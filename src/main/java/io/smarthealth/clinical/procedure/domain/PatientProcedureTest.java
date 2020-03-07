@@ -12,12 +12,10 @@ package io.smarthealth.clinical.procedure.domain;
 
 
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
-import io.smarthealth.clinical.record.domain.ClinicalRecord;
+import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -26,18 +24,18 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "patient_procedure_tests")
-@Inheritance(strategy = InheritanceType.JOINED)
-public class PatientProcedureTest extends ClinicalRecord{
+public class PatientProcedureTest extends Identifiable{
+
+    @ManyToOne
+    private PatientProcedureRegister patientProcedureRegister;
     
     @OneToOne
-    private ProcedureTest procedureTest;
+    private Procedure procedureTest;
     private double testPrice;
-    private int quantity;
+    private double quantity;
     @Enumerated(EnumType.STRING)
     private ProcedureTestState status;
     private String result;
     private String comments;  
     
-    @ManyToOne
-    private PatientProcedureRegister patientProcedureRegister;
 }

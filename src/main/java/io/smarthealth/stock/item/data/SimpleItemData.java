@@ -12,7 +12,6 @@ public class SimpleItemData {
     private Long itemId;
     private String itemCode;
     private String itemName;
-    private Double rate;
-    private Double costRate;
+    
 
 }

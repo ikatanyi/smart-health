@@ -105,7 +105,7 @@ public class InvoiceService {
                     invoice.setPaid(Boolean.FALSE);
                     invoice.setClosed(Boolean.FALSE);
                     invoice.setDraft(Boolean.FALSE);
-                    invoice.setStatus(InvoiceStatus.pending);
+                    invoice.setStatus(InvoiceStatus.draft);
 
                     if (bill.isPresent()) {
                         invoice.setBill(bill.get());
@@ -165,12 +165,9 @@ public class InvoiceService {
         return invoiceRepository.findByNumber(invoiceNo);
     }
 
-    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, String status, String patientNo, DateRange range, Pageable pageable) {
-        InvoiceStatus state = null;
-        if (state != null) {
-            state = InvoiceStatus.valueOf(status);
-        }
-        Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, state, patientNo, range);
+    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo, Pageable pageable) {
+
+        Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
         return invoices;
     }

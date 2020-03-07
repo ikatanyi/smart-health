@@ -5,18 +5,23 @@
  */
 package io.smarthealth.clinical.procedure.service;
 
+import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
 import io.smarthealth.clinical.procedure.data.ProcedureItemData;
-import io.smarthealth.clinical.procedure.data.ProcedureTestData;
+import io.smarthealth.clinical.procedure.data.ProcedureData;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureRegister;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureTest;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureTestRepository;
 import io.smarthealth.clinical.procedure.domain.ProcedureRepository;
-import io.smarthealth.clinical.procedure.domain.ProcedureTest;
+import io.smarthealth.clinical.procedure.domain.Procedure;
 import io.smarthealth.clinical.procedure.domain.ProcedureTestRepository;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
-import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologySpecification;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
@@ -24,21 +29,19 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
-import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -66,17 +69,20 @@ public class ProcedureService {
     private final VisitService visitService;
     private final SequenceService seqService;
     private final SequenceNumberService sequenceNumberService;
+    private final BillingService billingService;
+    private final ServicePointService servicePointService;
 
     @Transactional
-    public List<ProcedureTest> createProcedureTest(List<ProcedureTestData> procedureTestData) {
+    public List<Procedure> createProcedureTest(List<ProcedureData> procedureTestData) {
         try {
-            List<ProcedureTest> procedureTests = procedureTestData
+            List<Procedure> procedureTests = procedureTestData
                     .stream()
                     .map((procedureTest) -> {
-                        ProcedureTest test = ProcedureTestData.map(procedureTest);
+                        Procedure test = ProcedureData.map(procedureTest);
                         Optional<Item> item = itemService.findByItemCode(procedureTest.getItemCode());
                         if (item.isPresent()) {
                             test.setItem(item.get());
+                            
                         }
                         return test;
                     })
@@ -89,9 +95,9 @@ public class ProcedureService {
     }
 
     @Transactional
-    public ProcedureTest UpdateProcedureTest(ProcedureTestData procedureTestData) {
-        ProcedureTest procedureTest = this.getById(procedureTestData.getId());
-        ProcedureTest test = ProcedureTestData.map(procedureTestData);
+    public Procedure UpdateProcedureTest(ProcedureData procedureTestData) {
+        Procedure procedureTest = this.getById(procedureTestData.getId());
+        Procedure test = ProcedureData.map(procedureTestData);
         test.setId(procedureTest.getId());
         Optional<Item> item = itemService.findByItemCode(procedureTestData.getItemCode());
         if (item.isPresent()) {
@@ -102,19 +108,19 @@ public class ProcedureService {
 
     }
 
-    public ProcedureTest findProcedureByItem(final Item item) {
+    public Procedure findProcedureByItem(final Item item) {
         return procedureRepository.findByItem(item).orElseThrow(() -> {
             return APIException.notFound("Procedure Test not Registered in Procedure Department");
         });
     }
 
     @Transactional
-    public ProcedureTest getById(Long id) {
+    public Procedure getById(Long id) {
         return procedureRepository.findById(id).orElseThrow(() -> APIException.notFound("Procedure Test identified by {0} not found", id));
     }
 
     @Transactional
-    public Page<ProcedureTest> findAll(Pageable pgbl) {
+    public Page<Procedure> findAll(Pageable pgbl) {
         return procedureRepository.findAll(pgbl);
     }
 
@@ -150,19 +156,61 @@ public class ProcedureService {
             List<PatientProcedureTest> patientProcTest = new ArrayList<>();
             for (ProcedureItemData id : patientProcRegData.getItemData()) {
                 Item i = itemService.findItemWithNoFoundDetection(id.getItemCode());
-                ProcedureTest labTestType = findProcedureByItem(i);
+                Procedure labTestType = findProcedureByItem(i);
                 PatientProcedureTest pte = new PatientProcedureTest();
-                pte.setStatus(ProcedureTestState.valueOf(id.getStatus()));
+                pte.setStatus(ProcedureTestState.Scheduled);
                 pte.setTestPrice(id.getItemPrice());
-                pte.setQuantity(id.getQuantity());
+                pte.setQuantity(1);
                 pte.setProcedureTest(labTestType);
+                pte.setPatientProcedureRegister(patientProcReg);
 
                 patientProcTest.add(pte);
             }
+            procTestRepository.saveAll(patientProcTest);
             patientProcReg.addPatientProcedures(patientProcTest);
 
         }
+        patientProcReg.setBill(toBill(patientProcReg));
         return patientprocedureRepository.save(patientProcReg);
+    }
+    
+    private PatientBill toBill(PatientProcedureRegister data) {
+        //get the service point from store
+        ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedures);
+        PatientBill patientbill = new PatientBill();
+        patientbill.setVisit(data.getVisit());
+        patientbill.setPatient(data.getPatient());
+        patientbill.setAmount(data.getAmount());
+        patientbill.setDiscount(data.getDiscount());
+        patientbill.setBalance(data.getAmount());
+        
+        patientbill.setReferenceNo(data.getAccessNo());
+        patientbill.setPaymentMode(data.getPaymentMode());
+        patientbill.setTransactionId(data.getTransactionId());
+        patientbill.setStatus(BillStatus.Draft);
+
+        List<PatientBillItem> lineItems = data.getPatientProcedureTest()
+                .stream()
+                .map(lineData -> {
+                    PatientBillItem billItem = new PatientBillItem();
+                    Item item = itemService.findByItemCodeOrThrow(lineData.getProcedureTest().getItem().getItemCode());
+                    
+                    billItem.setTransactionId(data.getTransactionId());
+                    billItem.setServicePoint(ServicePointType.Procedures.name());
+                    
+                    billItem.setItem(item);
+                    billItem.setPrice(lineData.getTestPrice());
+                    billItem.setQuantity(lineData.getQuantity());
+                    billItem.setAmount(lineData.getTestPrice()*lineData.getQuantity());
+                    billItem.setServicePoint(servicePoint.getName());
+                    billItem.setServicePointId(servicePoint.getId());
+                    billItem.setStatus(BillStatus.Draft);
+
+                    return billItem;
+                })
+                .collect(Collectors.toList());
+        patientbill.addBillItems(lineItems);
+        return patientbill;
     }
 
     @Transactional

@@ -81,7 +81,7 @@ public class DoctorRequestData {
         doctorRequest.setDrug(doctorRequestData.getDrug());
         doctorRequest.setUrgency(doctorRequestData.getUrgency().name());
         doctorRequest.setRequestType(doctorRequestData.requestType);
-          
+
         return doctorRequest;
     }
 
@@ -94,28 +94,30 @@ public class DoctorRequestData {
         doctorRequestData.setOrderDatetime(doctorRequest.getOrderDatetime());
         doctorRequestData.setOrderNumber(doctorRequest.getOrderNumber());
         doctorRequestData.setRequestType(doctorRequest.getRequestType());
-        doctorRequestData.setUrgency(Urgency.valueOf(doctorRequest.getUrgency()));
+        if (doctorRequest.getUrgency() != null) {
+            doctorRequestData.setUrgency(Urgency.valueOf(doctorRequest.getUrgency()));
+        }
         doctorRequestData.setRequestId(doctorRequest.getId());
         doctorRequestData.setItemCode(doctorRequest.getItem().getItemCode());
         doctorRequestData.setItemName(doctorRequest.getItem().getItemName());
         doctorRequestData.setVisitNumber(doctorRequest.getVisitNumber());
         doctorRequestData.setPatientNumber(doctorRequest.getPatientNumber());
-        if(doctorRequest.getRequestedBy()!=null){
+        if (doctorRequest.getRequestedBy() != null) {
             doctorRequestData.setEmployeeData(new EmployeeData());
             doctorRequestData.getEmployeeData().setDepartmentCode(doctorRequest.getRequestedBy().getDepartment().getCode());
             doctorRequestData.getEmployeeData().setDepartmentName(doctorRequest.getRequestedBy().getDepartment().getName());
-            if(!doctorRequest.getRequestedBy().getContacts().isEmpty()){
+            if (!doctorRequest.getRequestedBy().getContacts().isEmpty()) {
                 doctorRequestData.getEmployeeData().setEmail(doctorRequest.getRequestedBy().getContacts().get(0).getEmail());
                 doctorRequestData.getEmployeeData().setMobile(doctorRequest.getRequestedBy().getContacts().get(0).getMobile());
                 doctorRequestData.getEmployeeData().setTelephone(doctorRequest.getRequestedBy().getContacts().get(0).getTelephone());
             }
-            
-            doctorRequestData.getEmployeeData().setEmployeeCategory(doctorRequest.getRequestedBy().getEmployeeCategory());            
+
+            doctorRequestData.getEmployeeData().setEmployeeCategory(doctorRequest.getRequestedBy().getEmployeeCategory());
             doctorRequestData.getEmployeeData().setStaffNumber(doctorRequest.getRequestedBy().getStaffNumber());
             doctorRequestData.getEmployeeData().setStatus(doctorRequest.getRequestedBy().getStatus());
-            
+
         }
-        if(doctorRequest.getPatient()!=null){
+        if (doctorRequest.getPatient() != null) {
             doctorRequestData.setPatientData(new PatientData());
             doctorRequestData.getPatientData().setAge(doctorRequest.getPatient().getAge());
             doctorRequestData.getPatientData().setAlive(doctorRequest.getPatient().isAlive());

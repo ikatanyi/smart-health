@@ -6,6 +6,7 @@ import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
+import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -19,14 +20,19 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
+import io.smarthealth.clinical.pharmacy.domain.enumeration.TransactionType;
 import io.smarthealth.clinical.pharmacy.domain.specification.DispensingSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.ItemRepository;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -47,6 +53,7 @@ public class DispensingService {
     private final BillingService billingService;
     private final InventoryService inventoryService;
     private final SequenceNumberService sequenceNumberService;
+    private final VisitService visitService;
 
     private void dispenseItem(Store store, DrugRequest drugRequest) {
         Patient patient = patientService.findPatientOrThrow(drugRequest.getPatientNumber());
@@ -73,7 +80,7 @@ public class DispensingService {
                         drugs.setCollected(true);
                         drugs.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
                         drugs.setCollectedBy("");
-
+                        drugs.setTransactionType(TransactionType.Dispensed);
                         drugs.setInstructions(drugData.getInstructions());
 
                         DispensedDrug savedDrug = repository.saveAndFlush(drugs);
@@ -110,12 +117,35 @@ public class DispensingService {
                 .orElseThrow(() -> APIException.notFound("Dispensed Drug with id {0} not found", id));
     }
 
-    public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, BillStatus status, Pageable page) {
-//        BillStatus state = BillStatus.valueOf(status);
-        Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo, status);
+    public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, String status, TransactionType type, Pageable page) {
+        BillStatus state = BillStatus.valueOf(status);
+        Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo, state,type);
 
         return repository.findAll(spec, page);
 
+    }
+    
+    public List<DispensedDrug> returnItems(String visitNumber, List<ReturnedDrugData> returnedDrugs) {
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        List<DispensedDrug>returnedArray = new ArrayList();
+        if (!returnedDrugs.isEmpty()) {
+            returnedDrugs
+           .stream()
+           .forEach(drugData -> {
+               DispensedDrug drugs = findDispensedDrugOrThrow(drugData.getDrugId());
+               DispensedDrug drug1 = ObjectUtils.clone(drugs);
+               drug1.setAmount(-1*(drugData.getQuantity())*(drugs.getPrice()));
+               drug1.setQtyIssued(-1*(drugData.getQuantity()));
+               drug1.setCollectedBy("");
+               drug1.setReturnDate(LocalDate.now());
+               drug1.setReturnReason(drugData.getReason());
+               drug1.setId(null);
+               drug1.setTransactionType(TransactionType.Returned);
+               returnedArray.add(drug1);                        
+           });           
+                     
+        }
+        return repository.saveAll(returnedArray);
     }
 
     private PatientBill toBill(DrugRequest data, Store store) {

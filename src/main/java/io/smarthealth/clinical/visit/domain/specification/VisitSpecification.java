@@ -25,14 +25,19 @@ public class VisitSpecification {
         super();
     }
 
-    public static Specification<Visit> createSpecification(Visit visit, Employee employee, ServicePoint servicePoint, Patient patient, boolean visitIsRunning, DateRange dateRange) {
+    public static Specification<Visit> createSpecification(String visitNumber, Employee employee, ServicePoint servicePoint, Patient patient, String patientName, boolean visitIsRunning, DateRange dateRange) {
 
         return (root, query, cb) -> {
 
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
-            if (visit != null) {
-                predicates.add(cb.equal(root.get("visit"), visit));
+            if (visitNumber != null) {
+                final String visitNumberExpression = "%" + visitNumber + "%";
+                predicates.add(
+                        cb.or(
+                                cb.like(root.get("visit").get("visitNumber"), visitNumberExpression)
+                        )
+                );
             }
 
             if (employee != null) {
@@ -68,6 +73,18 @@ public class VisitSpecification {
                 predicates.add(
                         cb.between(
                                 root.get("startDatetime"), dateRange.getStartDateTime(), dateRange.getEndDateTime()
+                        )
+                );
+            }
+
+            if (patientName != null) {
+
+                final String patientNameExpression = "%" + patientName + "%";
+                predicates.add(
+                        cb.or(
+                                cb.like(root.get("patient").get("givenName"), patientNameExpression),
+                                cb.like(root.get("patient").get("middleName"), patientNameExpression),
+                                cb.like(root.get("patient").get("surname"), patientNameExpression)
                         )
                 );
             }

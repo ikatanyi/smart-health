@@ -1,9 +1,17 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package io.smarthealth.clinical.pharmacy.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.clinical.pharmacy.domain.enumeration.TransactionType;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.io.Serializable;
 import java.time.LocalDate;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -29,14 +37,16 @@ public class DispensedDrugData implements Serializable {
     private String billNumber;
     private Double qtyIssued;
     private Double price;
-    private Double amount;
+    private Double amount; 
     private String units;
     private String instructions;
     private String doctorName;
     private Boolean paid;
-    private Boolean isReturn;
+     private Boolean IsReturn;
     private Boolean collected;
     private String dispensedBy;
     private String collectedBy;
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
 
 }
