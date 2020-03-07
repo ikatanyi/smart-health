@@ -30,7 +30,6 @@ import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import java.math.BigDecimal;
@@ -39,7 +38,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -60,9 +58,7 @@ public class InvoiceService {
     private final BillingService billingService;
     private final JournalService journalService;
     private final PayerService payerService;
-    private final SchemeService schemeService;
-
-    private final SequenceNumberGenerator sequenceGenerator;
+    private final SchemeService schemeService; 
     private final SequenceNumberService sequenceNumberService;
     private final FinancialActivityAccountRepository activityAccountRepository;
 //    private final TxnService txnService;

@@ -29,14 +29,14 @@ public class DispensedDrugData implements Serializable {
     private String billNumber;
     private Double qtyIssued;
     private Double price;
-    private Double amount; 
+    private Double amount;
     private String units;
     private String instructions;
     private String doctorName;
     private Boolean paid;
+    private Boolean isReturn;
     private Boolean collected;
     private String dispensedBy;
     private String collectedBy;
-   
 
 }

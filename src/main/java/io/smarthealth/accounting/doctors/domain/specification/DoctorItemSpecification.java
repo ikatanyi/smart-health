@@ -1,10 +1,6 @@
 package io.smarthealth.accounting.doctors.domain.specification;
 
-import io.smarthealth.accounting.billing.domain.PatientBill;
-import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.doctors.domain.DoctorItem;
-import io.smarthealth.accounting.doctors.service.DoctorItemService;
-import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;

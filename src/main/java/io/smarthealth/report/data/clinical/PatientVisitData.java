@@ -5,12 +5,11 @@
  */
 package io.smarthealth.report.data.clinical;
 
-import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
+import io.smarthealth.clinical.laboratory.data.LabRequestData;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.record.data.DiagnosisData;
-import io.smarthealth.organization.person.domain.enumeration.Gender;
 import java.util.List;
 import lombok.Data;
 
@@ -52,7 +51,7 @@ public class PatientVisitData {
     
     List<PatientScanRegisterData> radiologyTests;
     List<PatientProcedureRegisterData> procedures;
-    List<PatientTestRegisterData> labTests;
+    List<LabRequestData> labTests;
     List<DiagnosisData> diagnosis;
     List<PatientDrugsData> drugsData;
 }

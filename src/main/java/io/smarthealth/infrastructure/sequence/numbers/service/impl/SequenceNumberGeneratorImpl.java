@@ -5,7 +5,6 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.payment.domain.Payment;
 import io.smarthealth.appointment.domain.Appointment;
-import io.smarthealth.clinical.lab.domain.LabRegister;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.sequence.numbers.domain.EntitySequenceType;
@@ -107,10 +106,6 @@ public class SequenceNumberGeneratorImpl implements SequenceNumberGenerator {
         return nextVal(journal.getId(), EntitySequenceType.JOURNAL);
     }
 
-    @Override
-    public String generate(LabRegister lab) {
-        return nextVal(lab.getId(), EntitySequenceType.LABORATORY);
-    }
 
     @Override
     public String generate(PurchaseOrder order) {

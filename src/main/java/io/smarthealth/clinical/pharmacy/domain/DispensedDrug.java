@@ -36,6 +36,7 @@ public class DispensedDrug extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharm_dispensed_drugs_presc_id"))
     private Prescription prescription;
+    
     private String transactionId;
     private Double qtyIssued;
     private Double price;
@@ -71,6 +72,7 @@ public class DispensedDrug extends Auditable {
         data.setUnits(this.units);
         data.setDoctorName(this.doctorName);
         data.setPaid(this.paid);
+        data.setIsReturn(this.isReturn);
         data.setCollected(this.collected);
         data.setDispensedBy(this.dispensedBy);
         data.setCollectedBy(this.collectedBy);

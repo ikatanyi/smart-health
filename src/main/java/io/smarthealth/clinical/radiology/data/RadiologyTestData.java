@@ -5,7 +5,6 @@
  */
 package io.smarthealth.clinical.radiology.data;
 
-import io.smarthealth.clinical.lab.data.LabTestTypeData;
 import io.smarthealth.clinical.radiology.domain.RadiologyTest;
 import io.smarthealth.stock.item.data.SimpleItemData;
 import javax.persistence.EnumType;
@@ -25,7 +24,7 @@ public class RadiologyTestData {
     private String notes;
     private Boolean supervisorConfirmation;
     @Enumerated(EnumType.STRING)
-    private LabTestTypeData.Gender gender;  
+    private String gender;  
     private SimpleItemData itemData;
     
     public static RadiologyTestData map(RadiologyTest rtd){
