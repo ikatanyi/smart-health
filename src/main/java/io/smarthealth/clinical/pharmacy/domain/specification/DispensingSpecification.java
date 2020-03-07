@@ -17,7 +17,7 @@ public class DispensingSpecification {
     public DispensingSpecification() {
         super();
     }                  
-    public static Specification<DispensedDrug> createSpecification(String refNo, String visitNo, String patientNo, String prescription, String billNo, BillStatus status,TransactionType type) {
+    public static Specification<DispensedDrug> createSpecification(String refNo, String visitNo, String patientNo, String prescription, String billNo, BillStatus status,Boolean isReturn) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (refNo != null) {
@@ -42,8 +42,8 @@ public class DispensingSpecification {
             if (status != null) {
                 predicates.add(cb.equal(root.get("status"), status));
             }
-            if (type != null) {
-                predicates.add(cb.equal(root.get("type"), type));
+            if (isReturn != null) {
+                predicates.add(cb.equal(root.get("is_return"), isReturn));
             }
 
 //            if (term != null) {

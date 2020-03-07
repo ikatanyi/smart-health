@@ -80,7 +80,6 @@ public class DispensingService {
                         drugs.setCollected(true);
                         drugs.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
                         drugs.setCollectedBy("");
-                        drugs.setTransactionType(TransactionType.Dispensed);
                         drugs.setInstructions(drugData.getInstructions());
 
                         DispensedDrug savedDrug = repository.saveAndFlush(drugs);
@@ -117,9 +116,9 @@ public class DispensingService {
                 .orElseThrow(() -> APIException.notFound("Dispensed Drug with id {0} not found", id));
     }
 
-    public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, String status, TransactionType type, Pageable page) {
+    public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, String status, Boolean isReturn, Pageable page) {
         BillStatus state = BillStatus.valueOf(status);
-        Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo, state,type);
+        Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo, state,isReturn);
 
         return repository.findAll(spec, page);
 
@@ -140,7 +139,6 @@ public class DispensingService {
                drug1.setReturnDate(LocalDate.now());
                drug1.setReturnReason(drugData.getReason());
                drug1.setId(null);
-               drug1.setTransactionType(TransactionType.Returned);
                returnedArray.add(drug1);                        
            });           
                      
