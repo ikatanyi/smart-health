@@ -3,6 +3,7 @@ package io.smarthealth.clinical.laboratory.service;
 import io.smarthealth.clinical.laboratory.data.LabRequestData;
 import io.smarthealth.clinical.laboratory.data.LabRequestTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
+import io.smarthealth.clinical.laboratory.data.StatusRequest;
 import io.smarthealth.clinical.laboratory.domain.LabRequest;
 import io.smarthealth.clinical.laboratory.domain.LabRequestRepository;
 import io.smarthealth.clinical.laboratory.domain.LabRequestTest;
@@ -20,7 +21,9 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -66,6 +69,30 @@ public class LaboratoryService {
         LabRequest requests = getLabRequestById(id);
 
         return requests;//repository.save(requests);
+    }
+
+    public LabRequestTest updateLabRequestTest(String labNo, Long testId, StatusRequest status) {
+        LabRequest requests = getLabRequestByNumber(labNo);
+        LabRequestTest test = requests.getTests()
+                .stream()
+                .filter(x -> Objects.equals(x.getLabRequest().getId(), testId))
+                .findAny()
+                .orElseThrow(() -> APIException.notFound("Lab Test with Id {0} Not Found", testId));
+        switch (status.getStatus()) {
+            case Collected:
+                test.setCollected(Boolean.TRUE);
+                test.setCollectedBy(status.getComment());
+                test.setCollectionDateTime(LocalDateTime.now());
+                break;
+            case Entered:
+                test.setEntered(Boolean.TRUE);
+                break;
+            case Paid:
+                test.setPaid(Boolean.TRUE);
+                break;
+            default:
+        }
+       return testRepository.save(test);
     }
 
     public void deleteLabRequest(Long id) {

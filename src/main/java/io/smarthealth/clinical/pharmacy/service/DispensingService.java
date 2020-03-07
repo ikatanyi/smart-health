@@ -115,37 +115,36 @@ public class DispensingService {
                 .orElseThrow(() -> APIException.notFound("Dispensed Drug with id {0} not found", id));
     }
 
-    public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, String status, Boolean isReturn, Pageable page) {
-        BillStatus state = BillStatus.valueOf(status);
-        Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo, state, isReturn);
+    public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, Boolean isReturn, Pageable page) {
+
+        Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo,isReturn);
 
         return repository.findAll(spec, page);
 
     }
-
+    
     public List<DispensedDrug> returnItems(String visitNumber, List<ReturnedDrugData> returnedDrugs) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        List<DispensedDrug> returnedArray = new ArrayList();
+        List<DispensedDrug>returnedArray = new ArrayList();
         if (!returnedDrugs.isEmpty()) {
             returnedDrugs
-                    .stream()
-                    .forEach(drugData -> {
-                        DispensedDrug drugs = findDispensedDrugOrThrow(drugData.getDrugId());
-                        DispensedDrug drug1 = ObjectUtils.clone(drugs);
-                        drug1.setAmount(-1 * (drugData.getQuantity()) * (drugs.getPrice()));
-                        drug1.setQtyIssued(-1 * (drugData.getQuantity()));
-                        drug1.setCollectedBy("");
-                        drug1.setReturnDate(LocalDate.now());
-                        drug1.setReturnReason(drugData.getReason());
-                        drug1.setId(null);
-                        returnedArray.add(drug1);
-                    });
-
+           .stream()
+           .forEach(drugData -> {
+               DispensedDrug drugs = findDispensedDrugOrThrow(drugData.getDrugId());
+               DispensedDrug drug1 = ObjectUtils.clone(drugs);
+               drug1.setAmount(-1*(drugData.getQuantity())*(drugs.getPrice()));
+               drug1.setQtyIssued(-1*(drugData.getQuantity()));
+               drug1.setCollectedBy("");
+               drug1.setReturnDate(LocalDate.now());
+               drug1.setReturnReason(drugData.getReason());
+               drug1.setId(null);
+               returnedArray.add(drug1);                        
+           });           
+                     
         }
         return repository.saveAll(returnedArray);
     }
-
-
+  
     private PatientBill toBill(DrugRequest data, Store store) {
         //get the service point from store
         Visit visit = billingService.findVisitEntityOrThrow(data.getVisitNumber());

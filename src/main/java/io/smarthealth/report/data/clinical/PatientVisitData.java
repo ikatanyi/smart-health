@@ -5,7 +5,7 @@
  */
 package io.smarthealth.report.data.clinical;
 
-import io.smarthealth.clinical.laboratory.data.LabRequestData;
+import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
@@ -51,7 +51,7 @@ public class PatientVisitData {
     
     List<PatientScanRegisterData> radiologyTests;
     List<PatientProcedureRegisterData> procedures;
-    List<LabRequestData> labTests;
+    List<LabResultData> labTests;
     List<DiagnosisData> diagnosis;
     List<PatientDrugsData> drugsData;
 }

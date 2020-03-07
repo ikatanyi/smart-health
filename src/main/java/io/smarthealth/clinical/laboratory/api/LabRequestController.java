@@ -2,7 +2,9 @@ package io.smarthealth.clinical.laboratory.api;
 
 import io.smarthealth.clinical.laboratory.data.LabRequestData;
 import io.smarthealth.clinical.laboratory.data.LabRequestTestData;
+import io.smarthealth.clinical.laboratory.data.StatusRequest;
 import io.smarthealth.clinical.laboratory.domain.LabRequest;
+import io.smarthealth.clinical.laboratory.domain.LabRequestTest;
 import io.smarthealth.clinical.laboratory.domain.enumeration.TestStatus;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -75,6 +77,12 @@ public class LabRequestController {
         return ResponseEntity.ok(request.toData(isExpanded(expand)));
     }
 
+        @PutMapping("/labs/requests/{labNo}/tests/{id}")
+    public ResponseEntity<?> updateLabRequestTests( @PathVariable(value = "labNo") String labNo,@PathVariable(value = "id") Long testId, @Valid @RequestBody StatusRequest status) {
+            LabRequestTest test = service.updateLabRequestTest(labNo,testId, status); 
+        return ResponseEntity.ok(test);
+    }
+    
     @GetMapping("/labs/requests/{id}/tests")
     public ResponseEntity<?> getLabRequestTests(@PathVariable(value = "id") String labNo) {
         LabRequest item = service.getLabRequestByNumber(labNo);

@@ -19,8 +19,9 @@ public class LabTestData {
     private String testName;
     private String category;
     private String gender;
-     private Boolean requiresConsent;
-     private String turnAroundTime;
+    private Boolean requiresConsent;
+    private Boolean hasReferenceValue;
+    private String turnAroundTime;
     private Boolean active;
     private List<AnalyteData> analytes = new ArrayList<>();
 

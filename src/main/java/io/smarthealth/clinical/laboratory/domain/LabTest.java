@@ -35,6 +35,7 @@ public class LabTest extends Auditable {
     private String gender;
     private Boolean requiresConsent; 
     private String turnAroundTime;
+    private Boolean hasReferenceValue;
     private Boolean active;
 
     @OneToMany(mappedBy = "labTest", cascade = CascadeType.ALL)
@@ -57,6 +58,7 @@ public class LabTest extends Auditable {
         data.setActive(this.active);
         data.setCode(this.code);
         data.setRequiresConsent(this.requiresConsent);
+        data.setHasReferenceValue(this.hasReferenceValue);
         data.setGender(this.gender);
         if(this.displine!=null){
         data.setCategory(this.displine.getDisplineName());
