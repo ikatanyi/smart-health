@@ -412,6 +412,7 @@ public class ReportService {
             List<PatientDrugsData> pharmacyData = pharmacyService.getByVisitIdAndPatientId(visit.getVisitNumber(), PatientId);
 
             pVisitData.setVisitNumber(visit.getVisitNumber());
+            
             pVisitData.setCreatedOn(String.valueOf(visit.getCreatedOn()));
             pVisitData.setLabTests(labTests);
             pVisitData.setProcedures(procedures);

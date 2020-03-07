@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.invoice.service;
 
+
 import io.smarthealth.accounting.accounts.data.FinancialActivity;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
