@@ -55,9 +55,9 @@ public class DispensedDrug extends Auditable {
     private String doctorName;
     private Boolean paid;
     private Boolean collected;
-    private Boolean IsReturn;
     private String dispensedBy;
     private String collectedBy;
+    private Boolean isReturn;
     private String returnReason;
     private LocalDate returnDate;
     @ManyToOne
@@ -65,7 +65,6 @@ public class DispensedDrug extends Auditable {
     private Store store;
     private String instructions;
     @Enumerated(EnumType.STRING)
-    private TransactionType transactionType;
 
     public DispensedDrugData toData() {
         DispensedDrugData data = new DispensedDrugData();
@@ -88,7 +87,7 @@ public class DispensedDrug extends Auditable {
         data.setDispensedBy(this.dispensedBy);
         data.setCollectedBy(this.collectedBy);
         data.setTransactionId(this.transactionId);
-        data.setTransactionType(this.transactionType);
+        data.setIsReturn(this.isReturn);
         if (this.store != null) {
             data.setStoreId(this.store.getId());
             data.setStoreName(this.store.getStoreName());

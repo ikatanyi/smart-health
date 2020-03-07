@@ -5,6 +5,8 @@ package io.smarthealth.debtor.claim.dispatch.domain;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
+
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -29,11 +31,11 @@ public class Dispatch extends Auditable {
 
     private String dispatchNo;
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_dispatch_id_payer_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name="fk_dispatch_id_payer_id"))
     private Payer payer;
     private LocalDate dispatchDate;
     private String comments;
     @OneToMany
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_dispatch_id_dispatched_invoice_id"))
-    private List<Invoice> dispatchedInvoice;
+    @JoinColumn(foreignKey = @ForeignKey(name="fk_dispatch_id_dispatched_invoice_id"))
+    private List<Invoice>dispatchedInvoice;    
 }

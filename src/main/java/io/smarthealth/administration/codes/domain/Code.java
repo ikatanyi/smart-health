@@ -11,6 +11,5 @@ public enum Code {
     Frequency,
     DurationUnit,
     DoseUnit,
-    DrugInstruction,
-    LabUnits
+    DrugInstruction
 }
