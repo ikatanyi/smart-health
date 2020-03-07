@@ -13,9 +13,12 @@ package io.smarthealth.clinical.procedure.domain;
 
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.organization.facility.domain.Employee;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -37,5 +40,8 @@ public class PatientProcedureTest extends Identifiable{
     private ProcedureTestState status;
     private String result;
     private String comments;  
+    @ManyToOne
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_patient_procedure_tests_id_employee_id"))
+    private Employee medic;
     
 }
