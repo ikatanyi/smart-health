@@ -11,9 +11,14 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
+//
+//@Query("SELECT u FROM User u WHERE " +
+//        "lower(u.name) LIKE lower(CONCAT('%', :keyword, '%')) OR " +
+//        "lower(u.email) LIKE lower(CONCAT('%', :keyword, '%'))")
 
 /**
  *
@@ -21,7 +26,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "lab_test_types")
+@Table(name = "lab_test_types") 
 public class LabTest extends Auditable {
 
     @ManyToOne

@@ -14,13 +14,16 @@ import lombok.Data;
  */
 @Data
 public class StatusRequest {
-    public static enum Status{
+
+    public static enum Status {
         Collected,
         Entered,
+        Validated,
         Paid
     }
     //collected, Entered, Paid
     @NotNull
-    private Status status; 
-    private String comment;
+    private Status status;
+    private String doneBy;
+    private String specimen;
 }

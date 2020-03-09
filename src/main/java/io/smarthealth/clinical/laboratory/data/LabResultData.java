@@ -22,7 +22,7 @@ public class LabResultData{
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime resultsDate;
     private String labNumber;
-    private Long labRequestTestId;
+    private Long labRegisterTestId;
     private Long testId;
     private String testCode;
     private String testName;
@@ -32,5 +32,7 @@ public class LabResultData{
     private Double lowerLimit;
     private Double upperLimit;
     private String referenceValue;
+    private String status;
+    private String comments;
      private Boolean voided = Boolean.FALSE;
 }

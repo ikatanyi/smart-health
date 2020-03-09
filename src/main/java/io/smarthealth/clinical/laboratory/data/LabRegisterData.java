@@ -2,11 +2,12 @@ package io.smarthealth.clinical.laboratory.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.smarthealth.clinical.laboratory.domain.enumeration.TestStatus;
+import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -14,7 +15,7 @@ import lombok.Data;
  * @author Kelsas
  */ 
 @Data 
-public class LabRequestData {
+public class LabRegisterData {
 
     private Long id;
     private String visitNumber;
@@ -34,13 +35,14 @@ public class LabRequestData {
     /**
      * if is walkin pass the patient no and patient name fields
      */
-    private Boolean isWalkin;
+    @NotNull(message = "Walk-in flag is required") 
+    private Boolean isWalkin=Boolean.FALSE;
 
-    private TestStatus status;
+    private LabTestStatus status;
 
     private String paymentMode;
     
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<LabRequestTestData> tests = new ArrayList<>();
+    private List<LabRegisterTestData> tests = new ArrayList<>();
 
 }

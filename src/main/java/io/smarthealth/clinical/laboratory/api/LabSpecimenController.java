@@ -2,7 +2,7 @@ package io.smarthealth.clinical.laboratory.api;
 
 import io.smarthealth.clinical.laboratory.data.LabSpecimenData;
 import io.smarthealth.clinical.laboratory.domain.LabSpecimen;
-import io.smarthealth.clinical.laboratory.service.ConfiglaboratoryService;
+import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.util.List;
@@ -28,9 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class LabSpecimenController {
 
-    private final ConfiglaboratoryService service;
+    private final LabConfigurationService service;
 
-    public LabSpecimenController(ConfiglaboratoryService service) {
+    public LabSpecimenController(LabConfigurationService service) {
         this.service = service;
     }
 

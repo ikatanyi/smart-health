@@ -1,7 +1,7 @@
 package io.smarthealth.clinical.laboratory.domain.specification;
 
-import io.smarthealth.clinical.laboratory.domain.LabRequest;
-import io.smarthealth.clinical.laboratory.domain.enumeration.TestStatus;
+import io.smarthealth.clinical.laboratory.domain.LabRegister;
+import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -11,13 +11,13 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Kelsas
  */
-public class LabRequestSpecification {
+public class LabRegisterSpecification {
 
-    public LabRequestSpecification() {
+    public LabRegisterSpecification() {
         super();
     }
 
-    public static Specification<LabRequest> createSpecification(String labNumber, String orderNumber, String visitNumber,String patientNumber, TestStatus status) {
+    public static Specification<LabRegister> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (orderNumber != null) {

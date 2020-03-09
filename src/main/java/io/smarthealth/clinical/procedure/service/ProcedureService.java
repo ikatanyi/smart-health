@@ -127,6 +127,9 @@ public class ProcedureService {
     @Transactional
     public PatientProcedureRegister savePatientResults(PatientProcedureRegisterData patientProcRegData, final String visitNo, final Long requestId) {
         PatientProcedureRegister patientProcReg = PatientProcedureRegisterData.map(patientProcRegData);
+        String transactionId = sequenceNumberService.next(1L, Sequences.Procedure.name());
+        patientProcReg.setTransactionId(transactionId);
+        
         if (visitNo != null) {
             Visit visit = visitService.findVisitEntityOrThrow(visitNo);
             patientProcReg.setVisit(visit);
@@ -143,6 +146,7 @@ public class ProcedureService {
             Optional<DoctorRequest> request = doctorRequestRepository.findById(requestId);
             if (request.isPresent()) {
                 patientProcReg.setRequest(request.get());
+                request.get().setFulfillerStatus("fulfilled");
             }
 
         }
@@ -163,20 +167,27 @@ public class ProcedureService {
                 pte.setQuantity(1);
                 pte.setProcedureTest(labTestType);
                 pte.setPatientProcedureRegister(patientProcReg);
-
+                Optional<Employee> employee = employeeService.findEmployeeByStaffNumber(id.getMedicId());
+                if(employee.isPresent())
+                   pte.setMedic(employee.get());
                 patientProcTest.add(pte);
+                
             }
             procTestRepository.saveAll(patientProcTest);
             patientProcReg.addPatientProcedures(patientProcTest);
 
         }
-        patientProcReg.setBill(toBill(patientProcReg));
-        return patientprocedureRepository.save(patientProcReg);
+        PatientProcedureRegister savedProcedure=patientprocedureRepository.save(patientProcReg);
+        
+        PatientBill bill = toBill(savedProcedure);
+        //save the bill
+        billingService.save(bill);
+        return savedProcedure;
     }
     
     private PatientBill toBill(PatientProcedureRegister data) {
         //get the service point from store
-        ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedures);
+        ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(data.getVisit());
         patientbill.setPatient(data.getPatient());
@@ -188,16 +199,20 @@ public class ProcedureService {
         patientbill.setPaymentMode(data.getPaymentMode());
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
-
+        patientbill.setBillingDate(LocalDate.now());
+        String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
+        
+        patientbill.setBillNumber(bill_no);
         List<PatientBillItem> lineItems = data.getPatientProcedureTest()
                 .stream()
                 .map(lineData -> {
                     PatientBillItem billItem = new PatientBillItem();
                     Item item = itemService.findByItemCodeOrThrow(lineData.getProcedureTest().getItem().getItemCode());
-                    
+                   
                     billItem.setTransactionId(data.getTransactionId());
-                    billItem.setServicePoint(ServicePointType.Procedures.name());
-                    
+                    billItem.setServicePoint(ServicePointType.Procedure.name());
+                    if(lineData.getMedic()!=null)
+                       billItem.setMedicId(lineData.getMedic().getId());
                     billItem.setItem(item);
                     billItem.setPrice(lineData.getTestPrice());
                     billItem.setQuantity(lineData.getQuantity());

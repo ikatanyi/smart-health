@@ -28,14 +28,14 @@ import io.smarthealth.clinical.laboratory.domain.LabDisciplineRepository;
  * @author Kelsas
  */
 @Service
-public class ConfiglaboratoryService {
+public class LabConfigurationService {
 
     private final LabSpecimenRepository specimenRepository;
     private final LabDisciplineRepository displineRepository;
     private final ItemRepository itemRepository;
     private final LabTestRepository repository;
 
-    public ConfiglaboratoryService(LabSpecimenRepository specimenRepository, LabDisciplineRepository displineRepository, ItemRepository itemRepository, LabTestRepository repository) {
+    public LabConfigurationService(LabSpecimenRepository specimenRepository, LabDisciplineRepository displineRepository, ItemRepository itemRepository, LabTestRepository repository) {
         this.specimenRepository = specimenRepository;
         this.displineRepository = displineRepository;
         this.itemRepository = itemRepository;
@@ -53,6 +53,10 @@ public class ConfiglaboratoryService {
                 .map(x -> toLabTest(x))
                 .collect(Collectors.toList());
         return repository.saveAll(toSave);
+    }
+
+    public List<LabTest> searchLabTest(String keyword) {
+        return repository.searchLabTest(keyword);
     }
 
     public LabTest getTestByName(String testName) {
@@ -77,7 +81,7 @@ public class ConfiglaboratoryService {
 
     public void voidLabTest(Long id) {
         LabTest test = getTestById(id);
-        
+
         repository.delete(test);
     }
 

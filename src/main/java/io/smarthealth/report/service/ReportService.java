@@ -17,7 +17,7 @@ import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.laboratory.domain.LabSpecimen;
-import io.smarthealth.clinical.laboratory.service.ConfiglaboratoryService;
+import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 //import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
 //import io.smarthealth.clinical.lab.domain.Specimen;
@@ -101,7 +101,7 @@ public class ReportService {
     private final DoctorRequestService doctorRequestService;
     private final PrescriptionService prescriptionService;
     private final SickOffNoteService sickOffNoteService;
-    private final ConfiglaboratoryService labSetUpService;
+    private final LabConfigurationService labSetUpService;
 
     public void getTrialBalance(final boolean includeEmptyEntries, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         List<TrialBalanceData> dataList = new ArrayList();
@@ -392,7 +392,7 @@ public class ReportService {
                     .map((proc) -> PatientProcedureRegisterData.map(proc))
                     .collect(Collectors.toList());
 
-             List<LabResultData> labTests = labService.getLabResultByVisitNumber(visit);
+             List<LabResultData> labTests = labService.getLabResultDataByVisit(visit);
 
             Optional<PatientNotes> patientNotes = patientNotesService.fetchPatientNotesByVisit(visit);
             if (patientNotes.isPresent()) {
@@ -469,7 +469,7 @@ public class ReportService {
     public void getPatientLabReport(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-         List<LabResultData> labTests = labService.getLabResultByVisitNumber(visit);
+         List<LabResultData> labTests = labService.getLabResultDataByVisit(visit);
 
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();

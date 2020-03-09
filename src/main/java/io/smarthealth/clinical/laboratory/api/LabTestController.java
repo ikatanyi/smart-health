@@ -2,7 +2,7 @@ package io.smarthealth.clinical.laboratory.api;
 
 import io.smarthealth.clinical.laboratory.data.LabTestData;
 import io.smarthealth.clinical.laboratory.domain.LabTest;
-import io.smarthealth.clinical.laboratory.service.ConfiglaboratoryService;
+import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -33,9 +33,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class LabTestController {
 
-    private final ConfiglaboratoryService service;
+    private final LabConfigurationService service;
 
-    public LabTestController(ConfiglaboratoryService service) {
+    public LabTestController(LabConfigurationService service) {
         this.service = service;
     }
 
@@ -109,5 +109,14 @@ public class LabTestController {
         details.setReportName("Lab Tests list");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/labs")
+    public ResponseEntity<?> search(@RequestParam(value = "search") String test) {
+        List<LabTestData> lists = service.searchLabTest(test)
+                .stream().map(x -> x.toData())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(lists);
     }
 }

@@ -14,6 +14,7 @@ import lombok.Data;
 @Data
 public class ProcedureItemData {
 
+    private String medicId;
     private String itemCode;
     private double itemPrice;
     private int quantity;
