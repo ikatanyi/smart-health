@@ -1,7 +1,5 @@
 package io.smarthealth.debtor.claim.dispatch.domain;
 
-
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -28,8 +26,9 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="invoice_dispatch")
-public class Dispatch extends Auditable{  
+@Table(name = "invoice_dispatch")
+public class Dispatch extends Auditable {
+
     private String dispatchNo;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name="fk_dispatch_id_payer_id"))

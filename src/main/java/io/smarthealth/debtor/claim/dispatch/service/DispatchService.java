@@ -1,23 +1,18 @@
 package io.smarthealth.debtor.claim.dispatch.service;
 
-import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
-import io.smarthealth.debtor.claim.creditNote.domain.CreditNoteItemRepository;
 import io.smarthealth.debtor.claim.dispatch.data.DispatchData;
 import io.smarthealth.debtor.claim.dispatch.data.DispatchedInvoiceData;
 import io.smarthealth.debtor.claim.dispatch.domain.Dispatch;
 import io.smarthealth.debtor.claim.dispatch.domain.DispatchRepository;
-import io.smarthealth.debtor.claim.dispatch.domain.DispatchedInvoice;
 import io.smarthealth.debtor.claim.dispatch.domain.specification.DispatchSpecification;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import java.time.LocalDate;
