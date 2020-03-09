@@ -148,14 +148,12 @@ public class RadiologyService {
             patientScanReg.setAccessNo(accessionNo);
         }
 
-        //PatientTestRegister savedPatientTestRegister = patientRegRepository.save(patientTestReg);
         if (!patientScanRegData.getItemData().isEmpty()) {
             List<PatientScanTest> patientScanTest = new ArrayList<>();
             for (ScanItemData id : patientScanRegData.getItemData()) {
                 Item i = itemService.findItemWithNoFoundDetection(id.getItemCode());
                 RadiologyTest labTestType = findScanByItem(i);
                 PatientScanTest pte = new PatientScanTest();
-                pte.setStatus(ScanTestState.valueOf(id.getStatus()));
                 pte.setTestPrice(id.getItemPrice());
                 pte.setQuantity(id.getQuantity());
                 pte.setRadiologyTest(labTestType);

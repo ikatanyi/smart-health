@@ -55,7 +55,7 @@ public class PatientScanTestData {
 //        if(patScan.getPatientScanRegister()!=null)
 //            entity.setPatientScanRegisterData(PatientScanRegisterData.map(patScan.getPatientScanRegister()));
         if(patScan.getRadiologyTest()!=null){
-            entity.setRadiologyTestData(RadiologyTestData.map(patScan.getRadiologyTest()));
+//            entity.setRadiologyTestData(RadiologyTestData.map(patScan.getRadiologyTest()));
             entity.setScanName(patScan.getRadiologyTest().getScanName());
         }
         return entity;

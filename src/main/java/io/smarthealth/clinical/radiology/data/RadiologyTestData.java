@@ -5,9 +5,11 @@
  */
 package io.smarthealth.clinical.radiology.data;
 
-import io.smarthealth.clinical.lab.data.LabTestTypeData;
+
 import io.smarthealth.clinical.radiology.domain.RadiologyTest;
+import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.stock.item.data.SimpleItemData;
+import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -18,27 +20,22 @@ import lombok.Data;
  */
 @Data
 public class RadiologyTestData {
+    @ApiModelProperty(required=false, hidden=true)
     private Long id;
     private String itemCode;
     private String scanName; 
     private Boolean active; 
     private String notes;
+    private Long templateId;
+    @ApiModelProperty(required=false, hidden=true)
+    private String templateName;
+    @ApiModelProperty(required=false, hidden=true)
+    private String templateNotes;
     private Boolean supervisorConfirmation;
     @Enumerated(EnumType.STRING)
-    private LabTestTypeData.Gender gender;  
-    private SimpleItemData itemData;
+    private Gender gender;  
     
-    public static RadiologyTestData map(RadiologyTest rtd){
-        RadiologyTestData entity = new RadiologyTestData();
-        entity.setId(rtd.getId());
-        entity.setNotes(rtd.getNotes());
-        entity.setScanName(rtd.getScanName());
-        if(rtd.getItem()!=null)
-           entity.setItemData(rtd.getItem().toSimpleData());
-        entity.setActive(rtd.getStatus());     
-        
-        return entity;
-    }
+    
     
      public static RadiologyTest map(RadiologyTestData rtd){
         RadiologyTest entity = new RadiologyTest();

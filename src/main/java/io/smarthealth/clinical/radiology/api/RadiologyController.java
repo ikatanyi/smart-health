@@ -50,7 +50,7 @@ public class RadiologyController {
         List<RadiologyTestData> radiologyTestList = radiologyService.createRadiologyTest(radiologyTestData)
                 .stream()
                 .map((radiology)->{
-                 RadiologyTestData testdata =  RadiologyTestData.map(radiology);
+                 RadiologyTestData testdata =  radiology.toData();
             return testdata;
             }).collect(Collectors.toList());
         Pager<List<RadiologyTestData>> pagers = new Pager();        
@@ -65,7 +65,7 @@ public class RadiologyController {
 
     @GetMapping("/radiology-tests/{id}")
     public ResponseEntity<?> fetchRadiologyTest(@PathVariable("id") final Long id) {
-        RadiologyTestData radiologyTests = RadiologyTestData.map(radiologyService.getById(id));
+        RadiologyTestData radiologyTests = radiologyService.getById(id).toData();
         if (radiologyTests != null) {
             return ResponseEntity.ok(radiologyTests);
         } else {
@@ -83,7 +83,7 @@ public class RadiologyController {
         List<RadiologyTestData> testData = radiologyService.findAll(pageable)
                 .stream()
                 .map((radiology)->{
-                 RadiologyTestData testdata =  RadiologyTestData.map(radiology);
+                 RadiologyTestData testdata =  radiology.toData();
             return testdata;
             }).collect(Collectors.toList());
         Pager page = new Pager();
