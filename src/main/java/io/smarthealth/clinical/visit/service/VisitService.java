@@ -20,6 +20,7 @@ import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -116,6 +117,10 @@ public class VisitService {
     public Visit findVisitEntityOrThrow(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
+    }
+
+    public Optional<Visit> fetchVisitByPatientAndStatus(final Patient patient, final VisitEnum.Status status) {
+        return this.visitRepository.findByPatientAndStatus(patient, status);
     }
 
     public VisitData convertVisitEntityToData(Visit visit) {

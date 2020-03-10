@@ -42,7 +42,7 @@ public class LabRegisterData {
 
     private String paymentMode;
     
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<LabRegisterTestData> tests = new ArrayList<>();
 
 }

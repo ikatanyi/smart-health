@@ -24,7 +24,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "lab_register_tests") 
+@Table(name = "lab_register_tests")
 @NamedQuery(name = "test", query = "SELECT t FROM LabRegisterTest t WHERE t.labRegister.labNumber=:labNo")
 public class LabRegisterTest extends Identifiable {
 
@@ -64,7 +64,7 @@ public class LabRegisterTest extends Identifiable {
     @OneToMany(mappedBy = "labRegisterTest")
     private List<LabResult> labResults;
 
-    public LabRegisterTestData toData() {
+    public LabRegisterTestData toData(Boolean expand) {
         LabRegisterTestData data = new LabRegisterTestData();
         data.setId(this.getId());
 
@@ -101,12 +101,14 @@ public class LabRegisterTest extends Identifiable {
             data.setTestName(this.labTest.getTestName());
         }
         //include the results 
-        data.setLabResults(
-                this.getLabResults()
-                        .stream()
-                        .map(x -> x.toData())
-                        .collect(Collectors.toList())
-        );
+        if (expand) {
+            data.setLabResults(
+                    this.getLabResults()
+                            .stream()
+                            .map(x -> x.toData())
+                            .collect(Collectors.toList())
+            );
+        }
 
         return data;
 

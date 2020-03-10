@@ -26,6 +26,8 @@ public class DoctorRequestItem {
         DoctorRequestItem requestItem = new DoctorRequestItem();
         requestItem.setCode(d.getItem().getItemCode());
         requestItem.setItemId(d.getItem().getId());
+        requestItem.setRate(d.getItemRate());
+        requestItem.setCostRate(d.getItemCostRate());
         requestItem.setItemName(d.getItem().getItemName());
         requestItem.setRequestItemId(d.getId());
         return requestItem;

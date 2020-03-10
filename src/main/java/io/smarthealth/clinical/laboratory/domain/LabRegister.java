@@ -84,7 +84,7 @@ public class LabRegister extends Auditable {
         if (expand != null && expand) {
             data.setTests(this.tests
                     .stream()
-                    .map(x -> x.toData())
+                    .map(x -> x.toData(expand))
                     .collect(Collectors.toList())
             );
             

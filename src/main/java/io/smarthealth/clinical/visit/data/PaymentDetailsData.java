@@ -43,7 +43,7 @@ public class PaymentDetailsData {
         d.setSchemeName(e.getScheme().getSchemeName());
         if (e.getPayer() != null) {
             if (e.getPayer().getPriceBook() != null) {
-                d.setPriceBookId(e.getPayer().getId());
+                d.setPriceBookId(e.getPayer().getPriceBook().getId());
                 d.setPriceBookName(e.getPayer().getPriceBook().getName());
             }
         }

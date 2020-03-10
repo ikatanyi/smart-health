@@ -32,7 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterRepository;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTestRepository;
-import io.smarthealth.clinical.laboratory.domain.specification.LabResultTestSpecification;
+import io.smarthealth.organization.person.domain.WalkIn;
+import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
 
 /**
@@ -49,6 +50,7 @@ public class LaboratoryService {
     private final LabRegisterTestRepository testRepository;
     private final SequenceNumberService sequenceNumberService;
     private final LabResultRepository labResultRepository;
+    private final WalkingService walkingService;
 
     @Transactional
     public LabRegister createLabRegister(LabRegisterData data) {
@@ -209,8 +211,10 @@ public class LaboratoryService {
             request.setRequestedBy(data.getRequestedBy());
             request.setPatientNo(visit.getPatient().getPatientNumber());
         } else {
+            WalkIn w= createWalking(data.getPatientName());
             request.setRequestedBy(data.getPatientName());
-            request.setPatientNo(data.getPatientNo());
+            request.setPatientNo(w.getWalkingIdentitificationNo());
+            
         }
         request.setRequestDatetime(data.getRequestDatetime());
         request.setStatus(LabTestStatus.AwaitingSpecimen);
@@ -244,7 +248,8 @@ public class LaboratoryService {
     }
 
     private LabTest getLabTest(Long id) {
-        return labTestRepository.findById(id)
+//        return labTestRepository.findById(id)
+        return labTestRepository.findByItemId(id)
                 .orElseThrow(() -> APIException.notFound("Lab Test with Id {0} Not Found", id));
     }
 
@@ -271,5 +276,12 @@ public class LaboratoryService {
             return testRepository.findTestsByVisitAndLabNo(visitNo, labNumber);
         }
         return testRepository.findTestsByVisitNumber(visitNo);
+    }
+
+    private WalkIn createWalking(String patientName) {
+        WalkIn w = new WalkIn();
+        w.setFirstName(patientName);
+        w.setSurname("WI");
+        return walkingService.createWalking(w);
     }
 }
