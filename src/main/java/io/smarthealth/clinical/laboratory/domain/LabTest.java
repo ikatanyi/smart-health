@@ -11,15 +11,10 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
-//
-//@Query("SELECT u FROM User u WHERE " +
-//        "lower(u.name) LIKE lower(CONCAT('%', :keyword, '%')) OR " +
-//        "lower(u.email) LIKE lower(CONCAT('%', :keyword, '%'))")
-
+ 
 /**
  *
  * @author Kelsas
@@ -61,7 +56,7 @@ public class LabTest extends Auditable {
         data.setId(this.getId());
         data.setTurnAroundTime(this.turnAroundTime);
         data.setActive(this.active);
-        data.setCode(this.code);
+        data.setShortName(this.code);
         data.setRequiresConsent(this.requiresConsent);
         data.setHasReferenceValue(this.hasReferenceValue);
         data.setGender(this.gender);

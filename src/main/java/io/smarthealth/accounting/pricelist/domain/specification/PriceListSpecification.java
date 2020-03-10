@@ -41,6 +41,9 @@ public class PriceListSpecification {
               if (itemType != null) {
                 predicates.add(cb.equal(root.get("item").get("itemType"), itemType));
             }
+              if (servicePointId != null) {
+                predicates.add(cb.equal(root.get("servicePoint").get("id"), servicePointId));
+            }
 //              if(names!=null && !names.isEmpty()) {
 //                    predicates.add(root.get("employeeName").in(names));
 //                }

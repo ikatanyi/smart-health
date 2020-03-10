@@ -6,12 +6,14 @@ import io.smarthealth.infrastructure.domain.Identifiable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
@@ -23,6 +25,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "lab_register_tests") 
+@NamedQuery(name = "test", query = "SELECT t FROM LabRegisterTest t WHERE t.labRegister.labNumber=:labNo")
 public class LabRegisterTest extends Identifiable {
 
     @ManyToOne
@@ -64,26 +67,26 @@ public class LabRegisterTest extends Identifiable {
     public LabRegisterTestData toData() {
         LabRegisterTestData data = new LabRegisterTestData();
         data.setId(this.getId());
-         
+
         data.setCollected(this.collected);
         data.setCollectedBy(this.collectedBy);
         data.setCollectionDateTime(this.collectionDateTime);
-        
+
         data.setEntered(this.entered);
         data.setEnteredBy(this.enteredBy);
         data.setEntryDateTime(this.entryDateTime);
-        
+
         data.setValidated(this.validated);
         data.setValidatedBy(this.validatedBy);
         data.setValidationDateTime(this.validationDateTime);
-        
+
         data.setTestPrice(this.price);
         if (this.labRegister != null) {
             data.setLabRegisterId(this.labRegister.getId());
             data.setOrderNumber(this.labRegister.getOrderNumber());
             data.setRequestedBy(this.labRegister.getRequestedBy());
             data.setLabNumber(this.labRegister.getLabNumber());
-           
+
         }
 
         data.setPaid(this.paid);
@@ -98,11 +101,13 @@ public class LabRegisterTest extends Identifiable {
             data.setTestName(this.labTest.getTestName());
         }
         //include the results 
-//        this.getLabResults()
-//                .stream()
-//                .map(x -> x.toData())
-//                .collect(Collectors.toList());
-        
+        data.setLabResults(
+                this.getLabResults()
+                        .stream()
+                        .map(x -> x.toData())
+                        .collect(Collectors.toList())
+        );
+
         return data;
 
     }

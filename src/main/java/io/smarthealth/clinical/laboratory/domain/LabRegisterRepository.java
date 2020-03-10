@@ -10,5 +10,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  */
 public interface LabRegisterRepository extends JpaRepository<LabRegister, Long>, JpaSpecificationExecutor<LabRegister> {
 
-    Optional<LabRegister> findByLabNumber(String labNo);
+    Optional<LabRegister> findByLabNumber(String labNo); 
+    
 }

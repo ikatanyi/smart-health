@@ -15,8 +15,9 @@ public class LabTestData {
     private Long itemId;
     private String itemCode;
     private String itemName;
-    private String code;
+    private String shortName;
     private String testName;
+    private Long categoryId;
     private String category;
     private String gender;
     private Boolean requiresConsent;

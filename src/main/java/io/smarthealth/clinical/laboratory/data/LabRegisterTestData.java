@@ -2,9 +2,11 @@ package io.smarthealth.clinical.laboratory.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
-import io.smarthealth.infrastructure.lang.Constants;
+import io.smarthealth.infrastructure.lang.Constants; 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 
 /**
@@ -24,6 +26,7 @@ public class LabRegisterTestData {
     private Long testId;
     private String testName;
     private String testCode;
+    
     private BigDecimal testPrice;
     
     private Long requestId; //reference requence 
@@ -48,5 +51,7 @@ public class LabRegisterTestData {
     private LocalDateTime validationDateTime;
     
     private LabTestStatus status;
+    
+    private List<LabResultData> labResults=new ArrayList<>();
 
 }

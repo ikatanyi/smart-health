@@ -5,7 +5,6 @@ import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.laboratory.data.StatusRequest;
 import io.smarthealth.clinical.laboratory.domain.LabRegister;
-import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -144,6 +143,15 @@ public class LabRegisterController {
         details.setReportName("Lab Request list");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/labs/register/{visitNo}/test-results")
+    public ResponseEntity<?> getLabResults(@PathVariable(value = "visitNo") String visitNo,
+            @RequestParam(value = "lab_no", required = false) String labNumber) {
+        List<LabRegisterTestData> labRegisterTests = service.getTestsResultsByVisit(visitNo, labNumber)
+                .stream().map(x -> x.toData())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(labRegisterTests);
     }
 
     private Boolean isExpanded(Boolean expand) {

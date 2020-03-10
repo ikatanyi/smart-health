@@ -104,5 +104,5 @@ public class LabResultController {
         details.setReportName("Lab Results list");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
-    }
+    } 
 }

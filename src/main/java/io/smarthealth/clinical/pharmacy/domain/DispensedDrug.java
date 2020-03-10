@@ -1,7 +1,6 @@
 package io.smarthealth.clinical.pharmacy.domain;
 
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
-import io.smarthealth.clinical.pharmacy.domain.enumeration.TransactionType;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -25,7 +24,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "pharmacy_dispensed_drugs")
-public class DispensedDrug extends Auditable implements Cloneable {
+public class DispensedDrug extends Auditable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharm_dispensed_drugs_patient_id"))
@@ -64,6 +63,8 @@ public class DispensedDrug extends Auditable implements Cloneable {
     private Store store;
     private String instructions;
 
+//    @Enumerated(EnumType.STRING)
+
     public DispensedDrugData toData() {
         DispensedDrugData data = new DispensedDrugData();
 
@@ -88,7 +89,9 @@ public class DispensedDrug extends Auditable implements Cloneable {
         data.setIsReturn(this.isReturn);
         if (this.getDrug() != null) {
             data.setDrugId(this.getDrug().getId());
+             data.setDrug(this.drug.getItemName());
         }
+       
         data.setId(this.getId());
         if (this.store != null) {
             data.setStoreId(this.store.getId());
@@ -96,19 +99,5 @@ public class DispensedDrug extends Auditable implements Cloneable {
         }
         data.setInstructions(this.instructions);
         return data;
-    }
-
-    // It has to be exactly this method signature
-    @Override
-    public Object clone() {
-        try {
-            // call clone in Object.
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            System.out.println("Unable to clone object");
-
-            // Depends on your own use-case. I don't want the object modified somewhere!
-            return null;
-        }
     }
 }
