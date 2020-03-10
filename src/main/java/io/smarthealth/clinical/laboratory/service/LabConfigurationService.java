@@ -73,7 +73,7 @@ public class LabConfigurationService {
         LabTest toUpdateTest = getTestById(id);
         Item item = findByItemCodeOrThrow(data.getItemCode());
         toUpdateTest.setActive(Boolean.TRUE);
-        toUpdateTest.setCode(data.getCode());
+        toUpdateTest.setCode(data.getShortName());
         toUpdateTest.setTestName(data.getTestName());
         toUpdateTest.setService(item);
         return repository.save(toUpdateTest);
@@ -107,11 +107,17 @@ public class LabConfigurationService {
 
     private LabTest toLabTest(LabTestData data) {
         Item item = findByItemCodeOrThrow(data.getItemCode());
+        LabDiscipline displine=displineRepository.findById(data.getCategoryId()).orElse(null);
         LabTest labTest = new LabTest();
         labTest.setActive(Boolean.TRUE);
-        labTest.setCode(data.getCode());
+        labTest.setRequiresConsent(data.getRequiresConsent());
+        labTest.setTurnAroundTime(data.getTurnAroundTime());
+        labTest.setGender(data.getGender());
+        labTest.setHasReferenceValue(data.getHasReferenceValue());
+        labTest.setCode(data.getShortName());
+        labTest.setDispline(displine);
         labTest.setTestName(data.getTestName());
-        labTest.setService(item);
+        labTest.setService(item); 
 
         labTest.addAnalytes(
                 data.getAnalytes()

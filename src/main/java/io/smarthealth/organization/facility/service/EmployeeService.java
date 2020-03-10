@@ -124,7 +124,7 @@ public class EmployeeService {
         return employeeRepository.findByLoginAccount(user).orElseThrow(() -> APIException.notFound("Employee identified by user {0} was not found ", user.getEmail()));
     }
 
-    public Employee findEmployeeByIdOrThrow(Long id) { 
+    public Employee findEmployeeByIdOrThrow(Long id) {
         return employeeRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Employee with ID not found", id));
     }
@@ -151,7 +151,9 @@ public class EmployeeService {
     }
 
     public EmployeeData convertEmployeeEntityToEmployeeData(Employee employee) {
-        System.out.println("Employee " + employee.getFullName());
+        if (employee == null) {
+            return null;
+        }
         EmployeeData employeeData = modelMapper.map(employee, EmployeeData.class);
         employeeData.setEmployeeId(employee.getId());
         employeeData.setDepartmentCode(employee.getDepartment().getCode());

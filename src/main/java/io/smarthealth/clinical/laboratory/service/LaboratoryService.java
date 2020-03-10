@@ -3,6 +3,7 @@ package io.smarthealth.clinical.laboratory.service;
 import io.smarthealth.clinical.laboratory.data.LabRegisterData;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
+import io.smarthealth.clinical.laboratory.data.PatientResults;
 import io.smarthealth.clinical.laboratory.data.StatusRequest;
 import io.smarthealth.clinical.laboratory.domain.LabRegister;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterRepository;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTestRepository;
+import io.smarthealth.clinical.laboratory.domain.specification.LabResultTestSpecification;
 import io.smarthealth.security.util.SecurityUtils;
 
 /**
@@ -50,8 +52,9 @@ public class LaboratoryService {
 
     @Transactional
     public LabRegister createLabRegister(LabRegisterData data) {
-        String labNo = sequenceNumberService.next(1L, Sequences.LabNumber.name());
+
         LabRegister request = toLabRegister(data);
+        String labNo = sequenceNumberService.next(1L, Sequences.LabNumber.name());
         request.setLabNumber(labNo);
         return repository.save(request);
     }
@@ -82,7 +85,7 @@ public class LaboratoryService {
                 .orElseThrow(() -> APIException.notFound("Lab Test with Id {0} Not Found", testId));
         switch (status.getStatus()) {
             case Collected:
-                return testRepository.updateTestCollected(status.getDoneBy(),status.getSpecimen(), testId);
+                return testRepository.updateTestCollected(status.getDoneBy(), status.getSpecimen(), testId);
 //                test.setCollected(Boolean.TRUE);
 //                test.setCollectedBy(status.getComment());
 //                test.setCollectionDateTime(LocalDateTime.now()); 
@@ -181,12 +184,12 @@ public class LaboratoryService {
 
     private LabResult toLabResult(LabResultData data) {
         LabRegisterTest labRequestTest = getLabRegisterTest(data.getLabRegisterTestId());
-       
+
         LabResult results = new LabResult();
         results.setAnalyte(data.getAnalyte());
         results.setLabNumber(data.getLabNumber());
         results.setLabRegisterTest(labRequestTest);
-        results.setLowerLimit(data.getLowerLimit()); 
+        results.setLowerLimit(data.getLowerLimit());
         results.setPatientNo(data.getPatientNo());
         results.setReferenceValue(data.getReferenceValue());
         results.setResultValue(data.getResultValue());
@@ -255,4 +258,18 @@ public class LaboratoryService {
                 .orElseThrow(() -> APIException.notFound("Lab Request Test with Id {0} Not Found", id));
     }
 
+    public PatientResults getPatientResults(String patientNo, String visitNumber) {
+        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(null, null, visitNumber, null, null);
+        List<LabRegister> lists = repository.findAll(spec);
+        PatientResults results = new PatientResults();
+
+        return results;
+    }
+
+    public List<LabRegisterTest> getTestsResultsByVisit(String visitNo, String labNumber) {
+        if (labNumber != null) {
+            return testRepository.findTestsByVisitAndLabNo(visitNo, labNumber);
+        }
+        return testRepository.findTestsByVisitNumber(visitNo);
+    }
 }

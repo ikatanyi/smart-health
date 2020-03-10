@@ -71,7 +71,8 @@ public class DoctorRequestController {
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
+        //TODO: uncomment after testing
+        Employee employee =null;// employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceNumberService.next(1L, Sequences.DoctorRequest.name());
         for (DoctorRequestData data : docRequestData) {

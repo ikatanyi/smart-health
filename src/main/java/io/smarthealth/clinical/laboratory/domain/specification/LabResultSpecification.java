@@ -22,7 +22,7 @@ public class LabResultSpecification {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
             if (visitNumber != null) {
-                predicates.add(cb.equal(root.get("visit").get("visitNumber"), visitNumber));
+                predicates.add(cb.equal(root.get("labRegisterTest").get("labRegister").get("visit").get("visitNumber"), visitNumber));
             }
             if (patientNumber != null) {
                 predicates.add(cb.equal(root.get("visit").get("patient").get("patientNumber"), patientNumber));
@@ -44,8 +44,8 @@ public class LabResultSpecification {
                                 cb.like(root.get("labRequestTest").get("labTest").get("code"), likeExpression)
                         )
                 );
-            }
-            if (range != null) {
+            } 
+            if (visitNumber==null && range != null) {
                 predicates.add(
                         cb.between(root.get("resultsDate"), range.getStartDateTime(), range.getEndDateTime())
                 );
