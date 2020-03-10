@@ -118,6 +118,7 @@ public class ClinicalVisitController {
         visit.setPatient(patient);
         visit.setServicePoint(servicePoint);
         visit = this.visitService.createAVisit(visit);
+        
         //register payment details 
         if (visitData.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
             PaymentDetails pd = PaymentDetailsData.map(visitData.getPayment());

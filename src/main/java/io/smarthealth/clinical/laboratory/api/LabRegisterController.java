@@ -87,7 +87,7 @@ public class LabRegisterController {
     public ResponseEntity<?> getLabRequestTests(@PathVariable(value = "labNo") String labNo) {
         LabRegister item = service.getLabRegisterByNumber(labNo);
         List<LabRegisterTestData> list = item.getTests()
-                .stream().map(x -> x.toData())
+                .stream().map(x -> x.toData(false))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(list);
@@ -149,7 +149,7 @@ public class LabRegisterController {
     public ResponseEntity<?> getLabResults(@PathVariable(value = "visitNo") String visitNo,
             @RequestParam(value = "lab_no", required = false) String labNumber) {
         List<LabRegisterTestData> labRegisterTests = service.getTestsResultsByVisit(visitNo, labNumber)
-                .stream().map(x -> x.toData())
+                .stream().map(x -> x.toData(true))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(labRegisterTests);
     }

@@ -1,8 +1,10 @@
 package io.smarthealth.clinical.laboratory.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.lang.Constants; 
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,11 +49,14 @@ public class LabRegisterTestData {
     
     private Boolean validated;
     private String validatedBy; 
+    
      @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime validationDateTime;
     
     private LabTestStatus status;
     
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @ApiModelProperty(hidden = true)
     private List<LabResultData> labResults=new ArrayList<>();
 
 }

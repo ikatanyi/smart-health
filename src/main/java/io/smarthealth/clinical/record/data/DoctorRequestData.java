@@ -99,6 +99,8 @@ public class DoctorRequestData {
         }
         doctorRequestData.setRequestId(doctorRequest.getId());
         doctorRequestData.setItemCode(doctorRequest.getItem().getItemCode());
+        doctorRequestData.setItemRate(doctorRequest.getItemRate());
+        doctorRequestData.setItemCostRate(doctorRequest.getItemCostRate());
         doctorRequestData.setItemName(doctorRequest.getItem().getItemName());
         doctorRequestData.setVisitNumber(doctorRequest.getVisitNumber());
         doctorRequestData.setPatientNumber(doctorRequest.getPatientNumber());

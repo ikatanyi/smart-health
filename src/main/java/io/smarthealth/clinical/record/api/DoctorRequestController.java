@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.record.api;
  
+import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.DoctorRequestItem;
@@ -56,8 +57,10 @@ public class DoctorRequestController {
     private final PatientService patientService;
  
     private final SequenceNumberService sequenceNumberService;
+    
+    private final PricelistService pricelist;
 
-    public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, ItemService itemService, PatientService patientService, SequenceNumberService sequenceNumberService) {
+    public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, ItemService itemService, PatientService patientService, SequenceNumberService sequenceNumberService, PricelistService pricelist) {
         this.requestService = requestService;
         this.visitService = visitService;
         this.modelMapper = modelMapper;
@@ -65,7 +68,10 @@ public class DoctorRequestController {
         this.itemService = itemService;
         this.patientService = patientService;
         this.sequenceNumberService = sequenceNumberService;
+        this.pricelist = pricelist;
     }
+
+   
 
     @PostMapping("/visit/{visitNo}/doctor-request")
     public @ResponseBody
@@ -83,7 +89,7 @@ public class DoctorRequestController {
             doctorRequest.setItemCostRate(item.getCostRate().doubleValue());
             doctorRequest.setItemRate(item.getRate().doubleValue());
             doctorRequest.setPatient(visit.getPatient());
-            doctorRequest.setVisit(visit);
+            doctorRequest.setVisit(visit); 
             doctorRequest.setRequestedBy(employee);
             doctorRequest.setOrderNumber(orderNo);
             doctorRequest.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
@@ -122,8 +128,8 @@ public class DoctorRequestController {
 
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);
-            dd.setEmployeeData(employeeService.convertEmployeeEntityToEmployeeData(r.getRequestedBy()));
-            dd.setPatientNumber(r.getPatient().getPatientNumber());
+//            dd.setEmployeeData(employeeService.convertEmployeeEntityToEmployeeData(r.getRequestedBy()));
+//            dd.setPatientNumber(r.getPatient().getPatientNumber());
             dd.setVisitNumber(visit.getVisitNumber());
             return dd;
         });
@@ -148,8 +154,8 @@ public class DoctorRequestController {
             @RequestParam(value = "patientNo", required = false) final String patientNo,
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
             @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final String fulfillerStatus,
-            @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer size
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable);
@@ -174,8 +180,8 @@ public class DoctorRequestController {
         }
 
         PagedListHolder waitingPage = new PagedListHolder(waitingRequests);
-        waitingPage.setPageSize(size); // number of items per page
-        waitingPage.setPage(page);
+        waitingPage.setPageSize(pageable.getPageSize()); // number of items per page
+        waitingPage.setPage(pageable.getPageNumber());
 
         Pager<List<WaitingRequestsData>> pagers = new Pager();
         pagers.setCode("0");
@@ -206,8 +212,8 @@ public class DoctorRequestController {
 
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);
-            dd.setEmployeeData(employeeService.convertEmployeeEntityToEmployeeData(r.getRequestedBy()));
-            dd.setPatientNumber(r.getPatient().getPatientNumber());
+//            dd.setEmployeeData(employeeService.convertEmployeeEntityToEmployeeData(r.getRequestedBy()));
+//            dd.setPatientNumber(r.getPatient().getPatientNumber());
             dd.setVisitNumber(visit.getVisitNumber());
             return dd;
         });
