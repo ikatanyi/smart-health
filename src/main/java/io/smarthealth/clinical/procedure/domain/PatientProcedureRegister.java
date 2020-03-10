@@ -6,15 +6,22 @@
 package io.smarthealth.clinical.procedure.domain;
 
 import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
+import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
+import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.infrastructure.lang.DateConverter;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,21 +44,23 @@ import lombok.Data;
 @Table(name = "patient_procedure_register")
 public class PatientProcedureRegister extends ClinicalRecord {
 
-    
     @Column(nullable = false, unique = true)
     private String accessNo;
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_request_id"))
     @OneToOne
     private DoctorRequest request;
     
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_patient_id"))
-    private Patient patient;
+    private String patientName;
+    private String patientNo;
+
+//    @ManyToOne
+//    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_patient_id"))
+//    private Patient patient;
 
     @Column(nullable = false, unique = false)
     @Enumerated(EnumType.STRING)
     private ProcedureTestState status = ProcedureTestState.Scheduled;
-    
+
     private String billNumber;
     private String transactionId; //Receipt n. or Invoice No
     private String paymentMode;
@@ -59,8 +68,8 @@ public class PatientProcedureRegister extends ClinicalRecord {
     private Double amount;
     private Double taxes;
     private Double discount;
-    
-    
+    private Boolean isWalkin;
+
     @OneToMany(mappedBy = "patientProcedureRegister")
     private List<PatientProcedureTest> patientProcedureTest = new ArrayList<>();
 
@@ -69,7 +78,7 @@ public class PatientProcedureRegister extends ClinicalRecord {
     private Employee requestedBy;
 
     private LocalDate receivedDate;
-    
+
     public void addPatientProcedures(List<PatientProcedureTest> procs) {
         for (PatientProcedureTest proc : procs) {
             proc.setPatientProcedureRegister(this);
@@ -81,9 +90,39 @@ public class PatientProcedureRegister extends ClinicalRecord {
         proc.setPatientProcedureRegister(this);
         patientProcedureTest.add(proc);
     }
-    
-    
-    
 
-    
+    public PatientProcedureRegisterData toData() {
+        PatientProcedureRegisterData data = new PatientProcedureRegisterData();
+        if (this.getVisit() != null && !this.isWalkin) {
+            data.setVisitNumber(this.getVisit().getVisitNumber());
+            data.setPatientName(this.getVisit().getPatient().getFullName());
+            data.setPatientNumber(this.getVisit().getPatient().getPatientNumber());
+        }
+        else{
+            data.setPatientName(this.patientNo);
+            data.setPatientNumber(this.patientNo);
+        }
+        if (this.getRequest() != null) {
+            data.setRequestId(this.getRequest().getId());
+            data.setRequestedBy(this.getRequest().getRequestedBy().getStaffNumber());
+            data.setPhysicianName(this.getRequest().getCreatedBy());
+        }
+        data.setAccessionNo(this.getAccessNo());
+        if (this.getPatientProcedureTest() != null) {
+            data.setPatientProcecedureTestData(
+                    this.getPatientProcedureTest()
+                            .stream()
+                            .map((pscantest) -> pscantest.toData())
+                            .collect(Collectors.toList())
+            );
+        }
+        if (this.getRequest() != null) {
+            data.setRequestId(this.getRequest().getId());
+            data.setRequestData(DoctorRequestData.map(this.getRequest()));
+        }
+        data.setOrderedDate(DateConverter.toLocalDate(LocalDateTime.ofInstant(this.getCreatedOn(), ZoneOffset.UTC)));
+
+        return data;
+    }
+
 }

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +45,18 @@ public class PatientScanRegisterData {
     @ApiModelProperty(hidden = true, required = false)
     private LocalDate createdOn;
     private Boolean isWalkin;
+    
+    private Double amount;
+    
+    private Double Discount;
+    
+    private String paymentMode;
+    
+    private Double balance;
 
     private String servicePoint;
+    
+    private String transactionId;
 
     @ApiModelProperty(hidden = true, required = false)
     private List<PatientScanTestData> patientScanTestData = new ArrayList();
@@ -59,6 +70,10 @@ public class PatientScanRegisterData {
         PatientScanRegister e = new PatientScanRegister();
         e.setAccessNo(patientregister.getAccessionNo());
         e.setIsWalkin(patientregister.getIsWalkin());
+        e.setAmount(patientregister.getAmount());
+        e.setDiscount(patientregister.getDiscount());
+        e.setBalance(patientregister.getBalance());
+        e.setPaymentMode(patientregister.getPaymentMode());
         return e;
     }
 }

@@ -13,6 +13,7 @@ import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -49,6 +50,14 @@ public class PatientScanRegister extends ClinicalRecord {
     private String patientNo;
     
     private String patientName;
+    
+    private Double amount;
+    
+    private Double Discount;
+    
+    private String paymentMode;
+    
+    private Double balance;
    
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_request_id"))
@@ -72,6 +81,8 @@ public class PatientScanRegister extends ClinicalRecord {
     private LocalDate receivedDate;
     
     private LocalDateTime requestDatetime;
+    
+    private String transactionId;
 
     public void addPatientScans(List<PatientScanTest> scans) {
         for (PatientScanTest scan : scans) {
@@ -95,6 +106,7 @@ public class PatientScanRegister extends ClinicalRecord {
         data.setAccessionNo(this.getAccessNo());
         data.setCreatedOn(LocalDate.from(this.getCreatedOn().atZone(ZoneId.systemDefault())));
         data.setIsWalkin(this.getIsWalkin());
+        data.setTransactionId(this.getTransactionId());
 //        data.setOrderedDate(this.);
         if(this.getPatientScanTest()!=null){
            data.setPatientScanTestData(

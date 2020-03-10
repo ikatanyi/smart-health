@@ -34,8 +34,8 @@ public class PatientScanTest extends Identifiable {
 
     @OneToOne
     private RadiologyTest radiologyTest;
-    private BigDecimal testPrice;
-    private int quantity;
+    private Double testPrice;
+    private Double quantity;
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
     private Long requestId; //reference to doctor's request order number
@@ -54,6 +54,10 @@ public class PatientScanTest extends Identifiable {
     @JoinColumn(name="fk_patient_scan_test_radiology_patient_scan_register_id")
     private PatientScanRegister patientScanRegister;
     private String comments;
+    
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_radiology_employee_id")) 
+    private Employee medic;
     
    
     @OneToOne

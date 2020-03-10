@@ -9,6 +9,7 @@ package io.smarthealth.debtor.claim.creditNote.data;
  */
 
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -16,9 +17,12 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-public class CreditNoteItemData {  
+public class CreditNoteItemData { 
+    @ApiModelProperty(required=false, hidden=true)
     private Long id;
     private Long billItemid;
+    @ApiModelProperty(required=false, hidden=true)
     private Long itemId;
+    @ApiModelProperty(required=false, hidden=true)
     private Double amount;
 }

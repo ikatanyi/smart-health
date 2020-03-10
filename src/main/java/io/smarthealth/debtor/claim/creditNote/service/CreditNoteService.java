@@ -45,16 +45,16 @@ public class CreditNoteService {
 
     @javax.transaction.Transactional
     public CreditNote createCreditNote(CreditNoteData data) {
-        CreditNote creditNote = CreditNoteData.map(data); 
-        Payer payer = payerService.findPayerByIdWithNotFoundDetection(data.getPayerId());
+        CreditNote creditNote = CreditNoteData.map(data);         
         Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
+        Payer payer = payerService.findPayerByIdWithNotFoundDetection(invoice.getPayer().getId());
         creditNote.setInvoice(invoice);   
         creditNote.setPayer(payer);
         List<CreditNoteItem>creditNoteItemArr = new ArrayList();
         data.getBillItems().stream().map((item) -> {
             CreditNoteItem creditNoteItem = new CreditNoteItem();
             PatientBillItem billItem = billService.findBillItemById(item.getBillItemid());
-            creditNoteItem.setAmount(item.getAmount());
+            creditNoteItem.setAmount(billItem.getAmount());
             creditNoteItem.setBillItem(billItem);
             creditNoteItem.setItem(billItem.getItem());
             return creditNoteItem;
@@ -73,14 +73,16 @@ public class CreditNoteService {
         Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
         creditNote.setInvoice(invoice);        
         List<CreditNoteItem>creditNoteItemArr = new ArrayList();
-        for(CreditNoteItemData item:data.getBillItems()){
+        data.getBillItems().stream().map((item) -> {
             CreditNoteItem creditNoteItem = new CreditNoteItem();
             PatientBillItem billItem = billService.findBillItemById(item.getBillItemid());
-            creditNoteItem.setAmount(item.getAmount());
+            creditNoteItem.setAmount(billItem.getAmount());
             creditNoteItem.setBillItem(billItem);
             creditNoteItem.setItem(billItem.getItem());
+            return creditNoteItem;
+        }).forEachOrdered((creditNoteItem) -> {
             creditNoteItemArr.add(creditNoteItem);
-        }
+        });
         creditNote.setItems(creditNoteItemArr);
         invoice.setCreditNote(creditNote);
         invoiceRepository.save(invoice);
