@@ -385,7 +385,7 @@ public class ReportService {
             PatientVisitData pVisitData = patientVisitData;
             List<PatientScanRegisterData> scanData = radiologyService.findPatientScanRegisterByVisit(visit)
                     .stream()
-                    .map((scan) -> PatientScanRegisterData.map(scan))
+                    .map((scan) -> scan.todata())
                     .collect(Collectors.toList());
             List<PatientProcedureRegisterData> procedures = procedureService.findPatientProcedureRegisterByVisit(visit.getVisitNumber())
                     .stream()
@@ -520,7 +520,7 @@ public class ReportService {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         List<PatientScanRegisterData> scans = radiologyService.findPatientScanRegisterByVisit(visit)
                 .stream()
-                .map((test) -> PatientScanRegisterData.map(test))
+                .map((test) -> test.todata())
                 .collect(Collectors.toList());
 
         List<JRSortField> sortList = new ArrayList();

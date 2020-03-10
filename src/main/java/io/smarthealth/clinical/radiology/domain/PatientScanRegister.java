@@ -6,6 +6,7 @@
 package io.smarthealth.clinical.radiology.domain;
 
 import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
@@ -13,8 +14,11 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,9 +44,11 @@ public class PatientScanRegister extends ClinicalRecord {
     @Column(nullable = false, unique = true)
     private String accessNo;
     
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_patient_id"))
-    private Patient patient;
+    private Boolean isWalkin;
+    
+    private String patientNo;
+    
+    private String patientName;
    
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_request_id"))
@@ -60,9 +66,12 @@ public class PatientScanRegister extends ClinicalRecord {
     private List<PatientScanTest> patientScanTest = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_employee_id")) 
     private Employee requestedBy;
 
     private LocalDate receivedDate;
+    
+    private LocalDateTime requestDatetime;
 
     public void addPatientScans(List<PatientScanTest> scans) {
         for (PatientScanTest scan : scans) {
@@ -80,4 +89,36 @@ public class PatientScanRegister extends ClinicalRecord {
     @OneToOne
     private PatientBill bill;
     
+    
+    public PatientScanRegisterData todata(){
+        PatientScanRegisterData data = new PatientScanRegisterData();
+        data.setAccessionNo(this.getAccessNo());
+        data.setCreatedOn(LocalDate.from(this.getCreatedOn().atZone(ZoneId.systemDefault())));
+        data.setIsWalkin(this.getIsWalkin());
+//        data.setOrderedDate(this.);
+        if(this.getPatientScanTest()!=null){
+           data.setPatientScanTestData(
+             this.getPatientScanTest()
+                   .stream()
+                   .map((x)->x.toData())
+                   .collect(Collectors.toList())
+           );
+           
+        }
+        if(this.getVisit()!=null && !this.isWalkin){
+            data.setPatientName(this.getVisit().getPatient().getFullName());
+            data.setPatientNumber(this.getVisit().getPatient().getPatientNumber());
+            data.setVisitNumber(this.getVisit().getVisitNumber());
+        }
+        else{
+            data.setPatientName(this.patientNo);
+            data.setVisitNumber(this.patientNo);
+        }
+        
+        if(this.getRequest()!=null){
+            data.setRequestedBy(this.getRequest().getRequestedBy().getFullName());
+            data.setRequestId(this.getRequest().getId());
+        }        
+        return data;
+    }
 }

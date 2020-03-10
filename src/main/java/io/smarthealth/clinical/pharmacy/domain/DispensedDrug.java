@@ -9,8 +9,6 @@ import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
 import java.time.LocalDate;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -24,7 +22,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "pharmacy_dispensed_drugs")
-public class DispensedDrug extends Auditable {
+public class DispensedDrug extends Auditable implements Cloneable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharm_dispensed_drugs_patient_id"))
@@ -64,7 +62,6 @@ public class DispensedDrug extends Auditable {
     private String instructions;
 
 //    @Enumerated(EnumType.STRING)
-
     public DispensedDrugData toData() {
         DispensedDrugData data = new DispensedDrugData();
 
@@ -89,9 +86,9 @@ public class DispensedDrug extends Auditable {
         data.setIsReturn(this.isReturn);
         if (this.getDrug() != null) {
             data.setDrugId(this.getDrug().getId());
-             data.setDrug(this.drug.getItemName());
+            data.setDrug(this.drug.getItemName());
         }
-       
+
         data.setId(this.getId());
         if (this.store != null) {
             data.setStoreId(this.store.getId());
@@ -99,5 +96,19 @@ public class DispensedDrug extends Auditable {
         }
         data.setInstructions(this.instructions);
         return data;
+    }
+
+    // It has to be exactly this method signature
+    @Override
+    public Object clone() {
+        try {
+            // call clone in Object.
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            System.out.println("Unable to clone object");
+
+            // Depends on your own use-case. I don't want the object modified somewhere!
+            return null;
+        }
     }
 }

@@ -6,7 +6,12 @@
 package io.smarthealth.clinical.radiology.data;
 
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
+import io.smarthealth.clinical.radiology.domain.RadiologyResult;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
+import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -16,49 +21,32 @@ import lombok.Data;
  */
 @Data
 public class PatientScanTestData {
-
+    @ApiModelProperty(required=false, hidden=true)
     private Long id;
+    @ApiModelProperty(required=false, hidden=true)
     private String scanName;
-    private RadiologyTestData radiologyTestData;
-    private double testPrice;
+    private String testCode;//RadiologyTest code;
+    private BigDecimal testPrice;
     private int quantity;
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
     private String imagePath;
-   // private PatientScanRegisterData patientScanRegisterData;
-
-    private String result;
+    private Boolean done;
+    private String doneBy;
+    private LocalDateTime entryDateTime;
+    private Boolean voided;
+    private String voidedBy;
+    private LocalDateTime voidDatetime;
     private String comments;
+    @ApiModelProperty(required=false, hidden=true)
+    private RadiologyResultData resultData;
     
     public static PatientScanTest map(PatientScanTestData patScanData){
         PatientScanTest entity = new PatientScanTest();
         entity.setId(patScanData.getId());
-        entity.setComments(patScanData.getComments());
-        entity.setImagePath(patScanData.getImagePath());
-        entity.setQuantity(patScanData.getQuantity());
-        entity.setResult(patScanData.getResult());
-        entity.setStatus(patScanData.getStatus());
-        entity.setTestPrice(patScanData.getTestPrice());
+        entity.setComments(patScanData.getComments());        
+        entity.setQuantity(patScanData.getQuantity());       
+        entity.setStatus(patScanData.getStatus());        
         return entity;
     }
-    
-    public static PatientScanTestData map(PatientScanTest patScan){
-        PatientScanTestData entity = new PatientScanTestData();
-        entity.setId(patScan.getId());
-        entity.setComments(patScan.getComments());
-        entity.setImagePath(patScan.getImagePath());
-        entity.setQuantity(patScan.getQuantity());
-        entity.setResult(patScan.getResult());
-        entity.setStatus(patScan.getStatus());
-        entity.setTestPrice(patScan.getTestPrice());
-        
-//        if(patScan.getPatientScanRegister()!=null)
-//            entity.setPatientScanRegisterData(PatientScanRegisterData.map(patScan.getPatientScanRegister()));
-        if(patScan.getRadiologyTest()!=null){
-//            entity.setRadiologyTestData(RadiologyTestData.map(patScan.getRadiologyTest()));
-            entity.setScanName(patScan.getRadiologyTest().getScanName());
-        }
-        return entity;
-    }
-
 }

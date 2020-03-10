@@ -89,9 +89,6 @@ public class LabRegister extends Auditable {
             );
             
         }
-        //
-        
-
         return data;
     }
 }
