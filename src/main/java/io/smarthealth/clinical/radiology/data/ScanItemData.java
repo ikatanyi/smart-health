@@ -13,8 +13,8 @@ import lombok.Data;
  */
 @Data
 public class ScanItemData {
-
-    private String itemName, itemCode, status;
+    private Long medicId;
+    private String itemCode;
     private double itemPrice;
     private int quantity;
 }

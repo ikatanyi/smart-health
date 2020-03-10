@@ -88,6 +88,9 @@ public class DispensedDrug extends Auditable {
         data.setCollectedBy(this.collectedBy);
         data.setTransactionId(this.transactionId);
         data.setIsReturn(this.isReturn);
+        if(this.getDrug()!=null)
+           data.setDrugId(this.getDrug().getId());
+        data.setId(this.getId());
         if (this.store != null) {
             data.setStoreId(this.store.getId());
             data.setStoreName(this.store.getStoreName());

@@ -39,7 +39,7 @@ public class PatientRadiologyTestData {
         entity.setState(scan.getState());
         if(scan.getTest()!=null){
             entity.setScanId(scan.getTest().getId());
-            entity.setTestData(RadiologyTestData.map(scan.getTest()));
+//            entity.setTestData(RadiologyTestData.map(scan.getTest()));
         }  
         if(scan.getRequest()!=null){
             entity.setRequestId(scan.getRequest().getId());
