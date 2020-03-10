@@ -7,7 +7,6 @@ import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
-import org.smarthealth.patient.validation.constraints.ValidIdentifier;
 
 /**
  *
@@ -22,7 +21,7 @@ public class VitalRecordData {
     //@CheckValidVisit
     private String visitNumber;
 
-    @ValidIdentifier
+    //@ValidIdentifier
     private String patientNumber;
 
     private Float temp;

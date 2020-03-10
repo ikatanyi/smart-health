@@ -35,7 +35,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
     Optional<Visit> findByVisitNumberAndStatus(final String visitNumber, final String status);
 
     //Page<Visit> findByStatus(final String status, final Pageable pageable);
-    Optional<Visit> findByPatientAndStatus(Patient patient, String status);
+    Optional<Visit> findByPatientAndStatus(Patient patient, VisitEnum.Status status);
 
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN 'true' ELSE 'false' END FROM Visit c WHERE c.status=:currentStatus AND  c.patient.patientNumber = :patient")
     Boolean visitExists(@Param("currentStatus") final String status, @Param("patient") final String patient);

@@ -14,6 +14,7 @@ import io.smarthealth.clinical.record.service.TriageNotesService;
 import io.smarthealth.clinical.record.service.TriageService;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.VisitData;
+import io.smarthealth.clinical.visit.data.enums.TriageCategory;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -213,6 +214,22 @@ public class ClinicalVisitController {
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
+    @GetMapping("/patients/{patientNumber}/active-visit")
+    public ResponseEntity<?> fetchActiveVisitByPatient(@PathVariable("patientNumber") String patientNumber) {
+        Patient patient = visitService.findPatientOrThrow(patientNumber);
+        Optional<Visit> visit = visitService.fetchVisitByPatientAndStatus(patient, VisitEnum.Status.CheckIn);
+        if (visit.isPresent()) {
+            Pager<VisitData> pagers = new Pager();
+            pagers.setCode("0");
+            pagers.setMessage("Visit Data");
+            pagers.setContent(convertToVisitData(visit.get()));
+            return ResponseEntity.status(HttpStatus.OK).body(pagers);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(APIException.notFound("{0} does not have an active visit", patient.getFullName()));
+            // throw APIException.notFound("{0} does not have an active visit", patient.getFullName());
+        }
+    }
+
     @GetMapping("/patients/{id}/visits")
     public ResponseEntity<List<VisitData>> fetchAllVisitsByPatient(@PathVariable("id") final String patientNumber, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         System.out.println("patientNumber " + patientNumber);
@@ -285,15 +302,17 @@ public class ClinicalVisitController {
     }
 
     @PostMapping("/patient/{patientNo}/vitals")
-    @ApiOperation(value = "", response = VitalRecordData.class)
+    //@ApiOperation(value = "", response = VitalRecordData.class)
     public @ResponseBody
     ResponseEntity<VitalRecordData> addVitalRecordByPatient(@PathVariable("patientNo") String patientNo, @RequestBody @Valid final VitalRecordData vital) {
+        System.out.println("patientNo ");
+        System.out.println("patientNo " + patientNo);
         Patient patient = patientService.findPatientOrThrow(patientNo);
 
         VitalsRecord vitalR = this.triageService.addVitalRecordsByPatient(patient, vital);
         //log queue
         PatientQueue patientQueue = new PatientQueue(); //patientQueueService.fetchQueueByVisitNumber(vitalR.getVisit());
-        patientQueue.setUrgency(PatientQueue.QueueUrgency.valueOf(vital.getUrgency()));
+        //patientQueue.setUrgency(TriageCategory.valueOf(vital.getUrgency()));
         patientQueue.setPatient(patient);
         patientQueue.setVisit(vitalR.getVisit());
         if (vital.getSendTo().equals("specialist")) {
@@ -314,6 +333,7 @@ public class ClinicalVisitController {
         } else {
             //patientQueue.setStatus(false);
         }
+        vitalR.getVisit().setTriageCategory(TriageCategory.valueOf(vital.getUrgency()));
         visitService.createAVisit(vitalR.getVisit());
         patientQueueService.createPatientQueue(patientQueue);
         VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
