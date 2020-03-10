@@ -32,11 +32,12 @@ public class PatientProcedureTestData {
     private Long requestId;
     private double testPrice;
     private double discount;
-    private String paymentMode;  
-    private String billNumber;
+    private String paymentMode;
     private double quantity;
     @ApiModelProperty(required = false, hidden = true)
-    private BillData billData;
+    private String medicName;
+    private Long medicId;
+    
     
 
     public static PatientProcedureTestData map(PatientProcedureTest scan) {
@@ -49,6 +50,10 @@ public class PatientProcedureTestData {
         entity.setTestPrice(scan.getTestPrice());
         if (scan.getProcedureTest() != null) {
             entity.setProcedureName(scan.getProcedureTest().getProcedureName());            
+        }
+        if(scan.getMedic()!=null){
+            entity.setMedicId(scan.getMedic().getId());
+            entity.setMedicName(scan.getMedic().getFullName());
         }
         return entity;
     }

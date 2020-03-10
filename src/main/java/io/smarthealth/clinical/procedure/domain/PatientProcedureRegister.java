@@ -69,9 +69,6 @@ public class PatientProcedureRegister extends ClinicalRecord {
     private Employee requestedBy;
 
     private LocalDate receivedDate;
-
-    @OneToOne
-    private PatientBill bill;
     
     public void addPatientProcedures(List<PatientProcedureTest> procs) {
         for (PatientProcedureTest proc : procs) {

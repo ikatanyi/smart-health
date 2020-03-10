@@ -7,8 +7,6 @@ package io.smarthealth.clinical.procedure.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.accounting.billing.data.BillData;
-import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureRegister;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.infrastructure.lang.DateConverter;
@@ -101,10 +99,10 @@ public class PatientProcedureRegisterData {
         }
         data.setAccessionNo(patientregister.getAccessNo());
         
-        if (patientregister.getBill() != null) {
-            data.setBillNumber(patientregister.getBill().getBillNumber());
-            data.setBillData(patientregister.getBill().toData());
-        }
+//        if (patientregister.getBill() != null) {
+//            data.setBillNumber(patientregister.getBill().getBillNumber());
+//            data.setBillData(patientregister.getBill().toData());
+//        }
 
         if (patientregister.getPatientProcedureTest()!= null) {
             data.setPatientProcecedureTestData(

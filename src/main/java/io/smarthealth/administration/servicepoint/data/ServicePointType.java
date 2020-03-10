@@ -10,6 +10,6 @@ public enum ServicePointType {
     Laboratory,
     Pharmacy,
     Radiology,
-    Procedures,
+    Procedure,
     Others
 }

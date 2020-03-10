@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.radiology.domain;
 
+import io.smarthealth.clinical.radiology.data.RadiologyTestData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.item.domain.Item;
 import javax.persistence.Entity;
@@ -28,9 +29,28 @@ import lombok.Data;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class RadiologyTest extends Identifiable{
     private String scanName; 
+    private String code;
     private Boolean status; 
     private String notes;
     @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_radiology_test_item_id"))
     private Item item;
+    @OneToOne
+    private ServiceTemplate serviceTemplate;
+    
+    public RadiologyTestData toData(){
+        RadiologyTestData entity = new RadiologyTestData();
+        entity.setId(this.getId());
+        entity.setNotes(this.getNotes());
+        entity.setScanName(this.getScanName());
+        if(this.getServiceTemplate()!=null){
+            entity.setTemplateName(this.getServiceTemplate().getTemplateName());
+            entity.setTemplateNotes(this.getServiceTemplate().getNotes());
+        }
+        if(this.getItem()!=null)
+            entity.setItemCode(this.getItem().getItemCode());
+        
+        entity.setActive(this.getStatus());     
+        
+        return entity;
+    }
 }

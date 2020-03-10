@@ -44,8 +44,7 @@ public class DoctorItemService {
         return repository.saveAll(toSave);
     }
 
-    private DoctorItem toDoctorItem(DoctorItemData data) {
-        System.err.println(data);
+    private DoctorItem toDoctorItem(DoctorItemData data) { 
         Employee doctor = employeeService.findEmployeeByIdOrThrow(data.getDoctorId());
         Item serviceType = itemService.findByItemCodeOrThrow(data.getServiceCode());
 

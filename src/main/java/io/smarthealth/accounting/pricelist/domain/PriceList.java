@@ -78,7 +78,7 @@ public class PriceList extends Auditable {
         }
         if (this.servicePoint != null) {
             data.setServicePoint(this.servicePoint.getName());
-            data.setServicePointId(this.item.getId());
+            data.setServicePointId(this.servicePoint.getId());
         }
         return data;
     }

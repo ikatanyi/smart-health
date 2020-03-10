@@ -91,16 +91,12 @@ public class BillingService {
         List<PatientBillItem> lineItems = data.getBillItems()
                 .stream()
                 .map(lineData -> {
+                    Item item = itemService.findItemWithNoFoundDetection(lineData.getItemCode());
                     PatientBillItem billItem = new PatientBillItem();
 
                     billItem.setBillingDate(lineData.getBillingDate());
                     billItem.setTransactionId(trdId);
-
-                    if (lineData.getItemCode() != null) {
-                        Item item = itemService.findItemWithNoFoundDetection(lineData.getItemCode());
-                        billItem.setItem(item);
-                    }
-
+                    billItem.setItem(item);
                     billItem.setPrice(lineData.getPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getAmount());
@@ -173,17 +169,12 @@ public class BillingService {
         List<PatientBillItem> lineItems = billItems
                 .stream()
                 .map(lineData -> {
+                    Item item = itemService.findByItemCodeOrThrow(lineData.getItemCode());
                     PatientBillItem billLine = new PatientBillItem();
 
                     billLine.setBillingDate(lineData.getBillingDate());
                     billLine.setTransactionId(lineData.getTransactionId());
-
-                    if (lineData.getItemId() != null) {
-                        Item item = itemService.findItemEntityOrThrow(lineData.getItemId());
-                        billLine.setItem(item);
-
-                    }
-
+                    billLine.setItem(item);
                     billLine.setPrice(lineData.getPrice());
                     billLine.setQuantity(lineData.getQuantity());
                     billLine.setAmount(lineData.getAmount());
@@ -299,7 +290,7 @@ public class BillingService {
         return bill.getBillItems()
                 .stream()
                 .map(billItem -> {
-                    if (billItem.getMedicId()== null) {
+                    if (billItem.getMedicId() == null) {
                         return null;
                     }
                     Employee doctor = doctorInvoiceService.getDoctorById(billItem.getMedicId());

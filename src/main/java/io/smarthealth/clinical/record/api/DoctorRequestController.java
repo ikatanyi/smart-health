@@ -1,13 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.record.api;
-
-import io.smarthealth.clinical.lab.data.PatientLabTestData;
-import io.smarthealth.clinical.lab.domain.PatientLabTest;
-import io.smarthealth.clinical.lab.service.LabResultsService;
+ 
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.DoctorRequestItem;
@@ -62,18 +54,16 @@ public class DoctorRequestController {
     private final ItemService itemService;
 
     private final PatientService patientService;
-
-    private final LabResultsService labResultsService;
+ 
     private final SequenceNumberService sequenceNumberService;
 
-    public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, ItemService itemService, PatientService patientService, LabResultsService labResultsService, SequenceNumberService sequenceNumberService) {
+    public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, ItemService itemService, PatientService patientService, SequenceNumberService sequenceNumberService) {
         this.requestService = requestService;
         this.visitService = visitService;
         this.modelMapper = modelMapper;
         this.employeeService = employeeService;
         this.itemService = itemService;
         this.patientService = patientService;
-        this.labResultsService = labResultsService;
         this.sequenceNumberService = sequenceNumberService;
     }
 
@@ -81,7 +71,8 @@ public class DoctorRequestController {
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
+        //TODO: uncomment after testing
+        Employee employee =employeeService.findEmployeeByUsername(SecurityUtils.getCurrentUserLogin().get()).orElse(null);
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceNumberService.next(1L, Sequences.DoctorRequest.name());
         for (DoctorRequestData data : docRequestData) {
@@ -238,13 +229,6 @@ public class DoctorRequestController {
     @DeleteMapping("/doc-request/{id}")
     public ResponseEntity<?> deleteRequest(@PathVariable("id") final Long id) {
         return requestService.deleteById(id);
-    }
-
-    @GetMapping("/lab-results/{visitNo}")
-    public ResponseEntity<?> fetchLabRequestByVisit(@PathVariable("visitNo") final String visitNo) {
-//        Visit visit = visitService.findVisitEntityOrThrow(visitNo);
-        List<PatientLabTest> results = labResultsService.findLabResultsByVisit(visitNo);
-        return ResponseEntity.status(HttpStatus.OK).body(PatientLabTestData.mapConfirmedTests(results));
     }
 
 }

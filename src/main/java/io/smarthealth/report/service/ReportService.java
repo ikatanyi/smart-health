@@ -15,14 +15,17 @@ import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceLineItem;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
-import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
-import io.smarthealth.clinical.lab.domain.Specimen;
-import io.smarthealth.clinical.lab.service.LabService;
-import io.smarthealth.clinical.lab.service.LabSetupService;
+import io.smarthealth.clinical.laboratory.data.LabResultData;
+import io.smarthealth.clinical.laboratory.domain.LabSpecimen;
+import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
+import io.smarthealth.clinical.laboratory.service.LaboratoryService;
+//import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
+//import io.smarthealth.clinical.lab.domain.Specimen;
+//import io.smarthealth.clinical.lab.service.LabService;
+//import io.smarthealth.clinical.lab.service.LabSetupService;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
-import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.service.ProcedureService;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
@@ -46,7 +49,6 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.organization.person.patient.data.PatientData;
-import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.accounts.DailyBillingData;
@@ -92,14 +94,14 @@ public class ReportService {
     private final PatientService patientService;
     private final RadiologyService radiologyService;
     private final ProcedureService procedureService;
-    private final LabService labService;
+    private final LaboratoryService labService;
     private final DiagnosisService diagnosisService;
     private final PatientNotesService patientNotesService;
     private final PharmacyService pharmacyService;
     private final DoctorRequestService doctorRequestService;
     private final PrescriptionService prescriptionService;
     private final SickOffNoteService sickOffNoteService;
-    private final LabSetupService labSetUpService;
+    private final LabConfigurationService labSetUpService;
 
     public void getTrialBalance(final boolean includeEmptyEntries, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         List<TrialBalanceData> dataList = new ArrayList();
@@ -383,17 +385,14 @@ public class ReportService {
             PatientVisitData pVisitData = patientVisitData;
             List<PatientScanRegisterData> scanData = radiologyService.findPatientScanRegisterByVisit(visit)
                     .stream()
-                    .map((scan) -> PatientScanRegisterData.map(scan))
+                    .map((scan) -> scan.todata())
                     .collect(Collectors.toList());
             List<PatientProcedureRegisterData> procedures = procedureService.findPatientProcedureRegisterByVisit(visit.getVisitNumber())
                     .stream()
                     .map((proc) -> PatientProcedureRegisterData.map(proc))
                     .collect(Collectors.toList());
 
-            List<PatientTestRegisterData> labTests = labService.findPatientTestRegisterByVisit(visit)
-                    .stream()
-                    .map((test) -> PatientTestRegisterData.map(test))
-                    .collect(Collectors.toList());
+             List<LabResultData> labTests = labService.getLabResultDataByVisit(visit);
 
             Optional<PatientNotes> patientNotes = patientNotesService.fetchPatientNotesByVisit(visit);
             if (patientNotes.isPresent()) {
@@ -470,10 +469,7 @@ public class ReportService {
     public void getPatientLabReport(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        List<PatientTestRegisterData> labTests = labService.findPatientTestRegisterByVisit(visit)
-                .stream()
-                .map((test) -> PatientTestRegisterData.map(test))
-                .collect(Collectors.toList());
+         List<LabResultData> labTests = labService.getLabResultDataByVisit(visit);
 
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
@@ -524,7 +520,7 @@ public class ReportService {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         List<PatientScanRegisterData> scans = radiologyService.findPatientScanRegisterByVisit(visit)
                 .stream()
-                .map((test) -> PatientScanRegisterData.map(test))
+                .map((test) -> test.todata())
                 .collect(Collectors.toList());
 
         List<JRSortField> sortList = new ArrayList();
@@ -593,7 +589,7 @@ public class ReportService {
             labelData.setPatientName(patientData.get().getPatientNumber() + ", " + patientData.get().getFullName());
 
         }
-        Specimen specimen = labSetUpService.fetchSpecimenById(specimenId);
+        LabSpecimen specimen = labSetUpService.getLabSpecimenOrThrow(specimenId);
         labelData.setSpecimenCode(specimen.getId().toString());
         labelData.setSpecimenName(specimen.getSpecimen());
 

@@ -5,7 +5,6 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.payment.domain.Payment;
 import io.smarthealth.appointment.domain.Appointment;
-import io.smarthealth.clinical.lab.domain.LabRegister;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -35,8 +34,6 @@ public interface SequenceNumberGenerator {
     public String generate(DoctorRequest request);
 
     public String generate(JournalEntry journal);
-
-    public String generate(LabRegister lab);
 
     public String generate(PurchaseOrder order);
 }
