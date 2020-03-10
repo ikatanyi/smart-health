@@ -33,4 +33,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<Employee> findAllByEmployeeCategory(Category employeeCategory, Pageable pageable);
 
     Optional<Employee> findByLoginAccount(User user);
+    
+    @Query("SELECT e FROM Employee e WHERE e.loginAccount.username =:username")
+    Optional<Employee> findEmployeeBylogin(@Param("username") String username);
 }

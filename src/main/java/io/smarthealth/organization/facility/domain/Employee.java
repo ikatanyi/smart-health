@@ -13,6 +13,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "facility_employee")
+@NamedQuery(name = "tes", query = "SELECT e FROM Employee e WHERE e.loginAccount.username =:username")
 public class Employee extends Person {
 
     @Enumerated(EnumType.STRING)
