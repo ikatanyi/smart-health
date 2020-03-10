@@ -1,6 +1,5 @@
 package io.smarthealth.clinical.pharmacy.domain;
 
-
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
 import io.smarthealth.clinical.pharmacy.domain.enumeration.TransactionType;
 import io.smarthealth.clinical.record.domain.Prescription;
@@ -26,14 +25,14 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "pharmacy_dispensed_drugs")
-public class DispensedDrug extends Auditable {
+public class DispensedDrug extends Auditable implements Cloneable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharm_dispensed_drugs_patient_id"))
     private Patient patient;
-    
+
     @ManyToOne
-    @JoinColumn(foreignKey=@ForeignKey(name="fk_pharmacy_dispensed_drugs_visit_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharmacy_dispensed_drugs_visit_id"))
     private Visit visit;
 
     private LocalDate dispensedDate;
@@ -64,7 +63,6 @@ public class DispensedDrug extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharm_dispensed_drugs_store_id"))
     private Store store;
     private String instructions;
-    @Enumerated(EnumType.STRING)
 
     public DispensedDrugData toData() {
         DispensedDrugData data = new DispensedDrugData();
@@ -88,8 +86,9 @@ public class DispensedDrug extends Auditable {
         data.setCollectedBy(this.collectedBy);
         data.setTransactionId(this.transactionId);
         data.setIsReturn(this.isReturn);
-        if(this.getDrug()!=null)
-           data.setDrugId(this.getDrug().getId());
+        if (this.getDrug() != null) {
+            data.setDrugId(this.getDrug().getId());
+        }
         data.setId(this.getId());
         if (this.store != null) {
             data.setStoreId(this.store.getId());
@@ -97,5 +96,19 @@ public class DispensedDrug extends Auditable {
         }
         data.setInstructions(this.instructions);
         return data;
+    }
+
+    // It has to be exactly this method signature
+    @Override
+    public Object clone() {
+        try {
+            // call clone in Object.
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            System.out.println("Unable to clone object");
+
+            // Depends on your own use-case. I don't want the object modified somewhere!
+            return null;
+        }
     }
 }

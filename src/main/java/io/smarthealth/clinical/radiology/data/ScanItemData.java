@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.radiology.data;
 
+import java.math.BigDecimal;
 import lombok.Data;
 
 /**
@@ -15,6 +16,6 @@ import lombok.Data;
 public class ScanItemData {
     private Long medicId;
     private String itemCode;
-    private double itemPrice;
+    private BigDecimal itemPrice;
     private int quantity;
 }

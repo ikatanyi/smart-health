@@ -45,7 +45,7 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
  * @author Kennedy.Imbenzi
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 @Api(value = "Patient-Radiology-Controller", description = "Radiology Patient Results Rest Controller")
 public class PatientRadiologyController {
 
@@ -58,7 +58,7 @@ public class PatientRadiologyController {
     @PostMapping("/patient-scan")
     public @ResponseBody
     ResponseEntity<?> createPatientScan(@RequestBody final PatientScanRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo, @RequestParam(value = "requestId", required = false) final Long requestId) {
-        PatientScanRegisterData Patientscans = PatientScanRegisterData.map(radiologyService.savePatientResults(patientRegData, visitNo, requestId));
+        PatientScanRegisterData Patientscans = radiologyService.savePatientResults(patientRegData, visitNo, requestId).todata();
         Pager<PatientScanRegisterData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -77,7 +77,7 @@ public class PatientRadiologyController {
         //find patient tests by labTestFile
         List<PatientScanTestData> patientLabTests = scanReg.getPatientScanTest()
                 .stream()
-                .map((scanTest)->(PatientScanTestData.map(scanTest)))
+                .map((scanTest)->(scanTest.toData()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.status(HttpStatus.OK).body(patientLabTests);
@@ -88,16 +88,16 @@ public class PatientRadiologyController {
     ResponseEntity<?> updateScanResults(@PathVariable("resultId") final Long resultId, @Valid @RequestBody PatientScanTestData resultData) {
         PatientScanTest r = radiologyService.findResultsByIdWithNotFoundDetection(resultId);
         r.setComments(resultData.getComments());
-        r.setResult(resultData.getResult());
+//        r.setResult(resultData.getResult());
         r.setStatus(resultData.getStatus());
 
         PatientScanTest savedResult = radiologyService.updateRadiologyResult(r);
-        return ResponseEntity.status(HttpStatus.OK).body(PatientScanTestData.map(savedResult));
+        return ResponseEntity.status(HttpStatus.OK).body(savedResult.toData());
     }
 
     @GetMapping("/patient-scan/{id}")
     public ResponseEntity<?> fetchPatientScanById(@PathVariable("id") final Long id) {
-        PatientScanTestData result = PatientScanTestData.map(radiologyService.findResultsByIdWithNotFoundDetection(id));
+        PatientScanTestData result = radiologyService.findResultsByIdWithNotFoundDetection(id).toData();
         Pager<PatientScanTestData> pagers = new Pager();
 
         pagers.setCode("0");

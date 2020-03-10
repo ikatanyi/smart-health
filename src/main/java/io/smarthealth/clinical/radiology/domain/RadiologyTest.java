@@ -29,6 +29,7 @@ import lombok.Data;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class RadiologyTest extends Identifiable{
     private String scanName; 
+    private String code;
     private Boolean status; 
     private String notes;
     @OneToOne

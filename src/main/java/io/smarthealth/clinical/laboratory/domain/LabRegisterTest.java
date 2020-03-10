@@ -32,7 +32,7 @@ public class LabRegisterTest extends Identifiable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_register_tests_test_id"))
     private LabTest labTest;
-       private BigDecimal price;
+    private BigDecimal price;
     private Long requestId; //reference to doctor's request order number
 
     private String specimen;
