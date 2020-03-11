@@ -72,10 +72,10 @@ public class LaboratoryService {
         request.setLabNumber(labNo);
         request.setTransactionId(trnId);
         data.setTransactionId(trnId);
-        
-        LabRegister saved= repository.save(request);
-         billingService.save(toBill(data));
-         return saved;
+
+        LabRegister saved = repository.save(request);
+        billingService.save(toBill(data));
+        return saved;
     }
 
     public LabRegister getLabRegisterByNumber(String labNo) {
@@ -104,6 +104,8 @@ public class LaboratoryService {
                 .orElseThrow(() -> APIException.notFound("Lab Test with Id {0} Not Found", testId));
         switch (status.getStatus()) {
             case Collected:
+
+                repository.updateLabRegisterStatus(LabTestStatus.PendingResult, requests.getId());
                 return testRepository.updateTestCollected(status.getDoneBy(), status.getSpecimen(), testId, LabTestStatus.PendingResult);
 //                test.setCollected(Boolean.TRUE);
 //                test.setCollectedBy(status.getComment());
@@ -112,12 +114,14 @@ public class LaboratoryService {
 //                test.setEntered(Boolean.TRUE);
 //                test.setEnteredBy(status.getComment());
 //                test.setEntryDateTime(LocalDateTime.now());
-                return testRepository.updateTestEntry(status.getDoneBy(), testId,LabTestStatus.ResultsEntered);
+                repository.updateLabRegisterStatus(LabTestStatus.ResultsEntered, requests.getId());
+                return testRepository.updateTestEntry(status.getDoneBy(), testId, LabTestStatus.ResultsEntered);
             case Validated:
 //                test.setValidated(Boolean.TRUE);
 //                test.setValidatedBy(status.getComment());
 //                test.setValidationDateTime(LocalDateTime.now());
-                return testRepository.updateTestValidation(status.getDoneBy(), testId,LabTestStatus.Complete);
+                repository.updateLabRegisterStatus(LabTestStatus.Complete, requests.getId());
+                return testRepository.updateTestValidation(status.getDoneBy(), testId, LabTestStatus.Complete);
             case Paid:
 //                test.setPaid(Boolean.TRUE);
                 return testRepository.updateTestPaid(testId);
