@@ -84,44 +84,4 @@ public class PatientProcedureRegisterData {
         e.setDiscount(patientregister.getDiscount());
         return e;
     }
-
-    public static PatientProcedureRegisterData map(PatientProcedureRegister patientregister) {
-        PatientProcedureRegisterData data = new PatientProcedureRegisterData();
-        if (patientregister.getVisit() != null) {
-            data.setVisitNumber(patientregister.getVisit().getVisitNumber());
-            data.setPatientName(patientregister.getVisit().getPatient().getFullName());
-            data.setPatientNumber(patientregister.getVisit().getPatient().getPatientNumber());
-        }
-        if (patientregister.getRequest() != null) {
-            data.setRequestId(patientregister.getRequest().getId());
-            data.setRequestedBy(patientregister.getRequest().getRequestedBy().getStaffNumber());
-            data.setPhysicianName(patientregister.getRequest().getCreatedBy());
-        }
-        data.setAccessionNo(patientregister.getAccessNo());
-        
-//        if (patientregister.getBill() != null) {
-//            data.setBillNumber(patientregister.getBill().getBillNumber());
-//            data.setBillData(patientregister.getBill().toData());
-//        }
-
-        if (patientregister.getPatientProcedureTest()!= null) {
-            data.setPatientProcecedureTestData(
-                    patientregister.getPatientProcedureTest()
-                    .stream()
-                    .map((pscantest)->PatientProcedureTestData.map(pscantest))
-                    .collect(Collectors.toList())
-            );
-        }
-        if(patientregister.getRequest()!=null){
-            data.setRequestId(patientregister.getRequest().getId());
-            data.setRequestData(DoctorRequestData.map(patientregister.getRequest()));
-        }
-        //data.setOrderedDate(DateConverter.toIsoString(LocalDateTime.ofInstant(patientregister.getCreatedOn(), ZoneOffset.UTC)));
-
-        //System.out.println("Date converted " + DateConverter.toLocalDate(LocalDateTime.ofInstant(patientregister.getCreatedOn(), ZoneOffset.UTC)));
-        data.setOrderedDate(DateConverter.toLocalDate(LocalDateTime.ofInstant(patientregister.getCreatedOn(), ZoneOffset.UTC)));
-
-        return data;
-    }
-
 }

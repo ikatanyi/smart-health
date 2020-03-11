@@ -389,7 +389,7 @@ public class ReportService {
                     .collect(Collectors.toList());
             List<PatientProcedureRegisterData> procedures = procedureService.findPatientProcedureRegisterByVisit(visit.getVisitNumber())
                     .stream()
-                    .map((proc) -> PatientProcedureRegisterData.map(proc))
+                    .map((proc) -> proc.toData())
                     .collect(Collectors.toList());
 
              List<LabResultData> labTests = labService.getLabResultDataByVisit(visit);
@@ -494,7 +494,7 @@ public class ReportService {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         List<PatientProcedureRegisterData> procTests = procedureService.findPatientProcedureRegisterByVisit(visitNumber)
                 .stream()
-                .map((test) -> PatientProcedureRegisterData.map(test))
+                .map((test) -> test.toData())
                 .collect(Collectors.toList());
 
         List<JRSortField> sortList = new ArrayList();

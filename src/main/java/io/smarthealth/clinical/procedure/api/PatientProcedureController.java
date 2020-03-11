@@ -48,7 +48,7 @@ public class PatientProcedureController {
     @PostMapping("/patient-procedure")
     public @ResponseBody
     ResponseEntity<?> createPatientProcedure(@RequestBody final PatientProcedureRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo, @RequestParam(value = "requestId", required = false) final Long requestId) {
-        PatientProcedureRegisterData Patientprocedures = PatientProcedureRegisterData.map(procedureService.savePatientResults(patientRegData, visitNo, requestId));
+        PatientProcedureRegisterData Patientprocedures = procedureService.savePatientResults(patientRegData, visitNo, requestId).toData();
         Pager<PatientProcedureRegisterData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -67,7 +67,7 @@ public class PatientProcedureController {
         //find patient tests by labTestFile
         List<PatientProcedureTestData> patientLabTests = procedureReg.getPatientProcedureTest()
                 .stream()
-                .map((procedureTest)->(PatientProcedureTestData.map(procedureTest)))
+                .map((procedureTest)->procedureTest.toData())
                 .collect(Collectors.toList());
 
         return ResponseEntity.status(HttpStatus.OK).body(patientLabTests);
@@ -82,12 +82,12 @@ public class PatientProcedureController {
         r.setStatus(resultData.getState());
 
         PatientProcedureTest savedResult = procedureService.updateProcedureResult(r);
-        return ResponseEntity.status(HttpStatus.OK).body(PatientProcedureTestData.map(savedResult));
+        return ResponseEntity.status(HttpStatus.OK).body(savedResult.toData());
     }
 
     @GetMapping("/patient-procedure/{id}")
     public ResponseEntity<?> fetchPatientProcedureById(@PathVariable("id") final Long id) {
-        PatientProcedureTestData result = PatientProcedureTestData.map(procedureService.findResultsByIdWithNotFoundDetection(id));
+        PatientProcedureTestData result = procedureService.findResultsByIdWithNotFoundDetection(id).toData();
         Pager<PatientProcedureTestData> pagers = new Pager();
 
         pagers.setCode("0");

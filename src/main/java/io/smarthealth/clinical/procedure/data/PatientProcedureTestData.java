@@ -24,6 +24,8 @@ public class PatientProcedureTestData {
     private Long id;
     private String results;
     private String comments;
+    private String patientNo;
+    private String patientName;
     private String procedureName;
     @ApiModelProperty(required = false, hidden = true)
     private ProcedureData testData;
@@ -40,23 +42,7 @@ public class PatientProcedureTestData {
     
     
 
-    public static PatientProcedureTestData map(PatientProcedureTest scan) {
-        PatientProcedureTestData entity = new PatientProcedureTestData();
-        entity.setResults(scan.getResult());
-        entity.setState(scan.getStatus());
-        entity.setId(scan.getId());        
-        entity.setComments(scan.getComments());
-        entity.setQuantity(scan.getQuantity());
-        entity.setTestPrice(scan.getTestPrice());
-        if (scan.getProcedureTest() != null) {
-            entity.setProcedureName(scan.getProcedureTest().getProcedureName());            
-        }
-        if(scan.getMedic()!=null){
-            entity.setMedicId(scan.getMedic().getId());
-            entity.setMedicName(scan.getMedic().getFullName());
-        }
-        return entity;
-    }
+   
 
     public static PatientProcedureTest map(PatientProcedureTestData scan) {
         PatientProcedureTest entity = new PatientProcedureTest();

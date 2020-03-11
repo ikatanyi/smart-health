@@ -28,6 +28,7 @@ public class CreditNoteData {
     @ApiModelProperty(required=false, hidden=true)
     private String creditNoteNo;
     private Double amount;
+    @ApiModelProperty(required=false, hidden=true)
     private Long payerId;
     @ApiModelProperty(required=false, hidden=true)
     private String payer;

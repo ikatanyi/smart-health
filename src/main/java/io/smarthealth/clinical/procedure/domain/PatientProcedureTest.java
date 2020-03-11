@@ -11,6 +11,7 @@ package io.smarthealth.clinical.procedure.domain;
  */
 
 
+import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -43,5 +44,27 @@ public class PatientProcedureTest extends Identifiable{
     @ManyToOne
     @JoinColumn(foreignKey=@ForeignKey(name="fk_patient_procedure_tests_id_employee_id"))
     private Employee medic;
+    
+     public  PatientProcedureTestData toData() {
+        PatientProcedureTestData entity = new PatientProcedureTestData();
+        entity.setResults(this.getResult());
+        entity.setState(this.getStatus());
+        entity.setId(this.getId());        
+        entity.setComments(this.getComments());
+        entity.setQuantity(this.getQuantity());
+        entity.setTestPrice(this.getTestPrice());
+        if (this.getProcedureTest() != null) {
+            entity.setProcedureName(this.getProcedureTest().getProcedureName());            
+        }
+        if(this.getMedic()!=null){
+            entity.setMedicId(this.getMedic().getId());
+            entity.setMedicName(this.getMedic().getFullName());
+        }
+        if(this.getPatientProcedureRegister()!=null){
+            entity.setPatientName(this.getPatientProcedureRegister().getPatientName());
+            entity.setPatientNo(this.getPatientProcedureRegister().getPatientNo());
+        }
+        return entity;
+    }
     
 }

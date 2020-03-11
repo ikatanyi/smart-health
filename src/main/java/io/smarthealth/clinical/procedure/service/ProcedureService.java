@@ -134,9 +134,7 @@ public class ProcedureService {
             Visit visit = visitService.findVisitEntityOrThrow(visitNo);
             patientProcReg.setVisit(visit);
             patientProcReg.setPatient(visit.getPatient());
-        } else {
-            throw APIException.badRequest("A fully fledged visit session MUST be available", "");
-        }
+        } 
         Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(patientProcRegData.getRequestedBy());
         if (emp.isPresent()) {
             patientProcReg.setRequestedBy(emp.get());
