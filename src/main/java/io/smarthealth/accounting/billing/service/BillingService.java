@@ -164,6 +164,11 @@ public class BillingService {
         return itemService.findByItemCodeOrThrow(code);
     }
 
+    public Item getItemByBy(Long id) {
+        return itemService.findById(id)
+                .orElseThrow(() -> APIException.notFound("Service with Item Id {0} Not Found", id));
+    }
+
     public String addPatientBillItems(Long id, List<BillItemData> billItems) {
         PatientBill patientbill = findOneWithNoFoundDetection(id);
         List<PatientBillItem> lineItems = billItems

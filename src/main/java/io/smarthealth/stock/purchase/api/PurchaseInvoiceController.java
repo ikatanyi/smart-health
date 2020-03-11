@@ -25,23 +25,23 @@ import org.springframework.web.bind.annotation.*;
 @Api
 @RestController
 @RequestMapping("/api")
-public class PurchaseInvoiceRestController {
+public class PurchaseInvoiceController {
 
     private final PurchaseInvoiceService service;
 
-    public PurchaseInvoiceRestController(PurchaseInvoiceService service) {
+    public PurchaseInvoiceController(PurchaseInvoiceService service) {
         this.service = service;
     }
 
     @PostMapping("/purchaseinvoices")
     public ResponseEntity<?> createPurchaseInvoice(@Valid @RequestBody PurchaseInvoiceData orderData) {
 
-        PurchaseInvoiceData result = service.createPurchaseInvoice(orderData);
+        PurchaseInvoice result = service.createPurchaseInvoice(orderData);
 
         Pager<PurchaseInvoiceData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Purchase Invoice created successful");
-        pagers.setContent(result);
+        pagers.setContent(result.toData());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
@@ -50,19 +50,22 @@ public class PurchaseInvoiceRestController {
     @GetMapping("/purchaseinvoices/{id}")
     public PurchaseInvoiceData getPurchaseInvoice(@PathVariable(value = "id") Long code) {
         PurchaseInvoice po = service.findOneWithNoFoundDetection(code);
-        return PurchaseInvoiceData.map(po);
+        return po.toData();
     }
 
     @GetMapping("/purchaseinvoices")
     public ResponseEntity<?> getAllPurchaseInvoices(
+            @RequestParam(value = "supplier_id", required = false) Long supplierId,
+            @RequestParam(value = "paid", required = false) Boolean paid,
+            @RequestParam(value = "invoice_no", required = false) String invoiceNumber,
             @RequestParam(value = "status", required = false) final PurchaseInvoiceStatus status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<PurchaseInvoiceData> list = service.getPurchaseInvoices(status, pageable)
-                .map(u -> PurchaseInvoiceData.map(u));
+        Page<PurchaseInvoiceData> list = service.getSupplierInvoices(supplierId, invoiceNumber, paid, status, pageable) // service.getPurchaseInvoices(status, pageable)
+                .map(u -> u.toData());
 
         Pager<List<PurchaseInvoiceData>> pagers = new Pager();
         pagers.setCode("0");

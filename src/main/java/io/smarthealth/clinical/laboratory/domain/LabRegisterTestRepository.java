@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.laboratory.domain;
 
+import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -14,16 +15,16 @@ import org.springframework.data.repository.query.Param;
 public interface LabRegisterTestRepository extends JpaRepository<LabRegisterTest, Long>, JpaSpecificationExecutor<LabRegisterTest> {
 
     @Modifying
-    @Query("UPDATE LabRegisterTest t SET t.collected=true, t.collectionDateTime=CURRENT_TIMESTAMP, t.collectedBy=:collectedBy, t.specimen=:specimen WHERE t.id=:id")
-    int updateTestCollected(@Param("collectedBy") String collectedBy, @Param("specimen") String specimen, @Param("id") Long id);
+    @Query("UPDATE LabRegisterTest t SET t.collected=true, t.collectionDateTime=CURRENT_TIMESTAMP, t.collectedBy=:collectedBy, t.specimen=:specimen, t.status=:status WHERE t.id=:id")
+    int updateTestCollected(@Param("collectedBy") String collectedBy, @Param("specimen") String specimen, @Param("id") Long id,@Param("status") LabTestStatus status);
 
     @Modifying
-    @Query("UPDATE LabRegisterTest t SET t.entered=true, t.entryDateTime=CURRENT_TIMESTAMP, t.enteredBy=:enteredBy WHERE t.id=:id")
-    int updateTestEntry(@Param("enteredBy") String enteredBy, @Param("id") Long id);
+    @Query("UPDATE LabRegisterTest t SET t.entered=true, t.entryDateTime=CURRENT_TIMESTAMP, t.enteredBy=:enteredBy, t.status=:status WHERE t.id=:id")
+    int updateTestEntry(@Param("enteredBy") String enteredBy, @Param("id") Long id,@Param("status") LabTestStatus status);
 
     @Modifying
-    @Query("UPDATE LabRegisterTest t SET t.validated=true, t.validationDateTime=CURRENT_TIMESTAMP, t.validatedBy=:validatedBy WHERE t.id=:id")
-    int updateTestValidation(@Param("validatedBy") String validatedBy, @Param("id") Long id);
+    @Query("UPDATE LabRegisterTest t SET t.validated=true, t.validationDateTime=CURRENT_TIMESTAMP, t.validatedBy=:validatedBy,t.status=:status WHERE t.id=:id")
+    int updateTestValidation(@Param("validatedBy") String validatedBy, @Param("id") Long id,@Param("status") LabTestStatus status);
 
     @Modifying
     @Query("UPDATE LabRegisterTest t SET t.paid=true WHERE t.id=:id")

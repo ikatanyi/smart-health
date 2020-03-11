@@ -13,7 +13,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
@@ -25,7 +24,6 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "lab_register_tests")
-@NamedQuery(name = "test", query = "SELECT t FROM LabRegisterTest t WHERE t.labRegister.labNumber=:labNo")
 public class LabRegisterTest extends Identifiable {
 
     @ManyToOne

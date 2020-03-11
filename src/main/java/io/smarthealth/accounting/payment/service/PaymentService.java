@@ -45,6 +45,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -144,6 +145,7 @@ public class PaymentService {
         //TODO: allocate the invoices paid - mark
         //find the bank and journal this transactions
         //'
+        
         final FinancialTransaction trans = transactionRepository.save(transaction);
         return trans;
     }

@@ -45,6 +45,8 @@ public class LabRegister extends Auditable {
     private Boolean isWalkin;
     
      private String paymentMode;
+     
+     private String transactionId;
 
     @Enumerated(EnumType.STRING)
     private LabTestStatus status;
@@ -80,6 +82,7 @@ public class LabRegister extends Auditable {
         data.setRequestDatetime(this.requestDatetime);
         data.setRequestedBy(this.requestedBy);
         data.setStatus(this.status);
+        data.setTransactionId(this.transactionId);
         data.setPaymentMode(this.paymentMode);
         if (expand != null && expand) {
             data.setTests(this.tests
