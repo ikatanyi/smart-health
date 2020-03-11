@@ -17,6 +17,7 @@ import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.accounting.payment.data.FinancialTransactionData;
 import io.smarthealth.accounting.payment.data.CreateTransactionData;
+import io.smarthealth.accounting.payment.data.CreditorData;
 import io.smarthealth.accounting.payment.domain.Payment;
 import io.smarthealth.accounting.payment.domain.FinancialTransaction;
 import io.smarthealth.accounting.payment.domain.enumeration.TrxType;
@@ -24,7 +25,7 @@ import io.smarthealth.accounting.payment.domain.specification.PaymentSpecificati
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+//import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.FinancialTransactionRepository;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
-import io.smarthealth.infrastructure.sequence.numbers.service.SequenceNumberGenerator;
+import io.smarthealth.organization.bank.service.BankAccountService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import java.math.BigDecimal;
@@ -60,19 +61,18 @@ public class PaymentService {
     private final BillingService billingService;
     private final JournalService journalEntryService;
 
-    private final SequenceNumberGenerator sequenceGenerator;
-
     private final SequenceNumberService sequenceNumberService;
     private final ServicePointService servicePointService;
+    private final BankAccountService bankAccountService;
 
     @Transactional
-    public FinancialTransactionData createTransaction(CreateTransactionData transactionData) {
+    public FinancialTransaction createTransaction(CreateTransactionData transactionData) {
 
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String receipt = sequenceNumberService.next(1L, Sequences.Receipt.name());
 
         FinancialTransaction transaction = new FinancialTransaction();
-        transaction.setDate(transactionData.getDate());
+        transaction.setDate(LocalDateTime.now());
         transaction.setAmount(transactionData.getAmount());
         transaction.setTrxType(TrxType.payment);
         transaction.setReceiptNo(receipt);
@@ -115,8 +115,37 @@ public class PaymentService {
         }
         journalEntryService.save(toJournal(transactionData.getDate().toLocalDate(), trdId, receipt, billedItems));
 //        journalEntryService.createJournalEntry(trdId, billedItems);
-        return FinancialTransactionData.map(trans);
+        return trans;
 
+    }
+
+     @Transactional
+    public FinancialTransaction createTransaction(CreditorData creditorData) {
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        String receipt = sequenceNumberService.next(1L, Sequences.Receipt.name());
+
+        FinancialTransaction transaction = new FinancialTransaction();
+        transaction.setDate(LocalDateTime.now());
+        transaction.setAmount(creditorData.getAmount().doubleValue());
+        transaction.setTrxType(TrxType.payment);
+        transaction.setReceiptNo(receipt);
+        transaction.setShiftNo("0000");
+        transaction.setTransactionId(trdId);
+        transaction.setInvoice("reference invoices paid");
+
+        Payment pay = new Payment();
+        pay.setAmount(creditorData.getAmount().doubleValue());
+        pay.setMethod(creditorData.getPaymentMethod());
+        pay.setCurrency(creditorData.getPaymentMethod());
+        pay.setReferenceCode(receipt);
+
+        transaction.addPayment(pay);
+
+        //TODO: allocate the invoices paid - mark
+        //find the bank and journal this transactions
+        //'
+        final FinancialTransaction trans = transactionRepository.save(transaction);
+        return trans;
     }
 
     private Payment createPayment(PaymentData data) {
@@ -152,25 +181,26 @@ public class PaymentService {
     }
 
     @Transactional
-    public FinancialTransactionData refund(Long id, Double amount) {
+    public FinancialTransaction refund(Long id, Double amount) {
 
         FinancialTransaction trans = findTransactionOrThrowException(id);
         if (amount > trans.getAmount()) {
             throw APIException.badRequest("Refund amount is more than the receipt amount");
         }
-
+         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+         
         FinancialTransaction toSave = new FinancialTransaction();
         toSave.setDate(LocalDateTime.now());
         toSave.setTrxType(TrxType.refund);
         toSave.setReceiptNo(trans.getReceiptNo());
         toSave.setShiftNo("0000");
-        toSave.setTransactionId(UUID.randomUUID().toString());
+        toSave.setTransactionId(trdId);
         toSave.setInvoice(trans.getInvoice());
         toSave.setAccount(trans.getAccount());
         toSave.setAmount(amount);
 
         FinancialTransaction trns = transactionRepository.save(toSave);
-        return FinancialTransactionData.map(trns);
+        return trns;
 
     }
 

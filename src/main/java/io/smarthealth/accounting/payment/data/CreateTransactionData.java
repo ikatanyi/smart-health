@@ -38,6 +38,7 @@ public class CreateTransactionData {
     private PaymentStatus status;
 
     private Double amount;
+    
     private String transactionId;
 
 }

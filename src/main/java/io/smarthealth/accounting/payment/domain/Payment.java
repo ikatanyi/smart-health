@@ -5,6 +5,7 @@
  */
 package io.smarthealth.accounting.payment.domain;
 
+import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.infrastructure.domain.Auditable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -36,4 +37,15 @@ public class Payment extends Auditable {
     private String type;
 
     private String currency;
+    
+     public  PaymentData toData() {
+        return new PaymentData(
+                this.getId(),
+                this.method,
+                this.amount,
+                this.referenceCode,
+                this.type,
+                this.currency
+        );
+    }
 }
