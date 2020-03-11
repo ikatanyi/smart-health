@@ -2,11 +2,14 @@ package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.payment.domain.enumeration.TrxType;
 import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.payment.data.FinancialTransactionData;
+import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.accounting.payment.domain.enumeration.PaymentStatus;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -74,5 +77,38 @@ public class FinancialTransaction extends Auditable {
     public void addPayments(List<Payment> payments) {
         this.payments = payments;
         this.payments.forEach(x -> x.setTransaction(this));
+    }
+    
+    public  FinancialTransactionData toData() {
+        FinancialTransactionData data = new FinancialTransactionData();
+        data.setId(this.getId()); 
+        data.setDate(this.date);
+        data.setTrxType(this.trxType);
+        data.setReceiptNo(this.receiptNo);
+        data.setShiftNo(this.shiftNo);
+        data.setTransactionId(this.transactionId);
+        data.setInvoice(this.invoice);
+       data.setAmount(this.amount);
+        if (this.parentTransaction != null) {
+            data.setParentTransactionId(this.parentTransaction.getId());
+        }
+        
+        if(this.account!=null){
+            data.setAccount(this.account.getName());
+            data.setAccountName(this.account.getName());
+        }
+         
+        if (!this.payments.isEmpty()) {
+            data.setPayment(
+                    this.payments
+                            .stream()
+                            .map(p -> p.toData())
+                            .collect(Collectors.toList())
+            );
+        }
+
+        data.setStatus(this.status);
+       
+        return data;
     }
 }

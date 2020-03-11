@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class OrganizationService {
 
-    private OrganizationRepository orgRepository;
+    private final OrganizationRepository orgRepository;
 
     private final AdminService adminService;
 

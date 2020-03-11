@@ -11,6 +11,7 @@ import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoiceRepository;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
+import io.smarthealth.stock.purchase.domain.specification.PurchaseInvoiceSpecification;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 /**
@@ -37,7 +39,7 @@ public class PurchaseInvoiceService {
         this.journalService = journalService;
     }
 
-    public PurchaseInvoiceData createPurchaseInvoice(PurchaseInvoiceData invoiceData) {
+    public PurchaseInvoice createPurchaseInvoice(PurchaseInvoiceData invoiceData) {
         PurchaseInvoice invoice = new PurchaseInvoice();
 
         Supplier supplier = supplierService.findOneWithNoFoundDetection(invoiceData.getSupplierId());
@@ -57,7 +59,7 @@ public class PurchaseInvoiceService {
         //then we need to save this
         PurchaseInvoice savedInvoice = purchaseInvoiceRepository.save(invoice);
 
-        return PurchaseInvoiceData.map(savedInvoice);
+        return savedInvoice;
     }
   
     public void createPurchaseInvoice(Store store, SupplierStockEntry stockEntry) {
@@ -92,7 +94,11 @@ public class PurchaseInvoiceService {
         return purchaseInvoiceRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Purchase Invoice with Id {0} not found", id));
     }
-
+   public Page<PurchaseInvoice> getSupplierInvoices(Long supplierId, String invoiceNumber, Boolean paid,PurchaseInvoiceStatus status,Pageable page){
+       Specification<PurchaseInvoice> specs=PurchaseInvoiceSpecification.createSpecification(supplierId, invoiceNumber, paid, status);
+       return purchaseInvoiceRepository.findAll(specs, page);
+       
+   }
     public Page<PurchaseInvoice> getPurchaseInvoices(PurchaseInvoiceStatus status, Pageable page) {
         if (status != null) {
             return purchaseInvoiceRepository.findByStatus(status, page);

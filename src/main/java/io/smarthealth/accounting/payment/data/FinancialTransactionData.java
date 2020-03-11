@@ -45,38 +45,5 @@ public class FinancialTransactionData {
       
     private PaymentStatus status;
      
-    private Double amount; 
-    
-    public static FinancialTransactionData map(FinancialTransaction transaction) {
-        FinancialTransactionData data = new FinancialTransactionData();
-        data.setId((transaction.getId())); 
-        data.setDate(transaction.getDate());
-        data.setTrxType(transaction.getTrxType());
-        data.setReceiptNo(transaction.getReceiptNo());
-        data.setShiftNo(transaction.getShiftNo());
-        data.setTransactionId(transaction.getTransactionId());
-        data.setInvoice(transaction.getInvoice());
-       data.setAmount(transaction.getAmount());
-        if (transaction.getParentTransaction() != null) {
-            data.setParentTransactionId(transaction.getParentTransaction().getId());
-        }
-        
-        if(transaction.getAccount()!=null){
-            data.setAccount(transaction.getAccount().getName());
-            data.setAccountName(transaction.getAccount().getName());
-        }
-         
-        if (!transaction.getPayments().isEmpty()) {
-            data.setPayment(
-                    transaction.getPayments()
-                            .stream()
-                            .map(p -> PaymentData.map(p))
-                            .collect(Collectors.toList())
-            );
-        }
-
-        data.setStatus(transaction.getStatus());
-       
-        return data;
-    }
+    private Double amount;  
 }

@@ -37,8 +37,8 @@ import lombok.ToString;
 @Table(name = "invoices", uniqueConstraints = { @UniqueConstraint( columnNames = { "number" }, name = "uk_invoice_number")})
 public class Invoice extends Auditable {
 
-    @OneToOne(mappedBy = "invoice")
-    private CreditNote creditNote;
+    @OneToMany(mappedBy = "invoice")
+    private List<CreditNote> creditNotes = new ArrayList<>();;
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payer_id"))
@@ -100,6 +100,15 @@ public class Invoice extends Auditable {
         this.items = items;
         this.items.forEach(x -> x.setInvoice(this));
     }
- 
+    
+    public void addCreditNoteItem(CreditNote item) {
+        item.setInvoice(this);
+        creditNotes.add(item);
+    }
+
+    public void addCreditNoteItems(List<CreditNote> items) {
+        this.creditNotes = items;
+        this.creditNotes.forEach(x -> x.setInvoice(this));
+    }
     
 }

@@ -16,14 +16,14 @@ public class PaymentMethodData {
     private Boolean isCashPayment; 
     private Boolean active;
 
-    public static PaymentMethodData map(PaymentMethod paymode) {
-        PaymentMethodData data = new PaymentMethodData();
-        data.setId(paymode.getId());
-        data.setActive(paymode.getActive());
-        data.setName(paymode.getName());
-        data.setDescription(paymode.getDescription());
-        data.setIsCashPayment(paymode.getIsCashPayment()); 
-        return data;
-    }
+//    public static PaymentMethodData map(PaymentMethod paymode) {
+//        PaymentMethodData data = new PaymentMethodData();
+//        data.setId(paymode.getId());
+//        data.setActive(paymode.getActive());
+//        data.setName(paymode.getName());
+//        data.setDescription(paymode.getDescription());
+//        data.setIsCashPayment(paymode.getIsCashPayment()); 
+//        return data;
+//    }
 
 }

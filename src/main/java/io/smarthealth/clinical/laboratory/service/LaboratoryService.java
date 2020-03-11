@@ -1,5 +1,12 @@
 package io.smarthealth.clinical.laboratory.service;
 
+import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.laboratory.data.LabRegisterData;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
@@ -35,6 +42,8 @@ import io.smarthealth.clinical.laboratory.domain.LabRegisterTestRepository;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
+import io.smarthealth.stock.item.domain.Item;
+import java.time.LocalDate;
 
 /**
  *
@@ -51,14 +60,22 @@ public class LaboratoryService {
     private final SequenceNumberService sequenceNumberService;
     private final LabResultRepository labResultRepository;
     private final WalkingService walkingService;
+    private final ServicePointService servicePointService;
+    private final BillingService billingService;
 
     @Transactional
     public LabRegister createLabRegister(LabRegisterData data) {
 
         LabRegister request = toLabRegister(data);
+        String trnId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String labNo = sequenceNumberService.next(1L, Sequences.LabNumber.name());
         request.setLabNumber(labNo);
-        return repository.save(request);
+        request.setTransactionId(trnId);
+        data.setTransactionId(trnId);
+
+        LabRegister saved = repository.save(request);
+        billingService.save(toBill(data));
+        return saved;
     }
 
     public LabRegister getLabRegisterByNumber(String labNo) {
@@ -87,7 +104,9 @@ public class LaboratoryService {
                 .orElseThrow(() -> APIException.notFound("Lab Test with Id {0} Not Found", testId));
         switch (status.getStatus()) {
             case Collected:
-                return testRepository.updateTestCollected(status.getDoneBy(), status.getSpecimen(), testId);
+
+                repository.updateLabRegisterStatus(LabTestStatus.PendingResult, requests.getId());
+                return testRepository.updateTestCollected(status.getDoneBy(), status.getSpecimen(), testId, LabTestStatus.PendingResult);
 //                test.setCollected(Boolean.TRUE);
 //                test.setCollectedBy(status.getComment());
 //                test.setCollectionDateTime(LocalDateTime.now()); 
@@ -95,12 +114,14 @@ public class LaboratoryService {
 //                test.setEntered(Boolean.TRUE);
 //                test.setEnteredBy(status.getComment());
 //                test.setEntryDateTime(LocalDateTime.now());
-                return testRepository.updateTestEntry(status.getDoneBy(), testId);
+                repository.updateLabRegisterStatus(LabTestStatus.ResultsEntered, requests.getId());
+                return testRepository.updateTestEntry(status.getDoneBy(), testId, LabTestStatus.ResultsEntered);
             case Validated:
 //                test.setValidated(Boolean.TRUE);
 //                test.setValidatedBy(status.getComment());
 //                test.setValidationDateTime(LocalDateTime.now());
-                return testRepository.updateTestValidation(status.getDoneBy(), testId);
+                repository.updateLabRegisterStatus(LabTestStatus.Complete, requests.getId());
+                return testRepository.updateTestValidation(status.getDoneBy(), testId, LabTestStatus.Complete);
             case Paid:
 //                test.setPaid(Boolean.TRUE);
                 return testRepository.updateTestPaid(testId);
@@ -205,16 +226,17 @@ public class LaboratoryService {
         LabRegister request = new LabRegister();
         request.setOrderNumber(data.getOrderNumber());
         request.setIsWalkin(data.getIsWalkin());
+        request.setPaymentMode(data.getPaymentMode());
         if (!data.getIsWalkin()) {
             Visit visit = getPatientVisit(data.getVisitNumber());
             request.setVisit(visit);
             request.setRequestedBy(data.getRequestedBy());
             request.setPatientNo(visit.getPatient().getPatientNumber());
         } else {
-            WalkIn w= createWalking(data.getPatientName());
+            WalkIn w = createWalking(data.getPatientName());
             request.setRequestedBy(data.getPatientName());
             request.setPatientNo(w.getWalkingIdentitificationNo());
-            
+
         }
         request.setRequestDatetime(data.getRequestDatetime());
         request.setStatus(LabTestStatus.AwaitingSpecimen);
@@ -283,5 +305,50 @@ public class LaboratoryService {
         w.setFirstName(patientName);
         w.setSurname("WI");
         return walkingService.createWalking(w);
+    }
+
+    private PatientBill toBill(LabRegisterData data) {
+        //get the service point from store
+        Visit visit = visitRepository.findByVisitNumber(data.getVisitNumber()).orElse(null);
+        //find the service point for lab
+        ServicePoint srvpoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
+
+        PatientBill patientbill = new PatientBill();
+        patientbill.setVisit(visit);
+        patientbill.setPatient(visit.getPatient());
+//        patientbill.setAmount(data.getAmount());
+//        patientbill.setDiscount(data.getDiscount());
+//        patientbill.setBalance(data.getAmount());
+        patientbill.setBillingDate(LocalDate.now());
+//        patientbill.setReferenceNo(data.getReferenceNo());
+        patientbill.setPaymentMode(data.getPaymentMode());
+        patientbill.setTransactionId(data.getTransactionId());
+        patientbill.setStatus(BillStatus.Draft);
+
+        List<PatientBillItem> lineItems = data.getTests()
+                .stream()
+                .map(lineData -> {
+                    PatientBillItem billItem = new PatientBillItem();
+                    Item item = billingService.getItemByBy(lineData.getTestId());
+
+                    billItem.setBillingDate(LocalDate.now());
+                    billItem.setTransactionId(data.getTransactionId());
+                    billItem.setServicePointId(srvpoint.getId());
+                    billItem.setServicePoint(srvpoint.getName());
+                    billItem.setItem(item);
+                    billItem.setPrice(lineData.getTestPrice().doubleValue());
+                    billItem.setQuantity(1d);
+                    billItem.setAmount(lineData.getTestPrice().doubleValue());
+                    billItem.setDiscount(0.00);
+                    billItem.setBalance(lineData.getTestPrice().doubleValue());
+                    billItem.setServicePoint(srvpoint.getName());
+                    billItem.setServicePointId(srvpoint.getId());
+                    billItem.setStatus(BillStatus.Draft);
+
+                    return billItem;
+                })
+                .collect(Collectors.toList());
+        patientbill.addBillItems(lineItems);
+        return patientbill;
     }
 }

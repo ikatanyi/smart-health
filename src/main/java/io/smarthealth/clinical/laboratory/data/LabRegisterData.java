@@ -32,6 +32,8 @@ public class LabRegisterData {
     private String labNumber;
 
     private String requestedBy;
+    
+     private String transactionId;
     /**
      * if is walkin pass the patient no and patient name fields
      */

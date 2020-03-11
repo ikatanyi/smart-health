@@ -35,27 +35,5 @@ public class PurchaseInvoiceData {
     private BigDecimal netAmount;
     private PurchaseInvoiceStatus status;
     private String createdBy;
-
-    public static PurchaseInvoiceData map(PurchaseInvoice invoice) {
-        PurchaseInvoiceData data = new PurchaseInvoiceData();
-        if (invoice.getSupplier() != null) {
-            data.setSupplierId(invoice.getSupplier().getId());
-            data.setSupplier(invoice.getSupplier().getSupplierName());
-        }
-        data.setPurchaseOrderNumber(invoice.getPurchaseOrderNumber());
-        data.setSerialNumber(invoice.getSerialNumber());
-        data.setTransactionDate(invoice.getTransactionDate());
-        data.setDueDate(invoice.getDueDate());
-        data.setPaid(invoice.getPaid());
-        data.setIsReturn(invoice.getIsReturn());
-        data.setInvoiceNo(invoice.getInvoiceNumber());
-        data.setInvoiceAmount(invoice.getInvoiceAmount());
-        data.setInvoiceBalance(invoice.getInvoiceBalance());
-        data.setTax(invoice.getTax());
-        data.setDiscount(invoice.getDiscount());
-        data.setStatus(invoice.getStatus());
-        data.setCreatedBy(invoice.getCreatedBy());
-
-        return data;
-    }
+ 
 }

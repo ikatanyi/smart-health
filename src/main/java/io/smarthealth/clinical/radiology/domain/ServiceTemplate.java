@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.radiology.domain;
 
+import io.smarthealth.clinical.radiology.data.ServiceTemplateData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.stock.item.domain.Item;
@@ -31,4 +32,12 @@ public class ServiceTemplate extends Identifiable{
     private String templateName; 
     private Gender gender;
     private String notes;
+    
+    private ServiceTemplateData toData(){
+        ServiceTemplateData data = new ServiceTemplateData();
+        data.setTemplateName(this.getTemplateName());
+        data.setNotes(this.getNotes());
+        data.setId(this.getId());
+        return data;
+    }
 }

@@ -10,11 +10,16 @@ package io.smarthealth.debtor.claim.creditNote.domain;
 
 
 import io.smarthealth.accounting.invoice.domain.Invoice;
+import io.smarthealth.debtor.claim.creditNote.data.CreditNoteData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.infrastructure.domain.Auditable;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -31,13 +36,44 @@ public class CreditNote extends Auditable {
     private String creditNoteNo;
     private Double amount;
     private String comments;
+    private String transactionId;
     @OneToOne
     @JoinColumn(name="fk_credit_note_id_payer_id")
-    private Payer payer;
-    @OneToOne
+    private Payer payer;    
+    
+    
     @JoinColumn(name="fk_credit_note_id_invoice_id")
+    @ManyToOne
     private Invoice invoice;
     @OneToMany
     @JoinColumn(name="fk_credit_note_id_credit_note_item_id")
     private List<CreditNoteItem> items;  
+    
+    public CreditNoteData toData(){
+        CreditNoteData data = new CreditNoteData();
+        data.setId(this.getId());
+        data.setAmount(this.getAmount());
+        data.setCreditNoteNo(this.getCreditNoteNo());
+       
+        List items = this.getItems().stream().map((item) -> {
+            CreditNoteItemData billItem=new CreditNoteItemData();
+            billItem.setAmount(item.getAmount());
+            billItem.setBillItemId(item.getBillItem().getId());
+            billItem.setItemId(item.getItem().getId());
+            return billItem;
+        }).collect(Collectors.toList());
+        
+        data.setBillItems(items);
+        if(this.getInvoice()!=null){
+            data.setInvoiceNo(this.getInvoice().getNumber());
+            data.setInvoiceDate(this.getInvoice().getDate());
+        }
+        if(this.getPayer()!=null){
+            data.setPayer(this.getPayer().getPayerName());
+            data.setPayerId(this.getPayer().getId());
+        }
+        data.setDate(LocalDate.from(this.getCreatedOn().atZone(ZoneId.systemDefault())));
+        data.setComments(this.getComments());
+        return data;
+    }
 }

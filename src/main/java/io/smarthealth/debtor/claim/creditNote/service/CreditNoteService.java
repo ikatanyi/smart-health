@@ -1,7 +1,17 @@
 package io.smarthealth.debtor.claim.creditNote.service;
 
+import io.smarthealth.accounting.accounts.data.FinancialActivity;
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
+import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
+import io.smarthealth.accounting.accounts.domain.JournalEntry;
+import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
+import io.smarthealth.accounting.accounts.domain.JournalState;
+import io.smarthealth.accounting.accounts.domain.TransactionType;
+import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
@@ -9,13 +19,18 @@ import io.smarthealth.debtor.claim.creditNote.data.CreditNoteItemData;
 import io.smarthealth.debtor.claim.creditNote.data.CreditNoteData;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNote;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNoteItem;
+import io.smarthealth.debtor.claim.creditNote.domain.CreditNoteItemRepository;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNoteRepository;
 import io.smarthealth.debtor.claim.creditNote.domain.specification.CreditNoteSpecification;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,19 +52,28 @@ public class CreditNoteService {
 
     private final CreditNoteRepository creditNoteRepository;
     private final InvoiceRepository invoiceRepository; 
+    private final CreditNoteItemRepository creditNoteItemRepository;
     private final InvoiceService invoiceService;
     private final BillingService billService;
     private final PayerService payerService; 
+    private final JournalService journalService;
+    private final FinancialActivityAccountRepository activityAccountRepository;
+    private final SequenceNumberService sequenceNumberService;
 
         
 
     @javax.transaction.Transactional
     public CreditNote createCreditNote(CreditNoteData data) {
-        CreditNote creditNote = CreditNoteData.map(data);         
+        CreditNote creditNote = CreditNoteData.map(data);     
         Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(invoice.getPayer().getId());
+        String transactionId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        String creditNoteNumber = sequenceNumberService.next(1L, Sequences.CreditNoteNumber.name());
+        creditNote.setCreditNoteNo(creditNoteNumber);
+        creditNote.setTransactionId(transactionId);
         creditNote.setInvoice(invoice);   
         creditNote.setPayer(payer);
+        creditNote.setAmount(data.getAmount());
         List<CreditNoteItem>creditNoteItemArr = new ArrayList();
         data.getBillItems().stream().map((item) -> {
             CreditNoteItem creditNoteItem = new CreditNoteItem();
@@ -61,10 +85,13 @@ public class CreditNoteService {
         }).forEachOrdered((creditNoteItem) -> {
             creditNoteItemArr.add(creditNoteItem);
         });
-        creditNote.setItems(creditNoteItemArr);
-        invoice.setCreditNote(creditNote);
+        List<CreditNoteItem> savedItems = creditNoteItemRepository.saveAll(creditNoteItemArr);
+        creditNote.setItems(savedItems);
+        CreditNote savedcreditNote = creditNoteRepository.save(creditNote);
+        invoice.addCreditNoteItem(savedcreditNote);
         invoiceRepository.save(invoice);
-        return creditNoteRepository.save(creditNote);
+        journalService.save(toJournal(savedcreditNote));
+        return savedcreditNote;
     }
     
     public CreditNote updateCreditNote(final Long id, CreditNoteData data) {
@@ -83,10 +110,13 @@ public class CreditNoteService {
         }).forEachOrdered((creditNoteItem) -> {
             creditNoteItemArr.add(creditNoteItem);
         });
-        creditNote.setItems(creditNoteItemArr);
-        invoice.setCreditNote(creditNote);
+        List<CreditNoteItem> savedItems = creditNoteItemRepository.saveAll(creditNoteItemArr);
+        creditNote.setItems(savedItems);
+        CreditNote savedcreditNote = creditNoteRepository.save(creditNote);
+        invoice.addCreditNoteItem(savedcreditNote);
         invoiceRepository.save(invoice);
-        return creditNoteRepository.save(creditNote);
+        journalService.save(toJournal(savedcreditNote));
+        return savedcreditNote;
     }
 
     public CreditNote getCreditNoteByIdWithFailDetection(Long id) {
@@ -106,29 +136,31 @@ public class CreditNoteService {
         return creditNoteRepository.findAll();
     }
     
-    public static CreditNoteData map(CreditNote creditNote){
-        CreditNoteData data = new CreditNoteData();
-        data.setAmount(creditNote.getAmount());
-        data.setCreditNoteNo(creditNote.getCreditNoteNo());
-        creditNote.getItems().stream().map((item) -> {
-            CreditNoteItemData billItem=new CreditNoteItemData();
-            billItem.setAmount(item.getAmount());
-            billItem.setBillItemid(item.getBillItem().getId());
-            billItem.setItemId(item.getItem().getId());
-            return billItem;
-        }).forEachOrdered((billItem) -> {
-            data.getBillItems().add(billItem);
-        });
-        if(creditNote.getInvoice()!=null){
-            data.setInvoiceNo(creditNote.getInvoice().getNumber());
-            data.setInvoiceDate(creditNote.getInvoice().getDate());
+    private JournalEntry toJournal(CreditNote creditNote) {
+
+        Account debitAccount = creditNote.getPayer().getDebitAccount();
+        if (debitAccount==null) {
+            throw APIException.badRequest("Payer account is Not Mapped");
         }
-        if(creditNote.getPayer()!=null){
-            data.setPayer(creditNote.getPayer().getPayerName());
-            data.setPayerId(creditNote.getPayer().getId());
+        String debitAcc = debitAccount.getIdentifier();
+
+        Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Discount_Allowed);
+        if (!creditAccount.isPresent()) {
+            throw APIException.badRequest("Discount given Account is Not Mapped");
         }
-        data.setDate(LocalDate.from(creditNote.getCreatedOn()));
-        data.setComments(creditNote.getComments());
-        return data;
+        String creditAcc = creditAccount.get().getAccount().getIdentifier();
+
+        BigDecimal amount = BigDecimal.valueOf(creditNote.getAmount());
+        String narration = "Credit Note " + creditNote.getCreditNoteNo() + "for invoice " + creditNote.getInvoice().getNumber();
+        JournalEntry toSave = new JournalEntry(LocalDate.from(creditNote.getCreatedOn().atZone(ZoneId.systemDefault())), narration,
+                new JournalEntryItem[]{
+                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
+                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                }
+        );
+        toSave.setTransactionNo(creditNote.getTransactionId());
+        toSave.setTransactionType(TransactionType.Invoicing);
+        toSave.setStatus(JournalState.PENDING);
+        return toSave;
     }
 }
