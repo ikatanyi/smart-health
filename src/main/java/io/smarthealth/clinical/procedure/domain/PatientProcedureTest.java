@@ -15,13 +15,13 @@ import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.stock.item.domain.Item;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -31,10 +31,11 @@ import lombok.Data;
 public class PatientProcedureTest extends Identifiable{
 
     @ManyToOne
-    private PatientProcedureRegister patientProcedureRegister;
+    private PatientProcedureRegister patientProcedureRegister;    
     
-    @OneToOne
-    private Procedure procedureTest;
+    @ManyToOne
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_patient_procedure_tests_id_item_id"))
+    private Item procedureTest;
     private double testPrice;
     private double quantity;
     @Enumerated(EnumType.STRING)
@@ -54,7 +55,7 @@ public class PatientProcedureTest extends Identifiable{
         entity.setQuantity(this.getQuantity());
         entity.setTestPrice(this.getTestPrice());
         if (this.getProcedureTest() != null) {
-            entity.setProcedureName(this.getProcedureTest().getProcedureName());            
+            entity.setProcedureName(this.getProcedureTest().getItemName());            
         }
         if(this.getMedic()!=null){
             entity.setMedicId(this.getMedic().getId());

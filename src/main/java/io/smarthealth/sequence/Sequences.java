@@ -23,5 +23,6 @@ public enum Sequences {
     RequistionNumber,
     PurchaseOrder,
     StockTransferNumber,
-    BillNumber;
+    BillNumber,
+    CreditNoteNumber;
 }

@@ -15,7 +15,9 @@ public enum FinancialActivity {
     Surplus_And_Loss("Surplus And Loss", AccountType.LIABILITY),
     Cost_Of_Consultancy("Cost of Consultancy", AccountType.EXPENSE),
     Doctors_Fee("Doctor Fee", AccountType.LIABILITY),
-    Cost_Of_Sales("Cost of Sales", AccountType.EXPENSE);
+    Cost_Of_Sales("Cost of Sales", AccountType.EXPENSE),
+    Discount_Received("Discount Received", AccountType.REVENUE),
+    Discount_Allowed("Discount Allowed", AccountType.EXPENSE);
 
     private final String activityName;
     private final AccountType accountType;

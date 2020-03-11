@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class CreditNoteItemData {
 
-    private Long id;
+    private Long itemId;
     private Long billItemId;
     private SimpleItemData itemData;
     private Double amount;

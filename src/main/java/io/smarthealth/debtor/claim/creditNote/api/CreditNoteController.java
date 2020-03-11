@@ -36,7 +36,7 @@ public class CreditNoteController {
     @PostMapping("/credit-note")
     public ResponseEntity<?> createCreditNote(@Valid @RequestBody CreditNoteData creditNoteData) {
 
-        CreditNoteData creditNote = creditNoteService.map(creditNoteService.createCreditNote(creditNoteData));
+        CreditNoteData creditNote = creditNoteService.createCreditNote(creditNoteData).toData();
 
         Pager<CreditNoteData> pagers = new Pager();
         pagers.setCode("0");
@@ -48,13 +48,13 @@ public class CreditNoteController {
 
     @GetMapping("/credit-note/{id}")
     public CreditNoteData getCreditNote(@PathVariable(value = "id") Long id) {
-        CreditNoteData creditNote = creditNoteService.map(creditNoteService.getCreditNoteByIdWithFailDetection(id));
+        CreditNoteData creditNote = creditNoteService.getCreditNoteByIdWithFailDetection(id).toData();
         return creditNote;
     }
 
     @PutMapping("/credit-note/{id}")
     public CreditNoteData updateRemitance(@PathVariable(value = "id") Long id, CreditNoteData creditNoteData) {
-        CreditNoteData creditNote = creditNoteService.map(creditNoteService.updateCreditNote(id, creditNoteData));
+        CreditNoteData creditNote = creditNoteService.updateCreditNote(id, creditNoteData).toData();
         return creditNote;
     }
 
@@ -69,15 +69,15 @@ public class CreditNoteController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<CreditNoteData> list = creditNoteService.getCreditNotes(invoiceNo,  payerId, range, pageable)
-                .map(crnote -> creditNoteService.map(crnote));
+                .map(crnote -> crnote.toData());
 
         Pager<List<CreditNoteData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());
         PageDetails details = new PageDetails();
-        details.setPage(list.getNumber() + 1);
         details.setPerPage(list.getSize());
+        details.setPage(list.getNumber() + 1);
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Credit Notes");

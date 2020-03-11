@@ -9,6 +9,8 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.pricelist.domain.PriceList;
+import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -71,6 +73,7 @@ public class ProcedureService {
     private final SequenceNumberService sequenceNumberService;
     private final BillingService billingService;
     private final ServicePointService servicePointService;
+    private final PricelistService pricelistService;
 
     @Transactional
     public List<Procedure> createProcedureTest(List<ProcedureData> procedureTestData) {
@@ -133,7 +136,8 @@ public class ProcedureService {
         if (visitNo != null) {
             Visit visit = visitService.findVisitEntityOrThrow(visitNo);
             patientProcReg.setVisit(visit);
-            patientProcReg.setPatient(visit.getPatient());
+            patientProcReg.setPatientName(visit.getPatient().getFullName());
+            patientProcReg.setPatientNo(visit.getPatient().getPatientNumber());
         } 
         Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(patientProcRegData.getRequestedBy());
         if (emp.isPresent()) {
@@ -154,25 +158,24 @@ public class ProcedureService {
         }
 
         //PatientTestRegister savedPatientTestRegister = patientRegRepository.save(patientTestReg);
+       
         if (!patientProcRegData.getItemData().isEmpty()) {
             List<PatientProcedureTest> patientProcTest = new ArrayList<>();
             for (ProcedureItemData id : patientProcRegData.getItemData()) {
-                Item i = itemService.findItemWithNoFoundDetection(id.getItemCode());
-                Procedure labTestType = findProcedureByItem(i);
+                Item item = itemService.findItemWithNoFoundDetection(id.getItemCode());
                 PatientProcedureTest pte = new PatientProcedureTest();
                 pte.setStatus(ProcedureTestState.Scheduled);
                 pte.setTestPrice(id.getItemPrice());
-                pte.setQuantity(1);
-                pte.setProcedureTest(labTestType);
-                pte.setPatientProcedureRegister(patientProcReg);
+                pte.setQuantity(id.getQuantity());
+                pte.setProcedureTest(item);
                 Optional<Employee> employee = employeeService.findEmployeeByStaffNumber(id.getMedicId());
                 if(employee.isPresent())
                    pte.setMedic(employee.get());
                 patientProcTest.add(pte);
                 
             }
-            procTestRepository.saveAll(patientProcTest);
-            patientProcReg.addPatientProcedures(patientProcTest);
+             
+            patientProcReg.addPatientProcedures(patientProcTest);     
 
         }
         PatientProcedureRegister savedProcedure=patientprocedureRepository.save(patientProcReg);
@@ -188,7 +191,8 @@ public class ProcedureService {
         ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(data.getVisit());
-        patientbill.setPatient(data.getPatient());
+        if(data.getVisit()!=null)
+            patientbill.setPatient(data.getVisit().getPatient());
         patientbill.setAmount(data.getAmount());
         patientbill.setDiscount(data.getDiscount());
         patientbill.setBalance(data.getAmount());
@@ -205,7 +209,7 @@ public class ProcedureService {
                 .stream()
                 .map(lineData -> {
                     PatientBillItem billItem = new PatientBillItem();
-                    Item item = itemService.findByItemCodeOrThrow(lineData.getProcedureTest().getItem().getItemCode());
+                    Item item = itemService.findByItemCodeOrThrow(lineData.getProcedureTest().getItemCode());
                    
                     billItem.setTransactionId(data.getTransactionId());
                     billItem.setServicePoint(ServicePointType.Procedure.name());

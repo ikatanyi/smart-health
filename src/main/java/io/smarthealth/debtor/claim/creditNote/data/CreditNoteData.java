@@ -14,6 +14,7 @@ import io.smarthealth.debtor.claim.creditNote.domain.CreditNote;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 
@@ -40,7 +41,7 @@ public class CreditNoteData {
     @ApiModelProperty(required=false, hidden=true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate date;
-    private List<CreditNoteItemData>billItems;
+    private List<CreditNoteItemData>billItems=new ArrayList();
     
     public static CreditNote map(CreditNoteData data){
         CreditNote creditNote = new CreditNote();

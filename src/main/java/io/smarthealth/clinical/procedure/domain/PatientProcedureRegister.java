@@ -5,17 +5,15 @@
  */
 package io.smarthealth.clinical.procedure.domain;
 
-import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
-import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.lang.DateConverter;
 import io.smarthealth.organization.facility.domain.Employee;
-import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -42,20 +40,21 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "patient_procedure_register")
-public class PatientProcedureRegister extends ClinicalRecord {
+public class PatientProcedureRegister extends Auditable {
+    
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_procedure_request_visit_id"))
+    private Visit visit;
 
     @Column(nullable = false, unique = true)
     private String accessNo;
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_request_id"))
+    
     @OneToOne
     private DoctorRequest request;
     
     private String patientName;
     private String patientNo;
 
-//    @ManyToOne
-//    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_patient_id"))
-//    private Patient patient;
 
     @Column(nullable = false, unique = false)
     @Enumerated(EnumType.STRING)
@@ -68,9 +67,9 @@ public class PatientProcedureRegister extends ClinicalRecord {
     private Double amount;
     private Double taxes;
     private Double discount;
-    private Boolean isWalkin;
+    private Boolean isWalkin=false;
 
-    @OneToMany(mappedBy = "patientProcedureRegister")
+    @OneToMany(mappedBy = "patientProcedureRegister", cascade = CascadeType.ALL)
     private List<PatientProcedureTest> patientProcedureTest = new ArrayList<>();
 
     @ManyToOne

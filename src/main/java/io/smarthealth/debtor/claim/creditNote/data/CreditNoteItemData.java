@@ -19,10 +19,11 @@ import lombok.Data;
 @Data
 public class CreditNoteItemData { 
     @ApiModelProperty(required=false, hidden=true)
-    private Long id;
     private Long billItemid;
     @ApiModelProperty(required=false, hidden=true)
     private Long itemId;
+    @ApiModelProperty(required=false, hidden=true)
+    private String itemName;
     @ApiModelProperty(required=false, hidden=true)
     private Double amount;
 }
