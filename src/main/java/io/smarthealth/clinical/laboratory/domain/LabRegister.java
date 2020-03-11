@@ -15,6 +15,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
@@ -25,7 +26,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "lab_register")  //lab_patient_rquests
+@Table(name = "lab_register")  //lab_patient_rquests 
 public class LabRegister extends Auditable {
 
     @ManyToOne
@@ -45,6 +46,8 @@ public class LabRegister extends Auditable {
     private Boolean isWalkin;
     
      private String paymentMode;
+     
+     private String transactionId;
 
     @Enumerated(EnumType.STRING)
     private LabTestStatus status;
@@ -80,6 +83,7 @@ public class LabRegister extends Auditable {
         data.setRequestDatetime(this.requestDatetime);
         data.setRequestedBy(this.requestedBy);
         data.setStatus(this.status);
+        data.setTransactionId(this.transactionId);
         data.setPaymentMode(this.paymentMode);
         if (expand != null && expand) {
             data.setTests(this.tests

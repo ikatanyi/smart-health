@@ -25,15 +25,4 @@ public class PaymentData {
     private String type;
 
     private String currency;
-
-    public static PaymentData map(Payment payment) {
-        return new PaymentData(
-                payment.getId(),
-                payment.getMethod(),
-                payment.getAmount(),
-                payment.getReferenceCode(),
-                payment.getType(),
-                payment.getCurrency()
-        );
-    }
 }
