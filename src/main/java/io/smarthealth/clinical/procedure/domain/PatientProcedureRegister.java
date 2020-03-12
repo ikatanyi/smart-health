@@ -119,7 +119,7 @@ public class PatientProcedureRegister extends Auditable {
             data.setRequestId(this.getRequest().getId());
             data.setRequestData(DoctorRequestData.map(this.getRequest()));
         }
-        data.setOrderedDate(DateConverter.toLocalDate(LocalDateTime.ofInstant(this.getCreatedOn(), ZoneOffset.UTC)));
+        data.setOrderedDate(DateConverter.toLocalDate(LocalDateTime.ofInstant(this.getCreatedOn(), ZoneOffset.systemDefault())));
 
         return data;
     }

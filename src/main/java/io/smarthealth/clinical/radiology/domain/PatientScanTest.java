@@ -38,8 +38,7 @@ public class PatientScanTest extends Identifiable {
     private Double quantity;
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
-    private Long requestId; //reference to doctor's request order number
-    
+    private Long requestId; //reference to doctor's request order number    
     private Boolean done; //results entered
     @ManyToOne
     @JoinColumn(foreignKey=@ForeignKey(name="fk_patient_scan_test_employee_id"))

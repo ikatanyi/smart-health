@@ -11,6 +11,7 @@ import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.math.BigDecimal;
@@ -40,7 +41,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "patient_scan_register")
-public class PatientScanRegister extends ClinicalRecord {
+public class PatientScanRegister extends Auditable {
 
     @Column(nullable = false, unique = true)
     private String accessNo;

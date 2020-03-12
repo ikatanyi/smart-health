@@ -50,7 +50,7 @@ public class PrescriptionData extends DoctorRequestData {
         pd.setDurationUnits(p.getDurationUnits());
         pd.setFrequency(p.getFrequency());
         pd.setFulfillerComment(p.getFulfillerComment());
-        pd.setFulfillerStatus(FullFillerStatusType.valueOf(p.getFulfillerStatus()));
+        pd.setFulfillerStatus(p.getFulfillerStatus());
         pd.setId(p.getId());
         pd.setIssuedQuantity(p.getIssuedQuantity());
         //pd.set
@@ -95,7 +95,7 @@ public class PrescriptionData extends DoctorRequestData {
         pd.setDurationUnits(p.getDurationUnits());
         pd.setFrequency(p.getFrequency());
         pd.setFulfillerComment(p.getFulfillerComment());
-        pd.setFulfillerStatus(p.getFulfillerStatus().name());
+        pd.setFulfillerStatus(p.getFulfillerStatus());
         pd.setId(p.getId());
         pd.setIssuedQuantity(p.getIssuedQuantity());
         pd.setNotes(p.getNotes());

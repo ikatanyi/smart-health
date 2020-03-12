@@ -6,6 +6,7 @@
 package io.smarthealth.clinical.record.domain.specification;
 
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import java.util.ArrayList;
 import javax.persistence.criteria.CriteriaQuery;
@@ -23,7 +24,7 @@ public class DoctorRequestSpecification {
         super();
     }
 
-    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final String fulfillerStatus) {
+    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus) {
         System.out.println("visitNumber to request " + visitNumber);
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();

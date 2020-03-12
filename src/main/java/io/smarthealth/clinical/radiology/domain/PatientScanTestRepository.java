@@ -6,11 +6,12 @@
 package io.smarthealth.clinical.radiology.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
  *
  * @author Kennedy.Imbenzi
  */
-public interface PatientScanTestRepository extends JpaRepository<PatientScanTest, Long>{
+public interface PatientScanTestRepository extends JpaRepository<PatientScanTest, Long>, JpaSpecificationExecutor<PatientScanTest>{
     
 }

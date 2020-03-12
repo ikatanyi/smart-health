@@ -1,6 +1,7 @@
 package io.smarthealth.clinical.record.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.person.patient.data.PatientData;
@@ -20,13 +21,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DoctorRequestData {
 
-    public enum FullFillerStatusType {
-        Fulfilled,
-        Unfulfilled,
-        Cancelled,
-        PartiallyFullfilled
-    }
-
+    
     public enum RequestType {
         Laboratory,
         Pharmacy,
@@ -89,7 +84,7 @@ public class DoctorRequestData {
         DoctorRequestData doctorRequestData = new DoctorRequestData();
         doctorRequestData.setDrug(doctorRequest.getDrug());
         doctorRequestData.setFulfillerComment(doctorRequest.getFulfillerComment());
-        doctorRequestData.setFulfillerStatus(DoctorRequestData.FullFillerStatusType.valueOf(doctorRequest.getFulfillerStatus()));
+        doctorRequestData.setFulfillerStatus(doctorRequest.getFulfillerStatus());
         doctorRequestData.setNotes(doctorRequest.getNotes());
         doctorRequestData.setOrderDatetime(doctorRequest.getOrderDatetime());
         doctorRequestData.setOrderNumber(doctorRequest.getOrderNumber());
