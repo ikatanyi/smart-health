@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Kennedy.Imbenzi
  */
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api")
 @Api(value = "Radiology-Controller", description = "Setup of Radiology tests")
 public class RadiologyController {
 
@@ -45,9 +45,9 @@ public class RadiologyController {
     @Autowired
     RadiologyConfigService radiologyConfigService;
 
-    @PostMapping("/template")
+    @PostMapping("/radiology-template")
     public @ResponseBody
-    ResponseEntity<?> createTemplate(@RequestBody @Valid final List<ServiceTemplateData> serviceTemplateData) {
+    ResponseEntity<?> createServiceTemplate(@RequestBody @Valid final List<ServiceTemplateData> serviceTemplateData) {
         List<ServiceTemplateData> serviceTemplateDataArr = radiologyConfigService.createServiceTemplate(serviceTemplateData)
                 .stream()
                 .map((template)->template.toData()
@@ -63,8 +63,8 @@ public class RadiologyController {
         return ResponseEntity.status(HttpStatus.OK).body(pagers);      
     }
 
-    @GetMapping("/template/{id}")
-    public ResponseEntity<?> fetchTemplate(@PathVariable("id") final Long id) {
+    @GetMapping("/radiology-template/{id}")
+    public ResponseEntity<?> fetchServiceTemplate(@PathVariable("id") final Long id) {
         ServiceTemplateData serviceTemplates = radiologyConfigService.getServiceTemplateByIdWithFailDetection(id).toData();
         if (serviceTemplates != null) {
             return ResponseEntity.ok(serviceTemplates);
@@ -73,8 +73,8 @@ public class RadiologyController {
         }
     }
 
-    @GetMapping("/template")
-    public ResponseEntity<?> fetchAllTemplates(
+    @GetMapping("/radiology-template")
+    public ResponseEntity<?> fetchAllServiceTemplates(
        @RequestParam(value = "page", required = false) Integer page1,
        @RequestParam(value = "pageSize", required = false) Integer size
     ) {

@@ -26,6 +26,7 @@ import io.smarthealth.clinical.radiology.domain.RadiologyRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyResult;
 import io.smarthealth.clinical.radiology.domain.RadiologyResultRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyTest;
+import io.smarthealth.clinical.radiology.domain.specification.RadiologyResultSpecification;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologySpecification;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
@@ -222,24 +223,26 @@ public class RadiologyService {
     }  
     
     
-//    @Transactional
-//    public PatientScanTest updatePatientScanTest(Long id, PatientScanTestData data) {
-//        PatientScanTest radiologyTest = findPatientRadiologyTestByIdWithNotFoundDetection(id);
-//        radiologyTest.setComments(data.getComments());
-//        radiologyTest.setDone(data.getDone());
-//        Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(data.getRequestedBy());
-//        if (emp.isPresent()) {
-//            patientScanReg.setRequestedBy(emp.get());
-//        }
-//        radiologyTest.setMedic(data.get);
-//        radiologyTest.setQuantity();
-//        radiologyTest.setRequestId();
-//        radiologyTest.setStatus();
-//        radiologyTest.setTestPrice();
-//        radiologyTest.setVoidDatetime();
-//        radiologyTest.setVoidedBy();
-//        return radiologyResultRepo.save(radiologyResult);
-//    }
+    @Transactional
+    public PatientScanTest updatePatientScanTest(Long id, PatientScanTestData data) {
+        PatientScanTest radiologyTest = findPatientRadiologyTestByIdWithNotFoundDetection(id);
+        radiologyTest.setComments(data.getComments());
+        radiologyTest.setDone(data.getDone());
+        Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(data.getDoneBy());
+        if (emp.isPresent()) {
+            radiologyTest.setMedic(emp.get());
+        }
+        radiologyTest.setQuantity(data.getQuantity());
+        radiologyTest.setStatus(data.getStatus());
+        radiologyTest.setTestPrice(data.getTestPrice());
+        return pscanRepository.save(radiologyTest);
+    }
+    
+    public Page<RadiologyResult> findAllRadiologyResults(String visitNumber, String patientNumber, String scanNumber, Boolean walkin, String orderNo, DateRange range, Pageable pgbl){
+        Specification spec =  RadiologyResultSpecification.createSpecification(patientNumber, orderNo, visitNumber, walkin, range);
+        return radiologyResultRepo.findAll(spec, pgbl);
+        
+    }
     
     public PatientScanTest findPatientRadiologyTestByIdWithNotFoundDetection(Long id) {
         return pscanRepository.findById(id).orElseThrow(() -> APIException.notFound("Patient results identified by id {0} not found ", id));

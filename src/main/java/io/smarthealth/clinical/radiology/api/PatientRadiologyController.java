@@ -69,33 +69,28 @@ public class PatientRadiologyController {
         return ResponseEntity.status(HttpStatus.OK).body(patientLabTests);
     }
 
-//    @PutMapping("/patient-scan/test/{testId}")
-//    public @ResponseBody
-//    ResponseEntity<?> updateRadiolgyTest(@PathVariable("resultId") final Long resultId, @Valid @RequestBody PatientScanTestData resultData) {
-//        PatientScanTest r = radiologyService.findPatientRadiologyTestByIdWithNotFoundDetection(resultId);
-//        r.setComments(resultData.getComments());
-////        r.setResult(resultData.getResult());
-//        r.setStatus(resultData.getStatus());
-//
-//        PatientScanTest savedResult = radiologyService.updateRadiologyResult(r);
-//        return ResponseEntity.status(HttpStatus.OK).body(savedResult.toData());
-//    }
-//
-//    @GetMapping("/patient-scan/{id}")
-//    public ResponseEntity<?> fetchPatientScanById(@PathVariable("id") final Long id) {
-//        PatientScanTestData result = radiologyService.findResultsByIdWithNotFoundDetection(id).toData();
-//        Pager<PatientScanTestData> pagers = new Pager();
-//
-//        pagers.setCode("0");
-//        pagers.setMessage("Success");
-//        pagers.setContent(result);
-//        PageDetails details = new PageDetails();
-//        details.setReportName("Patient Lab Tests");
-//        pagers.setPageDetails(details);
-//
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .body(pagers);
-//    }
+    @PutMapping("/patient-scan/test/{testId}")
+    public @ResponseBody
+    ResponseEntity<?> updateRadiolgyTest(@PathVariable("testId") final Long testId, @Valid @RequestBody PatientScanTestData patientScanTestData) {
+        PatientScanTest savedResult = radiologyService.updatePatientScanTest(testId, patientScanTestData);
+        return ResponseEntity.status(HttpStatus.OK).body(savedResult.toData());
+    }
+
+    @GetMapping("/patient-scan/{id}")
+    public ResponseEntity<?> fetchPatientScanById(@PathVariable("id") final Long id) {
+        PatientScanTestData result = radiologyService.findPatientRadiologyTestByIdWithNotFoundDetection(id).toData();
+        Pager<PatientScanTestData> pagers = new Pager();
+
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(result);
+        PageDetails details = new PageDetails();
+        details.setReportName("Patient Radiology Tests");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(pagers);
+    }
     
 //    @PostMapping("/patient-scan/{resultsId}/image")
 //    @ApiOperation(value = "Upload/Update a scan's image details", response = Portrait.class)
