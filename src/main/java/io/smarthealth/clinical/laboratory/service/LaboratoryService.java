@@ -317,7 +317,7 @@ public class LaboratoryService {
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
         if(visit!=null){
-        patientbill.setPatient(visit.getPatient());
+           patientbill.setPatient(visit.getPatient());
         }
 //        patientbill.setAmount(data.getAmount());
 //        patientbill.setDiscount(data.getDiscount());

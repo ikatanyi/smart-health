@@ -1,6 +1,7 @@
 package io.smarthealth.clinical.record.domain;
 
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -20,13 +21,6 @@ import lombok.Data;
 @Table(name = "patient_doctor_request")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class DoctorRequest extends Auditable {
-
-    public enum FullFillerStatusType {
-        Fulfilled,
-        Unfulfilled,
-        Cancelled,
-        PartiallyFullfilled
-    }
 
     @Enumerated(EnumType.STRING)
     private RequestType requestType;
@@ -51,7 +45,8 @@ public class DoctorRequest extends Auditable {
     private String urgency;
     private String orderNumber;
     private String notes;
-    private String fulfillerStatus;  //this is the va
+    @Enumerated(EnumType.STRING)
+    private FullFillerStatusType fulfillerStatus;  //this is the va
     private String fulfillerComment;
     private Boolean drug;
 

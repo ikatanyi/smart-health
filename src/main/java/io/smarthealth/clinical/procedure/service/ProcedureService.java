@@ -9,7 +9,6 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
-import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
@@ -24,7 +23,8 @@ import io.smarthealth.clinical.procedure.domain.ProcedureRepository;
 import io.smarthealth.clinical.procedure.domain.Procedure;
 import io.smarthealth.clinical.procedure.domain.ProcedureTestRepository;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
-import io.smarthealth.clinical.radiology.domain.specification.RadiologySpecification;
+import io.smarthealth.clinical.procedure.domain.specification.ProcedureSpecification;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -148,7 +148,7 @@ public class ProcedureService {
             Optional<DoctorRequest> request = doctorRequestRepository.findById(requestId);
             if (request.isPresent()) {
                 patientProcReg.setRequest(request.get());
-                request.get().setFulfillerStatus("fulfilled");
+                request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
             }
 
         }
@@ -250,7 +250,7 @@ public class ProcedureService {
 
     @Transactional
     public Page<PatientProcedureRegister> findAll(String PatientNumber, String scanNo, String visitId, DateRange range, Pageable pgbl) {
-        Specification spec = RadiologySpecification.createSpecification(PatientNumber, scanNo, visitId, range);
+        Specification spec = ProcedureSpecification.createSpecification(PatientNumber, scanNo, visitId, range);
         return patientprocedureRepository.findAll(spec, pgbl);
     }
 

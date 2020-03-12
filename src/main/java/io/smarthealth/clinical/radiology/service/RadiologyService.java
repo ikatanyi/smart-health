@@ -26,8 +26,10 @@ import io.smarthealth.clinical.radiology.domain.RadiologyRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyResult;
 import io.smarthealth.clinical.radiology.domain.RadiologyResultRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyTest;
+import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
+import io.smarthealth.clinical.radiology.domain.specification.RadiologyRegisterSpecification;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyResultSpecification;
-import io.smarthealth.clinical.radiology.domain.specification.RadiologySpecification;
+import io.smarthealth.clinical.radiology.domain.specification.RadiologyTestSpecification;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -155,7 +157,10 @@ public class RadiologyService {
         ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Radiology);
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(data.getVisit());
-        patientbill.setPatient(data.getPatient());
+        patientbill.setVisit(data.getVisit());
+        if(data.getVisit()!=null){
+           patientbill.setPatient(data.getVisit().getPatient());
+        }
         patientbill.setAmount(data.getAmount());
         patientbill.setDiscount(data.getDiscount());
         patientbill.setBalance(data.getBalance());
@@ -247,6 +252,12 @@ public class RadiologyService {
     public PatientScanTest findPatientRadiologyTestByIdWithNotFoundDetection(Long id) {
         return pscanRepository.findById(id).orElseThrow(() -> APIException.notFound("Patient results identified by id {0} not found ", id));
     }
+    
+    public Page<PatientScanTest> findAllTests(String PatientNumber, String scanNo, ScanTestState status, String visitId, DateRange range,Boolean isWalkin, Pageable pgbl) {
+        Specification spec = RadiologyTestSpecification.createSpecification(PatientNumber, scanNo, visitId, isWalkin, range);
+        return pscanRepository.findAll(spec, pgbl);
+    }
+    
 
     public PatientScanRegister findPatientRadiologyTestByIdWithNotFoundDetection(String accessNo) {
         return patientradiologyRepository.findByAccessNo(accessNo).orElseThrow(() -> APIException.notFound("Patient Scan identified by scanN Number {0} not found ", accessNo));
@@ -258,7 +269,7 @@ public class RadiologyService {
 
     @Transactional
     public Page<PatientScanRegister> findAll(String PatientNumber, String scanNo, String visitId, DateRange range, Pageable pgbl) {
-        Specification spec = RadiologySpecification.createSpecification(PatientNumber, scanNo, visitId, range);
+        Specification spec = RadiologyRegisterSpecification.createSpecification(PatientNumber, scanNo, visitId, ScanTestState.Scheduled, Boolean.FALSE, range);
         return patientradiologyRepository.findAll(spec, pgbl);
     }
 

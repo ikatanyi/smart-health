@@ -1,6 +1,7 @@
 package io.smarthealth.clinical.record.domain;
 
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.List;
@@ -27,5 +28,5 @@ public interface DoctorsRequestRepository extends JpaRepository<DoctorRequest, L
 //    Page<DoctorRequest> findRequestLine(@Param("fulfillerStatus") final String fulfillerStatus, @Param("requestType") final RequestType requestType, final Pageable pageable);
 
     @Query("select d FROM DoctorRequest d WHERE d.patient=:patient AND  d.fulfillerStatus=:fulfillerStatus AND requestType=:requestType")
-    List<DoctorRequest> findServiceRequestsByPatient(@Param("patient") final Patient patient, @Param("fulfillerStatus") final String fulfillerStatus, @Param("requestType") final RequestType requestType);
+    List<DoctorRequest> findServiceRequestsByPatient(@Param("patient") final Patient patient, @Param("fulfillerStatus") final FullFillerStatusType fulfillerStatus, @Param("requestType") final RequestType requestType);
 }

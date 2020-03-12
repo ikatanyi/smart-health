@@ -8,7 +8,7 @@ package io.smarthealth.clinical.pharmacy.service;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.domain.PatientDrugs;
 import io.smarthealth.clinical.pharmacy.domain.PatientDrugsRepository;
-import io.smarthealth.clinical.record.domain.DoctorRequest.FullFillerStatusType;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.domain.PrescriptionRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -69,9 +69,9 @@ public class PharmacyService {
                     System.out.println("saveddrug.getDurationUnits()  "+saveddrug.getDurationUnits() );
                     System.out.println("saveddrug.getIssuedQuantity()  "+saveddrug.getIssuedQuantity());
 //                    presc.setIssuedQuantity(presc.getIssuedQuantity() + saveddrug.getIssuedQuantity());
-                    presc.setFulfillerStatus(FullFillerStatusType.PartiallyFullfilled.name());
+                    presc.setFulfillerStatus(FullFillerStatusType.PartiallyFullfilled);
                 } else {
-                    presc.setFulfillerStatus(FullFillerStatusType.Fulfilled.name());
+                    presc.setFulfillerStatus(FullFillerStatusType.Fulfilled);
                 }
                 prescriptionRepository.save(presc);
             }

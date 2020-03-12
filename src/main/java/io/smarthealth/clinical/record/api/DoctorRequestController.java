@@ -5,6 +5,7 @@ import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.DoctorRequestItem;
 import io.smarthealth.clinical.record.data.WaitingRequestsData;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.service.DoctorRequestService;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -92,8 +93,8 @@ public class DoctorRequestController {
             doctorRequest.setVisit(visit); 
             doctorRequest.setRequestedBy(employee);
             doctorRequest.setOrderNumber(orderNo);
-            doctorRequest.setFulfillerStatus(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
-            doctorRequest.setFulfillerComment(DoctorRequest.FullFillerStatusType.Unfulfilled.name());
+            doctorRequest.setFulfillerStatus(FullFillerStatusType.Unfulfilled);
+            doctorRequest.setFulfillerComment(FullFillerStatusType.Unfulfilled.name());
             doctorRequest.setRequestType(data.getRequestType());
             docRequests.add(doctorRequest);
         }
@@ -153,7 +154,7 @@ public class DoctorRequestController {
             @RequestParam(value = "visitNo", required = false) final String visitNo,
             @RequestParam(value = "patientNo", required = false) final String patientNo,
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
-            @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final String fulfillerStatus,
+            @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final FullFillerStatusType fulfillerStatus,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
@@ -203,7 +204,7 @@ public class DoctorRequestController {
             @PathVariable("visitNo") final String visitNo,
             @RequestParam(value = "patientNo", required = false) final String patientNo,
             @PathVariable("requestType") final RequestType requestType,
-            @RequestParam(value = "fulfillerStatus", required = false) final String fulfillerStatus,
+            @RequestParam(value = "fulfillerStatus", required = false) final FullFillerStatusType fulfillerStatus,
             Pageable pageable) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
 

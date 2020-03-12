@@ -12,6 +12,7 @@ import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
@@ -102,7 +103,7 @@ public class DoctorRequestService implements DateConverter {
         return docReqs;
     }
 
-    public Page<DoctorRequest> fetchAllDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final String fulfillerStatus, final String groupBy, Pageable pageable) {
+    public Page<DoctorRequest> fetchAllDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, final String groupBy, Pageable pageable) {
         Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy);
 
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
@@ -114,7 +115,7 @@ public class DoctorRequestService implements DateConverter {
 //        return doctorRequestRepository.findRequestLine(fulfillerStatus, requestType, pageable);
 //    }
 //    
-    public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final String fullfillerStatus, final RequestType requestType) {
+    public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final FullFillerStatusType fullfillerStatus, final RequestType requestType) {
         return doctorRequestRepository.findServiceRequestsByPatient(patient, fullfillerStatus, requestType);
     }
 

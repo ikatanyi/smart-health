@@ -2,9 +2,13 @@ package io.smarthealth.clinical.radiology.api;
 
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
+import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
+import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
+import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
@@ -13,6 +17,8 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -90,6 +96,36 @@ public class PatientRadiologyController {
                 .body(pagers);
     }
     
+    @GetMapping("/patient-scan")
+    public ResponseEntity<?> getRadiologyPatientTests(
+            @RequestParam(value = "visit_no", required = false) String visitNumber,
+            @RequestParam(value = "patient_no", required = false) String patientNumber,
+            @RequestParam(value = "scan_no", required = false) String scanNumber,
+            @RequestParam(value = "is_walkin", required = false) Boolean walkin,
+            @RequestParam(value = "order_no", required = false) String orderNo,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "status", required = false) ScanTestState status,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        final DateRange range = DateRange.fromIsoString(dateRange);
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        Page<PatientScanTestData> list = radiologyService.findAllTests(patientNumber, orderNo, status, visitNumber, range, walkin, pageable)
+                .map(x -> x.toData());
+
+        Pager<List<PatientScanTestData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Patient Radiology Tests");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+    } 
     
 //    @PostMapping("/patient-scan/{resultsId}/image")
 //    @ApiOperation(value = "Upload/Update a scan's image details", response = Portrait.class)
