@@ -8,22 +8,12 @@ package io.smarthealth.clinical.radiology.api;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
-import io.smarthealth.clinical.radiology.domain.PatientScanTest;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
-import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.image.ClinicalImage;
-import io.smarthealth.infrastructure.image.ImageUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.person.data.PortraitData;
-import io.smarthealth.organization.person.domain.Portrait;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,14 +21,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 /**
  *
