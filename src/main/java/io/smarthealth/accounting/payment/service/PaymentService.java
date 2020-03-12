@@ -214,7 +214,7 @@ public class PaymentService {
     private JournalEntry toJournal(LocalDate receiptDate, String trxId, String receipt, List<PatientBillItem> billedItems) {
         Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
 
-        if (debitAccount.isPresent()) {
+        if (!debitAccount.isPresent()) {
             throw APIException.badRequest("Receipt Control Account is Not Mapped");
         }
         String debitAcc = debitAccount.get().getAccount().getIdentifier();
