@@ -23,7 +23,7 @@ public class DoctorRequestSpecification {
         super();
     }
 
-    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final String fulfillerStatus/*, Date from , Date to*/, String groupBy) {
+    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final String fulfillerStatus) {
         System.out.println("visitNumber to request " + visitNumber);
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
@@ -44,9 +44,9 @@ public class DoctorRequestSpecification {
                 predicates.add(cb.equal(root.get("requestType"), requestType));
             }
 
-            if (groupBy != null) {
-                query.groupBy(root.get("patient"));
-            }
+//            if (groupBy != null) {
+//                query.groupBy(root.get("patient"));
+//            }
 
 //            if (from != null && to!=null) {
 //                predicates.add(

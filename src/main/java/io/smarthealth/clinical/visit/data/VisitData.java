@@ -69,6 +69,8 @@ public class VisitData {
     @Enumerated(EnumType.STRING)
     private VisitEnum.ServiceType serviceType;
 
+    private Long itemToBill;
+
     public static Visit map(VisitData visitDTO) {
         Visit visitEntity = new Visit();
         visitEntity.setScheduled(visitDTO.getScheduled());

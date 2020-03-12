@@ -75,6 +75,7 @@ public class LaboratoryService {
 
         LabRegister saved = repository.save(request);
         billingService.save(toBill(data));
+        //save
         return saved;
     }
 
@@ -216,7 +217,7 @@ public class LaboratoryService {
         results.setPatientNo(data.getPatientNo());
         results.setReferenceValue(data.getReferenceValue());
         results.setResultValue(data.getResultValue());
-        results.setResultsDate(data.getResultsDate());
+        results.setResultsDate(LocalDateTime.now());
         results.setUnits(data.getUnits());
         results.setUpperLimit(data.getUpperLimit());
         return results;
@@ -315,7 +316,9 @@ public class LaboratoryService {
 
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
+        if(visit!=null){
         patientbill.setPatient(visit.getPatient());
+        }
 //        patientbill.setAmount(data.getAmount());
 //        patientbill.setDiscount(data.getDiscount());
 //        patientbill.setBalance(data.getAmount());

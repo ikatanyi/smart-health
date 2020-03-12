@@ -78,12 +78,12 @@ public class VisitService {
 
     @Transactional
     public Visit createAVisit(final Visit visit) {
-        try {
-            return visitRepository.save(visit);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("There was an error creating visit", e.getMessage());
-        }
+//        try {
+        return visitRepository.save(visit);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw APIException.internalError("There was an error creating visit", e.getMessage());
+//        }
     }
 
     public String updateVisit(final String visitNumber, final VisitData visitDTO) {
