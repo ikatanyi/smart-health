@@ -3,6 +3,9 @@ package io.smarthealth.clinical.visit.api;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.pricelist.domain.PriceList;
+import io.smarthealth.accounting.pricelist.domain.PriceListRepository;
+import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -106,6 +109,9 @@ public class ClinicalVisitController {
     @Autowired
     ItemService itemService;
 
+    @Autowired
+    PriceListRepository priceListRepository;
+    
     @PostMapping("/visits")
     @ApiOperation(value = "Submit a new patient visit", response = VisitData.class)
     public @ResponseBody
@@ -154,15 +160,17 @@ public class ClinicalVisitController {
         patientQueueService.createPatientQueue(patientQueue);
         //create bill if consultation
         if (visit.getServiceType().equals(VisitEnum.ServiceType.Consultation)) {
-            Item item = itemService.findItemEntityOrThrow(visitData.getItemToBill());
+         //this should be get from pricelist and not item list
+            PriceList pricelist= priceListRepository.findById(visitData.getItemToBill()).orElseThrow(()-> APIException.notFound("Price List Item with id {0} Not found", visitData.getItemToBill()));
+          //  Item item = pricelist.getItem();//itemService.findItemEntityOrThrow(visitData.getItemToBill());
 
             List<BillItemData> billItems = new ArrayList<>();
             BillItemData itemData = new BillItemData();
-            itemData.setAmount(item.getRate().doubleValue());
-            itemData.setBalance(item.getRate().doubleValue());
+            itemData.setAmount(pricelist.getSellingRate().doubleValue());
+            itemData.setBalance(pricelist.getSellingRate().doubleValue());
             itemData.setBillingDate(LocalDate.now());
-            itemData.setItem(item.getItemName());
-            itemData.setItemCode(item.getItemCode());
+            itemData.setItem(pricelist.getItem().getItemName());
+            itemData.setItemCode(pricelist.getItem().getItemCode());
             if (employee != null) {
                 itemData.setMedicId(employee.getId());
                 itemData.setMedicName(employee.getFullName());
@@ -174,8 +182,8 @@ public class ClinicalVisitController {
 
             BillData data = new BillData();
             data.setBillItems(billItems);
-            data.setAmount(item.getRate().doubleValue());
-            data.setBalance(item.getRate().doubleValue());
+            data.setAmount(pricelist.getSellingRate().doubleValue());
+            data.setBalance(pricelist.getSellingRate().doubleValue());
             data.setBillingDate(LocalDate.now());
             data.setDiscount(0.00);
             data.setPatientName(patient.getFullName());
