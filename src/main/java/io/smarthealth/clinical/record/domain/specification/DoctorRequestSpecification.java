@@ -9,8 +9,6 @@ import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import java.util.ArrayList;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -24,7 +22,7 @@ public class DoctorRequestSpecification {
         super();
     }
 
-    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus) {
+    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus/*, Date from , Date to*/, String groupBy) {
         System.out.println("visitNumber to request " + visitNumber);
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
@@ -45,9 +43,9 @@ public class DoctorRequestSpecification {
                 predicates.add(cb.equal(root.get("requestType"), requestType));
             }
 
-//            if (groupBy != null) {
-//                query.groupBy(root.get("patient"));
-//            }
+            if (groupBy != null) {
+                query.groupBy(root.get("patient"));
+            }
 
 //            if (from != null && to!=null) {
 //                predicates.add(
