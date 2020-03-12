@@ -6,6 +6,8 @@
 package io.smarthealth.clinical.radiology.api;
 
 import io.smarthealth.clinical.radiology.data.RadiologyTestData;
+import io.smarthealth.clinical.radiology.data.ServiceTemplateData;
+import io.smarthealth.clinical.radiology.service.RadiologyConfigService;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -15,7 +17,6 @@ import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -42,12 +43,65 @@ public class RadiologyController {
     RadiologyService radiologyService;
 
     @Autowired
-    ModelMapper modelMapper;
+    RadiologyConfigService radiologyConfigService;
+
+    @PostMapping("/template")
+    public @ResponseBody
+    ResponseEntity<?> createTemplate(@RequestBody @Valid final List<ServiceTemplateData> serviceTemplateData) {
+        List<ServiceTemplateData> serviceTemplateDataArr = radiologyConfigService.createServiceTemplate(serviceTemplateData)
+                .stream()
+                .map((template)->template.toData()
+            ).collect(Collectors.toList());
+        
+        Pager<List<ServiceTemplateData>> pagers = new Pager();        
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(serviceTemplateDataArr);
+        PageDetails details = new PageDetails();
+        details.setReportName("Service Templates");
+        pagers.setPageDetails(details);        
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);      
+    }
+
+    @GetMapping("/template/{id}")
+    public ResponseEntity<?> fetchTemplate(@PathVariable("id") final Long id) {
+        ServiceTemplateData serviceTemplates = radiologyConfigService.getServiceTemplateByIdWithFailDetection(id).toData();
+        if (serviceTemplates != null) {
+            return ResponseEntity.ok(serviceTemplates);
+        } else {
+            throw APIException.notFound("radiology Test Number {0} not found.", id);
+        }
+    }
+
+    @GetMapping("/template")
+    public ResponseEntity<?> fetchAllTemplates(
+       @RequestParam(value = "page", required = false) Integer page1,
+       @RequestParam(value = "pageSize", required = false) Integer size
+    ) {
+
+        Pageable pageable = PaginationUtil.createPage(page1, size);
+        List<ServiceTemplateData> testData = radiologyConfigService.findAllTemplates(pageable)
+                .stream()
+                .map((template)->template.toData()
+            ).collect(Collectors.toList());
+        
+        Pager page = new Pager();
+        page.setCode("200");
+        page.setContent(testData);
+        page.setMessage("Service Templates fetched successfully");
+        PageDetails details = new PageDetails();
+        details.setPage(1);
+        details.setPerPage(25);
+        details.setReportName("Service Template fetched");
+//        details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
+        page.setPageDetails(details);
+        return ResponseEntity.ok(page);
+    }
 
     @PostMapping("/radiology-tests")
     public @ResponseBody
     ResponseEntity<?> createTests(@RequestBody @Valid final List<RadiologyTestData> radiologyTestData) {
-        List<RadiologyTestData> radiologyTestList = radiologyService.createRadiologyTest(radiologyTestData)
+        List<RadiologyTestData> radiologyTestList = radiologyConfigService.createRadiologyTest(radiologyTestData)
                 .stream()
                 .map((radiology)->{
                  RadiologyTestData testdata =  radiology.toData();
@@ -65,7 +119,7 @@ public class RadiologyController {
 
     @GetMapping("/radiology-tests/{id}")
     public ResponseEntity<?> fetchRadiologyTest(@PathVariable("id") final Long id) {
-        RadiologyTestData radiologyTests = radiologyService.getById(id).toData();
+        RadiologyTestData radiologyTests = radiologyConfigService.getById(id).toData();
         if (radiologyTests != null) {
             return ResponseEntity.ok(radiologyTests);
         } else {
@@ -80,7 +134,7 @@ public class RadiologyController {
     ) {
 
         Pageable pageable = PaginationUtil.createPage(page1, size);
-        List<RadiologyTestData> testData = radiologyService.findAll(pageable)
+        List<RadiologyTestData> testData = radiologyConfigService.findAll(pageable)
                 .stream()
                 .map((radiology)->{
                  RadiologyTestData testdata =  radiology.toData();
@@ -94,7 +148,6 @@ public class RadiologyController {
         details.setPage(1);
         details.setPerPage(25);
         details.setReportName("Radiology Tests fetched");
-//        details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
         page.setPageDetails(details);
         return ResponseEntity.ok(page);
     }

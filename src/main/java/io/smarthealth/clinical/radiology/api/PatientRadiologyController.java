@@ -70,11 +70,10 @@ public class PatientRadiologyController {
                 .body(pagers);
     }
     
-    @GetMapping("/patient-scan/results/{scanAccessionNo}")
+    @GetMapping("/patient-scan/test/{scanAccessionNo}")
     public @ResponseBody
-    ResponseEntity<?> fetchPatientScanssByAccessionNo(@PathVariable("scanAccessionNo") final String scanAccessionNo) {
-        PatientScanRegister scanReg = radiologyService.findScansByIdWithNotFoundDetection(scanAccessionNo);
-        //find patient tests by labTestFile
+    ResponseEntity<?> fetchPatientTestsByAccessionNo(@PathVariable("scanAccessionNo") final String scanAccessionNo) {
+        PatientScanRegister scanReg = radiologyService.findPatientRadiologyTestByIdWithNotFoundDetection(scanAccessionNo);
         List<PatientScanTestData> patientLabTests = scanReg.getPatientScanTest()
                 .stream()
                 .map((scanTest)->(scanTest.toData()))
@@ -83,58 +82,58 @@ public class PatientRadiologyController {
         return ResponseEntity.status(HttpStatus.OK).body(patientLabTests);
     }
 
-    @PutMapping("/patient-scan/results/{resultId}")
-    public @ResponseBody
-    ResponseEntity<?> updateScanResults(@PathVariable("resultId") final Long resultId, @Valid @RequestBody PatientScanTestData resultData) {
-        PatientScanTest r = radiologyService.findResultsByIdWithNotFoundDetection(resultId);
-        r.setComments(resultData.getComments());
-//        r.setResult(resultData.getResult());
-        r.setStatus(resultData.getStatus());
-
-        PatientScanTest savedResult = radiologyService.updateRadiologyResult(r);
-        return ResponseEntity.status(HttpStatus.OK).body(savedResult.toData());
-    }
-
-    @GetMapping("/patient-scan/{id}")
-    public ResponseEntity<?> fetchPatientScanById(@PathVariable("id") final Long id) {
-        PatientScanTestData result = radiologyService.findResultsByIdWithNotFoundDetection(id).toData();
-        Pager<PatientScanTestData> pagers = new Pager();
-
-        pagers.setCode("0");
-        pagers.setMessage("Success");
-        pagers.setContent(result);
-        PageDetails details = new PageDetails();
-        details.setReportName("Patient Lab Tests");
-        pagers.setPageDetails(details);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(pagers);
-    }
+//    @PutMapping("/patient-scan/test/{testId}")
+//    public @ResponseBody
+//    ResponseEntity<?> updateRadiolgyTest(@PathVariable("resultId") final Long resultId, @Valid @RequestBody PatientScanTestData resultData) {
+//        PatientScanTest r = radiologyService.findPatientRadiologyTestByIdWithNotFoundDetection(resultId);
+//        r.setComments(resultData.getComments());
+////        r.setResult(resultData.getResult());
+//        r.setStatus(resultData.getStatus());
+//
+//        PatientScanTest savedResult = radiologyService.updateRadiologyResult(r);
+//        return ResponseEntity.status(HttpStatus.OK).body(savedResult.toData());
+//    }
+//
+//    @GetMapping("/patient-scan/{id}")
+//    public ResponseEntity<?> fetchPatientScanById(@PathVariable("id") final Long id) {
+//        PatientScanTestData result = radiologyService.findResultsByIdWithNotFoundDetection(id).toData();
+//        Pager<PatientScanTestData> pagers = new Pager();
+//
+//        pagers.setCode("0");
+//        pagers.setMessage("Success");
+//        pagers.setContent(result);
+//        PageDetails details = new PageDetails();
+//        details.setReportName("Patient Lab Tests");
+//        pagers.setPageDetails(details);
+//
+//        return ResponseEntity.status(HttpStatus.OK)
+//                .body(pagers);
+//    }
     
-    @PostMapping("/patient-scan/{resultsId}/image")
-    @ApiOperation(value = "Upload/Update a scan's image details", response = Portrait.class)
-    public @ResponseBody
-    ResponseEntity<PortraitData> postScanImage(@PathVariable("resultsId") final Long resultsId,
-            @RequestParam final MultipartFile image) {
-        if (image == null) {
-            throw APIException.badRequest("Image not found");
-        }
-
-        PatientScanTest patient = radiologyService.findResultsByIdWithNotFoundDetection(resultsId);
-
-        try {
-            ImageUtil util = new ImageUtil();
-            //delete if any existing
-            util.deleteImage(image.getName());
-            ClinicalImage portrait = util.createImage(patient, image);
-            URI location = fromCurrentRequest().buildAndExpand(portrait.getId()).toUri();
-            PortraitData data = modelMapper.map(portrait, PortraitData.class);
-            return ResponseEntity.created(location).body(data);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            throw APIException.internalError("Error saving Patient Scan image ", ex.getMessage());
-        }
-
-    }
+//    @PostMapping("/patient-scan/{resultsId}/image")
+//    @ApiOperation(value = "Upload/Update a scan's image details", response = Portrait.class)
+//    public @ResponseBody
+//    ResponseEntity<PortraitData> postScanImage(@PathVariable("resultsId") final Long resultsId,
+//            @RequestParam final MultipartFile image) {
+//        if (image == null) {
+//            throw APIException.badRequest("Image not found");
+//        }
+//
+//        PatientScanTest patient = radiologyService.findResultsByIdWithNotFoundDetection(resultsId);
+//
+//        try {
+//            ImageUtil util = new ImageUtil();
+//            //delete if any existing
+//            util.deleteImage(image.getName());
+//            ClinicalImage portrait = util.createImage(patient, image);
+//            URI location = fromCurrentRequest().buildAndExpand(portrait.getId()).toUri();
+//            PortraitData data = modelMapper.map(portrait, PortraitData.class);
+//            return ResponseEntity.created(location).body(data);
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//            throw APIException.internalError("Error saving Patient Scan image ", ex.getMessage());
+//        }
+//
+//    }
     
 }

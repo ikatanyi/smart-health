@@ -30,6 +30,7 @@ public class PatientScanRegisterData {
     @ApiModelProperty(hidden = true, required = false)
     private String visitNumber;
     private Long requestId;
+    @ApiModelProperty(hidden = true, required = false)
     private String accessionNo;
     private String patientNumber;
 
@@ -56,6 +57,7 @@ public class PatientScanRegisterData {
 
     private String servicePoint;
     
+    @ApiModelProperty(hidden = true, required = false)
     private String transactionId;
 
     @ApiModelProperty(hidden = true, required = false)
@@ -66,14 +68,14 @@ public class PatientScanRegisterData {
     @ApiModelProperty(required = false, hidden = true)
     private BillData billData;
 
-    public static PatientScanRegister map(PatientScanRegisterData patientregister) {
+    public PatientScanRegister fromData() {
         PatientScanRegister e = new PatientScanRegister();
-        e.setAccessNo(patientregister.getAccessionNo());
-        e.setIsWalkin(patientregister.getIsWalkin());
-        e.setAmount(patientregister.getAmount());
-        e.setDiscount(patientregister.getDiscount());
-        e.setBalance(patientregister.getBalance());
-        e.setPaymentMode(patientregister.getPaymentMode());
+        e.setAccessNo(this.getAccessionNo());
+        e.setIsWalkin(this.getIsWalkin());
+        e.setAmount(this.getAmount());
+        e.setDiscount(this.getDiscount());
+        e.setBalance(this.getBalance());
+        e.setPaymentMode(this.getPaymentMode());
         return e;
     }
 }

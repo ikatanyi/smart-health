@@ -6,9 +6,12 @@
 package io.smarthealth.clinical.radiology.domain;
 
 import io.smarthealth.clinical.radiology.data.RadiologyResultData;
+import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -24,24 +27,17 @@ public class RadiologyResult extends Auditable{
 
     @OneToOne(mappedBy = "radiologyResult")
     private PatientScanTest patientScanTest;
-    
-    private String scanNumber;
-
-    private String patientNo; 
-    private String patientNumber; 
     private String notes;
-    private Long testId;
-    private String testName;
     private String comments;
     private String imagePath;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ScanTestState status;
     private LocalDateTime resultsDate;
-    private Boolean voided = Boolean.FALSE;    
+    private Boolean voided = Boolean.FALSE;     
 
     public RadiologyResultData toData() {
         RadiologyResultData data = new RadiologyResultData();
         data.setId(this.getId());
-        data.setScanNumber(this.scanNumber);
         data.setTemplateNotes(this.notes);
         data.setResultsDate(this.resultsDate);
         data.setStatus(this.status);
@@ -60,9 +56,9 @@ public class RadiologyResult extends Auditable{
             data.setVisitNumber(this.patientScanTest.getPatientScanRegister().getVisit().getVisitNumber());
             data.setVisitDate(this.patientScanTest.getPatientScanRegister().getVisit().getStartDatetime().toLocalDate());
         } else {
-            data.setPatientNo(this.patientNo);
-            data.setPatientName("Walkin - "+this.patientNo);
-            data.setVisitNumber(this.patientNo);
+            data.setPatientNo(this.patientScanTest.getPatientScanRegister().getPatientNo());
+            data.setPatientName("Walkin - "+this.patientScanTest.getPatientScanRegister().getPatientNo());
+            data.setVisitNumber(this.patientScanTest.getPatientScanRegister().getPatientNo());
             data.setVisitDate(this.patientScanTest.getPatientScanRegister().getRequestDatetime().toLocalDate());
         }
 

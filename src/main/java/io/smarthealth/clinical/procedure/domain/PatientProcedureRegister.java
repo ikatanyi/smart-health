@@ -41,20 +41,19 @@ import lombok.Data;
 @Entity
 @Table(name = "patient_procedure_register")
 public class PatientProcedureRegister extends Auditable {
-    
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_procedure_request_visit_id"))
     private Visit visit;
 
     @Column(nullable = false, unique = true)
     private String accessNo;
-    
+
     @OneToOne
     private DoctorRequest request;
-    
+
     private String patientName;
     private String patientNo;
-
 
     @Column(nullable = false, unique = false)
     @Enumerated(EnumType.STRING)
@@ -67,7 +66,7 @@ public class PatientProcedureRegister extends Auditable {
     private Double amount;
     private Double taxes;
     private Double discount;
-    private Boolean isWalkin=false;
+    private Boolean isWalkin = false;
 
     @OneToMany(mappedBy = "patientProcedureRegister", cascade = CascadeType.ALL)
     private List<PatientProcedureTest> patientProcedureTest = new ArrayList<>();
@@ -96,15 +95,16 @@ public class PatientProcedureRegister extends Auditable {
             data.setVisitNumber(this.getVisit().getVisitNumber());
             data.setPatientName(this.getVisit().getPatient().getFullName());
             data.setPatientNumber(this.getVisit().getPatient().getPatientNumber());
-        }
-        else{
+        } else {
             data.setPatientName(this.patientNo);
             data.setPatientNumber(this.patientNo);
         }
         if (this.getRequest() != null) {
             data.setRequestId(this.getRequest().getId());
-            data.setRequestedBy(this.getRequest().getRequestedBy().getStaffNumber());
-            data.setPhysicianName(this.getRequest().getCreatedBy());
+            if (this.getRequest().getRequestedBy() != null) {
+                data.setRequestedBy(this.getRequest().getRequestedBy().getStaffNumber());
+                data.setPhysicianName(this.getRequest().getCreatedBy());
+            }
         }
         data.setAccessionNo(this.getAccessNo());
         if (this.getPatientProcedureTest() != null) {

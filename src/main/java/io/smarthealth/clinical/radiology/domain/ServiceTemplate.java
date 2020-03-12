@@ -8,13 +8,9 @@ package io.smarthealth.clinical.radiology.domain;
 import io.smarthealth.clinical.radiology.data.ServiceTemplateData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
-import io.smarthealth.stock.item.domain.Item;
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import lombok.Data;
@@ -33,7 +29,7 @@ public class ServiceTemplate extends Identifiable{
     private Gender gender;
     private String notes;
     
-    private ServiceTemplateData toData(){
+    public ServiceTemplateData toData(){
         ServiceTemplateData data = new ServiceTemplateData();
         data.setTemplateName(this.getTemplateName());
         data.setNotes(this.getNotes());

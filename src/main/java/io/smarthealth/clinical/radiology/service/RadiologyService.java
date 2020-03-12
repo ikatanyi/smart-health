@@ -14,6 +14,8 @@ import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureRegister;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
+import io.smarthealth.clinical.radiology.data.PatientScanTestData;
+import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.radiology.data.RadiologyTestData;
 import io.smarthealth.clinical.radiology.data.ScanItemData;
 import io.smarthealth.clinical.radiology.domain.PatientRadiologyTestRepository;
@@ -21,8 +23,9 @@ import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
 import io.smarthealth.clinical.radiology.domain.PatientScanTestRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyRepository;
+import io.smarthealth.clinical.radiology.domain.RadiologyResult;
+import io.smarthealth.clinical.radiology.domain.RadiologyResultRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyTest;
-import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologySpecification;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
@@ -84,71 +87,27 @@ public class RadiologyService {
 
     private final SequenceNumberService sequenceNumberService;
 
-    @Transactional
-    public List<RadiologyTest> createRadiologyTest(List<RadiologyTestData> radiolgyTestData) {
-        try {
-            List<RadiologyTest> radiologyTests = radiolgyTestData
-                    .stream()
-                    .map((radiologyTest) -> {
-                        RadiologyTest test = RadiologyTestData.map(radiologyTest);
-                        Optional<Item> item = itemService.findByItemCode(radiologyTest.getItemCode());
-                        if (item.isPresent()) {
-                            test.setItem(item.get());
-                        }
-                        return test;
-                    })
-                    .collect(Collectors.toList());
-            return radiologyRepository.saveAll(radiologyTests);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw APIException.internalError("Error occured while creating RadiologyItem ", e.getMessage());
-        }
-    }
-
-    @Transactional
-    public RadiologyTest UpdateRadiologyTest(RadiologyTestData radiolgyTestData) {
-        RadiologyTest radiologyTest = this.getById(radiolgyTestData.getId());
-        RadiologyTest test = RadiologyTestData.map(radiolgyTestData);
-        test.setId(radiologyTest.getId());
-        Optional<Item> item = itemService.findByItemCode(radiolgyTestData.getItemCode());
-        if (item.isPresent()) {
-            test.setItem(item.get());
-        }
-
-        return radiologyRepository.save(test);
-
-    }
-
-    public RadiologyTest findScanByItem(final Item item) {
-        return radiologyRepository.findByItem(item).orElseThrow(() -> {
-            return APIException.notFound("Radiology Test not Registered in Radiology Department");
-        });
-    }
-
-    @Transactional
-    public RadiologyTest getById(Long id) {
-        return radiologyRepository.findById(id).orElseThrow(() -> APIException.notFound("Radiology Test identified by {0} not found", id));
-    }
-
-    @Transactional
-    public Page<RadiologyTest> findAll(Pageable pgbl) {
-        return radiologyRepository.findAll(pgbl);
-    }
+    private final RadiologyConfigService radiologyConfigService;
+    
+    private final RadiologyResultRepository radiologyResultRepo;
 
     @Transactional
     public PatientScanRegister savePatientResults(PatientScanRegisterData patientScanRegData, final String visitNo, final Long requestId) {
-        PatientScanRegister patientScanReg = PatientScanRegisterData.map(patientScanRegData);
+        PatientScanRegister patientScanReg = patientScanRegData.fromData();
         String transactionId = sequenceNumberService.next(1L, Sequences.RadiologyNumber.name());
         patientScanReg.setTransactionId(transactionId);
         patientScanReg.setIsWalkin(patientScanRegData.getIsWalkin());
-        
-        if (visitNo != null) {
+
+        if (visitNo != null && !patientScanReg.getIsWalkin()) {
             Visit visit = visitService.findVisitEntityOrThrow(visitNo);
             patientScanReg.setVisit(visit);
-            patientScanReg.setPatient(visit.getPatient());
-        } 
-        
-        
+            patientScanReg.setPatientName(visit.getPatient().getFullName());
+            patientScanReg.setPatientNo(visit.getPatient().getPatientNumber());
+        } else {
+            patientScanReg.setPatientName(patientScanReg.getPatientNo());
+            patientScanReg.setPatientNo(patientScanReg.getPatientNo());
+        }
+
         Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(patientScanRegData.getRequestedBy());
         if (emp.isPresent()) {
             patientScanReg.setRequestedBy(emp.get());
@@ -161,23 +120,22 @@ public class RadiologyService {
             }
 
         }
-        if (patientScanRegData.getAccessionNo() == null || patientScanRegData.getAccessionNo().equals("")) {
-            String accessionNo = sequenceNumberService.next(1L, Sequences.RadiologyNumber.name());
-            patientScanReg.setAccessNo(accessionNo);
-        }
+
+        String accessionNo = sequenceNumberService.next(1L, Sequences.RadiologyNumber.name());
+        patientScanReg.setAccessNo(accessionNo);
 
         if (!patientScanRegData.getItemData().isEmpty()) {
             List<PatientScanTest> patientScanTest = new ArrayList<>();
             for (ScanItemData id : patientScanRegData.getItemData()) {
                 Item i = itemService.findItemWithNoFoundDetection(id.getItemCode());
-                RadiologyTest labTestType = findScanByItem(i);
+                RadiologyTest labTestType = radiologyConfigService.findScanByItem(i);
                 PatientScanTest pte = new PatientScanTest();
                 pte.setTestPrice(id.getItemPrice());
                 pte.setQuantity(id.getQuantity());
                 pte.setRadiologyTest(labTestType);
                 Optional<Employee> medic = employeeService.findEmployeeByStaffNumber(id.getMedicId());
-                if (emp.isPresent()) {
-                    pte.setMedic(emp.get());
+                if (medic.isPresent()) {
+                    pte.setMedic(medic.get());
                 }
 
                 patientScanTest.add(pte);
@@ -234,17 +192,60 @@ public class RadiologyService {
         patientbill.addBillItems(lineItems);
         return patientbill;
     }
+    
+    @Transactional
+    public RadiologyResult saveRadiologyResult(RadiologyResultData data) {
+        RadiologyResult radiologyResult= data.fromData();
+        PatientScanTest patientScanTest = findPatientRadiologyTestByIdWithNotFoundDetection(data.getTestId());
+        radiologyResult.setPatientScanTest(patientScanTest);
+        radiologyResult.setStatus(data.getStatus());
+        return radiologyResultRepo.save(radiologyResult);
+    }    
+    
 
     @Transactional
-    public PatientScanTest updateRadiologyResult(PatientScanTest r) {
-        return pscanRepository.save(r);
+    public RadiologyResult updateRadiologyResult(Long id, RadiologyResultData data) {
+        RadiologyResult radiologyResult = findResultsByIdWithNotFoundDetection(id);
+        radiologyResult.setComments(data.getComments());
+        radiologyResult.setImagePath(data.getImagePath());
+        radiologyResult.setNotes(data.getTemplateNotes());
+        PatientScanTest patientScanTest = findPatientRadiologyTestByIdWithNotFoundDetection(data.getTestId());
+        radiologyResult.setPatientScanTest(patientScanTest);
+        radiologyResult.setResultsDate(data.getResultsDate());
+        radiologyResult.setStatus(data.getStatus());
+        radiologyResult.setVoided(data.getVoided());
+        return radiologyResultRepo.save(radiologyResult);
     }
 
-    public PatientScanTest findResultsByIdWithNotFoundDetection(Long id) {
-        return pscanRepository.findById(id).orElseThrow(() -> APIException.notFound("Results identified by id {0} not found ", id));
+    public RadiologyResult findResultsByIdWithNotFoundDetection(Long id) {
+        return radiologyResultRepo.findById(id).orElseThrow(() -> APIException.notFound("Results identified by id {0} not found ", id));
+    }  
+    
+    
+//    @Transactional
+//    public PatientScanTest updatePatientScanTest(Long id, PatientScanTestData data) {
+//        PatientScanTest radiologyTest = findPatientRadiologyTestByIdWithNotFoundDetection(id);
+//        radiologyTest.setComments(data.getComments());
+//        radiologyTest.setDone(data.getDone());
+//        Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(data.getRequestedBy());
+//        if (emp.isPresent()) {
+//            patientScanReg.setRequestedBy(emp.get());
+//        }
+//        radiologyTest.setMedic(data.get);
+//        radiologyTest.setQuantity();
+//        radiologyTest.setRequestId();
+//        radiologyTest.setStatus();
+//        radiologyTest.setTestPrice();
+//        radiologyTest.setVoidDatetime();
+//        radiologyTest.setVoidedBy();
+//        return radiologyResultRepo.save(radiologyResult);
+//    }
+    
+    public PatientScanTest findPatientRadiologyTestByIdWithNotFoundDetection(Long id) {
+        return pscanRepository.findById(id).orElseThrow(() -> APIException.notFound("Patient results identified by id {0} not found ", id));
     }
 
-    public PatientScanRegister findScansByIdWithNotFoundDetection(String accessNo) {
+    public PatientScanRegister findPatientRadiologyTestByIdWithNotFoundDetection(String accessNo) {
         return patientradiologyRepository.findByAccessNo(accessNo).orElseThrow(() -> APIException.notFound("Patient Scan identified by scanN Number {0} not found ", accessNo));
     }
 

@@ -2,11 +2,15 @@ package io.smarthealth.clinical.radiology.data;
 
 import io.smarthealth.clinical.laboratory.data.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.clinical.radiology.domain.RadiologyResult;
+import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -35,9 +39,20 @@ public class RadiologyResultData {
     private String testCode;
     @ApiModelProperty(required = false, hidden = true)
     private String testName;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ScanTestState status;
     private String templateNotes;
     private String comments;
     private String imagePath;
     private Boolean voided = Boolean.FALSE;
+    
+    public RadiologyResult fromData(){
+        RadiologyResult entity = new RadiologyResult();
+        entity.setComments(this.getComments());
+        entity.setImagePath(this.getImagePath());
+        entity.setNotes(this.getTemplateNotes());
+        entity.setResultsDate(this.getResultsDate());
+        entity.setVoided(this.getVoided());
+        return entity;
+    }
 }

@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.radiology.data;
 
+import io.smarthealth.clinical.radiology.domain.ServiceTemplate;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -20,4 +21,12 @@ public class ServiceTemplateData{
     private String templateName; 
     private Gender gender;
     private String notes;
+    
+    public static ServiceTemplate map(ServiceTemplateData data){
+        ServiceTemplate entity = new ServiceTemplate();
+        entity.setGender(data.getGender());
+        entity.setNotes(data.getNotes());
+        entity.setTemplateName(data.getTemplateName());
+        return entity;
+    }
 }
