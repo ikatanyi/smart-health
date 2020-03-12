@@ -85,7 +85,7 @@ public class ProcedureService {
                         Optional<Item> item = itemService.findByItemCode(procedureTest.getItemCode());
                         if (item.isPresent()) {
                             test.setItem(item.get());
-                            
+
                         }
                         return test;
                     })
@@ -132,13 +132,13 @@ public class ProcedureService {
         PatientProcedureRegister patientProcReg = PatientProcedureRegisterData.map(patientProcRegData);
         String transactionId = sequenceNumberService.next(1L, Sequences.Procedure.name());
         patientProcReg.setTransactionId(transactionId);
-        
+
         if (visitNo != null) {
             Visit visit = visitService.findVisitEntityOrThrow(visitNo);
             patientProcReg.setVisit(visit);
             patientProcReg.setPatientName(visit.getPatient().getFullName());
             patientProcReg.setPatientNo(visit.getPatient().getPatientNumber());
-        } 
+        }
         Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(patientProcRegData.getRequestedBy());
         if (emp.isPresent()) {
             patientProcReg.setRequestedBy(emp.get());
@@ -158,7 +158,6 @@ public class ProcedureService {
         }
 
         //PatientTestRegister savedPatientTestRegister = patientRegRepository.save(patientTestReg);
-       
         if (!patientProcRegData.getItemData().isEmpty()) {
             List<PatientProcedureTest> patientProcTest = new ArrayList<>();
             for (ProcedureItemData id : patientProcRegData.getItemData()) {
@@ -169,56 +168,65 @@ public class ProcedureService {
                 pte.setQuantity(id.getQuantity());
                 pte.setProcedureTest(item);
                 Optional<Employee> employee = employeeService.findEmployeeByStaffNumber(id.getMedicId());
-                if(employee.isPresent())
-                   pte.setMedic(employee.get());
+                if (employee.isPresent()) {
+                    pte.setMedic(employee.get());
+                }
+
+                Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
+                if (request.isPresent()) {
+                    request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                }
+
                 patientProcTest.add(pte);
-                
+
             }
-             
-            patientProcReg.addPatientProcedures(patientProcTest);     
+
+            patientProcReg.addPatientProcedures(patientProcTest);
 
         }
-        PatientProcedureRegister savedProcedure=patientprocedureRepository.save(patientProcReg);
-        
+        PatientProcedureRegister savedProcedure = patientprocedureRepository.save(patientProcReg);
+
         PatientBill bill = toBill(savedProcedure);
         //save the bill
         billingService.save(bill);
         return savedProcedure;
     }
-    
+
     private PatientBill toBill(PatientProcedureRegister data) {
         //get the service point from store
         ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(data.getVisit());
-        if(data.getVisit()!=null)
+        if (data.getVisit() != null) {
             patientbill.setPatient(data.getVisit().getPatient());
+        }
         patientbill.setAmount(data.getAmount());
         patientbill.setDiscount(data.getDiscount());
         patientbill.setBalance(data.getAmount());
-        
+
         patientbill.setReferenceNo(data.getAccessNo());
         patientbill.setPaymentMode(data.getPaymentMode());
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
         patientbill.setBillingDate(LocalDate.now());
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
-        
+
         patientbill.setBillNumber(bill_no);
         List<PatientBillItem> lineItems = data.getPatientProcedureTest()
                 .stream()
                 .map(lineData -> {
                     PatientBillItem billItem = new PatientBillItem();
                     Item item = itemService.findByItemCodeOrThrow(lineData.getProcedureTest().getItemCode());
-                   
+
                     billItem.setTransactionId(data.getTransactionId());
                     billItem.setServicePoint(ServicePointType.Procedure.name());
-                    if(lineData.getMedic()!=null)
-                       billItem.setMedicId(lineData.getMedic().getId());
+                    if (lineData.getMedic() != null) {
+                        billItem.setMedicId(lineData.getMedic().getId());
+                    }
                     billItem.setItem(item);
                     billItem.setPrice(lineData.getTestPrice());
                     billItem.setQuantity(lineData.getQuantity());
-                    billItem.setAmount(lineData.getTestPrice()*lineData.getQuantity());
+                    billItem.setAmount(lineData.getTestPrice() * lineData.getQuantity());
                     billItem.setServicePoint(servicePoint.getName());
                     billItem.setServicePointId(servicePoint.getId());
                     billItem.setStatus(BillStatus.Draft);

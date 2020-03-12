@@ -66,6 +66,7 @@ public class PatientProcedureRegister extends Auditable {
     private Double amount;
     private Double taxes;
     private Double discount;
+    private LocalDate billingDate;
     private Boolean isWalkin = false;
 
     @OneToMany(mappedBy = "patientProcedureRegister", cascade = CascadeType.ALL)
@@ -91,6 +92,7 @@ public class PatientProcedureRegister extends Auditable {
 
     public PatientProcedureRegisterData toData() {
         PatientProcedureRegisterData data = new PatientProcedureRegisterData();
+        data.setBillingDate(this.getBillingDate());
         if (this.getVisit() != null && !this.isWalkin) {
             data.setVisitNumber(this.getVisit().getVisitNumber());
             data.setPatientName(this.getVisit().getPatient().getFullName());
