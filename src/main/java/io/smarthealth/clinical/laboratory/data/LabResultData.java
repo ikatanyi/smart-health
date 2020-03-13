@@ -34,5 +34,7 @@ public class LabResultData{
     private String referenceValue;
     private String status;
     private String comments;
-     private Boolean voided = Boolean.FALSE;
+    private String createdBy;
+    private String specimen;
+    private Boolean voided = Boolean.FALSE;
 }

@@ -17,7 +17,7 @@
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Patient_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="IMAGE_DIR" class="java.lang.String"/>
-	<field name="itemName" class="java.lang.String"/>
+	<field name="brandName" class="java.lang.String"/>
 	<field name="quantity" class="java.lang.Double"/>
 	<field name="quantityUnits" class="java.lang.Double"/>
 	<field name="dosingInstructions" class="java.lang.String"/>
@@ -28,17 +28,13 @@
 	<field name="dose" class="java.lang.Double"/>
 	<field name="urgency" class="java.lang.String"/>
 	<field name="notes" class="java.lang.String"/>
-	<field name="frequency" class="java.lang.Double"/>
+	<field name="frequency" class="java.lang.String"/>
 	<field name="duration" class="java.lang.Integer"/>
-	<field name="durationUnits" class="java.lang.Integer"/>
-	<variable name="duration" class="java.lang.String">
-		<variableExpression><![CDATA[$F{duration}.toString().concat(" ").concat(($F{durationUnits}==1?" Day(s)":$F{durationUnits}==7?" Week(s)":
-                 $F{durationUnits}==30?" Month(s)":""))]]></variableExpression>
-	</variable>
+	<field name="durationUnits" class="java.lang.String"/>
 	<title>
 		<band height="12">
 			<subreport>
-				<reportElement x="0" y="0" width="210" height="12" uuid="420f6fe6-2f77-418e-8515-5e4ed9f8e34b"/>
+				<reportElement x="0" y="0" width="92" height="11" uuid="420f6fe6-2f77-418e-8515-5e4ed9f8e34b"/>
 				<subreportParameter name="PIC_DIR">
 					<subreportParameterExpression><![CDATA[]]></subreportParameterExpression>
 				</subreportParameter>
@@ -48,6 +44,11 @@
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
+			<subreport>
+				<reportElement x="115" y="0" width="95" height="11" uuid="78381bfd-523c-47eb-bdd9-5bf7b43ba3bb"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
+			</subreport>
 			<line>
 				<reportElement positionType="Float" x="0" y="11" width="210" height="1" uuid="7cb5c5a9-719f-44c7-a6ac-01310d5410a8"/>
 				<graphicElement>
@@ -56,15 +57,6 @@
 			</line>
 		</band>
 	</title>
-	<pageHeader>
-		<band height="14" splitType="Stretch">
-			<subreport>
-				<reportElement x="0" y="0" width="210" height="14" uuid="78381bfd-523c-47eb-bdd9-5bf7b43ba3bb"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
-			</subreport>
-		</band>
-	</pageHeader>
 	<detail>
 		<band height="38" splitType="Stretch">
 			<textField>
@@ -72,21 +64,21 @@
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[($F{frequency}==1)?"Take "+$F{dose}+" "+$F{doseUnits}+" every 1 Hour":""]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Take "+$F{dose}+$F{doseUnits}+" "+$F{frequency}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="41" y="28" width="147" height="9" uuid="073762c6-b6d4-4232-b967-9753361a52f2"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$V{duration}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{duration})+" "+$F{durationUnits}+"(s)"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="41" y="1" width="147" height="9" uuid="dd0e4c22-dc94-4841-aa4f-9d5aa1ed3d29"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{brandName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="42" y="10" width="146" height="9" uuid="f0696195-4234-4e05-906f-febdc89c01af"/>
