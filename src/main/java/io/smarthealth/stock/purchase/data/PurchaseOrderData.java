@@ -17,7 +17,7 @@ import lombok.Data;
  */
 @Data
 public class PurchaseOrderData {
-
+   private Long id;
     private String orderNumber; //PUR-ORD-2019-00001
     private Long supplierId;
     private String supplierName;
@@ -44,9 +44,10 @@ public class PurchaseOrderData {
 
     public static PurchaseOrderData map(PurchaseOrder order) {
         PurchaseOrderData data = new PurchaseOrderData();
+        data.setId(order.getId());
         data.setOrderNumber(order.getOrderNumber());
         if (order.getSupplier() != null) {
-            data.setSupplierId(order.getId());
+            data.setSupplierId(order.getSupplier().getId());
             data.setSupplierName(order.getSupplier().getSupplierName());
         }
         data.setTransactionDate(order.getTransactionDate());
