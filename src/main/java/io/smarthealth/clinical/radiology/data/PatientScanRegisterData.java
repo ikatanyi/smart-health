@@ -42,9 +42,9 @@ public class PatientScanRegisterData {
     private String requestedBy;
     @ApiModelProperty(hidden = true, required = false)
     private String physicianName;
-    private LocalDate receivedDate;
     @ApiModelProperty(hidden = true, required = false)
     private LocalDate createdOn;
+    private LocalDate billingDate;
     private Boolean isWalkin;
     
     private Double amount;
@@ -76,6 +76,7 @@ public class PatientScanRegisterData {
         e.setDiscount(this.getDiscount());
         e.setBalance(this.getBalance());
         e.setPaymentMode(this.getPaymentMode());
+        e.setBillingDate(this.getBillingDate());
         return e;
     }
 }

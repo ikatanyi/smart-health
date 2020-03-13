@@ -79,7 +79,9 @@ public class PatientScanRegister extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_employee_id")) 
     private Employee requestedBy;
 
-    private LocalDate receivedDate;
+    private LocalDate receivedDate=LocalDate.now();
+    
+    private LocalDate billingDate;
     
     private LocalDateTime requestDatetime;
     

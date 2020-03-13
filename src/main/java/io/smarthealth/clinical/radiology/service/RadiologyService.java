@@ -12,11 +12,9 @@ import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
-import io.smarthealth.clinical.procedure.domain.PatientProcedureRegister;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.data.RadiologyResultData;
-import io.smarthealth.clinical.radiology.data.RadiologyTestData;
 import io.smarthealth.clinical.radiology.data.ScanItemData;
 import io.smarthealth.clinical.radiology.domain.PatientRadiologyTestRepository;
 import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
@@ -30,13 +28,13 @@ import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyRegisterSpecification;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyResultSpecification;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyTestSpecification;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.sequence.SequenceType;
 import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
@@ -51,7 +49,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -140,7 +137,10 @@ public class RadiologyService {
                 if (medic.isPresent()) {
                     pte.setMedic(medic.get());
                 }
-
+                Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
+                if (request.isPresent()) {
+                    request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                }
                 patientScanTest.add(pte);
             }
             patientScanReg.addPatientScans(patientScanTest);

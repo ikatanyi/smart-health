@@ -64,6 +64,8 @@ public class PatientProcedureRegisterData {
     @ApiModelProperty(required = false, hidden = true)
     private Double taxes;
     private Double discount;
+    
+    private LocalDate billingDate;
 
     @ApiModelProperty(hidden = true, required = false)
     private List<PatientProcedureTestData> patientProcecedureTestData = new ArrayList();
@@ -78,6 +80,7 @@ public class PatientProcedureRegisterData {
         e.setAccessNo(patientregister.getAccessionNo());
         e.setAmount(patientregister.getAmount());
         e.setDiscount(patientregister.getDiscount());
+        e.setBillingDate(patientregister.getBillingDate());
         return e;
     }
 }

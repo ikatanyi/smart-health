@@ -15,6 +15,7 @@ import lombok.Data;
 @Data
 public class ScanItemData {
     //StaffNumber
+    private Long requestItemId;
     private String medicId;
     private String itemCode;
     private Double itemPrice;

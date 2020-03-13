@@ -76,6 +76,11 @@ public class PatientScanTest extends Identifiable {
         entity.setVoided(this.getVoided());
         entity.setVoidedBy(this.getVoidedBy());
         entity.setStatus(this.getStatus());
+        
+        if(this.getRadiologyTest()!=null){
+           entity.setScanName(this.getRadiologyTest().getScanName());
+           entity.setTestCode(this.getRadiologyTest().getCode());
+        }
         if(this.getDoneBy()!=null){
             entity.setDoneBy(this.getDoneBy().getFullName());
         }
