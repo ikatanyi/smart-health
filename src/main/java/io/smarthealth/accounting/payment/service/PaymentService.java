@@ -44,6 +44,8 @@ import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.organization.bank.service.BankAccountService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
+import io.smarthealth.stock.purchase.domain.PurchaseInvoiceRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -69,8 +71,9 @@ public class PaymentService {
     private final SequenceNumberService sequenceNumberService;
     private final ServicePointService servicePointService;
     private final BankAccountService bankAccountService;
-    private final InvoiceRepository invoiceRepository;
+//    private final InvoiceRepository invoiceRepository;
     private final DoctorInvoiceRepository doctorInvoiceRepository;
+    private final PurchaseInvoiceRepository purchaseInvoiceRepository;
 
     @Transactional
     public FinancialTransaction createTransaction(CreateTransactionData transactionData) {
@@ -154,7 +157,7 @@ public class PaymentService {
                     if (creditorData.getCreditorType().equals("Doctors")) {
                         updateDoctorInvoice(creditorData.getCreditorId(), x.getInvoiceNo(), x.getAmountPaid());
                     } else {
-                        updateInvoiceBalance(x.getInvoiceNo(), x.getAmountPaid());
+                        updateInvoiceBalance(creditorData.getCreditorId(),x.getInvoiceNo(), x.getAmountPaid());
                     }
                 });
 
@@ -221,15 +224,15 @@ public class PaymentService {
 
     }
 
-    private void updateInvoiceBalance(String invoiceNo, BigDecimal amountPaid) {
-        Optional<Invoice> invoice = invoiceRepository.findByNumber(invoiceNo);
+    private void updateInvoiceBalance(Long supplierId,String invoiceNo, BigDecimal amountPaid) {
+        Optional<PurchaseInvoice> invoice = purchaseInvoiceRepository.findByInvoiceForSupplier(invoiceNo, supplierId);
         if (invoice.isPresent()) {
-            Invoice inv = invoice.get();
-            BigDecimal newBal = BigDecimal.valueOf(inv.getBalance()).subtract(amountPaid);
+            PurchaseInvoice inv = invoice.get();
+            BigDecimal newBal =inv.getInvoiceBalance().subtract(amountPaid);
             boolean paid = newBal.doubleValue() <= 0;
-            inv.setBalance(newBal.doubleValue());
+            inv.setInvoiceBalance(newBal);
             inv.setPaid(paid);
-            invoiceRepository.save(inv);
+            purchaseInvoiceRepository.save(inv);
         }
     }
 

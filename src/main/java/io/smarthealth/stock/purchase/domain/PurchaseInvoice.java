@@ -8,15 +8,14 @@ import io.smarthealth.supplier.domain.Supplier;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.*;
-import lombok.Data;
-
+import lombok.Data; 
 /**
  *
  * @author Kelsas
  */
 @Entity
 @Data
-@Table(name = "purchase_invoice")
+@Table(name = "purchase_invoice") 
 public class PurchaseInvoice extends Auditable {
 
     @ManyToOne
