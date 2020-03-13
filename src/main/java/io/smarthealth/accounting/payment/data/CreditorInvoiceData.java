@@ -21,6 +21,7 @@ public class CreditorInvoiceData {
     private LocalDate date;
     private String invoiceNo;
     private BigDecimal amount;
+     private BigDecimal amountPaid;
     private BigDecimal balance;
     
 }

@@ -37,6 +37,7 @@ public class DrugItemRequest {
     
     private String servicePoint;
     private Long servicePointId;
+     private Long requestId;
 
     private BillStatus status;
     private Boolean paid;

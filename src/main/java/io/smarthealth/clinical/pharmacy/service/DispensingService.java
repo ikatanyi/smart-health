@@ -21,6 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
 import io.smarthealth.clinical.pharmacy.domain.specification.DispensingSpecification;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
+import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -53,6 +56,7 @@ public class DispensingService {
     private final InventoryService inventoryService;
     private final SequenceNumberService sequenceNumberService;
     private final VisitService visitService;
+    private final DoctorsRequestRepository doctorRequestRepository;
 
     private void dispenseItem(Store store, DrugRequest drugRequest) {
         Patient patient = patientService.findPatientOrThrow(drugRequest.getPatientNumber());
@@ -83,6 +87,7 @@ public class DispensingService {
 
                         DispensedDrug savedDrug = repository.saveAndFlush(drugs);
                         doStockEntries(savedDrug.getId());
+                        fulfillDocRequest(drugData.getRequestId());
                     });
         }
     }
@@ -197,5 +202,13 @@ public class DispensingService {
     private Item getItemById(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", id));
+    }
+     private void fulfillDocRequest(Long id){
+         if(id==null) return;
+        DoctorRequest req=doctorRequestRepository.findById(id).orElse(null);
+        if(req!=null){
+            req.setFulfillerStatus(FullFillerStatusType.Fulfilled);
+            doctorRequestRepository.save(req);
+        }
     }
 }

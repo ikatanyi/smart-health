@@ -41,6 +41,7 @@ public class DoctorRequest extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_doc_request_empoyee_id"))
     private Employee requestedBy;
+    
     private LocalDateTime orderDatetime;
     private String urgency;
     private String orderNumber;
