@@ -29,5 +29,6 @@ public class CreditorData {
     private Long bankAccountId;
     private String bankAccountName;
     private String currency;
+    private String creditorType;
     private List<CreditorInvoiceData> invoices = new ArrayList<>();
 }

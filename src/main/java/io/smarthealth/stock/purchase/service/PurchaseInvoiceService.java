@@ -76,7 +76,7 @@ public class PurchaseInvoiceService {
         invoice.setDiscount(stockEntry.getDiscount());
         invoice.setTax(stockEntry.getTaxes());
         invoice.setInvoiceAmount(stockEntry.getAmount());
-        invoice.setInvoiceBalance(stockEntry.getNetAmount());
+        invoice.setInvoiceBalance(stockEntry.getAmount());
         invoice.setNetAmount(stockEntry.getNetAmount());
         invoice.setStatus(PurchaseInvoiceStatus.Unpaid);
         invoice.setTransactionNumber(stockEntry.getTransactionId());

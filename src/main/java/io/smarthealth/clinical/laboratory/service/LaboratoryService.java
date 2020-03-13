@@ -39,6 +39,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterRepository;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTestRepository;
+import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
+import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
@@ -62,6 +65,7 @@ public class LaboratoryService {
     private final WalkingService walkingService;
     private final ServicePointService servicePointService;
     private final BillingService billingService;
+    private final DoctorsRequestRepository doctorRequestRepository;
 
     @Transactional
     public LabRegister createLabRegister(LabRegisterData data) {
@@ -76,6 +80,12 @@ public class LaboratoryService {
         LabRegister saved = repository.save(request);
         billingService.save(toBill(data));
         //save
+       data.getTests()
+               .stream()
+               .forEach(x -> {
+                  fulfillDocRequest(x.getRequestId());
+               });
+       
         return saved;
     }
 
@@ -353,5 +363,13 @@ public class LaboratoryService {
                 .collect(Collectors.toList());
         patientbill.addBillItems(lineItems);
         return patientbill;
+    }
+    private void fulfillDocRequest(Long id){
+          if(id==null) return;
+        DoctorRequest req=doctorRequestRepository.findById(id).orElse(null);
+        if(req!=null){
+            req.setFulfillerStatus(FullFillerStatusType.Fulfilled);
+            doctorRequestRepository.save(req);
+        }
     }
 }

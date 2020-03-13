@@ -3,7 +3,6 @@ package io.smarthealth.accounting.billing.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
-import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;

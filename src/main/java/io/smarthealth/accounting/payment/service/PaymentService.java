@@ -14,6 +14,11 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
+import io.smarthealth.accounting.doctors.domain.DoctorInvoiceRepository;
+import io.smarthealth.accounting.invoice.domain.Invoice;
+import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
+import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.accounting.payment.data.FinancialTransactionData;
 import io.smarthealth.accounting.payment.data.CreateTransactionData;
@@ -39,13 +44,14 @@ import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.organization.bank.service.BankAccountService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
+import io.smarthealth.stock.purchase.domain.PurchaseInvoiceRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -65,6 +71,9 @@ public class PaymentService {
     private final SequenceNumberService sequenceNumberService;
     private final ServicePointService servicePointService;
     private final BankAccountService bankAccountService;
+//    private final InvoiceRepository invoiceRepository;
+    private final DoctorInvoiceRepository doctorInvoiceRepository;
+    private final PurchaseInvoiceRepository purchaseInvoiceRepository;
 
     @Transactional
     public FinancialTransaction createTransaction(CreateTransactionData transactionData) {
@@ -120,7 +129,7 @@ public class PaymentService {
 
     }
 
-     @Transactional
+    @Transactional
     public FinancialTransaction createTransaction(CreditorData creditorData) {
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String receipt = sequenceNumberService.next(1L, Sequences.Receipt.name());
@@ -142,10 +151,19 @@ public class PaymentService {
 
         transaction.addPayment(pay);
 
+        creditorData.getInvoices()
+                .stream()
+                .forEach(x -> {
+                    if (creditorData.getCreditorType().equals("Doctors")) {
+                        updateDoctorInvoice(creditorData.getCreditorId(), x.getInvoiceNo(), x.getAmountPaid());
+                    } else {
+                        updateInvoiceBalance(creditorData.getCreditorId(),x.getInvoiceNo(), x.getAmountPaid());
+                    }
+                });
+
         //TODO: allocate the invoices paid - mark
         //find the bank and journal this transactions
-        //'
-        
+        //'allocate this invoices
         final FinancialTransaction trans = transactionRepository.save(transaction);
         return trans;
     }
@@ -189,8 +207,8 @@ public class PaymentService {
         if (amount > trans.getAmount()) {
             throw APIException.badRequest("Refund amount is more than the receipt amount");
         }
-         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
-         
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+
         FinancialTransaction toSave = new FinancialTransaction();
         toSave.setDate(LocalDateTime.now());
         toSave.setTrxType(TrxType.refund);
@@ -204,6 +222,30 @@ public class PaymentService {
         FinancialTransaction trns = transactionRepository.save(toSave);
         return trns;
 
+    }
+
+    private void updateInvoiceBalance(Long supplierId,String invoiceNo, BigDecimal amountPaid) {
+        Optional<PurchaseInvoice> invoice = purchaseInvoiceRepository.findByInvoiceForSupplier(invoiceNo, supplierId);
+        if (invoice.isPresent()) {
+            PurchaseInvoice inv = invoice.get();
+            BigDecimal newBal =inv.getInvoiceBalance().subtract(amountPaid);
+            boolean paid = newBal.doubleValue() <= 0;
+            inv.setInvoiceBalance(newBal);
+            inv.setPaid(paid);
+            purchaseInvoiceRepository.save(inv);
+        }
+    }
+
+    private void updateDoctorInvoice(Long doctorId, String invoiceNo, BigDecimal amountPaid) {
+        Optional<DoctorInvoice> invoice = doctorInvoiceRepository.findByInvoiceForDoctor(invoiceNo, doctorId);
+        if (invoice.isPresent()) {
+            DoctorInvoice inv = invoice.get();
+            BigDecimal newBal = inv.getBalance().subtract(amountPaid);
+            boolean paid = newBal.doubleValue() <= 0;
+            inv.setBalance(newBal);
+            inv.setPaid(paid);
+            doctorInvoiceRepository.save(inv);
+        }
     }
 
     public FinancialTransaction findTransactionOrThrowException(Long id) {

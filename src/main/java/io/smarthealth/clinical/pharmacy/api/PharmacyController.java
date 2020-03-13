@@ -112,6 +112,8 @@ public class PharmacyController {
     ResponseEntity<?> savePatientPrescriptions(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<PrescriptionData> prescriptionData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
+//         Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
+        
         List<Prescription> prescriptions = new ArrayList<>();
         String prescriptionNo =  sequenceNumberService.next(1L, Sequences.Prescription.name());
 
