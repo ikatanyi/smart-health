@@ -14,6 +14,8 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
+import io.smarthealth.accounting.doctors.domain.DoctorInvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
@@ -68,6 +70,7 @@ public class PaymentService {
     private final ServicePointService servicePointService;
     private final BankAccountService bankAccountService;
     private final InvoiceRepository invoiceRepository;
+    private final DoctorInvoiceRepository doctorInvoiceRepository;
 
     @Transactional
     public FinancialTransaction createTransaction(CreateTransactionData transactionData) {
@@ -148,7 +151,11 @@ public class PaymentService {
         creditorData.getInvoices()
                 .stream()
                 .forEach(x -> {
-                    updateInvoiceBalance(x.getInvoiceNo(), x.getAmountPaid());
+                    if (creditorData.getCreditorType().equals("Doctors")) {
+                        updateDoctorInvoice(creditorData.getCreditorId(), x.getInvoiceNo(), x.getAmountPaid());
+                    } else {
+                        updateInvoiceBalance(x.getInvoiceNo(), x.getAmountPaid());
+                    }
                 });
 
         //TODO: allocate the invoices paid - mark
@@ -223,6 +230,18 @@ public class PaymentService {
             inv.setBalance(newBal.doubleValue());
             inv.setPaid(paid);
             invoiceRepository.save(inv);
+        }
+    }
+
+    private void updateDoctorInvoice(Long doctorId, String invoiceNo, BigDecimal amountPaid) {
+        Optional<DoctorInvoice> invoice = doctorInvoiceRepository.findByInvoiceForDoctor(invoiceNo, doctorId);
+        if (invoice.isPresent()) {
+            DoctorInvoice inv = invoice.get();
+            BigDecimal newBal = inv.getBalance().subtract(amountPaid);
+            boolean paid = newBal.doubleValue() <= 0;
+            inv.setBalance(newBal);
+            inv.setPaid(paid);
+            doctorInvoiceRepository.save(inv);
         }
     }
 
