@@ -26,14 +26,14 @@ import org.springframework.transaction.annotation.Propagation;
  * @author Kelsas
  */
 @Service
-@RequiredArgsConstructor 
+@RequiredArgsConstructor
 public class InventoryItemService {
 
 //    https://www.devglan.com/spring-boot/spring-boot-jms-activemq-example
     private final ItemService itemService;
     private final StoreService storeService;
     private final InventoryItemRepository inventoryItemRepository;
- 
+
     public void decrease(Item item, Store store, double qty) {
         InventoryItem balance = inventoryItemRepository
                 .findByItemAndStore(item, store)
@@ -42,7 +42,7 @@ public class InventoryItemService {
         balance.decrease(qty);
         inventoryItemRepository.save(balance);
     }
- 
+
     public void increase(Item item, Store store, double qty) {
         InventoryItem balance = inventoryItemRepository
                 .findByItemAndStore(item, store)
@@ -51,7 +51,7 @@ public class InventoryItemService {
         balance.increase(qty);
         inventoryItemRepository.save(balance);
     }
- 
+
     public InventoryItem createInventoryItem(InventoryItemData itemData) {
         Item item = itemService.findItemEntityOrThrow(itemData.getItemId());
         Store store = storeService.getStoreWithNoFoundDetection(itemData.getStoreId());
@@ -60,7 +60,7 @@ public class InventoryItemService {
                 .orElse(InventoryItem.create(store, item));
         return save(inventory);
     }
- 
+
     public void createInventoryItem(CreateInventoryItem itemData) {
         List<InventoryItem> items = new ArrayList<>();
         itemData.getInventoryItems()
@@ -71,19 +71,19 @@ public class InventoryItemService {
                     InventoryItem inventory = inventoryItemRepository
                             .findByItemAndStore(item, store)
                             .orElse(InventoryItem.create(store, item));
-                    if(x.getAvailableStock()>0){
+                    if (x.getAvailableStock() > 0) {
                         inventory.setAvailableStock(x.getAvailableStock());
                     }
                     items.add(inventory);
                 });
 //        return save(inventory);
-            inventoryItemRepository.saveAll(items);
+        inventoryItemRepository.saveAll(items);
     }
- 
+
     public InventoryItem save(InventoryItem item) {
         return inventoryItemRepository.save(item);
     }
- 
+
     public void adjustment(Item item, Store store, double qty) {
         InventoryItem balance = inventoryItemRepository
                 .findByItemAndStore(item, store)
