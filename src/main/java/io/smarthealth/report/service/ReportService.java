@@ -16,13 +16,10 @@ import io.smarthealth.accounting.invoice.domain.InvoiceLineItem;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
+import io.smarthealth.clinical.laboratory.data.PatientResults;
 import io.smarthealth.clinical.laboratory.domain.LabSpecimen;
 import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
-//import io.smarthealth.clinical.lab.data.PatientTestRegisterData;
-//import io.smarthealth.clinical.lab.domain.Specimen;
-//import io.smarthealth.clinical.lab.service.LabService;
-//import io.smarthealth.clinical.lab.service.LabSetupService;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
@@ -469,7 +466,7 @@ public class ReportService {
     public void getPatientLabReport(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-         List<LabResultData> labTests = labService.getLabResultDataByVisit(visit);
+         PatientResults labTests = labService.getPatientResults(visit.getPatient().getPatientNumber(), visitNumber);//tLabResultDataByVisit(visit);
 
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
@@ -479,7 +476,7 @@ public class ReportService {
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
-        reportData.setData(labTests);
+        reportData.setData(Arrays.asList(labTests));
         if (visit.getHealthProvider() != null) {
             reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
         }
