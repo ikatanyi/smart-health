@@ -153,6 +153,7 @@ public class DispensingService {
     private PatientBill toBill(DrugRequest data, Store store) {
         //get the service point from store
         Visit visit = billingService.findVisitEntityOrThrow(data.getVisitNumber());
+        System.err.println("Store service point ... "+store.getServicePoint().getName());
         ServicePoint srvpoint = store.getServicePoint();
 
         PatientBill patientbill = new PatientBill();
