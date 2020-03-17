@@ -64,7 +64,7 @@ public class JournalController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        final DateRange range = DateRange.fromIsoString(dateRange);
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<JournalEntryData> list = journalService.findJournals(transactionNo, type, status, range, pageable);

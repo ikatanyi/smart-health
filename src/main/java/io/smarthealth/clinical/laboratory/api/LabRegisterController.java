@@ -131,7 +131,7 @@ public class LabRegisterController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-         final DateRange range = DateRange.fromIsoString(dateRange);
+         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
          
         Page<LabRegisterData> list = service.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status, range,pageable)
                 .map(x -> x.toData(isExpanded(expand)));
