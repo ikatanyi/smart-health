@@ -75,11 +75,11 @@ public class PatientService {
     private final PatientIdentifierRepository patientIdentifierRepository;
     private final PatientQueueRepository patientQueueRepository;
     private final VisitRepository visitRepository;
-    
+
     private final ServicePointService servicePointService;
     private final FacilityService facilityService;
 //    private final VisitService visitService;
-     
+
     private final SequenceNumberService sequenceNumberService;
 
     private final ModelMapper modelMapper;
@@ -87,24 +87,28 @@ public class PatientService {
     private final PortraitRepository portraitRepository;
 
     private final PatientIdentifierService patientIdentifierService;
-  
+
     private File patientImageDirRoot;
-    
-      @Autowired
+
+    @Autowired
     @Qualifier("jdbcTemplate")
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private ResourceLoader resourceLoader;
 
-    
     @Value("${patientimage.upload.dir}")
     private String uploadDir;
- 
+
     public Page<Patient> fetchAllPatients(MultiValueMap<String, String> queryParams, final Pageable pageable) {
         Specification<Patient> spec = PatientSpecification.createSpecification(queryParams.getFirst("term"));
         return patientRepository.findAll(spec, pageable);
         // return patientRepository.findAll(pageable);
+    }
+
+    public Page<Patient> search(String keyword, Pageable page) {
+        Specification<Patient> spec = PatientSpecification.createSpecification(keyword);
+        return patientRepository.findAll(spec, page);
     }
 
     public Patient fetchPatientByIdentityNumber(Long patientId) {
@@ -161,7 +165,7 @@ public class PatientService {
     public String deletePortrait(String patientNumber) throws IOException {
         final Person person = findPatientOrThrow(patientNumber);
         Portrait portrait = portraitRepository.findByPerson(person);
-         patientImageDirRoot = new File(uploadDir);
+        patientImageDirRoot = new File(uploadDir);
         System.out.println("-------------Deleting patient portrait--------------");
         File file = new File(patientImageDirRoot, portrait.getImageName());
         if (file.exists()) {

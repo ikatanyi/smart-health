@@ -71,6 +71,7 @@ public class LaboratoryService {
     public LabRegister createLabRegister(LabRegisterData data) {
 
         LabRegister request = toLabRegister(data);
+
         String trnId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String labNo = sequenceNumberService.next(1L, Sequences.LabNumber.name());
         request.setLabNumber(labNo);
@@ -80,12 +81,12 @@ public class LaboratoryService {
         LabRegister saved = repository.save(request);
         billingService.save(toBill(data));
         //save
-       data.getTests()
-               .stream()
-               .forEach(x -> {
-                  fulfillDocRequest(x.getRequestId());
-               });
-       
+        data.getTests()
+                .stream()
+                .forEach(x -> {
+                    fulfillDocRequest(x.getRequestId());
+                });
+
         return saved;
     }
 
@@ -108,9 +109,10 @@ public class LaboratoryService {
     @Transactional
     public int updateLabRegisteredTest(String labNo, Long testId, StatusRequest status) {
         LabRegister requests = getLabRegisterByNumber(labNo);
+
         LabRegisterTest test = requests.getTests()
                 .stream()
-                .filter(x -> Objects.equals(x.getLabRegister().getId(), testId))
+                .filter(x -> Objects.equals(x.getId(), testId))
                 .findAny()
                 .orElseThrow(() -> APIException.notFound("Lab Test with Id {0} Not Found", testId));
         switch (status.getStatus()) {
@@ -118,19 +120,11 @@ public class LaboratoryService {
 
                 repository.updateLabRegisterStatus(LabTestStatus.PendingResult, requests.getId());
                 return testRepository.updateTestCollected(status.getDoneBy(), status.getSpecimen(), testId, LabTestStatus.PendingResult);
-//                test.setCollected(Boolean.TRUE);
-//                test.setCollectedBy(status.getComment());
-//                test.setCollectionDateTime(LocalDateTime.now()); 
             case Entered:
-//                test.setEntered(Boolean.TRUE);
-//                test.setEnteredBy(status.getComment());
-//                test.setEntryDateTime(LocalDateTime.now());
                 repository.updateLabRegisterStatus(LabTestStatus.ResultsEntered, requests.getId());
+                updateRegisterStatus(requests);
                 return testRepository.updateTestEntry(status.getDoneBy(), testId, LabTestStatus.ResultsEntered);
             case Validated:
-//                test.setValidated(Boolean.TRUE);
-//                test.setValidatedBy(status.getComment());
-//                test.setValidationDateTime(LocalDateTime.now());
                 repository.updateLabRegisterStatus(LabTestStatus.Complete, requests.getId());
                 return testRepository.updateTestValidation(status.getDoneBy(), testId, LabTestStatus.Complete);
             case Paid:
@@ -147,8 +141,24 @@ public class LaboratoryService {
         repository.save(requests);
     }
 
-    public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, Pageable page) {
-        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status);
+    private void updateRegisterStatus(LabRegister requests) {
+        long entered = requests.getTests()
+                .stream().filter(x -> x.getEntered())
+                .count();
+        System.err.println("Entered results "+entered);
+        long total = requests.getTests()
+                .stream()
+                .count();
+        System.err.println("Tests totals "+total);
+        
+        if (entered >= total) {
+            requests.setStatus(LabTestStatus.Complete);
+            repository.save(requests);
+        }
+    }
+
+    public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range,Pageable page) {
+        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status,range);
         return repository.findAll(spec, page);
     }
 
@@ -297,7 +307,7 @@ public class LaboratoryService {
     }
 
     public PatientResults getPatientResults(String patientNo, String visitNumber) {
-        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(null, null, visitNumber, null, null);
+        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(null, null, visitNumber, null, null,null);
         List<LabRegister> lists = repository.findAll(spec);
         PatientResults results = new PatientResults();
 
@@ -326,8 +336,8 @@ public class LaboratoryService {
 
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
-        if(visit!=null){
-           patientbill.setPatient(visit.getPatient());
+        if (visit != null) {
+            patientbill.setPatient(visit.getPatient());
         }
 //        patientbill.setAmount(data.getAmount());
 //        patientbill.setDiscount(data.getDiscount());
@@ -364,10 +374,13 @@ public class LaboratoryService {
         patientbill.addBillItems(lineItems);
         return patientbill;
     }
-    private void fulfillDocRequest(Long id){
-          if(id==null) return;
-        DoctorRequest req=doctorRequestRepository.findById(id).orElse(null);
-        if(req!=null){
+
+    private void fulfillDocRequest(Long id) {
+        if (id == null) {
+            return;
+        }
+        DoctorRequest req = doctorRequestRepository.findById(id).orElse(null);
+        if (req != null) {
             req.setFulfillerStatus(FullFillerStatusType.Fulfilled);
             doctorRequestRepository.save(req);
         }

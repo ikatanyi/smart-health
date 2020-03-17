@@ -117,6 +117,7 @@ public class PaymentService {
                         item.setBalance(0D);
                         PatientBillItem i = billingService.updateBillItem(item);
                         billedItems.add(i);
+                        //update the bill as 
                     });
 
         }

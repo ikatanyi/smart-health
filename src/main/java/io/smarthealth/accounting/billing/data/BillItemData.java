@@ -43,5 +43,6 @@ public class BillItemData {
     private BillStatus status;
     private Boolean paid;
     
+    private Long requestReference;
 
 }

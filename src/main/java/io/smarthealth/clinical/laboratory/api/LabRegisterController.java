@@ -8,9 +8,11 @@ import io.smarthealth.clinical.laboratory.domain.LabRegister;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -124,11 +126,14 @@ public class LabRegisterController {
             @RequestParam(value = "visitNo", required = false) String visitNumber,
             @RequestParam(value = "patientNo", required = false) String patientNumber,
             @RequestParam(value = "status", required = false) LabTestStatus status,
+             @ApiParam(value = "Date Range", required = false, example = "2020-03-01..2020-03-17") @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<LabRegisterData> list = service.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status, pageable)
+         final DateRange range = DateRange.fromIsoString(dateRange);
+         
+        Page<LabRegisterData> list = service.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status, range,pageable)
                 .map(x -> x.toData(isExpanded(expand)));
 
         Pager<List<LabRegisterData>> pagers = new Pager();
