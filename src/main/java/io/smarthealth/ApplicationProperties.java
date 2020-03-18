@@ -31,4 +31,6 @@ public class ApplicationProperties {
     private Resource authServer;
     
     private String reportLoc;
+    
+    private String docUploadDir;
 }
