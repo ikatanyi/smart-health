@@ -9,45 +9,38 @@ import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 /**
  *
- * @author simz
+ * @author Simon.waweru
  */
-@Data
 @Entity
-@Table(name = "patient_visit_payment_details")
-public class PaymentDetails extends Auditable {
+@Data
+public class VisitPaymentDetails extends Auditable {
 
     @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "visit_id", foreignKey = @ForeignKey(name = "fk_payment_details_visit_id"))
     private Visit visit;
-
+    
     @OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "payer_id", foreignKey = @ForeignKey(name = "fk_payment_details_payer"))
     private Payer payer;
-
+    
     @OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "scheme_id", foreignKey = @ForeignKey(name = "fk_payment_details_payee_id"))
     private Scheme scheme;
-
-    @Column(columnDefinition = "TEXT")
-    private String comments;
-
+    
     private String memberName, policyNo, relation, idNo;
     private double limitAmount;
-
 }

@@ -46,7 +46,7 @@ public class PatientBillItem extends Auditable {
     
     @Transient
     private Long medicId;
-
+     private Long requestReference;
 
     public BillItemData toData() {
         BillItemData data = new BillItemData();
@@ -73,6 +73,7 @@ public class PatientBillItem extends Auditable {
         }
         data.setServicePoint(this.getServicePoint());
         data.setPaid(this.getPaid());
+        data.setRequestReference(this.requestReference);
         
         return data;
     }

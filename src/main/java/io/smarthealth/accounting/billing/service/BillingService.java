@@ -157,9 +157,15 @@ public class BillingService {
     }
 
     public PatientBillItem updateBillItem(PatientBillItem item) {
+        //determine the request origin and update ti
+        
         return billItemRepository.save(item);
     }
-
+ private void updateRequestStatus(PatientBillItem item){
+     if(item.getPatientBill().getPaymentMode().equals("Cash")){
+         
+     }
+ }
     public Item getItemByCode(String code) {
         return itemService.findByItemCodeOrThrow(code);
     }

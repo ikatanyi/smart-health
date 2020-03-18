@@ -152,9 +152,8 @@ public class DispensingService {
   
     private PatientBill toBill(DrugRequest data, Store store) {
         //get the service point from store
-        Visit visit = billingService.findVisitEntityOrThrow(data.getVisitNumber());
-        ServicePoint srvpoint = store.getServicePoint();
-
+        Visit visit = billingService.findVisitEntityOrThrow(data.getVisitNumber()); 
+       final ServicePoint srvpoint = store.getServicePoint(); 
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
         patientbill.setPatient(visit.getPatient());
@@ -170,23 +169,26 @@ public class DispensingService {
         List<PatientBillItem> lineItems = data.getDrugItems()
                 .stream()
                 .map(lineData -> {
+                    
                     PatientBillItem billItem = new PatientBillItem();
                     Item item = getItemByCode(lineData.getItemCode());
 
                     billItem.setBillingDate(data.getDispenseDate());
                     billItem.setTransactionId(data.getTransactionId());
+                    
                     billItem.setServicePointId(srvpoint.getId());
                     billItem.setServicePoint(srvpoint.getName());
+                    
                     billItem.setItem(item);
                     billItem.setPrice(lineData.getPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getAmount());
                     billItem.setDiscount(lineData.getDiscount());
                     billItem.setBalance(lineData.getAmount());
-                    billItem.setServicePoint(lineData.getServicePoint());
-                    billItem.setServicePointId(lineData.getServicePointId());
+//                    billItem.setServicePoint(lineData.getServicePoint());
+//                    billItem.setServicePointId(lineData.getServicePointId());
                     billItem.setStatus(BillStatus.Draft);
-
+            System.err.println(billItem);
                     return billItem;
                 })
                 .collect(Collectors.toList());
