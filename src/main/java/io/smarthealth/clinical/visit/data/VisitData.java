@@ -64,8 +64,6 @@ public class VisitData {
     private PaymentDetailsData payment;
 
     private List<PatientQueueData> patientQueueData;
-    private double limitAmount;
-    private String memberName, relation, policyNo;
     @Enumerated(EnumType.STRING)
     private VisitEnum.ServiceType serviceType;
 

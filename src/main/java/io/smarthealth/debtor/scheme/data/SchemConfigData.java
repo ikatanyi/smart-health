@@ -48,7 +48,7 @@ public class SchemConfigData {
         scd.setConfigId(config.getId());
         scd.setSchemeCover(config.getSchemeCover());
         scd.setCheckMemberShipLimit(config.isCheckMemberShipLimit());
-        scd.setHasClaimSwithing(config.isHasClaimSwithing());
+        scd.setHasClaimSwithing(config.isHasClaimSwitching());
         return scd;
     }
     
@@ -63,7 +63,7 @@ public class SchemConfigData {
         
         sc.setSchemeCover(schemeData.getSchemeCover());
         sc.setCheckMemberShipLimit(schemeData.isCheckMemberShipLimit());
-        sc.setHasClaimSwithing(schemeData.isHasClaimSwithing());
+        sc.setHasClaimSwitching(schemeData.isHasClaimSwithing());
         
         return sc;
     }
