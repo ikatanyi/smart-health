@@ -122,6 +122,7 @@ public class LabRegisterController {
     public ResponseEntity<?> getLabRequests(
             @RequestParam(value = "expand", required = false) Boolean expand,
             @RequestParam(value = "labNo", required = false) String labNumber,
+             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "orderNo", required = false) String orderNumber,
             @RequestParam(value = "visitNo", required = false) String visitNumber,
             @RequestParam(value = "patientNo", required = false) String patientNumber,
@@ -133,7 +134,7 @@ public class LabRegisterController {
         Pageable pageable = PaginationUtil.createPage(page, size);
          final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
          
-        Page<LabRegisterData> list = service.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status, range,pageable)
+        Page<LabRegisterData> list = service.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status, range,search,pageable)
                 .map(x -> x.toData(isExpanded(expand)));
 
         Pager<List<LabRegisterData>> pagers = new Pager();

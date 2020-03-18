@@ -18,7 +18,7 @@ public class LabRegisterSpecification {
         super();
     }
 
-    public static Specification<LabRegister> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status,DateRange range) {
+    public static Specification<LabRegister> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status,DateRange range, String search) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (orderNumber != null) {
@@ -41,15 +41,18 @@ public class LabRegisterSpecification {
                         cb.between(root.get("requestDatetime"), range.getStartDateTime(), range.getEndDateTime())
                 );
             }
-//            if (service != null) {
-//                final String likeExpression = "%" + service + "%";
-//                predicates.add(
-//                        cb.or(
-//                                cb.like(root.get("serviceType").get("itemName"), likeExpression),
-//                                cb.like(root.get("serviceType").get("itemCode"), likeExpression)
-//                        )
-//                );
-//            }
+            if (search != null) {
+                final String likeExpression = "%" + search + "%";
+                predicates.add(
+                        cb.or(
+                                cb.like(root.get("visit").get("visitNumber"), likeExpression),
+                                cb.like(root.get("patientNo"), likeExpression),
+                                cb.like(root.get("visit").get("patient").get("fullName"), likeExpression),
+                                cb.like(root.get("visit").get("patient").get("patientNumber"), likeExpression), //
+                                cb.like(root.get("labNumber"), likeExpression)
+                        )
+                );
+            }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
