@@ -2,6 +2,7 @@ package io.smarthealth.clinical.laboratory.domain.specification;
 
 import io.smarthealth.clinical.laboratory.domain.LabRegister;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
+import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,7 +18,7 @@ public class LabRegisterSpecification {
         super();
     }
 
-    public static Specification<LabRegister> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status) {
+    public static Specification<LabRegister> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status,DateRange range) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (orderNumber != null) {
@@ -31,6 +32,14 @@ public class LabRegisterSpecification {
             }
             if (status != null) {
                 predicates.add(cb.equal(root.get("status"), status));
+            }
+            
+              if (range != null) {
+                   System.out.println("date ranger .. "+range.getStartDateTime()+ " end : "+range.getEndDateTime());
+                predicates.add(
+                      
+                        cb.between(root.get("requestDatetime"), range.getStartDateTime(), range.getEndDateTime())
+                );
             }
 //            if (service != null) {
 //                final String likeExpression = "%" + service + "%";

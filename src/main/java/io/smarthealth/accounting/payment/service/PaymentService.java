@@ -16,9 +16,6 @@ import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoiceRepository;
-import io.smarthealth.accounting.invoice.domain.Invoice;
-import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
-import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.accounting.payment.data.FinancialTransactionData;
 import io.smarthealth.accounting.payment.data.CreateTransactionData;
@@ -120,6 +117,7 @@ public class PaymentService {
                         item.setBalance(0D);
                         PatientBillItem i = billingService.updateBillItem(item);
                         billedItems.add(i);
+                        //update the bill as 
                     });
 
         }
