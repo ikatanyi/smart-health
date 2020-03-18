@@ -5,7 +5,6 @@ import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.accounting.pricelist.domain.PriceListRepository;
-import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -24,7 +23,10 @@ import io.smarthealth.clinical.visit.data.enums.TriageCategory;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.VisitPaymentDetails;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
+import io.smarthealth.clinical.visit.service.VisitPaymentDetailsData;
+import io.smarthealth.clinical.visit.service.VisitPaymentDetailsService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.service.SchemeService;
@@ -40,7 +42,6 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
-import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -71,6 +72,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Api(value = "Patient Visit", description = "Operations pertaining to patient visit in a health facility")
 public class ClinicalVisitController {
 
+    @Autowired
+    VisitPaymentDetailsService visitPaymentDetailsService;
     @Autowired
     private VisitService visitService;
 
@@ -111,7 +114,7 @@ public class ClinicalVisitController {
 
     @Autowired
     PriceListRepository priceListRepository;
-    
+
     @PostMapping("/visits")
     @ApiOperation(value = "Submit a new patient visit", response = VisitData.class)
     public @ResponseBody
@@ -141,14 +144,11 @@ public class ClinicalVisitController {
         //register payment details 
         if (visitData.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
             PaymentDetails pd = PaymentDetailsData.map(visitData.getPayment());
-            pd.setLimitAmount(visitData.getLimitAmount());
-            pd.setMemberName(visitData.getMemberName());
-            pd.setPolicyNo(visitData.getPolicyNo());
-            pd.setRelation(visitData.getRelation());
             Scheme scheme = schemeService.fetchSchemeById(visitData.getPayment().getSchemeId());
             pd.setScheme(scheme);
             pd.setPayer(scheme.getPayer());
             pd.setVisit(visit);
+
             paymentDetailsService.createPaymentDetails(pd);
         }
         //Push it to queue
@@ -160,9 +160,9 @@ public class ClinicalVisitController {
         patientQueueService.createPatientQueue(patientQueue);
         //create bill if consultation
         if (visit.getServiceType().equals(VisitEnum.ServiceType.Consultation)) {
-         //this should be get from pricelist and not item list
-            PriceList pricelist= priceListRepository.findById(visitData.getItemToBill()).orElseThrow(()-> APIException.notFound("Price List Item with id {0} Not found", visitData.getItemToBill()));
-          //  Item item = pricelist.getItem();//itemService.findItemEntityOrThrow(visitData.getItemToBill());
+            //this should be get from pricelist and not item list
+            PriceList pricelist = priceListRepository.findById(visitData.getItemToBill()).orElseThrow(() -> APIException.notFound("Price List Item with id {0} Not found", visitData.getItemToBill()));
+            //  Item item = pricelist.getItem();//itemService.findItemEntityOrThrow(visitData.getItemToBill());
 
             List<BillItemData> billItems = new ArrayList<>();
             BillItemData itemData = new BillItemData();

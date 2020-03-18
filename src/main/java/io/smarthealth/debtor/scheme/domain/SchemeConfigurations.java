@@ -37,12 +37,12 @@ public class SchemeConfigurations extends Auditable {
     private boolean smartEnabled;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_scheme_configurations_scheme_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_scheme_configurations_scheme_id"), unique = true)
     private Scheme scheme;
 
     private LocalDate copayStartDate;
     private String schemeCover;
     private boolean checkMemberShipLimit;
-    private boolean hasClaimSwithing;
+    private boolean hasClaimSwitching;
 
 }
