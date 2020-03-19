@@ -68,7 +68,7 @@ public class PricelistService {
         priceList.setDefaultPrice(data.getDefaultPrice());
         priceList.setEffectiveDate(data.getEffectiveDate());
         priceList.setItem(item);
-        if (data.getDefaultPrice()!=null && !data.getDefaultPrice()) {
+        if (data.getDefaultPrice() != null && !data.getDefaultPrice()) {
             priceList.setSellingRate(data.getSellingRate());
         } else {
             priceList.setSellingRate(BigDecimal.ZERO);
@@ -126,7 +126,7 @@ public class PricelistService {
                 } else {
                     prices.map(pbi -> {
                         PriceBookItem i = findPriceItem(book, pbi.getItem());
-                        System.err.println("finding i "+i);
+                        System.err.println("finding i " + i);
                         if (i != null) {
                             return i.toPriceBookItemRate(pbi);
                         }
@@ -136,6 +136,10 @@ public class PricelistService {
             }
         }
         return repository.findByServicePoint(servicePoint, page);
+    }
+
+    public PriceList fetchPriceListByItemAndServicePoint(final Item item, final ServicePoint servicePoint) {
+        return repository.findByItemAndServicePoint(item, servicePoint).orElseThrow(() -> APIException.notFound("Pricelist not found ", ""));
     }
 
     public void deletePriceList(Long id) {

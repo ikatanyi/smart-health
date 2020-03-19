@@ -5,6 +5,16 @@
  */
 package io.smarthealth.clinical.record.api;
 
+import io.smarthealth.accounting.billing.data.BillData;
+import io.smarthealth.accounting.billing.data.BillItemData;
+import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.doctors.domain.DoctorItem;
+import io.smarthealth.accounting.doctors.service.DoctorItemService;
+import io.smarthealth.accounting.pricelist.domain.PriceList;
+import io.smarthealth.accounting.pricelist.service.PricelistService;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.record.data.ReferralData;
 import io.smarthealth.clinical.record.data.SickOffNoteData;
 import io.smarthealth.clinical.record.data.enums.ReferralType;
@@ -15,6 +25,7 @@ import io.smarthealth.clinical.record.service.SickOffNoteService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.data.EmployeeData;
@@ -23,8 +34,10 @@ import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.swagger.annotations.Api;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -62,6 +75,18 @@ public class GeneralClinicalServices {
 
     @Autowired
     EmployeeService employeeService;
+
+    @Autowired
+    BillingService billingService;
+
+    @Autowired
+    PricelistService pricelistService;
+
+    @Autowired
+    ServicePointService servicePointService;
+
+    @Autowired
+    DoctorItemService doctorItemService;
 
 //    prepare sick-off note
     @PostMapping("/sick-off")
@@ -117,13 +142,48 @@ public class GeneralClinicalServices {
     public @ResponseBody
     ResponseEntity<?> saveReferral(@Valid @RequestBody ReferralData rd) {
         Visit visit = visitService.findVisitEntityOrThrow(rd.getVisitNo());
+        Patient patient = visit.getPatient();
         Referrals rde = ReferralData.map(rd);
         rde.setVisit(visit);
         rde.setPatient(visit.getPatient());
         if (rd.getReferralType().equals(ReferralType.Internal)) {
-            Employee staff = employeeService.fetchEmployeeByNumberOrThrow(rd.getStaffNumber());
-            rde.setDoctor(staff);
-            rde.setDoctorName(staff.getFullName());
+            Employee employee = employeeService.fetchEmployeeByNumberOrThrow(rd.getStaffNumber());
+            rde.setDoctor(employee);
+            rde.setDoctorName(employee.getFullName());
+            //create bill for the referred doctor
+            //find consultation service by doctor selected
+            if (rd.getDoctorServiceId() != null) {
+                ServicePoint sp = servicePointService.getServicePoint(ServicePointType.Consultation).orElseThrow(() -> APIException.notFound("Consultation service point not set", ""));
+                DoctorItem docService = doctorItemService.getDoctorItem(rd.getDoctorServiceId());
+                PriceList pricelist = pricelistService.fetchPriceListByItemAndServicePoint(docService.getServiceType(), sp);
+                List<BillItemData> billItems = new ArrayList<>();
+                BillItemData itemData = new BillItemData();
+                itemData.setAmount(pricelist.getSellingRate().doubleValue());
+                itemData.setBalance(pricelist.getSellingRate().doubleValue());
+                itemData.setBillingDate(LocalDate.now());
+                itemData.setItem(pricelist.getItem().getItemName());
+                itemData.setItemCode(pricelist.getItem().getItemCode());
+                if (employee != null) {
+                    itemData.setMedicId(employee.getId());
+                    itemData.setMedicName(employee.getFullName());
+                }
+                itemData.setQuantity(1.0);
+                itemData.setServicePoint(visit.getServicePoint().getName());
+                itemData.setServicePointId(visit.getServicePoint().getId());
+                billItems.add(itemData);
+
+                BillData data = new BillData();
+                data.setBillItems(billItems);
+                data.setAmount(pricelist.getSellingRate().doubleValue());
+                data.setBalance(pricelist.getSellingRate().doubleValue());
+                data.setBillingDate(LocalDate.now());
+                data.setDiscount(0.00);
+                data.setPatientName(patient.getFullName());
+                data.setPatientNumber(patient.getPatientNumber());
+                data.setPaymentMode(visit.getPaymentMethod().name());
+                data.setVisitNumber(visit.getVisitNumber());
+                billingService.createPatientBill(data);
+            }
         }
         Referrals srd = referralsService.createReferrals(rde);
         if (rd.getReferralType().equals(ReferralType.External)) {
