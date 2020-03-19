@@ -9,24 +9,38 @@ import io.smarthealth.clinical.radiology.domain.ServiceTemplate;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author Kennedy.Imbenzi
  */
 @Data
-public class ServiceTemplateData{
-    @ApiModelProperty(required=false, hidden=true)
+public class ServiceTemplateData {
+
+    @ApiModelProperty(required = false, hidden = true)
     private Long id;
-    private String templateName; 
+    private MultipartFile templateFile;
+    private String templateName;
     private Gender gender;
     private String notes;
-    
-    public static ServiceTemplate map(ServiceTemplateData data){
+    @ApiModelProperty(required = false, hidden = true)
+    private String fileType;
+    @ApiModelProperty(required = false, hidden = true)
+    private Long size;
+    @ApiModelProperty(required = false, hidden = true)
+    private byte[] template;
+    private String fileString;
+
+    public ServiceTemplate fromData() {
         ServiceTemplate entity = new ServiceTemplate();
-        entity.setGender(data.getGender());
-        entity.setNotes(data.getNotes());
-        entity.setTemplateName(data.getTemplateName());
+        entity.setGender(this.getGender());
+        entity.setNotes(this.getNotes());
+        if (this.getTemplate() != null) {
+            entity.setTemplateName(this.getTemplateFile().getName());
+            entity.setSize(this.getTemplateFile().getSize());
+            entity.setFileType(this.getTemplateFile().getContentType());
+        }
         return entity;
     }
 }
