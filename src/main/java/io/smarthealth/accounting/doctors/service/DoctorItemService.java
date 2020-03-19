@@ -35,7 +35,8 @@ public class DoctorItemService {
         DoctorItem items = toDoctorItem(data);
         return save(items);
     }
-  @Transactional
+
+    @Transactional
     public List<DoctorItem> createDoctorItem(List<DoctorItemData> data) {
         List<DoctorItem> toSave = data
                 .stream()
@@ -44,7 +45,7 @@ public class DoctorItemService {
         return repository.saveAll(toSave);
     }
 
-    private DoctorItem toDoctorItem(DoctorItemData data) { 
+    private DoctorItem toDoctorItem(DoctorItemData data) {
         Employee doctor = employeeService.findEmployeeByIdOrThrow(data.getDoctorId());
         Item serviceType = itemService.findByItemCodeOrThrow(data.getServiceCode());
 
@@ -63,7 +64,7 @@ public class DoctorItemService {
 
     public DoctorItem getDoctorItem(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> APIException.notFound("Doctor Service Item with ID {0} Not Found"));
+                .orElseThrow(() -> APIException.notFound("Doctor Service Item with ID {0} Not Found", id));
     }
 
     public DoctorItem updateDoctorItem(Long id, DoctorItemData data) {
@@ -81,8 +82,8 @@ public class DoctorItemService {
         return save(toUpdateItem);
     }
 
-    public Page<DoctorItem> getDoctorItems(Long doctorId, String service, Pageable page) {
-        Specification<DoctorItem> spec = DoctorItemSpecification.createSpecification(doctorId, service);
+    public Page<DoctorItem> getDoctorItems(Long doctorId, final String staffNumber, String service, Pageable page) {
+        Specification<DoctorItem> spec = DoctorItemSpecification.createSpecification(doctorId, staffNumber, service);
         return repository.findAll(spec, page);
     }
 

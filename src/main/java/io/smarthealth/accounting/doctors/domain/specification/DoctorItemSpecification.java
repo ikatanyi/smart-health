@@ -16,11 +16,14 @@ public class DoctorItemSpecification {
         super();
     }
 
-    public static Specification<DoctorItem> createSpecification(Long doctorId, String service) {
+    public static Specification<DoctorItem> createSpecification(Long doctorId, final String staffNumber, String service) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (doctorId != null) {
                 predicates.add(cb.equal(root.get("doctor").get("id"), doctorId));
+            }
+            if (staffNumber != null) {
+                predicates.add(cb.equal(root.get("doctor").get("staffNumber"), staffNumber));
             }
             if (service != null) {
                 final String likeExpression = "%" + service + "%";

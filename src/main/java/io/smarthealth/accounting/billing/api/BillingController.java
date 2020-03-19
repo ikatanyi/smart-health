@@ -108,12 +108,12 @@ public class BillingController {
     @GetMapping("/bills/{visitId}/items")
     public ResponseEntity<?> listBillSummary(
             @PathVariable(value = "visitId") String visitId,
-             @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
-         Pageable pageable = PaginationUtil.createPage(page, size);
+        Pageable pageable = PaginationUtil.createPage(page, size);
         Page<PatientBillItem> list = service.getPatientBillItemByVisit(visitId, pageable);
 
-       Pager<List<PatientBillItem>> pagers = new Pager();
+        Pager<List<PatientBillItem>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());
