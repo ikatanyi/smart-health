@@ -157,8 +157,8 @@ public class LaboratoryService {
         }
     }
 
-    public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range,Pageable page) {
-        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status,range);
+    public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range,String search,Pageable page) {
+        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status,range, search);
         return repository.findAll(spec, page);
     }
 
@@ -307,7 +307,7 @@ public class LaboratoryService {
     }
 
     public PatientResults getPatientResults(String patientNo, String visitNumber) {
-        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(null, null, visitNumber, null, null,null);
+        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(null, null, visitNumber, null, null,null,null);
         List<LabRegister> lists = repository.findAll(spec);
         PatientResults results = new PatientResults();
 

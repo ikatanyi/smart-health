@@ -31,12 +31,14 @@ import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
 import lombok.RequiredArgsConstructor;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
+import io.smarthealth.accounting.billing.domain.specification.BillSpecificationsBuilder;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
+import io.smarthealth.infrastructure.domain.SearchOperation;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -45,7 +47,10 @@ import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.stores.domain.Store;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -158,14 +163,16 @@ public class BillingService {
 
     public PatientBillItem updateBillItem(PatientBillItem item) {
         //determine the request origin and update ti
-        
+
         return billItemRepository.save(item);
     }
- private void updateRequestStatus(PatientBillItem item){
-     if(item.getPatientBill().getPaymentMode().equals("Cash")){
-         
-     }
- }
+
+    private void updateRequestStatus(PatientBillItem item) {
+        if (item.getPatientBill().getPaymentMode().equals("Cash")) {
+
+        }
+    }
+
     public Item getItemByCode(String code) {
         return itemService.findByItemCodeOrThrow(code);
     }
@@ -338,5 +345,19 @@ public class BillingService {
             return doctorRate;
         }
         return item.getAmount();
+    }
+
+    public List<PatientBill> search(String search) {
+        BillSpecificationsBuilder builder = new BillSpecificationsBuilder();
+        
+         String operationSetExper = StringUtils.join(SearchOperation.SIMPLE_OPERATION_SET, "|");
+        Pattern pattern = Pattern.compile("(\\w+?)(" + operationSetExper + ")(\\p{Punct}?)(\\w+?)(\\p{Punct}?),");
+        Matcher matcher = pattern.matcher(search + ",");
+        while (matcher.find()) {
+            builder.with(matcher.group(1), matcher.group(2), matcher.group(4), matcher.group(3), matcher.group(5));
+        }
+
+        Specification<PatientBill> spec = builder.build(); 
+        return patientBillRepository.findAll(spec);
     }
 }
