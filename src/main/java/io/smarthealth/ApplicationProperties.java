@@ -33,4 +33,6 @@ public class ApplicationProperties {
     private String reportLoc;
     
     private String docUploadDir;
+    
+    private String templateUploadDir;
 }

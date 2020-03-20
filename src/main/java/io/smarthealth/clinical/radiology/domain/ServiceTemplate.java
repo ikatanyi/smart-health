@@ -28,12 +28,18 @@ public class ServiceTemplate extends Identifiable{
     private String templateName; 
     private Gender gender;
     private String notes;
+    private String fileType;
+    private Long size;
+    
     
     public ServiceTemplateData toData(){
         ServiceTemplateData data = new ServiceTemplateData();
         data.setTemplateName(this.getTemplateName());
         data.setNotes(this.getNotes());
         data.setId(this.getId());
+        data.setSize(this.getSize());
+        data.setFileType(this.getFileType());
+        data.setGender(this.getGender());
         return data;
     }
 }

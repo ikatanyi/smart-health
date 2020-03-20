@@ -89,12 +89,13 @@ public class DoctorItemsController {
     @GetMapping("/doctors-items")
     public ResponseEntity<?> getDoctorItems(
             @RequestParam(value = "doctor", required = false) Long doctor,
+            @RequestParam(value = "staffNo", required = false) String staffNo,
             @RequestParam(value = "service", required = false) String service,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<DoctorItemData> list = doctorService.getDoctorItems(doctor, service, pageable)
+        Page<DoctorItemData> list = doctorService.getDoctorItems(doctor, staffNo, service, pageable)
                 .map(x -> x.toData());
 
         Pager<List<DoctorItemData>> pagers = new Pager();

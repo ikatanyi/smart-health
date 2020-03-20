@@ -35,11 +35,19 @@ public class UploadService {
     
     private  Path fileStorageLocation;
     
+    public String location;
+    
     private final ApplicationProperties appProperties;
 
     public void UploadService() {
-        this.fileStorageLocation = Paths.get(appProperties.getDocUploadDir())
+        if(location==null){
+            this.fileStorageLocation = Paths.get(appProperties.getDocUploadDir())
                 .toAbsolutePath().normalize();
+        }
+        else{
+           this.fileStorageLocation = Paths.get(appProperties.getTemplateUploadDir())
+                .toAbsolutePath().normalize(); 
+        }
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (IOException ex) {
@@ -73,17 +81,19 @@ public class UploadService {
 
     public Resource loadFileAsResource(String fileName) {
         UploadService();
+        Resource resource=null;
         try {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
+            resource = new UrlResource(filePath.toUri());
             if(resource.exists()) {
                 return resource;
             } else {
-                throw new MyFileNotFoundException("File not found " + fileName);
+//                throw new MyFileNotFoundException("File not found " + fileName);
             }
         } catch (MalformedURLException ex) {
-            throw new MyFileNotFoundException("File not found " + fileName, ex);
+//            throw new MyFileNotFoundException("File not found " + fileName, ex);
         }
+        return resource;
     }
 }
 

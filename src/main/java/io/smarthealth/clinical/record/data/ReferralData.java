@@ -28,6 +28,7 @@ public class ReferralData {
     private boolean includeVisitClinalNotes;
     private String chiefComplaints;
     private String examinationNotes;
+    private Long doctorServiceId;
     
     public static ReferralData map(Referrals r) {
         ReferralData data = new ReferralData();
