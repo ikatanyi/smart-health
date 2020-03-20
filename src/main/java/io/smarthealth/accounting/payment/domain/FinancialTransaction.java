@@ -3,7 +3,6 @@ package io.smarthealth.accounting.payment.domain;
 import io.smarthealth.accounting.payment.domain.enumeration.TrxType;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.payment.data.FinancialTransactionData;
-import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.accounting.payment.domain.enumeration.PaymentStatus;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDateTime;

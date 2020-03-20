@@ -16,7 +16,7 @@ import lombok.ToString;
  */
 @Entity
 @Data
-@Table(name = "patient_billing_item") 
+@Table(name = "patient_billing_item")
 public class PatientBillItem extends Auditable {
 
     @JsonIgnore
@@ -28,7 +28,7 @@ public class PatientBillItem extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_item_item_id"))
     private Item item;
-    
+
     private LocalDate billingDate;
     private String transactionId;
     private Double quantity;
@@ -43,10 +43,11 @@ public class PatientBillItem extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private BillStatus status;
-    
+
     @Transient
     private Long medicId;
-     private Long requestReference;
+    private Long requestReference;
+    private Long paymentReference;
 
     public BillItemData toData() {
         BillItemData data = new BillItemData();
@@ -74,7 +75,7 @@ public class PatientBillItem extends Auditable {
         data.setServicePoint(this.getServicePoint());
         data.setPaid(this.getPaid());
         data.setRequestReference(this.requestReference);
-        
+
         return data;
     }
 
