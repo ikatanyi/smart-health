@@ -60,7 +60,8 @@ public class RadiologyConfigService {
     public ServiceTemplate UpdateServiceTemplate(Long id, ServiceTemplateData serviceTemplateData) {
         ServiceTemplate serviceTemplate = getServiceTemplateByIdWithFailDetection(id);
         serviceTemplate.setGender(serviceTemplateData.getGender());
-        serviceTemplate.setNotes(serviceTemplateData.getNotes());
+        if(serviceTemplateData.getNotes()!=null)
+           serviceTemplate.setNotes(serviceTemplateData.getNotes().getBytes());
         serviceTemplate.setTemplateName(serviceTemplateData.getTemplateName());
 
         return serviceTemplateRepository.save(serviceTemplate);
@@ -86,7 +87,7 @@ public class RadiologyConfigService {
             List<RadiologyTest> radiologyTests = radiolgyTestData
                     .stream()
                     .map((radiologyTest) -> {
-                        RadiologyTest test = RadiologyTestData.map(radiologyTest);
+                        RadiologyTest test = radiologyTest.map(radiologyTest);
                         Optional<Item> item = itemService.findByItemCode(radiologyTest.getItemCode());
                         if (item.isPresent()) {
                             test.setItem(item.get());
@@ -108,7 +109,7 @@ public class RadiologyConfigService {
     @Transactional
     public RadiologyTest UpdateRadiologyTest(RadiologyTestData radiolgyTestData) {
         RadiologyTest radiologyTest = this.getById(radiolgyTestData.getId());
-        RadiologyTest test = RadiologyTestData.map(radiolgyTestData);
+        RadiologyTest test = radiolgyTestData.map(radiolgyTestData);
         test.setId(radiologyTest.getId());
         Optional<Item> item = itemService.findByItemCode(radiolgyTestData.getItemCode());
         if (item.isPresent()) {
@@ -142,8 +143,6 @@ public class RadiologyConfigService {
                 .stream()
                 .map((serviceTemplate) -> {
                     ServiceTemplate template = serviceTemplate.fromData();
-                    String fileName = uploadService.storeFile(serviceTemplate.getTemplateFile());
-                    template.setTemplateName(fileName);
                     return template;
                 }).forEachOrdered((document) -> {
             templates.add(document);
@@ -151,12 +150,9 @@ public class RadiologyConfigService {
         return serviceTemplateRepository.saveAll(templates);
     }
 
-    public ServiceTemplate saveTemplate(ServiceTemplateData serviceTemplateData) throws IOException {
+    public ServiceTemplate saveTemplate(ServiceTemplateData serviceTemplateData) {
         uploadService.location = "scan";
         ServiceTemplate template = serviceTemplateData.fromData();
-
-        String fileName = uploadService.storeFile(serviceTemplateData.getTemplateFile());
-        template.setTemplateName(fileName);
         ServiceTemplate saveTemp = serviceTemplateRepository.save(template);
         return saveTemp;
     }

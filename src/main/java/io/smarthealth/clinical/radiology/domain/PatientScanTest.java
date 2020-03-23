@@ -56,8 +56,7 @@ public class PatientScanTest extends Identifiable {
     
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_radiology_employee_id")) 
-    private Employee medic;
-    
+    private Employee medic;    
    
     @OneToOne
     private RadiologyResult radiologyResult;

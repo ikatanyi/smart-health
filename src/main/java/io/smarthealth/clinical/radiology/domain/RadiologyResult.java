@@ -7,8 +7,9 @@ package io.smarthealth.clinical.radiology.domain;
 
 import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
-import io.smarthealth.infrastructure.domain.Auditable;
-import java.time.LocalDateTime;
+import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.organization.person.domain.enumeration.Gender;
+import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -23,7 +24,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "radiology_results")
-public class RadiologyResult extends Auditable{
+public class RadiologyResult extends Identifiable{
 
     @OneToOne(mappedBy = "radiologyResult")
     private PatientScanTest patientScanTest;
@@ -32,7 +33,8 @@ public class RadiologyResult extends Auditable{
     private String imagePath;
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
-    private LocalDateTime resultsDate;
+    private LocalDate resultsDate;
+    @Enumerated(EnumType.STRING)
     private Boolean voided = Boolean.FALSE;     
 
     public RadiologyResultData toData() {
@@ -53,13 +55,16 @@ public class RadiologyResult extends Auditable{
         if (!this.patientScanTest.getPatientScanRegister().getIsWalkin()) {
             data.setPatientName(this.patientScanTest.getPatientScanRegister().getVisit().getPatient().getFullName());
             data.setPatientNo(this.patientScanTest.getPatientScanRegister().getVisit().getPatient().getPatientNumber());
+            data.setGender(Gender.fromValue(this.patientScanTest.getPatientScanRegister().getVisit().getPatient().getGender()));
             data.setVisitNumber(this.patientScanTest.getPatientScanRegister().getVisit().getVisitNumber());
             data.setVisitDate(this.patientScanTest.getPatientScanRegister().getVisit().getStartDatetime().toLocalDate());
         } else {
             data.setPatientNo(this.patientScanTest.getPatientScanRegister().getPatientNo());
+            data.setScanNumber(this.getPatientScanTest().getPatientScanRegister().getAccessNo());
+            data.setGender(this.getPatientScanTest().getPatientScanRegister().getGender());
             data.setPatientName("Walkin - "+this.patientScanTest.getPatientScanRegister().getPatientNo());
             data.setVisitNumber(this.patientScanTest.getPatientScanRegister().getPatientNo());
-            data.setVisitDate(this.patientScanTest.getPatientScanRegister().getRequestDatetime().toLocalDate());
+            data.setVisitDate(this.patientScanTest.getPatientScanRegister().getReceivedDate());
         }
 
         return data;

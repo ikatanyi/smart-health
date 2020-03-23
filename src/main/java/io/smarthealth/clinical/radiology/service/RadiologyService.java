@@ -133,6 +133,7 @@ public class RadiologyService {
                 pte.setTestPrice(id.getItemPrice());
                 pte.setQuantity(id.getQuantity());
                 pte.setRadiologyTest(labTestType);
+                pte.setStatus(ScanTestState.Scheduled);
                 Optional<Employee> medic = employeeService.findEmployeeByStaffNumber(id.getMedicId());
                 if (medic.isPresent()) {
                     pte.setMedic(medic.get());
@@ -203,8 +204,10 @@ public class RadiologyService {
     public RadiologyResult saveRadiologyResult(RadiologyResultData data) {
         RadiologyResult radiologyResult= data.fromData();
         PatientScanTest patientScanTest = findPatientRadiologyTestByIdWithNotFoundDetection(data.getTestId());
+        patientScanTest.setStatus(data.getStatus());
         radiologyResult.setPatientScanTest(patientScanTest);
         radiologyResult.setStatus(data.getStatus());
+        pscanRepository.save(patientScanTest);
         return radiologyResultRepo.save(radiologyResult);
     }    
     
@@ -220,6 +223,8 @@ public class RadiologyService {
         radiologyResult.setResultsDate(data.getResultsDate());
         radiologyResult.setStatus(data.getStatus());
         radiologyResult.setVoided(data.getVoided());
+        patientScanTest.setRadiologyResult(radiologyResult);
+        pscanRepository.save(patientScanTest);
         return radiologyResultRepo.save(radiologyResult);
     }
 
@@ -268,8 +273,8 @@ public class RadiologyService {
     }
 
     @Transactional
-    public Page<PatientScanRegister> findAll(String PatientNumber, String scanNo, String visitId, DateRange range, Pageable pgbl) {
-        Specification spec = RadiologyRegisterSpecification.createSpecification(PatientNumber, scanNo, visitId, ScanTestState.Scheduled, Boolean.FALSE, range);
+    public Page<PatientScanRegister> findAll(String PatientNumber, String scanNo, String visitId, ScanTestState status, DateRange range, Pageable pgbl) {
+        Specification spec = RadiologyRegisterSpecification.createSpecification(PatientNumber, scanNo, visitId, status, Boolean.FALSE, range);
         return patientradiologyRepository.findAll(spec, pgbl);
     }
 

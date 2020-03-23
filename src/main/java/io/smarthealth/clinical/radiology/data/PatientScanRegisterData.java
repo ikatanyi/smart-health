@@ -9,11 +9,14 @@ package io.smarthealth.clinical.radiology.data;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
+import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -47,6 +50,9 @@ public class PatientScanRegisterData {
     private LocalDate billingDate;
     private Boolean isWalkin;
     
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+    
     private Double amount;
     
     private Double Discount;
@@ -77,6 +83,7 @@ public class PatientScanRegisterData {
         e.setBalance(this.getBalance());
         e.setPaymentMode(this.getPaymentMode());
         e.setBillingDate(this.getBillingDate());
+        e.setGender(this.getGender());
         return e;
     }
 }

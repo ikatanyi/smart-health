@@ -41,12 +41,13 @@ public class PatientScanTestData {
     @ApiModelProperty(required=false, hidden=true)
     private RadiologyResultData resultData;
     
-    public static PatientScanTest map(PatientScanTestData patScanData){
+    public PatientScanTest map(){
         PatientScanTest entity = new PatientScanTest();
-        entity.setId(patScanData.getId());
-        entity.setComments(patScanData.getComments());        
-        entity.setQuantity(patScanData.getQuantity());       
-        entity.setStatus(patScanData.getStatus());        
+        entity.setComments(this.getComments());        
+        entity.setQuantity(this.getQuantity());       
+        entity.setStatus(this.getStatus());
+        entity.setEntryDateTime(this.getEntryDateTime());
+        entity.setComments(this.getComments());
         return entity;
     }
 }

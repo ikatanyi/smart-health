@@ -76,15 +76,8 @@ public class RadiologyController {
 //    }
     @PostMapping("/radiology-template")
     public @ResponseBody
-    ResponseEntity<?> uploadTemplate(@RequestParam final MultipartFile file, @ModelAttribute @Valid final ServiceTemplateData serviceTemplateData) throws IOException {
-        serviceTemplateData.setTemplateFile(file);
+    ResponseEntity<?> uploadTemplate(@RequestBody @Valid final ServiceTemplateData serviceTemplateData) {
         ServiceTemplateData savedTemplateData = radiologyConfigService.saveTemplate(serviceTemplateData).toData();
-        Resource resource = uploadService.loadFileAsResource(savedTemplateData.getTemplateName());
-        if (resource != null) {
-            byte[] bdata = FileCopyUtils.copyToByteArray(resource.getInputStream());
-            savedTemplateData.setTemplate(bdata);
-            savedTemplateData.setFileString(new String(bdata, StandardCharsets.UTF_8));
-        }
         Pager<ServiceTemplateData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -97,21 +90,11 @@ public class RadiologyController {
 
     @PostMapping("/radiology-template/batch")
     public @ResponseBody
-    ResponseEntity<?> batchUploadTemplates(@ModelAttribute @Valid final List<ServiceTemplateData> serviceTemplateData) {
+    ResponseEntity<?> batchUploadTemplates(@RequestBody @Valid final List<ServiceTemplateData> serviceTemplateData) {
         List<ServiceTemplateData> serviceTemplateDataArr = radiologyConfigService.batchTemplateUpload(serviceTemplateData)
                 .stream()
                 .map((template) -> {
                     ServiceTemplateData templateData = template.toData();
-                    Resource resource = uploadService.loadFileAsResource(templateData.getTemplateName());
-                    try {
-                        if (resource != null) {
-                            byte[] bdata = FileCopyUtils.copyToByteArray(resource.getInputStream());
-                            templateData.setTemplate(bdata);
-                            templateData.setFileString(new String(bdata, StandardCharsets.UTF_8));
-                        }
-                    } catch (IOException ex) {
-                        Logger.getLogger(RadiologyController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
                     return templateData;
                 }).collect(Collectors.toList());
 
