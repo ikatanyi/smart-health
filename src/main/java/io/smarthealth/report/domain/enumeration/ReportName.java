@@ -9,7 +9,7 @@ package io.smarthealth.report.domain.enumeration;
  *
  * @author Kennedy.Imbenzi
  */
-public enum report { 
+public enum ReportName { 
         Trial_Balance,
         Daily_Income_Statement,
         Insurance_Statement,

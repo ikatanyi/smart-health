@@ -5,11 +5,9 @@
  */
 package io.smarthealth.report.service;
 
-import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.PatientTestsData;
 import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.visit.data.VisitData;
-import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -20,10 +18,8 @@ import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
-import io.smarthealth.report.data.clinical.PatientVisitData;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -48,13 +44,16 @@ public class PatientReportService {
     private final VisitService visitService;
     
     
-    public void getPatients(DateRange range, Pageable pageable, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getPatients(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        String dateRange = reportParam.getFirst("dateRange");
+        Integer page = Integer.getInteger(reportParam.getFirst("page"));
+        Integer size = Integer.getInteger(reportParam.getFirst("size"));
         
-        MultiValueMap mMap = new LinkedMultiValueMap<>();
-
-        mMap.put("range", range);
-         List<PatientData> patientData = (List<PatientData>) patientService.fetchAllPatients(mMap, pageable).getContent()
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        
+        List<PatientData> patientData = (List<PatientData>) patientService.fetchAllPatients(reportParam, pageable).getContent()
                 .stream()
                 .map((patient) -> patientService.convertToPatientData((Patient) patient))
                 .collect(Collectors.toList());
