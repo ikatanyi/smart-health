@@ -34,7 +34,6 @@ public class RadiologyResult extends Identifiable{
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
     private LocalDate resultsDate;
-    @Enumerated(EnumType.STRING)
     private Boolean voided = Boolean.FALSE;     
 
     public RadiologyResultData toData() {
