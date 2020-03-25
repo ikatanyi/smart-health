@@ -223,6 +223,8 @@ public class ProcedureService {
                     if (lineData.getMedic() != null) {
                         billItem.setMedicId(lineData.getMedic().getId());
                     }
+                    if(!lineData.getPatientProcedureRegister().getIsWalkin())
+                        billItem.setRequestReference(lineData.getPatientProcedureRegister().getRequest().getId());
                     billItem.setItem(item);
                     billItem.setPrice(lineData.getTestPrice());
                     billItem.setQuantity(lineData.getQuantity());

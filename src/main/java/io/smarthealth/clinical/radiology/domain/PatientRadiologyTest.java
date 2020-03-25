@@ -12,9 +12,11 @@ package io.smarthealth.clinical.radiology.domain;
 
 
 import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -29,7 +31,17 @@ public class PatientRadiologyTest extends ClinicalRecord{
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_radiology_test_id"))
     private RadiologyTest test;
     private String scanNumber;
+    //overall test status
+    @Enumerated(EnumType.STRING)
     private ScanTestState state;
+    
+    private String referenceNo; //payment reference
+    private Boolean paid; //  test paid
+
+    private Boolean voided = Boolean.FALSE;
+    private String voidedBy;
+    private LocalDateTime voidDatetime;
+    
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_radiology_request_id"))
     private DoctorRequest request;    

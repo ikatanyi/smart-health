@@ -45,9 +45,9 @@ public class PatientScanTest extends Identifiable {
     private Employee doneBy;
     private LocalDateTime entryDateTime;
     
-    private Boolean voided = Boolean.FALSE;
-    private String voidedBy;
-    private LocalDateTime voidDatetime;
+//    private Boolean voided = Boolean.FALSE;
+//    private String voidedBy;
+//    private LocalDateTime voidDatetime;
 
     @ManyToOne
     @JoinColumn(name="fk_patient_scan_test_radiology_patient_scan_register_id")
@@ -71,9 +71,9 @@ public class PatientScanTest extends Identifiable {
         
         entity.setEntryDateTime(this.getEntryDateTime());
         entity.setStatus(this.getStatus());
-        entity.setVoidDatetime(this.getVoidDatetime());
-        entity.setVoided(this.getVoided());
-        entity.setVoidedBy(this.getVoidedBy());
+//        entity.setVoidDatetime(this.getVoidDatetime());
+//        entity.setVoided(this.getVoided());
+//        entity.setVoidedBy(this.getVoidedBy());
         entity.setStatus(this.getStatus());
         
         if(this.getRadiologyTest()!=null){

@@ -117,7 +117,6 @@ public class LaboratoryService {
                 .orElseThrow(() -> APIException.notFound("Lab Test with Id {0} Not Found", testId));
         switch (status.getStatus()) {
             case Collected:
-
                 repository.updateLabRegisterStatus(LabTestStatus.PendingResult, requests.getId());
                 return testRepository.updateTestCollected(status.getDoneBy(), status.getSpecimen(), testId, LabTestStatus.PendingResult);
             case Entered:

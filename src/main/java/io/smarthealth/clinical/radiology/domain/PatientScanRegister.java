@@ -47,6 +47,8 @@ public class PatientScanRegister extends Identifiable {
     
     private Boolean isWalkin;
     
+    private Boolean voided;
+    
     private String patientNo;
     
     private String patientName;
@@ -112,6 +114,7 @@ public class PatientScanRegister extends Identifiable {
         data.setCreatedOn(LocalDate.from(this.getReceivedDate()));
         data.setIsWalkin(this.getIsWalkin());
         data.setTransactionId(this.getTransactionId());
+        data.setVoided(this.getVoided());
 //        data.setOrderedDate(this.);
         if(this.getPatientScanTest()!=null){
            data.setPatientScanTestData(
