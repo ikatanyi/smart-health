@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.organization.person.patient.data;
+package io.smarthealth.clinical.radiology.data;
 
 import lombok.Data;
 
@@ -12,10 +12,9 @@ import lombok.Data;
  * @author Simon.waweru
  */
 @Data
-public class PatientIdentifierData {
+public class TemplateNoteData {
 
-    private String id_type;
-    private String identification_value;
-    private String identificationType;
-    private Boolean validated = false;
+    private String widget;
+    private String label;
+    private String fieldName;
 }
