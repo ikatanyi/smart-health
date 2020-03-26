@@ -23,10 +23,7 @@ import io.smarthealth.clinical.visit.data.enums.TriageCategory;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
-import io.smarthealth.clinical.visit.domain.VisitPaymentDetails;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
-import io.smarthealth.clinical.visit.service.VisitPaymentDetailsData;
-import io.smarthealth.clinical.visit.service.VisitPaymentDetailsService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.service.SchemeService;
@@ -72,8 +69,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Api(value = "Patient Visit", description = "Operations pertaining to patient visit in a health facility")
 public class ClinicalVisitController {
 
-    @Autowired
-    VisitPaymentDetailsService visitPaymentDetailsService;
+  
     @Autowired
     private VisitService visitService;
 

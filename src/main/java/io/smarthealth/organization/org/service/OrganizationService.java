@@ -65,7 +65,10 @@ public class OrganizationService {
         a.setLine2(o.getLine2());
         a.setPostalCode(o.getPostalCode());
         a.setTown(o.getTown());
-        a.setType(Address.Type.valueOf(o.getAddressType()));
+        System.out.println("o.getAddressType() " + o.getAddressType());
+        if (o.getAddressType() != null && !o.getAddressType().equals("")) {
+            a.setType(Address.Type.valueOf(o.getAddressType()));
+        }
 
         addresses.add(a);
 

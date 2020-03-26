@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.visit.domain;
-
-import org.springframework.data.jpa.repository.JpaRepository;
+package io.smarthealth.clinical.radiology.data;
 
 /**
  *
  * @author Simon.waweru
  */
-public interface VisitPaymentDetailsRepository extends JpaRepository<VisitPaymentDetails, Long> {
+public class RadiologyTemplateResponseData {
 
+    private String templateName;
+    private String description;
+    //HashMap<TemplateNote, String> notes = new HashMap<>();
 }

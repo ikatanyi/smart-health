@@ -70,7 +70,9 @@ public class OrganizationData {
                 addressData.setLine2(address.getLine2());
                 addressData.setPostalCode(address.getPostalCode());
                 addressData.setTown(address.getTown());
-                addressData.setType(address.getType().name());
+                if(address.getType()!=null){
+                    addressData.setType(address.getType().name());
+                }
                 addressData.setId(address.getId());
                 data.setAddress(addressData);
             }
