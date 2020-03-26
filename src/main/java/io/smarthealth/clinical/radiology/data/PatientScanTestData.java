@@ -40,6 +40,8 @@ public class PatientScanTestData {
     private String comments;
     @ApiModelProperty(required=false, hidden=true)
     private RadiologyResultData resultData;
+    @ApiModelProperty(required=false, hidden=true)
+    private Long requestId;
     
     public PatientScanTest map(){
         PatientScanTest entity = new PatientScanTest();

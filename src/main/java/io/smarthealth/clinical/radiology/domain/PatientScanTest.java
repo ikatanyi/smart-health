@@ -8,6 +8,7 @@ package io.smarthealth.clinical.radiology.domain;
 
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
+import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.facility.domain.Employee;
 import java.math.BigDecimal;
@@ -38,12 +39,15 @@ public class PatientScanTest extends Identifiable {
     private Double quantity;
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
-    private Long requestId; //reference to doctor's request order number    
     private Boolean done; //results entered
     @ManyToOne
     @JoinColumn(foreignKey=@ForeignKey(name="fk_patient_scan_test_employee_id"))
     private Employee doneBy;
     private LocalDateTime entryDateTime;
+    
+    @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_request_id"))
+    private DoctorRequest request;
     
 //    private Boolean voided = Boolean.FALSE;
 //    private String voidedBy;
@@ -86,6 +90,8 @@ public class PatientScanTest extends Identifiable {
         if(this.getRadiologyResult()!=null){
             entity.setResultData(this.getRadiologyResult().toData());
         }
+        if(this.getRequest()!=null)
+            entity.setRequestId(this.getRequest().getId());
         return entity;
     }
 

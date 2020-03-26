@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
-		<![CDATA[SELECT p.id,p.created_on, pa.patient_number, CONCAT(p.given_name,' ',p.middle_name,' ',p.surname)as full_name,p.gender, TIMESTAMPDIFF( YEAR, p.date_of_birth, CURDATE()) as Age FROM patient AS pa INNER JOIN person AS p ON p.id = pa.id]]>
+		<![CDATA[]]>
 	</queryString>
 	<field name="id" class="java.lang.Long">
 		<fieldDescription><![CDATA[]]></fieldDescription>
@@ -27,33 +30,32 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="58" splitType="Stretch">
-			<staticText>
-				<reportElement x="194" y="10" width="100" height="20" uuid="2fda218e-3d7e-4be3-b709-9e9b80af46fe"/>
-				<textElement textAlignment="Center">
-					<font size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Patient List]]></text>
-			</staticText>
+		<band height="70" splitType="Stretch">
 			<line>
-				<reportElement x="1" y="50" width="554" height="1" uuid="5d2fc52e-b224-419b-992e-58f23cb65a0b"/>
+				<reportElement positionType="Float" x="2" y="69" width="554" height="1" uuid="5d2fc52e-b224-419b-992e-58f23cb65a0b"/>
 				<graphicElement>
-					<pen lineStyle="Dotted"/>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
 				</graphicElement>
 			</line>
+			<subreport>
+				<reportElement x="2" y="0" width="553" height="69" uuid="05921211-9986-4f9b-a55e-0186167db752"/>
+				<subreportParameter name="PIC_DIR"/>
+				<subreportParameter name="IMAGE_DIR"/>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</title>
 	<columnHeader>
-		<band height="29">
+		<band height="22">
 			<staticText>
-				<reportElement x="2" y="1" width="100" height="20" uuid="263ba3f2-4855-4731-84d3-169e3d06d503"/>
+				<reportElement x="0" y="1" width="70" height="20" uuid="263ba3f2-4855-4731-84d3-169e3d06d503"/>
 				<textElement textAlignment="Center">
 					<font size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="102" y="0" width="100" height="20" uuid="5bc8d71e-0ea9-48b6-8450-068c9c022c4a"/>
+				<reportElement x="70" y="0" width="76" height="20" uuid="5bc8d71e-0ea9-48b6-8450-068c9c022c4a"/>
 				<textElement textAlignment="Center">
 					<font size="11" isBold="true"/>
 				</textElement>

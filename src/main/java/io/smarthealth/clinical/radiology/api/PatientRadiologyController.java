@@ -49,7 +49,7 @@ public class PatientRadiologyController {
     @PostMapping("/patient-scan")
     public @ResponseBody
     ResponseEntity<?> createPatientScan(@RequestBody final PatientScanRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo, @RequestParam(value = "requestId", required = false) final Long requestId) {
-        PatientScanRegisterData Patientscans = radiologyService.savePatientResults(patientRegData, visitNo, requestId).todata();
+        PatientScanRegisterData Patientscans = radiologyService.savePatientResults(patientRegData, visitNo).todata();
         Pager<PatientScanRegisterData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
