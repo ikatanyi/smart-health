@@ -35,7 +35,8 @@ public class RadiologyTestSpecification {
             }
              if(range!=null){
                   predicates.add(
-                     cb.between(root.get("createdOn"), range.getStartDateTime(), range.getEndDateTime())
+                          
+                     cb.between(root.get("patientScanRegister").get("receivedDate"), range.getStartDate(), range.getStartDate())
                   );
               }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
