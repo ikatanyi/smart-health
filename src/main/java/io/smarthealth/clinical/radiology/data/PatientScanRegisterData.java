@@ -49,7 +49,7 @@ public class PatientScanRegisterData {
     private LocalDate createdOn;
     private LocalDate billingDate;
     private Boolean isWalkin;
-    
+    private Boolean voided;
     @Enumerated(EnumType.STRING)
     private Gender gender;
     
@@ -84,6 +84,7 @@ public class PatientScanRegisterData {
         e.setPaymentMode(this.getPaymentMode());
         e.setBillingDate(this.getBillingDate());
         e.setGender(this.getGender());
+        e.setVoided(this.getVoided());
         return e;
     }
 }

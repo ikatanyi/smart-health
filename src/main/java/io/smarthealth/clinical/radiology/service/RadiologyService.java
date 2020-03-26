@@ -186,6 +186,8 @@ public class RadiologyService {
                         billItem.setMedicId(lineData.getMedic().getId());
                     }
                     billItem.setItem(item);
+                    if(!lineData.getPatientScanRegister().getIsWalkin())
+                        billItem.setRequestReference(lineData.getPatientScanRegister().getRequest().getId());
                     billItem.setPrice(lineData.getTestPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getTestPrice() * lineData.getQuantity());
@@ -214,7 +216,7 @@ public class RadiologyService {
 
     @Transactional
     public RadiologyResult updateRadiologyResult(Long id, RadiologyResultData data) {
-        RadiologyResult radiologyResult = findResultsByIdWithNotFoundDetection(id);
+        RadiologyResult radiologyResult = findResultsByIdWithNotFoundDetection(id);        
         radiologyResult.setComments(data.getComments());
         radiologyResult.setImagePath(data.getImagePath());
         radiologyResult.setNotes(data.getTemplateNotes());
@@ -277,6 +279,10 @@ public class RadiologyService {
         Specification spec = RadiologyRegisterSpecification.createSpecification(PatientNumber, scanNo, visitId, status, Boolean.FALSE, range);
         return patientradiologyRepository.findAll(spec, pgbl);
     }
+    
+    public PatientScanRegister findPatientScanRegisterByIdWithNotFoundDetection(Long id) {
+        return patientradiologyRepository.findById(id).orElseThrow(() -> APIException.notFound("Patient Scan identified by Id{0} not found ", id));
+    }
 
     public List<PatientScanTest> findScanResultsByVisit(final Visit visit) {
         List<PatientScanRegister> scanTestFile = findPatientScanRegisterByVisit(visit);
@@ -288,5 +294,11 @@ public class RadiologyService {
             });
         }
         return patientScansDone;
+    }
+    
+     public void voidRadiologyRegister(Long id) {
+        PatientScanRegister requests = findPatientScanRegisterByIdWithNotFoundDetection(id);
+        requests.setVoided(Boolean.TRUE);
+        patientradiologyRepository.save(requests);
     }
 }
