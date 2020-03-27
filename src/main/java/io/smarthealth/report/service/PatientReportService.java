@@ -57,10 +57,10 @@ public class PatientReportService {
                 .stream()
                 .map((patient) -> patientService.convertToPatientData((Patient) patient))
                 .collect(Collectors.toList());
-        reportData.getFilters().put("SUBREPORT_DIR", "/clinical/");
+        
         reportData.setData(patientData);
         reportData.setFormat(format);
-        reportData.setTemplate("/clinical/request_form");
+        reportData.setTemplate("/patient/PatientList");
         reportData.setReportName("PatientList");
         reportService.generateReport(reportData, response);
     }
@@ -84,7 +84,6 @@ public class PatientReportService {
                 .stream()
                 .map((visit) -> visitService.convertVisitEntityToData(visit))
                 .collect(Collectors.toList());
-        reportData.getFilters().put("SUBREPORT_DIR", "/clinical/");
         reportData.setData(visitData);
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/visit_report");
@@ -111,7 +110,6 @@ public class PatientReportService {
                 .stream()
                 .map((diagnosis) -> PatientTestsData.map(diagnosis))
                 .collect(Collectors.toList());
-        reportData.getFilters().put("SUBREPORT_DIR", "/clinical/");
         reportData.setData(diagnosisData);
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/visit_report");

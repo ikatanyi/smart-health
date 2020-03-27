@@ -34,9 +34,9 @@ public class ReportController {
     private final PatientReportService patientReportService;
     
     
-    @GetMapping("/report/{report}")
+    @GetMapping("/report")
     public void generateReport(
-            @PathVariable ReportName reportName,
+            @RequestParam(value = "reportName", required = true) ReportName reportName,
             @RequestParam(required = false) MultiValueMap<String, String> queryParams,
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
