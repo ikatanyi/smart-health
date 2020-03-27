@@ -137,10 +137,12 @@ public class RadiologyService {
                 if (medic.isPresent()) {
                     pte.setMedic(medic.get());
                 }
-                Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
-                if (request.isPresent()) {
-                    pte.setRequest(request.get());
-                    request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                if (id.getRequestItemId() != null) {
+                    Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
+                    if (request.isPresent()) {
+                        pte.setRequest(request.get());
+                        request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                    }
                 }
                 patientScanTest.add(pte);
             }
@@ -186,8 +188,9 @@ public class RadiologyService {
                         billItem.setMedicId(lineData.getMedic().getId());
                     }
                     billItem.setItem(item);
-                    if(lineData.getRequest()!=null)
-                       billItem.setRequestReference(lineData.getRequest().getId());
+                    if (lineData.getRequest() != null) {
+                        billItem.setRequestReference(lineData.getRequest().getId());
+                    }
                     billItem.setPrice(lineData.getTestPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getTestPrice() * lineData.getQuantity());

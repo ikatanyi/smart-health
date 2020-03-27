@@ -12,6 +12,7 @@ import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.facility.domain.Employee;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -82,13 +83,22 @@ public class PatientScanTest extends Identifiable {
         
         if(this.getRadiologyTest()!=null){
            entity.setScanName(this.getRadiologyTest().getScanName());
-           entity.setTestCode(this.getRadiologyTest().getCode());
+           entity.setTestCode(this.getRadiologyTest().getItem().getItemCode());
         }
         if(this.getDoneBy()!=null){
             entity.setDoneBy(this.getDoneBy().getFullName());
         }
         if(this.getRadiologyResult()!=null){
             entity.setResultData(this.getRadiologyResult().toData());
+        }
+        
+        entity.setPatientNumber(this.getPatientScanRegister().getPatientNo());
+        entity.setPatientName(this.getPatientScanRegister().getPatientName());
+        if(this.getRadiologyTest().getServiceTemplate()!=null){
+             entity.setTemplateName(this.getRadiologyTest().getServiceTemplate().getTemplateName());
+             entity.setTemplateId(this.getRadiologyTest().getServiceTemplate().getId());
+             if(this.getRadiologyTest().getServiceTemplate().getNotes()!=null)
+                entity.setTemplate(new String(this.getRadiologyTest().getServiceTemplate().getNotes(),StandardCharsets.UTF_8));  
         }
         if(this.getRequest()!=null)
             entity.setRequestId(this.getRequest().getId());

@@ -42,6 +42,16 @@ public class PatientScanTestData {
     private RadiologyResultData resultData;
     @ApiModelProperty(required=false, hidden=true)
     private Long requestId;
+    @ApiModelProperty(required=false, hidden=true)
+    private String patientNumber;
+    @ApiModelProperty(required=false, hidden=true)
+    private String patientName;
+    @ApiModelProperty(required=false, hidden=true)
+    private String template;
+    @ApiModelProperty(required=false, hidden=true)
+    private Long templateId;
+    @ApiModelProperty(required=false, hidden=true)
+    private String templateName;
     
     public PatientScanTest map(){
         PatientScanTest entity = new PatientScanTest();

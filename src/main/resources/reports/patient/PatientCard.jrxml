@@ -163,7 +163,7 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="100">
+		<band height="3">
 			<line>
 				<reportElement positionType="Float" x="1" y="-1" width="554" height="1" uuid="dc15f410-7fa9-4af3-9559-4eba8800e4c0"/>
 				<graphicElement>
