@@ -15,21 +15,14 @@ import io.smarthealth.infrastructure.imports.service.UploadService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -76,15 +68,8 @@ public class RadiologyController {
 //    }
     @PostMapping("/radiology-template")
     public @ResponseBody
-    ResponseEntity<?> uploadTemplate(@RequestParam final MultipartFile file, @ModelAttribute @Valid final ServiceTemplateData serviceTemplateData) throws IOException {
-        serviceTemplateData.setTemplateFile(file);
+    ResponseEntity<?> uploadTemplate(@RequestBody @Valid final ServiceTemplateData serviceTemplateData) {
         ServiceTemplateData savedTemplateData = radiologyConfigService.saveTemplate(serviceTemplateData).toData();
-        Resource resource = uploadService.loadFileAsResource(savedTemplateData.getTemplateName());
-        if (resource != null) {
-            byte[] bdata = FileCopyUtils.copyToByteArray(resource.getInputStream());
-            savedTemplateData.setTemplate(bdata);
-            savedTemplateData.setFileString(new String(bdata, StandardCharsets.UTF_8));
-        }
         Pager<ServiceTemplateData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -97,21 +82,11 @@ public class RadiologyController {
 
     @PostMapping("/radiology-template/batch")
     public @ResponseBody
-    ResponseEntity<?> batchUploadTemplates(@ModelAttribute @Valid final List<ServiceTemplateData> serviceTemplateData) {
+    ResponseEntity<?> batchUploadTemplates(@RequestBody @Valid final List<ServiceTemplateData> serviceTemplateData) {
         List<ServiceTemplateData> serviceTemplateDataArr = radiologyConfigService.batchTemplateUpload(serviceTemplateData)
                 .stream()
                 .map((template) -> {
                     ServiceTemplateData templateData = template.toData();
-                    Resource resource = uploadService.loadFileAsResource(templateData.getTemplateName());
-                    try {
-                        if (resource != null) {
-                            byte[] bdata = FileCopyUtils.copyToByteArray(resource.getInputStream());
-                            templateData.setTemplate(bdata);
-                            templateData.setFileString(new String(bdata, StandardCharsets.UTF_8));
-                        }
-                    } catch (IOException ex) {
-                        Logger.getLogger(RadiologyController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
                     return templateData;
                 }).collect(Collectors.toList());
 

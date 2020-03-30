@@ -61,8 +61,7 @@ public class DepartmentController {
         if (departmentService.existsByName(departmentData.getName(), facility)) {
             throw APIException.conflict("Department already exists", "");
         }
-        //fetch service points
-        ServicePoint servicePoint = servicePointService.getServicePoint(departmentData.getServicePointId());
+
         /*
         if (departmentService.existsByNameAndServicePoint(departmentData.getName(), facility, departmentData.getServicePointType().name())) {
             throw APIException.conflict("Department already exists", "");
@@ -72,8 +71,14 @@ public class DepartmentController {
         if (departmentData.getParentId() != null) {
             department.setParent(departmentService.fetchDepartmentById(departmentData.getParentId()));
         }
-        department.setServicePointType(servicePoint);
-        department.setType(Department.Type.valueOf(departmentData.getType().name()));
+        if (departmentData.getServicePointId() != null) {
+            //fetch service points
+            ServicePoint servicePoint = servicePointService.getServicePoint(departmentData.getServicePointId());
+            department.setServicePointType(servicePoint);
+        }
+        if (departmentData.getType() != null && !departmentData.getType().equals("")) {
+            department.setType(Department.Type.valueOf(departmentData.getType().name()));
+        }
         Department departmentSaved = this.departmentService.createDepartment(department);
 
         DepartmentData savedDeptData = convertToDeptData(departmentSaved);

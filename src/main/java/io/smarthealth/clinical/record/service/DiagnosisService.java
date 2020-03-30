@@ -8,10 +8,13 @@ package io.smarthealth.clinical.record.service;
 import io.smarthealth.clinical.record.data.PatientTestsData;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosisRepository;
+import io.smarthealth.clinical.record.domain.specification.DiagnosisSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.ContentPage;
+import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,6 +83,11 @@ public class DiagnosisService {
         return diagnosisRepository.findByVisit(visit, pageable);
     }
 
+    public Page<PatientDiagnosis> fetchAllDiagnosis(String visitNumber, String patientNumber, DateRange range, Gender gender,Integer minAge, Integer maxAge,Pageable pageable) {
+        Specification spec = DiagnosisSpecification.createSpecification(visitNumber, patientNumber, gender, range);
+        return diagnosisRepository.findAll(spec, pageable);
+    }
+    
     public PatientTestsData getDiagnosisById(String visitNumber, Long id) {
 
         Optional<PatientDiagnosis> entity = diagnosisRepository.findById(id);

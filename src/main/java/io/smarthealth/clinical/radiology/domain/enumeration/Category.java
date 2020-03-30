@@ -9,12 +9,13 @@ package io.smarthealth.clinical.radiology.domain.enumeration;
  *
  * @author Kennedy.Imbenzi
  */
-public enum ScanTestState { 
-        Scheduled,
-        Accepted,
-        Rejected,
-        Completed,
-        Cancelled,
-        AwaitingReview ,
-        Paid
+public enum Category { 
+        Ultrasound,
+        Plain_Film, 
+        CT, 
+        MRI,
+        Mammogram, 
+        Bone_Density, 
+        PET, 
+        Nuclear_Med
 }

@@ -8,6 +8,7 @@ package io.smarthealth.clinical.radiology.domain;
 import io.smarthealth.clinical.radiology.data.ServiceTemplateData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
+import java.nio.charset.StandardCharsets;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -27,18 +28,15 @@ import lombok.Data;
 public class ServiceTemplate extends Identifiable{
     private String templateName; 
     private Gender gender;
-    private String notes;
-    private String fileType;
-    private Long size;
+    private byte[] notes;
     
     
     public ServiceTemplateData toData(){
         ServiceTemplateData data = new ServiceTemplateData();
         data.setTemplateName(this.getTemplateName());
-        data.setNotes(this.getNotes());
+        if(this.getNotes()!=null)
+            data.setNotes(new String(this.getNotes(),StandardCharsets.UTF_8));
         data.setId(this.getId());
-        data.setSize(this.getSize());
-        data.setFileType(this.getFileType());
         data.setGender(this.getGender());
         return data;
     }

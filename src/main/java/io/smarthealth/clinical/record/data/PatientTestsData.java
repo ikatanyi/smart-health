@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.visit.validation.constraints.CheckValidVisit;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
+import io.smarthealth.organization.person.domain.enumeration.Gender;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
@@ -33,8 +35,14 @@ public class PatientTestsData {
 
     @ValidIdentifier
     private String patientNumber;
+    @ApiModelProperty(required = false, hidden = true)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     @CheckValidVisit
     private String visitNumber;
+    
+    @ApiModelProperty(required = false, hidden = true)
+    private Integer age;
 
     private String code;
 
@@ -69,6 +77,7 @@ public class PatientTestsData {
         diagnos.setDescription(entity.getDiagnosis().getDescription());
         diagnos.setCertainty(Certainty.valueOf(entity.getCertainty()));
         diagnos.setDiagnosisOrder(Order.valueOf(entity.getDiagnosisOrder()));
+        diagnos.setAge(entity.getAge());
         return diagnos;
     }
 

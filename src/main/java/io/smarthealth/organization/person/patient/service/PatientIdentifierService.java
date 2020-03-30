@@ -45,6 +45,7 @@ public class PatientIdentifierService {
         PatientIdentifierData patientIdentifierData = new PatientIdentifierData();
         patientIdentifierData.setId_type(patientIdentifier.getId().toString());
         patientIdentifierData.setIdentification_value(patientIdentifier.getValue());
+        patientIdentifierData.setIdentificationType(patientIdentifier.getType().getIdentificationName());
         patientIdentifierData.setValidated(patientIdentifier.getValidated());
         return patientIdentifierData;
     }

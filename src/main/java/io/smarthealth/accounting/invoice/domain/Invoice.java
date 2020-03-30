@@ -23,7 +23,7 @@ import javax.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString; 
+import lombok.ToString;
 
 /**
  *
@@ -33,16 +33,18 @@ import lombok.ToString;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "invoices", uniqueConstraints = { @UniqueConstraint( columnNames = { "number" }, name = "uk_invoice_number")})
+@Table(name = "invoices", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"number"}, name = "uk_invoice_number")})
 public class Invoice extends Auditable {
 
     @OneToMany(mappedBy = "invoice")
-    private List<CreditNote> creditNotes = new ArrayList<>();;
+    private List<CreditNote> creditNotes = new ArrayList<>();
+    ;
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payer_id"))
     private Payer payer;
-    
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_scheme_id"))
     private Scheme payee;
@@ -75,7 +77,6 @@ public class Invoice extends Auditable {
     private Double total;
     private Double balance;
     private String notes; // additional notes displayed on invoice
-    
 
     @Enumerated(EnumType.STRING)
     private InvoiceStatus status; //tracking status for the invoice
@@ -84,9 +85,9 @@ public class Invoice extends Auditable {
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     private List<InvoiceLineItem> items = new ArrayList<>();
 
-     @Transient
+    @Transient
     protected boolean invoiceNumberRequiresAutoGeneration = false;
-     
+
 //    @ManyToOne
 //    private Address shipTo; // include the supplier address here
     // Inoivce
@@ -99,7 +100,7 @@ public class Invoice extends Auditable {
         this.items = items;
         this.items.forEach(x -> x.setInvoice(this));
     }
-    
+
     public void addCreditNoteItem(CreditNote item) {
         item.setInvoice(this);
         creditNotes.add(item);
@@ -109,5 +110,5 @@ public class Invoice extends Auditable {
         this.creditNotes = items;
         this.creditNotes.forEach(x -> x.setInvoice(this));
     }
-    
+
 }

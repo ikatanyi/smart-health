@@ -52,7 +52,7 @@
 				</graphicElement>
 			</line>
 			<subreport>
-				<reportElement x="2" y="0" width="553" height="69" uuid="05921211-9986-4f9b-a55e-0186167db752"/>
+				<reportElement x="2" y="0" width="276" height="69" uuid="05921211-9986-4f9b-a55e-0186167db752"/>
 				<subreportParameter name="PIC_DIR"/>
 				<subreportParameter name="IMAGE_DIR"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
@@ -61,68 +61,111 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="5"/>
-	</pageHeader>
-	<columnHeader>
-		<band height="15">
+		<band height="63">
 			<staticText>
-				<reportElement x="19" y="1" width="58" height="14" uuid="263ba3f2-4855-4731-84d3-169e3d06d503"/>
+				<reportElement x="2" y="4" width="56" height="14" uuid="263ba3f2-4855-4731-84d3-169e3d06d503"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient No.]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="321" y="1" width="55" height="14" uuid="5bc8d71e-0ea9-48b6-8450-068c9c022c4a"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="58" y="4" width="128" height="14" isRemoveLineWhenBlank="true" uuid="aabcb449-0ebb-4ddc-aede-56381b6f08bc"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+					<font size="8"/>
 				</textElement>
-				<text><![CDATA[DOB]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
+			</textField>
 			<staticText>
-				<reportElement x="79" y="1" width="114" height="14" uuid="75429f40-c5c5-48ce-8a6d-98f5df4271b8"/>
+				<reportElement x="2" y="18" width="56" height="14" uuid="75429f40-c5c5-48ce-8a6d-98f5df4271b8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient Name]]></text>
 			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="58" y="18" width="128" height="14" isRemoveLineWhenBlank="true" uuid="3c105f01-5c48-4446-a091-7fd820d516e9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fullName}]]></textFieldExpression>
+			</textField>
 			<staticText>
-				<reportElement x="196" y="0" width="57" height="14" uuid="c026adf4-63dc-4fea-8dc0-19b18a976390"/>
+				<reportElement x="2" y="32" width="56" height="14" uuid="c026adf4-63dc-4fea-8dc0-19b18a976390"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Gender]]></text>
 			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="59" y="32" width="127" height="14" isRemoveLineWhenBlank="true" uuid="0797b2f2-15a9-4e18-8546-c0b543e4c3ad"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{gender}]]></textFieldExpression>
+			</textField>
 			<staticText>
-				<reportElement x="267" y="1" width="39" height="14" uuid="2f17ed8c-afcb-49bb-8d90-95497a115c34"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="197" y="32" width="67" height="14" uuid="2f17ed8c-afcb-49bb-8d90-95497a115c34"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Age]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="0" y="1" width="19" height="14" uuid="e824ec7a-6c25-4ffa-a926-b7829168a22d"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="265" y="32" width="76" height="14" isRemoveLineWhenBlank="true" uuid="40d3bdb5-d777-4f35-b6c5-1b7665cf387d"/>
+				<textElement>
+					<font size="8"/>
 				</textElement>
-				<text><![CDATA[#]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[$F{age}]]></textFieldExpression>
+			</textField>
 			<staticText>
-				<reportElement x="392" y="1" width="54" height="13" uuid="99c8e844-6437-4d7c-8fb9-ccd2b912bd2f"/>
+				<reportElement x="197" y="18" width="67" height="14" uuid="5bc8d71e-0ea9-48b6-8450-068c9c022c4a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Blood Type]]></text>
+				<text><![CDATA[DOB :]]></text>
 			</staticText>
+			<textField pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
+				<reportElement x="265" y="18" width="76" height="14" isRemoveLineWhenBlank="true" uuid="fc3fae2c-4cbb-44a8-89ad-87636b67880e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dateOfBirth}]]></textFieldExpression>
+			</textField>
 			<staticText>
-				<reportElement x="470" y="1" width="76" height="13" uuid="d919d8f9-c5bd-4894-a02c-6eeffd508a3d"/>
+				<reportElement x="2" y="46" width="56" height="14" uuid="99c8e844-6437-4d7c-8fb9-ccd2b912bd2f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Blood Type :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="58" y="46" width="128" height="14" isRemoveLineWhenBlank="true" uuid="16009c45-4c4a-4a8f-a9f2-0d550ea88423"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bloodType}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="197" y="5" width="67" height="13" uuid="d919d8f9-c5bd-4894-a02c-6eeffd508a3d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Registration Date]]></text>
 			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="265" y="6" width="76" height="12" isRemoveLineWhenBlank="true" uuid="bf3f1f51-2d6b-49d7-8a9c-43f2f2e2bf96"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""+$F{createdOn}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="3">
 			<line>
-				<reportElement positionType="Float" x="2" y="14" width="554" height="1" uuid="dc15f410-7fa9-4af3-9559-4eba8800e4c0"/>
+				<reportElement positionType="Float" x="1" y="-1" width="554" height="1" uuid="dc15f410-7fa9-4af3-9559-4eba8800e4c0"/>
 				<graphicElement>
 					<pen lineWidth="0.15" lineStyle="Solid"/>
 				</graphicElement>
@@ -130,64 +173,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="12" splitType="Stretch">
-			<textField pattern="dd/MM/yyyy HH.mm.ss">
-				<reportElement x="321" y="0" width="55" height="12" uuid="fc3fae2c-4cbb-44a8-89ad-87636b67880e"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{dateOfBirth}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="79" y="0" width="114" height="12" uuid="3c105f01-5c48-4446-a091-7fd820d516e9"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{fullName}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="196" y="0" width="57" height="12" uuid="0797b2f2-15a9-4e18-8546-c0b543e4c3ad"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{gender}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="267" y="0" width="39" height="12" uuid="40d3bdb5-d777-4f35-b6c5-1b7665cf387d"/>
-				<textElement textAlignment="Center">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{age}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="19" y="0" width="58" height="12" uuid="aabcb449-0ebb-4ddc-aede-56381b6f08bc"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="2" y="0" width="17" height="12" uuid="3267125e-a357-4f46-8446-7f31e5ec3452"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="403" y="-1" width="43" height="13" uuid="16009c45-4c4a-4a8f-a9f2-0d550ea88423"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{bloodType}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="470" y="0" width="76" height="12" uuid="bf3f1f51-2d6b-49d7-8a9c-43f2f2e2bf96"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""+$F{createdOn}]]></textFieldExpression>
-			</textField>
-		</band>
+		<band height="103" splitType="Stretch"/>
 	</detail>
 	<columnFooter>
 		<band height="16">

@@ -74,6 +74,7 @@ import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 
 /**
  *
@@ -100,15 +101,16 @@ public class ReportService {
     private final SickOffNoteService sickOffNoteService;
     private final LabConfigurationService labSetUpService;
 
-    public void getTrialBalance(final boolean includeEmptyEntries, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
-        List<TrialBalanceData> dataList = new ArrayList();
+    public void getTrialBalance(MultiValueMap<String,String>reportParam,  ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+     
+        Boolean includeEmptyEntries = Boolean.valueOf(reportParam.getFirst("includeEmptyEntries"));
         ReportData reportData = new ReportData();
-        TrialBalance trialBalance = trialBalanceService.getTrialBalance(includeEmptyEntries);
-
-        trialBalance.getTrialBalanceEntries().stream().map((trialBalEntry) -> {
+        List<TrialBalanceData> dataList  = trialBalanceService.getTrialBalance(includeEmptyEntries).getTrialBalanceEntries()
+           .stream()
+           .map((trialBalEntry) -> {
             TrialBalanceData data = new TrialBalanceData();
-            data.setCreditTotal(trialBalance.getCreditTotal());
-            data.setDebitTotal(trialBalance.getDebitTotal());
+//            data.setCreditTotal(trialBalEntry.getCreditTotal());
+//            data.setDebitTotal(trialBalance.getDebitTotal());
 //            data.setCreatedBy(trialBalEntry.getLedger().getType());
             data.setCreatedOn(trialBalEntry.getLedger().getCreatedOn());
             data.setDescription(trialBalEntry.getLedger().getDescription());
@@ -119,9 +121,7 @@ public class ReportService {
             data.setTotalValue(trialBalEntry.getLedger().getTotalValue());
             data.setType(trialBalEntry.getType());
             return data;
-        }).forEachOrdered((data) -> {
-            dataList.add(data);
-        });
+        }).collect(Collectors.toList());
         reportData.setData(dataList);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/TrialBalance");
@@ -129,7 +129,16 @@ public class ReportService {
         reportService.generateReport(reportData, response);
     }
 
-    public void getDailyPayment(String transactionNo, String visitNo, String patientNo, String paymentMode, String billNo, String dateRange, String billStatus, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getDailyPayment(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        
+        String transactionNo = reportParam.getFirst("transactionNo");
+        String paymentMode = reportParam.getFirst("paymentMode");
+        String billNo = reportParam.getFirst("billNo");
+        String visitNo = reportParam.getFirst("visitNo");
+        String billStatus = reportParam.getFirst("billStatus");
+        String patientNo = reportParam.getFirst("patientNo");
+        String dateRange = reportParam.getFirst("dateRange"); 
+        
         List<DailyBillingData> billData = new ArrayList();
         ReportData reportData = new ReportData();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
@@ -184,7 +193,18 @@ public class ReportService {
         reportService.generateReport(reportData, response);
     }
 
-    public void getInvoiceStatement(Long payer, Long scheme, String invoiceNo, String patientNo, String dateRange, String invoiceStatus, ExportFormat format, double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getInvoiceStatement(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        String transactionNo = reportParam.getFirst("transactionNo");
+        Long payer  = Long.getLong(reportParam.getFirst("payerId"),null);
+        Long scheme = Long.getLong(reportParam.getFirst("schemeId"),null);
+        String patientNo = reportParam.getFirst("patientNo");
+        String invoiceNo = reportParam.getFirst("invoiceNo"); 
+        String dateRange = reportParam.getFirst("dateRange"); 
+        String invoiceStatus = reportParam.getFirst("invoiceStatus");
+        Double amountGreaterThan = Double.valueOf(reportParam.getFirst("amountGreaterThan"));
+        Boolean filterPastDue = Boolean.getBoolean(reportParam.getFirst("filterPastDue"));
+        Double amountLessThanOrEqualTo = Double.valueOf(reportParam.getFirst("amountLessThanOrEqualTo"));
+        
         List<InsuranceInvoiceData> invoiceData = new ArrayList();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         ReportData reportData = new ReportData();
@@ -246,7 +266,18 @@ public class ReportService {
         reportService.generateReport(reportData, response);
     }
 
-    public void genInsuranceStatement(Long payer, Long scheme, String invoiceNo, String dateRange, String patientNo, ExportFormat format, double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo, HttpServletResponse response) throws SQLException, IOException, JRException {
+    public void genInsuranceStatement(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+        Long payer  = Long.getLong(reportParam.getFirst("payerId"),null);
+        Long scheme = Long.getLong(reportParam.getFirst("schemeId"),null);
+        String patientNo = reportParam.getFirst("patientNo");
+        String invoiceNo = reportParam.getFirst("invoiceNo"); 
+        String dateRange = reportParam.getFirst("dateRange"); 
+        String invoiceStatus = reportParam.getFirst("invoiceStatus");
+        Double amountGreaterThan = Double.valueOf(reportParam.getFirst("amountGreaterThan"));
+        Double amountLessThanOrEqualTo = Double.valueOf(reportParam.getFirst("amountLessThanOrEqualTo"));
+        Boolean filterPastDue = Boolean.valueOf(reportParam.getFirst("filterPastDue"));
+        
+        
         List<InsuranceInvoiceData> invoiceData = new ArrayList();
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
@@ -290,7 +321,19 @@ public class ReportService {
         reportService.generateReport(reportData, response);
     }
 
-    public void getInvoice(String transactionNo, Long payer, Long scheme, String patientNo, String invoiceNo, String dateRange, String invoiceStatus, ExportFormat format, double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getInvoice(MultiValueMap<String,String>reportParam,  ExportFormat format,  HttpServletResponse response) throws SQLException, JRException, IOException {
+        
+        String transactionNo = reportParam.getFirst("transactionNo");
+        Long payer  = Long.getLong(reportParam.getFirst("payerId"),null);
+        Long scheme = Long.getLong(reportParam.getFirst("schemeId"),null);
+        String patientNo = reportParam.getFirst("patientNo");
+        String invoiceNo = reportParam.getFirst("invoiceNo"); 
+        String dateRange = reportParam.getFirst("dateRange"); 
+        String invoiceStatus = reportParam.getFirst("invoiceStatus");
+        Double amountGreaterThan = Double.valueOf(reportParam.getFirst("amountGreaterThan"));
+        Boolean filterPastDue = Boolean.getBoolean(reportParam.getFirst("filterPastDue"));
+        Double amountLessThanOrEqualTo = Double.valueOf(reportParam.getFirst("amountLessThanOrEqualTo"));
+        
         List<InvoiceData> invoiceData = new ArrayList();
         ReportData reportData = new ReportData();
         InvoiceStatus status = invoiceStatusToEnum(invoiceStatus);
@@ -351,7 +394,9 @@ public class ReportService {
 //     }
 //     
 
-    public void getPatientFile(final String PatientId, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getPatientFile(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        
+        final String PatientId = reportParam.getFirst("patientId");
         List<PatientVisitData> visitData = new ArrayList();
         PatientVisitData patientVisitData = new PatientVisitData();
         PatientData patient = patientService.convertToPatientData(patientService.findPatientOrThrow(PatientId));
@@ -439,9 +484,10 @@ public class ReportService {
 
     }
 
-    public void getPatientRequest(String visitNumber, RequestType requestType, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getPatientRequest(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-
+        String visitNumber = reportParam.getFirst("visitNumber");
+        RequestType requestType = RequestType.valueOf(reportParam.getFirst("requestType"));
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         Pageable pageable = PaginationUtil.createPage(1, 500);
         List<DoctorRequestData> requestData = doctorRequestService.findAllRequestsByVisitAndRequestType(visit, requestType, pageable)
@@ -463,8 +509,9 @@ public class ReportService {
         reportService.generateReport(reportData, response);
     }
 
-    public void getPatientLabReport(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getPatientLabReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        String visitNumber = reportParam.getFirst("visitNumber");
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
          PatientResults labTests = labService.getPatientResults(visit.getPatient().getPatientNumber(), visitNumber);//tLabResultDataByVisit(visit);
 
@@ -486,8 +533,9 @@ public class ReportService {
         reportService.generateReport(reportData, response);
     }
 
-    public void getPatientProcedureReport(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getPatientProcedureReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        String visitNumber = reportParam.getFirst("visitNumber");
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         List<PatientProcedureRegisterData> procTests = procedureService.findPatientProcedureRegisterByVisit(visitNumber)
                 .stream()
@@ -512,8 +560,9 @@ public class ReportService {
         reportService.generateReport(reportData, response);
     }
 
-    public void getPatientRadiologyReport(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getPatientRadiologyReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        String visitNumber = reportParam.getFirst("visitNumber");
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         List<PatientScanRegisterData> scans = radiologyService.findPatientScanRegisterByVisit(visit)
                 .stream()
@@ -538,9 +587,9 @@ public class ReportService {
         reportService.generateReport(reportData, response);
     }
 
-    public void getPrescription(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getPrescription(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-
+        String visitNumber = reportParam.getFirst("visitNumber");
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         Pageable pageable = PaginationUtil.createPage(1, 500);
         List<PrescriptionData> requestData = prescriptionService.fetchAllPrescriptionsByVisit(visit, pageable)
@@ -560,9 +609,9 @@ public class ReportService {
         reportService.generateReport(reportData, response);
     }
 
-    public void getSickOff(String visitNumber, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getSickOff(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-
+        String visitNumber = reportParam.getFirst("visitNumber");
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         List<SickOffNoteData> requestData = Arrays.asList(SickOffNoteData.map(sickOffNoteService.fetchSickNoteByVisitWithNotFoundThrow(visit)));
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
@@ -577,8 +626,10 @@ public class ReportService {
         reportService.generateReport(reportData, response);
     }
 
-    public void genSpecimenLabel(String patientNumber, Long specimenId, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void genSpecimenLabel(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        String patientNumber = reportParam.getFirst("patientNumber");
+        Long specimenId = Long.getLong(reportParam.getFirst("specimenId"),null);
         specimenLabelData labelData = new specimenLabelData();
         Optional<PatientData> patientData = patientService.fetchPatientByPatientNumber(patientNumber);
         if (patientData.isPresent()) {
@@ -598,10 +649,10 @@ public class ReportService {
         reportService.generateReport(reportData, response);
     }
 
-    public void getPrescriptionLabel(Long prescriptionId, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getPrescriptionLabel(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         PrescriptionData prescriptionData = null;
-
+        Long prescriptionId = Long.getLong(reportParam.getFirst("prescriptionId"),null);
         Optional<Prescription> prescription = prescriptionService.fetchPrescriptionById(prescriptionId);
         if (prescription.isPresent()) {
             prescriptionData = PrescriptionData.map(prescription.get());

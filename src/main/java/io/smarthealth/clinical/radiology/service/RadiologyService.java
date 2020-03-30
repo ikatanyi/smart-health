@@ -87,11 +87,11 @@ public class RadiologyService {
     private final SequenceNumberService sequenceNumberService;
 
     private final RadiologyConfigService radiologyConfigService;
-    
+
     private final RadiologyResultRepository radiologyResultRepo;
 
     @Transactional
-    public PatientScanRegister savePatientResults(PatientScanRegisterData patientScanRegData, final String visitNo, final Long requestId) {
+    public PatientScanRegister savePatientResults(PatientScanRegisterData patientScanRegData, final String visitNo) {
         PatientScanRegister patientScanReg = patientScanRegData.fromData();
         String transactionId = sequenceNumberService.next(1L, Sequences.RadiologyNumber.name());
         patientScanReg.setTransactionId(transactionId);
@@ -112,14 +112,13 @@ public class RadiologyService {
             patientScanReg.setRequestedBy(emp.get());
         }
 
-        if (requestId != null) {
-            Optional<DoctorRequest> request = doctorRequestRepository.findById(requestId);
-            if (request.isPresent()) {
-                patientScanReg.setRequest(request.get());
-            }
-
-        }
-
+//        if (requestId != null) {
+//            Optional<DoctorRequest> request = doctorRequestRepository.findById(requestId);
+//            if (request.isPresent()) {
+//                patientScanReg.setRequest(request.get());
+//            }
+//
+//        }
         String accessionNo = sequenceNumberService.next(1L, Sequences.RadiologyNumber.name());
         patientScanReg.setAccessNo(accessionNo);
 
@@ -132,13 +131,17 @@ public class RadiologyService {
                 pte.setTestPrice(id.getItemPrice());
                 pte.setQuantity(id.getQuantity()); 
                 pte.setRadiologyTest(labTestType);
+                pte.setStatus(ScanTestState.Scheduled);
                 Optional<Employee> medic = employeeService.findEmployeeByStaffNumber(id.getMedicId());
                 if (medic.isPresent()) {
                     pte.setMedic(medic.get());
                 }
-                Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
-                if (request.isPresent()) {
-                    request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                if (id.getRequestItemId() != null) {
+                    Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
+                    if (request.isPresent()) {
+                        pte.setRequest(request.get());
+                        request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                    }
                 }
                 patientScanTest.add(pte);
             }
@@ -157,8 +160,8 @@ public class RadiologyService {
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(data.getVisit());
         patientbill.setVisit(data.getVisit());
-        if(data.getVisit()!=null){
-           patientbill.setPatient(data.getVisit().getPatient());
+        if (data.getVisit() != null) {
+            patientbill.setPatient(data.getVisit().getPatient());
         }
         patientbill.setAmount(data.getAmount());
         patientbill.setDiscount(data.getDiscount());
@@ -184,9 +187,13 @@ public class RadiologyService {
                         billItem.setMedicId(lineData.getMedic().getId());
                     }
                     billItem.setItem(item);
+                    if (lineData.getRequest() != null) {
+                        billItem.setRequestReference(lineData.getRequest().getId());
+                    }
                     billItem.setPrice(lineData.getTestPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getTestPrice() * lineData.getQuantity());
+                    billItem.setBalance(lineData.getTestPrice() * lineData.getQuantity());
                     billItem.setServicePoint(servicePoint.getName());
                     billItem.setServicePointId(servicePoint.getId());
                     billItem.setStatus(BillStatus.Draft);
@@ -197,16 +204,17 @@ public class RadiologyService {
         patientbill.addBillItems(lineItems);
         return patientbill;
     }
-    
+
     @Transactional
     public RadiologyResult saveRadiologyResult(RadiologyResultData data) {
-        RadiologyResult radiologyResult= data.fromData();
+        RadiologyResult radiologyResult = data.fromData();
         PatientScanTest patientScanTest = findPatientRadiologyTestByIdWithNotFoundDetection(data.getTestId());
+        patientScanTest.setStatus(data.getStatus());
         radiologyResult.setPatientScanTest(patientScanTest);
         radiologyResult.setStatus(data.getStatus());
+        pscanRepository.save(patientScanTest);
         return radiologyResultRepo.save(radiologyResult);
-    }    
-    
+    }
 
     @Transactional
     public RadiologyResult updateRadiologyResult(Long id, RadiologyResultData data) {
@@ -219,14 +227,15 @@ public class RadiologyService {
         radiologyResult.setResultsDate(data.getResultsDate());
         radiologyResult.setStatus(data.getStatus());
         radiologyResult.setVoided(data.getVoided());
+        patientScanTest.setRadiologyResult(radiologyResult);
+        pscanRepository.save(patientScanTest);
         return radiologyResultRepo.save(radiologyResult);
     }
 
     public RadiologyResult findResultsByIdWithNotFoundDetection(Long id) {
         return radiologyResultRepo.findById(id).orElseThrow(() -> APIException.notFound("Results identified by id {0} not found ", id));
-    }  
-    
-    
+    }
+
     @Transactional
     public PatientScanTest updatePatientScanTest(Long id, PatientScanTestData data) {
         PatientScanTest radiologyTest = findPatientRadiologyTestByIdWithNotFoundDetection(id);
@@ -241,22 +250,21 @@ public class RadiologyService {
         radiologyTest.setTestPrice(data.getTestPrice());
         return pscanRepository.save(radiologyTest);
     }
-    
-    public Page<RadiologyResult> findAllRadiologyResults(String visitNumber, String patientNumber, String scanNumber, Boolean walkin, String orderNo, DateRange range, Pageable pgbl){
-        Specification spec =  RadiologyResultSpecification.createSpecification(patientNumber, orderNo, visitNumber, walkin, range);
+
+    public Page<RadiologyResult> findAllRadiologyResults(String visitNumber, String patientNumber, String scanNumber, Boolean walkin, String orderNo, DateRange range, Pageable pgbl) {
+        Specification spec = RadiologyResultSpecification.createSpecification(patientNumber, orderNo, visitNumber, walkin, range);
         return radiologyResultRepo.findAll(spec, pgbl);
-        
+
     }
-    
+
     public PatientScanTest findPatientRadiologyTestByIdWithNotFoundDetection(Long id) {
         return pscanRepository.findById(id).orElseThrow(() -> APIException.notFound("Patient results identified by id {0} not found ", id));
     }
-    
-    public Page<PatientScanTest> findAllTests(String PatientNumber, String scanNo, ScanTestState status, String visitId, DateRange range,Boolean isWalkin, Pageable pgbl) {
+
+    public Page<PatientScanTest> findAllTests(String PatientNumber, String scanNo, ScanTestState status, String visitId, DateRange range, Boolean isWalkin, Pageable pgbl) {
         Specification spec = RadiologyTestSpecification.createSpecification(PatientNumber, scanNo, visitId, isWalkin, range);
         return pscanRepository.findAll(spec, pgbl);
     }
-    
 
     public PatientScanRegister findPatientRadiologyTestByIdWithNotFoundDetection(String accessNo) {
         return patientradiologyRepository.findByAccessNo(accessNo).orElseThrow(() -> APIException.notFound("Patient Scan identified by scanN Number {0} not found ", accessNo));
@@ -267,9 +275,13 @@ public class RadiologyService {
     }
 
     @Transactional
-    public Page<PatientScanRegister> findAll(String PatientNumber, String scanNo, String visitId, DateRange range, Pageable pgbl) {
-        Specification spec = RadiologyRegisterSpecification.createSpecification(PatientNumber, scanNo, visitId, ScanTestState.Scheduled, Boolean.FALSE, range);
+    public Page<PatientScanRegister> findAll(String PatientNumber, String scanNo, String visitId, ScanTestState status, DateRange range, Pageable pgbl) {
+        Specification spec = RadiologyRegisterSpecification.createSpecification(PatientNumber, scanNo, visitId, status, Boolean.FALSE, range);
         return patientradiologyRepository.findAll(spec, pgbl);
+    }
+
+    public PatientScanRegister findPatientScanRegisterByIdWithNotFoundDetection(Long id) {
+        return patientradiologyRepository.findById(id).orElseThrow(() -> APIException.notFound("Patient Scan identified by Id{0} not found ", id));
     }
 
     public List<PatientScanTest> findScanResultsByVisit(final Visit visit) {
@@ -282,5 +294,11 @@ public class RadiologyService {
             });
         }
         return patientScansDone;
+    }
+
+    public void voidRadiologyRegister(Long id) {
+        PatientScanRegister requests = findPatientScanRegisterByIdWithNotFoundDetection(id);
+        requests.setVoided(Boolean.TRUE);
+        patientradiologyRepository.save(requests);
     }
 }

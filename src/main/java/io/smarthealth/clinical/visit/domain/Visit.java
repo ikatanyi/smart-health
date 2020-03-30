@@ -28,8 +28,7 @@ public class Visit extends Auditable {
     @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_visit_patient_id"))
     private Patient patient;
 
-    @NaturalId
-    @Column(length = 38, unique = true)
+    @Column(length = 38, unique = true, name = "visit_number")
     private String visitNumber;
 
     @ManyToOne(fetch = FetchType.LAZY/*, optional = false*/)

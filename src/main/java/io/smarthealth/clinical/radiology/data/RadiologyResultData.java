@@ -1,6 +1,5 @@
 package io.smarthealth.clinical.radiology.data;
 
-import io.smarthealth.clinical.laboratory.data.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.radiology.domain.RadiologyResult;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
@@ -8,7 +7,6 @@ import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -25,15 +23,17 @@ public class RadiologyResultData {
     private String patientNo;
     @ApiModelProperty(required = false, hidden = true)
     private String patientName;
+    @ApiModelProperty(required = false, hidden = true)
     private Gender gender;
+    @ApiModelProperty(required = false, hidden = true)
     private String visitNumber;
+    @ApiModelProperty(required = false, hidden = true)
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate visitDate;
-    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
-    private LocalDateTime resultsDate;
+    @JsonFormat(pattern = Constants.DATE_PATTERN)
+    private LocalDate resultsDate;
     @ApiModelProperty(required = false, hidden = true)
     private String scanNumber;
-    private Long PatientScanRegisterId;
     private Long testId;
     @ApiModelProperty(required = false, hidden = true)
     private String testCode;
@@ -43,6 +43,7 @@ public class RadiologyResultData {
     private ScanTestState status;
     private String templateNotes;
     private String comments;
+    @ApiModelProperty(required = false, hidden = true)
     private String imagePath;
     private Boolean voided = Boolean.FALSE;
     

@@ -7,6 +7,7 @@ package io.smarthealth.clinical.radiology.data;
 
 
 import io.smarthealth.clinical.radiology.domain.RadiologyTest;
+import io.smarthealth.clinical.radiology.domain.enumeration.Category;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.stock.item.data.SimpleItemData;
 import io.swagger.annotations.ApiModelProperty;
@@ -34,15 +35,19 @@ public class RadiologyTestData {
     private Boolean supervisorConfirmation;
     @Enumerated(EnumType.STRING)
     private Gender gender;  
+    @Enumerated(EnumType.STRING)
+    private Category category;
     
     
     
-     public static RadiologyTest map(RadiologyTestData rtd){
+     public RadiologyTest map(RadiologyTestData rtd){
         RadiologyTest entity = new RadiologyTest();
         entity.setNotes(rtd.getNotes());
         entity.setScanName(rtd.getScanName());
         entity.setStatus(rtd.getActive());
-        
+        entity.setCategory(this.getCategory());
+        entity.setGender(this.getGender());
+        entity.setSupervisorConfirmation(this.getSupervisorConfirmation());
         return entity;
     }
 }

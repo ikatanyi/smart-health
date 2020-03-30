@@ -1,17 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.radiology.data;
 
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
-import io.smarthealth.clinical.radiology.domain.RadiologyResult;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.swagger.annotations.ApiModelProperty;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -41,13 +33,26 @@ public class PatientScanTestData {
     private String comments;
     @ApiModelProperty(required=false, hidden=true)
     private RadiologyResultData resultData;
+    @ApiModelProperty(required=false, hidden=true)
+    private Long requestId;
+    @ApiModelProperty(required=false, hidden=true)
+    private String patientNumber;
+    @ApiModelProperty(required=false, hidden=true)
+    private String patientName;
+    @ApiModelProperty(required=false, hidden=true)
+    private String template;
+    @ApiModelProperty(required=false, hidden=true)
+    private Long templateId;
+    @ApiModelProperty(required=false, hidden=true)
+    private String templateName;
     
-    public static PatientScanTest map(PatientScanTestData patScanData){
+    public PatientScanTest map(){
         PatientScanTest entity = new PatientScanTest();
-        entity.setId(patScanData.getId());
-        entity.setComments(patScanData.getComments());        
-        entity.setQuantity(patScanData.getQuantity());       
-        entity.setStatus(patScanData.getStatus());        
+        entity.setComments(this.getComments());        
+        entity.setQuantity(this.getQuantity());       
+        entity.setStatus(this.getStatus());
+        entity.setEntryDateTime(this.getEntryDateTime());
+        entity.setComments(this.getComments());
         return entity;
     }
 }

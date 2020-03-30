@@ -8,9 +8,11 @@ package io.smarthealth.clinical.radiology.domain;
 
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
+import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.facility.domain.Employee;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -38,7 +40,6 @@ public class PatientScanTest extends Identifiable {
     private Double quantity;
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
-    private Long requestId; //reference to doctor's request order number    
     private Boolean done; //results entered
     private Boolean paid;
     @ManyToOne
@@ -46,9 +47,13 @@ public class PatientScanTest extends Identifiable {
     private Employee doneBy;
     private LocalDateTime entryDateTime;
     
-    private Boolean voided = Boolean.FALSE;
-    private String voidedBy;
-    private LocalDateTime voidDatetime;
+    @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_request_id"))
+    private DoctorRequest request;
+    
+//    private Boolean voided = Boolean.FALSE;
+//    private String voidedBy;
+//    private LocalDateTime voidDatetime;
 
     @ManyToOne
     @JoinColumn(name="fk_patient_scan_test_radiology_patient_scan_register_id")
@@ -57,8 +62,7 @@ public class PatientScanTest extends Identifiable {
     
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_radiology_employee_id")) 
-    private Employee medic;
-    
+    private Employee medic;    
    
     @OneToOne
     private RadiologyResult radiologyResult;
@@ -74,14 +78,14 @@ public class PatientScanTest extends Identifiable {
         
         entity.setEntryDateTime(this.getEntryDateTime());
         entity.setStatus(this.getStatus());
-        entity.setVoidDatetime(this.getVoidDatetime());
-        entity.setVoided(this.getVoided());
-        entity.setVoidedBy(this.getVoidedBy());
+//        entity.setVoidDatetime(this.getVoidDatetime());
+//        entity.setVoided(this.getVoided());
+//        entity.setVoidedBy(this.getVoidedBy());
         entity.setStatus(this.getStatus());
         
         if(this.getRadiologyTest()!=null){
            entity.setScanName(this.getRadiologyTest().getScanName());
-           entity.setTestCode(this.getRadiologyTest().getCode());
+           entity.setTestCode(this.getRadiologyTest().getItem().getItemCode());
         }
         if(this.getDoneBy()!=null){
             entity.setDoneBy(this.getDoneBy().getFullName());
@@ -89,6 +93,17 @@ public class PatientScanTest extends Identifiable {
         if(this.getRadiologyResult()!=null){
             entity.setResultData(this.getRadiologyResult().toData());
         }
+        
+        entity.setPatientNumber(this.getPatientScanRegister().getPatientNo());
+        entity.setPatientName(this.getPatientScanRegister().getPatientName());
+        if(this.getRadiologyTest().getServiceTemplate()!=null){
+             entity.setTemplateName(this.getRadiologyTest().getServiceTemplate().getTemplateName());
+             entity.setTemplateId(this.getRadiologyTest().getServiceTemplate().getId());
+             if(this.getRadiologyTest().getServiceTemplate().getNotes()!=null)
+                entity.setTemplate(new String(this.getRadiologyTest().getServiceTemplate().getNotes(),StandardCharsets.UTF_8));  
+        }
+        if(this.getRequest()!=null)
+            entity.setRequestId(this.getRequest().getId());
         return entity;
     }
 
