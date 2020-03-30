@@ -3,7 +3,7 @@ package io.smarthealth.debtor.claim.allocation.api;
 import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.domain.Allocation;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
-import io.smarthealth.debtor.claim.remittance.domain.Remittance;
+import io.smarthealth.debtor.claim.remittance.domain.RemittanceOld;
 import io.smarthealth.debtor.claim.remittance.service.RemitanceService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -38,7 +38,7 @@ public class AllocationController {
 
     @PostMapping("/allocation/{remmitanceId}")
     public ResponseEntity<?> createAllocation(@PathVariable("remmitanceId") final Long remmitanceId, @Valid @RequestBody List<AllocationData> allocationData) {
-        Remittance remitance = remitanceService.getRemitanceByIdWithFailDetection(remmitanceId);
+        RemittanceOld remitance = remitanceService.getRemitanceByIdWithFailDetection(remmitanceId);
         List<Allocation> allocatedAmount = allocationService.createAllocation(allocationData, remitance);
         List<AllocationData> dataList = new ArrayList<>();
         for (Allocation a : allocatedAmount) {

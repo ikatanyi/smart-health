@@ -1,12 +1,18 @@
 package io.smarthealth.accounting.accounts.domain;
 
+import io.smarthealth.accounting.accounts.data.Creditor;
+import io.smarthealth.accounting.accounts.data.Debtor;
+import io.smarthealth.accounting.accounts.data.JournalEntryData;
+import io.smarthealth.accounting.accounts.data.JournalEntryItemData;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,7 +48,7 @@ public class JournalEntry extends Auditable {
     }
 
     public JournalEntry(LocalDate date, String description, JournalEntryItem journalEntryItems[]) {
-           List<JournalEntryItem> journalsClone =new ArrayList<>(Arrays.asList(journalEntryItems));
+        List<JournalEntryItem> journalsClone = new ArrayList<>(Arrays.asList(journalEntryItems));
         this.items = journalsClone;
         if (!JournalEntry.isBalanced(this.items)) {
             throw new IllegalArgumentException(
@@ -68,15 +74,15 @@ public class JournalEntry extends Auditable {
         BigDecimal d = items
                 .stream()
                 .filter(x -> x.isDebit())
-                .map(x -> x.getAmount())
+                .map(x -> x.getDebit())
                 .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
 
         BigDecimal c = items
                 .stream()
-                .filter(x -> x.isDebit())
-                .map(x -> x.getAmount())
+                .filter(x -> x.isCredit())
+                .map(x -> x.getCredit())
                 .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
-        
+
         return d.equals(c);
     }
 
@@ -95,14 +101,43 @@ public class JournalEntry extends Auditable {
         this.amount = items
                 .stream()
                 .filter(x -> x.isDebit())
-                .map(x -> x.getAmount())
+                .map(x -> x.getDebit())
                 .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
         System.err.println(this.amount);
         BigDecimal c = items
                 .stream()
                 .filter(x -> x.isDebit())
-                .map(x -> x.getAmount())
+                .map(x -> x.getCredit())
                 .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
         System.err.println("My credut ... " + c);
+    }
+    public JournalEntryData toData() {
+        final JournalEntryData data = new JournalEntryData();
+        data.setId(this.getId());
+        data.setTransactionNo(this.transactionNo);
+        data.setDate(this.date);
+        data.setTransactionType(this.transactionType);
+        data.setDescription(this.description);
+        data.setAmount(this.amount);
+        data.setCreatedBy(this.getCreatedBy());
+        Set<Debtor> debtors = new HashSet<>();
+        Set<Creditor> creditors = new HashSet<>();
+        List<JournalEntryItemData> jeitems=new ArrayList<>();
+        this.getItems()
+                .stream()
+                .forEach(item -> {
+                     jeitems.add(item.toData());
+                    if (item.isDebit()) {
+                        debtors.add(new Debtor(item.getDescription(), item.getAccount().getName(),item.getAccount().getIdentifier(), item.getDebit(), item.getJournalEntry().getTransactionType()));
+                    }
+                    if (item.isCredit()) {
+                        creditors.add(new Creditor(item.getDescription(), item.getAccount().getName(),item.getAccount().getIdentifier(), item.getCredit(),item.getJournalEntry().getTransactionType()));
+                    }
+                });
+        data.setJournalEntries(jeitems);
+        data.setDebtors(debtors);
+        data.setCreditors(creditors);
+        data.setState(this.status);
+        return data;
     }
 }

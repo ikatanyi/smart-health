@@ -41,6 +41,7 @@ public class PatientScanTest extends Identifiable {
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
     private Boolean done; //results entered
+    private Boolean paid;
     @ManyToOne
     @JoinColumn(foreignKey=@ForeignKey(name="fk_patient_scan_test_employee_id"))
     private Employee doneBy;
@@ -73,6 +74,7 @@ public class PatientScanTest extends Identifiable {
         entity.setTestPrice(this.getTestPrice());
         entity.setQuantity(this.getQuantity());  
         entity.setDone(this.getDone());
+        entity.setPaid(this.paid);
         
         entity.setEntryDateTime(this.getEntryDateTime());
         entity.setStatus(this.getStatus());

@@ -136,8 +136,10 @@ public class InventoryService {
         String narration = "Issuing Stocks for  - " + store.getStoreName();
         JournalEntry toSave = new JournalEntry(date, narration,
                 new JournalEntryItem[]{
-                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
-                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                    new JournalEntryItem(store.getExpenseAccount(), narration, amount, BigDecimal.ZERO),
+                    new JournalEntryItem(store.getInventoryAccount(), narration, BigDecimal.ZERO, amount)
+//                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
+//                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
                 }
         );
         toSave.setTransactionNo(trdId);

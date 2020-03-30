@@ -1,7 +1,6 @@
 package io.smarthealth.stock.purchase.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.stock.inventory.data.SupplierStockItem;
 import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.supplier.domain.Supplier;
@@ -23,7 +22,6 @@ public class PurchaseInvoice extends Auditable {
     private Supplier supplier;
     
     private String purchaseOrderNumber;
-    private String serialNumber; //ACC-PINV-2019-00001
     private Boolean paid;
     private Boolean isReturn; //debit note
     private String invoiceNumber; //supplier invoice number
@@ -48,7 +46,6 @@ public class PurchaseInvoice extends Auditable {
             data.setSupplier(this.supplier.getSupplierName());
         }
         data.setPurchaseOrderNumber(this.purchaseOrderNumber);
-        data.setSerialNumber(this.serialNumber);
         data.setTransactionDate(this.transactionDate);
         data.setDueDate(this.dueDate);
         data.setPaid(this.paid);

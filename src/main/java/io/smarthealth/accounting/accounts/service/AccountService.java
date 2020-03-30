@@ -9,6 +9,8 @@ import io.smarthealth.accounting.accounts.domain.AccountRepository;
 import io.smarthealth.accounting.accounts.domain.AccountState;
 import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.domain.IncomeExpenseData;
+import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
+import io.smarthealth.accounting.accounts.domain.JournalEntryItemRepository;
 import io.smarthealth.accounting.accounts.domain.Ledger;
 import io.smarthealth.accounting.accounts.domain.LedgerRepository;
 import io.smarthealth.accounting.accounts.domain.specification.AccountSpecification;
@@ -30,6 +32,7 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final LedgerRepository ledgerRepository;
+    private final JournalEntryItemRepository journalEntryItemRepository;
 
     public Optional<AccountData> findAccount(final String identifier) {
         final Optional<Account> accountEntity = this.accountRepository.findByIdentifier(identifier);
@@ -224,4 +227,8 @@ public class AccountService {
                 });
         return groups;
     }
+   public Page<JournalEntryItem> getAccountEntries(String identifier, Pageable page){
+       final Account accountEntity = findByAccountNumberOrThrow(identifier);
+       return journalEntryItemRepository.findByAccount(accountEntity, page);
+   }
 }

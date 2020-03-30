@@ -259,8 +259,10 @@ public class InvoiceService {
         String narration = "Raise Invoice - " + invoice.getNumber();
         JournalEntry toSave = new JournalEntry(invoice.getDate(), narration,
                 new JournalEntryItem[]{
-                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
-                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                    new JournalEntryItem(debitAccount, narration, amount, BigDecimal.ZERO),
+                    new JournalEntryItem(creditAccount.getAccount(), narration,BigDecimal.ZERO, amount)
+//                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
+//                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
                 }
         );
         toSave.setTransactionNo(invoice.getTransactionNo());

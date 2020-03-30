@@ -48,7 +48,7 @@ public class JournalController {
         Pager<JournalEntryData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Journal created successful");
-        pagers.setContent(JournalEntryData.map(result));
+        pagers.setContent(result.toData());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
@@ -88,7 +88,7 @@ public class JournalController {
     @PreAuthorize("hasAuthority('view_journal')")
     ResponseEntity<JournalEntryData> findJournalEntry(@PathVariable("id") Long id) {
         JournalEntry optionalJournalEntry = journalService.findJournalIdOrThrow(id);
-        return ResponseEntity.ok(JournalEntryData.map(optionalJournalEntry));
+        return ResponseEntity.ok(optionalJournalEntry.toData());
     }
     
 }

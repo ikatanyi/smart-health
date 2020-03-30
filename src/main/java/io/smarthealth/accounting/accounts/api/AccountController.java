@@ -2,6 +2,8 @@ package io.smarthealth.accounting.accounts.api;
 
 import io.smarthealth.accounting.accounts.data.AccountData;
 import io.smarthealth.accounting.accounts.data.AccountPage;
+import io.smarthealth.accounting.accounts.data.JournalEntryData;
+import io.smarthealth.accounting.accounts.data.JournalEntryItemData;
 import io.smarthealth.accounting.accounts.data.SimpleAccountData;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.AccountState;
@@ -16,6 +18,7 @@ import io.swagger.annotations.Api;
 import java.util.HashSet;
 import java.util.Optional;
 import javax.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,7 +62,7 @@ public class AccountController {
     ResponseEntity<AccountPage> fetchAccounts(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "term", required = false) final String term,
-            @RequestParam(value = "type", required = false) final AccountType type, 
+            @RequestParam(value = "type", required = false) final AccountType type,
             @RequestParam(value = "includeDetails", required = false, defaultValue = "false") final boolean includeDetails,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size
@@ -113,9 +116,10 @@ public class AccountController {
     ) {
         final DateRange range = DateRange.fromIsoString(dateRange);
         Pageable pageable = PaginationUtil.createPage(page, size);
-
+        Page<JournalEntryItemData> lists = accountService.getAccountEntries(identifier, pageable)
+                .map(x -> x.toData());
 //        accountService.fetchAccountEntries( identifier,range, pageable)
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(lists);
     }
 
     @DeleteMapping("/accounts/{identifier}")
@@ -150,10 +154,10 @@ public class AccountController {
 
     @GetMapping("/accounts/lite")
     public ResponseEntity<?> geTransactionalAccounts(
-            @RequestParam(value = "type", required = false)  final AccountType type,
-            @RequestParam(value = "grouped", required = false)  final boolean grouped) {
-        if(grouped){ 
-           return ResponseEntity.ok(accountService.getGroupedAccounts());
+            @RequestParam(value = "type", required = false) final AccountType type,
+            @RequestParam(value = "grouped", required = false) final boolean grouped) {
+        if (grouped) {
+            return ResponseEntity.ok(accountService.getGroupedAccounts());
         }
         return ResponseEntity.ok(accountService.getTransactionalAccounts(type));
     }

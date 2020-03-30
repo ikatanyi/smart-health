@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,8 +18,12 @@ import org.springframework.data.repository.query.Param;
  *
  * @author Kennedy.Imbenzi
  */
-public interface PatientProcedureTestRepository extends JpaRepository<PatientProcedureRegister, Long>,JpaSpecificationExecutor<PatientProcedureRegister>{
+public interface PatientProcedureTestRepository extends JpaRepository<PatientProcedureRegister, Long>, JpaSpecificationExecutor<PatientProcedureRegister> {
+
     @Query("SELECT d FROM PatientScanRegister d WHERE d.visit=:visit")
-    List<PatientProcedureRegister> findByVisit(@Param("visit") final Visit visit);    
-     Optional<PatientProcedureRegister> findByAccessNo(final String accessNo);
+    List<PatientProcedureRegister> findByVisit(@Param("visit") final Visit visit);
+
+    Optional<PatientProcedureRegister> findByAccessNo(final String accessNo);
+    
+    
 }

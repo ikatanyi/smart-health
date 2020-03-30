@@ -3,7 +3,7 @@ package io.smarthealth.infrastructure.sequence.numbers.service;
 import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.invoice.domain.Invoice;
-import io.smarthealth.accounting.payment.domain.Payment;
+import io.smarthealth.accounting.old.domain.Paymentold;
 import io.smarthealth.appointment.domain.Appointment;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -21,7 +21,7 @@ public interface SequenceNumberGenerator {
 
     public String generate(Patient patient);
 
-    public String generate(Payment payment);
+    public String generate(Paymentold payment);
 
     public String generate(Visit visit);
 

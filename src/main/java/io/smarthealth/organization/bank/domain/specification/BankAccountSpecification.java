@@ -19,10 +19,13 @@ public class BankAccountSpecification {
         super();
     }
 
-    public static Specification<BankAccount> createSpecification(String bankName, String bankBranch, BankType type) {
+    public static Specification<BankAccount> createSpecification(String accountNumber, String bankName, String bankBranch, BankType type) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
- 
+
+            if (accountNumber != null) {
+                predicates.add(cb.equal(root.get("accountNumber"), accountNumber));
+            }
             if (bankName != null) {
                 predicates.add(cb.equal(root.get("bankName"), bankName));
             }

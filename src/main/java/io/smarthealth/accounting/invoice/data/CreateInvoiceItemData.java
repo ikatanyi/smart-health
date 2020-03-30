@@ -8,6 +8,7 @@ import lombok.Data;
  */
 @Data
 public class CreateInvoiceItemData {
+
     private Long billItemId;
     private Double amount;
     private String servicePoint;
