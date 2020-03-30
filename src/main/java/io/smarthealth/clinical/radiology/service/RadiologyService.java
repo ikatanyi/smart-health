@@ -212,7 +212,7 @@ public class RadiologyService {
         PatientScanTest patientScanTest = findPatientRadiologyTestByIdWithNotFoundDetection(data.getTestId());
         patientScanTest.setStatus(data.getStatus());
         radiologyResult.setPatientScanTest(patientScanTest);
-        radiologyResult.setStatus(data.getStatus());
+        radiologyResult.setStatus(ScanTestState.Completed);
         pscanRepository.save(patientScanTest);
         return radiologyResultRepo.save(radiologyResult);
     }
@@ -252,8 +252,8 @@ public class RadiologyService {
         return pscanRepository.save(radiologyTest);
     }
 
-    public Page<RadiologyResult> findAllRadiologyResults(String visitNumber, String patientNumber, String scanNumber, Boolean walkin, String orderNo, DateRange range, Pageable pgbl) {
-        Specification spec = RadiologyResultSpecification.createSpecification(patientNumber, orderNo, visitNumber, walkin, range);
+    public Page<RadiologyResult> findAllRadiologyResults(String visitNumber, String patientNumber, String scanNumber, Boolean walkin, ScanTestState status, String orderNo, DateRange range, Pageable pgbl) {
+        Specification spec = RadiologyResultSpecification.createSpecification(patientNumber, orderNo, visitNumber, walkin, status, range);
         return radiologyResultRepo.findAll(spec, pgbl);
 
     }
@@ -263,7 +263,7 @@ public class RadiologyService {
     }
 
     public Page<PatientScanTest> findAllTests(String PatientNumber, String scanNo, ScanTestState status, String visitId, DateRange range, Boolean isWalkin, Pageable pgbl) {
-        Specification spec = RadiologyTestSpecification.createSpecification(PatientNumber, scanNo, visitId, isWalkin, range);
+        Specification spec = RadiologyTestSpecification.createSpecification(PatientNumber, scanNo, visitId, isWalkin, status, range);
         return pscanRepository.findAll(spec, pgbl);
     }
 

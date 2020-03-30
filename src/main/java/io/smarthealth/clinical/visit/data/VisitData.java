@@ -35,6 +35,8 @@ public class VisitData {
     private String visitNumber;
     @NotBlank
     private String patientNumber;
+    @ApiModelProperty(required=false, hidden=true)
+    private String patientName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime startDatetime;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
@@ -98,6 +100,10 @@ public class VisitData {
         if (visitEntity.getHealthProvider() != null) {
             visitDTO.setPractitionerCode(visitEntity.getHealthProvider().getStaffNumber());
             visitDTO.setPractitionerName(visitEntity.getHealthProvider().getFullName());
+        }
+        if(visitEntity.getPatient()!=null){
+            visitDTO.setPatientName(visitEntity.getPatient().getFullName());
+            visitDTO.setPatientNumber(visitEntity.getPatient().getPatientNumber());
         }
         return visitDTO;
     }

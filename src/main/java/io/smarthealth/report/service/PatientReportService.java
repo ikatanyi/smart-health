@@ -20,6 +20,7 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -65,6 +66,18 @@ public class PatientReportService {
         reportService.generateReport(reportData, response);
     }
     
+    public void getPatientCard(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String patientId = reportParam.getFirst("patientId");
+        PatientData patientData = patientService.convertToPatientData(patientService.findPatientOrThrow(patientId));
+        
+        reportData.setData(Arrays.asList(patientData));
+        reportData.setFormat(format);
+        reportData.setTemplate("/patient/PatientCard");
+        reportData.setReportName("Patient-Card");
+        reportService.generateReport(reportData, response);
+    }
+    
     public void getVisit(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws JRException, SQLException, IOException{
         String visitNumber = reportParam.getFirst("visitNumber");
         String staffNumber = reportParam.getFirst("staffNumber");
@@ -86,7 +99,7 @@ public class PatientReportService {
                 .collect(Collectors.toList());
         reportData.setData(visitData);
         reportData.setFormat(format);
-        reportData.setTemplate("/clinical/visit_report");
+        reportData.setTemplate("/patient/PatientVisit");
         reportData.setReportName("visit-report");
         reportService.generateReport(reportData, response);
     }
