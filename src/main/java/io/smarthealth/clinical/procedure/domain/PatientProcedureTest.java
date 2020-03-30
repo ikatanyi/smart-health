@@ -38,6 +38,7 @@ public class PatientProcedureTest extends Identifiable{
     private Item procedureTest;
     private double testPrice;
     private double quantity;
+    private Boolean paid;
     @Enumerated(EnumType.STRING)
     private ProcedureTestState status;
     private String result;
@@ -50,7 +51,8 @@ public class PatientProcedureTest extends Identifiable{
         PatientProcedureTestData entity = new PatientProcedureTestData();
         entity.setResults(this.getResult());
         entity.setState(this.getStatus());
-        entity.setId(this.getId());        
+        entity.setId(this.getId());     
+        entity.setPaid(this.paid);
         entity.setComments(this.getComments());
         entity.setQuantity(this.getQuantity());
         entity.setTestPrice(this.getTestPrice());

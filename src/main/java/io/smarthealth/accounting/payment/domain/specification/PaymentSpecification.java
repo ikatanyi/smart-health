@@ -1,35 +1,44 @@
 package io.smarthealth.accounting.payment.domain.specification;
 
-
-import io.smarthealth.accounting.payment.domain.FinancialTransaction;
+import io.smarthealth.accounting.payment.domain.Payment;
+import io.smarthealth.accounting.payment.domain.enumeration.PayeeType;
+import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 public class PaymentSpecification {
 
-  private PaymentSpecification() {
-    super();
-  }
+    private PaymentSpecification() {
+        super();
+    }
 
-  public static Specification<FinancialTransaction> createSpecification( String customer,String invoice, String receipt ) {
+    public static Specification<Payment> createSpecification(PayeeType creditorType, Long creditorId, String creditor, String transactionNo, DateRange range) {
 
-    return (root, query, cb) -> {
+        return (root, query, cb) -> {
 
-      final ArrayList<Predicate> predicates = new ArrayList<>();
-  
+            final ArrayList<Predicate> predicates = new ArrayList<>();
 
-      if (customer != null) {
-        predicates.add(cb.equal(root.get("payer"), customer));
-      } 
-        if (invoice != null) {
-        predicates.add(cb.equal(root.get("invoice"), invoice));
-      } 
-          if (receipt != null) {
-        predicates.add(cb.equal(root.get("receiptNo"), receipt));
-      } 
+            if (creditorType != null) {
+                predicates.add(cb.equal(root.get("creditorType"), creditorType));
+            }
+            if (creditor != null) {
+                predicates.add(cb.equal(root.get("creditor"), creditor));
+            }
+            if (transactionNo != null) {
+                predicates.add(cb.equal(root.get("transactionNo"), transactionNo));
+            }
+            if (creditorId != null) {
+                predicates.add(cb.equal(root.get("creditorId"), creditorId));
+            }
 
-      return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-    };
-  }
+            if (range != null) {
+                predicates.add(
+                        cb.between(root.get("paymentDate"), range.getStartDate(), range.getEndDate())
+                );
+            }
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
 }

@@ -47,7 +47,8 @@ public class PatientBillItem extends Auditable {
     @Transient
     private Long medicId;
     private Long requestReference;
-    private Long paymentReference;
+    /** Reference payment details i.e. Receipt or an Invoice used to settle this bill*/
+    private String paymentReference;
 
     public BillItemData toData() {
         BillItemData data = new BillItemData();

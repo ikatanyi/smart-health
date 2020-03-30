@@ -1,11 +1,13 @@
 package io.smarthealth.accounting.payment.api;
 
-import io.smarthealth.accounting.payment.data.CreateTransactionData;
-import io.smarthealth.accounting.payment.data.CreditorData;
-import io.smarthealth.accounting.payment.data.FinancialTransactionData;
-import io.smarthealth.accounting.payment.domain.FinancialTransaction;
+import io.smarthealth.accounting.payment.data.MakePayment;
+import io.smarthealth.accounting.payment.data.MakePettyCashPayment;
+import io.smarthealth.accounting.payment.data.PaymentData;
+import io.smarthealth.accounting.payment.domain.Payment;
+import io.smarthealth.accounting.payment.domain.enumeration.PayeeType;
 import io.smarthealth.accounting.payment.service.PaymentService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
@@ -15,7 +17,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
@@ -33,56 +42,43 @@ public class PaymentController {
     }
 
     @PostMapping("/payments")
-    public ResponseEntity<?> createPayment(@Valid @RequestBody CreateTransactionData transactionData) {
+    public ResponseEntity<?> makePayment(@Valid @RequestBody MakePayment data) {
 
-        FinancialTransaction trans = service.createTransaction(transactionData);
-
-        Pager<FinancialTransactionData> pagers = new Pager();
+        Payment payment = service.makePayment(data);
+        Pager<PaymentData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Payment successfully Created.");
-        pagers.setContent(trans.toData());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
-    }
-    
-    @PostMapping("/payments/creditors")
-    public ResponseEntity<?> createCreditorPayment(@Valid @RequestBody CreditorData creditorData) {
-
-        FinancialTransaction trans = service.createTransaction(creditorData);
-
-        Pager<FinancialTransactionData> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Payment successfully Created.");
-        pagers.setContent(trans.toData());
+        pagers.setContent(payment.toData());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
     @GetMapping("/payments/{id}")
-    public FinancialTransactionData getPayment(@PathVariable(value = "id") Long id) {
-        FinancialTransaction trans = service.findTransactionOrThrowException(id);
-        return trans.toData();
+    public ResponseEntity<?> getPayment(@PathVariable(value = "id") Long id) {
+        Payment payment = service.getPaymentOrThrow(id);
+        return ResponseEntity.ok(payment.toData());
     }
 
-    @PatchMapping("/payments/{id}")
-    public FinancialTransactionData updatePayment(@PathVariable(value = "id") Long id, FinancialTransactionData transactionData) {
-        FinancialTransactionData trans = service.updatePayment(id, transactionData);
-        return trans;
-    }
-
+//     CreditorType creditorType, Long creditorId, String creditor, String transactionNo, DateRange range
     @GetMapping("/payments")
+    @ResponseBody
+//    @PreAuthorize("hasAuthority('view_payment')")
     public ResponseEntity<?> getPayments(
-            @RequestParam(value = "customer", required = false) String customer,
-            @RequestParam(value = "invoice", required = false) String invoice,
-            @RequestParam(value = "receipt", required = false) String receipt,
+            @RequestParam(value = "payee_type", required = false) final PayeeType creditorType,
+            @RequestParam(value = "payee", required = false) final String creditor,
+            @RequestParam(value = "payee_id", required = false) final Long creditorId,
+            @RequestParam(value = "transaction_no", required = false) final String transactionNo,
+            @RequestParam(value = "date_range", required = false) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<FinancialTransactionData> list = service.fetchTransactions(customer, invoice, receipt, pageable)
+        Page<PaymentData> list = service.getPayments(creditorType, creditorId, creditor, transactionNo, range, pageable)
                 .map(x -> x.toData());
 
-        Pager<List<FinancialTransactionData>> pagers = new Pager();
+        Pager<List<PaymentData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());
@@ -91,29 +87,20 @@ public class PaymentController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Payment Transactions");
+        details.setReportName("Payments");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
 
-    @PostMapping("/payments/{id}/emails")
-    public String sendReceipt(@PathVariable(value = "id") Long id) {
-        return service.emailReceipt(id);
-    }
+    @PostMapping("/payments/pettycash")
+    public ResponseEntity<?> makePayment(@Valid @RequestBody MakePettyCashPayment data) {
 
-    @PostMapping("/payments/{id}/refunds")
-    public ResponseEntity<?> refundPayment(@PathVariable(value = "id") Long id, @RequestParam(name = "amount") Double amount) {
-        FinancialTransaction trans = service.refund(id, amount);
-        return ResponseEntity.status(HttpStatus.CREATED).body(trans.toData());
-    }
+        Payment payment = service.makePayment(data);
+        Pager<PaymentData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Payment successfully Created.");
+        pagers.setContent(payment.toData());
 
-    /*Charging external payment gateways like M-pesa, Credit card */
-    @PostMapping("/payments/charge")
-    public ResponseEntity<?> charge(@RequestParam(name = "type") String type, FinancialTransactionData transaction) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment Gateway not implemented");
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-    //TODO
-    /*
-      Provide mpesa integrations, credit cards,
-     */
 }

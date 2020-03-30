@@ -40,6 +40,7 @@ public class PatientScanTest extends Identifiable {
     private ScanTestState status;
     private Long requestId; //reference to doctor's request order number    
     private Boolean done; //results entered
+    private Boolean paid;
     @ManyToOne
     @JoinColumn(foreignKey=@ForeignKey(name="fk_patient_scan_test_employee_id"))
     private Employee doneBy;
@@ -69,6 +70,7 @@ public class PatientScanTest extends Identifiable {
         entity.setTestPrice(this.getTestPrice());
         entity.setQuantity(this.getQuantity());  
         entity.setDone(this.getDone());
+        entity.setPaid(this.paid);
         
         entity.setEntryDateTime(this.getEntryDateTime());
         entity.setStatus(this.getStatus());

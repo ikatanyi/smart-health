@@ -42,11 +42,10 @@ public class PurchaseInvoiceService {
     public PurchaseInvoice createPurchaseInvoice(PurchaseInvoiceData invoiceData) {
         PurchaseInvoice invoice = new PurchaseInvoice();
 
-        Supplier supplier = supplierService.findOneWithNoFoundDetection(invoiceData.getSupplierId());
+        Supplier supplier = supplierService.getSupplierOrThrow(invoiceData.getSupplierId());
         invoice.setSupplier(supplier);
         invoice.setPurchaseOrderNumber(invoiceData.getPurchaseOrderNumber());
         invoice.setInvoiceDate(invoiceData.getInvoiceDate());
-        invoice.setSerialNumber(invoiceData.getSerialNumber());
         invoice.setTransactionDate(invoiceData.getTransactionDate());
         invoice.setDueDate(invoiceData.getDueDate());
         invoice.setPaid(false);
@@ -64,7 +63,7 @@ public class PurchaseInvoiceService {
   
     public void createPurchaseInvoice(Store store, SupplierStockEntry stockEntry) {
         PurchaseInvoice invoice = new PurchaseInvoice();
-        Supplier supplier = supplierService.findOneWithNoFoundDetection(stockEntry.getSupplierId());
+        Supplier supplier = supplierService.getSupplierOrThrow(stockEntry.getSupplierId());
         invoice.setSupplier(supplier);
         invoice.setPurchaseOrderNumber(stockEntry.getOrderNumber());
         invoice.setInvoiceDate(stockEntry.getSupplierInvoiceDate());
@@ -120,8 +119,10 @@ public class PurchaseInvoiceService {
         String narration ="Stocks delivery for the invoice "+invoice.getInvoiceNumber();
         JournalEntry toSave = new JournalEntry(invoice.getInvoiceDate(), "Purchase Invoice - " + invoice.getInvoiceNumber(),
                 new JournalEntryItem[]{
-                    new JournalEntryItem(narration,debitAcc, JournalEntryItem.Type.DEBIT, amount),
-                    new JournalEntryItem(narration,creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                    new JournalEntryItem(store.getInventoryAccount(), narration, amount, BigDecimal.ZERO),
+                     new JournalEntryItem(invoice.getSupplier().getCreditAccount(), narration, BigDecimal.ZERO,amount)
+//                    new JournalEntryItem(narration,debitAcc, JournalEntryItem.Type.DEBIT, amount),
+//                    new JournalEntryItem(narration,creditAcc, JournalEntryItem.Type.CREDIT, amount)
                 }
         );
         toSave.setTransactionNo(invoice.getTransactionNumber());

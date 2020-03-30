@@ -82,8 +82,7 @@ public class RadiologyService {
     private final ItemService itemService;
 
     private final VisitService visitService;
-
-    private final SequenceService seqService;
+ 
 
     private final SequenceNumberService sequenceNumberService;
 
@@ -131,7 +130,7 @@ public class RadiologyService {
                 RadiologyTest labTestType = radiologyConfigService.findScanByItem(i);
                 PatientScanTest pte = new PatientScanTest();
                 pte.setTestPrice(id.getItemPrice());
-                pte.setQuantity(id.getQuantity());
+                pte.setQuantity(id.getQuantity()); 
                 pte.setRadiologyTest(labTestType);
                 Optional<Employee> medic = employeeService.findEmployeeByStaffNumber(id.getMedicId());
                 if (medic.isPresent()) {

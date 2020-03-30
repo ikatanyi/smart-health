@@ -32,6 +32,7 @@ public class PatientScanTestData {
     private ScanTestState status;
     private String imagePath;
     private Boolean done;
+    private Boolean paid;
     private String doneBy;
     private LocalDateTime entryDateTime;
     private Boolean voided;

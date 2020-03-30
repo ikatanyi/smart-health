@@ -88,8 +88,8 @@ public class BankAccountService {
 //    public Optional<BankAccount> getBankAccountByName(String name) {
 //        return bankAccountRepository.findByBankName(name);
 //    }
-    public Page<BankAccount> getBankAccounts(String bankName, String bankBranch, BankType type, Pageable page) {
-        Specification spec = BankAccountSpecification.createSpecification(bankName, bankBranch, type);
+    public Page<BankAccount> getBankAccounts(String accountNumber,String bankName, String bankBranch, BankType type, Pageable page) {
+        Specification spec = BankAccountSpecification.createSpecification(accountNumber,bankName, bankBranch, type);
         return bankAccountRepository.findAll(spec, page);
     }
 

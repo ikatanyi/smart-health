@@ -56,7 +56,7 @@ public class PurchaseService {
         String lpo=sequenceNumberService.next(1L, Sequences.PurchaseOrder.name());
         PurchaseOrder order = new PurchaseOrder();
         order.setOrderNumber(lpo);
-        Supplier supplier = supplierService.findOneWithNoFoundDetection(data.getSupplierId());
+        Supplier supplier = supplierService.getSupplierOrThrow(data.getSupplierId());
         order.setSupplier(supplier);
         if (data.getAddressId() != null) {
             Address address = adminService.getAddress(data.getAddressId()).get();

@@ -1,7 +1,7 @@
 package io.smarthealth.debtor.claim.remittance.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.debtor.claim.remittance.domain.Remittance;
+import io.smarthealth.debtor.claim.remittance.domain.RemittanceOld;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
@@ -38,8 +38,8 @@ public class RemitanceData {
     private Integer creditDays;
     private Boolean termsActive;
     
-    public static Remittance map(RemitanceData data) {
-        Remittance remitance = new Remittance();
+    public static RemittanceOld map(RemitanceData data) {
+        RemittanceOld remitance = new RemittanceOld();
         remitance.setAmount(data.getAmount());
         remitance.setNotes(data.getNotes());
         remitance.setBalance(data.getBalance());
@@ -50,7 +50,7 @@ public class RemitanceData {
         return remitance;
     }
     
-    public static RemitanceData map(Remittance remitance) {
+    public static RemitanceData map(RemittanceOld remitance) {
         RemitanceData data = new RemitanceData();
         data.setId(remitance.getId());
         data.setAmount(remitance.getAmount());

@@ -1,7 +1,8 @@
 package io.smarthealth.debtor.payer.domain;
- 
+
 import io.smarthealth.accounting.accounts.domain.Account;
-import io.smarthealth.accounting.payment.domain.PaymentTerms;
+import io.smarthealth.accounting.payment.domain.Remittance;
+import io.smarthealth.administration.finances.domain.PaymentTerms;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.banks.domain.BankBranch;
@@ -24,21 +25,24 @@ import lombok.Data;
 @Table(name = "payers")
 public class Payer extends Auditable {
 
-    @OneToMany(mappedBy = "payer")
-    private List<Dispatch> dispatches;
-
     public enum Type {
         Business,
         Individual
     }
-    
+
     @Enumerated(EnumType.STRING)
     private Type payerType;
-    
+
     private String payerName;
     private String legalName;
     private String taxNumber;
     private String website;
+
+    @OneToMany(mappedBy = "payer")
+    private List<Remittance> remittances;
+
+    @OneToMany(mappedBy = "payer")
+    private List<Dispatch> dispatches;
 
     @JoinColumn(name = "bank_branch", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_payer_bank_branch_id")/*, insertable = false, updatable = false*/)
     @ManyToOne(optional = false)
