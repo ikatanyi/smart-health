@@ -58,5 +58,7 @@ public class LabRegisterTestData {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @ApiModelProperty(hidden = true)
     private List<LabResultData> labResults=new ArrayList<>();
+    @ApiModelProperty(required=false, hidden = true)
+    private String patientNumber;
 
 }

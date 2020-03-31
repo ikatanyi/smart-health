@@ -14,6 +14,7 @@ import io.smarthealth.organization.facility.domain.Employee;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -35,6 +36,7 @@ import lombok.Data;
 public class PatientScanTest extends Identifiable {
 
     @OneToOne
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_patient_scan_test_radiology_test_id"))
     private RadiologyTest radiologyTest;
     private Double testPrice;
     private Double quantity;
@@ -50,13 +52,10 @@ public class PatientScanTest extends Identifiable {
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_request_id"))
     private DoctorRequest request;
-    
-//    private Boolean voided = Boolean.FALSE;
-//    private String voidedBy;
-//    private LocalDateTime voidDatetime;
+   
 
     @ManyToOne
-    @JoinColumn(name="fk_patient_scan_test_radiology_patient_scan_register_id")
+    @JoinColumn(foreignKey = @ForeignKey(name="fk_patient_scan_test_radiology_patient_scan_register_id"))
     private PatientScanRegister patientScanRegister;
     private String comments;
     
@@ -64,7 +63,8 @@ public class PatientScanTest extends Identifiable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_radiology_employee_id")) 
     private Employee medic;    
    
-    @OneToOne
+    @OneToOne(mappedBy = "patientScanTest", cascade = CascadeType.ALL)
+    @JoinColumn(foreignKey = @ForeignKey(name = "radiology_result_id"))
     private RadiologyResult radiologyResult;
     
      public PatientScanTestData toData(){

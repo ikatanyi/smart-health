@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -26,8 +28,11 @@ import lombok.Data;
 @Table(name = "radiology_results")
 public class RadiologyResult extends Identifiable{
 
-    @OneToOne(mappedBy = "radiologyResult")
+    @OneToOne(optional = false)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_radiology_result_patient_scan_test_id"))
     private PatientScanTest patientScanTest;
+
+    
     private String notes;
     private String comments;
     private String imagePath;

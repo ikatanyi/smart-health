@@ -210,10 +210,11 @@ public class RadiologyService {
         RadiologyResult radiologyResult = data.fromData();
         PatientScanTest patientScanTest = findPatientRadiologyTestByIdWithNotFoundDetection(data.getTestId());
         patientScanTest.setStatus(data.getStatus());
-        radiologyResult.setPatientScanTest(patientScanTest);
+        radiologyResult.setPatientScanTest(patientScanTest);        
         radiologyResult.setStatus(ScanTestState.Completed);
-        pscanRepository.save(patientScanTest);
-        return radiologyResultRepo.save(radiologyResult);
+        patientScanTest.setRadiologyResult(radiologyResult);
+        return pscanRepository.save(patientScanTest).getRadiologyResult();
+//        return radiologyResultRepo.save(radiologyResult);
     }
 
     @Transactional
