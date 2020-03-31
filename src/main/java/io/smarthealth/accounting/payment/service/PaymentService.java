@@ -176,6 +176,7 @@ public class PaymentService {
 
         List<JournalEntryItem> items = new ArrayList<>();
         String descType = "";
+        Account creditTax = null;
         switch (type) {
             case Doctor: {
                 Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Doctors_Fee);
@@ -187,6 +188,7 @@ public class PaymentService {
                 items.add(new JournalEntryItem(acc, narration, payment.getAmount(), BigDecimal.ZERO));
                 //create the invoice payments
                 descType = "Doctor's Payment";
+                creditTax = acc;
             }
             break;
             case Supplier: {
@@ -195,29 +197,19 @@ public class PaymentService {
                 String narration = SystemUtils.formatCurrency(payment.getAmount()) + " for supplier's payment, voucher no. " + payment.getVoucherNo();
                 items.add(new JournalEntryItem(acc, narration, payment.getAmount(), BigDecimal.ZERO));
                 descType = "Supplier's Payment";
+                creditTax = acc;
             }
             break;
-//            case PettyCash: {
-//                //credit the account we paying from and not his
-//                Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Petty_Cash);
-//                if (!debitAccount.isPresent()) {
-//                    throw APIException.badRequest("Petty Cash Account is Not Mapped");
-//                }
-//                Account acc = debitAccount.get().getAccount();
-//                String narration = SystemUtils.formatCurrency(payment.getAmount()) + " for petty cash payment, voucher no. " + payment.getVoucherNo();
-//                items.add(new JournalEntryItem(acc, narration, payment.getAmount(), BigDecimal.ZERO));
-//            }
-//            break;
             default:
         }
-        // determine the accounts to credit - Bank or cash
+        //PAYMENT CHANNEL
         String narration = "Payment for voucher no. " + payment.getVoucherNo() + " amount : " + SystemUtils.formatCurrency(payment.getAmount());
         if (channel.getType() == PayChannel.Type.Bank) {
             BankAccount bank = bankingService.findBankAccountByNumber(channel.getAccountNumber())
                     .orElseThrow(() -> APIException.notFound("Bank Account Number {0} Not Found", channel.getAccountNumber()));
             Account creditAccount = bank.getLedgerAccount();
             //withdraw this amount from this bank
-             bankingService.withdraw(bank, payment); 
+            bankingService.withdraw(bank, payment);
             if (data.getBankCharge() != null && data.getBankCharge() != BigDecimal.ZERO) {
                 Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Bank_Charge);
                 if (debitAccount.isPresent()) {
@@ -253,8 +245,25 @@ public class PaymentService {
             }
             items.add(new JournalEntryItem(creditAccount, narration, BigDecimal.ZERO, payment.getAmount()));
         }
-        //check taxes if available
-        // TODO:: taxes needs to be posted -> Tax bills to be generate gain
+        //TAXES
+        if (data.getTaxAccountNumber() != null) {
+            Optional<Account> taxAccount = accountRepository.findByIdentifier(data.getTaxAccountNumber());
+            if (taxAccount.isPresent()) {
+                //then we go tax
+                Account debitTax = taxAccount.get();
+                final Account toCreditTax = creditTax;
+                BigDecimal amount = data.getInvoices()
+                        .stream()
+                        .filter(x -> x.getTaxAmount() != null && x.getTaxAmount() != BigDecimal.ZERO)
+                        .map(x -> x.getTaxAmount())
+                        .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
+//                        .forEach(inv -> {
+                String desc = "Withheld Tax " + SystemUtils.formatCurrency(amount) + " for the payment voucher no. " + payment.getVoucherNo();
+                items.add(new JournalEntryItem(debitTax, desc, amount, BigDecimal.ZERO));
+                items.add(new JournalEntryItem(toCreditTax, desc, BigDecimal.ZERO, amount));
+//                        });
+            }
+        }
 
         String description = descType + " - Voucher Number. " + payment.getVoucherNo();
 
@@ -316,6 +325,10 @@ public class PaymentService {
         journalEntryService.save(toJournalPettyCash(payment, data.getRequests()));
 
         return savedPayment;
+    }
+
+    private void taxJournaling(MakePayment data, List<JournalEntryItem> items) {
+
     }
 
     private JournalEntry toJournalPettyCash(Payment payment, List<PettyCashRequestItem> requests) {

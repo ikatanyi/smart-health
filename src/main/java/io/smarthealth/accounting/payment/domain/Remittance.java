@@ -25,8 +25,8 @@ public class Remittance extends Auditable {
     private Payer payer;
 
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_remittance_payment_id"))
-    private Receipt payment;
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_remittance_receipt_id"))
+    private Receipt receipt;
     private String remittanceNo;
     private LocalDateTime remittanceDate;
     private BigDecimal balance;
@@ -34,20 +34,20 @@ public class Remittance extends Auditable {
     public Remittance() {
     }
 
-    public Remittance(Payer payer, Receipt payment) {
+    public Remittance(Payer payer, Receipt receipt) {
         this.payer = payer;
-        this.payment = payment;
-        this.remittanceNo = payment.getReferenceNumber();
-        this.balance = payment.getAmount();
-        this.remittanceDate = payment.getTransactionDate();
+        this.receipt = receipt;
+        this.remittanceNo = receipt.getReferenceNumber();
+        this.balance = receipt.getAmount();
+        this.remittanceDate = receipt.getTransactionDate();
     }
 
-    public Remittance(Payer payer, Receipt payment, String remittanceNo) {
+    public Remittance(Payer payer, Receipt receipt, String remittanceNo) {
         this.payer = payer;
-        this.payment = payment;
+        this.receipt = receipt;
         this.remittanceNo = remittanceNo;
-        this.balance = payment.getAmount();
-        this.remittanceDate = payment.getTransactionDate();
+        this.balance = receipt.getAmount();
+        this.remittanceDate = receipt.getTransactionDate();
     }
 
 }
