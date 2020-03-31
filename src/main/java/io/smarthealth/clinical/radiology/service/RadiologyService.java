@@ -187,9 +187,10 @@ public class RadiologyService {
                         billItem.setMedicId(lineData.getMedic().getId());
                     }
                     billItem.setItem(item);
-                    if (lineData.getRequest() != null) {
-                        billItem.setRequestReference(lineData.getRequest().getId());
-                    }
+                    billItem.setRequestReference(lineData.getId());
+//                    if (lineData.getRequest() != null) {
+//                        
+//                    }
                     billItem.setPrice(lineData.getTestPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getTestPrice() * lineData.getQuantity());

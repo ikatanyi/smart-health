@@ -96,7 +96,8 @@ public class PatientScanTest extends Identifiable {
         
         entity.setPatientNumber(this.getPatientScanRegister().getPatientNo());
         entity.setPatientName(this.getPatientScanRegister().getPatientName());
-        if(this.getRadiologyTest().getServiceTemplate()!=null){
+        entity.setSupervisorConfirmation(this.getRadiologyTest().getSupervisorConfirmation());
+        if(this.getRadiologyTest().getServiceTemplate()!=null){             
              entity.setTemplateName(this.getRadiologyTest().getServiceTemplate().getTemplateName());
              entity.setTemplateId(this.getRadiologyTest().getServiceTemplate().getId());
              if(this.getRadiologyTest().getServiceTemplate().getNotes()!=null)
