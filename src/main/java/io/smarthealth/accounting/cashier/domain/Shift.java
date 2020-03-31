@@ -2,6 +2,7 @@ package io.smarthealth.accounting.cashier.domain;
 
 import io.smarthealth.accounting.cashier.data.ShiftData;
 import io.smarthealth.infrastructure.domain.Identifiable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,7 +11,9 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Data;
+import org.hibernate.annotations.Formula;
 
 /**
  *
@@ -35,8 +38,6 @@ public class Shift extends Identifiable {
     private String shiftNo;
     @Enumerated(EnumType.STRING)
     private ShiftStatus status;
-    
-    // we can collect what the user started with
 
     public Shift() {
     }

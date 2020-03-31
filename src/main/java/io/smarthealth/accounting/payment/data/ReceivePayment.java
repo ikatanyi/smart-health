@@ -22,6 +22,7 @@ public class ReceivePayment {
     }
     private Long payerId;
     private String payer;
+    private String payerNumber;
     private Type type;
     private Boolean walkin;
     private BigDecimal amount; //total amount paid

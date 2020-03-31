@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -22,11 +23,20 @@ import lombok.NoArgsConstructor;
  *
  * @author Kelsas
  */
+//    String getCashPoint();
+//    public String getCashier();
+//    public LocalDateTime getStartDate();
+//    public LocalDateTime getEndDate();
+//    public String getShiftNo();
+//    public ShiftStatus getStatus();
+//    public BigDecimal getBalance();
+
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "acc_receipts") 
+//@NamedQuery(name = "t", query = "SELECT R.receipt.shift.cashPoint AS cashPoint,R.receipt.shift.cashier.user.name as cashier, R.receipt.shift.startDate as startDate,  R.receipt.shift.endDate as endDate,  R.receipt.shift.shiftNo as shiftNo,  R.receipt.shift.status as status, SUM(R.amount) as balance  FROM ReceiptTransaction as R GROUP BY R.receipt.shift.shiftNo ORDER BY R.receipt.transactionDate DESC")
 public class Receipt extends Auditable {
 
     private String payer;

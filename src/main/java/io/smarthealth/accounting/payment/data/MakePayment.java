@@ -40,7 +40,9 @@ public class MakePayment {
     private String transactionNo;
     private String currency;
     private BigDecimal bankCharge;
-    private Long taxAccountId;
+    private String taxAccount;
+    private String taxAccountNumber;
+
     private PayChannel paymentChannel;
 
     private List<BillToPay> invoices = new ArrayList<>();

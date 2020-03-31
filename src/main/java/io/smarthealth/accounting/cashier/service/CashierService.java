@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.cashier.service;
 
 import io.smarthealth.accounting.cashier.data.CashierData;
+import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.domain.Cashier;
 import io.smarthealth.accounting.cashier.domain.CashierRepository;
 import io.smarthealth.accounting.cashier.domain.Shift;
@@ -60,10 +61,10 @@ public class CashierService {
     public Page<Cashier> fetchAllCashiers(Pageable page) {
         return repository.findAll(page);
     }
-    
-    public Page<Shift> fetchAllShifts(ShiftStatus status,Pageable page) {
-        if(status!=null){
-            return shiftRepository.findByStatus(status,page);
+
+    public Page<Shift> fetchAllShifts(ShiftStatus status, Pageable page) {
+        if (status != null) {
+            return shiftRepository.findByStatus(status, page);
         }
         return shiftRepository.findAll(page);
     }
@@ -74,11 +75,11 @@ public class CashierService {
     }
 
     public Shift startShift(Cashier cashier) {
-          //check if this guy has a running shift
-          Optional<Shift> currentShift=shiftRepository.findByStatusAndCashier(ShiftStatus.Running, cashier);
-          if(currentShift.isPresent()){
-              throw APIException.badRequest("There's already Running Shift for the Cashier. Shift Number: "+currentShift.get().getShiftNo());
-          }
+        //check if this guy has a running shift
+        Optional<Shift> currentShift = shiftRepository.findByStatusAndCashier(ShiftStatus.Running, cashier);
+        if (currentShift.isPresent()) {
+            throw APIException.badRequest("There's already Running Shift for the Cashier. Shift Number: " + currentShift.get().getShiftNo());
+        }
         String shiftNo = sequenceNumberService.next(1L, Sequences.ShiftNumber.name());
         Shift shift = new Shift(cashier, shiftNo);
         return shiftRepository.save(shift);
@@ -103,10 +104,11 @@ public class CashierService {
         shift.setStatus(ShiftStatus.Closed);
         return shiftRepository.save(shift);
     }
-    public Shift closeShift(Long cashierId,String shiftNo) {
-         Cashier cashier = getCashier(cashierId);
-        Shift shift =  findByShiftNo(shiftNo);
-        if(!Objects.equals(shift.getCashier().getId(), cashier.getId())){
+
+    public Shift closeShift(Long cashierId, String shiftNo) {
+        Cashier cashier = getCashier(cashierId);
+        Shift shift = findByShiftNo(shiftNo);
+        if (!Objects.equals(shift.getCashier().getId(), cashier.getId())) {
             throw APIException.badRequest("Shift {0} does not belong to cashier {1}", shiftNo, cashierId);
         }
         shift.setStatus(ShiftStatus.Closed);
@@ -120,13 +122,18 @@ public class CashierService {
         }
         return repository.save(cashDrawer);
     }
-    public Shift findByCashierAndShiftNo(Cashier cashier, String shiftNo){
+
+    public Shift findByCashierAndShiftNo(Cashier cashier, String shiftNo) {
         return shiftRepository.findByCashierAndShiftNo(cashier, shiftNo)
-                .orElseThrow(()-> APIException.notFound("Shift Number {0} Not Found", shiftNo));
+                .orElseThrow(() -> APIException.notFound("Shift Number {0} Not Found", shiftNo));
     }
-    
-     public Shift findByShiftNo(String shiftNo){
+
+    public Shift findByShiftNo(String shiftNo) {
         return shiftRepository.findByShiftNo(shiftNo)
-                .orElseThrow(()-> APIException.notFound("Shift Number {0} Not Found", shiftNo));
+                .orElseThrow(() -> APIException.notFound("Shift Number {0} Not Found", shiftNo));
+    }
+
+    public List<CashierShift> getCashierShiftWithBalance() {
+        return repository.shiftBalanceByDateInterface();
     }
 }
