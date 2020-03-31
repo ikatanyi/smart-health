@@ -187,9 +187,10 @@ public class RadiologyService {
                         billItem.setMedicId(lineData.getMedic().getId());
                     }
                     billItem.setItem(item);
-                    if (lineData.getRequest() != null) {
-                        billItem.setRequestReference(lineData.getRequest().getId());
-                    }
+                    billItem.setRequestReference(lineData.getId());
+//                    if (lineData.getRequest() != null) {
+//                        
+//                    }
                     billItem.setPrice(lineData.getTestPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getTestPrice() * lineData.getQuantity());
@@ -210,10 +211,11 @@ public class RadiologyService {
         RadiologyResult radiologyResult = data.fromData();
         PatientScanTest patientScanTest = findPatientRadiologyTestByIdWithNotFoundDetection(data.getTestId());
         patientScanTest.setStatus(data.getStatus());
-        radiologyResult.setPatientScanTest(patientScanTest);
+        radiologyResult.setPatientScanTest(patientScanTest);        
         radiologyResult.setStatus(ScanTestState.Completed);
-        pscanRepository.save(patientScanTest);
-        return radiologyResultRepo.save(radiologyResult);
+        patientScanTest.setRadiologyResult(radiologyResult);
+        return pscanRepository.save(patientScanTest).getRadiologyResult();
+//        return radiologyResultRepo.save(radiologyResult);
     }
 
     @Transactional

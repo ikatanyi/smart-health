@@ -45,6 +45,8 @@ public class PatientScanTestData {
     private Long templateId;
     @ApiModelProperty(required=false, hidden=true)
     private String templateName;
+    @ApiModelProperty(required=false, hidden=true)
+    private Boolean supervisorConfirmation;
     
     public PatientScanTest map(){
         PatientScanTest entity = new PatientScanTest();
