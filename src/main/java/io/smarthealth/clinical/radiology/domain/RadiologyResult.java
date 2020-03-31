@@ -45,10 +45,11 @@ public class RadiologyResult extends Identifiable{
         data.setComments(this.comments);
         data.setVoided(this.voided);
 
-        if (this.patientScanTest.getRadiologyTest() != null) {
+        if (this.getPatientScanTest().getRadiologyTest() != null) {
             data.setTestId(this.patientScanTest.getRadiologyTest().getId());
             data.setTestCode(this.patientScanTest.getRadiologyTest().getCode());
             data.setTestName(this.patientScanTest.getRadiologyTest().getScanName());
+            data.setScanNumber(this.getPatientScanTest().getPatientScanRegister().getAccessNo());
         } 
         
         if (!this.patientScanTest.getPatientScanRegister().getIsWalkin()) {

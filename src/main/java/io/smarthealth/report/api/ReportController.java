@@ -98,6 +98,9 @@ public class ReportController {
             case Patient_List:
                 patientReportService.getPatients(queryParams, format, response);
                 break;
+            case Patient_Card:
+                patientReportService.getPatientCard(queryParams, format, response);
+                break;    
             case Patient_Visit:
                 patientReportService.getVisit(queryParams, format, response);
                 break;

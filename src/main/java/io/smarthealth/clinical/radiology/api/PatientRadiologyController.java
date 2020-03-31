@@ -108,7 +108,7 @@ public class PatientRadiologyController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        final DateRange range = DateRange.fromIsoString(dateRange);
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<PatientScanTestData> list = radiologyService.findAllTests(patientNumber, orderNo, status, visitNumber, range, walkin, pageable)
                 .map(x -> x.toData());

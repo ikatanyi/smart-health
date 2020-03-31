@@ -2,6 +2,7 @@ package io.smarthealth.clinical.radiology.api;
 
 import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.radiology.domain.RadiologyResult;
+import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -71,14 +72,15 @@ public class RadiologyResultController {
             @RequestParam(value = "patient_no", required = false) String patientNumber,
             @RequestParam(value = "scan_no", required = false) String scanNumber,
             @RequestParam(value = "is_walkin", required = false) Boolean walkin,
+            @RequestParam(value = "status", required = false) ScanTestState status,
             @RequestParam(value = "order_no", required = false) String orderNo,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        final DateRange range = DateRange.fromIsoString(dateRange);
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<RadiologyResultData> list = service.findAllRadiologyResults(visitNumber, patientNumber, scanNumber, walkin,orderNo, range, pageable)
+        Page<RadiologyResultData> list = service.findAllRadiologyResults(visitNumber, patientNumber, scanNumber, walkin, status, orderNo, range, pageable)
                 .map(x -> x.toData());
 
         Pager<List<RadiologyResultData>> pagers = new Pager();
