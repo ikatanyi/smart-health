@@ -11,10 +11,10 @@ import io.smarthealth.administration.app.data.BankEmbeddedData;
 import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.domain.Currency;
-import io.smarthealth.accounting.payment.domain.PaymentTerms;
+import io.smarthealth.administration.finances.domain.PaymentTerms;
 import io.smarthealth.administration.app.service.AdminService;
 import io.smarthealth.administration.app.service.CurrencyService;
-import io.smarthealth.accounting.payment.service.PaymentTermsService;
+import io.smarthealth.administration.finances.service.PaymentTermsService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
@@ -109,7 +109,7 @@ public class SupplierService {
         return savedSupplier.toData();
     }
 
-    public Supplier findOneWithNoFoundDetection(Long id) {
+    public Supplier getSupplierOrThrow(Long id) {
         Supplier supplier = getSupplierById(id)
                 .orElseThrow(() -> APIException.notFound("Supplier with id {0} not found.", id));
         return supplier;

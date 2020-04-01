@@ -34,9 +34,9 @@ public class ReportController {
     private final PatientReportService patientReportService;
     
     
-    @GetMapping("/report/{report}")
+    @GetMapping("/report")
     public void generateReport(
-            @PathVariable ReportName reportName,
+            @RequestParam(value = "reportName", required = true) ReportName reportName,
             @RequestParam(required = false) MultiValueMap<String, String> queryParams,
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
@@ -98,6 +98,9 @@ public class ReportController {
             case Patient_List:
                 patientReportService.getPatients(queryParams, format, response);
                 break;
+            case Patient_Card:
+                patientReportService.getPatientCard(queryParams, format, response);
+                break;    
             case Patient_Visit:
                 patientReportService.getVisit(queryParams, format, response);
                 break;

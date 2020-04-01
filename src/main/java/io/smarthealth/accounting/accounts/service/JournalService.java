@@ -40,12 +40,18 @@ public class JournalService {
 
         List<JournalEntryItem> items = data.getDebtors()
                 .stream()
-                .map(x -> new JournalEntryItem(x.getDescription(), x.getAccountNumber(), JournalEntryItem.Type.DEBIT, x.getAmount()))
+                .map(x -> {
+                    Account account = accountService.findByAccountNumberOrThrow(x.getAccountNumber());
+                    return new JournalEntryItem(account, x.getDescription(), x.getAmount(), BigDecimal.ZERO);
+                })
                 .collect(Collectors.toList());
 
         items.addAll(data.getCreditors()
                 .stream()
-                .map(x -> new JournalEntryItem(x.getDescription(), x.getAccountNumber(), JournalEntryItem.Type.CREDIT, x.getAmount()))
+                .map(x -> {
+                    Account account = accountService.findByAccountNumberOrThrow(x.getAccountNumber());
+                    return new JournalEntryItem(account, x.getDescription(), BigDecimal.ZERO, x.getAmount());
+                })
                 .collect(Collectors.toList())
         );
 
@@ -69,7 +75,7 @@ public class JournalService {
     public Page<JournalEntryData> findJournals(String transactionNo, TransactionType type, JournalState status, DateRange range, Pageable page) {
         Specification<JournalEntry> spec = JournalSpecification.createSpecification(transactionNo, type, status, range);
         return journalRepository.findAll(spec, page)
-                .map(x -> JournalEntryData.map(x));
+                .map(x -> x.toData());
     }
 
     public Optional<JournalEntry> findJournalById(Long id) {
@@ -94,28 +100,28 @@ public class JournalService {
         journal.getItems()
                 .stream()
                 .forEach(je -> {
-                    final Account accountEntity = accountService.findByAccountNumberOrThrow(je.getAccountNumber());
+                    final Account accountEntity = je.getAccount();// accountService.findByAccountNumberOrThrow(je.getAccountNumber());
                     final BigDecimal amount;
                     switch (accountEntity.getType()) {
                         case ASSET:
                         case EXPENSE:
                             if (je.isDebit()) {
-                                accountEntity.setBalance(accountEntity.getBalance().add(je.getAmount()));
-                                amount = je.getAmount();
+                                accountEntity.setBalance(accountEntity.getBalance().add(je.getDebit()));
+                                amount = je.getDebit();
                             } else {
-                                accountEntity.setBalance(accountEntity.getBalance().subtract(je.getAmount()));
-                                amount = je.getAmount().negate();
+                                accountEntity.setBalance(accountEntity.getBalance().subtract(je.getCredit()));
+                                amount = je.getCredit().negate();
                             }
                             break;
                         case LIABILITY:
                         case EQUITY:
                         case REVENUE:
                             if (je.isDebit()) {
-                                accountEntity.setBalance(accountEntity.getBalance().subtract(je.getAmount()));
-                                amount = je.getAmount().negate();
+                                accountEntity.setBalance(accountEntity.getBalance().subtract(je.getDebit()));
+                                amount = je.getDebit().negate();
                             } else {
-                                accountEntity.setBalance(accountEntity.getBalance().add(je.getAmount()));
-                                amount = je.getAmount();
+                                accountEntity.setBalance(accountEntity.getBalance().add(je.getCredit()));
+                                amount = je.getCredit();
                             }
                             break;
                         default:

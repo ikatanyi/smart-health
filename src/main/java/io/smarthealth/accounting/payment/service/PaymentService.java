@@ -2,53 +2,54 @@ package io.smarthealth.accounting.payment.service;
 
 import io.smarthealth.accounting.accounts.data.FinancialActivity;
 import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.domain.AccountRepository;
 import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
 import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
 import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
-import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.accounting.accounts.service.JournalService;
-import io.smarthealth.accounting.billing.domain.PatientBill;
-import io.smarthealth.accounting.billing.domain.PatientBillItem;
-import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
-import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoiceRepository;
-import io.smarthealth.accounting.payment.data.PaymentData;
-import io.smarthealth.accounting.payment.data.FinancialTransactionData;
-import io.smarthealth.accounting.payment.data.CreateTransactionData;
-import io.smarthealth.accounting.payment.data.CreditorData;
+import io.smarthealth.accounting.payment.data.BillToPay;
+import io.smarthealth.accounting.payment.data.PayChannel;
+import io.smarthealth.accounting.payment.data.MakePayment;
+import io.smarthealth.accounting.payment.data.MakePettyCashPayment;
+import io.smarthealth.accounting.payment.data.PettyCashRequestItem;
+import io.smarthealth.accounting.payment.domain.DoctorsPayment;
+import io.smarthealth.accounting.payment.domain.DoctorsPaymentRepository;
 import io.smarthealth.accounting.payment.domain.Payment;
-import io.smarthealth.accounting.payment.domain.FinancialTransaction;
-import io.smarthealth.accounting.payment.domain.enumeration.TrxType;
-import io.smarthealth.accounting.payment.domain.specification.PaymentSpecification;
-import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.accounting.payment.domain.PaymentRepository;
+import io.smarthealth.accounting.payment.domain.PettyCashPayment;
+import io.smarthealth.accounting.payment.domain.PettyCashPaymentRepository;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-//import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import io.smarthealth.accounting.payment.domain.SupplierPayment;
+import io.smarthealth.accounting.payment.domain.SupplierPaymentRepository;
+import io.smarthealth.accounting.payment.domain.enumeration.PayeeType;
+import io.smarthealth.accounting.payment.domain.specification.PaymentSpecification;
+import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.lang.SystemUtils;
+import io.smarthealth.organization.bank.domain.BankAccount;
+import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
+import io.smarthealth.stock.purchase.domain.PurchaseInvoiceRepository;
+import io.smarthealth.supplier.domain.Supplier;
+import io.smarthealth.supplier.domain.SupplierRepository;
+import java.util.ArrayList;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import io.smarthealth.accounting.payment.domain.FinancialTransactionRepository;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
-import io.smarthealth.administration.servicepoint.service.ServicePointService;
-import io.smarthealth.organization.bank.service.BankAccountService;
-import io.smarthealth.sequence.SequenceNumberService;
-import io.smarthealth.sequence.Sequences;
-import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
-import io.smarthealth.stock.purchase.domain.PurchaseInvoiceRepository;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Map;
-import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -59,253 +60,309 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PaymentService {
 
-    private final FinancialTransactionRepository transactionRepository;
-    private final FinancialActivityAccountRepository activityAccountRepository;
-    private final AccountService accountService;
-    private final BillingService billingService;
-    private final JournalService journalEntryService;
-
     private final SequenceNumberService sequenceNumberService;
-    private final ServicePointService servicePointService;
-    private final BankAccountService bankAccountService;
-//    private final InvoiceRepository invoiceRepository;
+    private final FinancialActivityAccountRepository activityAccountRepository;
+    private final BankingService bankingService;
     private final DoctorInvoiceRepository doctorInvoiceRepository;
     private final PurchaseInvoiceRepository purchaseInvoiceRepository;
+    private final PaymentRepository repository;
+    private final SupplierRepository supplierRepository;
+    private final DoctorsPaymentRepository doctorsPaymentRepository;
+    private final SupplierPaymentRepository supplierPaymentRepository;
+    private final JournalService journalEntryService;
+    private final PettyCashPaymentRepository pettyCashPaymentRepository;
+    private final AccountRepository accountRepository;
 
-    @Transactional
-    public FinancialTransaction createTransaction(CreateTransactionData transactionData) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Payment makePayment(MakePayment data) {
+        Payment payment = new Payment();
+        payment.setPayeeId(data.getCreditorId());
+        payment.setPayee(data.getCreditor());
+        payment.setPayeeType(data.getCreditorType());
+        payment.setAmount(data.getAmount());
+        payment.setDescription(data.getDescription());
+        payment.setPaymentDate(data.getDate());
+        payment.setPaymentMethod(data.getPaymentMethod());
+        payment.setReferenceNumber(data.getReferenceNumber());
+//        payment.setSupplier(supplier);
+        //update the invoices paid
 
-        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
-        String receipt = sequenceNumberService.next(1L, Sequences.Receipt.name());
+        String transactionId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        String voucherNo = sequenceNumberService.next(1L, Sequences.VoucherNumber.name());
+        payment.setVoucherNo(voucherNo);
+        payment.setTransactionNo(transactionId);
 
-        FinancialTransaction transaction = new FinancialTransaction();
-        transaction.setDate(LocalDateTime.now());
-        transaction.setAmount(transactionData.getAmount());
-        transaction.setTrxType(TrxType.payment);
-        transaction.setReceiptNo(receipt);
-        transaction.setShiftNo("0000");
-        transaction.setTransactionId(trdId);
-        transaction.setInvoice(transactionData.getBillNumber());
+        Payment savedPayment = repository.save(payment);
+        //update bills status and the once paid
+        doBillPayment(payment, data);
+        //Bank Charges 
+        // journal the payment
+        journalEntryService.save(toJournal(data.getCreditorType(), payment, data));
+        return savedPayment;
+    }
 
-        if (!transactionData.getPayment().isEmpty()) {
-            List<Payment> paylist = transactionData.getPayment()
-                    .stream()
-                    .map(p -> createPayment(p))
-                    .collect(Collectors.toList());
-            transaction.addPayments(paylist);
+    public Optional<Payment> getPayment(Long id) {
+        return repository.findById(id);
+    }
+
+    public Payment getPaymentOrThrow(Long id) {
+        return getPayment(id)
+                .orElseThrow(() -> APIException.notFound("Payment with Id {0} Not Found", id));
+    }
+
+    public Payment getPaymentByVoucherNo(String voucherNo) {
+        return repository.findByVoucherNo(voucherNo)
+                .orElseThrow(() -> APIException.notFound("Payment with Voucher Number {0} Not Found", voucherNo));
+    }
+
+    public Page<Payment> getPayments(PayeeType creditorType, Long creditorId, String creditor, String transactionNo, DateRange range, Pageable page) {
+        Specification<Payment> spec = PaymentSpecification.createSpecification(creditorType, creditorId, creditor, transactionNo, range);
+        return repository.findAll(spec, page);
+    }
+
+    private void doBillPayment(Payment payment, MakePayment data) {
+        switch (data.getCreditorType()) {
+            case Doctor: {
+                List<DoctorsPayment> list = data.getInvoices()
+                        .stream().map(x -> doctorsPayment(payment, x))
+                        .filter(x -> x != null)
+                        .collect(Collectors.toList());
+                doctorsPaymentRepository.saveAll(list);
+            }
+            break;
+            case Supplier: {
+                List<SupplierPayment> list = data.getInvoices()
+                        .stream().map(x -> supplierPayment(payment, x))
+                        .filter(x -> x != null)
+                        .collect(Collectors.toList());
+                supplierPaymentRepository.saveAll(list);
+            }
+            break;
+            default:
         }
-
-        final FinancialTransaction trans = transactionRepository.save(transaction);
-
-        Optional<PatientBill> bill = billingService.findByBillNumber(transactionData.getBillNumber());
-
-        if (bill.isPresent()) {
-            PatientBill b = bill.get();
-            b.setStatus(BillStatus.Final);
-            billingService.save(b);
-        }
-
-        List<PatientBillItem> billedItems = new ArrayList<>();
-
-        if (!transactionData.getBillItems().isEmpty()) {
-            transactionData.getBillItems()
-                    .stream()
-                    .forEach(data -> {
-                        PatientBillItem item = billingService.findBillItemById(data.getBillItemId());
-                        item.setPaid(Boolean.TRUE);
-                        item.setStatus(BillStatus.Final);
-                        item.setBalance(0D);
-                        PatientBillItem i = billingService.updateBillItem(item);
-                        billedItems.add(i);
-                        //update the bill as 
-                    });
-
-        }
-        journalEntryService.save(toJournal(transactionData.getDate().toLocalDate(), trdId, receipt, billedItems));
-//        journalEntryService.createJournalEntry(trdId, billedItems);
-        return trans;
-
     }
 
-    @Transactional
-    public FinancialTransaction createTransaction(CreditorData creditorData) {
-        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
-        String receipt = sequenceNumberService.next(1L, Sequences.Receipt.name());
-
-        FinancialTransaction transaction = new FinancialTransaction();
-        transaction.setDate(LocalDateTime.now());
-        transaction.setAmount(creditorData.getAmount().doubleValue());
-        transaction.setTrxType(TrxType.payment);
-        transaction.setReceiptNo(receipt);
-        transaction.setShiftNo("0000");
-        transaction.setTransactionId(trdId);
-        transaction.setInvoice("reference invoices paid");
-
-        Payment pay = new Payment();
-        pay.setAmount(creditorData.getAmount().doubleValue());
-        pay.setMethod(creditorData.getPaymentMethod());
-        pay.setCurrency(creditorData.getPaymentMethod());
-        pay.setReferenceCode(receipt);
-
-        transaction.addPayment(pay);
-
-        creditorData.getInvoices()
-                .stream()
-                .forEach(x -> {
-                    if (creditorData.getCreditorType().equals("Doctors")) {
-                        updateDoctorInvoice(creditorData.getCreditorId(), x.getInvoiceNo(), x.getAmountPaid());
-                    } else {
-                        updateInvoiceBalance(creditorData.getCreditorId(),x.getInvoiceNo(), x.getAmountPaid());
-                    }
-                });
-
-        //TODO: allocate the invoices paid - mark
-        //find the bank and journal this transactions
-        //'allocate this invoices
-        final FinancialTransaction trans = transactionRepository.save(transaction);
-        return trans;
-    }
-
-    private Payment createPayment(PaymentData data) {
-        Payment pay = new Payment();
-        pay.setAmount(data.getAmount());
-        pay.setMethod(data.getMethod());
-        pay.setCurrency(data.getCurrency());
-        pay.setReferenceCode(data.getReferenceCode());
-        pay.setType(data.getType());
-        return pay;
-    }
-
-    public FinancialTransactionData updatePayment(final Long id, FinancialTransactionData data) {
-        FinancialTransaction trans = findTransactionOrThrowException(id);
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Optional<FinancialTransaction> findById(final Long id) {
-        return transactionRepository.findById(id);
-    }
-
-    public Page<FinancialTransaction> fetchTransactions(String customer, String invoice, String receipt, Pageable pageable) {
-        Specification<FinancialTransaction> spec = PaymentSpecification.createSpecification(customer, invoice, receipt);
-        Page<FinancialTransaction> transactions = transactionRepository.findAll(spec, pageable);
-        return transactions;
-    }
-
-    public String emailReceipt(Long id) {
-//        Transaction trans = findTransactionOrThrowException(id);
-        //TODO Implement further
-//        return "Receipt send to client "+trans.getReceiptNo();
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Transactional
-    public FinancialTransaction refund(Long id, Double amount) {
-
-        FinancialTransaction trans = findTransactionOrThrowException(id);
-        if (amount > trans.getAmount()) {
-            throw APIException.badRequest("Refund amount is more than the receipt amount");
-        }
-        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
-
-        FinancialTransaction toSave = new FinancialTransaction();
-        toSave.setDate(LocalDateTime.now());
-        toSave.setTrxType(TrxType.refund);
-        toSave.setReceiptNo(trans.getReceiptNo());
-        toSave.setShiftNo("0000");
-        toSave.setTransactionId(trdId);
-        toSave.setInvoice(trans.getInvoice());
-        toSave.setAccount(trans.getAccount());
-        toSave.setAmount(amount);
-
-        FinancialTransaction trns = transactionRepository.save(toSave);
-        return trns;
-
-    }
-
-    private void updateInvoiceBalance(Long supplierId,String invoiceNo, BigDecimal amountPaid) {
-        Optional<PurchaseInvoice> invoice = purchaseInvoiceRepository.findByInvoiceForSupplier(invoiceNo, supplierId);
+    private SupplierPayment supplierPayment(Payment pay, BillToPay bill) {
+        Optional<PurchaseInvoice> invoice = purchaseInvoiceRepository.findByInvoiceForSupplier(bill.getInvoiceNo(), pay.getPayeeId());
         if (invoice.isPresent()) {
             PurchaseInvoice inv = invoice.get();
-            BigDecimal newBal =inv.getInvoiceBalance().subtract(amountPaid);
+            BigDecimal newBal = inv.getInvoiceBalance().subtract(bill.getAmountPaid());
             boolean paid = newBal.doubleValue() <= 0;
             inv.setInvoiceBalance(newBal);
             inv.setPaid(paid);
-            purchaseInvoiceRepository.save(inv);
+            PurchaseInvoice saved = purchaseInvoiceRepository.save(inv);
+            return new SupplierPayment(pay, saved, bill.getAmountPaid(), bill.getTaxAmount());
         }
+        return null;
     }
 
-    private void updateDoctorInvoice(Long doctorId, String invoiceNo, BigDecimal amountPaid) {
-        Optional<DoctorInvoice> invoice = doctorInvoiceRepository.findByInvoiceForDoctor(invoiceNo, doctorId);
+    private DoctorsPayment doctorsPayment(Payment pay, BillToPay bill) {
+        Optional<DoctorInvoice> invoice = doctorInvoiceRepository.findByInvoiceForDoctor(bill.getInvoiceNo(), pay.getPayeeId());
         if (invoice.isPresent()) {
             DoctorInvoice inv = invoice.get();
-            BigDecimal newBal = inv.getBalance().subtract(amountPaid);
+            BigDecimal newBal = inv.getBalance().subtract(bill.getAmountPaid());
             boolean paid = newBal.doubleValue() <= 0;
             inv.setBalance(newBal);
             inv.setPaid(paid);
-            doctorInvoiceRepository.save(inv);
+            DoctorInvoice saved = doctorInvoiceRepository.save(inv);
+            return new DoctorsPayment(pay, saved, bill.getAmountPaid(), bill.getTaxAmount());
         }
+        return null;
     }
 
-    public FinancialTransaction findTransactionOrThrowException(Long id) {
-        return findById(id)
-                .orElseThrow(() -> APIException.notFound("Transaction with id {0} not found.", id));
-    }
+    private JournalEntry toJournal(PayeeType type, Payment payment, MakePayment data) {
 
-    private JournalEntry toJournal(LocalDate receiptDate, String trxId, String receipt, List<PatientBillItem> billedItems) {
-        Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
+        PayChannel channel = data.getPaymentChannel();
 
-        if (!debitAccount.isPresent()) {
-            throw APIException.badRequest("Receipt Control Account is Not Mapped");
-        }
-        String debitAcc = debitAccount.get().getAccount().getIdentifier();
         List<JournalEntryItem> items = new ArrayList<>();
+        String descType = "";
+        Account creditTax = null;
+        switch (type) {
+            case Doctor: {
+                Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Doctors_Fee);
+                if (!debitAccount.isPresent()) {
+                    throw APIException.badRequest("Doctors Ledger Account is Not Mapped");
+                }
+                Account acc = debitAccount.get().getAccount();
+                String narration = SystemUtils.formatCurrency(payment.getAmount()) + " for doctor's payment, voucher no. " + payment.getVoucherNo();
+                items.add(new JournalEntryItem(acc, narration, payment.getAmount(), BigDecimal.ZERO));
+                //create the invoice payments
+                descType = "Doctor's Payment";
+                creditTax = acc;
+            }
+            break;
+            case Supplier: {
+                Supplier supplier = getSupplier(payment.getPayeeId());
+                Account acc = supplier.getCreditAccount();
+                String narration = SystemUtils.formatCurrency(payment.getAmount()) + " for supplier's payment, voucher no. " + payment.getVoucherNo();
+                items.add(new JournalEntryItem(acc, narration, payment.getAmount(), BigDecimal.ZERO));
+                descType = "Supplier's Payment";
+                creditTax = acc;
+            }
+            break;
+            default:
+        }
+        //PAYMENT CHANNEL
+        String narration = "Payment for voucher no. " + payment.getVoucherNo() + " amount : " + SystemUtils.formatCurrency(payment.getAmount());
+        if (channel.getType() == PayChannel.Type.Bank) {
+            BankAccount bank = bankingService.findBankAccountByNumber(channel.getAccountNumber())
+                    .orElseThrow(() -> APIException.notFound("Bank Account Number {0} Not Found", channel.getAccountNumber()));
+            Account creditAccount = bank.getLedgerAccount();
+            //withdraw this amount from this bank
+            bankingService.withdraw(bank, payment);
+            if (data.getBankCharge() != null && data.getBankCharge() != BigDecimal.ZERO) {
+                Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Bank_Charge);
+                if (debitAccount.isPresent()) {
+                    Account debitAcc = debitAccount.get().getAccount();
+                    bankingService.bankingCharges(bank, data.getBankCharge(), payment.getTransactionNo());
+                    String desc = "Bank Charge of " + SystemUtils.formatCurrency(data.getBankCharge());
+                    items.add(new JournalEntryItem(debitAcc, desc, data.getBankCharge(), BigDecimal.ZERO));
+                    items.add(new JournalEntryItem(creditAccount, desc, BigDecimal.ZERO, data.getBankCharge()));
+                }
+            }
 
-        if (!billedItems.isEmpty()) {
-            Map<Long, Double> map = billedItems
-                    .stream()
-                    .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
-                            Collectors.summingDouble(PatientBillItem::getAmount)
-                    )
-                    );
-            //then here since we making a revenue
-            map.forEach((k, v) -> {
-                //revenue
-                ServicePoint srv = servicePointService.getServicePoint(k);
-                String narration = "Receipting for " + srv.getName();
-                Account credit = srv.getIncomeAccount();
-                BigDecimal amount = BigDecimal.valueOf(v);
+            items.add(new JournalEntryItem(creditAccount, narration, BigDecimal.ZERO, payment.getAmount()));
 
-                items.add(new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount));
-                items.add(new JournalEntryItem(narration, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
-
-            });
-            //expenses
-            Map<Long, Double> inventory = billedItems
-                    .stream()
-                    .filter(x -> x.getItem().isInventoryItem())
-                    .collect(
-                            Collectors.groupingBy(PatientBillItem::getServicePointId,
-                                    Collectors.summingDouble(x -> (x.getItem().getCostRate().doubleValue() * x.getQuantity())))
-                    );
-            if (!inventory.isEmpty()) {
-                inventory.forEach((k, v) -> {
-                    //revenue
-                    ServicePoint srv = servicePointService.getServicePoint(k);
-                    String narration = "Expensing Inventory for " + srv.getName();
-                    Account debit = srv.getExpenseAccount();//store.getInventoryAccount();// srv.getExpenseAccount();// cost of sales
-                    Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
-                    BigDecimal amount = BigDecimal.valueOf(v);
-                    items.add(new JournalEntryItem(narration, debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
-                    items.add(new JournalEntryItem(narration, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
-                });
+            //at this pointwithdraw the cash
+        } else if (channel.getType() == PayChannel.Type.Cash) {
+            Account creditAccount = null;
+            if (channel.getAccountId() == 1) {
+                Optional<FinancialActivityAccount> pettycashAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Petty_Cash);
+                if (!pettycashAccount.isPresent()) {
+                    throw APIException.badRequest("Petty Cash Account is Not Mapped");
+                }
+                creditAccount = pettycashAccount.get().getAccount();
+            }
+            if (channel.getAccountId() == 2) {
+                Optional<FinancialActivityAccount> receiptAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
+                if (!receiptAccount.isPresent()) {
+                    throw APIException.badRequest("Undeposited Fund Account (Receipt Control) is Not Mapped");
+                }
+                creditAccount = receiptAccount.get().getAccount();
+            }
+            if (creditAccount == null) {
+                return null;
+            }
+            items.add(new JournalEntryItem(creditAccount, narration, BigDecimal.ZERO, payment.getAmount()));
+        }
+        //TAXES
+        if (data.getTaxAccountNumber() != null) {
+            Optional<Account> taxAccount = accountRepository.findByIdentifier(data.getTaxAccountNumber());
+            if (taxAccount.isPresent()) {
+                //then we go tax
+                Account debitTax = taxAccount.get();
+                final Account toCreditTax = creditTax;
+                BigDecimal amount = data.getInvoices()
+                        .stream()
+                        .filter(x -> x.getTaxAmount() != null && x.getTaxAmount() != BigDecimal.ZERO)
+                        .map(x -> x.getTaxAmount())
+                        .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
+//                        .forEach(inv -> {
+                String desc = "Withheld Tax " + SystemUtils.formatCurrency(amount) + " for the payment voucher no. " + payment.getVoucherNo();
+                items.add(new JournalEntryItem(debitTax, desc, amount, BigDecimal.ZERO));
+                items.add(new JournalEntryItem(toCreditTax, desc, BigDecimal.ZERO, amount));
+//                        });
             }
         }
-        String description = "Patient Receipting - " + receipt;
-        JournalEntry toSave = new JournalEntry(receiptDate, description, items);
-        toSave.setTransactionType(TransactionType.Receipting);
-        toSave.setTransactionNo(trxId);
+
+        String description = descType + " - Voucher Number. " + payment.getVoucherNo();
+
+        JournalEntry toSave = new JournalEntry(payment.getPaymentDate(), description, items);
+        toSave.setTransactionType(TransactionType.Payment);
+        toSave.setTransactionNo(payment.getTransactionNo());
         toSave.setStatus(JournalState.PENDING);
+
         return toSave;
     }
 
+    public Supplier getSupplier(Long id) {
+        Supplier supplier = supplierRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Supplier with id {0} not found.", id));
+        return supplier;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Payment makePayment(MakePettyCashPayment data) {
+        Payment payment = new Payment();
+//        payment.setCreditorId(data.getCreditorId());
+        payment.setPayee(data.getPayee());
+        payment.setPayeeType(PayeeType.PettyCash);
+        payment.setAmount(data.getApprovedAmount());
+        payment.setDescription(data.getDescription());
+        payment.setPaymentDate(data.getDate());
+        payment.setPaymentMethod("Cash");
+        payment.setReferenceNumber(data.getReferenceNumber());
+//        payment.setSupplier(supplier);
+        //update the invoices paid
+
+        String transactionId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        String voucherNo = sequenceNumberService.next(1L, Sequences.VoucherNumber.name());
+        payment.setVoucherNo(voucherNo);
+        payment.setTransactionNo(transactionId);
+
+        Payment savedPayment = repository.save(payment);
+        //update bills status and the once paid
+
+        List<PettyCashPayment> pettycashpayments = data.getRequests()
+                .stream()
+                .map(req -> {
+                    PettyCashPayment pay = new PettyCashPayment();
+                    pay.setCredit(req.getAmount());
+                    pay.setDebit(BigDecimal.ZERO);
+                    pay.setDescription(req.getDescription());
+                    pay.setPayee(data.getPayee());
+                    pay.setPayment(savedPayment);
+                    pay.setPaymentDate(data.getDate());
+//                   pay.setPettyCashRequest(pettyCashRequest);
+                    pay.setTransactionNo(savedPayment.getTransactionNo());
+                    pay.setVoucherNo(savedPayment.getVoucherNo());
+
+                    return pay;
+                })
+                .collect(Collectors.toList());
+        pettyCashPaymentRepository.saveAll(pettycashpayments);
+        // journal the payment
+        journalEntryService.save(toJournalPettyCash(payment, data.getRequests()));
+
+        return savedPayment;
+    }
+
+    private void taxJournaling(MakePayment data, List<JournalEntryItem> items) {
+
+    }
+
+    private JournalEntry toJournalPettyCash(Payment payment, List<PettyCashRequestItem> requests) {
+
+        List<JournalEntryItem> items = new ArrayList<>();
+        requests.stream()
+                .forEach(request -> {
+                    //credit the account we paying from and not his
+                    Account debitAccount = findAccountByNumber(request.getLedgerAccountNumber());
+
+                    String narration = SystemUtils.formatCurrency(payment.getAmount()) + " for petty cash payment, voucher no. " + payment.getVoucherNo();
+                    items.add(new JournalEntryItem(debitAccount, narration, request.getAmount(), BigDecimal.ZERO));
+                }
+                );
+
+        Optional<FinancialActivityAccount> pettycashAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Petty_Cash);
+        if (!pettycashAccount.isPresent()) {
+            throw APIException.badRequest("Petty Cash Account is Not Mapped");
+        }
+        Account creditAccount = pettycashAccount.get().getAccount();
+        String narration = SystemUtils.formatCurrency(payment.getAmount()) + " for petty cash payment, voucher no. " + payment.getVoucherNo();
+        items.add(new JournalEntryItem(creditAccount, narration, BigDecimal.ZERO, payment.getAmount()));
+
+        String description = "Petty Cash Payment - Voucher Number. " + payment.getVoucherNo() + " amount : " + SystemUtils.formatCurrency(payment.getAmount());
+        JournalEntry toSave = new JournalEntry(payment.getPaymentDate(), description, items);
+        toSave.setTransactionType(TransactionType.Petty_Cash);
+        toSave.setTransactionNo(payment.getTransactionNo());
+        toSave.setStatus(JournalState.PENDING);
+
+        return toSave;
+    }
+
+    public Account findAccountByNumber(String identifier) {
+        return accountRepository.findByIdentifier(identifier)
+                .orElseThrow(() -> APIException.notFound("Account with Account Number {0} not found", identifier));
+    }
 }

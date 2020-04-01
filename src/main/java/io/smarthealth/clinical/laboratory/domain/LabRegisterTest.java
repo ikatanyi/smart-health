@@ -84,6 +84,7 @@ public class LabRegisterTest extends Identifiable {
             data.setOrderNumber(this.labRegister.getOrderNumber());
             data.setRequestedBy(this.labRegister.getRequestedBy());
             data.setLabNumber(this.labRegister.getLabNumber());
+            data.setPatientNumber(this.labRegister.getPatientNo());
 
         }
 

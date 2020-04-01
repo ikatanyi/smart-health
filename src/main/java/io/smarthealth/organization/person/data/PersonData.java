@@ -11,6 +11,7 @@ import io.smarthealth.organization.person.domain.Person;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.domain.enumeration.MaritalStatus;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
@@ -44,6 +45,7 @@ public class PersonData {
     private List<AddressData> address;
     private List<ContactData> contact;
     private String fullName;
+    private LocalDate createdOn;
 
     private boolean isPatient;
     private String primaryContact, residence, religion, nationalIdNumber;
@@ -84,6 +86,7 @@ public class PersonData {
         persondto.setSurname(person.getSurname());
         persondto.setPatient(person.isPatient());
         persondto.setDateOfBirth(person.getDateOfBirth());
+        persondto.setCreatedOn(LocalDate.from(person.getCreatedOn().atZone(ZoneId.systemDefault())));
         if (person.getAddresses() != null) {
             persondto.setAddress(
                     person.getAddresses().stream()

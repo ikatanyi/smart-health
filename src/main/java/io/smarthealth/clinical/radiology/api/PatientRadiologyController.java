@@ -48,8 +48,8 @@ public class PatientRadiologyController {
     
     @PostMapping("/patient-scan")
     public @ResponseBody
-    ResponseEntity<?> createPatientScan(@RequestBody final PatientScanRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo, @RequestParam(value = "requestId", required = false) final Long requestId) {
-        PatientScanRegisterData Patientscans = radiologyService.savePatientResults(patientRegData, visitNo, requestId).todata();
+    ResponseEntity<?> createPatientScan(@RequestBody final PatientScanRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo) {
+        PatientScanRegisterData Patientscans = radiologyService.savePatientResults(patientRegData, visitNo).todata();
         Pager<PatientScanRegisterData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -108,7 +108,7 @@ public class PatientRadiologyController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        final DateRange range = DateRange.fromIsoString(dateRange);
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<PatientScanTestData> list = radiologyService.findAllTests(patientNumber, orderNo, status, visitNumber, range, walkin, pageable)
                 .map(x -> x.toData());

@@ -37,6 +37,10 @@ import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
+import io.smarthealth.clinical.laboratory.domain.LabRegisterTestRepository;
+import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
+import io.smarthealth.clinical.radiology.domain.PatientScanTestRepository;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.domain.SearchOperation;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -70,6 +74,7 @@ public class BillingService {
     private final SequenceNumberService sequenceNumberService;
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final DoctorInvoiceService doctorInvoiceService;
+    private final CashPaidUpdater cashPaidUpdater;
 
     //Create service bill
     public PatientBill createPatientBill(BillData data) {
@@ -163,14 +168,8 @@ public class BillingService {
 
     public PatientBillItem updateBillItem(PatientBillItem item) {
         //determine the request origin and update ti
-
+        cashPaidUpdater.updateRequestStatus(item);
         return billItemRepository.save(item);
-    }
-
-    private void updateRequestStatus(PatientBillItem item) {
-        if (item.getPatientBill().getPaymentMode().equals("Cash")) {
-
-        }
     }
 
     public Item getItemByCode(String code) {
@@ -262,8 +261,12 @@ public class BillingService {
                 String desc = srv.getName() + " Patient Billing";
                 Account credit = srv.getIncomeAccount();
                 BigDecimal amount = BigDecimal.valueOf(v);
-                items.add(new JournalEntryItem(desc, debitAcc, JournalEntryItem.Type.DEBIT, amount));
-                items.add(new JournalEntryItem(desc, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
+
+                items.add(new JournalEntryItem(debitAccount.get().getAccount(), desc, amount, BigDecimal.ZERO));
+                items.add(new JournalEntryItem(credit, desc, BigDecimal.ZERO, amount));
+
+//                items.add(new JournalEntryItem(desc, debitAcc, JournalEntryItem.Type.DEBIT, amount));
+//                items.add(new JournalEntryItem(desc, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
             });
             //if inventory expenses this shit!
             if (store != null) {
@@ -287,8 +290,12 @@ public class BillingService {
                         Account debit = srv.getExpenseAccount(); // cost of sales
                         Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
                         BigDecimal amount = BigDecimal.valueOf(v);
-                        items.add(new JournalEntryItem(desc, debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
-                        items.add(new JournalEntryItem(desc, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
+                        
+                        items.add(new JournalEntryItem(debit, desc, amount, BigDecimal.ZERO));
+                        items.add(new JournalEntryItem(credit, desc, BigDecimal.ZERO, amount));
+
+//                        items.add(new JournalEntryItem(desc, debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
+//                        items.add(new JournalEntryItem(desc, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
                     });
                 }
 
@@ -349,15 +356,15 @@ public class BillingService {
 
     public List<PatientBill> search(String search) {
         BillSpecificationsBuilder builder = new BillSpecificationsBuilder();
-        
-         String operationSetExper = StringUtils.join(SearchOperation.SIMPLE_OPERATION_SET, "|");
+
+        String operationSetExper = StringUtils.join(SearchOperation.SIMPLE_OPERATION_SET, "|");
         Pattern pattern = Pattern.compile("(\\w+?)(" + operationSetExper + ")(\\p{Punct}?)(\\w+?)(\\p{Punct}?),");
         Matcher matcher = pattern.matcher(search + ",");
         while (matcher.find()) {
             builder.with(matcher.group(1), matcher.group(2), matcher.group(4), matcher.group(3), matcher.group(5));
         }
 
-        Specification<PatientBill> spec = builder.build(); 
+        Specification<PatientBill> spec = builder.build();
         return patientBillRepository.findAll(spec);
     }
 }

@@ -6,9 +6,11 @@
 package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.payment.data.PaymentData;
+import io.smarthealth.accounting.payment.domain.enumeration.PayeeType;
 import io.smarthealth.infrastructure.domain.Auditable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,30 +24,38 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "payments")
+@Table(name = "acc_payments")
 public class Payment extends Auditable {
 
-    @ManyToOne
-    private FinancialTransaction transaction;
-    
-    private String method;
-
-    private Double amount;
-
-    private String referenceCode;
-
-    private String type;
-
+    private Long payeeId;
+    private String payee;
+    private PayeeType payeeType;
+    private LocalDate paymentDate;
+    private String voucherNo; //payment number
+    private String paymentMethod;
+    private BigDecimal amount;
+    private String referenceNumber;
+    private String description;
+    private String transactionNo;
     private String currency;
-    
-     public  PaymentData toData() {
-        return new PaymentData(
-                this.getId(),
-                this.method,
-                this.amount,
-                this.referenceCode,
-                this.type,
-                this.currency
-        );
+//    @OneToMany(mappedBy = "payment")
+//    private List<SupplierPayment> invoicePayments = new ArrayList<>();
+
+//    private PaymentInfoCheque paymentInfoCheque;
+    public PaymentData toData() {
+        PaymentData data = new PaymentData();
+        data.setId(this.getId());
+        data.setAmount(this.amount);
+        data.setPayee(this.payee);
+        data.setPayeeId(this.payeeId);
+        data.setPayeeType(this.payeeType);
+        data.setCurrency(this.currency);
+        data.setDescription(this.description);
+        data.setPaymentDate(this.paymentDate);
+        data.setPaymentMethod(this.paymentMethod);
+        data.setReferenceNumber(this.referenceNumber);
+        data.setTransactionNo(this.transactionNo);
+        data.setVoucherNo(this.voucherNo);
+        return data;
     }
 }

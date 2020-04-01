@@ -1,17 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.radiology.data;
 
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
-import io.smarthealth.clinical.radiology.domain.RadiologyResult;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.swagger.annotations.ApiModelProperty;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -32,6 +24,7 @@ public class PatientScanTestData {
     private ScanTestState status;
     private String imagePath;
     private Boolean done;
+    private Boolean paid;
     private String doneBy;
     private LocalDateTime entryDateTime;
     private Boolean voided;
@@ -40,6 +33,20 @@ public class PatientScanTestData {
     private String comments;
     @ApiModelProperty(required=false, hidden=true)
     private RadiologyResultData resultData;
+    @ApiModelProperty(required=false, hidden=true)
+    private Long requestId;
+    @ApiModelProperty(required=false, hidden=true)
+    private String patientNumber;
+    @ApiModelProperty(required=false, hidden=true)
+    private String patientName;
+    @ApiModelProperty(required=false, hidden=true)
+    private String template;
+    @ApiModelProperty(required=false, hidden=true)
+    private Long templateId;
+    @ApiModelProperty(required=false, hidden=true)
+    private String templateName;
+    @ApiModelProperty(required=false, hidden=true)
+    private Boolean supervisorConfirmation;
     
     public PatientScanTest map(){
         PatientScanTest entity = new PatientScanTest();

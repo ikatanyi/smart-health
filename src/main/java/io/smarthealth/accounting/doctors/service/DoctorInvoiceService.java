@@ -138,8 +138,10 @@ public class DoctorInvoiceService {
         String narration = "Doctor " + invoice.getDoctor().getFullName() + " invoicing for patient " + invoice.getPatient().getPatientNumber() + " Bill Number: " + invoice.getInvoiceNumber();
         JournalEntry toSave = new JournalEntry(invoice.getInvoiceDate(), narration,
                 new JournalEntryItem[]{
-                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
-                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                    new JournalEntryItem(debitAccount.get().getAccount(), narration, amount, BigDecimal.ZERO),
+                    new JournalEntryItem(creditAccount.get().getAccount(), narration,BigDecimal.ZERO, amount)
+//                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
+//                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
                 }
         );
         toSave.setTransactionNo(invoice.getTransactionId());

@@ -30,5 +30,6 @@ public enum ReportName {
         Radiology_Statement_Summarized,
         Patient_List,
         Patient_Visit,
-        Patient_Diagnosis,        
+        Patient_Diagnosis,   
+        Patient_Card
 }

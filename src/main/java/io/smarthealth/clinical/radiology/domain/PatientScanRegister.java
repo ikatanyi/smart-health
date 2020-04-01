@@ -59,11 +59,8 @@ public class PatientScanRegister extends Identifiable {
     
     private String paymentMode;
     
-    private Double balance;
-   
-    @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_request_id"))
-    private DoctorRequest request;
+    private Double balance;   
+    
     
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_visit_id"))    
@@ -133,12 +130,7 @@ public class PatientScanRegister extends Identifiable {
         else{
             data.setPatientName(this.patientNo);
             data.setVisitNumber(this.patientNo);
-        }
-        
-        if(this.getRequest()!=null){
-            data.setRequestedBy(this.getRequest().getRequestedBy().getFullName());
-            data.setRequestId(this.getRequest().getId());
-        }        
+        }       
         return data;
     }
 }

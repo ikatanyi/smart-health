@@ -2,6 +2,7 @@ package io.smarthealth.clinical.radiology.domain.specification;
 
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
 import io.smarthealth.clinical.radiology.domain.RadiologyResult;
+import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
@@ -17,7 +18,7 @@ public class RadiologyTestSpecification {
         super();
     }
 
-    public static Specification<PatientScanTest> createSpecification(String PatientNumber,String scanNo, String visitId, Boolean isWalkin, DateRange range) {
+    public static Specification<PatientScanTest> createSpecification(String PatientNumber,String scanNo, String visitId, Boolean isWalkin, ScanTestState status, DateRange range) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
  
@@ -33,9 +34,13 @@ public class RadiologyTestSpecification {
             if (isWalkin != null) {
                 predicates.add(cb.equal(root.get("patientScanRegister").get("isWalkin"), isWalkin));
             }
+             if (status != null) {
+                predicates.add(cb.equal(root.get("status"), status));
+            }
              if(range!=null){
                   predicates.add(
-                     cb.between(root.get("createdOn"), range.getStartDateTime(), range.getEndDateTime())
+                          
+                     cb.between(root.get("patientScanRegister").get("receivedDate"), range.getStartDate(), range.getStartDate())
                   );
               }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

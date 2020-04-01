@@ -6,8 +6,7 @@ import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.domain.Allocation;
 import io.smarthealth.debtor.claim.allocation.domain.AllocationRepository;
 import io.smarthealth.debtor.claim.allocation.domain.specification.AllocationSpecification;
-import io.smarthealth.debtor.claim.remittance.domain.Remittance;
-import io.smarthealth.debtor.claim.remittance.domain.RemitanceRepository;
+import io.smarthealth.debtor.claim.remittance.domain.RemittanceOld;
 import io.smarthealth.debtor.claim.remittance.service.RemitanceService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -20,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import io.smarthealth.debtor.claim.remittance.domain.RemittanceOldRepository;
 
 /**
  *
@@ -31,11 +31,11 @@ import org.springframework.stereotype.Service;
 public class AllocationService {
 
     private final AllocationRepository allocationRepository;
-    private final RemitanceRepository remitanceRepository;
+    private final RemittanceOldRepository remitanceRepository;
     private final InvoiceService invoiceService;
 
     @javax.transaction.Transactional
-    public List<Allocation> createAllocation(List<AllocationData> dataList, Remittance remitance) {
+    public List<Allocation> createAllocation(List<AllocationData> dataList, RemittanceOld remitance) {
         List<Allocation> allocations = new ArrayList<>();
         for (AllocationData data : dataList) {
             Allocation allocation = AllocationData.map(data);

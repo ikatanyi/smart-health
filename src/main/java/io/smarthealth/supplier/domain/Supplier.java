@@ -1,7 +1,8 @@
 package io.smarthealth.supplier.domain;
 
 import io.smarthealth.accounting.accounts.domain.Account;
-import io.smarthealth.accounting.payment.domain.PaymentTerms;
+import io.smarthealth.accounting.payment.domain.Payment;
+import io.smarthealth.administration.finances.domain.PaymentTerms;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.BankEmbeddedData;
@@ -10,6 +11,7 @@ import io.smarthealth.administration.app.domain.*;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.enumeration.SupplierType;
+import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -17,6 +19,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -30,7 +33,7 @@ import lombok.Data;
 @Entity
 @Table(name = "supplier")
 public class Supplier extends Auditable {
-
+ 
     @Enumerated(EnumType.STRING)
     private SupplierType supplierType;
     private String supplierName;
@@ -66,7 +69,7 @@ public class Supplier extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_supplier_account_id"))
     @ManyToOne
     private Account creditAccount;
-
+   
     public SupplierData toData() {
         SupplierData data = new SupplierData();
         data.setId(this.getId());

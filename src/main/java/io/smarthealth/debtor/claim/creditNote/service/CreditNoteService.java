@@ -11,11 +11,9 @@ import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.service.BillingService;
-import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
-import io.smarthealth.debtor.claim.creditNote.data.CreditNoteItemData;
 import io.smarthealth.debtor.claim.creditNote.data.CreditNoteData;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNote;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNoteItem;
@@ -154,8 +152,10 @@ public class CreditNoteService {
         String narration = "Credit Note " + creditNote.getCreditNoteNo() + "for invoice " + creditNote.getInvoice().getNumber();
         JournalEntry toSave = new JournalEntry(LocalDate.from(creditNote.getCreatedOn().atZone(ZoneId.systemDefault())), narration,
                 new JournalEntryItem[]{
-                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
-                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                    new JournalEntryItem(debitAccount, narration, amount, BigDecimal.ZERO),
+                    new JournalEntryItem(creditAccount.get().getAccount(), narration,BigDecimal.ZERO, amount)
+//                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
+//                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
                 }
         );
         toSave.setTransactionNo(creditNote.getTransactionId());

@@ -58,6 +58,7 @@ public class BankAccountController {
 
     @GetMapping("/bank-account")
     public ResponseEntity<?> getBankAccounts(
+            @RequestParam(value = "accountNumber", required = false) String accountNumber,
             @RequestParam(value = "bankName", required = false) String bankName,
             @RequestParam(value = "bankBranch", required = false) String bankBranch,
             @RequestParam(value = "bankType", required = false) BankType bankType,
@@ -65,7 +66,7 @@ public class BankAccountController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<BankAccountData> list = bankAccountservice.getBankAccounts(bankName, bankBranch, bankType, pageable)
+        Page<BankAccountData> list = bankAccountservice.getBankAccounts(accountNumber,bankName, bankBranch, bankType, pageable)
                 .map(bAccount -> BankAccountData.map(bAccount));
 
         Pager<List<BankAccountData>> pagers = new Pager();
