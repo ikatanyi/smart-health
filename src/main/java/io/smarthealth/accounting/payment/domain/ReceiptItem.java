@@ -30,6 +30,7 @@ import lombok.NoArgsConstructor;
 public class ReceiptItem extends Identifiable {
 
     @ManyToOne
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_receipts_billed_receipt_id"))
     private Receipt receipt;
 
     @ManyToOne
