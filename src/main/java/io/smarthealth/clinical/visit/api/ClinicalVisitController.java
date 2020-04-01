@@ -69,7 +69,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Api(value = "Patient Visit", description = "Operations pertaining to patient visit in a health facility")
 public class ClinicalVisitController {
 
-  
     @Autowired
     private VisitService visitService;
 
@@ -232,7 +231,7 @@ public class ClinicalVisitController {
         visit.setStatus(VisitEnum.Status.valueOf(status));
         visit = this.visitService.createAVisit(visit);
         //Convert to data
-        VisitData visitDat = modelMapper.map(visit, VisitData.class);
+        VisitData visitDat = VisitData.map(visit);
 
         return ResponseEntity.status(HttpStatus.OK).body(visitDat);
     }
@@ -426,7 +425,7 @@ public class ClinicalVisitController {
     }
 
     private VisitData convertToVisitData(Visit visit) {
-        VisitData visitData = modelMapper.map(visit, VisitData.class);
+        VisitData visitData = VisitData.map(visit);
         if (visit.getHealthProvider() != null) {
             visitData.setPractitionerCode(visit.getHealthProvider().getStaffNumber());
             visitData.setPractitionerName(visit.getHealthProvider().getTitle() + ". " + visit.getHealthProvider().getFullName());
