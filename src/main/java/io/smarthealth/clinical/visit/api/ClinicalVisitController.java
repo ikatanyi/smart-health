@@ -189,7 +189,7 @@ public class ClinicalVisitController {
             billingService.createPatientBill(data);
         }
         //Convert to data
-        VisitData visitDat = modelMapper.map(visit, VisitData.class);
+        VisitData visitDat = VisitData.map(visit);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/visits/{visitNumber}")
@@ -213,7 +213,7 @@ public class ClinicalVisitController {
         visit.setPatient(patient);
         visit = this.visitService.createAVisit(visit);
         //Convert to data
-        VisitData visitDat = modelMapper.map(visit, VisitData.class);
+        VisitData visitDat = VisitData.map(visit);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/visits/{visitNumber}")
