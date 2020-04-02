@@ -34,6 +34,7 @@ private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests() 
+                 .antMatchers("/tenants").permitAll()   
                 .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                 .antMatchers("/api/user/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE").and()
                 .antMatcher("/api/**").authorizeRequests() 

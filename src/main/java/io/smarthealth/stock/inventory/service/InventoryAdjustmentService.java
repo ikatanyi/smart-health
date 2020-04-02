@@ -2,7 +2,6 @@ package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.sequence.service.TxnService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.data.AdjustmentData;
@@ -34,7 +33,6 @@ public class InventoryAdjustmentService {
     private final StoreService storeService;
     private final StockAdjustmentRepository stockAdjustmentRepository;
     private final InventoryEventSender inventoryEventSender;
-    private final TxnService txnService;
     private final SequenceNumberService sequenceNumberService;
 
     // create Invariance

@@ -31,7 +31,6 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -69,11 +68,9 @@ public class ProcedureService {
     private final EmployeeService employeeService;
     private final ItemService itemService;
     private final VisitService visitService;
-    private final SequenceService seqService;
     private final SequenceNumberService sequenceNumberService;
     private final BillingService billingService;
     private final ServicePointService servicePointService;
-    private final PricelistService pricelistService;
 
     @Transactional
     public List<Procedure> createProcedureTest(List<ProcedureData> procedureTestData) {
@@ -223,8 +220,9 @@ public class ProcedureService {
                     if (lineData.getMedic() != null) {
                         billItem.setMedicId(lineData.getMedic().getId());
                     }
-                    if(!lineData.getPatientProcedureRegister().getIsWalkin())
+                    if (!lineData.getPatientProcedureRegister().getIsWalkin()) {
                         billItem.setRequestReference(lineData.getPatientProcedureRegister().getRequest().getId());
+                    }
                     billItem.setItem(item);
                     billItem.setPrice(lineData.getTestPrice());
                     billItem.setQuantity(lineData.getQuantity());
