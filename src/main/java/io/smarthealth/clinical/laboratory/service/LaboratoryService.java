@@ -4,6 +4,7 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -39,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterRepository;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTestRepository;
+import io.smarthealth.clinical.laboratory.domain.specification.LabRegisterTestSpecification;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
@@ -47,6 +49,7 @@ import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
+import org.apache.commons.lang3.EnumUtils;
 
 /**
  *
@@ -159,6 +162,11 @@ public class LaboratoryService {
     public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range,String search,Pageable page) {
         Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status,range, search);
         return repository.findAll(spec, page);
+    }
+    
+     public Page<LabRegisterTest> getLabRegisterTest(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range,String search,Pageable page) {
+        Specification<LabRegisterTest> spec = LabRegisterTestSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status,range, search);
+        return testRepository.findAll(spec, page);
     }
 
 //RESULTS
@@ -383,5 +391,15 @@ public class LaboratoryService {
             req.setFulfillerStatus(FullFillerStatusType.Fulfilled);
             doctorRequestRepository.save(req);
         }
+    }
+    
+    public LabTestStatus LabTestStatusToEnum(String status) {
+        if (status == null || status.equals("null") || status.equals("")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(LabTestStatus.class, status)) {
+            return LabTestStatus.valueOf(status);
+        }
+        throw APIException.internalError("Provide a Valid Invoice Status");
     }
 }

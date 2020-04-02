@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientLab_report_tests" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b3381605-b0c8-42fa-9eeb-f8ba94fce080">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
-	<field name="patientLabTestId" class="java.lang.Long"/>
 	<field name="testName" class="java.lang.String"/>
-	<field name="createdOn" class="java.lang.Object"/>
-	<field name="createdBy" class="java.lang.String"/>
+	<field name="entryDateTime" class="java.lang.Object"/>
+	<field name="enteredBy" class="java.lang.String"/>
 	<field name="specimen" class="java.lang.String"/>
-	<field name="accessNo" class="java.lang.String"/>
+	<field name="labNumber" class="java.lang.String"/>
 	<field name="status" class="java.lang.Object"/>
-	<field name="resultsData" class="java.util.List"/>
+	<field name="labResults" class="java.util.List"/>
+	<field name="orderNumber" class="java.lang.String"/>
+	<field name="requestedBy" class="java.lang.String"/>
+	<field name="testCode" class="java.lang.String"/>
+	<field name="validated" class="java.lang.Boolean"/>
+	<field name="validatedBy" class="java.lang.String"/>
 	<field name="withRef" class="java.lang.Boolean"/>
 	<columnHeader>
 		<band height="48" splitType="Stretch">
@@ -25,7 +29,7 @@
 				<text><![CDATA[Date Reported :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="16" width="69" height="15" isRemoveLineWhenBlank="true" uuid="d367d4ed-94f0-4b99-9918-e1ce57b6cdc4"/>
+				<reportElement x="1" y="16" width="66" height="15" isRemoveLineWhenBlank="true" uuid="d367d4ed-94f0-4b99-9918-e1ce57b6cdc4"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 					<paragraph leftIndent="5"/>
@@ -37,7 +41,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{accessNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{testCode}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="360" y="1" width="91" height="16" uuid="67303c2a-87ee-41db-9b69-acb699ac149e"/>
@@ -47,7 +51,7 @@
 				<text><![CDATA[Lab Transaction.No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="1" y="0" width="68" height="17" isRemoveLineWhenBlank="true" forecolor="#000000" uuid="1a8461b2-fa61-41cb-b26e-fee39503e7bc"/>
+				<reportElement positionType="Float" x="1" y="0" width="66" height="17" isRemoveLineWhenBlank="true" forecolor="#000000" uuid="1a8461b2-fa61-41cb-b26e-fee39503e7bc"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 					<paragraph leftIndent="5"/>
@@ -59,7 +63,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{createdOn}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{entryDateTime}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="67" y="1" width="156" height="15" isRemoveLineWhenBlank="true" uuid="788c4112-84a4-41d8-9826-37c9db2fc205"/>
@@ -88,7 +92,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{enteredBy}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="360" y="31" width="91" height="15" uuid="5f173801-00c0-4e94-b3e0-3ad4714b843b"/>
@@ -121,12 +125,12 @@
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{resultsData})]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labResults})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement x="0" y="0" width="555" height="20" uuid="f34baf56-bfab-4384-b0d4-f9233c4010e8"/>
-				<dataSourceExpression><![CDATA[$F{resultsData}]]></dataSourceExpression>
+				<reportElement x="0" y="0" width="556" height="20" uuid="f34baf56-bfab-4384-b0d4-f9233c4010e8"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labResults})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results_without_ref.jasper"]]></subreportExpression>
 			</subreport>
 		</band>

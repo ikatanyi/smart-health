@@ -60,7 +60,7 @@ public class ReportController {
                 reportService.getPatientFile(queryParams, format, response);
                 break;
             case Lab_Report:
-                reportService.getPatientLabReport(queryParams, format, response);
+                labReportService.getPatientLabReport(queryParams, format, response);
                 break;
             case Procedure_Report:
                 reportService.getPatientProcedureReport(queryParams, format, response);
@@ -84,7 +84,7 @@ public class ReportController {
                 reportService.getPrescriptionLabel(queryParams, format, response);
                 break;
             case Lab_Statement_Summarized:
-                labReportService.getLabStatement(queryParams, format, response);
+                labReportService.getLabTestStatement(queryParams, format, response);
                 break;
             case Lab_Statement:
                 labReportService.getLabStatement(queryParams, format, response);

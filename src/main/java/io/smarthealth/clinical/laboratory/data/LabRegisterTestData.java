@@ -60,5 +60,7 @@ public class LabRegisterTestData {
     private List<LabResultData> labResults=new ArrayList<>();
     @ApiModelProperty(required=false, hidden = true)
     private String patientNumber;
+    @ApiModelProperty(required=false, hidden = true)
+    private Boolean withRef;
 
 }
