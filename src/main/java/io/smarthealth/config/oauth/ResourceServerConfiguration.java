@@ -17,28 +17,29 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 @Configuration
 @EnableResourceServer
 public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
-private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     public ResourceServerConfiguration(CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
-
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
         resources.resourceId("api");
     }
-  @Override
+
+    @Override
     public void configure(HttpSecurity http) throws Exception {
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests() 
+                .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                 .antMatchers("/api/user/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE").and()
-                .antMatcher("/api/**").authorizeRequests() 
-                .antMatchers(HttpMethod.GET, "/api/users", "/v2/api-docs/**", "/swagger-ui.html*").permitAll()  
-                 .antMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()   
+                .antMatcher("/api/**").authorizeRequests()
+                .antMatchers(HttpMethod.GET, /*"/api/users",*/ "/v2/api-docs/**", "/swagger-ui.html*").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/auth/signup").permitAll() /* This end-point should be dedicated to a scenario where this sytem is provided as a service. Different companies(hospitals) can signup and create their account*/
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint)
