@@ -21,7 +21,7 @@ public class PassayPassword {
         PasswordGenerator gen = new PasswordGenerator();
         CharacterData lowerCaseChars = EnglishCharacterData.LowerCase;
         CharacterRule lowerCaseRule = new CharacterRule(lowerCaseChars);
-        lowerCaseRule.setNumberOfCharacters(2);
+        lowerCaseRule.setNumberOfCharacters(1);
 
         CharacterData upperCaseChars = EnglishCharacterData.UpperCase;
         CharacterRule upperCaseRule = new CharacterRule(upperCaseChars);
@@ -37,17 +37,16 @@ public class PassayPassword {
             }
 
             public String getCharacters() {
-                return "!@#$%^&*()_+";
+                //return "!@#$%^&*()_+";
+                return "*#";
             }
         };
         CharacterRule splCharRule = new CharacterRule(specialChars);
-        splCharRule.setNumberOfCharacters(2);
+        splCharRule.setNumberOfCharacters(1);
 
-        String password = gen.generatePassword(10, splCharRule, lowerCaseRule,
+        String password = gen.generatePassword(6, splCharRule, lowerCaseRule,
                 upperCaseRule, digitRule);
         return password;
     }
-    public static void main(String[] args) {
-        System.out.println("Hey \n "+generatePassayPassword());
-    }
+
 }
