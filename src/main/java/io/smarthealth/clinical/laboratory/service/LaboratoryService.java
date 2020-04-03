@@ -109,7 +109,7 @@ public class LaboratoryService {
         return requests;//repository.save(requests);
     }
 
-//    @Transactional
+    @Transactional
     public int updateLabRegisteredTest(String labNo, Long testId, StatusRequest status) {
         LabRegister requests = getLabRegisterByNumber(labNo);
 
@@ -153,7 +153,7 @@ public class LaboratoryService {
         if (countEntered >= size) {
             repository.updateLabRegisterStatus(LabTestStatus.Complete, requests.getId());
         } else {
-            repository.updateLabRegisterStatus(LabTestStatus.PartialResults, requests.getId());
+            repository.updateLabRegisterStatus(LabTestStatus.PartialResult, requests.getId());
         }
 
 //        long entered = requests.getTests()

@@ -107,6 +107,7 @@ public class BillingService {
                     billItem.setBillingDate(lineData.getBillingDate());
                     billItem.setTransactionId(trdId);
                     billItem.setItem(item);
+                    billItem.setPaid(data.getPaymentMode().equals("Insurance"));
                     billItem.setPrice(lineData.getPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getAmount());
