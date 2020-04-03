@@ -3,6 +3,7 @@ package io.smarthealth.clinical.laboratory.domain;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.security.util.SecurityUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +14,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
@@ -23,7 +25,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "lab_register_tests")
+@Table(name = "lab_register_tests") 
 public class LabRegisterTest extends Identifiable {
 
     @ManyToOne

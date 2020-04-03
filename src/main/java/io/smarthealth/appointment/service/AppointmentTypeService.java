@@ -9,7 +9,6 @@ import io.smarthealth.appointment.data.AppointmentTypeData;
 import io.smarthealth.appointment.domain.AppointmentType;
 import io.smarthealth.appointment.domain.AppointmentTypeRepository;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import java.util.Optional;
@@ -27,7 +26,6 @@ public class AppointmentTypeService {
 
     private final AppointmentTypeRepository appointmentTypeRepository;
     private final SequenceNumberService sequenceNumberService; 
-    SequenceService sequenceService;
 
     public AppointmentTypeService(AppointmentTypeRepository appointmentTypeRepository, SequenceNumberService sequenceNumberService) {
         this.appointmentTypeRepository = appointmentTypeRepository;

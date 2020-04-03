@@ -107,6 +107,7 @@ public class BillingService {
                     billItem.setBillingDate(lineData.getBillingDate());
                     billItem.setTransactionId(trdId);
                     billItem.setItem(item);
+                    billItem.setPaid(data.getPaymentMode().equals("Insurance"));
                     billItem.setPrice(lineData.getPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getAmount());
@@ -144,6 +145,8 @@ public class BillingService {
     }
 
     public PatientBill save(PatientBill bill) {
+        String bill_no = bill.getBillNumber() == null ? sequenceNumberService.next(1L, Sequences.BillNumber.name()) : bill.getBillNumber();
+        bill.setBillNumber(bill_no);
         PatientBill savedBill = patientBillRepository.saveAndFlush(bill);
         List<DoctorInvoice> doctorInvoices = toDoctorInvoice(savedBill);
         if (doctorInvoices.size() > 0) {

@@ -21,30 +21,30 @@ import lombok.Data;
 @Data
 @Table(name = "patient_billing")
 public class PatientBill extends Auditable {
- 
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_patient_id"))
     private Patient patient;
-    
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_visit_id"))
     private Visit visit;
-    
-    private LocalDate billingDate;    
-    
+
+    private LocalDate billingDate;
+
     private String billNumber; //can also be an invoice
-    
+
     private String paymentMode;
     private String transactionId;
-    
+
     private Double discount;
     private Double taxes;
     private Double Amount;
     private Double balance;
     private String referenceNo;
-     
+
     @Enumerated(EnumType.STRING)
-    private BillStatus status; 
+    private BillStatus status;
     @OneToMany(mappedBy = "patientBill", cascade = CascadeType.ALL)
     private List<PatientBillItem> billItems = new ArrayList<>();
     //
@@ -55,10 +55,17 @@ public class PatientBill extends Auditable {
     }
 
     public void addBillItems(List<PatientBillItem> billItems) {
-        this.billItems=billItems;
+        this.billItems = billItems;
         this.billItems.forEach(x -> x.setPatientBill(this));
     }
-     
+
+    public Double getBillTotals() {
+        return this.billItems
+                .stream()
+                .mapToDouble(x -> x.getAmount())
+                .sum();
+
+    }
 
     public BillData toData() {
         BillData data = new BillData();

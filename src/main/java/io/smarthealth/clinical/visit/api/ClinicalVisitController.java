@@ -206,6 +206,7 @@ public class ClinicalVisitController {
             itemData.setAmount(pricelist.getSellingRate().doubleValue());
             itemData.setBalance(pricelist.getSellingRate().doubleValue());
             itemData.setBillingDate(LocalDate.now());
+            itemData.setPrice(pricelist.getSellingRate().doubleValue());
             itemData.setItem(pricelist.getItem().getItemName());
             itemData.setItemCode(pricelist.getItem().getItemCode());
             if (employee != null) {

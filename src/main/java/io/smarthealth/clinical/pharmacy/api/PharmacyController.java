@@ -12,7 +12,6 @@ import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
-import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.PrescriptionData;
 import io.smarthealth.clinical.record.domain.Prescription;
@@ -22,13 +21,9 @@ import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.Employee;
-import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.facility.service.FacilityService;
@@ -42,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -68,8 +62,6 @@ public class PharmacyController {
     final PrescriptionService prescriptionService;
 
     final ItemService itemService;
-
-     SequenceService sequenceService;
 
     final EmployeeService employeeService;
 

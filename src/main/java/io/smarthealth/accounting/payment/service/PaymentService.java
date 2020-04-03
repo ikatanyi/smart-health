@@ -146,10 +146,12 @@ public class PaymentService {
         Optional<PurchaseInvoice> invoice = purchaseInvoiceRepository.findByInvoiceForSupplier(bill.getInvoiceNo(), pay.getPayeeId());
         if (invoice.isPresent()) {
             PurchaseInvoice inv = invoice.get();
-            BigDecimal newBal = inv.getInvoiceBalance().subtract(bill.getAmountPaid());
+            BigDecimal grosspaid=bill.getAmountPaid().add(bill.getTaxAmount());
+            BigDecimal newBal = inv.getInvoiceBalance().subtract(grosspaid);
             boolean paid = newBal.doubleValue() <= 0;
             inv.setInvoiceBalance(newBal);
             inv.setPaid(paid);
+            inv.setTax(bill.getTaxAmount());
             PurchaseInvoice saved = purchaseInvoiceRepository.save(inv);
             return new SupplierPayment(pay, saved, bill.getAmountPaid(), bill.getTaxAmount());
         }
@@ -160,7 +162,8 @@ public class PaymentService {
         Optional<DoctorInvoice> invoice = doctorInvoiceRepository.findByInvoiceForDoctor(bill.getInvoiceNo(), pay.getPayeeId());
         if (invoice.isPresent()) {
             DoctorInvoice inv = invoice.get();
-            BigDecimal newBal = inv.getBalance().subtract(bill.getAmountPaid());
+            BigDecimal grosspaid=bill.getAmountPaid().add(bill.getTaxAmount());
+            BigDecimal newBal = inv.getBalance().subtract(grosspaid);
             boolean paid = newBal.doubleValue() <= 0;
             inv.setBalance(newBal);
             inv.setPaid(paid);

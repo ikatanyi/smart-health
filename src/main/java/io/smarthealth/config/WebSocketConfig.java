@@ -9,16 +9,22 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-   
+
+    // This prefix we will append to every message's route.
+    static final String MESSAGE_TOPIC_PREFIX = "/topic";
+    static final String MESSAGE_QUEUE_PREFIX = "/queue";
+    static final String END_POINT = "/notifications";
+    static final String APPLICATION_DESTINATION_PREFIX = "/app";
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic/", "/queue/");
-        config.setApplicationDestinationPrefixes("/app");
+        config.enableSimpleBroker(MESSAGE_TOPIC_PREFIX, MESSAGE_QUEUE_PREFIX);
+        config.setApplicationDestinationPrefixes(APPLICATION_DESTINATION_PREFIX);
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").withSockJS();
+        registry.addEndpoint(END_POINT).setAllowedOrigins("*").withSockJS();
     }
-  
+
 }

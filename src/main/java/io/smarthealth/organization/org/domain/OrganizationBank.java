@@ -24,5 +24,6 @@ public class OrganizationBank extends Auditable {
     @JoinColumn(name = "ledger_account_id", foreignKey = @ForeignKey(name = "fk_bank_account_id"))
     @ManyToOne
     private Account ledgerAccount;
+    
     private Boolean defaultAccount;
 }

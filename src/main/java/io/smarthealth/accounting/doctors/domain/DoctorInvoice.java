@@ -27,7 +27,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "acc_doctor_invoices")
-@NamedQuery(name = "tt", query = "SELECT d FROM DoctorInvoice d where d.invoiceNumber=:inv AND d.doctor.id=:docId")
 public class DoctorInvoice extends Auditable {
 
     public enum TransactionType {

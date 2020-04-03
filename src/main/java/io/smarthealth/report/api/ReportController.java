@@ -1,6 +1,5 @@
 package io.smarthealth.report.api;
 
-import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.report.domain.enumeration.ReportName;
 import io.smarthealth.report.service.LabReportService;
@@ -10,8 +9,6 @@ import io.smarthealth.report.service.ReportService;
 import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
