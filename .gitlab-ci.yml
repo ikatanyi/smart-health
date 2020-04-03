@@ -13,6 +13,8 @@ maven_build:
  
 build:
   stage: build
+  tags:
+    - maven
   script:  
     - mvn clean package -DskipTests
   artifacts:
@@ -21,6 +23,8 @@ build:
       
 deploy:
     stage: deploy
+    tags:
+    - maven
     script:
         - rsync target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
         - service smarthealth-app restart
