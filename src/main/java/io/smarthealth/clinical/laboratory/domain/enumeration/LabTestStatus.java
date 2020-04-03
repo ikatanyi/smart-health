@@ -4,6 +4,7 @@ public enum LabTestStatus {
     AwaitingSpecimen,
     PendingResult,
     ResultsEntered,
+    PartialResults,
     Complete,
     Cancelled
 }
