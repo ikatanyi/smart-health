@@ -6,7 +6,7 @@ stages:
 maven_build:
   stage: test
   tags:
-    - maven
+    - mavens
   script:
     - echo "Building project with maven"
     - mvn verify -DskipTests
