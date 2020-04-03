@@ -107,18 +107,13 @@
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <version>6.12.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>eclipse</groupId>
-                    <artifactId>jdtcore</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
-        <dependency>
+
+        <!--        <dependency>
             <groupId>org.eclipse.jdt.core.compiler</groupId>
             <artifactId>ecj</artifactId>
             <version>4.5</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.passay</groupId>
             <artifactId>passay</artifactId>
@@ -215,12 +210,5 @@
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>jasper-3rd-party</id>
-            <name>Jasper3rdParty</name>
-            <url>http://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/</url>
-        </repository>
-    </repositories>
 
 </project>
