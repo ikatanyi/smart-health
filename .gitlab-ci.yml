@@ -1,9 +1,9 @@
 stages:
-  - build
   - test
+  - build
   - deploy
 
-maven_build:
+verify:
   stage: test
   tags:
     - maven
