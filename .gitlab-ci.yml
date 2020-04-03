@@ -1,41 +1,12 @@
-# maven_build:
-#  script: mvn verify
-
 stages:
-  - test
   - build
+  - test
   - deploy
 
-before_script:
-  - mvn install
-test:
+maven_build:
   stage: test
-  script:  
+  tags:
+    - maven
+  script:
+    - echo "Building project with maven"
     - mvn verify -DskipTests
-
-build:
-  stage: build
-  script:  
-    - mvn clean package -DskipTests
-  artifacts:
-    paths:
-      - target/*.jar
-
-# variables:
-#   # MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode --errors --fail-at-end --show-version"
-#   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-    
-# before_script:
-#     # - apt update && apt install -y maven
-    
-deploy:
-    stage: deploy
-    script:
-        - rsync target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
-        - service smarthealth-app restart
-    
-    only:
-        - master
-cache:
-  paths:
-    - .m2/repository/
