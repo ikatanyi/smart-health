@@ -63,7 +63,7 @@ public class SchemConfigData {
         
         sc.setSchemeCover(schemeData.getSchemeCover());
         sc.setCheckMemberShipLimit(schemeData.isCheckMemberShipLimit());
-        sc.setHasClaimSwitching(schemeData.isHasClaimSwithing());
+//        sc.setHasClaimSwitching(schemeData.isHasClaimSwithing());
         
         return sc;
     }

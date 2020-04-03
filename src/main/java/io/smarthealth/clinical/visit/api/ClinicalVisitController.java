@@ -26,6 +26,7 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Scheme;
+import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -39,6 +40,8 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.service.ItemService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,6 +54,7 @@ import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -145,6 +149,44 @@ public class ClinicalVisitController {
             pd.setVisit(visit);
 
             paymentDetailsService.createPaymentDetails(pd);
+            //create bill for copay
+            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+            if (config.isPresent()) {
+                if (config.get().getCoPayType().equals("Fixed")) {
+                    Pageable firstPageWithOneElement = PageRequest.of(0, 1);
+
+                    //find item where item category is copay
+                    Page<Item> item = itemService.findByItemsByCategory(ItemCategory.CoPay, firstPageWithOneElement);
+                    if (item.getContent().size() < 1) {
+                        throw APIException.notFound("Copay service item has not been set", "CoPay");
+                    }
+                    List<BillItemData> billItems = new ArrayList<>();
+                    BillItemData itemData = new BillItemData();
+                    itemData.setAmount(config.get().getCoPayValue());
+                    itemData.setBalance(config.get().getCoPayValue());
+                    itemData.setBillingDate(LocalDate.now());
+                    itemData.setItem(item.getContent().get(0).getItemName());
+                    itemData.setItemCode(item.getContent().get(0).getItemCode());
+
+                    itemData.setQuantity(1.0);
+                    itemData.setServicePoint(visit.getServicePoint().getName());
+                    itemData.setServicePointId(visit.getServicePoint().getId());
+                    billItems.add(itemData);
+
+                    BillData data = new BillData();
+                    data.setBillItems(billItems);
+                    data.setAmount(config.get().getCoPayValue());
+                    data.setBalance(config.get().getCoPayValue());
+                    data.setBillingDate(LocalDate.now());
+                    data.setDiscount(0.00);
+                    data.setPatientName(patient.getFullName());
+                    data.setPatientNumber(patient.getPatientNumber());
+                    data.setPaymentMode(visit.getPaymentMethod().name());
+                    data.setVisitNumber(visit.getVisitNumber());
+
+                    billingService.createPatientBill(data);
+                }
+            }
         }
         //Push it to queue
         PatientQueue patientQueue = new PatientQueue();

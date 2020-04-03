@@ -117,7 +117,11 @@ public class BillingService {
                     billItem.setServicePointId(lineData.getServicePointId());
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setMedicId(lineData.getMedicId());
-
+//                    if (item != null) {
+//                        billItem.setNarration(item.getItemName());
+//                    }else{
+//                        billItem.setNarration(lineData.getNarration());
+//                    }
                     return billItem;
                 })
                 .collect(Collectors.toList());

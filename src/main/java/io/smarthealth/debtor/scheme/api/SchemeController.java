@@ -49,6 +49,7 @@ public class SchemeController {
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(scheme.getPayerId());
 
         Scheme s = SchemeData.map(scheme);
+
         s.setPayer(payer);
         Scheme savedScheme = schemeService.createScheme(s);
 
@@ -57,13 +58,25 @@ public class SchemeController {
                 .buildAndExpand(s.getId()).toUri();
 
         SchemeData data = SchemeData.map(savedScheme);
+        Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(savedScheme);
+        if (config.isPresent()) {
+            data.setConfigData(SchemConfigData.map(config.get()));
+        }
 
         return ResponseEntity.created(location).body(data);
     }
 
     @GetMapping("/scheme")
     public ResponseEntity<?> fetchAllSchemes(Pageable pageable) {
-        Page<SchemeData> scheme = schemeService.fetchSchemes(pageable).map(p -> SchemeData.map(p));
+        Page<SchemeData> scheme = schemeService.fetchSchemes(pageable).map(p
+                -> {
+            SchemeData data = SchemeData.map(p);
+            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(p);
+            if (config.isPresent()) {
+                data.setConfigData(SchemConfigData.map(config.get()));
+            }
+            return data;
+        });
 
         Pager<List<SchemeData>> pagers = new Pager();
         pagers.setCode("0");
@@ -83,7 +96,15 @@ public class SchemeController {
     @GetMapping("/payer/{id}/scheme")
     public ResponseEntity<?> fetchAllSchemesByPayer(@PathVariable("id") Long id, Pageable pageable) {
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(id);
-        Page<SchemeData> scheme = schemeService.fetchSchemesByPayer(payer, pageable).map(p -> SchemeData.map(p));
+        Page<SchemeData> scheme = schemeService.fetchSchemesByPayer(payer, pageable).map(p -> {
+            SchemeData data = SchemeData.map(p);
+            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(p);
+            if (config.isPresent()) {
+                data.setConfigData(SchemConfigData.map(config.get()));
+            }
+            return data;
+        }
+        );
 
         Pager<List<SchemeData>> pagers = new Pager();
         pagers.setCode("0");
@@ -119,6 +140,7 @@ public class SchemeController {
             //save as new
             SchemeConfigurations configurations = SchemConfigData.map(data);
             configurations.setScheme(scheme);
+            configurations.setHasClaimSwitching(true);
             configSaved = schemeService.updateSchemeConfigurations(configurations);
         } else {
             //look for scheme config 
