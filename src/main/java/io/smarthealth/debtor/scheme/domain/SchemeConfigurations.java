@@ -43,6 +43,6 @@ public class SchemeConfigurations extends Auditable {
     private LocalDate copayStartDate;
     private String schemeCover;
     private boolean checkMemberShipLimit;
-    private boolean hasClaimSwitching;
+    private boolean hasClaimSwitching=true;
 
 }

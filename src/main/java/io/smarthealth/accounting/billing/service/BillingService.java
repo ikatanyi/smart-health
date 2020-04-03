@@ -116,7 +116,11 @@ public class BillingService {
                     billItem.setServicePointId(lineData.getServicePointId());
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setMedicId(lineData.getMedicId());
-
+//                    if (item != null) {
+//                        billItem.setNarration(item.getItemName());
+//                    }else{
+//                        billItem.setNarration(lineData.getNarration());
+//                    }
                     return billItem;
                 })
                 .collect(Collectors.toList());
@@ -290,7 +294,7 @@ public class BillingService {
                         Account debit = srv.getExpenseAccount(); // cost of sales
                         Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
                         BigDecimal amount = BigDecimal.valueOf(v);
-                        
+
                         items.add(new JournalEntryItem(debit, desc, amount, BigDecimal.ZERO));
                         items.add(new JournalEntryItem(credit, desc, BigDecimal.ZERO, amount));
 

@@ -16,5 +16,6 @@ public enum ItemCategory {
     Procedure,
     Ward,
     Surgery,
-    Drug
+    Drug,
+    CoPay
 }

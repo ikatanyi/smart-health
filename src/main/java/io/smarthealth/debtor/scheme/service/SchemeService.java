@@ -64,7 +64,7 @@ public class SchemeService {
     public SchemeConfigurations fetchSchemeConfigBySchemeWithNotAvailableDetection(Scheme scheme) {
         return configurationsRepository.findByScheme(scheme).orElseThrow(() -> APIException.notFound("Scheme configuration identified by scheme no {0} not available ", scheme.getSchemeName()));
     }
-
+    
     public boolean SchemeConfigBySchemeExists(Scheme scheme) {
         return configurationsRepository.findByScheme(scheme).isPresent();
     }

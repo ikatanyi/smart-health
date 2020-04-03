@@ -49,6 +49,8 @@ public class PatientBillItem extends Auditable {
     private Long requestReference;
     /** Reference payment details i.e. Receipt or an Invoice used to settle this bill*/
     private String paymentReference;
+    /** Any narration's or further details attached to this bill bill item*/
+    private String narration;
 
     public BillItemData toData() {
         BillItemData data = new BillItemData();
