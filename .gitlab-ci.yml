@@ -31,8 +31,8 @@ deploy:
     script:
         - mvn clean
         - mvn package -DskipTests
-        - cp target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
-        - sudo service smarthealth-app restart
+        - rsync target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
+        - service smarthealth-app restart
     
     only:
         - master
