@@ -19,43 +19,23 @@ build:
     paths:
       - target/*.jar
 
-deploy_review:
-  stage: deploy
-  
-  before_script:
-    - echo "$DEPLOY_KEY" > ~/.ssh/known_hosts
-    - chmod 644 ~/.ssh/known_hosts 
-            
-  script:
-    - scp target/smart-health-1.0.0.jar smart@192.180.4.102:/home/smart/workloads 
-  environment: 
-    name: smarthealth
-    url: https://192.180.4.102
-  only:
-    - master
-  # only:
-  #   - branches
-  # except:
-  #   - master
-
-# deploy_staging:
-#   stage: deploy
-#   script:
-#     - echo "Deploy to staging server"
-#   environment:
-#     name: staging
-#     url: https://staging.example.com
-#   only:
-#   - master
-
-deploy_prod:
-  stage: deploy
-  script:
-    - echo "Stop running jar and start a new one"
-    - rsync -azP --append-verify target/smart-health-1.0.0.jar smart@192.180.4.102:/opt/smarthealth/prod
-  environment:
-    name: production
-    url: https://192.180.4.102
-  when: manual
-  only:
-  - master
+variables:
+  # MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode --errors --fail-at-end --show-version"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+    
+before_script:
+    # - apt update && apt install -y maven
+    
+deploy:
+    stage: deploy
+    script:
+        - mvn clean
+        - mvn package -DskipTests
+        - cp target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
+        - sudo service smarthealth-app restart
+    
+    only:
+        - master
+cache:
+  paths:
+    - .m2/repository/
