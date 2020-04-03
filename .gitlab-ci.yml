@@ -10,3 +10,23 @@ maven_build:
   script:
     - echo "Building project with maven"
     - mvn verify -DskipTests
+ 
+build:
+  stage: build
+  script:  
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - target/*.jar
+      
+deploy:
+    stage: deploy
+    script:
+        - rsync target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
+        - service smarthealth-app restart
+    
+    only:
+        - master
+cache:
+  paths:
+    - ~.m2/repository/
