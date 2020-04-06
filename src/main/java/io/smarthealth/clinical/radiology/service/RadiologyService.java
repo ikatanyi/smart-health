@@ -35,7 +35,6 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
@@ -63,8 +62,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RadiologyService {
 
-    private final RadiologyRepository radiologyRepository;
-
     private final PatientRadiologyTestRepository patientradiologyRepository;
 
     private final DoctorsRequestRepository doctorRequestRepository;
@@ -77,12 +74,9 @@ public class RadiologyService {
 
     private final EmployeeService employeeService;
 
-    private final PatientService patientservice;
-
     private final ItemService itemService;
 
     private final VisitService visitService;
- 
 
     private final SequenceNumberService sequenceNumberService;
 
@@ -129,7 +123,7 @@ public class RadiologyService {
                 RadiologyTest labTestType = radiologyConfigService.findScanByItem(i);
                 PatientScanTest pte = new PatientScanTest();
                 pte.setTestPrice(id.getItemPrice());
-                pte.setQuantity(id.getQuantity()); 
+                pte.setQuantity(id.getQuantity());
                 pte.setRadiologyTest(labTestType);
                 pte.setStatus(ScanTestState.Scheduled);
                 Optional<Employee> medic = employeeService.findEmployeeByStaffNumber(id.getMedicId());
@@ -211,7 +205,7 @@ public class RadiologyService {
         RadiologyResult radiologyResult = data.fromData();
         PatientScanTest patientScanTest = findPatientRadiologyTestByIdWithNotFoundDetection(data.getTestId());
         patientScanTest.setStatus(data.getStatus());
-        radiologyResult.setPatientScanTest(patientScanTest);        
+        radiologyResult.setPatientScanTest(patientScanTest);
         radiologyResult.setStatus(ScanTestState.Completed);
         patientScanTest.setRadiologyResult(radiologyResult);
         return pscanRepository.save(patientScanTest).getRadiologyResult();

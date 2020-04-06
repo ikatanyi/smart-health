@@ -2,8 +2,6 @@ package io.smarthealth.organization.person.patient.api;
 
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.sequence.SequenceType;
-import io.smarthealth.infrastructure.sequence.service.SequenceService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.data.AddressData;
@@ -77,13 +75,12 @@ public class PatientController {
     @Autowired
     ModelMapper modelMapper;
 
-
     @PostMapping("/patients")
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestBody @Valid final PatientData patientData) {
         LocalDate dateOfBirth = LocalDate.now().minusYears(Long.valueOf(patientData.getAge()));
         patientData.setDateOfBirth(dateOfBirth);
-        
+
         Patient patient = this.patientService.createPatient(patientData);
 
         PatientData savedpatientData = patientService.convertToPatientData(patient);
@@ -360,11 +357,10 @@ public class PatientController {
 //        jasperPrint = patientService.exportPatientPdfFile();
 //        JasperExportManager.exportReportToPdfStream(jasperPrint, out);
 //    }
-    
     //PDF Reports
     @RequestMapping(value = "/patient/patientFile", method = RequestMethod.GET)
-    public void exportPatientFile(HttpServletResponse response) throws JRException, SQLException, IOException{
-        String contentType=null;
+    public void exportPatientFile(HttpServletResponse response) throws JRException, SQLException, IOException {
+        String contentType = null;
         patientService.exportPatientPdfFile(response);
     }
 }

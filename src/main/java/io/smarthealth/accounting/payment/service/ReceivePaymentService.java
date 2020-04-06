@@ -18,6 +18,7 @@ import io.smarthealth.accounting.payment.data.ReceiptMethod;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
 import io.smarthealth.accounting.payment.domain.Banking;
 import io.smarthealth.accounting.payment.domain.Receipt;
+import io.smarthealth.accounting.payment.domain.ReceiptItem;
 import io.smarthealth.accounting.payment.domain.ReceiptTransaction;
 import io.smarthealth.accounting.payment.domain.Remittance;
 import io.smarthealth.accounting.payment.domain.RemittanceRepository;
@@ -123,14 +124,10 @@ public class ReceivePaymentService {
 
         receipt.setTransactionNo(trdId);
         receipt.setReceiptNo(receiptNo);
-
-        Receipt savedPayment = repository.save(receipt); //save the payment
-        //bank payments
-        depositToBank(savedPayment, toBank);
-
+        
         List<PatientBillItem> billedItems = new ArrayList<>();
         //update payments for the bills
-        if (!data.getBillItems().isEmpty()) {
+        if (data.getBillItems()!=null && !data.getBillItems().isEmpty()) {
             if (!data.getBillItems().isEmpty()) {
                 data.getBillItems()
                         .stream()
@@ -145,9 +142,16 @@ public class ReceivePaymentService {
 
                             billedItems.add(i);
                             //update the bill as 
+                            receipt.addReceiptItem(new ReceiptItem(item, BigDecimal.valueOf(item.getAmount())));
                         });
             }
         }
+
+        Receipt savedPayment = repository.save(receipt); //save the payment
+        //bank payments
+        depositToBank(savedPayment, toBank);
+
+        
 
         switch (data.getType()) {
             case Patient:
@@ -172,7 +176,7 @@ public class ReceivePaymentService {
     public Optional<Receipt> getPayment(Long id) {
         return repository.findById(id);
     }
-
+   
     public Receipt getPaymentOrThrow(Long id) {
         return getPayment(id)
                 .orElseThrow(() -> APIException.notFound("Payment with Id {0} Not Found", id));

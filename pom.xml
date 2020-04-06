@@ -106,19 +106,14 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.11.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>eclipse</groupId>
-                    <artifactId>jdtcore</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>6.12.2</version>
         </dependency>
-        <dependency>
+
+        <!--        <dependency>
             <groupId>org.eclipse.jdt.core.compiler</groupId>
             <artifactId>ecj</artifactId>
             <version>4.5</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.passay</groupId>
             <artifactId>passay</artifactId>
@@ -179,6 +174,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-messaging</artifactId>
         </dependency>
 
         <dependency>

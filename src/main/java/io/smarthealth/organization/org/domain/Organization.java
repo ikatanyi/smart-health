@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  *
  * @author Kelsas
  */
-    @Data
+@Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "org_organization")

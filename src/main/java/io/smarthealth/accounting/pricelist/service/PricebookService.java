@@ -4,7 +4,6 @@ import io.smarthealth.accounting.pricelist.data.PriceBookData;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.accounting.pricelist.domain.PriceBookItem;
 import io.smarthealth.accounting.pricelist.domain.PriceBookRepository;
-import io.smarthealth.accounting.pricelist.domain.PriceListDTO;
 import io.smarthealth.accounting.pricelist.domain.enumeration.PriceCategory;
 import io.smarthealth.accounting.pricelist.domain.enumeration.PriceType;
 import io.smarthealth.accounting.pricelist.domain.specification.PriceBookSpecification;
@@ -24,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import io.smarthealth.accounting.pricelist.domain.PriceListDTO;
 
 /**
  *

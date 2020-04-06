@@ -10,7 +10,6 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,11 +22,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(
-        name = "acc_doctor_items",
-        uniqueConstraints
-        = @UniqueConstraint(columnNames = {"doctor_id", "service_type_id"}, name = "uk_acc_doctor_items_doctor_service_type")
-)
+@Table(name = "acc_doctor_items")
 public class DoctorItem extends Auditable {
 
     @ManyToOne

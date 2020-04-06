@@ -189,6 +189,10 @@ public class ItemService {
                 .orElseThrow(() -> APIException.notFound("Item id {0} not found.", code));
     }
 
+    public Page<Item> findByItemsByCategory(final ItemCategory itemCategory, final Pageable pageable) {
+        return itemRepository.findByCategory(itemCategory, pageable);
+    }
+
     @Transactional(readOnly = true)
     @Cacheable
     public Collection<Item> findAll() {

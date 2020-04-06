@@ -3,6 +3,8 @@ package io.smarthealth.clinical.laboratory.domain;
 import io.smarthealth.clinical.laboratory.data.AnalyteData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -24,6 +26,7 @@ public class Analyte extends Identifiable {
     private String referenceValue;
     private Integer sortKey;
     @ManyToOne
+     @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_analyte_test_id"))
     private LabTest labTest;
 
     public AnalyteData toData(){

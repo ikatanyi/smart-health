@@ -1,6 +1,6 @@
 package io.smarthealth.security.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;  
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.security.data.UserData;
 import java.time.LocalDateTime;
@@ -61,6 +61,13 @@ public class User extends Identifiable implements UserDetails {
         this.password = password;
         this.name = name;
         this.roles = roles;
+        this.enabled = true;
+    }
+
+    public User(String email, String username, String name) {
+        this.email = email;
+        this.username = username;
+        this.name = name;
         this.enabled = true;
     }
 

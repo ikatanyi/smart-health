@@ -4,6 +4,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.mail.EmailData;
 import io.smarthealth.infrastructure.mail.MailService;
+import io.smarthealth.infrastructure.utility.PassayPassword;
 import io.smarthealth.security.data.ApiResponse;
 import io.smarthealth.security.data.PasswordData;
 import io.smarthealth.security.data.SignUpRequest;
@@ -17,6 +18,8 @@ import io.smarthealth.security.service.UserService;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -28,11 +31,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -58,32 +61,46 @@ public class AuthController {
     private final UserService userService;
     private final MailService mailSender;
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+    @PostMapping("/users")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserData data) {
+        if (userRepository.existsByUsername(data.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
         }
 
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (userRepository.existsByEmail(data.getEmail())) {
             return new ResponseEntity(new ApiResponse(false, "Email Address already in use!"),
                     HttpStatus.BAD_REQUEST);
         }
 //String email, String username, String password, String name
+//generate password 
+        String password = PassayPassword.generatePassayPassword();
+
         // Creating user's account
-        User user = new User(signUpRequest.getEmail(),
-                signUpRequest.getUsername(),
-                signUpRequest.getPassword(),
-                signUpRequest.getName());
+        User user = new User(data.getEmail(),
+                data.getUsername(),
+                password,
+                data.getName());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
+        /*
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER.name())
                 .orElseThrow(() -> APIException.internalError("User Role not set."));
 
         user.setRoles(Collections.singleton(userRole));
-
+         */
+        if (!data.getRoles().isEmpty()) {
+            Set<Role> userRoles = new HashSet<>();
+            for (String role : data.getRoles()) {
+                Role userRole = roleRepository.findByName(role)
+                        .orElseThrow(() -> APIException.internalError("User Role not found."));
+                userRoles.add(userRole);
+            }
+            user.setRoles(userRoles);
+        }
         User result = userRepository.save(user);
+//send welcome message to the new system user
+        mailSender.send(EmailData.of(user.getEmail(), "User Account", "<b>Welcome</b> " + user.getName().concat(". Your login credentials is <br/> username : " + user.getEmail() + "<br/> password : " + password)));
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
@@ -92,15 +109,6 @@ public class AuthController {
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
     }
 
-    @GetMapping("/users/{username}")
-    public ResponseEntity<?> getUserProfile(@PathVariable(value = "username") String username, OAuth2Authentication authentication) {
-        String auth = (String) authentication.getUserAuthentication().getPrincipal();
-
-        User user = userService.findUserByUsernameOrEmail(username)
-                .orElseThrow(() -> APIException.notFound("Username or email {0} not found.... ", username));
-        return ResponseEntity.ok(user.toData());
-    }
- 
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
 
@@ -108,8 +116,38 @@ public class AuthController {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-    
-     // Reset password 
+
+    @PutMapping("/users/{username}")
+    public ResponseEntity<?> updateUserProfile(@PathVariable(value = "username") String username, @Valid @RequestBody final UserData data) {
+        User user = userService.findUserByUsernameOrEmail(username)
+                .orElseThrow(() -> APIException.notFound("Username or email {0} not found.... ", username));
+        user.setEmail(data.getEmail());
+        user.setName(data.getName());
+
+        if (!data.getRoles().isEmpty()) {
+            Set<Role> userRoles = new HashSet<>();
+            for (String role : data.getRoles()) {
+                Role userRole = roleRepository.findByName(role)
+                        .orElseThrow(() -> APIException.internalError("User Role not found."));
+                userRoles.add(userRole);
+            }
+            user.setRoles(userRoles);
+        }
+        user.setUsername(data.getUsername());
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.ok(savedUser.toData());
+    }
+
+    @GetMapping("/users/{username}")
+    public ResponseEntity<?> getUserProfile(@PathVariable(value = "username") String username) {
+
+        User user = userService.findUserByUsernameOrEmail(username)
+                .orElseThrow(() -> APIException.notFound("Username or email {0} not found.... ", username));
+
+        return ResponseEntity.ok(user.toData());
+    }
+
+    // Reset password 
     @ResponseBody
     @PostMapping("/user/resetPassword")
     public ResponseEntity<?> resetPassword(final HttpServletRequest request, @RequestParam("email") final String userEmail) {
@@ -117,14 +155,15 @@ public class AuthController {
                 .orElseThrow(() -> APIException.notFound("No user with email {0} Found", userEmail));
 
         final String token = UUID.randomUUID().toString();
-        userService.createPasswordResetTokenForUser(user, token); 
-        
+        userService.createPasswordResetTokenForUser(user, token);
+
         final String url = getAppUrl(request) + "/api/users/changePassword?id=" + user.getId() + "&token=" + token;
         final String message = "Reset Password" + " \r\n" + url;
         mailSender.send(EmailData.of(user.getEmail(), "Reset Password", message));
 
         return ResponseEntity.ok(new ApiResponse(true, "You should receive an Password Reset Email shortly"));
     }
+
     @GetMapping(value = "/users/changePassword")
     public ResponseEntity<?> showChangePasswordPage(@RequestParam("id") final long id, @RequestParam("token") final String token) {
         final String result = userService.validatePasswordResetToken(id, token);
@@ -144,7 +183,7 @@ public class AuthController {
 
     // change user password
     @ResponseBody
-    @RequestMapping(value = "/users/updatePassword", method = RequestMethod.POST)  
+    @RequestMapping(value = "/users/updatePassword", method = RequestMethod.POST)
     public ResponseEntity<?> changeUserPassword(Authentication authentication, @Valid PasswordData passwordDto) {
 
         String username = authentication.getName();
@@ -158,8 +197,6 @@ public class AuthController {
 
         return ResponseEntity.ok(new ApiResponse(true, "Password updated successfully"));
     }
-
-    
 
     private String getAppUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();

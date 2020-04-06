@@ -49,7 +49,7 @@ import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
-import org.apache.commons.lang3.EnumUtils;
+import org.springframework.transaction.annotation.Propagation;
 
 /**
  *
@@ -70,7 +70,7 @@ public class LaboratoryService {
     private final BillingService billingService;
     private final DoctorsRequestRepository doctorRequestRepository;
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public LabRegister createLabRegister(LabRegisterData data) {
 
         LabRegister request = toLabRegister(data);
@@ -81,8 +81,10 @@ public class LaboratoryService {
         request.setTransactionId(trnId);
         data.setTransactionId(trnId);
 
-        LabRegister saved = repository.save(request);
-        billingService.save(toBill(data));
+        LabRegister savedRegister = repository.save(request);
+
+//        billingService.save(toBill(data));
+        billingService.save(toBill(savedRegister));
         //save
         data.getTests()
                 .stream()
@@ -90,7 +92,7 @@ public class LaboratoryService {
                     fulfillDocRequest(x.getRequestId());
                 });
 
-        return saved;
+        return savedRegister;
     }
 
     public LabRegister getLabRegisterByNumber(String labNo) {
@@ -118,6 +120,7 @@ public class LaboratoryService {
                 .filter(x -> Objects.equals(x.getId(), testId))
                 .findAny()
                 .orElseThrow(() -> APIException.notFound("Lab Test with Id {0} Not Found", testId));
+
         switch (status.getStatus()) {
             case Collected:
                 repository.updateLabRegisterStatus(LabTestStatus.PendingResult, requests.getId());
@@ -144,23 +147,38 @@ public class LaboratoryService {
     }
 
     private void updateRegisterStatus(LabRegister requests) {
-        long entered = requests.getTests()
-                .stream().filter(x -> x.getEntered())
+
+        long countEntered = requests.getTests()
+                .stream().filter(x -> x.getStatus() == LabTestStatus.ResultsEntered)
                 .count();
-        System.err.println("Entered results "+entered);
-        long total = requests.getTests()
-                .stream()
-                .count();
-        System.err.println("Tests totals "+total);
-        
-        if (entered >= total) {
-            requests.setStatus(LabTestStatus.Complete);
-            repository.save(requests);
+        long size = requests.getTests().size();
+        if (countEntered >= size) {
+            repository.updateLabRegisterStatus(LabTestStatus.Complete, requests.getId());
+        } else {
+            repository.updateLabRegisterStatus(LabTestStatus.PartialResult, requests.getId());
         }
+
+//        long entered = requests.getTests()
+//                .stream() 
+//                .filter(x -> x.getEntered())
+//                .count();
+//        
+//        System.err.println("Entered results " + entered);
+//        long total = requests.getTests()
+//                .stream()
+//                .count();
+//        System.err.println("Tests totals " + total);
+//
+//        System.err.println("Test completed " + (entered >= total) + " for lab register " + requests.getId() + " lab number " + requests.getLabNumber());
+//        if (entered >= total) {
+//            repository.updateLabRegisterStatus(LabTestStatus.Complete, requests.getId()); 
+//        }else{
+//             repository.updateLabRegisterStatus(LabTestStatus.PartialResults, requests.getId()); 
+//        }
     }
 
-    public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range,String search,Pageable page) {
-        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status,range, search);
+    public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range, String search, Pageable page) {
+        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status, range, search);
         return repository.findAll(spec, page);
     }
     
@@ -170,20 +188,24 @@ public class LaboratoryService {
     }
 
 //RESULTS
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public LabResult createLabResult(LabResultData data) {
         LabResult result = toLabResult(data);
-
         LabResult savedResult = labResultRepository.save(result);
         updateResultsEntry(savedResult);
         return savedResult;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<LabResult> createLabResult(List<LabResultData> data) {
+        ;
         List<LabResult> toSave = data
                 .stream()
                 .map(x -> toLabResult(x))
                 .collect(Collectors.toList());
+
         List<LabResult> savedResults = labResultRepository.saveAll(toSave);
+
         savedResults.forEach(x -> updateResultsEntry(x));
         return savedResults;
     }
@@ -225,12 +247,18 @@ public class LaboratoryService {
     }
 
     private void updateResultsEntry(LabResult savedResult) {
+//        System.err.println("results been entered for  ... "+savedResult.getLabRegisterTest().getLabTest().getTestName());
+//        LabRegisterTest test = savedResult.getLabRegisterTest();
+//        test.setEntered(Boolean.TRUE);
+//        test.setEnteredBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
+//        test.setEntryDateTime(LocalDateTime.now());
+//        test.setStatus(LabTestStatus.ResultsEntered);
+//        testRepository.save(test);
         LabRegisterTest test = savedResult.getLabRegisterTest();
-        test.setEntered(Boolean.TRUE);
-        test.setEnteredBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
-        test.setEntryDateTime(LocalDateTime.now());
-        test.setStatus(LabTestStatus.ResultsEntered);
-        testRepository.save(test);
+
+        testRepository.updateTestEntry(SecurityUtils.getCurrentUserLogin().orElse("system"), test.getId(), LabTestStatus.ResultsEntered);
+
+        updateRegisterStatus(test.getLabRegister());
     }
 
     private LabResult toLabResult(LabResultData data) {
@@ -314,7 +342,7 @@ public class LaboratoryService {
     }
 
     public PatientResults getPatientResults(String patientNo, String visitNumber) {
-        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(null, null, visitNumber, null, null,null,null);
+        Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(null, null, visitNumber, null, null, null, null);
         List<LabRegister> lists = repository.findAll(spec);
         PatientResults results = new PatientResults();
 
@@ -335,9 +363,9 @@ public class LaboratoryService {
         return walkingService.createWalking(w);
     }
 
-    private PatientBill toBill(LabRegisterData data) {
+    private PatientBill toBill(/*LabRegisterData*/LabRegister data) {
         //get the service point from store
-        Visit visit = visitRepository.findByVisitNumber(data.getVisitNumber()).orElse(null);
+        Visit visit = data.getVisit();// visitRepository.findByVisitNumber(data.getVisitNumber()).orElse(null);
         //find the service point for lab
         ServicePoint srvpoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
 
@@ -346,38 +374,44 @@ public class LaboratoryService {
         if (visit != null) {
             patientbill.setPatient(visit.getPatient());
         }
-//        patientbill.setAmount(data.getAmount());
-//        patientbill.setDiscount(data.getDiscount());
-//        patientbill.setBalance(data.getAmount());
+
         patientbill.setBillingDate(LocalDate.now());
 //        patientbill.setReferenceNo(data.getReferenceNo());
         patientbill.setPaymentMode(data.getPaymentMode());
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
-
         List<PatientBillItem> lineItems = data.getTests()
                 .stream()
                 .map(lineData -> {
                     PatientBillItem billItem = new PatientBillItem();
-                    Item item = billingService.getItemByBy(lineData.getTestId());
+//                    Item item = billingService.getItemByBy(lineData.getTestId());
+                    Item item = lineData.getLabTest().getService();
 
                     billItem.setBillingDate(LocalDate.now());
                     billItem.setTransactionId(data.getTransactionId());
                     billItem.setServicePointId(srvpoint.getId());
                     billItem.setServicePoint(srvpoint.getName());
                     billItem.setItem(item);
-                    billItem.setPrice(lineData.getTestPrice().doubleValue());
+//                    billItem.setPrice(lineData.getTestPrice().doubleValue());
+                    billItem.setPrice(lineData.getPrice().doubleValue());
                     billItem.setQuantity(1d);
-                    billItem.setAmount(lineData.getTestPrice().doubleValue());
+//                    billItem.setAmount(lineData.getTestPrice().doubleValue());
+                    billItem.setAmount(lineData.getPrice().doubleValue());
                     billItem.setDiscount(0.00);
-                    billItem.setBalance(lineData.getTestPrice().doubleValue());
+                    billItem.setPaid(data.getPaymentMode().equals("Insurance"));
+//                    billItem.setBalance(lineData.getTestPrice().doubleValue());
+                    billItem.setBalance(lineData.getPrice().doubleValue());
                     billItem.setServicePoint(srvpoint.getName());
                     billItem.setServicePointId(srvpoint.getId());
                     billItem.setStatus(BillStatus.Draft);
-
+                    billItem.setRequestReference(lineData.getId());
                     return billItem;
                 })
                 .collect(Collectors.toList());
+        Double amount = patientbill.getBillTotals();
+        patientbill.setAmount(amount);
+        patientbill.setDiscount(0D);
+        patientbill.setBalance(amount);
         patientbill.addBillItems(lineItems);
         return patientbill;
     }
