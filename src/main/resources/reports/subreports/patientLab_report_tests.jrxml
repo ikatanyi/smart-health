@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientLab_report_tests" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b3381605-b0c8-42fa-9eeb-f8ba94fce080">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="51"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
@@ -129,7 +129,9 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement x="0" y="0" width="556" height="20" uuid="f34baf56-bfab-4384-b0d4-f9233c4010e8"/>
+				<reportElement x="0" y="0" width="555" height="20" uuid="f34baf56-bfab-4384-b0d4-f9233c4010e8">
+					<printWhenExpression><![CDATA[$F{withRef}.equals( false )]]></printWhenExpression>
+				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labResults})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results_without_ref.jasper"]]></subreportExpression>
 			</subreport>

@@ -37,16 +37,16 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="requestDatetime" class="java.lang.Object"/>
 	<field name="visitNumber" class="java.lang.String"/>
 	<field name="labNumber" class="java.lang.String"/>
 	<field name="patientNo" class="java.lang.String"/>
 	<field name="patientName" class="java.lang.String"/>
 	<field name="requestedBy" class="java.lang.String"/>
-	<field name="LabRegisterTestData" class="java.util.List"/>
+	<field name="tests" class="java.util.List"/>
 	<field name="orderNumber" class="java.lang.String"/>
 	<field name="isWalkin" class="java.lang.Boolean"/>
 	<field name="status" class="java.lang.Object"/>
+	<field name="requestDatetime" class="java.lang.Object"/>
 	<title>
 		<band height="43" splitType="Stretch">
 			<subreport>
@@ -163,12 +163,12 @@
 				</textElement>
 				<text><![CDATA[Request Date:]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="68" y="64" width="200" height="14" uuid="3aaeac3e-959d-41ec-956c-24280f5e4212"/>
+			<textField>
+				<reportElement x="68" y="64" width="200" height="14" uuid="a49f4560-802c-4230-942c-e1a24737cec9"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{requestDatetime}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[""+$F{requestDatetime}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>
@@ -176,7 +176,7 @@
 		<band height="14" splitType="Stretch">
 			<subreport>
 				<reportElement x="1" y="0" width="555" height="14" uuid="fd029b6f-2e4d-4930-9618-295458b4b9f2"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{LabRegisterTestData})]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{tests})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests.jasper"]]></subreportExpression>
 			</subreport>
 			<line>

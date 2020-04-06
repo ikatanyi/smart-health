@@ -201,9 +201,9 @@ public class ReportService {
         String invoiceNo = reportParam.getFirst("invoiceNo"); 
         String dateRange = reportParam.getFirst("dateRange"); 
         String invoiceStatus = reportParam.getFirst("invoiceStatus");
-        Double amountGreaterThan = Double.valueOf(reportParam.getFirst("amountGreaterThan"));
-        Boolean filterPastDue = Boolean.getBoolean(reportParam.getFirst("filterPastDue"));
-        Double amountLessThanOrEqualTo = Double.valueOf(reportParam.getFirst("amountLessThanOrEqualTo"));
+        Double amountGreaterThan = null;
+        Boolean filterPastDue = null;
+        Double amountLessThanOrEqualTo = null;
         
         List<InsuranceInvoiceData> invoiceData = new ArrayList();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);

@@ -119,9 +119,9 @@ public class LabReportService {
     
     public void getPatientLabReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        String visitNumber = reportParam.getFirst("visitNumber");
-        Visit visit = visitService.findVisitEntityOrThrow("O000005");
-         PatientResults labTests = labService.getPatientResults(visit.getPatient().getPatientNumber(), visitNumber);//tLabResultDataByVisit(visit);
+        Long id = Long.getLong(reportParam.getFirst("id"));
+//        Visit visit = visitService.findVisitEntityOrThrow("O000005");
+        LabRegisterData labTests = labService.getLabRegisterById(8L).toData(Boolean.TRUE);//tLabResultDataByVisit(visit);
 
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
@@ -130,11 +130,11 @@ public class LabReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        reportData.setPatientNumber(labTests.getPatientNo());
         reportData.setData(Arrays.asList(labTests));
-        if (visit.getHealthProvider() != null) {
-            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
-        }
+//        if (visit.getHealthProvider() != null) {
+//            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
+//        }
         reportData.setFormat(format);
         reportData.setTemplate("/laboratory/patientLab_report");
         reportData.setReportName("Lab-report");
