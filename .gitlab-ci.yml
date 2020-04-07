@@ -26,7 +26,7 @@ deploy:
     tags:
     - maven
     script:
-        - rsync target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
+        - rsync -chavzP --stats --rsync-path="echo smart@123 | sudo -Sv && sudo rsync" target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
         - service smarthealth-app restart
     
     only:
