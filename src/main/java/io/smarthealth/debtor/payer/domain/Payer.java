@@ -9,14 +9,14 @@ import io.smarthealth.administration.banks.domain.BankBranch;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.debtor.claim.dispatch.domain.Dispatch;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.organization.org.domain.Organization;
+import io.smarthealth.organization.org.domain.Organisation;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import lombok.Data;
 
 /**
- * {@link  Organization} Payer - Debtor
+ * {@link  Organisation} Payer - Debtor
  *
  * @author Kelsas
  */

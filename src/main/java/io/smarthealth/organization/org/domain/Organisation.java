@@ -25,7 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "org_organization")
-public class Organization implements Serializable {
+public class Organisation implements Serializable {
 
     public enum Type {
         Business,

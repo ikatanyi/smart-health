@@ -20,6 +20,7 @@ public class ShiftData {
    private Long id;
     private String cashPoint;
     private String cashier;
+    private Long cashierId;
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime startDate;
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)

@@ -4,8 +4,8 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.facility.data.FacilityData;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.domain.FacilityRepository;
-import io.smarthealth.organization.org.domain.Organization;
-import io.smarthealth.organization.org.service.OrganizationService;
+import io.smarthealth.organization.org.domain.Organisation;
+import io.smarthealth.organization.org.service.OrganisationService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacilityService {
 
     private final FacilityRepository facilityRepository;
-    private final OrganizationService orgService;
+    private final OrganisationService orgService;
 
-    public FacilityService(FacilityRepository facilityRepository, OrganizationService orgService) {
+    public FacilityService(FacilityRepository facilityRepository, OrganisationService orgService) {
         this.facilityRepository = facilityRepository;
         this.orgService = orgService;
     }
@@ -32,7 +32,7 @@ public class FacilityService {
     @Transactional
     public Facility createFacility(String id, FacilityData facilityData) throws IOException {
         byte[] bytes = null;
-        Organization org = orgService.getOrganization(id);
+        Organisation org = orgService.getOrganization(id);
         Facility facility = new Facility();
         if (facilityData.getParentFacilityId() != null) {
             Optional<Facility> pf = getFacility(facilityData.getParentFacilityId());
@@ -95,7 +95,7 @@ public class FacilityService {
     }
 
     public List<Facility> findByOrganization(String orgId) {
-        Organization org = orgService.getOrganization(orgId);
+        Organisation org = orgService.getOrganization(orgId);
 
         return org.getFacilities();
     }

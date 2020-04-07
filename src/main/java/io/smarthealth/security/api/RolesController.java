@@ -1,5 +1,5 @@
 package io.smarthealth.security.api;
- 
+
 import io.smarthealth.security.service.RoleService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -50,14 +50,18 @@ public class RolesController {
 
     @PostMapping("/roles/{id}")
     public ResponseEntity<?> actionsOnRoles(@PathVariable(value = "id") Long roleId,
-            @RequestParam(value = "command") String commandParam) {
-        if (is(commandParam, "enable") || is(commandParam, "disable")) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(service.changeRoleStatus(roleId, commandParam));
-        } else {
-            throw APIException.badRequest("Unknown Command {0} ", commandParam);
-        }
+            @RequestParam(value = "command", required = true) Command commandParam) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(service.changeRoleStatus(roleId, commandParam.name()));
+
+//        if (is(commandParam, "enable") || is(commandParam, "disable")) {
+//            return ResponseEntity
+//                    .status(HttpStatus.OK)
+//                    .body(service.changeRoleStatus(roleId, commandParam));
+//        } else {
+//            throw APIException.badRequest("Unknown Command {0} ", commandParam);
+//        }
     }
 
     @GetMapping("/roles/{id}")
@@ -81,7 +85,7 @@ public class RolesController {
     }
 
     @PutMapping("/roles/{id}/permissions")
-    public ResponseEntity<?> updateRolePermissions(@PathVariable(value = "id") Long roleId, @Valid @RequestBody PermissionData data) {
+    public ResponseEntity<?> updateRolePermissions(@PathVariable(value = "id") Long roleId, @Valid @RequestBody List<PermissionData> data) {
         RoleData rd = service.updateRolePermissions(roleId, data);
         return ResponseEntity.ok(rd);
     }
@@ -119,5 +123,10 @@ public class RolesController {
 
     private boolean is(final String commandParam, final String commandValue) {
         return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
+    }
+
+    public enum Command {
+        enable,
+        disable
     }
 }

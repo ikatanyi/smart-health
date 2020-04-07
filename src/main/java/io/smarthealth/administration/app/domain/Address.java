@@ -28,11 +28,14 @@ public class Address extends Identifiable {
         Other
     }
     @Enumerated(EnumType.STRING)
-    private Type type;
+    private Type type =Type.Office;
     private String line1;
     private String line2;
     private String town;
     private String county;
     private String country;
     private String postalCode;
+    private String website;
+    private String phone;
+    private String email;
 }

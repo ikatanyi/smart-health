@@ -128,10 +128,22 @@ public class CashierController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-        
+
         if (showBalance != null && showBalance) {
-            List<CashierShift> list = service.getCashierShiftWithBalance();
-            return ResponseEntity.ok(list);
+            Page<CashierShift> list = service.getCashierShiftWithBalance(status, pageable);
+            Pager<List<CashierShift>> pagers = new Pager();
+            pagers.setCode("0");
+            pagers.setMessage("Success");
+            pagers.setContent(list.getContent());
+
+            PageDetails details = new PageDetails();
+            details.setPage(list.getNumber() + 1);
+            details.setPerPage(list.getSize());
+            details.setTotalElements(list.getTotalElements());
+            details.setTotalPage(list.getTotalPages());
+            details.setReportName("Cashier Shifts");
+            pagers.setPageDetails(details);
+            return ResponseEntity.ok(pagers);
         }
 
         Page<ShiftData> list = service.fetchAllShifts(status, pageable)
