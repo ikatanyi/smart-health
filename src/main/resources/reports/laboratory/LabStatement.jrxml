@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="HEADER_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PatientData" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Footer_Data" class="java.util.List"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="id" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="collected" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="requestId" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="specimen" class="java.lang.String"/>
+	<field name="collectedBy" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="collectionDateTime" class="java.lang.Object"/>
+	<field name="entered" class="java.lang.Boolean"/>
+	<field name="enteredBy" class="java.lang.String"/>
+	<field name="entryDateTime" class="java.lang.Object"/>
+	<field name="validated" class="java.lang.Boolean"/>
+	<field name="validatedBy" class="java.lang.String"/>
+	<field name="validationDateTime" class="java.lang.Object"/>
+	<field name="referenceNo" class="java.lang.String"/>
+	<field name="paid" class="java.lang.Boolean"/>
+	<field name="status" class="java.lang.Object"/>
+	<field name="testId" class="java.lang.Long"/>
+	<field name="testName" class="java.lang.String"/>
+	<field name="testCode" class="java.lang.String"/>
+	<field name="orderNumber" class="java.lang.String"/>
+	<field name="labNumber" class="java.lang.String"/>
+	<field name="requestedBy" class="java.lang.String"/>
+	<field name="testPrice" class="java.math.BigDecimal"/>
+	<field name="patientNumber" class="java.lang.String"/>
+	<variable name="requestCount" class="java.lang.Integer" resetType="Group" resetGroup="Status" calculation="Count">
+		<variableExpression><![CDATA[$F{status}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="variable1" class="java.lang.String"/>
+	<group name="Status">
+		<groupExpression><![CDATA[$F{status}]]></groupExpression>
+		<groupHeader>
+			<band height="14">
+				<textField>
+					<reportElement x="2" y="0" width="110" height="14" uuid="844deb4d-bb85-4a38-8984-c3c4387a0e8e"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[""+$F{status}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="1" y="13" width="553" height="1" uuid="601851f2-3e87-4632-beff-4c304f33795d"/>
+					<graphicElement>
+						<pen lineWidth="0.15"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="70" splitType="Stretch">
+			<line>
+				<reportElement positionType="Float" x="0" y="69" width="554" height="1" uuid="5d2fc52e-b224-419b-992e-58f23cb65a0b"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="69" uuid="05921211-9986-4f9b-a55e-0186167db752"/>
+				<subreportParameter name="PIC_DIR"/>
+				<subreportParameter name="IMAGE_DIR"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="20">
+			<staticText>
+				<reportElement x="0" y="0" width="104" height="20" forecolor="#6666FF" uuid="6e097ebd-188a-427b-9a8e-5da1fb171f98"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Lab Tests Statement]]></text>
+			</staticText>
+			<line>
+				<reportElement x="2" y="19" width="553" height="1" uuid="30b04841-52c4-4794-9564-d5f18726f301"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="12">
+			<line>
+				<reportElement positionType="Float" x="0" y="11" width="554" height="1" uuid="dc15f410-7fa9-4af3-9559-4eba8800e4c0"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="0" y="0" width="19" height="11" uuid="991b1c23-ff1f-4b1b-9b51-f15579ca9de5"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="79" y="0" width="46" height="11" uuid="c413311e-33fe-4cf6-8024-74b1b3b30468"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PatientNo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="138" y="0" width="24" height="11" uuid="73fdcc28-03e1-4dc3-b7e2-68ea771e6212"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="175" y="0" width="85" height="11" uuid="67756dba-ca97-4e10-9095-d279db544eba"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Test]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="273" y="0" width="18" height="11" uuid="a4050875-50e0-435f-8b7b-ca60b73b91b7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Paid]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="307" y="0" width="83" height="11" uuid="a632e177-6db8-45e7-9002-3f03c335da7d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RequestedBy]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="398" y="0" width="34" height="11" uuid="71865cb2-d0f4-4b13-be53-0a4a4a309199"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rslts Ent.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="439" y="0" width="42" height="11" uuid="d15f0b26-05e7-4316-a168-b9d4e7e49824"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Validated]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="492" y="0" width="62" height="11" uuid="22c1770b-b435-417e-8703-0d947e62e1bf"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[validatedBy]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="19" y="0" width="46" height="12" uuid="69314529-a98d-4a99-a730-3b054b0c3de6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LabNumber]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="11" splitType="Stretch">
+			<textField>
+				<reportElement x="1" y="0" width="18" height="11" uuid="28a286f5-96d7-4da6-a69c-c2fff1228a27"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="19" y="0" width="46" height="11" uuid="85ed173e-b92d-4939-bd99-a57a71e43dba"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{labNumber}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="79" y="0" width="46" height="11" uuid="7d5cc57c-8607-4bbf-9422-d8fef653804b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="138" y="0" width="24" height="11" uuid="27aa4374-c260-45ad-9854-3b0c92f8b7f0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{testCode}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="175" y="0" width="85" height="11" uuid="1dd9610f-5fb8-433d-b9fe-65dbdeff6f6c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{testName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="273" y="0" width="18" height="11" uuid="cf2fd3b6-33ae-45f4-b579-29ea3d9b06a4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paid}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="307" y="0" width="83" height="11" uuid="adfcdddb-95c0-4d5d-834d-ed5a82d03a17"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{requestedBy}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="398" y="0" width="34" height="11" uuid="65b477e9-7b8d-4f40-ac3f-487391a018e9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{entered}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="439" y="0" width="42" height="11" uuid="5f8edb2a-4a56-40d5-823d-a3cdc1f7ebd9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{validated}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="492" y="0" width="62" height="11" uuid="79e2aaed-fc87-45c0-a74a-cda85abf850d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{validatedBy}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement positionType="Float" x="0" y="9" width="554" height="1" uuid="e8cda4a5-5619-46c8-8a9f-f6f8becd9839"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="15">
+			<subreport>
+				<reportElement x="2" y="0" width="552" height="15" uuid="b93fb920-a651-407d-a067-95ef0e3484d6"/>
+				<dataSourceExpression><![CDATA[$P{Footer_Data}]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageFooter>
+</jasperReport>

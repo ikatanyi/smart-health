@@ -6,8 +6,11 @@
 package io.smarthealth.report.service;
 
 import io.smarthealth.clinical.laboratory.data.LabRegisterData;
+import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
+import io.smarthealth.clinical.laboratory.data.PatientResults;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -17,11 +20,18 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRSortField;
+import net.sf.jasperreports.engine.design.JRDesignSortField;
+import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
+import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -60,7 +70,6 @@ public class LabReportService {
                 .stream()
                 .map((register) -> register.toData(expand))
                 .collect(Collectors.toList());
-        reportData.getFilters().put("SUBREPORT_DIR", "/clinical/");
         reportData.setData(patientData);
         reportData.setFormat(format);
         if(!expand)
@@ -70,5 +79,66 @@ public class LabReportService {
         reportData.setReportName("Lab-Statement");
         reportService.generateReport(reportData, response);
     }    
+    
+    public void getLabTestStatement(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String visitNumber = reportParam.getFirst("visitNumber");
+        String labNumber = reportParam.getFirst("labNumber");
+        String orderNumber = reportParam.getFirst("orderNumber");
+        String patientNumber = reportParam.getFirst("patientNumber");
+        String search = reportParam.getFirst("search");
+        String dateRange = reportParam.getFirst("dateRange");
+        Integer page = Integer.getInteger(reportParam.getFirst("page"));
+        Integer size = Integer.getInteger(reportParam.getFirst("size"));
+        LabTestStatus status = labService.LabTestStatusToEnum(reportParam.getFirst("status"));
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));
+        
+         List<LabRegisterTestData> patientData = labService.getLabRegisterTest(labNumber, orderNumber, visitNumber, patientNumber, status, range, search, pageable)
+                .getContent()
+                .stream()
+                .map((register) -> register.toData(expand))
+                .collect(Collectors.toList());
+        reportData.setData(patientData);
+        reportData.setFormat(format);
+        if(!expand)
+            reportData.setTemplate("/laboratory/LabStatement");
+        else
+            reportData.setTemplate("/laboratory/lab_statement_summary");
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("status");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.setReportName("Lab-Statement");
+        reportService.generateReport(reportData, response);
+    }    
+    
+    public void getPatientLabReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        Long id = Long.getLong(reportParam.getFirst("id"));
+//        Visit visit = visitService.findVisitEntityOrThrow("O000005");
+        LabRegisterData labTests = labService.getLabRegisterById(8L).toData(Boolean.TRUE);//tLabResultDataByVisit(visit);
+
+        List<JRSortField> sortList = new ArrayList();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("visitNumber");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.setPatientNumber(labTests.getPatientNo());
+        reportData.setData(Arrays.asList(labTests));
+//        if (visit.getHealthProvider() != null) {
+//            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
+//        }
+        reportData.setFormat(format);
+        reportData.setTemplate("/laboratory/patientLab_report");
+        reportData.setReportName("Lab-report");
+        reportService.generateReport(reportData, response);
+    }
     
 }

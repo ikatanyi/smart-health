@@ -6,6 +6,7 @@ import io.smarthealth.report.service.LabReportService;
 import io.smarthealth.report.service.PatientReportService;
 import io.smarthealth.report.service.RadiologyReportService;
 import io.smarthealth.report.service.ReportService;
+import io.smarthealth.report.service.SupplierReportService;
 import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @SuppressWarnings("unused")
 @RestController
-@RequestMapping("/api/v2/")
+@RequestMapping("/api/")
 @RequiredArgsConstructor
 public class ReportController {
 
@@ -29,10 +31,11 @@ public class ReportController {
     private final LabReportService labReportService;
     private final RadiologyReportService radiologyReportService;
     private final PatientReportService patientReportService;
+    private final SupplierReportService supplierInvoiceService;
     
     
     @GetMapping("/report")
-    public void generateReport(
+    public ResponseEntity<?> generateReport(
             @RequestParam(value = "reportName", required = true) ReportName reportName,
             @RequestParam(required = false) MultiValueMap<String, String> queryParams,
             @RequestParam(value = "format", required = false) ExportFormat format,
@@ -57,7 +60,7 @@ public class ReportController {
                 reportService.getPatientFile(queryParams, format, response);
                 break;
             case Lab_Report:
-                reportService.getPatientLabReport(queryParams, format, response);
+                labReportService.getPatientLabReport(queryParams, format, response);
                 break;
             case Procedure_Report:
                 reportService.getPatientProcedureReport(queryParams, format, response);
@@ -81,7 +84,7 @@ public class ReportController {
                 reportService.getPrescriptionLabel(queryParams, format, response);
                 break;
             case Lab_Statement_Summarized:
-                labReportService.getLabStatement(queryParams, format, response);
+                labReportService.getLabTestStatement(queryParams, format, response);
                 break;
             case Lab_Statement:
                 labReportService.getLabStatement(queryParams, format, response);
@@ -104,11 +107,17 @@ public class ReportController {
             case Patient_Diagnosis:
                 patientReportService.getDiagnosis(queryParams, format, response);
                 break;
+            case Doctor_Invoice:
+                supplierInvoiceService.getDoctorInvoiceStatement(queryParams, format, response);
+                break;
+            case Supplier_Invoice:
+                supplierInvoiceService.SupplierInvoiceStatement(queryParams, format, response);
+                break;
             default:
                 break;
 
         }
-
+         return ResponseEntity.ok(200); 
     }
 
     
