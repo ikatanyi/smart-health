@@ -1,33 +1,35 @@
-stages:
-  - test
+stages: 
   - build
+  - staging
   - deploy
 
-verify:
-  stage: test
-  tags:
-    - maven
-  script:
-    - echo "Building project with maven"
-    - mvn verify -DskipTests
- 
 build:
   stage: build
   tags:
     - maven
   script:  
-    - mvn clean package -DskipTests
+    - mvn package -DskipTests
   artifacts:
     paths:
       - target/*.jar
       
-deploy:
+deploy_dev:
+    stage: staging
+    tags:
+    - maven
+    script:
+        - sudo rsync -rav -e --stats target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
+        - sudo chmod 775 /var/log/smarthealth-app.log
+        - sudo service smarthealth-app restart
+       
+deploy_prod:
     stage: deploy
     tags:
     - maven
     script:
-        - rsync target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
-        - service smarthealth-app restart
+        - sshpass -V
+        - sshpass -p "$QA_SERVER_PASSWORD" sudo rsync -rav -e --stats target/smart-health-1.0.0.jar smart@192.180.4.135:/opt/smarthealth/latest/smart-health-1.0.0.jar
+        - sshpass -p "$QA_SERVER_PASSWORD" sudo service smarthealth-app restart
     
     only:
         - master

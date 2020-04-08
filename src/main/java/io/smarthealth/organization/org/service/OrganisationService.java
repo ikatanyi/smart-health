@@ -4,46 +4,46 @@ import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.service.AdminService;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.org.data.OrganizationData;
-import io.smarthealth.organization.org.domain.Organization;
-import io.smarthealth.organization.org.domain.OrganizationRepository;
+import io.smarthealth.organization.org.data.OrganisationData;
+import io.smarthealth.organization.org.domain.Organisation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import io.smarthealth.organization.org.domain.OrganisationRepository;
 
 /**
  *
  * @author Kelsas
  */
 @Service
-public class OrganizationService {
+public class OrganisationService {
 
-    private final OrganizationRepository orgRepository;
+    private final OrganisationRepository orgRepository;
 
     private final AdminService adminService;
 
-    public OrganizationService(OrganizationRepository orgRepository, AdminService adminService) {
+    public OrganisationService(OrganisationRepository orgRepository, AdminService adminService) {
         this.orgRepository = orgRepository;
         this.adminService = adminService;
     }
 
     @Transactional
-    public OrganizationData createOrganization(OrganizationData o) {
+    public OrganisationData createOrganization(OrganisationData o) {
 
-        Optional<Organization> orgx = orgRepository.findTopByOrderByOrganizationNameDesc();
+        Optional<Organisation> orgx = orgRepository.findTopByOrderByOrganizationNameDesc();
         if (orgx.isPresent()) {
             throw APIException.notFound("Organization Already Exists");
         }
 
-        Organization org = new Organization();
+        Organisation org = new Organisation();
         //check if there is an organization already
-        List<Organization> orgs = fetchOrganizations();
+        List<Organisation> orgs = fetchOrganizations();
         if (orgs.size() > 0) {
             org = orgs.get(0);
             org.setOrganizationName(o.getOrganizationName());
-            org.setOrganizationType(Organization.Type.valueOf(o.getOrganizationType()));
+            org.setOrganizationType(Organisation.Type.valueOf(o.getOrganizationType()));
             org.setLegalName(o.getLegalName());
             org.setTaxNumber(o.getTaxNumber());
             org.setWebsite(o.getWebsite());
@@ -52,10 +52,10 @@ public class OrganizationService {
             //delete contact
             adminService.removeContactByOrganization(org);
         } else {
-            org = OrganizationData.map(o);
+            org = OrganisationData.map(o);
         }
         org.setActive(Boolean.TRUE);
-        Organization savedOrg = orgRepository.save(org);
+        Organisation savedOrg = orgRepository.save(org);
         //Address data
         List<Address> addresses = new ArrayList<>();
         Address a = new Address();
@@ -90,28 +90,28 @@ public class OrganizationService {
         savedOrg.setContact(contact);
         adminService.createContactEntity(contact);
 
-        OrganizationData savedData = OrganizationData.map(savedOrg);
+        OrganisationData savedData = OrganisationData.map(savedOrg);
         return savedData;
     }
 
-    public List<Organization> fetchOrganizations() {
+    public List<Organisation> fetchOrganizations() {
         return orgRepository.findAll();
     }
 
-    public Optional<Organization> getOptionalOrganization(String orgId) {
+    public Optional<Organisation> getOptionalOrganization(String orgId) {
         return orgRepository.findById(orgId);
     }
 
-    public Organization getOrganization(String orgId) {
+    public Organisation getOrganization(String orgId) {
         return orgRepository.findById(orgId)
                 .orElseThrow(() -> APIException.notFound("Organization with Id {0} not Found", orgId));
     }
 
     @Transactional
-    public OrganizationData updateOrganization(String id, OrganizationData o) {
-        Organization org = getOrganization(id);
+    public OrganisationData updateOrganization(String id, OrganisationData o) {
+        Organisation org = getOrganization(id);
         org.setOrganizationName(o.getOrganizationName());
-        org.setOrganizationType(Organization.Type.valueOf(o.getOrganizationType()));
+        org.setOrganizationType(Organisation.Type.valueOf(o.getOrganizationType()));
         org.setLegalName(o.getLegalName());
         org.setTaxNumber(o.getTaxNumber());
         org.setWebsite(o.getWebsite());
@@ -121,7 +121,7 @@ public class OrganizationService {
         adminService.removeContactByOrganization(org);
 
         org.setActive(Boolean.TRUE);
-        Organization savedOrg = orgRepository.save(org);
+        Organisation savedOrg = orgRepository.save(org);
         //Address data
         List<Address> addresses = new ArrayList<>();
         Address a = new Address();
@@ -153,12 +153,12 @@ public class OrganizationService {
         savedOrg.setContact(contact);
         adminService.createContactEntity(contact);
 
-        OrganizationData savedData = OrganizationData.map(savedOrg);
+        OrganisationData savedData = OrganisationData.map(savedOrg);
         return savedData;
 
     }
 
-    public Organization getActiveOrganization() {
+    public Organisation getActiveOrganization() {
         return orgRepository.findTopByOrderByOrganizationNameDesc()
                 .orElseThrow(() -> APIException.notFound("No active Organization set"));
     }

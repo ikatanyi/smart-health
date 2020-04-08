@@ -26,6 +26,7 @@ public class ReportData {
     private String template;
     private String patientNumber;
     private String employeeId;
+    private Long supplierId;
     private Map<String, Object> filters=new HashMap();
     @Enumerated(EnumType.STRING)
     private ExportFormat format;

@@ -27,5 +27,6 @@ public interface CashierShift {
     public ShiftStatus getStatus();
 
     public BigDecimal getBalance();
-
+   
+    public Long getCashierId();
 }

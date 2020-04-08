@@ -1,9 +1,10 @@
 package io.smarthealth.security.domain;
-  
+
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.security.data.RoleData;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
 import lombok.Data;
@@ -52,6 +53,15 @@ public class Role extends Identifiable {
         }
 
         return changed;
+    }
+
+    public void removeAll() {
+        this.permissions.clear();
+    }
+
+    public boolean updatePermission(List<Permission> permissions) {
+        this.permissions.clear();
+        return this.permissions.addAll(permissions);
     }
 
     private boolean addPermission(final Permission permission) {

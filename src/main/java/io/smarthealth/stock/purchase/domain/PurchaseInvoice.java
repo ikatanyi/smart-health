@@ -7,23 +7,30 @@ import io.smarthealth.supplier.domain.Supplier;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.*;
-import lombok.Data; 
+import lombok.Data;
+
 /**
  *
  * @author Kelsas
  */
 @Entity
 @Data
-@Table(name = "purchase_invoice") 
+@Table(name = "purchase_invoice")
 public class PurchaseInvoice extends Auditable {
 
+    public enum Type {
+        Stock_Delivery,
+        Stock_Returns
+    }
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_purchase_invoice_supplier_id"))
     private Supplier supplier;
-    
+
     private String purchaseOrderNumber;
     private Boolean paid;
     private Boolean isReturn; //debit note
+    @Enumerated(EnumType.STRING)
+    private Type type;
     private String invoiceNumber; //supplier invoice number
     private LocalDate invoiceDate; //supplier invoice date
     private LocalDate dueDate;
@@ -32,14 +39,13 @@ public class PurchaseInvoice extends Auditable {
     private BigDecimal discount;
     private BigDecimal netAmount;
     private BigDecimal invoiceBalance;
-    
     private LocalDate transactionDate;
     private String transactionNumber;
-    
+
     @Enumerated(EnumType.STRING)
     private PurchaseInvoiceStatus status;
- 
-    public  PurchaseInvoiceData toData() {
+
+    public PurchaseInvoiceData toData() {
         PurchaseInvoiceData data = new PurchaseInvoiceData();
         if (this.supplier != null) {
             data.setSupplierId(this.supplier.getId());
@@ -56,6 +62,7 @@ public class PurchaseInvoice extends Auditable {
         data.setTax(this.tax);
         data.setDiscount(this.discount);
         data.setStatus(this.status);
+        data.setType(this.type);
         data.setCreatedBy(this.getCreatedBy());
 
         return data;

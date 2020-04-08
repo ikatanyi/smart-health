@@ -1,7 +1,7 @@
 package io.smarthealth.organization.facility.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.organization.org.domain.Organization;
+import io.smarthealth.organization.org.domain.Organisation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +32,7 @@ public class Facility extends Auditable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_facility_org_id"))
-    private Organization organization; 
+    private Organisation organization; 
     private String registrationNumber;
     private String facilityType;
     private String taxNumber;

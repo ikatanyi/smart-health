@@ -24,7 +24,7 @@ public class PatientScanTestData {
     private ScanTestState status;
     private String imagePath;
     private Boolean done;
-    private Boolean paid;
+    private Boolean paid=Boolean.FALSE;
     private String doneBy;
     private LocalDateTime entryDateTime;
     private Boolean voided;
@@ -55,6 +55,7 @@ public class PatientScanTestData {
         entity.setStatus(this.getStatus());
         entity.setEntryDateTime(this.getEntryDateTime());
         entity.setComments(this.getComments());
+        entity.setPaid(this.getPaid());
         return entity;
     }
 }

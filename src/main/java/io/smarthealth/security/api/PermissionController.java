@@ -1,5 +1,4 @@
 package io.smarthealth.security.api;
- 
 
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -25,12 +24,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class PermissionController {
 
-     private final PermissionRepository permissionRepository;
+    private final PermissionRepository permissionRepository;
 
     public PermissionController(PermissionRepository permissionRepository) {
         this.permissionRepository = permissionRepository;
     }
-     
+
     @GetMapping("/permissions")
     public ResponseEntity<?> retrieveAllPermission(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
@@ -39,7 +38,7 @@ public class PermissionController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<PermissionData> list = permissionRepository.findAll(pageable).map(pd -> PermissionData.instance(pd.getPermissionGroup(), pd.getName(), false));
+        Page<PermissionData> list = permissionRepository.findAll(pageable).map(pd -> pd.toData());
 
         Pager<List<PermissionData>> pagers = new Pager();
         pagers.setCode("0");

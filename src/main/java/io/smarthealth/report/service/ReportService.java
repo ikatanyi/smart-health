@@ -201,9 +201,9 @@ public class ReportService {
         String invoiceNo = reportParam.getFirst("invoiceNo"); 
         String dateRange = reportParam.getFirst("dateRange"); 
         String invoiceStatus = reportParam.getFirst("invoiceStatus");
-        Double amountGreaterThan = Double.valueOf(reportParam.getFirst("amountGreaterThan"));
-        Boolean filterPastDue = Boolean.getBoolean(reportParam.getFirst("filterPastDue"));
-        Double amountLessThanOrEqualTo = Double.valueOf(reportParam.getFirst("amountLessThanOrEqualTo"));
+        Double amountGreaterThan = null;
+        Boolean filterPastDue = null;
+        Double amountLessThanOrEqualTo = null;
         
         List<InsuranceInvoiceData> invoiceData = new ArrayList();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
@@ -506,30 +506,6 @@ public class ReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/request_form");
         reportData.setReportName(requestType.name() + "_request_form");
-        reportService.generateReport(reportData, response);
-    }
-
-    public void getPatientLabReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
-        ReportData reportData = new ReportData();
-        String visitNumber = reportParam.getFirst("visitNumber");
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-         PatientResults labTests = labService.getPatientResults(visit.getPatient().getPatientNumber(), visitNumber);//tLabResultDataByVisit(visit);
-
-        List<JRSortField> sortList = new ArrayList();
-        JRDesignSortField sortField = new JRDesignSortField();
-        sortField.setName("visitNumber");
-        sortField.setOrder(SortOrderEnum.ASCENDING);
-        sortField.setType(SortFieldTypeEnum.FIELD);
-        sortList.add(sortField);
-        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
-        reportData.setData(Arrays.asList(labTests));
-        if (visit.getHealthProvider() != null) {
-            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
-        }
-        reportData.setFormat(format);
-        reportData.setTemplate("/clinical/patientLab_report");
-        reportData.setReportName("Lab-report");
         reportService.generateReport(reportData, response);
     }
 

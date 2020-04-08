@@ -103,13 +103,14 @@ public class PatientRadiologyController {
             @RequestParam(value = "is_walkin", required = false) Boolean walkin,
             @RequestParam(value = "order_no", required = false) String orderNo,
             @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "status", required = false) ScanTestState status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<PatientScanTestData> list = radiologyService.findAllTests(patientNumber, orderNo, status, visitNumber, range, walkin, pageable)
+        Page<PatientScanTestData> list = radiologyService.findAllTests(patientNumber, search, orderNo, status, visitNumber, range, walkin, pageable)
                 .map(x -> x.toData());
 
         Pager<List<PatientScanTestData>> pagers = new Pager();

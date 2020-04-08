@@ -14,6 +14,7 @@ import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -102,6 +103,7 @@ public class CashierService {
         Shift shift = shiftRepository.findByStatusAndCashier(ShiftStatus.Running, cashier)
                 .orElseThrow(() -> APIException.badRequest("No shift Running for the Cashier"));
         shift.setStatus(ShiftStatus.Closed);
+        shift.setEndDate(LocalDateTime.now());
         return shiftRepository.save(shift);
     }
 
@@ -112,6 +114,7 @@ public class CashierService {
             throw APIException.badRequest("Shift {0} does not belong to cashier {1}", shiftNo, cashierId);
         }
         shift.setStatus(ShiftStatus.Closed);
+        shift.setEndDate(LocalDateTime.now());
         return shiftRepository.save(shift);
     }
 
@@ -133,7 +136,10 @@ public class CashierService {
                 .orElseThrow(() -> APIException.notFound("Shift Number {0} Not Found", shiftNo));
     }
 
-    public List<CashierShift> getCashierShiftWithBalance() {
-        return repository.shiftBalanceByDateInterface();
+    public Page<CashierShift> getCashierShiftWithBalance(ShiftStatus status, Pageable page) {
+        if (status != null) {
+            return repository.shiftBalanceByDateInterface(status, page);
+        }
+        return repository.shiftBalanceByDateInterface(page);
     }
 }

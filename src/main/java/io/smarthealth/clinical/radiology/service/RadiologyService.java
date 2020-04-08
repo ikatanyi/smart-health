@@ -247,8 +247,8 @@ public class RadiologyService {
         return pscanRepository.save(radiologyTest);
     }
 
-    public Page<RadiologyResult> findAllRadiologyResults(String visitNumber, String patientNumber, String scanNumber, Boolean walkin, ScanTestState status, String orderNo, DateRange range, Pageable pgbl) {
-        Specification spec = RadiologyResultSpecification.createSpecification(patientNumber, orderNo, visitNumber, walkin, status, range);
+    public Page<RadiologyResult> findAllRadiologyResults(String visitNumber, String patientNumber, String scanNumber, Boolean walkin, ScanTestState status, String orderNo, DateRange range, String search, Pageable pgbl) {
+        Specification spec = RadiologyResultSpecification.createSpecification(patientNumber, orderNo, visitNumber, walkin, status, range,search);
         return radiologyResultRepo.findAll(spec, pgbl);
 
     }
@@ -257,8 +257,8 @@ public class RadiologyService {
         return pscanRepository.findById(id).orElseThrow(() -> APIException.notFound("Patient results identified by id {0} not found ", id));
     }
 
-    public Page<PatientScanTest> findAllTests(String PatientNumber, String scanNo, ScanTestState status, String visitId, DateRange range, Boolean isWalkin, Pageable pgbl) {
-        Specification spec = RadiologyTestSpecification.createSpecification(PatientNumber, scanNo, visitId, isWalkin, status, range);
+    public Page<PatientScanTest> findAllTests(String PatientNumber, String search, String scanNo, ScanTestState status, String visitId, DateRange range, Boolean isWalkin, Pageable pgbl) {
+        Specification spec = RadiologyTestSpecification.createSpecification(PatientNumber, scanNo, visitId, isWalkin, status, range, search);
         return pscanRepository.findAll(spec, pgbl);
     }
 

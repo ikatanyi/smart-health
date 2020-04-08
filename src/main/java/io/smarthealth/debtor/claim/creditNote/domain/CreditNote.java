@@ -18,6 +18,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -38,15 +39,15 @@ public class CreditNote extends Auditable {
     private String comments;
     private String transactionId;
     @OneToOne
-    @JoinColumn(name="fk_credit_note_id_payer_id")
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_note_id_payer_id"))
     private Payer payer;    
     
     
-    @JoinColumn(name="fk_credit_note_id_invoice_id")
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_note_id_invoice_id"))
     @ManyToOne
     private Invoice invoice;
     @OneToMany
-    @JoinColumn(name="fk_credit_note_id_credit_note_item_id")
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_note_id_credit_note_item_id"))
     private List<CreditNoteItem> items;  
     
     public CreditNoteData toData(){

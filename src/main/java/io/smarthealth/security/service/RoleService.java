@@ -9,6 +9,7 @@ import io.smarthealth.security.domain.PermissionRepository;
 import io.smarthealth.security.domain.Role;
 import io.smarthealth.security.domain.RoleRepository;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
@@ -82,18 +83,24 @@ public class RoleService {
         RoleData roleData = role.toData();
         Collection<PermissionData> pd = permissions
                 .stream()
-                .map(p -> PermissionData.instance(p.getPermissionGroup(), p.getName(), Boolean.FALSE))
+                .map(p -> p.toData())
                 .collect(Collectors.toSet());
 
         RolePermissionsData permissionsData = roleData.toRolePermissionData(pd);
         return permissionsData;
     }
 
-    public RoleData updateRolePermissions(Long roleId, PermissionData data) {
+    public RoleData updateRolePermissions(Long roleId, List<PermissionData> data) {
         Role role = getRoleWithNoFoundDetection(roleId);
-        Permission per = permissionRepository.findOneByName(data.getName())
-                .orElseThrow(() -> APIException.notFound("Permission {0} not found", data.getName()));
-        role.updatePermission(per, data.getSelected());
+        List<Permission> list = data.stream()
+                .map(permission -> {
+                    return permissionRepository.findOneByName(permission.getName()).orElse(null);
+                })
+                .filter(x -> x != null)
+                .collect(Collectors.toList());
+
+        role.updatePermission(list);
+        
         return roleRepository.save(role).toData();
         //then we 
     }

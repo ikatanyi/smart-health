@@ -61,6 +61,7 @@ public class DoctorInvoice extends Auditable {
         if (this.doctor != null) {
             data.setDoctorId(this.doctor.getId());
             data.setDoctorName(this.doctor.getFullName());
+            data.setStaffNumber(this.doctor.getStaffNumber());
 
         }
         data.setInvoiceDate(this.invoiceDate);

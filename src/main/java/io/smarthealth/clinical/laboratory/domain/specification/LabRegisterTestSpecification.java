@@ -1,6 +1,7 @@
 package io.smarthealth.clinical.laboratory.domain.specification;
 
 import io.smarthealth.clinical.laboratory.domain.LabRegister;
+import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
@@ -18,17 +19,17 @@ public class LabRegisterTestSpecification {
         super();
     }
 
-    public static Specification<LabRegister> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status,DateRange range, String search) {
+    public static Specification<LabRegisterTest> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status,DateRange range, String search) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (orderNumber != null) {
-                predicates.add(cb.equal(root.get("orderNumber"), orderNumber));
+                predicates.add(cb.equal(root.get("labRegister").get("orderNumber"), orderNumber));
             }
             if (visitNumber != null) {
-                predicates.add(cb.equal(root.get("visit").get("visitNumber"), visitNumber));
+                predicates.add(cb.equal(root.get("labRegister").get("visit").get("visitNumber"), visitNumber));
             }
             if (patientNumber != null) {
-                predicates.add(cb.equal(root.get("visit").get("patient").get("patientNumber"), patientNumber));
+                predicates.add(cb.equal(root.get("labRegister").get("visit").get("patient").get("patientNumber"), patientNumber));
             }
             if (status != null) {
                 predicates.add(cb.equal(root.get("status"), status));
@@ -38,18 +39,18 @@ public class LabRegisterTestSpecification {
                    System.out.println("date ranger .. "+range.getStartDateTime()+ " end : "+range.getEndDateTime());
                 predicates.add(
                       
-                        cb.between(root.get("requestDatetime"), range.getStartDateTime(), range.getEndDateTime())
+                        cb.between(root.get("entryDateTime"), range.getStartDateTime(), range.getEndDateTime())
                 );
             }
             if (search != null) {
                 final String likeExpression = "%" + search + "%";
                 predicates.add(
                         cb.or(
-                                cb.like(root.get("visit").get("visitNumber"), likeExpression),
-                                cb.like(root.get("patientNo"), likeExpression),
-                                cb.like(root.get("visit").get("patient").get("fullName"), likeExpression),
-                                cb.like(root.get("visit").get("patient").get("patientNumber"), likeExpression), //
-                                cb.like(root.get("labNumber"), likeExpression)
+                                cb.like(root.get("labRegister").get("visit").get("visitNumber"), likeExpression),
+                                cb.like(root.get("labRegister").get("patientNo"), likeExpression),
+                                cb.like(root.get("labRegister").get("visit").get("patient").get("fullName"), likeExpression),
+                                cb.like(root.get("labRegister").get("visit").get("patient").get("patientNumber"), likeExpression), //
+                                cb.like(root.get("labRegister").get("labNumber"), likeExpression)
                         )
                 );
             }

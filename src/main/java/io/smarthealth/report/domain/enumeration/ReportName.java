@@ -15,6 +15,8 @@ public enum ReportName {
         Insurance_Statement,
         Invoice_Statement,
         Invoice,
+        Doctor_Invoice,
+        Supplier_Invoice,
         Patient_file ,
         Lab_Report,
         Procedure_Report,
