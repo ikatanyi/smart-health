@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.invoice.domain.InvoiceLineItem;
 import io.smarthealth.infrastructure.lang.Constants;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
 import lombok.Data;
@@ -34,10 +35,12 @@ public class InvoiceLineItemData implements Serializable {
 
     private String servicePoint;
     private String createdBy;
+    @ApiModelProperty(hidden = true)
+    private String status;
 
     public static InvoiceLineItemData map(InvoiceLineItem invoiceLineItem) {
         InvoiceLineItemData data = new InvoiceLineItemData();
-       data.setInvoiceNumber(invoiceLineItem.getInvoice()!=null ? invoiceLineItem.getInvoice().getNumber() : "");
+        data.setInvoiceNumber(invoiceLineItem.getInvoice() != null ? invoiceLineItem.getInvoice().getNumber() : "");
         data.setCreatedBy(invoiceLineItem.getCreatedBy());
         if (invoiceLineItem.getBillItem() != null) {
             PatientBillItem lineItem = invoiceLineItem.getBillItem();
@@ -57,6 +60,7 @@ public class InvoiceLineItemData implements Serializable {
             data.setAmount(lineItem.getAmount());
             data.setBalance(lineItem.getBalance());
             data.setServicePoint(lineItem.getServicePoint());
+            data.setStatus(lineItem.getStatus().name());
         }
         return data;
     }

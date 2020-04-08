@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.administration.config.service;
+package io.smarthealth.approval.service;
 
-import io.smarthealth.administration.config.data.enums.ApprovalModule;
-import io.smarthealth.administration.config.domain.ApprovalConfig;
-import io.smarthealth.administration.config.domain.ApprovalConfigRepository;
-import io.smarthealth.administration.config.domain.ModuleApprovers;
-import io.smarthealth.administration.config.domain.ModuleApproversRepository;
+import io.smarthealth.approval.data.enums.ApprovalModule;
+import io.smarthealth.approval.domain.ApprovalConfig;
+import io.smarthealth.approval.domain.repo.ApprovalConfigRepository;
+import io.smarthealth.approval.domain.ModuleApprovers;
+import io.smarthealth.approval.domain.repo.ModuleApproversRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.facility.domain.Employee;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class ApprovalConfigService {
         return moduleApproversRepository.findByModuleName(module);
     }
 
-    public ModuleApprovers fetchModuleApproversByModule(final ApprovalModule module, final Employee employee) {
+    public ModuleApprovers fetchModuleApproverByModuleAndEmployee(final ApprovalModule module, final Employee employee) {
         return moduleApproversRepository.findByModuleNameAndEmployee(module, employee).orElseThrow(() -> APIException.notFound("No approval rights found", employee.getFullName()));
     }
 

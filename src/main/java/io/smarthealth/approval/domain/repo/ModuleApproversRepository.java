@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.administration.config.domain;
+package io.smarthealth.approval.domain.repo;
 
-import io.smarthealth.administration.config.data.enums.ApprovalModule;
+import io.smarthealth.approval.data.enums.ApprovalModule;
+import io.smarthealth.approval.domain.ModuleApprovers;
 import io.smarthealth.organization.facility.domain.Employee;
 import java.util.List;
 import java.util.Optional;
