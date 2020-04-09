@@ -8,8 +8,6 @@ import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.domain.Allocation;
 import io.smarthealth.debtor.claim.allocation.domain.AllocationRepository;
 import io.smarthealth.debtor.claim.allocation.domain.specification.AllocationSpecification;
-import io.smarthealth.debtor.claim.remittance.domain.RemittanceOld;
-import io.smarthealth.debtor.claim.remittance.service.RemitanceService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
@@ -21,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import io.smarthealth.debtor.claim.remittance.domain.RemittanceOldRepository;
 import java.math.BigDecimal;
 import org.springframework.transaction.annotation.Transactional;
 
