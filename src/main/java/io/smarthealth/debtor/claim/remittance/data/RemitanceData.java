@@ -13,6 +13,7 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
+@Deprecated
 public class RemitanceData {
     
     private Long id;

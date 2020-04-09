@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.payment.domain;
 
+import io.smarthealth.accounting.payment.data.RemittanceData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.math.BigDecimal;
@@ -50,4 +51,25 @@ public class Remittance extends Auditable {
         this.remittanceDate = receipt.getTransactionDate();
     }
 
+    public RemittanceData toData() {
+        RemittanceData data = new RemittanceData();
+        data.setId(this.getId());
+        if (this.payer != null) {
+            data.setPayer(this.payer.getPayerName());
+            data.setPayerId(this.payer.getId());
+        }
+        data.setBalance(this.balance);
+        data.setRemittanceDate(this.remittanceDate);
+        if (this.receipt != null) {
+            data.setReceiptNo(this.receipt.getReceiptNo());
+            data.setDescription(this.receipt.getDescription());
+            data.setAmount(this.receipt.getAmount());
+            data.setPaymentMethod(this.receipt.getPaymentMethod());
+            data.setReferenceNumber(this.receipt.getReferenceNumber());
+            data.setTransactionNo(this.receipt.getTransactionNo());
+            data.setCurrency(this.receipt.getCurrency());
+        }
+        data.setRemittanceNo(this.remittanceNo);
+        return data;
+    }
 }

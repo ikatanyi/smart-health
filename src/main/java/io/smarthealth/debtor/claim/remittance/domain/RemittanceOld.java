@@ -22,6 +22,7 @@ import lombok.Data;
  *
  * @author Kennedy.Imbenzi
  */
+@Deprecated
 @Entity
 @Data
 @Table(name = "payer_remittance")
