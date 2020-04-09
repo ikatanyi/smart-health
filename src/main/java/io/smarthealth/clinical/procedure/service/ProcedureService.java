@@ -168,10 +168,11 @@ public class ProcedureService {
                 if (employee.isPresent()) {
                     pte.setMedic(employee.get());
                 }
-
-                Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
-                if (request.isPresent()) {
-                    request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                if (id.getRequestItemId() != null) {
+                    Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
+                    if (request.isPresent()) {
+                        request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                    }
                 }
 
                 patientProcTest.add(pte);

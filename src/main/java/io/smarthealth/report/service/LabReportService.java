@@ -121,7 +121,7 @@ public class LabReportService {
         ReportData reportData = new ReportData();
         Long id = Long.getLong(reportParam.getFirst("id"));
 //        Visit visit = visitService.findVisitEntityOrThrow("O000005");
-        LabRegisterData labTests = labService.getLabRegisterById(8L).toData(Boolean.TRUE);//tLabResultDataByVisit(visit);
+        LabRegisterData labTests = labService.getLabRegisterById(id).toData(Boolean.TRUE);//tLabResultDataByVisit(visit);
 
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
