@@ -115,6 +115,11 @@ public final class PaginationUtil {
         Pageable pageable = PageRequest.of(page, size);
         return pageable;
     }
-    
+    public static Pageable createUnPaged(Integer page, Integer size) {
+        if(page!=null && size!=null){
+             return PageRequest.of(page, size);
+        } 
+        return Pageable.unpaged();
+    }
     
 }
