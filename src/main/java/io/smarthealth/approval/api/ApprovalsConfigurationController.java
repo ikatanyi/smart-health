@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.administration.config.api;
+package io.smarthealth.approval.api;
 
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
-import io.smarthealth.administration.config.data.ApprovalConfigData;
-import io.smarthealth.administration.config.data.ModuleApproversData;
-import io.smarthealth.administration.config.data.enums.ApprovalModule;
-import io.smarthealth.administration.config.domain.ApprovalConfig;
-import io.smarthealth.administration.config.domain.ModuleApprovers;
-import io.smarthealth.administration.config.service.ApprovalConfigService;
+import io.smarthealth.approval.data.ApprovalConfigData;
+import io.smarthealth.approval.data.ModuleApproversData;
+import io.smarthealth.approval.data.enums.ApprovalModule;
+import io.smarthealth.approval.domain.ApprovalConfig;
+import io.smarthealth.approval.domain.ModuleApprovers;
+import io.smarthealth.approval.service.ApprovalConfigService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -57,12 +57,12 @@ public class ApprovalsConfigurationController {
     }
 
     @GetMapping("/approval-settings/{moduleName}")
-    public ResponseEntity<?> fetchApprovalConfigurationByModuleName(@PathVariable("moduleName") final String moduleName, @RequestParam(value = "page", required = false) Integer page,
+    public ResponseEntity<?> fetchApprovalConfigurationByModuleName(@PathVariable("moduleName") final ApprovalModule moduleName, @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<ApprovalConfigData> list = approvalConfigService.fetchAllApprovalConfigByModuleName(ApprovalModule.valueOf(moduleName), pageable).map(r -> ApprovalConfigData.map(r));
+        Page<ApprovalConfigData> list = approvalConfigService.fetchAllApprovalConfigByModuleName(moduleName, pageable).map(r -> ApprovalConfigData.map(r));
         Pager<List<ApprovalConfigData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

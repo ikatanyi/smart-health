@@ -3,6 +3,7 @@ package io.smarthealth.stock.purchase.api;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
 import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
@@ -80,5 +81,17 @@ public class PurchaseInvoiceController {
         pagers.setPageDetails(details);
 
         return ResponseEntity.ok(pagers);
+    }
+
+    @PostMapping("/purchaseinvoices/credit-note")
+    public ResponseEntity<?> createCreditNote(@Valid @RequestBody PurchaseCreditNoteData data) {
+        PurchaseInvoice result = service.doCreditNote(data);
+
+        Pager<PurchaseInvoiceData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Credit Note created successful");
+        pagers.setContent(result.toData());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 }

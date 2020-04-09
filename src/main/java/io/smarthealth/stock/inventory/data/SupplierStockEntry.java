@@ -43,6 +43,7 @@ public class SupplierStockEntry {
 
     private String deliveredBy;
     private String receivedBy;
+    
     private BigDecimal discount = BigDecimal.ZERO;
     private BigDecimal taxes = BigDecimal.ZERO;
     private BigDecimal amount = BigDecimal.ZERO;
@@ -59,8 +60,28 @@ public class SupplierStockEntry {
         }
         return BigDecimal.ZERO;
     }
+       public BigDecimal getDiscountTotals() {
+        if (!items.isEmpty()) {
+            BigDecimal totals = items.stream()
+                    .map(x -> x.getDiscount())
+                    .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
+
+            return totals;
+        }
+        return BigDecimal.ZERO;
+    }
+          public BigDecimal getTaxTotals() {
+        if (!items.isEmpty()) {
+            BigDecimal totals = items.stream()
+                    .map(x -> x.getTax())
+                    .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
+
+            return totals;
+        }
+        return BigDecimal.ZERO;
+    }
 
     public BigDecimal getNetAmount() {
-        return getStockTotals().subtract(amount);
+        return (getStockTotals().add(getTaxes())).subtract(getDiscountTotals());
     }
 }

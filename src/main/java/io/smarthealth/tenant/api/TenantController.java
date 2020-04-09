@@ -28,9 +28,7 @@
 //    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 //    @ResponseStatus(HttpStatus.CREATED)
 //    @Transactional
-//    public Tenant createTenant(@RequestBody Tenant tenant) {
-//        tenant = repository.save(tenant);
-//        String schema = tenant.getSchemaName();
+//    public Tenant createTenant(@RequestBody Tenant tenant) {-
 //        if (schema == null) {
 //            throw new RuntimeException("schema is null");
 //        }

@@ -1,6 +1,7 @@
 package io.smarthealth.administration.servicepoint.api;
 
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -64,14 +65,16 @@ public class ServicePointController {
 
     @GetMapping("/servicepoints")
     public ResponseEntity<?> listServicepoint(
+            @RequestParam(value = "type", required = false) ServicePointType type,
             @RequestParam(value = "point_type", required = false) String pointType,
             @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {
+            @RequestParam(value = "pageSize",required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
+        Pageable pageable = PaginationUtil.createUnPaged(page, size);
 
-        Page<ServicePointData> list = service.listServicePoints(pointType,pageable);
-        
+        Page<ServicePointData> list = service.listServicePoints(type, pointType, pageable)
+                .map(x -> x.toData());
+
         Pager<List<ServicePointData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

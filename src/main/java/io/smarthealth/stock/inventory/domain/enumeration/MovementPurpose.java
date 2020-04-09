@@ -7,6 +7,6 @@ package io.smarthealth.stock.inventory.domain.enumeration;
 public enum MovementPurpose {
     Issue,
     Receipt,
-    Transfer,
-    Return
+    Transfer, 
+    Returns
 }

@@ -8,7 +8,7 @@ import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.*;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.org.domain.Organization;
+import io.smarthealth.organization.org.domain.Organisation;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,10 +26,10 @@ public class AdminService {
 
     private final AddressRepository addressRepository;
     private final ContactRepository contactRepository;
-   
+
     public AdminService(AddressRepository addressRepository, ContactRepository contactRepository) {
         this.addressRepository = addressRepository;
-        this.contactRepository = contactRepository; 
+        this.contactRepository = contactRepository;
     }
 
     public List<Contact> createContacts(List<ContactData> contactList) {
@@ -53,6 +53,36 @@ public class AdminService {
         Address addresses = AddressData.map(address);
 
         return addressRepository.save(addresses);
+    }
+
+    public Address updateAddress(Long id, AddressData addressData) {
+        Address address = getAddressWithNoFoundDetection(id);
+        if (addressData.getId() != null) {
+            address.setId(addressData.getId());
+        }
+        if (addressData.getType() != null) {
+            address.setType(Address.Type.valueOf(addressData.getType()));
+        }
+        address.setLine1(addressData.getLine1());
+        address.setLine2(addressData.getLine2());
+        address.setTown(addressData.getTown());
+        address.setCounty(addressData.getCounty());
+        address.setCountry(addressData.getCountry());
+        address.setPostalCode(addressData.getPostalCode());
+
+        return addressRepository.save(address);
+    }
+
+    public Contact updateContact(Long id, ContactData contactData) {
+        Contact contacts = getContactWithNoFoundDetection(id);
+        contacts.setId(contactData.getId());
+        contacts.setSalutation(contactData.getSalutation());
+        contacts.setFullName(contactData.getFullName());
+        contacts.setEmail(contactData.getEmail());
+        contacts.setMobile(contactData.getMobile());
+        contacts.setTelephone(contactData.getTelephone());
+
+        return contactRepository.save(contacts);
     }
 
     public List<Address> createAddresses(List<AddressData> addressList) {
@@ -86,15 +116,13 @@ public class AdminService {
                 .orElseThrow(() -> APIException.notFound("Contact with id {0} not found", id));
     }
 
-    
-
-    public void removeAddressByOrganization(Organization org) {
+    public void removeAddressByOrganization(Organisation org) {
         if (!org.getAddress().isEmpty()) {
             addressRepository.delete(org.getAddress().get(0));
         }
     }
 
-    public void removeContactByOrganization(Organization org) {
+    public void removeContactByOrganization(Organisation org) {
         if (!org.getContact().isEmpty()) {
             contactRepository.delete(org.getContact().get(0));
         }

@@ -16,7 +16,7 @@ import lombok.Data;
 public class OrganizationBank extends Auditable {
 
     @ManyToOne
-    private Organization organization;
+    private Organisation organization;
 
     @Embedded
     private BankEmbedded bank;

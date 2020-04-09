@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.administration.config.data;
+package io.smarthealth.approval.data;
 
-import io.smarthealth.administration.config.data.enums.ApprovalModule;
-import io.smarthealth.administration.config.domain.ModuleApprovers;
+import io.smarthealth.approval.data.enums.ApprovalModule;
+import io.smarthealth.approval.domain.ModuleApprovers;
 import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

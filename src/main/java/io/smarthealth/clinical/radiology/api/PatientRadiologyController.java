@@ -2,7 +2,6 @@ package io.smarthealth.clinical.radiology.api;
 
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
-import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;

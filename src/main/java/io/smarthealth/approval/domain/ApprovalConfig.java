@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.administration.config.domain;
+package io.smarthealth.approval.domain;
 
-import io.smarthealth.administration.config.data.enums.ApprovalModule;
+import io.smarthealth.approval.data.enums.ApprovalModule;
 import io.smarthealth.infrastructure.domain.Auditable;
 import javax.persistence.Column;
 import javax.persistence.Entity;

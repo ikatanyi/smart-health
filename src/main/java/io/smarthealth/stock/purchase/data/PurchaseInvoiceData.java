@@ -18,9 +18,10 @@ public class PurchaseInvoiceData {
     private Long supplierId;
     private String supplier;
     private String purchaseOrderNumber;
-    private String serialNumber; //ACC-PINV-2019-00001
+    private PurchaseInvoice.Type type;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate transactionDate;
+    private String transactionId;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate dueDate;
     private Boolean paid;
@@ -35,5 +36,5 @@ public class PurchaseInvoiceData {
     private BigDecimal netAmount;
     private PurchaseInvoiceStatus status;
     private String createdBy;
- 
+
 }

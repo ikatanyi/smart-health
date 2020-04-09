@@ -14,10 +14,10 @@ import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
 import io.smarthealth.accounting.pettycash.service.PettyCashApprovalsService;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
-import io.smarthealth.administration.config.data.enums.ApprovalModule;
-import io.smarthealth.administration.config.domain.ApprovalConfig;
-import io.smarthealth.administration.config.domain.ModuleApprovers;
-import io.smarthealth.administration.config.service.ApprovalConfigService;
+import io.smarthealth.approval.data.enums.ApprovalModule;
+import io.smarthealth.approval.domain.ApprovalConfig;
+import io.smarthealth.approval.domain.ModuleApprovers;
+import io.smarthealth.approval.service.ApprovalConfigService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -64,6 +64,7 @@ public class PettyCashRequestController {
 
     @Autowired
     EmployeeService employeeService;
+
     @Autowired
     PettyCashApprovalsService approvalsService;
 
@@ -171,9 +172,9 @@ public class PettyCashRequestController {
                 .orElseThrow(() -> APIException.badRequest("User not found"));
         Employee employee = employeeService.fetchEmployeeByUser(user);
 
-        int level = approvalConfigService.fetchModuleApproversByModule(ApprovalModule.PettyCash, employee).getApprovalLevel();
+        int loggedInPersonApprovalLevel = approvalConfigService.fetchModuleApproverByModuleAndEmployee(ApprovalModule.PettyCash, employee).getApprovalLevel();
 
-        Page<PettyCashRequestsData> list = pettyCashRequestsService.fetchAllPettyCashRequestsByPendingApprovalLevel(level, pageable).map(r -> PettyCashRequestsData.map(r));
+        Page<PettyCashRequestsData> list = pettyCashRequestsService.fetchAllPettyCashRequestsByPendingApprovalLevel(loggedInPersonApprovalLevel, pageable).map(r -> PettyCashRequestsData.map(r));
         Pager<List<PettyCashRequestsData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -256,7 +257,7 @@ public class PettyCashRequestController {
                 .orElseThrow(() -> APIException.badRequest("User not found"));
         Employee employee = employeeService.fetchEmployeeByUser(user);
         //validate approver availability
-        ModuleApprovers app = approvalConfigService.fetchModuleApproversByModule(ApprovalModule.PettyCash, employee);
+        ModuleApprovers app = approvalConfigService.fetchModuleApproverByModuleAndEmployee(ApprovalModule.PettyCash, employee);
         List<PettyCashApprovals> approvedItems = new ArrayList<>();
 
         int noOfRequestedItems = pettyCashRequests.getPettyCashRequestItems().size();
