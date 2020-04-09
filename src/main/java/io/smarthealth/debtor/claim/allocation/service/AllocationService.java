@@ -2,6 +2,8 @@ package io.smarthealth.debtor.claim.allocation.service;
 
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
+import io.smarthealth.accounting.payment.domain.Remittance;
+import io.smarthealth.accounting.payment.domain.RemittanceRepository;
 import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.domain.Allocation;
 import io.smarthealth.debtor.claim.allocation.domain.AllocationRepository;
@@ -20,6 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import io.smarthealth.debtor.claim.remittance.domain.RemittanceOldRepository;
+import java.math.BigDecimal;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -31,22 +35,24 @@ import io.smarthealth.debtor.claim.remittance.domain.RemittanceOldRepository;
 public class AllocationService {
 
     private final AllocationRepository allocationRepository;
-    private final RemittanceOldRepository remitanceRepository;
+    private final RemittanceRepository remitanceRepository;
     private final InvoiceService invoiceService;
 
-    @javax.transaction.Transactional
-    public List<Allocation> createAllocation(List<AllocationData> dataList, RemittanceOld remitance) {
+    @Transactional
+    public List<Allocation> createAllocation(List<AllocationData> dataList, Remittance remitance) {
         List<Allocation> allocations = new ArrayList<>();
-        for (AllocationData data : dataList) {
+        dataList.forEach((data) -> {
             Allocation allocation = AllocationData.map(data);
             Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
             invoice.setBalance(invoice.getBalance() - data.getAmount());
             allocation.setInvoice(invoice);
 
-            remitance.setBalance(remitance.getAmount() - data.getAmount());
-            remitanceRepository.save(remitance);
+//            remitance.setBalance();
+//            remitanceRepository.save(remitance);
+            remitanceRepository.updateBalance((remitance.getReceipt().getAmount().subtract(BigDecimal.valueOf(data.getAmount()))), remitance.getId());
+            
             allocations.add(allocation);
-        }
+        });
         return allocationRepository.saveAll(allocations);
     }
 
