@@ -65,8 +65,8 @@ public class ServicePointController {
 
     @GetMapping("/servicepoints")
     public ResponseEntity<?> listServicepoint(
-            @RequestParam(value = "point_type", required = false) ServicePointType type,
-            @RequestParam(value = "item_category", required = false) String pointType,
+            @RequestParam(value = "type", required = false) ServicePointType type,
+            @RequestParam(value = "point_type", required = false) String pointType,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize",required = false) Integer size) {
 
