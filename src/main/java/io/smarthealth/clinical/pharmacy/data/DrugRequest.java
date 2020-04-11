@@ -31,8 +31,7 @@ public class DrugRequest {
     private Double balance;
     private Double Amount;
     private Double taxes;
-    private Double discount;
-    private String referenceNo;//receipt or invoice no
+    private Double discount; 
      private Boolean isWalkin; 
     
     @Enumerated(EnumType.STRING)

@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.billing.domain;
 
+import io.smarthealth.accounting.billing.data.PatientBillGroup;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import java.util.List;
 import java.util.Optional;
@@ -15,12 +16,12 @@ public interface PatientBillRepository extends JpaRepository<PatientBill, Long>,
     
     Optional<PatientBill> findByBillNumber(final String identifier);
       
-    @Query(value = "SELECT new  io.smarthealth.accounting.billing.domain.PatientBillGroup("
+    @Query(value = "SELECT new  io.smarthealth.accounting.billing.data.PatientBillGroup("
             + "b.patient.patientNumber as patientNumber,"
             + "b.patient.fullName as patientName,"
             + "b.billingDate as date,"
             + "b.visit.visitNumber as visitNumber,"
-            + "sum(b.Amount),"
+            + "sum(b.amount),"
             + "sum(b.balance),"
             + "b.paymentMode,"
             + "b.billNumber,"

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.accounting.billing.domain.enumeration;
 
 /**
@@ -11,7 +6,7 @@ package io.smarthealth.accounting.billing.domain.enumeration;
  */
 public enum BillStatus {
     Draft,
-    Interim,
-    Final,
-    Cancelled
+    Paid,
+    Returned,
+    Canceled
 }

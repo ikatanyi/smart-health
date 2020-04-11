@@ -9,7 +9,6 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 

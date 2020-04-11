@@ -9,7 +9,6 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
-import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -127,7 +126,7 @@ public class ProcedureService {
     @Transactional
     public PatientProcedureRegister savePatientResults(PatientProcedureRegisterData patientProcRegData, final String visitNo, final Long requestId) {
         PatientProcedureRegister patientProcReg = PatientProcedureRegisterData.map(patientProcRegData);
-        String transactionId = sequenceNumberService.next(1L, Sequences.Procedure.name());
+        String transactionId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         patientProcReg.setTransactionId(transactionId);
 
         if (visitNo != null) {
@@ -198,10 +197,9 @@ public class ProcedureService {
             patientbill.setPatient(data.getVisit().getPatient());
         }
         patientbill.setAmount(data.getAmount());
+        patientbill.setBillingDate(data.getBillingDate());
         patientbill.setDiscount(data.getDiscount());
         patientbill.setBalance(data.getAmount());
-
-        patientbill.setReferenceNo(data.getAccessNo());
         patientbill.setPaymentMode(data.getPaymentMode());
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);

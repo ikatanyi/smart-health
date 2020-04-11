@@ -3,7 +3,8 @@ package io.smarthealth.accounting.billing.api;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
-import io.smarthealth.accounting.billing.domain.PatientBillGroup;
+import io.smarthealth.accounting.billing.data.PatientBillGroup;
+import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
@@ -35,13 +36,6 @@ public class BillingController {
         this.service = service;
     }
 
-    /*
-    //api/v1/patient-billing    //create invoice and line items
-    //api/v1/patient-billing/{billno}/line     
-    
-    //api/v1/visit/{visitid}/patient-billing
-    
-     */
     @PostMapping("/billing")
     public ResponseEntity<?> createPatientBill(@Valid @RequestBody BillData billData) {
 
@@ -66,25 +60,57 @@ public class BillingController {
         PatientBill bill = service.findOneWithNoFoundDetection(id);
         return bill.toData();
     }
+//  String patientNo, String visitNo, Boolean hasBalance, DateRange range
+//String visitNumber, String patientNumber, Boolean hasBalance, DateRange range
 
-    @GetMapping("/billing")
-    public ResponseEntity<?> getPatientBills(
-            @RequestParam(value = "transactionNo", required = false) String transactionNo,
+    @GetMapping("/billing/summary")
+    public ResponseEntity<?> getPatientBillSummary(
             @RequestParam(value = "visitNumber", required = false) String visitNumber,
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
-            @RequestParam(value = "paymentMode", required = false) String paymentMode,
-            @RequestParam(value = "billNumber", required = false) String billNumber,
+            @RequestParam(value = "hasBalance", required = false) Boolean hasBalance,
             @RequestParam(value = "dateRange", required = false) String dateRange,
-            @RequestParam(value = "status", required = false) BillStatus status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<BillData> list = service.findAllBills(transactionNo, visitNumber, patientNumber, paymentMode, billNumber, status, range, pageable)
-                .map(bill -> bill.toData());
 
-        Pager<List<BillData>> pagers = new Pager();
+        Page<SummaryBill> list = service.getSummaryBill(visitNumber, patientNumber, hasBalance, range, pageable);
+
+        Pager<List<SummaryBill>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Patient Bills");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/billing/items")
+    public ResponseEntity<?> getPatientBillItems(
+            @RequestParam(value = "patientNumber", required = false) String patientNo,
+            @RequestParam(value = "visitNumber", required = false) String visitNo,
+            @RequestParam(value = "billNumber", required = false) String billNumber,
+            @RequestParam(value = "transactionNo", required = false) String transactionId,
+            @RequestParam(value = "servicepointId", required = false) Long servicePointId,
+            @RequestParam(value = "hasBalance", required = false) Boolean hasBalance,
+            @RequestParam(value = "status", required = false) BillStatus status,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        Page<BillItemData> list = service.getPatientBillItems(patientNo, visitNo, billNumber, transactionId, servicePointId, hasBalance, status, range, pageable)
+                .map(x -> x.toData());
+
+        Pager<List<BillItemData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());
@@ -105,6 +131,7 @@ public class BillingController {
 
         return ResponseEntity.ok(list);
     }
+
     @GetMapping("/bills/{visitId}/items")
     public ResponseEntity<?> listBillSummary(
             @PathVariable(value = "visitId") String visitId,

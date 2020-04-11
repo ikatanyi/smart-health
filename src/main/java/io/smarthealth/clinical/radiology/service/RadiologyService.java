@@ -87,7 +87,8 @@ public class RadiologyService {
     @Transactional
     public PatientScanRegister savePatientResults(PatientScanRegisterData patientScanRegData, final String visitNo) {
         PatientScanRegister patientScanReg = patientScanRegData.fromData();
-        String transactionId = sequenceNumberService.next(1L, Sequences.RadiologyNumber.name());
+        String transactionId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        patientScanRegData.setTransactionId(transactionId);
         patientScanReg.setTransactionId(transactionId);
         patientScanReg.setIsWalkin(patientScanRegData.getIsWalkin());
 
@@ -157,13 +158,12 @@ public class RadiologyService {
         if (data.getVisit() != null) {
             patientbill.setPatient(data.getVisit().getPatient());
         }
+        patientbill.setBillingDate(data.getBillingDate());
         patientbill.setAmount(data.getAmount());
         patientbill.setDiscount(data.getDiscount());
         patientbill.setBalance(data.getBalance());
-
-        patientbill.setReferenceNo(data.getAccessNo());
         patientbill.setPaymentMode(data.getPaymentMode());
-//        patientbill.setTransactionId(data.getTransactionId());
+        patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
         patientbill.setBillingDate(LocalDate.now());
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());

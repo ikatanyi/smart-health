@@ -12,7 +12,8 @@ import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
-import io.smarthealth.accounting.billing.domain.PatientBillGroup;
+import io.smarthealth.accounting.billing.data.PatientBillGroup;
+import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
@@ -32,6 +33,7 @@ import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
 import lombok.RequiredArgsConstructor;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
 import io.smarthealth.accounting.billing.domain.specification.BillSpecificationsBuilder;
+import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecification;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
@@ -49,8 +51,13 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -73,12 +80,12 @@ public class BillingService {
     private final CashPaidUpdater cashPaidUpdater;
 
     //Create service bill
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createPatientBill(BillData data) {
 
         //check the validity of the patient visit
         Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
-//        String billNumber = RandomStringUtils.randomNumeric(6); //sequenceService.nextNumber(SequenceType.BillNumber);
-        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());  //sequenceGenerator.generateTransactionNumber();
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
 
         PatientBill patientbill = new PatientBill();
@@ -89,7 +96,6 @@ public class BillingService {
         patientbill.setBalance(data.getAmount());
         patientbill.setBillNumber(bill_no);
         patientbill.setBillingDate(data.getBillingDate());
-        patientbill.setReferenceNo(data.getReferenceNo());
         patientbill.setPaymentMode(data.getPaymentMode());
         patientbill.setTransactionId(trdId);
         patientbill.setStatus(BillStatus.Draft);
@@ -142,7 +148,10 @@ public class BillingService {
 
     public PatientBill save(PatientBill bill) {
         String bill_no = bill.getBillNumber() == null ? sequenceNumberService.next(1L, Sequences.BillNumber.name()) : bill.getBillNumber();
+        String trdId = bill.getTransactionId() == null ? sequenceNumberService.next(1L, Sequences.Transactions.name()) : bill.getTransactionId();
         bill.setBillNumber(bill_no);
+        bill.setTransactionId(trdId);
+
         PatientBill savedBill = patientBillRepository.saveAndFlush(bill);
         List<DoctorInvoice> doctorInvoices = toDoctorInvoice(savedBill);
         if (doctorInvoices.size() > 0) {
@@ -212,6 +221,7 @@ public class BillingService {
         return patientbill.getBillNumber();
     }
 
+    @Deprecated
     public Page<PatientBill> findAllBills(String transactionNo, String visitNo, String patientNo, String paymentMode, String billNo, BillStatus status, DateRange range, Pageable page) {
 
         Specification<PatientBill> spec = BillingSpecification.createSpecification(transactionNo, visitNo, patientNo, paymentMode, billNo, status, range);
@@ -220,6 +230,15 @@ public class BillingService {
 
     }
 
+    public Page<PatientBillItem> getPatientBillItems(String patientNo, String visitNo, String billNumber, String transactionId, Long servicePointId, Boolean hasBalance, BillStatus status, DateRange range, Pageable page) {
+        Specification<PatientBillItem> spec = PatientBillSpecification.createSpecification(patientNo, visitNo, billNumber, transactionId, servicePointId, hasBalance, status, range);
+        return billItemRepository.findAll(spec, page);
+    }
+
+    public Page<SummaryBill> getSummaryBill(String visitNumber, String patientNumber, Boolean hasBalance, DateRange range,Pageable pageable) {
+        return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, range,pageable);
+    }
+ 
     public Visit findVisitEntityOrThrow(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
@@ -229,10 +248,23 @@ public class BillingService {
         return patientBillRepository.groupBy(status);
     }
 
+    @Deprecated
     public Page<PatientBillItem> getPatientBillItemByVisit(String visitNumber, Pageable page) {
         Visit visit = findVisitEntityOrThrow(visitNumber);
 
         return billItemRepository.findPatientBillItemByVisit(visit, page);
+    }
+
+    @Deprecated
+    public List<BillData> withBalances() {
+        return patientBillRepository.findAll(billHasBalance()).stream().map(x -> x.toData()).collect(Collectors.toList());
+    }
+
+    @Deprecated
+    private Specification<PatientBill> billHasBalance() {
+        return (Root<PatientBill> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
+            return cb.greaterThan(root.get("balance"), 0);
+        };
     }
 
     private JournalEntry toJournal(PatientBill bill, Store store) {
@@ -246,8 +278,7 @@ public class BillingService {
         if (!debitAccount.isPresent()) {
             throw APIException.badRequest("Patient Control Account is Not Mapped");
         }
-        String debitAcc = debitAccount.get().getAccount().getIdentifier();
-
+//        String debitAcc = debitAccount.get().getAccount().getIdentifier();
         List<JournalEntryItem> items = new ArrayList<>();
 
         if (!bill.getBillItems().isEmpty()) {
