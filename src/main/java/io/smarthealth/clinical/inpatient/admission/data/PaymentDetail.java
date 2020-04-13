@@ -14,10 +14,10 @@ import lombok.Data;
  * @author Kelsas
  */
 @Data
-public class AdmissionPayment {
+public class PaymentDetail {
 
-    private VisitEnum.PaymentMethod paymentMethod;
-    
+    private String method;
+
     private Long payerId;
     private String payer;
 

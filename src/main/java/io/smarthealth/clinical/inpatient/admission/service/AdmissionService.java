@@ -3,6 +3,7 @@ package io.smarthealth.clinical.inpatient.admission.service;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.clinical.inpatient.admission.data.AdmissionData;
+import io.smarthealth.clinical.inpatient.admission.data.CreateAdmission;
 import io.smarthealth.clinical.inpatient.admission.domain.Admission;
 import io.smarthealth.clinical.inpatient.admission.domain.AdmissionRepository;
 import io.smarthealth.clinical.inpatient.setup.domain.Bed;
@@ -37,7 +38,7 @@ public class AdmissionService {
     private final EmployeeRepository employeeRepository;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Admission createAdmission(AdmissionData data) {
+    public Admission createAdmission(CreateAdmission data) {
         Patient patient = getPatientOrThrow(data.getPatientNumber());
         Bed bed = bedService.getBedOrThrow(data.getBedId());
         Employee medic = employeeRepository.findById(data.getAdmittingDoctorId()).orElse(null);
@@ -46,7 +47,6 @@ public class AdmissionService {
         admission.setAdmissionDate(data.getAdmissionDate());
         admission.setAdmissionReason(data.getAdmissionReason());
         admission.setBed(bed);
-        admission.setDischargeDate(data.getDischargeDate());
         admission.setMedic(medic);
         admission.setPatient(patient);
         admission.setStatus(Admission.Status.Admitted);

@@ -5,6 +5,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.clinical.inpatient.admission.data.AdmissionData;
+import io.smarthealth.clinical.inpatient.admission.data.CreateAdmission;
 import io.smarthealth.clinical.inpatient.admission.domain.Admission;
 import io.smarthealth.clinical.inpatient.admission.service.AdmissionService;
 import io.swagger.annotations.Api;
@@ -43,7 +44,7 @@ public class AdmissionController {
     @PostMapping("/admissions")
     @ResponseBody
 //    @PreAuthorize("hasAuthority('create_admission')")
-    public ResponseEntity<?> createAdmission(@RequestBody @Valid final AdmissionData data) {
+    public ResponseEntity<?> createAdmission(@RequestBody @Valid final CreateAdmission data) {
         Admission admission = service.createAdmission(data);
         return ResponseEntity.status(HttpStatus.CREATED).body(admission.toData());
     }
