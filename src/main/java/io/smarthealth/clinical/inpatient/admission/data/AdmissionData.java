@@ -32,5 +32,6 @@ public class AdmissionData {
     private Long bedId;
     private String bed;
     private Admission.Status status;
+    private AdmissionPayment payment;
 
 }
