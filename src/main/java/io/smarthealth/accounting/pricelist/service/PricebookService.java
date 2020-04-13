@@ -91,16 +91,16 @@ public class PricebookService {
         return priceBookRepository.findByName(name);
     }
 
-    public Page<PriceBook> getPricebooks(String category, String type, Pageable page, boolean includeClosed) {
-        PriceType priceType = null;
-        PriceCategory priceCategory = null;
-        if (category != null && EnumUtils.isValidEnum(PriceCategory.class, category)) {
-            priceCategory = PriceCategory.valueOf(category);
-        }
-        if (type != null && EnumUtils.isValidEnum(PriceType.class, type)) {
-            priceType = PriceType.valueOf(type);
-        }
-        Specification<PriceBook> spec = PriceBookSpecification.createSpecification(priceCategory, priceType, includeClosed);
+    public Page<PriceBook> getPricebooks(PriceCategory category, PriceType type, Pageable page, boolean includeClosed) {
+//        PriceType priceType = null;
+//        PriceCategory priceCategory = null;
+//        if (category != null && EnumUtils.isValidEnum(PriceCategory.class, category)) {
+//            priceCategory = PriceCategory.valueOf(category);
+//        }
+//        if (type != null && EnumUtils.isValidEnum(PriceType.class, type)) {
+//            priceType = PriceType.valueOf(type);
+//        }
+        Specification<PriceBook> spec = PriceBookSpecification.createSpecification(category, type, includeClosed);
         return priceBookRepository.findAll(spec, page);
     }
 

@@ -2,6 +2,8 @@ package io.smarthealth.accounting.pricelist.api;
 
 import io.smarthealth.accounting.pricelist.data.PriceBookData;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
+import io.smarthealth.accounting.pricelist.domain.enumeration.PriceCategory;
+import io.smarthealth.accounting.pricelist.domain.enumeration.PriceType;
 import io.smarthealth.accounting.pricelist.service.PricebookService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -60,8 +62,8 @@ public class PricebookRestController {
     @GetMapping("/pricebooks")
     public ResponseEntity<?> getAllPricebook(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
-            @RequestParam(value = "type", required = false) final String type,
-            @RequestParam(value = "category", required = false) final String category,
+            @RequestParam(value = "type", required = false) final PriceType type,
+            @RequestParam(value = "category", required = false) final PriceCategory category,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 

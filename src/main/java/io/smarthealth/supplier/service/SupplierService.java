@@ -56,6 +56,7 @@ public class SupplierService {
 
     public SupplierData createSupplier(SupplierData supplierData) {
         Supplier supplier = new Supplier();
+        supplier.setActive(Boolean.TRUE);
         if (supplierData.getSupplierType() != null) {
             supplier.setSupplierType(supplierData.getSupplierType());
         }
