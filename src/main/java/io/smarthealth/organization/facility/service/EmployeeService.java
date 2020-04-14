@@ -3,8 +3,8 @@ package io.smarthealth.organization.facility.service;
 import io.smarthealth.administration.employeespecialization.data.enums.EmployeeCategory.Category;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.mail.EmailData;
-import io.smarthealth.infrastructure.mail.MailService;
 import io.smarthealth.infrastructure.utility.PassayPassword;
+import io.smarthealth.messaging.NotificationService;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
@@ -60,7 +60,7 @@ public class EmployeeService {
     PersonContactService personContactService;
 
     @Autowired
-    MailService mailSender;
+    NotificationService notificationService;
 
     @Transactional
     public Employee createFacilityEmployee(Employee employee, PersonContact personContact) {
@@ -99,7 +99,7 @@ public class EmployeeService {
         employeeRepository.save(savedEmployee);
 
         //send welcome message to the new system user
-        mailSender.send(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + savedContact.getEmail() + "<br/> password : " + password)));
+        notificationService.sendEmailNotification(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + savedContact.getEmail() + "<br/> password : " + password)));
 
         return savedEmployee;
     }
