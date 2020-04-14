@@ -3,7 +3,6 @@ package io.smarthealth.stock.item.service;
 import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.accounting.taxes.domain.TaxRepository;
-import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.data.SimpleServicePoint;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;

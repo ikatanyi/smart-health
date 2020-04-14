@@ -28,10 +28,12 @@ public class BillData {
     private String transactionId; //Receipt n. or Invoice No
     private String paymentMode;
     private Double balance;
-    private Double Amount;
+    private Double amount;
     private Double taxes;
     private Double discount;
-    private String referenceNo;//receipt or invoice no
+    private String reference;
+    private String otherDetails;
+      private Boolean walkinFlag;
     @Enumerated(EnumType.STRING)
     private BillStatus status;
 

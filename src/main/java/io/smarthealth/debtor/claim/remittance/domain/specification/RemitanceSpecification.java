@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Kelsas
  */
+@Deprecated
 public class RemitanceSpecification {
 
     public RemitanceSpecification() {

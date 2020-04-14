@@ -44,9 +44,6 @@ public class Facility extends Auditable {
     @Lob
     private byte[] logo;
    private boolean enabled;
-   
-    @OneToMany(mappedBy = "facility")
-    private List<Ward> wards = new ArrayList<>();
 
     @OneToMany(mappedBy = "facility")
     private List<Department> departments = new ArrayList<>();

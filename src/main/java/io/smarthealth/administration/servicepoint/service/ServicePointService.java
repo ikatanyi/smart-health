@@ -11,7 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
+import io.smarthealth.administration.servicepoint.domain.specification.ServicePointSpecification;
 import java.util.Optional;
+import org.springframework.data.jpa.domain.Specification;
 
 /**
  *
@@ -65,15 +67,9 @@ public class ServicePointService {
                 .findByServicePointType(servicePointType);
     }
 
-    public Page<ServicePointData> listServicePoints(String pointType, Pageable page) {
-        Page<ServicePoint> list;
-        if (pointType != null) {
-            list = repository.findByPointType(pointType, page);
-        } else {
-            list = repository.findAll(page);
-        }
-        return list
-                .map(sd -> sd.toData());
+    public Page<ServicePoint> listServicePoints(ServicePointType servicePointType, String pointType, Pageable page) {
+        Specification<ServicePoint> spec = ServicePointSpecification.createSpecification(servicePointType, pointType);
+        return repository.findAll(spec, page);
     }
 
     public ServicePointData updateServicePoint(Long id, ServicePointData data) {

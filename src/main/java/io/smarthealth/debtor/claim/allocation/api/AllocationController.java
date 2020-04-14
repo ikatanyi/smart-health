@@ -1,5 +1,7 @@
 package io.smarthealth.debtor.claim.allocation.api;
 
+import io.smarthealth.accounting.payment.domain.Remittance;
+import io.smarthealth.accounting.payment.service.RemittanceService;
 import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.domain.Allocation;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
@@ -29,22 +31,21 @@ import org.springframework.web.bind.annotation.*;
 public class AllocationController {
 
     private final AllocationService allocationService;
-    private final RemitanceService remitanceService;
+    private final RemittanceService remitanceService;
 
-    public AllocationController(AllocationService allocationService, RemitanceService remitanceService) {
+    public AllocationController(AllocationService allocationService, RemittanceService remitanceService) {
         this.allocationService = allocationService;
         this.remitanceService = remitanceService;
     }
 
     @PostMapping("/allocation/{remmitanceId}")
     public ResponseEntity<?> createAllocation(@PathVariable("remmitanceId") final Long remmitanceId, @Valid @RequestBody List<AllocationData> allocationData) {
-        RemittanceOld remitance = remitanceService.getRemitanceByIdWithFailDetection(remmitanceId);
+        Remittance remitance = remitanceService.getRemittanceOrThrow(remmitanceId);
         List<Allocation> allocatedAmount = allocationService.createAllocation(allocationData, remitance);
         List<AllocationData> dataList = new ArrayList<>();
-        for (Allocation a : allocatedAmount) {
-            AllocationData remittance = AllocationData.map(a);
+        allocatedAmount.stream().map((a) -> AllocationData.map(a)).forEachOrdered((remittance) -> {
             dataList.add(remittance);
-        }
+        });
 
         Pager<List<AllocationData>> pagers = new Pager();
         pagers.setCode("0");

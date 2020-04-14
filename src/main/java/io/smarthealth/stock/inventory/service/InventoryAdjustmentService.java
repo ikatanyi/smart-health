@@ -19,6 +19,7 @@ import io.smarthealth.stock.stores.service.StoreService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -36,7 +37,7 @@ public class InventoryAdjustmentService {
     private final SequenceNumberService sequenceNumberService;
 
     // create Invariance
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public String createStockAdjustment(AdjustmentData data) {
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
 

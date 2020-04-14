@@ -160,8 +160,7 @@ public class DispensingService {
         patientbill.setAmount(data.getAmount());
         patientbill.setDiscount(data.getDiscount());
         patientbill.setBalance(data.getAmount());
-        patientbill.setBillingDate(data.getDispenseDate());
-        patientbill.setReferenceNo(data.getReferenceNo());
+        patientbill.setBillingDate(data.getDispenseDate()); 
         patientbill.setPaymentMode(data.getPaymentMode());
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);

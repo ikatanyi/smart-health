@@ -1,5 +1,8 @@
 package io.smarthealth.stock.purchase.service;
 
+import io.smarthealth.accounting.accounts.data.FinancialActivity;
+import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
+import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
 import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.accounting.accounts.domain.JournalState;
@@ -33,6 +36,7 @@ import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +63,7 @@ public class PurchaseInvoiceService {
     private final StoreRepository storeRepository;
     private final StockEntryRepository stockEntryRepository;
     private final InventoryEventSender inventoryEventSender;
+    private final FinancialActivityAccountRepository activityAccountRepository;
 
     public PurchaseInvoice createPurchaseInvoice(PurchaseInvoiceData invoiceData) {
         Supplier supplier = supplierService.getSupplierOrThrow(invoiceData.getSupplierId());
@@ -97,10 +102,10 @@ public class PurchaseInvoiceService {
         invoice.setPaid(false);
         invoice.setIsReturn(false);
         invoice.setInvoiceNumber(stockEntry.getSupplierInvoiceNumber());
-        invoice.setDiscount(stockEntry.getDiscount());
-        invoice.setTax(stockEntry.getTaxes());
+        invoice.setDiscount(stockEntry.getDiscountTotals());
+        invoice.setTax(stockEntry.getTaxTotals());
         invoice.setInvoiceAmount(stockEntry.getAmount());
-        invoice.setInvoiceBalance(stockEntry.getAmount());
+        invoice.setInvoiceBalance(stockEntry.getNetAmount());
         invoice.setNetAmount(stockEntry.getNetAmount());
         invoice.setStatus(PurchaseInvoiceStatus.Unpaid);
         invoice.setTransactionNumber(stockEntry.getTransactionId());
@@ -175,15 +180,27 @@ public class PurchaseInvoiceService {
         }
 
         BigDecimal amount = invoice.getNetAmount();
+        BigDecimal discount = invoice.getDiscount();
         JournalEntry toSave;
         if (invoice.getType() == PurchaseInvoice.Type.Stock_Delivery) {
+
             String narration = "Stocks delivery for the invoice " + invoice.getInvoiceNumber();
-            toSave = new JournalEntry(invoice.getInvoiceDate(), "Purchase Invoice - " + invoice.getInvoiceNumber(),
-                    new JournalEntryItem[]{
-                        new JournalEntryItem(store.getInventoryAccount(), narration, amount, BigDecimal.ZERO),
-                        new JournalEntryItem(invoice.getSupplier().getCreditAccount(), narration, BigDecimal.ZERO, amount)
-                    }
-            );
+            String narration2 = "Stocks delivery Discount for the invoice " + invoice.getInvoiceNumber();
+              List<JournalEntryItem> items = new ArrayList<>();
+             
+            items.add(new JournalEntryItem(store.getInventoryAccount(), narration, amount, BigDecimal.ZERO));
+            items.add(new JournalEntryItem(invoice.getSupplier().getCreditAccount(), narration, BigDecimal.ZERO, amount));
+             
+            if (invoice.getDiscount() !=null && invoice.getDiscount()!= BigDecimal.ZERO) { 
+                Optional<FinancialActivityAccount> discountAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Discount_Received);
+                if (!discountAccount.isPresent()) {
+                    throw APIException.badRequest("Discount Received Ledger Not Mapped");
+                }
+                items.add(new JournalEntryItem(invoice.getSupplier().getCreditAccount(), narration2, discount, BigDecimal.ZERO));
+                items.add(new JournalEntryItem(discountAccount.get().getAccount(), narration2, BigDecimal.ZERO, discount));
+            }
+            
+            toSave = new JournalEntry(invoice.getInvoiceDate(), "Purchase Invoice - " + invoice.getInvoiceNumber(),items);
             toSave.setTransactionType(TransactionType.Purchase);
         } else {
             String narration = "Credit Note  " + invoice.getPurchaseOrderNumber() + " for the Invoice No. " + invoice.getInvoiceNumber();

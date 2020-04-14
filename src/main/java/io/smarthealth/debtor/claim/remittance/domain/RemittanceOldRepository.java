@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  *
  * @author Kennedy.Imbenzi
  */
+@Deprecated
 public interface RemittanceOldRepository extends JpaRepository<RemittanceOld, Long>,JpaSpecificationExecutor<RemittanceOld>{
     
 }

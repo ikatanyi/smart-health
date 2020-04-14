@@ -63,4 +63,11 @@ public class BillingSpecification {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
+    
+//    CriteriaQuery<Country> q = cb.createQuery(Country.class);
+//  Root<Country> c = q.from(Country.class);
+//  q.multiselect(c.get("currency"), cb.sum(c.get("population")));
+//  q.where(cb.isMember("Europe", c.get("continents")));
+//  q.groupBy(c.get("currency"));
+//  g.having(cb.gt(cb.count(c), 1));
 }

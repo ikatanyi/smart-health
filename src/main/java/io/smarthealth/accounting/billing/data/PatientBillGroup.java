@@ -1,4 +1,4 @@
-package io.smarthealth.accounting.billing.domain;
+package io.smarthealth.accounting.billing.data;
 
 import java.time.LocalDate;
 import lombok.Data;
@@ -34,7 +34,4 @@ public class PatientBillGroup {
         this.billNumber=billNumber;
         this.transactionNo=transactionNo;
     }
-
-     
-
 }

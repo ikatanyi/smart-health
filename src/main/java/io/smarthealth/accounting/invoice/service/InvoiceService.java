@@ -138,7 +138,7 @@ public class InvoiceService {
 //        }
         if (savedInvoice.getBill() != null) {
             PatientBill bill = savedInvoice.getBill();
-            bill.setStatus(BillStatus.Final);
+            bill.setStatus(BillStatus.Paid);
             billingService.update(bill);
         }
         journalService.save(toJournal(invoice));
@@ -149,7 +149,7 @@ public class InvoiceService {
     private InvoiceLineItem createItem(String trxId, CreateInvoiceItemData data) {
         InvoiceLineItem lineItem = new InvoiceLineItem();
         PatientBillItem item = billingService.findBillItemById(data.getBillItemId());
-        item.setStatus(BillStatus.Final);
+        item.setStatus(BillStatus.Paid);
 
         lineItem.setBillItem(item);
         lineItem.setDeleted(false);
