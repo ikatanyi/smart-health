@@ -7,6 +7,7 @@ package io.smarthealth.organization.facility.api;
 
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -47,6 +48,11 @@ public class EmployeeController {
     @PostMapping("/employee")
     public @ResponseBody
     ResponseEntity<?> createEmployee(@RequestBody @Valid final EmployeeData employeeData) {
+        if (employeeData.isCreateUserAccount()) {
+            if (employeeData.getRoles().length < 1) {
+                throw APIException.badRequest("Please assign a role to the user to be created", "");
+            }
+        }
 
         Department department = departmentService.fetchDepartmentByCode(employeeData.getDepartmentCode());
 
@@ -60,7 +66,7 @@ public class EmployeeController {
         personContact.setTelephone(employeeData.getTelephone());
         personContact.setPrimary(true);
 
-        Employee savedEmployee = employeeService.createFacilityEmployee(employee, personContact);
+        Employee savedEmployee = employeeService.createFacilityEmployee(employee, personContact, employeeData.isCreateUserAccount(), employeeData.getRoles());
 
         EmployeeData employeeData1 = employeeService.convertEmployeeEntityToEmployeeData(savedEmployee);
 

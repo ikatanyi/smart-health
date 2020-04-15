@@ -14,7 +14,6 @@ import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
-import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -43,6 +42,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -64,7 +64,7 @@ public class CreditNoteService {
     private final SequenceNumberService sequenceNumberService;
     private final ServicePointService servicePointService;
 
-    @javax.transaction.Transactional
+    @Transactional
     public CreditNote createCreditNote(CreditNoteData data) {
         CreditNote creditNote = CreditNoteData.map(data);
         Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
@@ -82,6 +82,7 @@ public class CreditNoteService {
         for (CreditNoteItemData item : data.getBillItems()) {
             CreditNoteItem creditNoteItem = new CreditNoteItem();
             PatientBillItem billItem = billService.findBillItemById(item.getBillItemid());
+            
             creditNoteItem.setAmount(billItem.getAmount());
             creditNoteItem.setBillItem(billItem);
             creditNoteItem.setItem(billItem.getItem());
@@ -90,7 +91,7 @@ public class CreditNoteService {
 
             totalAmount = totalAmount + billItem.getAmount();
 
-            billItem.setStatus(BillStatus.Cancelled);
+            billItem.setStatus(BillStatus.Returned);
             billService.updateBillItem(billItem);
 
         }

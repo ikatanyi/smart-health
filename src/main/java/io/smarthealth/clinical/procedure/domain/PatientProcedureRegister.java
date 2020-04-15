@@ -8,7 +8,6 @@ package io.smarthealth.clinical.procedure.domain;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
-import io.smarthealth.clinical.record.domain.ClinicalRecord;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -104,7 +103,7 @@ public class PatientProcedureRegister extends Auditable {
         if (this.getRequest() != null) {
             data.setRequestId(this.getRequest().getId());
             if (this.getRequest().getRequestedBy() != null) {
-                data.setRequestedBy(this.getRequest().getRequestedBy().getStaffNumber());
+                data.setRequestedBy(this.getRequest().getRequestedBy().getUsername());
                 data.setPhysicianName(this.getRequest().getCreatedBy());
             }
         }

@@ -9,7 +9,7 @@ package io.smarthealth.debtor.claim.remittance.domain.enumeration;
  *
  * @author Kennedy.Imbenzi
  */
-
+@Deprecated
      public enum PaymentMode {        
         MPESA,
         EFT,

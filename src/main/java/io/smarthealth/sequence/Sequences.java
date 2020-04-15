@@ -25,5 +25,6 @@ public enum Sequences {
     StockTransferNumber,
     BillNumber,
     CreditNoteNumber,
-    VoucherNumber;
+    VoucherNumber,
+    Admission;
 }

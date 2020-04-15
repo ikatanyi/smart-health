@@ -29,22 +29,22 @@ public class PatientBill extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_visit_id"))
     private Visit visit;
-
     private LocalDate billingDate;
-
     private String billNumber; //can also be an invoice
-
     private String paymentMode;
     private String transactionId;
-
     private Double discount;
     private Double taxes;
-    private Double Amount;
+    private Double amount;
     private Double balance;
-    private String referenceNo;
+    private String reference;
+    private String otherDetails;
+    private Boolean walkinFlag;
+    
 
     @Enumerated(EnumType.STRING)
     private BillStatus status;
+
     @OneToMany(mappedBy = "patientBill", cascade = CascadeType.ALL)
     private List<PatientBillItem> billItems = new ArrayList<>();
     //
@@ -71,15 +71,17 @@ public class PatientBill extends Auditable {
         BillData data = new BillData();
         data.setId(this.getId());
         data.setBillNumber(this.getBillNumber());
-        data.setBillingDate(this.getBillingDate());
-        data.setReferenceNo(this.getReferenceNo());
+        data.setBillingDate(this.getBillingDate()); 
         data.setTransactionId(this.getTransactionId());
         data.setAmount(this.getAmount());
         data.setDiscount(this.getDiscount());
         data.setDiscount(this.getDiscount());
         data.setBalance(this.getBalance());
         data.setPaymentMode(this.getPaymentMode());
-        data.setStatus(this.getStatus());
+        data.setStatus(this.status);
+        data.setReference(this.reference);
+        data.setOtherDetails(this.otherDetails);
+        data.setWalkinFlag(this.walkinFlag);
 
         if (this.getVisit() != null) {
             data.setVisitNumber(this.getVisit().getVisitNumber());

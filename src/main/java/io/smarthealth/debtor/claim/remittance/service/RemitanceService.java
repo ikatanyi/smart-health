@@ -35,6 +35,7 @@ import io.smarthealth.debtor.claim.remittance.domain.RemittanceOldRepository;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Deprecated
 public class RemitanceService {
 
     private final RemittanceOldRepository remitanceRepository;

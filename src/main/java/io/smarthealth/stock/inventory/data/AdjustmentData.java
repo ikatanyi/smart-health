@@ -2,10 +2,10 @@ package io.smarthealth.stock.inventory.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -17,7 +17,7 @@ import lombok.Data;
 public class AdjustmentData {
 
     private Long id;
-    
+    @NotNull(message = "Store ID is Required")
     private Long storeId;
     private String storeName;
     

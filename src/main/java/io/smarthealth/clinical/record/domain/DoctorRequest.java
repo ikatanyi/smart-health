@@ -6,6 +6,7 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.security.domain.User;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDateTime;
 import javax.persistence.*;
@@ -40,7 +41,7 @@ public class DoctorRequest extends Auditable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_doc_request_empoyee_id"))
-    private Employee requestedBy;
+    private User requestedBy;
     
     private LocalDateTime orderDatetime;
     private String urgency;

@@ -5,7 +5,6 @@
  */
 package io.smarthealth.approval.api;
 
-import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.approval.data.ApprovalConfigData;
 import io.smarthealth.approval.data.ModuleApproversData;
 import io.smarthealth.approval.data.enums.ApprovalModule;

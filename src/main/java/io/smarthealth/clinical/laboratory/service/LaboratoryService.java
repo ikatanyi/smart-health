@@ -182,9 +182,9 @@ public class LaboratoryService {
         Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status, range, search);
         return repository.findAll(spec, page);
     }
-    
-     public Page<LabRegisterTest> getLabRegisterTest(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range,String search,Pageable page) {
-        Specification<LabRegisterTest> spec = LabRegisterTestSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status,range, search);
+
+    public Page<LabRegisterTest> getLabRegisterTest(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range, String search, Pageable page) {
+        Specification<LabRegisterTest> spec = LabRegisterTestSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status, range, search);
         return testRepository.findAll(spec, page);
     }
 
@@ -293,7 +293,7 @@ public class LaboratoryService {
             WalkIn w = createWalking(data.getPatientName());
             request.setRequestedBy(data.getPatientName());
             request.setPatientNo(w.getWalkingIdentitificationNo());
-
+            request.setPaymentMode("Cash");
         }
         request.setRequestDatetime(data.getRequestDatetime());
         request.setStatus(LabTestStatus.AwaitingSpecimen);
@@ -374,11 +374,18 @@ public class LaboratoryService {
         patientbill.setVisit(visit);
         if (visit != null) {
             patientbill.setPatient(visit.getPatient());
+            patientbill.setWalkinFlag(Boolean.FALSE);
+        }
+        // how do I deal with bills for Walkin
+        if (data.getIsWalkin()) {
+            patientbill.setReference(data.getPatientNo());
+            patientbill.setOtherDetails(data.getRequestedBy());
+            patientbill.setWalkinFlag(Boolean.TRUE);
         }
 
         patientbill.setBillingDate(LocalDate.now());
 //        patientbill.setReferenceNo(data.getReferenceNo());
-        patientbill.setPaymentMode(data.getPaymentMode());
+        patientbill.setPaymentMode(data.getPaymentMode() != null ? data.getPaymentMode() : "Cash");
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
         List<PatientBillItem> lineItems = data.getTests()
@@ -399,7 +406,7 @@ public class LaboratoryService {
 //                    billItem.setAmount(lineData.getTestPrice().doubleValue());
                     billItem.setAmount(lineData.getPrice().doubleValue());
                     billItem.setDiscount(0.00);
-                    billItem.setPaid(data.getPaymentMode().equals("Insurance"));
+                    billItem.setPaid(data.getPaymentMode() != null ? data.getPaymentMode().equals("Insurance") : false);
 //                    billItem.setBalance(lineData.getTestPrice().doubleValue());
                     billItem.setBalance(lineData.getPrice().doubleValue());
                     billItem.setServicePoint(srvpoint.getName());
@@ -427,7 +434,7 @@ public class LaboratoryService {
             doctorRequestRepository.save(req);
         }
     }
-    
+
     public LabTestStatus LabTestStatusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;

@@ -1,12 +1,8 @@
 package io.smarthealth.sequence;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Version;
 import lombok.Data;
 

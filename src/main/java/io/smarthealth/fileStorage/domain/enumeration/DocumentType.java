@@ -5,8 +5,6 @@
  */
 package io.smarthealth.fileStorage.domain.enumeration;
 
-import io.smarthealth.clinical.radiology.domain.enumeration.*;
-
 /**
  *
  * @author Kennedy.Imbenzi

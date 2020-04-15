@@ -24,6 +24,7 @@ public final class PaginationUtil {
     private static final String API_VERSION = "v1.0";
     private static final String HEADER_X_TOTAL_COUNT = "X-Total-Count";
     private static final String HEADER_LINK_FORMAT = "<{0}>; rel=\"{1}\"";
+    public static final Integer defaultSize=50;
 
     private PaginationUtil() {
     }

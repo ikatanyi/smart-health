@@ -97,7 +97,11 @@ public class StockEntry extends Auditable {
         stock.setMoveType(MovementType.Dispensed);
         stock.setPrice(price);
         stock.setPurpose(MovementPurpose.Issue);
+        if(drug.getWalkinFlag()){
+            stock.setReferenceNumber(drug.getOtherReference());
+        }else{
         stock.setReferenceNumber(drug.getPatient().getPatientNumber());
+        }
         stock.setStore(store);
         stock.setTransactionDate(drug.getDispensedDate());
         stock.setTransactionNumber(drug.getTransactionId());

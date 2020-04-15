@@ -135,7 +135,7 @@ public class ReceivePaymentService {
                             PatientBillItem item = billingService.findBillItemById(x.getBillItemId());
                             BigDecimal bal = BigDecimal.valueOf(item.getAmount()).subtract(x.getAmount());
                             item.setPaid(Boolean.TRUE);
-                            item.setStatus(BillStatus.Final);
+                            item.setStatus(BillStatus.Paid);
                             item.setPaymentReference(receiptNo);
                             item.setBalance(bal.doubleValue());
                             PatientBillItem i = billingService.updateBillItem(item);
