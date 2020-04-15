@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.record.data;
 
-import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -14,22 +14,14 @@ import lombok.Data;
  */
 @Data
 public class DoctorRequestItem {
-    
+
     private Long itemId;
     private String itemName;
     private String code;
     private double costRate;
     private double rate;
     private Long requestItemId;
+    @ApiModelProperty(hidden = true)
+    private PrescriptionData prescriptionData;
 
-    public static DoctorRequestItem map(DoctorRequest d) {
-        DoctorRequestItem requestItem = new DoctorRequestItem();
-        requestItem.setCode(d.getItem().getItemCode());
-        requestItem.setItemId(d.getItem().getId());
-        requestItem.setRate(d.getItemRate());
-        requestItem.setCostRate(d.getItemCostRate());
-        requestItem.setItemName(d.getItem().getItemName());
-        requestItem.setRequestItemId(d.getId());
-        return requestItem;
-    }
 }

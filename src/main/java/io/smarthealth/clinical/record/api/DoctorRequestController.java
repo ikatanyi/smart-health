@@ -1,5 +1,5 @@
 package io.smarthealth.clinical.record.api;
- 
+
 import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
@@ -17,6 +17,8 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.security.domain.User;
+import io.smarthealth.security.service.UserService;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.support.PagedListHolder;
@@ -43,6 +46,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @Api(value = "Doctor Request Controller", description = "Operations pertaining to Doctor Requests/Orders maintenance")
+@RequiredArgsConstructor
 public class DoctorRequestController {
 
     private final DoctorRequestService requestService;
@@ -56,30 +60,21 @@ public class DoctorRequestController {
     private final ItemService itemService;
 
     private final PatientService patientService;
- 
+
     private final SequenceNumberService sequenceNumberService;
-    
+
     private final PricelistService pricelist;
 
-    public DoctorRequestController(DoctorRequestService requestService, VisitService visitService, ModelMapper modelMapper, EmployeeService employeeService, ItemService itemService, PatientService patientService, SequenceNumberService sequenceNumberService, PricelistService pricelist) {
-        this.requestService = requestService;
-        this.visitService = visitService;
-        this.modelMapper = modelMapper;
-        this.employeeService = employeeService;
-        this.itemService = itemService;
-        this.patientService = patientService;
-        this.sequenceNumberService = sequenceNumberService;
-        this.pricelist = pricelist;
-    }
-
-   
+    private final UserService userService;
 
     @PostMapping("/visit/{visitNo}/doctor-request")
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         //TODO: uncomment after testing
-        Employee employee =employeeService.findEmployeeByUsername(SecurityUtils.getCurrentUserLogin().get()).orElse(null);
+        Optional<User> user = userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().get());
+
+//        Employee employee = employeeService.findEmployeeByUsername(SecurityUtils.getCurrentUserLogin().get()).orElse(null);
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceNumberService.next(1L, Sequences.DoctorRequest.name());
         for (DoctorRequestData data : docRequestData) {
@@ -90,8 +85,8 @@ public class DoctorRequestController {
             doctorRequest.setItemCostRate(item.getCostRate().doubleValue());
             doctorRequest.setItemRate(item.getRate().doubleValue());
             doctorRequest.setPatient(visit.getPatient());
-            doctorRequest.setVisit(visit); 
-            doctorRequest.setRequestedBy(employee);
+            doctorRequest.setVisit(visit);
+            doctorRequest.setRequestedBy(user.get());
             doctorRequest.setOrderNumber(orderNo);
             doctorRequest.setFulfillerStatus(FullFillerStatusType.Unfulfilled);
             doctorRequest.setFulfillerComment(FullFillerStatusType.Unfulfilled.name());
@@ -174,7 +169,7 @@ public class DoctorRequestController {
             List<DoctorRequest> serviceItems = requestService.fetchServiceRequestsByPatient(docReq.getPatient(), fulfillerStatus, requestType);
             List<DoctorRequestItem> requestItems = new ArrayList<>();
             for (DoctorRequest r : serviceItems) {
-                requestItems.add(DoctorRequestItem.map(r));
+                requestItems.add(requestService.toData(r));
             }
             waitingRequest.setItem(requestItems);
             waitingRequests.add(waitingRequest);

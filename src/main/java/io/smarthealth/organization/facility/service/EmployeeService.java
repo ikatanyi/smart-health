@@ -3,8 +3,8 @@ package io.smarthealth.organization.facility.service;
 import io.smarthealth.administration.employeespecialization.data.enums.EmployeeCategory.Category;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.mail.EmailData;
-import io.smarthealth.infrastructure.mail.MailService;
 import io.smarthealth.infrastructure.utility.PassayPassword;
+import io.smarthealth.messaging.NotificationService;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
@@ -26,8 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  *
@@ -60,10 +62,10 @@ public class EmployeeService {
     PersonContactService personContactService;
 
     @Autowired
-    MailService mailSender;
+    NotificationService notificationService;
 
     @Transactional
-    public Employee createFacilityEmployee(Employee employee, PersonContact personContact) {
+    public Employee createFacilityEmployee(Employee employee, PersonContact personContact, boolean createUserAccount, String[] roles) {
         //verify if exists
         if (employeeRepository.existsByStaffNumber(employee.getStaffNumber())) {
             throw APIException.conflict("Staff identified by number {0} already exists ", employee.getStaffNumber());
@@ -78,29 +80,33 @@ public class EmployeeService {
         //find roles by group
         //fetch primary contact details
         PersonContact savedContact = personContactService.fetchPersonPrimaryContact(employee);
+        if (createUserAccount) {
+            //generate password
+            String password = PassayPassword.generatePassayPassword();
+            User user = new User(
+                    savedContact.getEmail(),
+                    savedContact.getEmail(),
+                    password,
+                    savedContact.getPerson().getGivenName().concat(" ").concat(savedContact.getPerson().getSurname())
+            );
+            Set<Role> userRoles = new HashSet<>();
 
-        //generate password
-        String password = PassayPassword.generatePassayPassword();
-        User user = new User(
-                savedContact.getEmail(),
-                savedContact.getEmail(),
-                password,
-                savedContact.getPerson().getGivenName().concat(" ").concat(savedContact.getPerson().getSurname())
-        );
-        Role userRole = userService.findRoleByName(RoleName.ROLE_USER.name())
-                .orElseThrow(() -> APIException.internalError("User Role not set."));
+            for (String role : roles) {
+                Role userRole = userService.findRoleByName(role)
+                        .orElseThrow(() -> APIException.internalError("User Role not set."));
+                userRoles.add(userRole);
+            }
+            user.setRoles(userRoles);
 
-        user.setRoles(Collections.singleton(userRole));
+            User userSaved = userService.saveUser(user);
 
-        User userSaved = userService.saveUser(user);
+            savedEmployee.setLoginAccount(userSaved);
 
-        savedEmployee.setLoginAccount(userSaved);
+            employeeRepository.save(savedEmployee);
 
-        employeeRepository.save(savedEmployee);
-
-        //send welcome message to the new system user
-        mailSender.send(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + savedContact.getEmail() + "<br/> password : " + password)));
-
+            //send welcome message to the new system user
+            notificationService.sendEmailNotification(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + savedContact.getEmail() + "<br/> password : " + password)));
+        }
         return savedEmployee;
     }
 
