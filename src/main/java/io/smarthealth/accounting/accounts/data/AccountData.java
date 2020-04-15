@@ -1,4 +1,4 @@
-package io.smarthealth.accounting.accounts.data;
+        package io.smarthealth.accounting.accounts.data;
 
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.AccountState;
