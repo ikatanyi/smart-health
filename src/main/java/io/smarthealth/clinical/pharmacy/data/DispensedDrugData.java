@@ -46,6 +46,8 @@ public class DispensedDrugData implements Serializable {
     private String dispensedBy;
     private String collectedBy;
     private Boolean isReturn=false;
+      private String otherReference;
+    private Boolean walkinFlag=Boolean.FALSE;
    
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;

@@ -60,6 +60,8 @@ public class DispensedDrug extends Auditable implements Cloneable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharm_dispensed_drugs_store_id"))
     private Store store;
     private String instructions;
+    private String otherReference;
+    private Boolean walkinFlag = Boolean.FALSE;
 
 //    @Enumerated(EnumType.STRING)
     public DispensedDrugData toData() {
@@ -95,6 +97,8 @@ public class DispensedDrug extends Auditable implements Cloneable {
             data.setStoreName(this.store.getStoreName());
         }
         data.setInstructions(this.instructions);
+        data.setOtherReference(this.otherReference);
+        data.setWalkinFlag(this.walkinFlag);
         return data;
     }
 

@@ -196,6 +196,13 @@ public class ProcedureService {
         if (data.getVisit() != null) {
             patientbill.setPatient(data.getVisit().getPatient());
         }
+          if (!data.getIsWalkin()) { 
+            patientbill.setWalkinFlag(Boolean.FALSE);
+        } else {
+            patientbill.setReference(data.getPatientNo());
+            patientbill.setOtherDetails(data.getPatientName());
+            patientbill.setWalkinFlag(Boolean.TRUE);
+        }
         patientbill.setAmount(data.getAmount());
         patientbill.setBillingDate(data.getBillingDate());
         patientbill.setDiscount(data.getDiscount());
