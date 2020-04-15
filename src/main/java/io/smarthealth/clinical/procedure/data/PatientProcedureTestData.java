@@ -9,6 +9,7 @@ import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureTest;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -40,9 +41,7 @@ public class PatientProcedureTestData {
     @ApiModelProperty(required = false, hidden = true)
     private String medicName;
     private Long medicId;
-    
-    
-
+    private LocalDate procedureDate=LocalDate.now();
    
 
     public static PatientProcedureTest map(PatientProcedureTestData scan) {

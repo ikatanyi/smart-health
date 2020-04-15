@@ -5,11 +5,9 @@
  */
 package io.smarthealth.report.service;
 
-import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
+import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
-import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
-import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
-import io.smarthealth.clinical.radiology.service.RadiologyService;
+import io.smarthealth.clinical.procedure.service.ProcedureService;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -43,50 +41,27 @@ import org.springframework.util.MultiValueMap;
  */
 @Service
 @RequiredArgsConstructor
-public class RadiologyReportService {
+public class ProcedureReportService {
     private final JasperReportsService reportService;
     private final PatientService patientService;
-    private final RadiologyService scanService;
+    private final ProcedureService procedureService;
     
     private final VisitService visitService;
     
     
-    public void getRadiologyStatement(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+   public void getPatientProcedureReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        String visitId = reportParam.getFirst("visitNumber");
-        String scanNo = reportParam.getFirst("scanNumber");
-        String orderNumber = reportParam.getFirst("orderNumber");
-        String patientNumber = reportParam.getFirst("patientNumber");
-        String dateRange = reportParam.getFirst("dateRange");
-        Integer page = Integer.getInteger(reportParam.getFirst("page"));
-        Integer size = Integer.getInteger(reportParam.getFirst("size"));
-        ScanTestState status = statusToEnum(reportParam.getFirst("status"));
-        Boolean summary = Boolean.parseBoolean(reportParam.getFirst("summarized"));
-        Pageable pageable = PaginationUtil.createPage(page, size);
+        String PatientNumber= reportParam.getFirst("PatientNumber");
+        String scanNo=reportParam.getFirst("scanNo"); 
+        String visitNumber=reportParam.getFirst("visitNumber");
+        ProcedureTestState status=statusToEnum(reportParam.getFirst("status"));
+        String dateRange=reportParam.getFirst("range");
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        
-         List<PatientScanRegisterData> patientData = scanService.findAll(patientNumber, scanNo, visitId, status, range, pageable)
-                .getContent()
-                .stream()
-                .map((register) -> register.todata())
-                .collect(Collectors.toList());
-        reportData.setData(patientData);
-        reportData.setFormat(format);
-        if(summary)
-             reportData.setTemplate("/clinical/radiology/radiology_statement_summary");
-            else
-              reportData.setTemplate("/clinical/radiology/radiology_statement");
-        reportData.setReportName("Lab-Statement");
-        reportService.generateReport(reportData, response);
-    }    
-    
-    public void getPatientRadiolgyReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
-        ReportData reportData = new ReportData();
-        String visitNumber = reportParam.getFirst("visitNumber");
+        Pageable pgbl = PaginationUtil.createPage(1, 500);
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        List<PatientScanRegisterData> procTests = scanService.findPatientScanRegisterByVisit(visit)
+        List<PatientProcedureTestData> procTests = procedureService.findPatientProcedureTests(PatientNumber, scanNo, visitNumber, status, range, pgbl)
                 .stream()
-                .map((test) -> test.todata())
+                .map((test) -> test.toData())
                 .collect(Collectors.toList());
 
         List<JRSortField> sortList = new ArrayList();
@@ -102,18 +77,19 @@ public class RadiologyReportService {
             reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
         }
         reportData.setFormat(format);
-        reportData.setTemplate("/clinical/procedure/patient_procedure_report");
+        reportData.setTemplate("/clinical/radiolgy/patient_radiology_report");
         reportData.setReportName("procedure-report");
         reportService.generateReport(reportData, response);
     }
-    
-    private ScanTestState statusToEnum(String status) {
+   
+   private ProcedureTestState statusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;
         }
-        if (EnumUtils.isValidEnum(ScanTestState.class, status)) {
-            return ScanTestState.valueOf(status);
+        if (EnumUtils.isValidEnum(ProcedureTestState.class, status)) {
+            return ProcedureTestState.valueOf(status);
         }
         throw APIException.internalError("Provide a Valid Bill Status");
     }
+    
 }

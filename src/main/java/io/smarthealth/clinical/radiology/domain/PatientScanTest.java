@@ -103,8 +103,11 @@ public class PatientScanTest extends Identifiable {
              if(this.getRadiologyTest().getServiceTemplate().getNotes()!=null)
                 entity.setTemplate(new String(this.getRadiologyTest().getServiceTemplate().getNotes(),StandardCharsets.UTF_8));  
         }
-        if(this.getRequest()!=null)
+        if(this.getRequest()!=null){
             entity.setRequestId(this.getRequest().getId());
+            if(this.getRequest().getRequestedBy()!=null)
+               entity.setRequestedBy(this.getRequest().getRequestedBy().getFullName());
+        }
         return entity;
     }
 

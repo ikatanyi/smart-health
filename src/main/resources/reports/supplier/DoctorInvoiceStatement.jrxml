@@ -24,7 +24,6 @@
 	<field name="doctorId" class="java.lang.Long"/>
 	<field name="doctorName" class="java.lang.String"/>
 	<field name="staffNumber" class="java.lang.String"/>
-	<field name="transactionDate" class="java.lang.Object"/>
 	<field name="invoiceNumber" class="java.lang.String"/>
 	<field name="invoiceDate" class="java.lang.Object"/>
 	<field name="amount" class="java.math.BigDecimal"/>
@@ -36,7 +35,6 @@
 	<field name="paid" class="java.lang.Boolean"/>
 	<field name="balance" class="java.math.BigDecimal"/>
 	<field name="paymentMode" class="java.lang.String"/>
-	<field name="transactionType" class="java.lang.Object"/>
 	<variable name="PatientCount" class="java.lang.Integer" calculation="Count">
 		<variableExpression><![CDATA[]]></variableExpression>
 	</variable>

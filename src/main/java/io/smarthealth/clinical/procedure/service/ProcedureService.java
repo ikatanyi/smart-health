@@ -22,6 +22,7 @@ import io.smarthealth.clinical.procedure.domain.ProcedureRepository;
 import io.smarthealth.clinical.procedure.domain.Procedure;
 import io.smarthealth.clinical.procedure.domain.ProcedureTestRepository;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
+import io.smarthealth.clinical.procedure.domain.specification.PatientProcedureTestSpecification;
 import io.smarthealth.clinical.procedure.domain.specification.ProcedureSpecification;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
@@ -81,7 +82,6 @@ public class ProcedureService {
                         Optional<Item> item = itemService.findByItemCode(procedureTest.getItemCode());
                         if (item.isPresent()) {
                             test.setItem(item.get());
-
                         }
                         return test;
                     })
@@ -124,7 +124,7 @@ public class ProcedureService {
     }
 
     @Transactional
-    public PatientProcedureRegister savePatientResults(PatientProcedureRegisterData patientProcRegData, final String visitNo, final Long requestId) {
+    public PatientProcedureRegister savePatientResults(PatientProcedureRegisterData patientProcRegData, final String visitNo) {
         PatientProcedureRegister patientProcReg = PatientProcedureRegisterData.map(patientProcRegData);
         String transactionId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         patientProcReg.setTransactionId(transactionId);
@@ -140,14 +140,7 @@ public class ProcedureService {
             patientProcReg.setRequestedBy(emp.get());
         }
 
-        if (requestId != null) {
-            Optional<DoctorRequest> request = doctorRequestRepository.findById(requestId);
-            if (request.isPresent()) {
-                patientProcReg.setRequest(request.get());
-                request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
-            }
-
-        }
+        
         if (patientProcRegData.getAccessionNo() == null || patientProcRegData.getAccessionNo().equals("")) {
             String accessionNo = sequenceNumberService.next(1L, Sequences.Procedure.name());
             patientProcReg.setAccessNo(accessionNo);
@@ -167,10 +160,11 @@ public class ProcedureService {
                 if (employee.isPresent()) {
                     pte.setMedic(employee.get());
                 }
-
-                Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
-                if (request.isPresent()) {
-                    request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                if (id.getRequestItemId() != null) {
+                    Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
+                    if (request.isPresent()) {
+                        request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                    }
                 }
 
                 patientProcTest.add(pte);
@@ -259,6 +253,11 @@ public class ProcedureService {
     public List<PatientProcedureRegister> findPatientProcedureRegisterByVisit(String VisitNumber) {
         Visit visit = visitService.findVisitEntityOrThrow(VisitNumber);
         return patientprocedureRepository.findByVisit(visit);
+    }
+    
+     public Page<PatientProcedureTest> findPatientProcedureTests(String PatientNumber,String scanNo, String visitId, ProcedureTestState status, DateRange range, Pageable pgbl) {
+        Specification spec = PatientProcedureTestSpecification.createSpecification(PatientNumber, scanNo, visitId, status, range);
+        return patientprocedureRepository.findAll(spec, pgbl);
     }
 
     @Transactional

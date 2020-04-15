@@ -16,5 +16,4 @@ public enum ScanTestState {
         Completed,
         Cancelled,
         AwaitingReview ,
-        Paid
 }

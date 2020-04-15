@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="receipt" language="groovy" pageWidth="312" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="272" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e3432a93-c4e5-42d0-9c23-a88c9aff2afc">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" fontName="Times New Roman" fontSize="50" isBold="true" pdfFontName="Times-Bold"/>
+	<style name="SubTitle" forecolor="#736343" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<style name="Row" mode="Transparent">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style backcolor="#E6DAC3"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Footer_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="transactionDate" class="java.lang.String"/>
+	<field name="payer" class="java.lang.String"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="amount" class="java.math.BigDecimal"/>
+	<field name="refundedAmount" class="java.math.BigDecimal"/>
+	<field name="paymentMethod" class="java.lang.String"/>
+	<field name="receiptNo" class="java.lang.String"/>
+	<field name="referenceNumber" class="java.lang.String"/>
+	<field name="transactionType" class="java.lang.String"/>
+	<field name="transactionNo" class="java.lang.String"/>
+	<field name="shiftNo" class="java.lang.String"/>
+	<field name="currency" class="java.lang.String"/>
+	<field name="createdBy" class="java.lang.String"/>
+	<field name="receiptItems" class="java.util.List"/>
+	<variable name="amount" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[]]></variableExpression>
+		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>
+	</variable>
+	<variable name="bal" class="java.lang.Double">
+		<variableExpression><![CDATA[]]></variableExpression>
+		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>
+	</variable>
+	<variable name="amtDue" class="java.lang.Double">
+		<variableExpression><![CDATA[]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	</variable>
+	<group name="patient">
+		<groupExpression><![CDATA[]]></groupExpression>
+		<groupFooter>
+			<band height="113">
+				<line>
+					<reportElement positionType="FixRelativeToBottom" x="3" y="75" width="270" height="1" uuid="a60da878-2e95-4a09-891b-14d22037303d"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineColor="#999999"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="3" y="48" width="267" height="14" uuid="ade8470a-256c-4aec-817a-91e9cdbf7709"/>
+					<textElement>
+						<font size="10" isBold="true" isItalic="false"/>
+					</textElement>
+					<text><![CDATA[PRICES INCLUSIVE OF VAT WHERE APPLICABLE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="149" y="2" width="71" height="17" uuid="37509a91-0c47-40a2-8bf1-1106d0b68085"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TOTAL :]]></text>
+				</staticText>
+				<textField pattern="#,##0.00">
+					<reportElement x="220" y="2" width="52" height="17" uuid="9a031d84-2778-4a88-b0c4-ae0c651d8919"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="1" width="272" height="1" uuid="e95fd28e-6c70-4f66-a8be-84bb17f1778b"/>
+					<graphicElement>
+						<pen lineWidth="0.25" lineColor="#999999"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="149" y="19" width="71" height="15" uuid="ce6fb247-a0fb-4f6b-bcf9-472ab0bbedfa"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Refund :]]></text>
+				</staticText>
+				<textField pattern="#,##0.00">
+					<reportElement x="220" y="19" width="53" height="15" uuid="55d48a9f-cd9c-4204-b07d-ab6a1ad03649"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{refundedAmount}]]></textFieldExpression>
+				</textField>
+				<subreport>
+					<reportElement x="3" y="76" width="270" height="37" uuid="a05651d4-aeb4-4b9d-9f8c-ff7f47ac7488"/>
+					<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band height="161" splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="78" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="273" height="75" uuid="a7cf22b7-aee5-4ba4-a88b-aef724b424dc"/>
+				<subreportParameter name="PIC_DIR">
+					<subreportParameterExpression><![CDATA[]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="109" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="49" y="19" width="107" height="15" uuid="30691af1-f71d-4155-bbc4-5a351385705f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{payer}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="19" width="47" height="15" uuid="93648659-360e-4303-a31f-f02af77fb196"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payer:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="35" width="48" height="15" uuid="43fd262c-79e0-443b-8ea2-d804878937d6"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Trx Date :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="70" width="47" height="16" uuid="ca475b7a-12c4-45b0-afb7-1f896397ebf3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Shift :]]></text>
+			</staticText>
+			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="49" y="51" width="107" height="18" uuid="86fbffa6-34d2-4ade-933f-f88df1d52898"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paymentMethod}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="87" width="48" height="15" uuid="b1b3883e-d63c-4434-896b-44bb48f46b50"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ServedBy:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="51" width="48" height="18" uuid="2f1f781e-85da-42fe-9631-80949c43eaad"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Mode:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="49" y="35" width="107" height="15" uuid="8d99c74f-1758-49d4-8a55-b18c69008021"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{transactionDate}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="1" y="-1" width="271" height="1" uuid="a60da878-2e95-4a09-891b-14d22037303d"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineColor="#CCCCCC"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="1" y="0" width="271" height="1" uuid="0475c2f2-b3e8-4234-9ee6-2e8abaceb7e4"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineColor="#CCCCCC"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="1" y="0" width="61" height="15" uuid="da08471a-e688-4c0a-935b-daf853466751"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{receiptNo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="48" y="87" width="108" height="15" uuid="02113826-f210-4ff2-baf2-10389fad918d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="48" y="70" width="108" height="16" uuid="1d9af465-481d-4eff-ae1b-c9833a8b1a92"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shiftNo}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="102" width="272" height="1" uuid="915b14ae-8d36-451f-a14a-af8506cb78c4"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21">
+			<subreport>
+				<reportElement x="0" y="0" width="271" height="21" uuid="5e4cc929-2628-4795-944c-0e5db106a605"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{receiptItems})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "general_receipt_subreport1.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

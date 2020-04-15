@@ -16,6 +16,7 @@ import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.stock.item.domain.Item;
+import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -46,6 +47,7 @@ public class PatientProcedureTest extends Identifiable{
     @ManyToOne
     @JoinColumn(foreignKey=@ForeignKey(name="fk_patient_procedure_tests_id_employee_id"))
     private Employee medic;
+    private LocalDate procedureDate;
     
      public  PatientProcedureTestData toData() {
         PatientProcedureTestData entity = new PatientProcedureTestData();
@@ -53,6 +55,7 @@ public class PatientProcedureTest extends Identifiable{
         entity.setState(this.getStatus());
         entity.setId(this.getId());     
         entity.setPaid(this.paid);
+        entity.setProcedureDate(this.getProcedureDate());
         entity.setComments(this.getComments());
         entity.setQuantity(this.getQuantity());
         entity.setTestPrice(this.getTestPrice());
