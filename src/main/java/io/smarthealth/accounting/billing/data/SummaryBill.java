@@ -26,7 +26,7 @@ public class SummaryBill {
     public String patientName;
     public BigDecimal amount;
     public BigDecimal balance;
-    public VisitEnum.PaymentMethod paymentMethod;
+    public String paymentMethod;
     public Boolean isWalkin;
 
 }

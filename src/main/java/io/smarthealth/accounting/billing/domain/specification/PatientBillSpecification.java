@@ -32,6 +32,7 @@ public class PatientBillSpecification {
     public static Specification<PatientBillItem> createSpecification(String patientNo, String visitNo, String billNumber, String transactionId, Long servicePointId, Boolean hasBalance, BillStatus status, DateRange range) {
         return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), Boolean.FALSE));
             if (patientNo != null) {
                 predicates.add(cb.equal(root.get("patientBill").get("patient").get("patientNumber"), patientNo));
             }
@@ -59,6 +60,23 @@ public class PatientBillSpecification {
                 predicates.add(
                         cb.between(root.get("billingDate"), range.getStartDate(), range.getEndDate())
                 );
+            }
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
+
+    public static Specification<PatientBillItem> getWalkinBillItems(String walkIn, Boolean hasBalance) {
+        return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
+            final ArrayList<Predicate> predicates = new ArrayList<>();
+            
+            predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), Boolean.TRUE));
+            
+            if (walkIn != null) {
+                predicates.add(cb.equal(root.get("patientBill").get("reference"), walkIn));
+            }
+
+            if (hasBalance != null && hasBalance) {
+                predicates.add(cb.greaterThan(root.get("balance"), 0));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };

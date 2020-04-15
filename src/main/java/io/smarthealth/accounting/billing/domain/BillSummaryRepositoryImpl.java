@@ -1,13 +1,10 @@
 package io.smarthealth.accounting.billing.domain;
 
 import io.smarthealth.accounting.billing.data.SummaryBill;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -45,7 +42,7 @@ public class BillSummaryRepositoryImpl implements BillSummaryRepository {
                 root.get("patientBill").get("patient").get("fullName"),
                 cb.sum(root.get("amount")).as(BigDecimal.class),
                 cb.sum(root.get("balance")).as(BigDecimal.class),
-                root.get("patientBill").get("visit").get("paymentMethod"),
+                root.get("patientBill").get("paymentMode"),
                 root.get("patientBill").get("walkinFlag")
         );
 
@@ -81,5 +78,52 @@ public class BillSummaryRepositoryImpl implements BillSummaryRepository {
         Long count = em.createQuery(countQuery).getSingleResult();
         Page<SummaryBill> result1 = new PageImpl<>(result, pageable, count);
         return result1;
-    } 
+    }
+
+    @Override
+    public Page<SummaryBill> getWalkinBillSummary(String patientNumber, Boolean hasBalance, Pageable pageable) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<SummaryBill> cq = cb.createQuery(SummaryBill.class);
+        Root<PatientBillItem> root = cq.from(PatientBillItem.class);
+        cq.multiselect(
+                root.get("patientBill").get("billingDate"),
+                root.get("patientBill").get("reference"),
+                root.get("patientBill").get("reference"),
+                root.get("patientBill").get("otherDetails"),
+                cb.sum(root.get("amount")).as(BigDecimal.class),
+                cb.sum(root.get("balance")).as(BigDecimal.class),
+                root.get("patientBill").get("paymentMode"),
+                root.get("patientBill").get("walkinFlag")
+        );
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (patientNumber != null) {
+            predicates.add(cb.equal(root.get("patientBill").get("reference"), patientNumber));
+        }
+//        if (range != null) {
+//            predicates.add(
+//                    cb.between(root.get("billingDate"), range.getStartDate(), range.getEndDate())
+//            );
+//        }
+
+        cq.where(predicates.toArray(new Predicate[0]))
+                .groupBy(root.get("patientBill").get("reference"));
+
+        if (hasBalance != null) {
+            if (hasBalance) {
+                cq.having(cb.greaterThan(cb.sum(root.get("balance")), 0));
+            } else {
+                cq.having(cb.lessThanOrEqualTo(cb.sum(root.get("balance")), 0));
+            }
+        }
+
+        List<SummaryBill> result = em.createQuery(cq).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<PatientBillItem> rootCount = countQuery.from(PatientBillItem.class);
+        countQuery.select(cb.count(rootCount)).where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
+        Long count = em.createQuery(countQuery).getSingleResult();
+        Page<SummaryBill> result1 = new PageImpl<>(result, pageable, count);
+        return result1;
+    }
 }
