@@ -6,6 +6,7 @@
 package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.math.BigDecimal;
@@ -36,6 +37,11 @@ public class ReceiptItem extends Identifiable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_receipts_billed_items_id"))
     private PatientBillItem item;
+    
+    private Double quantity;
+    private BigDecimal price;
+    private BigDecimal discount;
+    private BigDecimal taxes;
     private BigDecimal amountPaid;
 
     public ReceiptItem(PatientBillItem item, BigDecimal amountPaid) {
@@ -43,4 +49,17 @@ public class ReceiptItem extends Identifiable {
         this.amountPaid = amountPaid;
     }
     
+    public ReceiptItemData toData(){
+        ReceiptItemData data = new ReceiptItemData();
+        data.setReceiptNumber(this.getReceipt().getReferenceNumber());
+        if(item!=null){
+            data.setItemName(this.getItem().getItem().getItemName());
+            data.setItemCode(this.getItem().getItem().getItemCode());
+            data.setAmountPaid(this.getAmountPaid());
+            data.setPrice(this.getPrice());
+            data.setQuantity(this.getQuantity());
+            data.setTaxes(this.getTaxes());
+        }
+        return data;
+    }
 }

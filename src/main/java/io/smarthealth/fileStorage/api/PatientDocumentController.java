@@ -42,8 +42,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
-@Api(value = "file-storage-Controller", description = "upload and download of documents")
-public class FileStorageController {
+@Api(value = "Patient-Document-Controller", description = "upload and download of documents")
+public class PatientDocumentController {
 
     @Autowired
     FileStorageService fileService;
@@ -51,7 +51,7 @@ public class FileStorageController {
     @Autowired
     UploadService uploadService;
 
-    @PostMapping("/file-storage/batch")
+    @PostMapping("/patient-document/batch")
     public @ResponseBody
     ResponseEntity<?> batchUpload(@ModelAttribute @Valid final List<DocumentData> documentData) {
         List<DocumentData> documentDataArr = fileService.batchDocumentUpload(documentData)
@@ -69,14 +69,14 @@ public class FileStorageController {
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
-    @GetMapping("/file-storage/{id}")
+    @GetMapping("/patient-document/{id}")
     public ResponseEntity<?> fetchServiceTemplate(@PathVariable("id") final Long id) {
         DocumentData documentData = fileService.getDocumentByIdWithFailDetection(id).toData();
         return ResponseEntity.ok(documentData);
 
     }
 
-    @GetMapping("/file-storage")
+    @GetMapping("/patient-document")
     public ResponseEntity<?> Documents(
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
             @RequestParam(value = "status", required = false) Status status,
@@ -106,7 +106,7 @@ public class FileStorageController {
         return ResponseEntity.ok(page);
     }
 
-    @PostMapping("/file-storage")
+    @PostMapping("/patient-document")
     public @ResponseBody
     ResponseEntity<?> Upload(@ModelAttribute @Valid final DocumentData documentData) {
         DocumentData savedDocumentData = fileService.documentUpload(documentData).toData();

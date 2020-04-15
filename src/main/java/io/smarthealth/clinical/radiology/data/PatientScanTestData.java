@@ -20,6 +20,7 @@ public class PatientScanTestData {
     private String testCode;//RadiologyTest code;
     private Double testPrice;
     private Double quantity;
+    private String requestedBy;
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
     private String imagePath;
@@ -31,6 +32,7 @@ public class PatientScanTestData {
     private String voidedBy;
     private LocalDateTime voidDatetime;
     private String comments;
+    
     @ApiModelProperty(required=false, hidden=true)
     private RadiologyResultData resultData;
     @ApiModelProperty(required=false, hidden=true)

@@ -6,14 +6,14 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
-	<field name="orderedDate" class="java.lang.Object"/>
-	<field name="requestedBy" class="java.lang.String"/>
-	<field name="accessionNo" class="java.lang.String"/>
-	<field name="patientScanTestData" class="java.util.List"/>
-	<field name="createdOn" class="java.lang.Object"/>
-	<field name="createdBy" class="java.lang.String"/>
+	<field name="scanName" class="java.lang.String"/>
+	<field name="testCode" class="java.lang.String"/>
+	<field name="resultData" class="java.util.List"/>
+	<field name="entryDateTime" class="java.lang.Object"/>
+	<field name="comments" class="java.lang.String"/>
+	<field name="doneBy" class="java.lang.String"/>
 	<columnHeader>
-		<band height="48" splitType="Stretch">
+		<band height="35" splitType="Stretch">
 			<staticText>
 				<reportElement x="1" y="17" width="59" height="14" uuid="e83091c0-858a-4e8a-a1fe-5bd1c97300d8"/>
 				<textElement verticalAlignment="Middle">
@@ -22,56 +22,70 @@
 				<text><![CDATA[Date Reported :]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="60" y="0" width="163" height="15" isRemoveLineWhenBlank="true" uuid="135ebb32-b8d6-478b-8dab-f10d13c2b763"/>
+				<reportElement x="60" y="0" width="101" height="15" isRemoveLineWhenBlank="true" uuid="135ebb32-b8d6-478b-8dab-f10d13c2b763"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{accessionNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{testCode}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="1" y="0" width="59" height="16" uuid="67303c2a-87ee-41db-9b69-acb699ac149e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Scan.No.]]></text>
+				<text><![CDATA[Test Code :]]></text>
 			</staticText>
 			<textField pattern="dd-MM-yyyy">
-				<reportElement x="60" y="16" width="163" height="15" isRemoveLineWhenBlank="true" uuid="22f110f5-45be-4e34-bc1a-8635dcc6957f"/>
+				<reportElement x="60" y="16" width="101" height="15" isRemoveLineWhenBlank="true" uuid="22f110f5-45be-4e34-bc1a-8635dcc6957f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{createdOn}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{entryDateTime}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="32" width="59" height="15" isRemoveLineWhenBlank="true" uuid="6a1af588-72d6-43a4-acf2-3218bd0987f1"/>
+				<reportElement x="167" y="16" width="46" height="15" isRemoveLineWhenBlank="true" uuid="6a1af588-72d6-43a4-acf2-3218bd0987f1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Reported By:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="60" y="32" width="163" height="16" isRemoveLineWhenBlank="true" uuid="6c6a9d4f-f8ea-4710-98f1-ac6c622da9cc"/>
+				<reportElement x="213" y="16" width="176" height="15" isRemoveLineWhenBlank="true" uuid="6c6a9d4f-f8ea-4710-98f1-ac6c622da9cc"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{doneBy}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement positionType="Float" x="1" y="47" width="555" height="1" forecolor="#CC0000" uuid="9c05c8dd-41ec-44ef-b45d-3567633bdd03"/>
+				<reportElement positionType="Float" x="1" y="34" width="555" height="1" forecolor="#CC0000" uuid="9c05c8dd-41ec-44ef-b45d-3567633bdd03"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineColor="#999999"/>
 				</graphicElement>
 			</line>
+			<textField>
+				<reportElement x="213" y="0" width="176" height="15" uuid="eaa34ea4-a65c-4738-86dd-cb8c0ecd05d3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{scanName}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="167" y="0" width="45" height="15" uuid="2435fbbf-e9b7-40ea-8862-5e182a47d9cb"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Test Name:]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
+		<band height="25" splitType="Stretch">
 			<subreport>
-				<reportElement x="0" y="0" width="555" height="20" uuid="f34baf56-bfab-4384-b0d4-f9233c4010e8"/>
+				<reportElement x="0" y="5" width="555" height="20" uuid="f34baf56-bfab-4384-b0d4-f9233c4010e8"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{patientScanTestData})]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{resultData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_radiology_report_tests_results.jasper"]]></subreportExpression>
 			</subreport>
 		</band>

@@ -48,7 +48,7 @@ public class PatientProcedureController {
     @PostMapping("/patient-procedure")
     public @ResponseBody
     ResponseEntity<?> createPatientProcedure(@RequestBody final PatientProcedureRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo, @RequestParam(value = "requestId", required = false) final Long requestId) {
-        PatientProcedureRegisterData Patientprocedures = procedureService.savePatientResults(patientRegData, visitNo, requestId).toData();
+        PatientProcedureRegisterData Patientprocedures = procedureService.savePatientResults(patientRegData, visitNo).toData();
         Pager<PatientProcedureRegisterData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
