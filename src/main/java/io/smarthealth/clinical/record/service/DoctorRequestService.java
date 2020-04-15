@@ -17,6 +17,8 @@ import io.smarthealth.clinical.record.data.PrescriptionData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
+import io.smarthealth.clinical.record.domain.Prescription;
+import io.smarthealth.clinical.record.domain.PrescriptionRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.lang.DateConverter;
@@ -24,6 +26,7 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +39,7 @@ import org.springframework.stereotype.Service;
  * @author Kennedy.Imbenzi
  */
 @Service
+@RequiredArgsConstructor
 public class DoctorRequestService implements DateConverter {
 
     // @Autowired
@@ -49,12 +53,7 @@ public class DoctorRequestService implements DateConverter {
     
     private final ServicePointService servicePointService;
     
-    public DoctorRequestService(DoctorsRequestRepository doctorRequestRepository, PatientQueueService patientQueueService, ModelMapper modelMapper, ServicePointService servicePointService) {
-        this.doctorRequestRepository = doctorRequestRepository;
-        this.patientQueueService = patientQueueService;
-        this.modelMapper = modelMapper;
-        this.servicePointService = servicePointService;
-    }
+    private final PrescriptionRepository prescriptionRepository;
     
     @Transactional
     public List<DoctorRequest> createRequest(List<DoctorRequest> docRequests) {
@@ -162,9 +161,9 @@ public class DoctorRequestService implements DateConverter {
         requestItem.setCostRate(d.getItemCostRate());
         requestItem.setItemName(d.getItem().getItemName());
         requestItem.setRequestItemId(d.getId());
-//        if (d.getRequestType().equals(DoctorRequestData.RequestType.Pharmacy)) {
-//            requestItem.setPrescriptionData(PrescriptionData.map(d.));
-//        }
+        if (d.getRequestType().equals(DoctorRequestData.RequestType.Pharmacy)) {
+            requestItem.setPrescriptionData(PrescriptionData.map(prescriptionRepository.findPresriptionByRequestId(d.getId())));
+        }
         return requestItem;
     }
 }

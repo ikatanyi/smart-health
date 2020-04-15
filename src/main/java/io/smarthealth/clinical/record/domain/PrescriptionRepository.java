@@ -9,11 +9,16 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  *
  * @author Simon.waweru
  */
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
+
     Page<Prescription> findByVisit(final Visit visit, final Pageable pageable);
+
+    @Query("SELECT p FROM Prescription p WHERE p.id=:id")
+    Prescription findPresriptionByRequestId(final Long id);
 }
