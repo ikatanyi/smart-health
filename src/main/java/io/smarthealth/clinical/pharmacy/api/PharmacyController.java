@@ -93,7 +93,7 @@ public class PharmacyController {
     public @ResponseBody
     ResponseEntity<?> savePatientPrescriptions(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<PrescriptionData> prescriptionData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
+//        Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
 //         Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
         Optional<User> user = userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().get());
 
