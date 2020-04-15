@@ -27,6 +27,8 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.facility.service.FacilityService;
+import io.smarthealth.security.domain.User;
+import io.smarthealth.security.service.UserService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
@@ -35,7 +37,9 @@ import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,6 +55,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/api/pharmacy")
 @Api(value = "Pharmacy Controller", description = "Operations pertaining to Pharmacy maintenance")
+@RequiredArgsConstructor
 public class PharmacyController {
 
     final PharmacyService pharmService;
@@ -72,23 +77,8 @@ public class PharmacyController {
     final FacilityService facilityService;
 
     final ServicePointService servicePointService;
-    private final SequenceNumberService sequenceNumberService; 
-
-    public PharmacyController(PharmacyService pharmService, ModelMapper modelMapper, VisitService visitService, PrescriptionService prescriptionService, ItemService itemService, EmployeeService employeeService, PatientQueueService patientQueueService, DepartmentService departmentService, FacilityService facilityService, ServicePointService servicePointService, SequenceNumberService sequenceNumberService) {
-        this.pharmService = pharmService;
-        this.modelMapper = modelMapper;
-        this.visitService = visitService;
-        this.prescriptionService = prescriptionService;
-        this.itemService = itemService;
-        this.employeeService = employeeService;
-        this.patientQueueService = patientQueueService;
-        this.departmentService = departmentService;
-        this.facilityService = facilityService;
-        this.servicePointService = servicePointService;
-        this.sequenceNumberService = sequenceNumberService;
-    }
-
-    
+    private final SequenceNumberService sequenceNumberService;
+    private final UserService userService;
 
     @PostMapping("/patient-drug")
     public @ResponseBody
@@ -105,9 +95,10 @@ public class PharmacyController {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
 //         Employee employee = employeeService.fetchEmployeeByAccountUsername(SecurityUtils.getCurrentUserLogin().get());
-        
+        Optional<User> user = userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().get());
+
         List<Prescription> prescriptions = new ArrayList<>();
-        String prescriptionNo =  sequenceNumberService.next(1L, Sequences.Prescription.name());
+        String prescriptionNo = sequenceNumberService.next(1L, Sequences.Prescription.name());
 
         for (PrescriptionData pd : prescriptionData) {
             Prescription p = PrescriptionData.map(pd);
@@ -116,7 +107,7 @@ public class PharmacyController {
             p.setItem(item);
             p.setVisit(visit);
             p.setOrderNumber(prescriptionNo);
-            p.setRequestedBy(employee);
+            p.setRequestedBy(user.get());
             p.setRequestType(RequestType.Pharmacy);
             prescriptions.add(p);
         }
