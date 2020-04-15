@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.fileStorage.api;
+package io.smarthealth.documents.api;
 
-import io.smarthealth.fileStorage.data.DocumentData;
-import io.smarthealth.fileStorage.domain.enumeration.DocumentType;
-import io.smarthealth.fileStorage.domain.enumeration.Status;
-import io.smarthealth.fileStorage.service.FileStorageService;
+import io.smarthealth.documents.data.DocumentData;
+import io.smarthealth.documents.domain.enumeration.DocumentType;
+import io.smarthealth.documents.domain.enumeration.Status;
+import io.smarthealth.documents.service.FileStorageService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.imports.service.UploadService;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -80,7 +80,7 @@ public class PatientDocumentController {
     public ResponseEntity<?> Documents(
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
             @RequestParam(value = "status", required = false) Status status,
-            @RequestParam(value = "DocumentType", required = false) DocumentType documentType,
+            @RequestParam(value = "documentType", required = false) DocumentType documentType,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "servicePointId", required = false) Long servicePointId,
             @RequestParam(value = "pag", required = false) Integer pag,

@@ -105,8 +105,8 @@ public class PatientScanTest extends Identifiable {
         }
         if(this.getRequest()!=null){
             entity.setRequestId(this.getRequest().getId());
-            if(this.getRequest().getRequestedBy()!=null)
-               entity.setRequestedBy(this.getRequest().getRequestedBy().getFullName());
+//            if(this.getRequest().getRequestedBy()!=null)
+             //  entity.setRequestedBy(this.getRequest().getRequestedBy().getFullName());
         }
         return entity;
     }
