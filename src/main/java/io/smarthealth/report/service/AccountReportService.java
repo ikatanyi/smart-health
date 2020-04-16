@@ -327,7 +327,7 @@ public class AccountReportService {
         ReceiptData receiptData = paymentService.getPaymentByReceiptNumber(receiptNo).toData();
         reportData.setData(Arrays.asList(receiptData));
         reportData.setFormat(format);
-        reportData.setTemplate("/payment/general_receipt");
+        reportData.setTemplate("/payments/general_receipt");
         reportData.setReportName("Receipt"+receiptNo);
         reportService.generateReport(reportData, response);
     }    

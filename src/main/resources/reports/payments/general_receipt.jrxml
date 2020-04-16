@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="receipt" language="groovy" pageWidth="312" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="272" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e3432a93-c4e5-42d0-9c23-a88c9aff2afc">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="receipt" pageWidth="312" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="272" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e3432a93-c4e5-42d0-9c23-a88c9aff2afc">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -18,7 +18,9 @@
 	</parameter>
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Footer_Data" class="java.util.List" isForPrompting="false"/>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -53,7 +55,7 @@
 		<groupFooter>
 			<band height="113">
 				<line>
-					<reportElement positionType="FixRelativeToBottom" x="3" y="75" width="270" height="1" uuid="a60da878-2e95-4a09-891b-14d22037303d"/>
+					<reportElement positionType="FixRelativeToBottom" x="0" y="75" width="272" height="1" uuid="a60da878-2e95-4a09-891b-14d22037303d"/>
 					<graphicElement>
 						<pen lineWidth="0.5" lineColor="#999999"/>
 					</graphicElement>
@@ -66,14 +68,14 @@
 					<text><![CDATA[PRICES INCLUSIVE OF VAT WHERE APPLICABLE]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="149" y="2" width="71" height="17" uuid="37509a91-0c47-40a2-8bf1-1106d0b68085"/>
+					<reportElement x="133" y="2" width="71" height="17" uuid="37509a91-0c47-40a2-8bf1-1106d0b68085"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="10" isBold="true"/>
 					</textElement>
 					<text><![CDATA[TOTAL :]]></text>
 				</staticText>
 				<textField pattern="#,##0.00">
-					<reportElement x="220" y="2" width="52" height="17" uuid="9a031d84-2778-4a88-b0c4-ae0c651d8919"/>
+					<reportElement x="204" y="2" width="52" height="17" uuid="9a031d84-2778-4a88-b0c4-ae0c651d8919"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>
@@ -86,24 +88,19 @@
 					</graphicElement>
 				</line>
 				<staticText>
-					<reportElement x="149" y="19" width="71" height="15" uuid="ce6fb247-a0fb-4f6b-bcf9-472ab0bbedfa"/>
+					<reportElement x="133" y="19" width="71" height="15" uuid="ce6fb247-a0fb-4f6b-bcf9-472ab0bbedfa"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="10" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Refund :]]></text>
 				</staticText>
 				<textField pattern="#,##0.00">
-					<reportElement x="220" y="19" width="53" height="15" uuid="55d48a9f-cd9c-4204-b07d-ab6a1ad03649"/>
+					<reportElement x="204" y="19" width="53" height="15" uuid="55d48a9f-cd9c-4204-b07d-ab6a1ad03649"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{refundedAmount}]]></textFieldExpression>
 				</textField>
-				<subreport>
-					<reportElement x="3" y="76" width="270" height="37" uuid="a05651d4-aeb4-4b9d-9f8c-ff7f47ac7488"/>
-					<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
-					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
-				</subreport>
 			</band>
 		</groupFooter>
 	</group>
@@ -145,7 +142,7 @@
 				<text><![CDATA[Payer:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="35" width="48" height="15" uuid="43fd262c-79e0-443b-8ea2-d804878937d6"/>
+				<reportElement positionType="Float" x="1" y="35" width="48" height="15" uuid="43fd262c-79e0-443b-8ea2-d804878937d6"/>
 				<textElement>
 					<font size="10" isBold="true"/>
 				</textElement>
@@ -173,7 +170,7 @@
 				<text><![CDATA[ServedBy:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="51" width="48" height="18" uuid="2f1f781e-85da-42fe-9631-80949c43eaad"/>
+				<reportElement positionType="Float" x="1" y="51" width="47" height="18" uuid="2f1f781e-85da-42fe-9631-80949c43eaad"/>
 				<textElement verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
@@ -220,7 +217,7 @@
 				<textFieldExpression><![CDATA[$F{shiftNo}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="1" y="102" width="272" height="1" uuid="915b14ae-8d36-451f-a14a-af8506cb78c4"/>
+				<reportElement x="1" y="106" width="272" height="1" uuid="915b14ae-8d36-451f-a14a-af8506cb78c4"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineColor="#999999"/>
 				</graphicElement>
@@ -230,7 +227,7 @@
 	<detail>
 		<band height="21">
 			<subreport>
-				<reportElement x="0" y="0" width="271" height="21" uuid="5e4cc929-2628-4795-944c-0e5db106a605"/>
+				<reportElement x="-21" y="0" width="313" height="21" uuid="5e4cc929-2628-4795-944c-0e5db106a605"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{receiptItems})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "general_receipt_subreport1.jasper"]]></subreportExpression>
 			</subreport>
