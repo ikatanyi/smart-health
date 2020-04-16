@@ -1,9 +1,9 @@
-package io.smarthealth.fileStorage.domain.specification;
+package io.smarthealth.documents.domain.specification;
 
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
-import io.smarthealth.fileStorage.domain.Document;
-import io.smarthealth.fileStorage.domain.enumeration.DocumentType;
-import io.smarthealth.fileStorage.domain.enumeration.Status;
+import io.smarthealth.documents.domain.Document;
+import io.smarthealth.documents.domain.enumeration.DocumentType;
+import io.smarthealth.documents.domain.enumeration.Status;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;

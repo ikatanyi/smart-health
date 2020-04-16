@@ -35,10 +35,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/api")
 public class WalkInController {
- 
+
     @Autowired
-    private  WalkingService walkInService; 
-    
+    private WalkingService walkInService;
 
     @PostMapping("/walk-in")
     public ResponseEntity<?> createWalkingPatient(@Valid @RequestBody WalkInData WalkInData) {

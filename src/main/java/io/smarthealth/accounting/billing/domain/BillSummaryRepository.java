@@ -17,4 +17,7 @@ import org.springframework.data.domain.Pageable;
 public interface BillSummaryRepository {
 
     Page<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, DateRange range, Pageable pageable);
+
+    Page<SummaryBill> getWalkinBillSummary(String patientNumber, Boolean hasBalance, Pageable pageable);
+
 }
