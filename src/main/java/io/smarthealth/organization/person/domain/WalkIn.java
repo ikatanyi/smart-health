@@ -31,6 +31,6 @@ public class WalkIn extends Auditable {
 
     private int age;
 
-    @Formula(value = " concat(first_name, ' ', second_name, ' ', surname) ")
+    @Formula(value = " concat(COALESCE(first_name, ''), ' ', COALESCE(second_name,''), ' ', COALESCE(surname,'')) ")
     private String fullName;
 }
