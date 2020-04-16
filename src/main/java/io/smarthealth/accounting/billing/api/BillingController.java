@@ -123,24 +123,20 @@ public class BillingController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-
-    @GetMapping("/bills")
-    public ResponseEntity<?> listBillSummary(
-            @RequestParam(value = "status", defaultValue = "Draft") BillStatus status) {
-        List<PatientBillGroup> list = service.getPatientBillGroups(status);
-
-        return ResponseEntity.ok(list);
-    }
-
-    @GetMapping("/bills/{visitId}/items")
-    public ResponseEntity<?> listBillSummary(
-            @PathVariable(value = "visitId") String visitId,
+    
+    @GetMapping("/billing/walkin")
+    public ResponseEntity<?> getWalkinBillSummary(
+            @RequestParam(value = "walkinNumber", required = false) String walkinNumber,
+            @RequestParam(value = "hasBalance", required = false) Boolean hasBalance,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
-        Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<PatientBillItem> list = service.getPatientBillItemByVisit(visitId, pageable);
 
-        Pager<List<PatientBillItem>> pagers = new Pager();
+        Pageable pageable = PaginationUtil.createPage(page, size);
+//        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        Page<SummaryBill> list = service.getWalkinSummaryBill(walkinNumber, hasBalance, pageable);
+
+        Pager<List<SummaryBill>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());
@@ -149,8 +145,66 @@ public class BillingController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Patient Bill Items");
+        details.setReportName("Patient Bills");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
+
+    @GetMapping("/billing/walkin/items")
+    public ResponseEntity<?> getWalkinBillItems( 
+            @RequestParam(value = "walkinNo", required = false) String walkinNo, 
+            @RequestParam(value = "hasBalance", required = false) Boolean hasBalance, 
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size); 
+
+        Page<BillItemData> list = service.getWalkBillItems(walkinNo, hasBalance, pageable)
+                .map(x -> x.toData());
+
+        Pager<List<BillItemData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Walkin Patient Bills");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+    }
+    
+    
+
+//    @GetMapping("/bills")
+//    public ResponseEntity<?> listBillSummary(
+//            @RequestParam(value = "status", defaultValue = "Draft") BillStatus status) {
+//        List<PatientBillGroup> list = service.getPatientBillGroups(status);
+//
+//        return ResponseEntity.ok(list);
+//    }
+//
+//    @GetMapping("/bills/{visitId}/items")
+//    public ResponseEntity<?> listBillSummary(
+//            @PathVariable(value = "visitId") String visitId,
+//            @RequestParam(value = "page", required = false) Integer page,
+//            @RequestParam(value = "pageSize", required = false) Integer size) {
+//        Pageable pageable = PaginationUtil.createPage(page, size);
+//        Page<PatientBillItem> list = service.getPatientBillItemByVisit(visitId, pageable);
+//
+//        Pager<List<PatientBillItem>> pagers = new Pager();
+//        pagers.setCode("0");
+//        pagers.setMessage("Success");
+//        pagers.setContent(list.getContent());
+//        PageDetails details = new PageDetails();
+//        details.setPage(list.getNumber() + 1);
+//        details.setPerPage(list.getSize());
+//        details.setTotalElements(list.getTotalElements());
+//        details.setTotalPage(list.getTotalPages());
+//        details.setReportName("Patient Bill Items");
+//        pagers.setPageDetails(details);
+//        return ResponseEntity.ok(pagers);
+//    }
 }

@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.fileStorage.domain;
+package io.smarthealth.documents.domain;
 
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
-import io.smarthealth.fileStorage.data.DocumentData;
-import io.smarthealth.fileStorage.domain.enumeration.DocumentType;
-import io.smarthealth.fileStorage.domain.enumeration.Status;
+import io.smarthealth.documents.data.DocumentData;
+import io.smarthealth.documents.domain.enumeration.DocumentType;
+import io.smarthealth.documents.domain.enumeration.Status;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.math.BigDecimal;

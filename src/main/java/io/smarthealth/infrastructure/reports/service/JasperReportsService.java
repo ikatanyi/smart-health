@@ -142,7 +142,7 @@ public class JasperReportsService {
     }
 
     public void generateReport(ReportData reportData, HttpServletResponse response) throws SQLException, JRException, IOException {
-        Connection conn = jdbcTemplate.getDataSource().getConnection();
+        
         JasperPrint jasperPrint = null;
         ExportFormat format = reportData.getFormat();
         if (format == null) {
@@ -172,6 +172,7 @@ public class JasperReportsService {
         param.putAll(reportData.getFilters());
         // Fill the report
         if (dataList.isEmpty()) {
+            Connection conn = jdbcTemplate.getDataSource().getConnection();
             jasperPrint = JasperFillManager.fillReport(jasperReport, param, conn);
         } else {
             jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);

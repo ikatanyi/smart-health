@@ -29,4 +29,5 @@ public interface DoctorsRequestRepository extends JpaRepository<DoctorRequest, L
 
     @Query("select d FROM DoctorRequest d WHERE d.patient=:patient AND  d.fulfillerStatus=:fulfillerStatus AND requestType=:requestType")
     List<DoctorRequest> findServiceRequestsByPatient(@Param("patient") final Patient patient, @Param("fulfillerStatus") final FullFillerStatusType fulfillerStatus, @Param("requestType") final RequestType requestType);
+     
 }

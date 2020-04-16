@@ -83,22 +83,32 @@ public class BillingService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createPatientBill(BillData data) {
 
-        //check the validity of the patient visit
-        Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
-        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
-        String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
-
         PatientBill patientbill = new PatientBill();
-        patientbill.setVisit(visit);
-        patientbill.setPatient(visit.getPatient());
+        if (!data.getWalkinFlag()) {
+            Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
+            patientbill.setVisit(visit);
+            patientbill.setPatient(visit.getPatient());
+            patientbill.setWalkinFlag(Boolean.FALSE);
+        } else {
+            patientbill.setReference(data.getPatientNumber());
+            patientbill.setOtherDetails(data.getPatientName());
+            patientbill.setWalkinFlag(Boolean.TRUE);
+        }
+
         patientbill.setAmount(data.getAmount());
         patientbill.setDiscount(data.getDiscount());
         patientbill.setBalance(data.getAmount());
-        patientbill.setBillNumber(bill_no);
+
         patientbill.setBillingDate(data.getBillingDate());
         patientbill.setPaymentMode(data.getPaymentMode());
-        patientbill.setTransactionId(trdId);
+
         patientbill.setStatus(BillStatus.Draft);
+
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
+
+        patientbill.setBillNumber(bill_no);
+        patientbill.setTransactionId(trdId);
 
         List<PatientBillItem> lineItems = data.getBillItems()
                 .stream()
@@ -235,10 +245,17 @@ public class BillingService {
         return billItemRepository.findAll(spec, page);
     }
 
-    public Page<SummaryBill> getSummaryBill(String visitNumber, String patientNumber, Boolean hasBalance, DateRange range,Pageable pageable) {
-        return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, range,pageable);
+    public Page<SummaryBill> getSummaryBill(String visitNumber, String patientNumber, Boolean hasBalance, DateRange range, Pageable pageable) {
+        return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, range, pageable);
     }
- 
+
+    public Page<SummaryBill> getWalkinSummaryBill(String patientNumber, Boolean hasBalance,  Pageable pageable) {
+        return billItemRepository.getWalkinBillSummary(patientNumber, hasBalance, pageable);
+    }
+ public Page<PatientBillItem> getWalkBillItems(String walkIn, Boolean hasBalance,Pageable page) {
+        Specification<PatientBillItem> spec = PatientBillSpecification.getWalkinBillItems(walkIn, hasBalance);
+        return billItemRepository.findAll(spec, page);
+    }
     public Visit findVisitEntityOrThrow(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));

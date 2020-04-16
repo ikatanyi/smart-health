@@ -374,11 +374,13 @@ public class LaboratoryService {
         patientbill.setVisit(visit);
         if (visit != null) {
             patientbill.setPatient(visit.getPatient());
+            patientbill.setWalkinFlag(Boolean.FALSE);
         }
         // how do I deal with bills for Walkin
         if (data.getIsWalkin()) {
             patientbill.setReference(data.getPatientNo());
             patientbill.setOtherDetails(data.getRequestedBy());
+            patientbill.setWalkinFlag(Boolean.TRUE);
         }
 
         patientbill.setBillingDate(LocalDate.now());

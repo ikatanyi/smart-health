@@ -96,10 +96,9 @@ public class SupplierReportService {
     
     public void getDoctorInvoiceStatement(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        String type= reportParam.getFirst("type"); 
         Long doctorId = Long.getLong(reportParam.getFirst("doctorId"));
         String serviceItem = reportParam.getFirst("serviceItem");
-        Boolean paid = Boolean.valueOf(reportParam.getFirst("paid"));
+        Boolean paid = reportParam.getFirst("paid")!=null?Boolean.valueOf(reportParam.getFirst("paid")):null;
         String paymentMode = reportParam.getFirst("paymentMode"); 
         String patientNo = reportParam.getFirst("patientNo"); 
         String invoiceNumber = reportParam.getFirst("invoiceNumber"); 

@@ -95,6 +95,12 @@ public class Receipt extends Auditable {
                         .stream().map(x -> x.toData())
                         .collect(Collectors.toList())
         );
+        data.setReceiptItems(
+                this.getReceiptItems()
+                .stream().map(x->x.toData())
+                .collect(Collectors.toList())
+        );
+        
 
         return data;
     }

@@ -46,5 +46,5 @@ public class BillItemData {
     private Long requestReference;
     private String paymentReference; 
     private Boolean walkinFlag;
-    private String createdBy;
+    private String createdBy; 
 }

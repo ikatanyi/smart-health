@@ -30,4 +30,6 @@ public class RadiologyTemplate extends Auditable {
         templateNotes.add(templateNote);
         templateNote.setTemplate(this);
     }
+    
+    
 }

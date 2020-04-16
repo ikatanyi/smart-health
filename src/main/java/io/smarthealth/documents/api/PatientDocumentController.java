@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.fileStorage.api;
+package io.smarthealth.documents.api;
 
-import io.smarthealth.fileStorage.data.DocumentData;
-import io.smarthealth.fileStorage.domain.enumeration.DocumentType;
-import io.smarthealth.fileStorage.domain.enumeration.Status;
-import io.smarthealth.fileStorage.service.FileStorageService;
+import io.smarthealth.documents.data.DocumentData;
+import io.smarthealth.documents.domain.enumeration.DocumentType;
+import io.smarthealth.documents.domain.enumeration.Status;
+import io.smarthealth.documents.service.FileStorageService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.imports.service.UploadService;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -42,8 +42,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
-@Api(value = "file-storage-Controller", description = "upload and download of documents")
-public class FileStorageController {
+@Api(value = "Patient-Document-Controller", description = "upload and download of documents")
+public class PatientDocumentController {
 
     @Autowired
     FileStorageService fileService;
@@ -51,7 +51,7 @@ public class FileStorageController {
     @Autowired
     UploadService uploadService;
 
-    @PostMapping("/file-storage/batch")
+    @PostMapping("/patient-document/batch")
     public @ResponseBody
     ResponseEntity<?> batchUpload(@ModelAttribute @Valid final List<DocumentData> documentData) {
         List<DocumentData> documentDataArr = fileService.batchDocumentUpload(documentData)
@@ -69,18 +69,18 @@ public class FileStorageController {
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
-    @GetMapping("/file-storage/{id}")
+    @GetMapping("/patient-document/{id}")
     public ResponseEntity<?> fetchServiceTemplate(@PathVariable("id") final Long id) {
         DocumentData documentData = fileService.getDocumentByIdWithFailDetection(id).toData();
         return ResponseEntity.ok(documentData);
 
     }
 
-    @GetMapping("/file-storage")
+    @GetMapping("/patient-document")
     public ResponseEntity<?> Documents(
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
             @RequestParam(value = "status", required = false) Status status,
-            @RequestParam(value = "DocumentType", required = false) DocumentType documentType,
+            @RequestParam(value = "documentType", required = false) DocumentType documentType,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "servicePointId", required = false) Long servicePointId,
             @RequestParam(value = "pag", required = false) Integer pag,
@@ -106,7 +106,7 @@ public class FileStorageController {
         return ResponseEntity.ok(page);
     }
 
-    @PostMapping("/file-storage")
+    @PostMapping("/patient-document")
     public @ResponseBody
     ResponseEntity<?> Upload(@ModelAttribute @Valid final DocumentData documentData) {
         DocumentData savedDocumentData = fileService.documentUpload(documentData).toData();

@@ -29,9 +29,9 @@ public enum ReportName {
         Lab_Statement_Summarized,
         Lab_Statement,
         Radiology_Statement,
-        Radiology_Statement_Summarized,
         Patient_List,
         Patient_Visit,
         Patient_Diagnosis,   
-        Patient_Card
+        Patient_Card,
+        Patient_Receipt
 }

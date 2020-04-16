@@ -20,6 +20,7 @@ import lombok.ToString;
 @Entity
 @Data
 @Table(name = "patient_billing_item")
+//@NamedQuery(name = "t", query = "SELECT b.patientBill.billingDate as date, b.patientBill.reference as visitNumber, b.patientBill.reference as patientNumber, b.patientBill.otherDetails as patientName, SUM(b.amount) as amount, SUM(b.balance) as balance, b.patientBill.visit.paymentMethod as paymentMethod, 'True' as walkin FROM PatientBillItem b WHERE b.patientBill.reference =:visit GROUP BY 2,3")
 public class PatientBillItem extends Auditable {
 
     @JsonIgnore
@@ -91,10 +92,10 @@ public class PatientBillItem extends Auditable {
         data.setRequestReference(this.requestReference);
         data.setPaymentReference(this.paymentReference);
 
-//        if(this.getPatientBill().getWalkinFlag()!=null && this.getPatientBill().getWalkinFlag() ){
-//            data.setPatientName(this.getPatientBill().getOtherDetails());
-//            data.setPatientNumber(this.getPatientBill().getReference());           
-//        }
+        if(this.getPatientBill().getWalkinFlag()!=null && this.getPatientBill().getWalkinFlag() ){
+            data.setPatientName(this.getPatientBill().getOtherDetails());
+            data.setPatientNumber(this.getPatientBill().getReference());           
+        }
         data.setWalkinFlag(this.getPatientBill().getWalkinFlag());
         return data;
     }

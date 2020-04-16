@@ -15,6 +15,8 @@ import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.debtor.claim.creditNote.data.CreditNoteData;
 import io.smarthealth.debtor.claim.creditNote.data.CreditNoteItemData;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNote;
@@ -60,6 +62,7 @@ public class CreditNoteService {
     private final JournalService journalService;
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final SequenceNumberService sequenceNumberService;
+    private final ServicePointService servicePointService;
 
     @Transactional
     public CreditNote createCreditNote(CreditNoteData data) {
@@ -148,29 +151,25 @@ public class CreditNoteService {
     }
 
     private JournalEntry toJournal(CreditNote creditNote) {
-
+        List<JournalEntryItem>journalEntries = new ArrayList();
         Account debitAccount = creditNote.getPayer().getDebitAccount();
+        String narration = "Credit Note " + creditNote.getCreditNoteNo() + "for invoice " + creditNote.getInvoice().getNumber();
         if (debitAccount == null) {
             throw APIException.badRequest("Payer account is Not Mapped");
         }
         String debitAcc = debitAccount.getIdentifier();
 
-        Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Discount_Allowed);
-        if (!creditAccount.isPresent()) {
-            throw APIException.badRequest("Discount given Account is Not Mapped");
+        for(CreditNoteItem item :creditNote.getItems()){
+            ServicePoint servicepoint = servicePointService.getServicePoint(item.getBillItem().getServicePointId());
+            BigDecimal amount = BigDecimal.valueOf(item.getBillItem().getAmount());
+            journalEntries.add(new JournalEntryItem(servicepoint.getIncomeAccount(), narration,   BigDecimal.ZERO, amount));
         }
-        String creditAcc = creditAccount.get().getAccount().getIdentifier();
-        System.out.println("creditNote.getAmount() " + creditNote.getAmount());
         BigDecimal amount = BigDecimal.valueOf(creditNote.getAmount());
-        String narration = "Credit Note " + creditNote.getCreditNoteNo() + "for invoice " + creditNote.getInvoice().getNumber();
-        JournalEntry toSave = new JournalEntry(LocalDate.from(creditNote.getCreatedOn().atZone(ZoneId.systemDefault())), narration,
-                new JournalEntryItem[]{
-                    new JournalEntryItem(debitAccount, narration, amount, BigDecimal.ZERO),
-                    new JournalEntryItem(creditAccount.get().getAccount(), narration, BigDecimal.ZERO, amount)
-//                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
-//                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
-                }
-        );
+        journalEntries.add(new JournalEntryItem(debitAccount, narration,   BigDecimal.ZERO, amount));
+        
+        
+        
+        JournalEntry toSave = new JournalEntry(LocalDate.from(creditNote.getCreatedOn().atZone(ZoneId.systemDefault())), narration, journalEntries );
         toSave.setTransactionNo(creditNote.getTransactionId());
         toSave.setTransactionType(TransactionType.Invoicing);
         toSave.setStatus(JournalState.PENDING);

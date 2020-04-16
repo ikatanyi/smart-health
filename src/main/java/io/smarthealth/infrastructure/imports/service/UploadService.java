@@ -8,7 +8,7 @@ package io.smarthealth.infrastructure.imports.service;
 import io.smarthealth.ApplicationProperties;
 import io.smarthealth.infrastructure.exception.FileStorageException;
 import io.smarthealth.infrastructure.exception.MyFileNotFoundException;
-import io.smarthealth.fileStorage.domain.FileStorageProperties;
+import io.smarthealth.documents.domain.FileStorageProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;

@@ -24,7 +24,6 @@ import lombok.Data;
 @Entity
 @Table(name = "service_template",uniqueConstraints = {
     @UniqueConstraint(columnNames = {"templateName"}, name="unique_template_name")})
-@Inheritance(strategy = InheritanceType.JOINED)
 public class ServiceTemplate extends Identifiable{
     private String templateName; 
     private Gender gender;

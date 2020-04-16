@@ -3,17 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.fileStorage.domain.enumeration;
-
-import io.smarthealth.clinical.radiology.domain.enumeration.*;
+package io.smarthealth.documents.domain.enumeration;
 
 /**
  *
  * @author Kennedy.Imbenzi
  */
-public enum Status { 
-        Viewed,
-        Rejected,
-        Cancelled,
-        AwaitingReview 
+public enum DocumentType { 
+        LabReport,
+        Scan,
+        RadiologyReport,
+        ProcedureReport,
 }

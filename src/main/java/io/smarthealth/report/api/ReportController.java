@@ -5,7 +5,9 @@ import io.smarthealth.report.domain.enumeration.ReportName;
 import io.smarthealth.report.service.LabReportService;
 import io.smarthealth.report.service.PatientReportService;
 import io.smarthealth.report.service.RadiologyReportService;
-import io.smarthealth.report.service.ReportService;
+import io.smarthealth.report.service.AccountReportService;
+import io.smarthealth.report.service.PharmacyReportService;
+import io.smarthealth.report.service.ProcedureReportService;
 import io.smarthealth.report.service.SupplierReportService;
 import io.swagger.annotations.Api;
 import java.io.IOException;
@@ -27,11 +29,13 @@ import org.springframework.web.bind.annotation.*;
 public class ReportController {
 
 //    private final JasperReportsService reportService;
-    private final ReportService reportService;
+    private final AccountReportService reportService;
     private final LabReportService labReportService;
     private final RadiologyReportService radiologyReportService;
     private final PatientReportService patientReportService;
     private final SupplierReportService supplierInvoiceService;
+    private final ProcedureReportService procedureReportService;
+    private final PharmacyReportService pharmacyReportService;
     
     
     @GetMapping("/report")
@@ -57,31 +61,31 @@ public class ReportController {
                 reportService.getInvoice(queryParams, format, response);
                 break;
             case Patient_file:
-                reportService.getPatientFile(queryParams, format, response);
+                patientReportService.getPatientFile(queryParams, format, response);
                 break;
             case Lab_Report:
                 labReportService.getPatientLabReport(queryParams, format, response);
                 break;
             case Procedure_Report:
-                reportService.getPatientProcedureReport(queryParams, format, response);
+                procedureReportService.getPatientProcedureReport(queryParams, format, response);
                 break;
             case Request_Form:
-                 reportService.getPatientRequest(queryParams, format, response);
+                 patientReportService.getPatientRequest(queryParams, format, response);
                 break;
             case Prescription:
-                reportService.getPrescription(queryParams, format, response);
+                pharmacyReportService.getPrescription(queryParams, format, response);
                 break;
             case Radiology_Report:
-                reportService.getPatientRadiologyReport(queryParams, format, response);
+                radiologyReportService.getPatientRadiolgyReport(queryParams, format, response);
                 break;
             case Sick_Off_Note:
-                reportService.getSickOff(queryParams, format, response);
+                patientReportService.getSickOff(queryParams, format, response);
                 break;
             case Specimen_Label:
-                reportService.genSpecimenLabel(queryParams, format, response);
+                labReportService.genSpecimenLabel(queryParams, format, response);
                 break;
             case Prescription_Label:
-                reportService.getPrescriptionLabel(queryParams, format, response);
+                pharmacyReportService.getPrescriptionLabel(queryParams, format, response);
                 break;
             case Lab_Statement_Summarized:
                 labReportService.getLabTestStatement(queryParams, format, response);
@@ -90,9 +94,6 @@ public class ReportController {
                 labReportService.getLabStatement(queryParams, format, response);
                 break;
             case Radiology_Statement:
-                radiologyReportService.getRadiologyStatement(queryParams, format, response);
-                break;
-            case Radiology_Statement_Summarized:
                 radiologyReportService.getRadiologyStatement(queryParams, format, response);
                 break;
             case Patient_List:
@@ -113,6 +114,8 @@ public class ReportController {
             case Supplier_Invoice:
                 supplierInvoiceService.SupplierInvoiceStatement(queryParams, format, response);
                 break;
+            case Patient_Receipt:
+                reportService.getPatientReceipt(queryParams, format, response);
             default:
                 break;
 

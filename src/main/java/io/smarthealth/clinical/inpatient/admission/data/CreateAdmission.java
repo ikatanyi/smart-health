@@ -14,26 +14,16 @@ import lombok.Data;
 @Data
 public class CreateAdmission {
 
-    private String patientNumber;
-    private String firstName;
-    private String middleName;
-    private String surname;
-    private String gender;
-    @JsonFormat(pattern = Constants.DATE_PATTERN)
-    private LocalDate dob;
-    private String nationalId;
-    private String phoneNumber;
-    private String email;
-    private String nhifNumber;
-    private String residence;
-    private NokData nok;
-
-    private String admissionReason;
-    private Admission.Type admissionType;
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime admissionDate;
+    private String admissionReason;
+    private Admission.Type admissionType;
     private Long admittingDoctorId;
     private Long bedId;
-
+    private String nhifNumber;
+    private NokData nok;
+    private String patientNumber;
     private PaymentDetail paymentDetail;
+    private String phoneNumber;
+    private String residence;
 }
