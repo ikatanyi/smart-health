@@ -16,6 +16,7 @@ public class CreateInvoiceData {
   
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate date;
+    
     private String notes;
     private String billNumber;
     private String patientNumber;

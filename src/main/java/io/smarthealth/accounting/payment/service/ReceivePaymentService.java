@@ -142,7 +142,8 @@ public class ReceivePaymentService {
 
                             billedItems.add(i);
                             //update the bill as 
-                            receipt.addReceiptItem(new ReceiptItem(item, BigDecimal.valueOf(item.getAmount())));
+                            //PatientBillItem item, Double quantity, BigDecimal price, BigDecimal discount, BigDecimal taxes, BigDecimal amountPaid
+                            receipt.addReceiptItem(new ReceiptItem(item, item.getQuantity(),BigDecimal.valueOf(item.getPrice()),BigDecimal.valueOf(item.getDiscount()),BigDecimal.valueOf(item.getTaxes()), BigDecimal.valueOf(item.getAmount())));
                         });
             }
         }

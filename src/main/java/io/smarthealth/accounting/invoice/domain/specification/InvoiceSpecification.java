@@ -5,8 +5,6 @@ import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
-import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 

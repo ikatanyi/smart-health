@@ -61,7 +61,7 @@ public class BankingController {
         pagers.setCode("0");
         pagers.setMessage("Bank Withdrawal Recorded Successfully");
         pagers.setContent(banking.toData());
-
+         
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
