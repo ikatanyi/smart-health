@@ -6,6 +6,9 @@
 package io.smarthealth.clinical.visit.data;
 
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
+import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -28,7 +31,10 @@ public class PaymentDetailsData {
     private double limitAmount;
     private Long priceBookId;
     private String priceBookName;
-    
+    @Enumerated(EnumType.STRING)
+    private CoPayType coPayCalcMethod;
+    private double coPayValue;
+
     public static PaymentDetailsData map(PaymentDetails e) {
         PaymentDetailsData d = new PaymentDetailsData();
         d.setComments(e.getComments());
@@ -41,6 +47,10 @@ public class PaymentDetailsData {
         d.setLimitAmount(e.getLimitAmount());
         d.setPayerName(e.getPayer().getPayerName());
         d.setSchemeName(e.getScheme().getSchemeName());
+        if (e.getCoPayCalcMethod() != null) {
+            d.setCoPayCalcMethod(e.getCoPayCalcMethod());
+        }
+        d.setCoPayValue(e.getCoPayValue());
         if (e.getPayer() != null) {
             if (e.getPayer().getPriceBook() != null) {
                 d.setPriceBookId(e.getPayer().getPriceBook().getId());
@@ -49,7 +59,7 @@ public class PaymentDetailsData {
         }
         return d;
     }
-    
+
     public static PaymentDetails map(PaymentDetailsData d) {
         PaymentDetails e = new PaymentDetails();
         e.setComments(d.getComments());
