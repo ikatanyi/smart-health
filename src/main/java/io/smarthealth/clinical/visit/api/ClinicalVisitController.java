@@ -27,6 +27,7 @@ import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
+import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -142,17 +143,25 @@ public class ClinicalVisitController {
 
         //register payment details 
         if (visitData.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
-            PaymentDetails pd = PaymentDetailsData.map(visitData.getPayment());
+            System.out.println("Payment method is insurance ");
             Scheme scheme = schemeService.fetchSchemeById(visitData.getPayment().getSchemeId());
+            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+            PaymentDetails pd = PaymentDetailsData.map(visitData.getPayment());
+
             pd.setScheme(scheme);
             pd.setPayer(scheme.getPayer());
             pd.setVisit(visit);
-
+            if (config.isPresent()) {
+                pd.setCoPayCalcMethod(config.get().getCoPayType());
+                pd.setCoPayValue(config.get().getCoPayValue());
+            }
             paymentDetailsService.createPaymentDetails(pd);
             //create bill for copay
-            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+
             if (config.isPresent()) {
-                if (config.get().getCoPayType().equals("Fixed")) {
+                System.out.println("Config data found");
+                if (config.get().getCoPayType().equals(CoPayType.Fixed)) {
+                    System.out.println("Copay type is fixed");
                     Pageable firstPageWithOneElement = PageRequest.of(0, 1);
 
                     //find item where item category is copay
@@ -174,6 +183,7 @@ public class ClinicalVisitController {
                     billItems.add(itemData);
 
                     BillData data = new BillData();
+                    data.setWalkinFlag(false);
                     data.setBillItems(billItems);
                     data.setAmount(config.get().getCoPayValue());
                     data.setBalance(config.get().getCoPayValue());
@@ -183,8 +193,9 @@ public class ClinicalVisitController {
                     data.setPatientNumber(patient.getPatientNumber());
                     data.setPaymentMode(visit.getPaymentMethod().name());
                     data.setVisitNumber(visit.getVisitNumber());
-
+                    System.out.println("About to bill copay " + config.get().getCoPayValue());
                     billingService.createPatientBill(data);
+                    System.out.println("End of creating copay bill " + data.toString());
                 }
             }
         }
@@ -219,6 +230,7 @@ public class ClinicalVisitController {
             billItems.add(itemData);
 
             BillData data = new BillData();
+            data.setWalkinFlag(false);
             data.setBillItems(billItems);
             data.setAmount(pricelist.getSellingRate().doubleValue());
             data.setBalance(pricelist.getSellingRate().doubleValue());
