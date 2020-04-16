@@ -91,7 +91,7 @@ public class ReportController {
                 labReportService.getLabTestStatement(queryParams, format, response);
                 break;
             case Lab_Statement:
-                labReportService.getLabStatement(queryParams, format, response);
+                labReportService.getLabTestStatement(queryParams, format, response);
                 break;
             case Radiology_Statement:
                 radiologyReportService.getRadiologyStatement(queryParams, format, response);
@@ -120,7 +120,7 @@ public class ReportController {
                 break;
 
         }
-         return ResponseEntity.ok(200); 
+         return ResponseEntity.ok(""); 
     }
 
     

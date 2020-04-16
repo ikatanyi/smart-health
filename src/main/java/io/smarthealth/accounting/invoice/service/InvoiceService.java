@@ -178,7 +178,7 @@ public class InvoiceService {
         invoice.setBalance(data.getBalance());
         invoice.setClosed(data.getClosed());
         invoice.setCurrency(data.getCurrency());
-        invoice.setDisounts(data.getDisounts());
+        invoice.setDisounts(data.getDiscounts());
         invoice.setDraft(data.getDraft());
         invoice.setDueDate(data.getDueDate());
         invoice.setNotes(data.getNotes());

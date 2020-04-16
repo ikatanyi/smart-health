@@ -40,7 +40,7 @@ public class InvoiceData {
     private Boolean closed; // bad debt or not
     private Boolean paid; // fully paid or not
     private Double subtotal;
-    private Double disounts;
+    private Double discounts;
     private Double taxes;
     private Double total;
     private Double balance;

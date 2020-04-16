@@ -34,10 +34,10 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="patientId" class="java.lang.String">
+	<field name="patientNo" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="date" class="java.lang.String">
+	<field name="date" class="java.lang.Object">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="patientName" class="java.lang.String">
@@ -47,15 +47,14 @@
 	<field name="payer" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="amount" class="java.lang.Double"/>
+	<field name="total" class="java.lang.Double"/>
 	<field name="balance" class="java.lang.Double"/>
 	<field name="items" class="java.util.Collection"/>
-	<field name="discount" class="java.lang.Double"/>
-	<field name="copay" class="java.lang.Double"/>
+	<field name="discounts" class="java.lang.Double"/>
 	<field name="terms" class="java.lang.String"/>
-	<field name="invoiceNo" class="java.lang.String"/>
-	<field name="dueDate" class="java.lang.String"/>
-	<field name="createdBy" class="java.lang.String"/>
+	<field name="number" class="java.lang.String"/>
+	<field name="dueDate" class="java.lang.Object"/>
+	<field name="reference" class="java.lang.String"/>
 	<variable name="Price_1" class="java.lang.Double" resetType="Column" calculation="Sum">
 		<variableExpression><![CDATA[]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
@@ -163,7 +162,7 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="100" splitType="Stretch">
+		<band height="109" splitType="Stretch">
 			<staticText>
 				<reportElement mode="Transparent" x="1" y="60" width="41" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
 				<textElement verticalAlignment="Middle">
@@ -225,7 +224,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{invoiceNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{number}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="62" y="27" width="132" height="11" uuid="6c43b589-8dbc-4cfd-8621-63c6e3c5eb39"/>
@@ -239,7 +238,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{patientId}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{reference}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="1" y="3" width="60" height="11" forecolor="#000000" uuid="f65afb30-85e4-4d6b-b5f7-c1786359a0fb"/>
@@ -279,7 +278,7 @@
 				<text><![CDATA[TOTAL AMOUNT :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="361" y="34" width="122" height="14" uuid="8faf028c-a4d3-469c-a85b-643104fb335e"/>
+				<reportElement positionType="Float" x="361" y="19" width="122" height="14" uuid="8faf028c-a4d3-469c-a85b-643104fb335e"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
@@ -311,28 +310,14 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{amount}.equals( null )?0.00:$F{amount}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
 			</textField>
 			<textField pattern=" #,##0.00">
-				<reportElement positionType="Float" x="486" y="34" width="57" height="14" uuid="c932f3de-d592-4733-bd3b-cf904407985f"/>
+				<reportElement positionType="Float" x="486" y="19" width="57" height="14" uuid="c932f3de-d592-4733-bd3b-cf904407985f"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{balance}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="361" y="19" width="122" height="14" uuid="faf0fbd6-9e75-40ac-80a0-3855bd216a78"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
-				</textElement>
-				<text><![CDATA[COPAY :]]></text>
-			</staticText>
-			<textField pattern="###0.00">
-				<reportElement x="486" y="19" width="57" height="14" uuid="93ca9cfa-2816-4bfb-b744-db253355b0e8"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{copay}==null?0.00:$F{copay}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="2" y="35" width="291" height="21" isRemoveLineWhenBlank="true" forecolor="#FF0033" uuid="59db33f4-6761-4fc2-aff8-67cb5167af94"/>
@@ -395,13 +380,6 @@
 				</textElement>
 				<text><![CDATA[don't hesitate to contact us]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="62" y="46" width="197" height="20" uuid="da786ef1-20ec-44ee-9f16-910f43e4617b"/>
-				<textElement verticalAlignment="Middle">
-					<font size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
-			</textField>
 			<textField>
 				<reportElement x="434" y="78" width="80" height="8" uuid="e7649eda-3681-4858-982c-f4a93e5a9b72"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">

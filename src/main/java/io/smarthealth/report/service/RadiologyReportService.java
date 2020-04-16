@@ -8,6 +8,7 @@ package io.smarthealth.report.service;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
+import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -58,17 +59,19 @@ public class RadiologyReportService {
         String orderNumber = reportParam.getFirst("orderNumber");
         String patientNumber = reportParam.getFirst("patientNumber");
         String dateRange = reportParam.getFirst("dateRange");
+        String search = reportParam.getFirst("search");
         Integer page = Integer.getInteger(reportParam.getFirst("page"));
         Integer size = Integer.getInteger(reportParam.getFirst("size"));
         ScanTestState status = statusToEnum(reportParam.getFirst("status"));
         Boolean summary = Boolean.parseBoolean(reportParam.getFirst("summarized"));
+        Boolean isWalkin = Boolean.parseBoolean(reportParam.getFirst("iswalkin"));
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         
-         List<PatientScanRegisterData> patientData = scanService.findAll(patientNumber, scanNo, visitId, status, range, pageable)
+         List<PatientScanTestData> patientData = scanService.findAllTests(patientNumber, search, scanNo, status, visitId, range, isWalkin, pageable)
                 .getContent()
                 .stream()
-                .map((register) -> register.todata())
+                .map((register) -> register.toData())
                 .collect(Collectors.toList());
         reportData.setData(patientData);
         reportData.setFormat(format);
@@ -76,7 +79,7 @@ public class RadiologyReportService {
              reportData.setTemplate("/clinical/radiology/radiology_statement_summary");
             else
               reportData.setTemplate("/clinical/radiology/radiology_statement");
-        reportData.setReportName("Lab-Statement");
+        reportData.setReportName("Radiology-Statement");
         reportService.generateReport(reportData, response);
     }    
     
