@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
@@ -50,7 +51,7 @@ public class Receipt extends Auditable {
     @OneToMany(mappedBy = "receipt")
     private List<ReceiptTransaction> transactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receipt")
+    @OneToMany(mappedBy = "receipt", cascade=CascadeType.ALL)
     private List<ReceiptItem> receiptItems = new ArrayList<>();
 
     public void addTransaction(ReceiptTransaction transaction) {
