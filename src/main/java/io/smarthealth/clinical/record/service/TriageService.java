@@ -44,9 +44,9 @@ public class TriageService {
     @Autowired
     private EmployeeService employeeService;
 
-//VITALS
-    public VitalsRecord addVitalRecordsByVisit(String visitNumber, VitalRecordData triage) {
-        Visit visit = findVisitOrThrow(visitNumber);
+    //VITALS
+    public VitalsRecord addVitalRecordsByVisit(Visit visit, VitalRecordData triage) {
+
         if (!StringUtils.equalsIgnoreCase(visit.getPatient().getPatientNumber(), triage.getPatientNumber())) {
             throw APIException.badRequest("Invalid Patient Number! mismatch in Patient Visit's patient number");
         }
