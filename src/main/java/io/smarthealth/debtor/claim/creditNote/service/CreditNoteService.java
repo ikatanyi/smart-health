@@ -1,8 +1,6 @@
 package io.smarthealth.debtor.claim.creditNote.service;
 
-import io.smarthealth.accounting.accounts.data.FinancialActivity;
 import io.smarthealth.accounting.accounts.domain.Account;
-import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
 import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
 import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
@@ -67,7 +65,7 @@ public class CreditNoteService {
     @Transactional
     public CreditNote createCreditNote(CreditNoteData data) {
         CreditNote creditNote = CreditNoteData.map(data);
-        Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
+        Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(data.getInvoiceNo());
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(invoice.getPayer().getId());
         String transactionId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String creditNoteNumber = sequenceNumberService.next(1L, Sequences.CreditNoteNumber.name());
@@ -81,7 +79,7 @@ public class CreditNoteService {
 //        data.getBillItems().stream().map((item) -> {
         for (CreditNoteItemData item : data.getBillItems()) {
             CreditNoteItem creditNoteItem = new CreditNoteItem();
-            PatientBillItem billItem = billService.findBillItemById(item.getBillItemid());
+            PatientBillItem billItem = billService.findBillItemById(item.getBillItemId());
             
             creditNoteItem.setAmount(billItem.getAmount());
             creditNoteItem.setBillItem(billItem);
@@ -102,7 +100,7 @@ public class CreditNoteService {
         List<CreditNoteItem> savedItems = creditNoteItemRepository.saveAll(creditNoteItemArr);
         creditNote.setItems(savedItems);
         CreditNote savedcreditNote = creditNoteRepository.save(creditNote);
-        invoice.addCreditNoteItem(savedcreditNote);
+//        invoice.addCreditNoteItem(savedcreditNote);
         invoiceRepository.save(invoice);
         journalService.save(toJournal(savedcreditNote));
         return savedcreditNote;
@@ -111,12 +109,12 @@ public class CreditNoteService {
     public CreditNote updateCreditNote(final Long id, CreditNoteData data) {
         CreditNote creditNote = getCreditNoteByIdWithFailDetection(id);
 
-        Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
+        Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(data.getInvoiceNo());
         creditNote.setInvoice(invoice);
         List<CreditNoteItem> creditNoteItemArr = new ArrayList();
         data.getBillItems().stream().map((item) -> {
             CreditNoteItem creditNoteItem = new CreditNoteItem();
-            PatientBillItem billItem = billService.findBillItemById(item.getBillItemid());
+            PatientBillItem billItem = billService.findBillItemById(item.getBillItemId());
             creditNoteItem.setAmount(billItem.getAmount());
             creditNoteItem.setBillItem(billItem);
             creditNoteItem.setItem(billItem.getItem());
@@ -127,7 +125,7 @@ public class CreditNoteService {
         List<CreditNoteItem> savedItems = creditNoteItemRepository.saveAll(creditNoteItemArr);
         creditNote.setItems(savedItems);
         CreditNote savedcreditNote = creditNoteRepository.save(creditNote);
-        invoice.addCreditNoteItem(savedcreditNote);
+//        invoice.addCreditNoteItem(savedcreditNote);
         invoiceRepository.save(invoice);
         journalService.save(toJournal(savedcreditNote));
         return savedcreditNote;

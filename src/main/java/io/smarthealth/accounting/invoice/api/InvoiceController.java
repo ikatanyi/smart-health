@@ -1,6 +1,6 @@
 package io.smarthealth.accounting.invoice.api;
 
-import io.smarthealth.accounting.invoice.data.CreateInvoiceData;
+import io.smarthealth.accounting.invoice.data.CreateInvoice;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
@@ -35,7 +35,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/invoices")
-    public ResponseEntity<?> createInvoice(@Valid @RequestBody CreateInvoiceData invoiceData) {
+    public ResponseEntity<?> createInvoice(@Valid @RequestBody CreateInvoice invoiceData) {
 
         String trans = service.createInvoice(invoiceData);
 
@@ -48,22 +48,22 @@ public class InvoiceController {
     }
 
     @GetMapping("/invoices/{id}")
-    public InvoiceData getInvoice(@PathVariable(value = "id") Long id) {
-        Invoice trans = service.findInvoiceOrThrowException(id);
-        return InvoiceData.map(trans);
+    public ResponseEntity<?> getInvoice(@PathVariable(value = "id") Long id) {
+        Invoice trans = service.getInvoiceByIdOrThrow(id);
+        return ResponseEntity.ok(trans.toData());
     }
 
-    @PatchMapping("/invoices/{id}")
-    public InvoiceData updateInvoice(@PathVariable(value = "id") Long id, InvoiceData transactionData) {
-        InvoiceData trans = InvoiceData.map(service.updateInvoice(id, transactionData));
-        return trans;
-    }
+//    @PatchMapping("/invoices/{id}")
+//    public InvoiceData updateInvoice(@PathVariable(value = "id") Long id, InvoiceData transactionData) {
+//        InvoiceData trans = InvoiceData.map(service.updateInvoice(id, transactionData));
+//        return trans;
+//    }
 
-    @PatchMapping("/invoices/{id}/verify")
-    public InvoiceData updateInvoice(@PathVariable(value = "id") Long id, Boolean Isverified) {
-        InvoiceData trans = InvoiceData.map(service.verifyInvoice(id, Isverified));
-        return trans;
-    }
+//    @PatchMapping("/invoices/{id}/verify")
+//    public InvoiceData updateInvoice(@PathVariable(value = "id") Long id, Boolean Isverified) {
+//        InvoiceData trans = InvoiceData.map(service.verifyInvoice(id, Isverified));
+//        return trans;
+//    }
 
     @GetMapping("/invoices")
     public ResponseEntity<?> getInvoices(
@@ -82,7 +82,7 @@ public class InvoiceController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable)
-                .map(bill -> InvoiceData.map(bill));
+                .map(x-> x.toData());
 
         Pager<List<InvoiceData>> pagers = new Pager();
         pagers.setCode("0");

@@ -152,6 +152,8 @@ public class ClinicalVisitController {
             //create bill for copay
             Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
             if (config.isPresent()) {
+                //instead of creating the bill just post the copayment
+                
                 if (config.get().getCoPayType().equals("Fixed")) {
                     Pageable firstPageWithOneElement = PageRequest.of(0, 1);
 

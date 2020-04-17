@@ -1,6 +1,7 @@
 package io.smarthealth.debtor.claim.allocation.service;
 
 import io.smarthealth.accounting.invoice.domain.Invoice;
+import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.domain.Remittance;
 import io.smarthealth.accounting.payment.domain.RemittanceRepository;
@@ -40,14 +41,19 @@ public class AllocationService {
         List<Allocation> allocations = new ArrayList<>();
         dataList.forEach((data) -> {
             Allocation allocation = AllocationData.map(data);
-            Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
-            invoice.setBalance(invoice.getBalance() - data.getAmount());
+            Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(data.getInvoiceNo());
+            BigDecimal bal = invoice.getBalance().subtract(data.getAmount());
+            InvoiceStatus status = bal.doubleValue() <= 0 ? InvoiceStatus.Paid : InvoiceStatus.PartialPaid;
+            invoice.setBalance(bal);
+            invoice.setStatus(status);
+
             allocation.setInvoice(invoice);
 
 //            remitance.setBalance();
 //            remitanceRepository.save(remitance);
-            remitanceRepository.updateBalance((remitance.getReceipt().getAmount().subtract(BigDecimal.valueOf(data.getAmount()))), remitance.getId());
-            
+            invoiceService.updateInvoice(invoice);
+            remitanceRepository.updateBalance((remitance.getReceipt().getAmount().subtract(data.getAmount())), remitance.getId());
+
             allocations.add(allocation);
         });
         return allocationRepository.saveAll(allocations);
@@ -55,11 +61,13 @@ public class AllocationService {
 
     public Allocation updateAllocation(final Long id, AllocationData data) {
         Allocation allocation = getAllocationByIdWithFailDetection(id);
-        Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(data.getInvoiceNo());
-        invoice.setBalance((invoice.getBalance() + allocation.getAmount()) - data.getAmount());
+        Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(data.getInvoiceNo());
+        BigDecimal bal = (invoice.getBalance().add(allocation.getAmount())).subtract(data.getAmount());
+        invoice.setBalance(bal);
         allocation.setInvoice(invoice);
         allocation.setAmount(data.getAmount());
-        allocation.setBalance(invoice.getBalance() + allocation.getAmount() - data.getAmount());
+//        allocation.setBalance(invoice.getBalance() + allocation.getAmount() - data.getAmount());
+        allocation.setBalance(bal);
         allocation.setReceiptNo(data.getReceiptNo());
         allocation.setRemittanceNo(data.getRemittanceNo());
         return allocationRepository.save(allocation);

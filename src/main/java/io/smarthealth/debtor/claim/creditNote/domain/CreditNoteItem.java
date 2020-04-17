@@ -25,14 +25,14 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "credit_note_item")
+@Table(name = "patient_credit_note_item")
 public class CreditNoteItem extends Identifiable {  
     
     @OneToOne
-    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_note_item_id_bill_item_id"))
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_noteitem_id_bill_item_id"))
     private PatientBillItem billItem;
     @OneToOne
-    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_note_item_id_item_id"))
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_noteitem_id_item_id"))
     private Item item;
     private Double amount;
 }

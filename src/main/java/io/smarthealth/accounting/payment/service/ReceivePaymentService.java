@@ -14,9 +14,12 @@ import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.cashier.domain.ShiftRepository;
+import io.smarthealth.accounting.payment.data.CopaymentData;
 import io.smarthealth.accounting.payment.data.ReceiptMethod;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
 import io.smarthealth.accounting.payment.domain.Banking;
+import io.smarthealth.accounting.payment.domain.Copayment;
+import io.smarthealth.accounting.payment.domain.CopaymentRepository;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.domain.ReceiptItem;
 import io.smarthealth.accounting.payment.domain.ReceiptTransaction;
@@ -35,7 +38,6 @@ import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +54,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.ReceiptRepository;
+import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.service.VisitService;
+import java.time.LocalDate;
 
 /**
  *
@@ -72,9 +77,12 @@ public class ReceivePaymentService {
     private final BankingService bankingService;
     private final PayerRepository payerRepository;
     private final RemittanceRepository remittanceRepository;
+    private final CopaymentService copaymentService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(ReceivePayment data) {
+        //TODO if walkin create the bill and pay for it
+
         Receipt receipt = new Receipt();
         receipt.setAmount(data.getAmount());
         receipt.setCurrency(data.getCurrency());
@@ -98,6 +106,9 @@ public class ReceivePaymentService {
                 case Insurance:
                     //find the payer and add them
                     receipt.setDescription("Insurance Payment");
+                    break;
+                case Copay:
+                    receipt.setDescription("Copayment");
                     break;
                 default:
                     receipt.setDescription("Other Payment");
@@ -124,10 +135,14 @@ public class ReceivePaymentService {
 
         receipt.setTransactionNo(trdId);
         receipt.setReceiptNo(receiptNo);
-        
+
         List<PatientBillItem> billedItems = new ArrayList<>();
         //update payments for the bills
-        if (data.getBillItems()!=null && !data.getBillItems().isEmpty()) {
+        if (data.getWalkin()) {
+            //check if we have a bill
+
+        }
+        if (data.getBillItems() != null && !data.getBillItems().isEmpty()) {
             if (!data.getBillItems().isEmpty()) {
                 data.getBillItems()
                         .stream()
@@ -142,17 +157,14 @@ public class ReceivePaymentService {
 
                             billedItems.add(i);
                             //update the bill as 
-                            //PatientBillItem item, Double quantity, BigDecimal price, BigDecimal discount, BigDecimal taxes, BigDecimal amountPaid
-                            receipt.addReceiptItem(new ReceiptItem(item, item.getQuantity(),BigDecimal.valueOf(item.getPrice()),BigDecimal.valueOf(item.getDiscount()),BigDecimal.valueOf(item.getTaxes()), BigDecimal.valueOf(item.getAmount())));
+                            receipt.addReceiptItem(new ReceiptItem(item, item.getQuantity(), BigDecimal.valueOf(item.getPrice()), BigDecimal.valueOf(item.getDiscount()), BigDecimal.valueOf(item.getTaxes()), BigDecimal.valueOf(item.getAmount())));
                         });
             }
         }
 
-        Receipt savedPayment = repository.save(receipt); //save the payment
+        Receipt savedReceipt = repository.save(receipt); //save the payment
         //bank payments
-        depositToBank(savedPayment, toBank);
-
-        
+        depositToBank(savedReceipt, toBank);
 
         switch (data.getType()) {
             case Patient:
@@ -161,23 +173,27 @@ public class ReceivePaymentService {
             case Insurance:
                 Optional<Payer> payer = payerRepository.findById(data.getPayerId());
                 if (payer.isPresent()) {
-                    Remittance remittance = new Remittance(payer.get(), savedPayment);
+                    Remittance remittance = new Remittance(payer.get(), savedReceipt);
                     remittanceRepository.save(remittance);
                     journalEntryService.save(toJournalRemittance(payer.get(), receipt, toBank));
                 }
+                break;
+            case Copay:
+                Copayment copay=copaymentService.createCopayment(data.getVisitNumber(), data.getPatientNumber(), data.getAmount(),savedReceipt);
+//                 journalEntryService.save(toJournalRemittance(payer.get(), receipt, toBank));
                 break;
             case Others:
                 break;
             default:
         }
 
-        return savedPayment;
+        return savedReceipt;
     }
 
     public Optional<Receipt> getPayment(Long id) {
         return repository.findById(id);
     }
-   
+
     public Receipt getPaymentOrThrow(Long id) {
         return getPayment(id)
                 .orElseThrow(() -> APIException.notFound("Payment with Id {0} Not Found", id));
@@ -352,4 +368,21 @@ public class ReceivePaymentService {
         return toSave;
     }
 
+    private JournalEntry toJournalCopayment() {
+
+        Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
+
+        if (!debitAccount.isPresent()) {
+            throw APIException.badRequest("Receipt Control Account is Not Mapped");
+        }
+//        String debitAcc = debitAccount.get().getAccount().getIdentifier();
+        List<JournalEntryItem> items = new ArrayList<>();
+
+        String description = "";
+        JournalEntry toSave = new JournalEntry(LocalDate.now(), description, items);
+        toSave.setTransactionType(TransactionType.Remittance);
+        toSave.setTransactionNo("");
+        toSave.setStatus(JournalState.PENDING);
+        return toSave;
+    }
 }

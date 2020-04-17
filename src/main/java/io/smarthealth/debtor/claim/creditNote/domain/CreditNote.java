@@ -1,16 +1,13 @@
 package io.smarthealth.debtor.claim.creditNote.domain;
 
-
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.debtor.claim.creditNote.data.CreditNoteData;
+import io.smarthealth.debtor.claim.creditNote.data.CreditNoteItemData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
@@ -32,44 +29,45 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "credit_note")
-public class CreditNote extends Auditable {  
+@Table(name = "patient_credit_note")
+public class CreditNote extends Auditable {
+
     private String creditNoteNo;
     private Double amount;
     private String comments;
     private String transactionId;
     @OneToOne
-    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_note_id_payer_id"))
-    private Payer payer;    
-    
-    
-    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_note_id_invoice_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_credit_note_id_payer_id"))
+    private Payer payer;
+
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_credit_note_id_invoice_id"))
     @ManyToOne
     private Invoice invoice;
+
     @OneToMany
-    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_note_id_credit_note_item_id"))
-    private List<CreditNoteItem> items;  
-    
-    public CreditNoteData toData(){
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_credit_note_id_credit_note_item_id"))
+    private List<CreditNoteItem> items;
+
+    public CreditNoteData toData() {
         CreditNoteData data = new CreditNoteData();
         data.setId(this.getId());
         data.setAmount(this.getAmount());
         data.setCreditNoteNo(this.getCreditNoteNo());
-       
+
         List items = this.getItems().stream().map((item) -> {
-            CreditNoteItemData billItem=new CreditNoteItemData();
+            CreditNoteItemData billItem = new CreditNoteItemData();
             billItem.setAmount(item.getAmount());
             billItem.setBillItemId(item.getBillItem().getId());
             billItem.setItemId(item.getItem().getId());
             return billItem;
         }).collect(Collectors.toList());
-        
+
         data.setBillItems(items);
-        if(this.getInvoice()!=null){
+        if (this.getInvoice() != null) {
             data.setInvoiceNo(this.getInvoice().getNumber());
             data.setInvoiceDate(this.getInvoice().getDate());
         }
-        if(this.getPayer()!=null){
+        if (this.getPayer() != null) {
             data.setPayer(this.getPayer().getPayerName());
             data.setPayerId(this.getPayer().getId());
         }

@@ -12,7 +12,7 @@ import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.domain.Invoice;
-import io.smarthealth.accounting.invoice.domain.InvoiceLineItem;
+import io.smarthealth.accounting.invoice.domain.InvoiceItem;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.ReceiptData;
@@ -58,6 +58,7 @@ import io.smarthealth.report.data.accounts.TrialBalanceData;
 import io.smarthealth.report.data.clinical.PatientVisitData;
 import io.smarthealth.report.data.clinical.specimenLabelData;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -213,19 +214,19 @@ public class AccountReportService {
 
         for (Invoice invoice : invoices) {
             InsuranceInvoiceData data = new InsuranceInvoiceData();
-            data.setAmount(invoice.getTotal());
+            data.setAmount(invoice.getAmount());
             data.setBalance(invoice.getBalance());
-            data.setDiscount(invoice.getDisounts());
-            data.setPatientId(invoice.getBill().getPatient().getPatientNumber());
-            data.setPatientName(invoice.getBill().getPatient().getFullName());
+            data.setDiscount(invoice.getDiscount());
+            data.setPatientId(invoice.getPatient().getPatientNumber());
+            data.setPatientName(invoice.getPatient().getFullName());
             data.setDueDate(String.valueOf(invoice.getDueDate()));
             data.setInvoiceNo(invoice.getNumber());
             data.setPayer(invoice.getPayer().getPayerName());
-            data.setPayee(invoice.getPayee().getSchemeName());
+            data.setPayee(invoice.getScheme().getSchemeName());
             data.setStatus(invoice.getStatus().name());
             data.setDate(String.valueOf(invoice.getDate()));
-            data.setPaid(invoice.getTotal() - invoice.getBalance());
-            for (InvoiceLineItem item : invoice.getItems()) {
+            data.setPaid(invoice.getAmount().subtract(invoice.getBalance()));
+            for (InvoiceItem item : invoice.getItems()) {
                 switch (item.getBillItem().getServicePoint()) {
                     case "Laboratory":
                         data.setLab(+item.getBillItem().getAmount());
@@ -240,7 +241,7 @@ public class AccountReportService {
                         data.setRadiology(+item.getBillItem().getAmount());
                         break;
                     case "Consultation":
-                        data.setAmount(+item.getBillItem().getAmount());
+                        data.setAmount(BigDecimal.valueOf(item.getBillItem().getAmount()));
                         break;
                     default:
                         data.setOther(+item.getBillItem().getAmount());
@@ -284,20 +285,20 @@ public class AccountReportService {
 
         for (Invoice invoice : invoices) {
             InsuranceInvoiceData data = new InsuranceInvoiceData();
-            data.setAmount(invoice.getTotal());
+            data.setAmount(invoice.getAmount());
             data.setBalance(invoice.getBalance());
-            data.setDiscount(invoice.getDisounts());
-            if (invoice.getBill() != null) {
-                data.setPatientId(invoice.getBill().getPatient().getPatientNumber());
-                data.setPatientName(invoice.getBill().getPatient().getFullName());
+            data.setDiscount(invoice.getDiscount());
+            if (invoice.getPatient() != null) {
+                data.setPatientId(invoice.getPatient().getPatientNumber());
+                data.setPatientName(invoice.getPatient().getFullName());
             }
             data.setDueDate(String.valueOf(invoice.getDueDate()));
             data.setInvoiceNo(invoice.getNumber());
             if (invoice.getPayer() != null) {
                 data.setPayer(invoice.getPayer().getPayerName());
             }
-            if (invoice.getPayee() != null) {
-                data.setPayee(invoice.getPayee().getSchemeName());
+            if (invoice.getScheme()!= null) {
+                data.setPayee(invoice.getScheme().getSchemeName());
             }
             data.setStatus(invoice.getStatus().name());
             data.setDate(String.valueOf(invoice.getDate()));
@@ -337,21 +338,21 @@ public class AccountReportService {
         Pageable pageable = PaginationUtil.createPage(1, 500);
         List<Invoice> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable).getContent();
 
-        for (Invoice invoice : invoices) {
+        for (Invoice invoice : invoices) { 
             List<InvoiceItemData> itemArray = new ArrayList();
             InvoiceData data = new InvoiceData();
-            data.setAmount(invoice.getTotal());
+            data.setAmount(invoice.getAmount());
             data.setBalance(invoice.getBalance());
-            data.setDiscount(invoice.getDisounts());
-            data.setPatientId(invoice.getBill().getPatient().getPatientNumber());
-            data.setPatientName(invoice.getBill().getPatient().getFullName());
+            data.setDiscount(invoice.getDiscount());
+            data.setPatientId(invoice.getPatient().getPatientNumber());
+            data.setPatientName(invoice.getPatient().getFullName());
             data.setDueDate(String.valueOf(invoice.getDueDate()));
             data.setInvoiceNo(invoice.getNumber());
             data.setPayer(invoice.getPayer().getPayerName());
-            data.setPayee(invoice.getPayee().getSchemeName());
+            data.setPayee(invoice.getScheme().getSchemeName());
             data.setDate(String.valueOf(invoice.getDate()));
             data.setCreatedBy(invoice.getCreatedBy());
-            for (InvoiceLineItem invoiceLineItem : invoice.getItems()) {
+            for (InvoiceItem invoiceLineItem : invoice.getItems()) {
                 InvoiceItemData item = new InvoiceItemData();
                 item.setQuantity(invoiceLineItem.getBillItem().getQuantity());
                 item.setAmount(invoiceLineItem.getBillItem().getAmount());
