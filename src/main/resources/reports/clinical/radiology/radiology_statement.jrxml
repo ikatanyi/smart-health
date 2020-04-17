@@ -26,7 +26,7 @@
 	</field>
 	<field name="scanName" class="java.lang.String"/>
 	<field name="testCode" class="java.lang.String"/>
-	<field name="testPrice" class="java.math.BigDecimal"/>
+	<field name="testPrice" class="java.lang.Double"/>
 	<field name="status" class="java.lang.Object"/>
 	<field name="paid" class="java.lang.Boolean"/>
 	<field name="entryDateTime" class="java.lang.Object"/>
@@ -245,7 +245,7 @@
 		<band height="15">
 			<subreport>
 				<reportElement x="2" y="0" width="552" height="15" uuid="b93fb920-a651-407d-a067-95ef0e3484d6"/>
-				<dataSourceExpression><![CDATA[$P{Footer_Data}]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
 			</subreport>
 		</band>

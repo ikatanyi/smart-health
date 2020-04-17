@@ -7,10 +7,13 @@ package io.smarthealth.clinical.visit.domain;
 
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
+import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.infrastructure.domain.Auditable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
@@ -49,5 +52,8 @@ public class PaymentDetails extends Auditable {
 
     private String memberName, policyNo, relation, idNo;
     private double limitAmount;
+    @Enumerated(EnumType.STRING)
+    private CoPayType coPayCalcMethod;
+    private double coPayValue;
 
 }

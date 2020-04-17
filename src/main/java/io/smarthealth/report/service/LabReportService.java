@@ -81,9 +81,9 @@ public class LabReportService {
         reportData.setData(patientData);
         reportData.setFormat(format);
         if(!expand)
-            reportData.setTemplate("/clinical/laboratory/lab_statement");
+            reportData.setTemplate("/clinical/laboratory/LabStatement");
         else
-            reportData.setTemplate("/clinical/laboratory/lab_statement_summary");
+            reportData.setTemplate("/clinical/laboratory/LabStatement_summary");
         reportData.setReportName("Lab-Statement");
         reportService.generateReport(reportData, response);
     }    
@@ -113,7 +113,7 @@ public class LabReportService {
         if(!expand)
             reportData.setTemplate("/clinical/laboratory/LabStatement");
         else
-            reportData.setTemplate("/clinical/laboratory/lab_statement_summary");
+            reportData.setTemplate("/clinical/laboratory/LabStatement_summary");
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("status");

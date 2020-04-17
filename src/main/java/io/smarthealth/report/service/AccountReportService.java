@@ -11,6 +11,7 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceItem;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
@@ -52,7 +53,6 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.accounts.DailyBillingData;
 import io.smarthealth.report.data.accounts.InsuranceInvoiceData;
-import io.smarthealth.report.data.accounts.InvoiceData;
 import io.smarthealth.report.data.accounts.InvoiceItemData;
 import io.smarthealth.report.data.accounts.TrialBalanceData;
 import io.smarthealth.report.data.clinical.PatientVisitData;
@@ -149,8 +149,10 @@ public class AccountReportService {
             data.setBalance(bill.getBalance());
             data.setCreatedBy(bill.getCreatedBy());
             data.setCreatedOn(bill.getBillingDate());
-            data.setPatientId(bill.getPatient().getPatientNumber());
-            data.setPatientName(bill.getPatient().getFullName());
+            if(bill.getPatient()!=null){
+                data.setPatientId(bill.getPatient().getPatientNumber());
+                data.setPatientName(bill.getPatient().getFullName());
+            }
             data.setPaymentMode(bill.getPaymentMode());
             data.setPaid(bill.getAmount() - bill.getBalance());
             for (PatientBillItem item : bill.getBillItems()) {
@@ -179,16 +181,16 @@ public class AccountReportService {
         }
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
-        sortField.setName("PatientId");
+//        sortField.setName("patientId");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+//        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
 
         reportData.setData(billData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/payment_statement");
-        reportData.setReportName("payement_statement");
+        reportData.setReportName("Payement_Statement");
         reportService.generateReport(reportData, response);
     }
 
@@ -200,9 +202,9 @@ public class AccountReportService {
         String invoiceNo = reportParam.getFirst("invoiceNo"); 
         String dateRange = reportParam.getFirst("dateRange"); 
         String invoiceStatus = reportParam.getFirst("invoiceStatus");
-        Double amountGreaterThan = null;
-        Boolean filterPastDue = null;
-        Double amountLessThanOrEqualTo = null;
+        Double amountGreaterThan = 0.0;
+        Boolean filterPastDue = false;
+        Double amountLessThanOrEqualTo = 0.0;
         
         List<InsuranceInvoiceData> invoiceData = new ArrayList();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
@@ -257,7 +259,6 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.getFilters().put("SUBREPORT_DIR", "/accounts/");
         reportData.setData(invoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/insurance_invoice_statement");
@@ -271,39 +272,21 @@ public class AccountReportService {
         String patientNo = reportParam.getFirst("patientNo");
         String invoiceNo = reportParam.getFirst("invoiceNo"); 
         String dateRange = reportParam.getFirst("dateRange"); 
-        String invoiceStatus = reportParam.getFirst("invoiceStatus");
+        InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));       
         
+        Double amountGreaterThan = 0.0;
+        Boolean filterPastDue = false;
+        Double amountLessThanOrEqualTo = 0.0;
         
-        
-        List<InsuranceInvoiceData> invoiceData = new ArrayList();
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
-        InvoiceStatus status = invoiceStatusToEnum(String.valueOf(map.get("billStatus")));
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<Invoice> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, 0, true, 0, pageable).getContent();
+        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable).getContent()
+                .stream()
+                .map(x -> x.toData())
+                .collect(Collectors.toList());
 
-        for (Invoice invoice : invoices) {
-            InsuranceInvoiceData data = new InsuranceInvoiceData();
-            data.setAmount(invoice.getAmount());
-            data.setBalance(invoice.getBalance());
-            data.setDiscount(invoice.getDiscount());
-            if (invoice.getPatient() != null) {
-                data.setPatientId(invoice.getPatient().getPatientNumber());
-                data.setPatientName(invoice.getPatient().getFullName());
-            }
-            data.setDueDate(String.valueOf(invoice.getDueDate()));
-            data.setInvoiceNo(invoice.getNumber());
-            if (invoice.getPayer() != null) {
-                data.setPayer(invoice.getPayer().getPayerName());
-            }
-            if (invoice.getScheme()!= null) {
-                data.setPayee(invoice.getScheme().getSchemeName());
-            }
-            data.setStatus(invoice.getStatus().name());
-            data.setDate(String.valueOf(invoice.getDate()));
-            invoiceData.add(data);
-        }
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("date");
@@ -320,62 +303,19 @@ public class AccountReportService {
 
     public void getInvoice(MultiValueMap<String,String>reportParam,  ExportFormat format,  HttpServletResponse response) throws SQLException, JRException, IOException {
         
-        String transactionNo = reportParam.getFirst("transactionNo");
-        Long payer  = Long.getLong(reportParam.getFirst("payerId"),null);
-        Long scheme = Long.getLong(reportParam.getFirst("schemeId"),null);
-        String patientNo = reportParam.getFirst("patientNo");
         String invoiceNo = reportParam.getFirst("invoiceNo"); 
-        String dateRange = reportParam.getFirst("dateRange"); 
-        String invoiceStatus = reportParam.getFirst("invoiceStatus");
-        Double amountGreaterThan = null;
-        Boolean filterPastDue = true;
-        Double amountLessThanOrEqualTo = null;
-        
-        List<InvoiceData> invoiceData = new ArrayList();
         ReportData reportData = new ReportData();
-        InvoiceStatus status = invoiceStatusToEnum(invoiceStatus);
-        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<Invoice> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable).getContent();
-
-        for (Invoice invoice : invoices) { 
-            List<InvoiceItemData> itemArray = new ArrayList();
-            InvoiceData data = new InvoiceData();
-            data.setAmount(invoice.getAmount());
-            data.setBalance(invoice.getBalance());
-            data.setDiscount(invoice.getDiscount());
-            data.setPatientId(invoice.getPatient().getPatientNumber());
-            data.setPatientName(invoice.getPatient().getFullName());
-            data.setDueDate(String.valueOf(invoice.getDueDate()));
-            data.setInvoiceNo(invoice.getNumber());
-            data.setPayer(invoice.getPayer().getPayerName());
-            data.setPayee(invoice.getScheme().getSchemeName());
-            data.setDate(String.valueOf(invoice.getDate()));
-            data.setCreatedBy(invoice.getCreatedBy());
-            for (InvoiceItem invoiceLineItem : invoice.getItems()) {
-                InvoiceItemData item = new InvoiceItemData();
-                item.setQuantity(invoiceLineItem.getBillItem().getQuantity());
-                item.setAmount(invoiceLineItem.getBillItem().getAmount());
-                item.setBalance(invoiceLineItem.getBillItem().getBalance());
-                item.setDiscount(invoiceLineItem.getBillItem().getDiscount());
-                item.setItem(invoiceLineItem.getBillItem().getItem() != null ? invoiceLineItem.getBillItem().getItem().getItemName() : "");
-                item.setPrice(invoiceLineItem.getBillItem().getPrice());
-                item.setServicePoint(invoiceLineItem.getBillItem().getServicePoint());
-                item.setTaxes(invoiceLineItem.getBillItem().getTaxes());
-                item.setBillingDate(String.valueOf(invoiceLineItem.getBillItem().getBillingDate()));
-                itemArray.add(item);
-            }
-            data.setItems(itemArray);
-            invoiceData.add(data);
-        }
-        List<JRSortField> sortList = new ArrayList<>();
-        JRDesignSortField sortField = new JRDesignSortField();
-        sortField.setName("date");
-        sortField.setOrder(SortOrderEnum.ASCENDING);
-        sortField.setType(SortFieldTypeEnum.FIELD);
-        sortList.add(sortField);
-        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.setData(invoiceData);
+       
+        InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();                
+        
+//        List<JRSortField> sortList = new ArrayList<>();
+//        JRDesignSortField sortField = new JRDesignSortField();
+//        sortField.setName("date");
+//        sortField.setOrder(SortOrderEnum.ASCENDING);
+//        sortField.setType(SortFieldTypeEnum.FIELD);
+//        sortList.add(sortField);
+//        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.setData(Arrays.asList(invoiceData));
         reportData.setTemplate("/accounts/invoice");
         reportData.setReportName("invoice");
         reportData.setFormat(format);
@@ -388,7 +328,7 @@ public class AccountReportService {
         ReceiptData receiptData = paymentService.getPaymentByReceiptNumber(receiptNo).toData();
         reportData.setData(Arrays.asList(receiptData));
         reportData.setFormat(format);
-        reportData.setTemplate("/payment/general_receipt");
+        reportData.setTemplate("/payments/general_receipt");
         reportData.setReportName("Receipt"+receiptNo);
         reportService.generateReport(reportData, response);
     }    

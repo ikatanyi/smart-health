@@ -27,6 +27,7 @@ import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
+import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -142,19 +143,25 @@ public class ClinicalVisitController {
 
         //register payment details 
         if (visitData.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
-            PaymentDetails pd = PaymentDetailsData.map(visitData.getPayment());
+            System.out.println("Payment method is insurance ");
             Scheme scheme = schemeService.fetchSchemeById(visitData.getPayment().getSchemeId());
+            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+            PaymentDetails pd = PaymentDetailsData.map(visitData.getPayment());
+
             pd.setScheme(scheme);
             pd.setPayer(scheme.getPayer());
             pd.setVisit(visit);
-
+            if (config.isPresent()) {
+                pd.setCoPayCalcMethod(config.get().getCoPayType());
+                pd.setCoPayValue(config.get().getCoPayValue());
+            }
             paymentDetailsService.createPaymentDetails(pd);
             //create bill for copay
-            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+
             if (config.isPresent()) {
-                //instead of creating the bill just post the copayment
-                
-                if (config.get().getCoPayType().equals("Fixed")) {
+                System.out.println("Config data found");
+                if (config.get().getCoPayType().equals(CoPayType.Fixed)) {
+                    System.out.println("Copay type is fixed");
                     Pageable firstPageWithOneElement = PageRequest.of(0, 1);
 
                     //find item where item category is copay
@@ -176,6 +183,7 @@ public class ClinicalVisitController {
                     billItems.add(itemData);
 
                     BillData data = new BillData();
+                    data.setWalkinFlag(false);
                     data.setBillItems(billItems);
                     data.setAmount(config.get().getCoPayValue());
                     data.setBalance(config.get().getCoPayValue());
@@ -185,8 +193,9 @@ public class ClinicalVisitController {
                     data.setPatientNumber(patient.getPatientNumber());
                     data.setPaymentMode(visit.getPaymentMethod().name());
                     data.setVisitNumber(visit.getVisitNumber());
-
+                    System.out.println("About to bill copay " + config.get().getCoPayValue());
                     billingService.createPatientBill(data);
+                    System.out.println("End of creating copay bill " + data.toString());
                 }
             }
         }
@@ -221,6 +230,7 @@ public class ClinicalVisitController {
             billItems.add(itemData);
 
             BillData data = new BillData();
+            data.setWalkinFlag(false);
             data.setBillItems(billItems);
             data.setAmount(pricelist.getSellingRate().doubleValue());
             data.setBalance(pricelist.getSellingRate().doubleValue());
@@ -336,7 +346,8 @@ public class ClinicalVisitController {
     @ApiOperation(value = "Create/Add a new patient vital by visit number", response = VitalRecordData.class)
     public @ResponseBody
     ResponseEntity<VitalRecordData> addVitalRecordByVisit(@PathVariable("visitNumber") String visitNumber, @RequestBody @Valid final VitalRecordData vital) {
-        VitalsRecord vitalR = this.triageService.addVitalRecordsByVisit(visitNumber, vital);
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        VitalsRecord vitalR = this.triageService.addVitalRecordsByVisit(visit, vital);
 
         VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
 
@@ -404,18 +415,28 @@ public class ClinicalVisitController {
         Patient patient = patientService.findPatientOrThrow(patientNo);
 
         VitalsRecord vitalR = this.triageService.addVitalRecordsByPatient(patient, vital);
+        Visit activeVisit = vitalR.getVisit();
         //log queue
         PatientQueue patientQueue = new PatientQueue(); //patientQueueService.fetchQueueByVisitNumber(vitalR.getVisit());
         //patientQueue.setUrgency(TriageCategory.valueOf(vital.getUrgency()));
         patientQueue.setPatient(patient);
-        patientQueue.setVisit(vitalR.getVisit());
+        patientQueue.setVisit(activeVisit);
         if (vital.getSendTo().equals("specialist")) {
             Employee employee = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());
+            //check if visit already has a doctor
+            if (activeVisit.getHealthProvider() != null) {
+                //update bill with current doctor if there is a difference between the visit activated one and the new one
+                if (!employee.equals(activeVisit.getHealthProvider())) {
+                    //find doctor invoice with service item and visit
+                    
+                }
+            }
+
             patientQueue.setStaffNumber(employee);
             patientQueue.setServicePoint(employee.getDepartment().getServicePointType());
             patientQueue.setSpecialNotes("Sent from triage");
-            vitalR.getVisit().setServicePoint(employee.getDepartment().getServicePointType());
-            vitalR.getVisit().setHealthProvider(employee);
+            activeVisit.setServicePoint(employee.getDepartment().getServicePointType());
+            activeVisit.setHealthProvider(employee);
         } else if (vital.getSendTo().equals("Service Point")) {
             ServicePoint servicePoint = servicePointService.getServicePoint(vital.getServicePointIdentifier());
             if (servicePoint.getServicePointType().equals(ServicePointType.Triage)) {
@@ -423,14 +444,15 @@ public class ClinicalVisitController {
             }
             patientQueue.setServicePoint(servicePoint);
             patientQueue.setSpecialNotes("Sent from triage");
-            vitalR.getVisit().setServicePoint(servicePoint);
+            activeVisit.setServicePoint(servicePoint);
         } else {
             //patientQueue.setStatus(false);
         }
-        vitalR.getVisit().setTriageCategory(TriageCategory.valueOf(vital.getUrgency()));
-        visitService.createAVisit(vitalR.getVisit());
+        activeVisit.setTriageCategory(TriageCategory.valueOf(vital.getUrgency()));
+        //update visit details
+        visitService.createAVisit(activeVisit);
         patientQueueService.createPatientQueue(patientQueue);
-        VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
+        VitalRecordData vr = modelMapper.map(activeVisit, VitalRecordData.class);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/patient/{patientNo}/vitals/{id}")

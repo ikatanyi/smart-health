@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="general_receipt_subreport1" language="groovy" pageWidth="312" pageHeight="802" columnWidth="312" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="5427f4fb-7bb9-4026-9081-58bdf85bdfb5">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="general_receipt_subreport1" pageWidth="312" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="272" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="0" uuid="5427f4fb-7bb9-4026-9081-58bdf85bdfb5">
 	<property name="ireport.zoom" value="3.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -14,35 +14,35 @@
 	<columnHeader>
 		<band height="18" splitType="Stretch">
 			<staticText>
-				<reportElement x="179" y="2" width="53" height="15" uuid="18345010-68b6-4e61-a798-9146f0e47c6e"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
+				<reportElement x="148" y="2" width="53" height="15" uuid="18345010-68b6-4e61-a798-9146f0e47c6e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Unit Cost]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="243" y="2" width="61" height="16" uuid="80af7947-0e7c-4094-895a-7f6763408380"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
+				<reportElement x="202" y="2" width="70" height="16" uuid="80af7947-0e7c-4094-895a-7f6763408380"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="139" y="2" width="29" height="15" uuid="a3839aa6-c68b-4699-b26a-cc979305fca5"/>
+				<reportElement x="102" y="2" width="42" height="15" uuid="a3839aa6-c68b-4699-b26a-cc979305fca5"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Qty]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="2" width="122" height="15" uuid="4241356f-771e-4e85-81c4-81be960b6dc8"/>
+				<reportElement x="1" y="2" width="98" height="15" uuid="4241356f-771e-4e85-81c4-81be960b6dc8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<line>
-				<reportElement positionType="FixRelativeToBottom" x="3" y="17" width="304" height="1" uuid="85ab7cfc-736f-4014-91d3-bb5bbed8c659"/>
+				<reportElement positionType="FixRelativeToBottom" x="3" y="17" width="269" height="1" uuid="85ab7cfc-736f-4014-91d3-bb5bbed8c659"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineColor="#999999"/>
 				</graphicElement>
@@ -52,28 +52,28 @@
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField>
-				<reportElement x="3" y="0" width="120" height="12" uuid="366d03f8-0b6b-4bc5-8e9b-14b8b124e9e5"/>
+				<reportElement x="1" y="0" width="98" height="12" uuid="366d03f8-0b6b-4bc5-8e9b-14b8b124e9e5"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="139" y="0" width="29" height="12" uuid="cca98489-cc58-4a83-b52f-27ae01241ece"/>
+				<reportElement x="102" y="0" width="42" height="12" uuid="cca98489-cc58-4a83-b52f-27ae01241ece"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="179" y="0" width="53" height="12" uuid="f7a667f1-10bd-4360-b3e9-a65515fa7771"/>
-				<textElement>
+				<reportElement x="148" y="0" width="42" height="12" uuid="f7a667f1-10bd-4360-b3e9-a65515fa7771"/>
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="243" y="0" width="61" height="12" uuid="eeac2738-50c5-4902-956e-d604d05f863c"/>
+				<reportElement x="214" y="0" width="58" height="12" uuid="eeac2738-50c5-4902-956e-d604d05f863c"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>

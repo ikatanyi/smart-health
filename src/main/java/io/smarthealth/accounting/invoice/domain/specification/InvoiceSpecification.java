@@ -50,15 +50,15 @@ public class InvoiceSpecification {
                         cb.between(root.get("createdOn"), range.getStartDate(), range.getEndDate())
                 );
             }
-            if (amountGreaterThan > 0) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("balance"), amountGreaterThan));
-            }
-            if (amountLessThanOrEqualTo > 0) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("balance"), amountLessThanOrEqualTo));
-            }
-            if (filterPastDue) {
-                predicates.add(cb.greaterThan(root.get("dueDate"), LocalDate.now()));
-            }
+//            if (amountGreaterThan > 0) {
+//                predicates.add(cb.greaterThanOrEqualTo(root.get("balance"), amountGreaterThan));
+//            }
+//            if (amountLessThanOrEqualTo > 0) {
+//                predicates.add(cb.lessThanOrEqualTo(root.get("balance"), amountLessThanOrEqualTo));
+//            }
+//            if (filterPastDue) {
+//                predicates.add(cb.greaterThan(root.get("dueDate"), LocalDate.now()));
+//            }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
