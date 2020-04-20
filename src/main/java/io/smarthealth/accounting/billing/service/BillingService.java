@@ -249,13 +249,15 @@ public class BillingService {
         return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, range, pageable);
     }
 
-    public Page<SummaryBill> getWalkinSummaryBill(String patientNumber, Boolean hasBalance,  Pageable pageable) {
+    public Page<SummaryBill> getWalkinSummaryBill(String patientNumber, Boolean hasBalance, Pageable pageable) {
         return billItemRepository.getWalkinBillSummary(patientNumber, hasBalance, pageable);
     }
- public Page<PatientBillItem> getWalkBillItems(String walkIn, Boolean hasBalance,Pageable page) {
+
+    public Page<PatientBillItem> getWalkBillItems(String walkIn, Boolean hasBalance, Pageable page) {
         Specification<PatientBillItem> spec = PatientBillSpecification.getWalkinBillItems(walkIn, hasBalance);
         return billItemRepository.findAll(spec, page);
     }
+
     public Visit findVisitEntityOrThrow(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));

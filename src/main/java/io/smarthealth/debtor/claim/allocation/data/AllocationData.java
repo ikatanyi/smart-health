@@ -7,6 +7,7 @@ package io.smarthealth.debtor.claim.allocation.data;
  */
 import io.smarthealth.debtor.claim.allocation.domain.*;
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import lombok.Data;
 
 /**
@@ -17,13 +18,13 @@ import lombok.Data;
 public class AllocationData {
 
     private String invoiceNo;
-    private Double amount;
+    private BigDecimal amount;
     @ApiModelProperty(hidden = true)
     private Long remitanceId;
     @ApiModelProperty(hidden = true)
-    private Double invoiceAmount;
+    private BigDecimal invoiceAmount;
     @ApiModelProperty(hidden = true)
-    private Double balance;
+    private BigDecimal balance;
     @ApiModelProperty(hidden = true)
     private String remittanceNo;
     @ApiModelProperty(hidden = true)
@@ -36,7 +37,7 @@ public class AllocationData {
         data.setAmount(allocation.getAmount());
         data.setBalance(allocation.getBalance());
         if (allocation.getInvoice() != null) {
-            data.setInvoiceAmount(allocation.getInvoice().getBill().getAmount());
+            data.setInvoiceAmount(allocation.getInvoice().getAmount());
             data.setInvoiceNo(allocation.getInvoice().getNumber());
         }
 

@@ -46,11 +46,11 @@ public class WriteOffService {
         WriteOff writeOff = WriteOffData.map(writeOffData);
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(writeOffData.getPayerId());
         Scheme scheme = schemeService.fetchSchemeById(writeOffData.getSchemeId());
-        Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(writeOffData.getInvoiceNo());
+        Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(writeOffData.getInvoiceNo());
         writeOff.setPayer(payer);
         writeOff.setScheme(scheme);
         writeOff.setInvoice(invoice);
-        invoice.setStatus(InvoiceStatus.voided);
+        invoice.setStatus(InvoiceStatus.WrittenOff);
         invoiceRepository.save(invoice);
         return writeOffRepository.save(writeOff);
     }
@@ -61,11 +61,11 @@ public class WriteOffService {
         writeOff.setComments(writeOffData.getComments());
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(writeOffData.getPayerId());
         Scheme scheme = schemeService.fetchSchemeById(writeOffData.getSchemeId());
-        Invoice invoice = invoiceService.findByInvoiceNumberOrThrow(writeOffData.getInvoiceNo());
+        Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(writeOffData.getInvoiceNo());
         writeOff.setPayer(payer);
         writeOff.setScheme(scheme);
         writeOff.setInvoice(invoice);
-        invoice.setStatus(InvoiceStatus.voided);
+        invoice.setStatus(InvoiceStatus.WrittenOff);
         invoiceRepository.save(invoice);
         return writeOffRepository.save(writeOff);
     }

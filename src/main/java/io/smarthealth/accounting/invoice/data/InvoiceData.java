@@ -1,15 +1,15 @@
 package io.smarthealth.accounting.invoice.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.infrastructure.lang.Constants;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
-import org.hibernate.annotations.NaturalId;
 
 /**
  *
@@ -19,85 +19,31 @@ import org.hibernate.annotations.NaturalId;
 public class InvoiceData {
 
     private Long id;
-
-    private String billNumber;
-    private String payer;
     private Long payerId;
-    private String payee;
-    private Long payeeId;
+    private String payer;
+    private String terms;
+    private Long schemeId;
+    private String scheme;
+    private String patientNumber;
+    private String patientName;
+    private String visitNumber;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
-    private LocalDate date;
+    private LocalDate visitDate;
+    private String memberNumber;
+    private String memberName;
+    @JsonFormat(pattern = Constants.DATE_PATTERN)
+    private LocalDate invoiceDate;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate dueDate;
-    private String terms; // 'Net 30'   
-    private String transactionNo;
-    private String reference;
-
-    @NaturalId
     private String number;  //invoice number
-    private String currency;
-    private Boolean draft; // Outstanding true or false 
-    private Boolean closed; // bad debt or not
-    private Boolean paid; // fully paid or not
-    private Double subtotal;
-    private Double discounts;
-    private Double taxes;
-    private Double total;
-    private Double balance;
-    private String notes;
-    private Boolean isVerified;
-
+    private BigDecimal amount;
+    private BigDecimal discount;
+    private BigDecimal tax;
+    private BigDecimal balance;
+    private String transactionNo;
+    @Enumerated(EnumType.STRING)
     private InvoiceStatus status;
+    private String notes;
+    private List<InvoiceItemData> invoiceItems = new ArrayList<>();
 
-    private String patientName;
-    private String patientNo;
-    private double amtAllocated;
-
-    private List<InvoiceLineItemData> items = new ArrayList<>();
-
-    public static InvoiceData map(Invoice invoice) {
-        InvoiceData data = new InvoiceData();
-        data.setId(invoice.getId());
-        data.setBillNumber(invoice.getBill() != null ? invoice.getBill().getBillNumber() : "");
-        data.setNumber(invoice.getNumber());
-        data.setCurrency(invoice.getCurrency());
-        data.setDraft(invoice.getDraft());
-        data.setClosed(invoice.getClosed());
-        data.setPaid(invoice.getPaid());
-        data.setStatus(invoice.getStatus());
-        data.setDate(invoice.getDate());
-        data.setDueDate(invoice.getDueDate());
-        data.setTerms(invoice.getTerms());
-        data.setTransactionNo(invoice.getTransactionNo());
-        data.setReference(invoice.getReference());
-        data.setIsVerified(invoice.getIsVerified());
-
-        data.setNotes(invoice.getNotes());
-        data.setSubtotal(invoice.getSubtotal());
-        data.setTotal(invoice.getTotal());
-        data.setBalance(invoice.getBalance());
-
-        if (invoice.getPayer() != null) {
-            data.setPayer(invoice.getPayer().getPayerName());
-            data.setPayerId(invoice.getPayer().getId());
-        }
-        if (invoice.getPayee() != null) {
-            data.setPayeeId(invoice.getPayee().getId());
-            data.setPayee(invoice.getPayee().getSchemeName());
-        }
-
-        if (!invoice.getItems().isEmpty()) {
-            data.setItems(
-                    invoice.getItems()
-                            .stream()
-                            .map(inv -> InvoiceLineItemData.map(inv))
-                            .collect(Collectors.toList())
-            );
-        }
-        if (invoice.getBill() != null) {
-            data.setPatientName(invoice.getBill().getPatient().getFullName());
-            data.setPatientNo(invoice.getBill().getPatient().getPatientNumber());
-        }
-        return data;
-    }
 }

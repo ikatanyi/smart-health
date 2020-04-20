@@ -48,6 +48,15 @@ public class ReceiptItem extends Identifiable {
         this.item = item;
         this.amountPaid = amountPaid;
     }
+
+    public ReceiptItem(PatientBillItem item, Double quantity, BigDecimal price, BigDecimal discount, BigDecimal taxes, BigDecimal amountPaid) {
+        this.item = item;
+        this.quantity = quantity;
+        this.price = price;
+        this.discount = discount;
+        this.taxes = taxes;
+        this.amountPaid = amountPaid;
+    }
     
     public ReceiptItemData toData(){
         ReceiptItemData data = new ReceiptItemData();

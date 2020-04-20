@@ -346,7 +346,8 @@ public class ClinicalVisitController {
     @ApiOperation(value = "Create/Add a new patient vital by visit number", response = VitalRecordData.class)
     public @ResponseBody
     ResponseEntity<VitalRecordData> addVitalRecordByVisit(@PathVariable("visitNumber") String visitNumber, @RequestBody @Valid final VitalRecordData vital) {
-        VitalsRecord vitalR = this.triageService.addVitalRecordsByVisit(visitNumber, vital);
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        VitalsRecord vitalR = this.triageService.addVitalRecordsByVisit(visit, vital);
 
         VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
 
@@ -414,18 +415,28 @@ public class ClinicalVisitController {
         Patient patient = patientService.findPatientOrThrow(patientNo);
 
         VitalsRecord vitalR = this.triageService.addVitalRecordsByPatient(patient, vital);
+        Visit activeVisit = vitalR.getVisit();
         //log queue
         PatientQueue patientQueue = new PatientQueue(); //patientQueueService.fetchQueueByVisitNumber(vitalR.getVisit());
         //patientQueue.setUrgency(TriageCategory.valueOf(vital.getUrgency()));
         patientQueue.setPatient(patient);
-        patientQueue.setVisit(vitalR.getVisit());
+        patientQueue.setVisit(activeVisit);
         if (vital.getSendTo().equals("specialist")) {
             Employee employee = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());
+            //check if visit already has a doctor
+            if (activeVisit.getHealthProvider() != null) {
+                //update bill with current doctor if there is a difference between the visit activated one and the new one
+                if (!employee.equals(activeVisit.getHealthProvider())) {
+                    //find doctor invoice with service item and visit
+                    
+                }
+            }
+
             patientQueue.setStaffNumber(employee);
             patientQueue.setServicePoint(employee.getDepartment().getServicePointType());
             patientQueue.setSpecialNotes("Sent from triage");
-            vitalR.getVisit().setServicePoint(employee.getDepartment().getServicePointType());
-            vitalR.getVisit().setHealthProvider(employee);
+            activeVisit.setServicePoint(employee.getDepartment().getServicePointType());
+            activeVisit.setHealthProvider(employee);
         } else if (vital.getSendTo().equals("Service Point")) {
             ServicePoint servicePoint = servicePointService.getServicePoint(vital.getServicePointIdentifier());
             if (servicePoint.getServicePointType().equals(ServicePointType.Triage)) {
@@ -433,14 +444,15 @@ public class ClinicalVisitController {
             }
             patientQueue.setServicePoint(servicePoint);
             patientQueue.setSpecialNotes("Sent from triage");
-            vitalR.getVisit().setServicePoint(servicePoint);
+            activeVisit.setServicePoint(servicePoint);
         } else {
             //patientQueue.setStatus(false);
         }
-        vitalR.getVisit().setTriageCategory(TriageCategory.valueOf(vital.getUrgency()));
-        visitService.createAVisit(vitalR.getVisit());
+        activeVisit.setTriageCategory(TriageCategory.valueOf(vital.getUrgency()));
+        //update visit details
+        visitService.createAVisit(activeVisit);
         patientQueueService.createPatientQueue(patientQueue);
-        VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
+        VitalRecordData vr = modelMapper.map(activeVisit, VitalRecordData.class);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/patient/{patientNo}/vitals/{id}")

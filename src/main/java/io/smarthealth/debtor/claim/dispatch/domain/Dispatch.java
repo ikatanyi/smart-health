@@ -26,16 +26,17 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "invoice_dispatch")
+@Table(name = "patient_invoice_dispatch")
 public class Dispatch extends Auditable {
 
     private String dispatchNo;
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name="fk_dispatch_id_payer_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_dispatch_id_payer_id"))
     private Payer payer;
+    
     private LocalDate dispatchDate;
     private String comments;
+    
     @OneToMany
-    @JoinColumn(foreignKey = @ForeignKey(name="fk_dispatch_id_dispatched_invoice_id"))
     private List<Invoice>dispatchedInvoice;    
 }
