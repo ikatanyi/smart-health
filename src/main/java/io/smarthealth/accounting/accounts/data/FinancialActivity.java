@@ -17,9 +17,10 @@ public enum FinancialActivity {
     Doctors_Fee("Doctor Fee", AccountType.LIABILITY),
     Tax_Payable("Tax Payable", AccountType.LIABILITY),
     Cost_Of_Sales("Cost of Sales", AccountType.EXPENSE),
-     Bank_Charge("Bank Charges", AccountType.EXPENSE),
+    Bank_Charge("Bank Charges", AccountType.EXPENSE),
     Discount_Received("Discount Received", AccountType.REVENUE),
-    Discount_Allowed("Discount Allowed", AccountType.EXPENSE);
+    Discount_Allowed("Discount Allowed", AccountType.EXPENSE),
+    Copayment("Copayment", AccountType.REVENUE);
 
     private final String activityName;
     private final AccountType accountType;
