@@ -63,7 +63,7 @@ public class PatientRadiologyController {
     @GetMapping("/patient-scan/test/{scanAccessionNo}")
     public @ResponseBody
     ResponseEntity<?> fetchPatientTestsByAccessionNo(@PathVariable("scanAccessionNo") final String scanAccessionNo) {
-        PatientScanRegister scanReg = radiologyService.findPatientRadiologyTestByIdWithNotFoundDetection(scanAccessionNo);
+        PatientScanRegister scanReg = radiologyService.findPatientRadiologyTestByAccessNoWithNotFoundDetection(scanAccessionNo);
         List<PatientScanTestData> patientLabTests = scanReg.getPatientScanTest()
                 .stream()
                 .map((scanTest)->(scanTest.toData()))

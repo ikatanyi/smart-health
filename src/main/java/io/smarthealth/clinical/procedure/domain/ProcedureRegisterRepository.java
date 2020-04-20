@@ -18,7 +18,7 @@ import org.springframework.data.repository.query.Param;
  *
  * @author Kennedy.Imbenzi
  */
-public interface PatientProcedureTestRepository extends JpaRepository<PatientProcedureRegister, Long>, JpaSpecificationExecutor<PatientProcedureRegister> {
+public interface ProcedureRegisterRepository extends JpaRepository<PatientProcedureRegister, Long>, JpaSpecificationExecutor<PatientProcedureRegister> {
 
     @Query("SELECT d FROM PatientScanRegister d WHERE d.visit=:visit")
     List<PatientProcedureRegister> findByVisit(@Param("visit") final Visit visit);

@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="3.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<field name="ReceiptNumber" class="java.lang.String"/>
+	<field name="receiptNumber" class="java.lang.String"/>
 	<field name="itemName" class="java.lang.String"/>
 	<field name="itemCode" class="java.lang.String"/>
 	<field name="quantity" class="java.lang.String"/>

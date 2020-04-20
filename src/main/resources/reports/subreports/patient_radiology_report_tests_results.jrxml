@@ -3,10 +3,10 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<field name="scanName" class="java.lang.String"/>
-	<field name="results" class="java.lang.String"/>
+	<field name="testName" class="java.lang.String"/>
+	<field name="templateNotes" class="java.lang.String"/>
 	<field name="comments" class="java.lang.String"/>
-	<field name="state" class="java.lang.Object"/>
+	<field name="status" class="java.lang.Object"/>
 	<detail>
 		<band height="87" splitType="Stretch">
 			<textField>
@@ -14,7 +14,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{scanName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{testName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="2" y="61" width="539" height="11" uuid="cd9db49d-c9dc-4960-a0a5-7e5d0236328b"/>
@@ -31,10 +31,10 @@
 			</line>
 			<textField>
 				<reportElement x="2" y="30" width="539" height="12" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
-				<textElement verticalAlignment="Middle">
+				<textElement verticalAlignment="Middle" markup="html">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{results}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{templateNotes}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="2" y="12" width="146" height="1" uuid="0198b9e1-ee13-46b3-bd8e-7c46ed849157"/>

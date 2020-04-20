@@ -17,12 +17,11 @@ import io.smarthealth.clinical.procedure.data.ProcedureItemData;
 import io.smarthealth.clinical.procedure.data.ProcedureData;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureRegister;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureTest;
-import io.smarthealth.clinical.procedure.domain.PatientProcedureTestRepository;
 import io.smarthealth.clinical.procedure.domain.ProcedureRepository;
 import io.smarthealth.clinical.procedure.domain.Procedure;
 import io.smarthealth.clinical.procedure.domain.ProcedureTestRepository;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
-import io.smarthealth.clinical.procedure.domain.specification.PatientProcedureTestSpecification;
+import io.smarthealth.clinical.procedure.domain.specification.ProcedureRegisterSpecification;
 import io.smarthealth.clinical.procedure.domain.specification.ProcedureSpecification;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
@@ -48,6 +47,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import io.smarthealth.clinical.procedure.domain.ProcedureRegisterRepository;
+import io.smarthealth.clinical.procedure.domain.RegisterTestRepository;
+import io.smarthealth.clinical.procedure.domain.specification.RegisterTestSpecification;
 
 /**
  *
@@ -59,7 +61,8 @@ public class ProcedureService {
 
     private final ProcedureRepository procedureRepository;
 
-    private final PatientProcedureTestRepository patientprocedureRepository;
+    private final ProcedureRegisterRepository patientprocedureRepository;
+    private final RegisterTestRepository registerTestRepository;
 
     private final DoctorsRequestRepository doctorRequestRepository;
 
@@ -163,6 +166,7 @@ public class ProcedureService {
                 if (id.getRequestItemId() != null) {
                     Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
                     if (request.isPresent()) {
+                        pte.setRequest(request.get());
                         request.get().setFulfillerStatus(FullFillerStatusType.Fulfilled);
                     }
                 }
@@ -219,8 +223,8 @@ public class ProcedureService {
                     if (lineData.getMedic() != null) {
                         billItem.setMedicId(lineData.getMedic().getId());
                     }
-                    if (!lineData.getPatientProcedureRegister().getIsWalkin()) {
-                        billItem.setRequestReference(lineData.getPatientProcedureRegister().getRequest().getId());
+                    if (!lineData.getPatientProcedureRegister().getIsWalkin() && lineData.getRequest()!=null) {
+                        billItem.setRequestReference(lineData.getRequest().getId());
                     }
                     billItem.setItem(item);
                     billItem.setPrice(lineData.getTestPrice());
@@ -243,12 +247,13 @@ public class ProcedureService {
     }
 
     public PatientProcedureTest findResultsByIdWithNotFoundDetection(Long id) {
-        return procTestRepository.findById(id).orElseThrow(() -> APIException.notFound("Results identified by id {0} not found ", id));
+        return registerTestRepository.findById(id).orElseThrow(() -> APIException.notFound("Procedure identified by id {0} not found ", id));
     }
 
     public PatientProcedureRegister findProceduresByIdWithNotFoundDetection(String accessNo) {
-        return patientprocedureRepository.findByAccessNo(accessNo).orElseThrow(() -> APIException.notFound("Patient Procedure identified by procedureN Number {0} not found ", accessNo));
+        return patientprocedureRepository.findByAccessNo(accessNo).orElseThrow(() -> APIException.notFound("Patient Procedure identified by procedure Number {0} not found ", accessNo));
     }
+    
 
     public List<PatientProcedureRegister> findPatientProcedureRegisterByVisit(String VisitNumber) {
         Visit visit = visitService.findVisitEntityOrThrow(VisitNumber);
@@ -256,8 +261,8 @@ public class ProcedureService {
     }
     
      public Page<PatientProcedureTest> findPatientProcedureTests(String PatientNumber,String scanNo, String visitId, ProcedureTestState status, DateRange range, Pageable pgbl) {
-        Specification spec = PatientProcedureTestSpecification.createSpecification(PatientNumber, scanNo, visitId, status, range);
-        return patientprocedureRepository.findAll(spec, pgbl);
+        Specification spec = RegisterTestSpecification.createSpecification(PatientNumber, scanNo, visitId, status, range);
+        return registerTestRepository.findAll(spec, pgbl);
     }
 
     @Transactional

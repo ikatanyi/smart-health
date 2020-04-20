@@ -22,12 +22,18 @@ import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.service.SupplierService;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRSortField;
+import net.sf.jasperreports.engine.design.JRDesignSortField;
+import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
+import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -86,6 +92,8 @@ public class SupplierReportService {
                 .stream()
                 .map((supplier) -> supplier.toData())
                 .collect(Collectors.toList());
+         
+         
         reportData.setData(patientData);
         reportData.setFormat(format);
         reportData.setTemplate("/supplier/supplierList");
@@ -116,6 +124,14 @@ public class SupplierReportService {
                 .stream()
                 .map((invoice) -> invoice.toData())
                 .collect(Collectors.toList());
+        
+         List<JRSortField> sortList = new ArrayList();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("doctorName");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList); 
         reportData.setData(doctorInvoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/supplier/DoctorInvoiceStatement");
@@ -155,6 +171,18 @@ public class SupplierReportService {
                 .stream()
                 .map((invoice) -> invoice.toData())
                 .collect(Collectors.toList());
+        
+        List<JRSortField> sortList = new ArrayList();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("supplier");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        sortField.setName("invoiceDate");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setData(purchaseInvoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/supplier/SupplierInvoiceStatement");

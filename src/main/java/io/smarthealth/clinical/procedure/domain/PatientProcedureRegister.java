@@ -48,8 +48,8 @@ public class PatientProcedureRegister extends Auditable {
     @Column(nullable = false, unique = true)
     private String accessNo;
 
-    @OneToOne
-    private DoctorRequest request;
+//    @OneToOne
+//    private DoctorRequest request;
 
     private String patientName;
     private String patientNo;
@@ -100,13 +100,13 @@ public class PatientProcedureRegister extends Auditable {
             data.setPatientName(this.patientNo);
             data.setPatientNumber(this.patientNo);
         }
-        if (this.getRequest() != null) {
-            data.setRequestId(this.getRequest().getId());
-            if (this.getRequest().getRequestedBy() != null) {
-                data.setRequestedBy(this.getRequest().getRequestedBy().getUsername());
-                data.setPhysicianName(this.getRequest().getCreatedBy());
-            }
-        }
+//        if (this.getRequest() != null) {
+//            data.setRequestId(this.getRequest().getId());
+//            if (this.getRequest().getRequestedBy() != null) {
+//                data.setRequestedBy(this.getRequest().getRequestedBy().getUsername());
+//                data.setPhysicianName(this.getRequest().getCreatedBy());
+//            }
+//        }
         data.setAccessionNo(this.getAccessNo());
         if (this.getPatientProcedureTest() != null) {
             data.setPatientProcecedureTestData(
@@ -116,10 +116,10 @@ public class PatientProcedureRegister extends Auditable {
                             .collect(Collectors.toList())
             );
         }
-        if (this.getRequest() != null) {
-            data.setRequestId(this.getRequest().getId());
-            data.setRequestData(DoctorRequestData.map(this.getRequest()));
-        }
+//        if (this.getRequest() != null) {
+//            data.setRequestId(this.getRequest().getId());
+//            data.setRequestData(DoctorRequestData.map(this.getRequest()));
+//        }
         data.setOrderedDate(DateConverter.toLocalDate(LocalDateTime.ofInstant(this.getCreatedOn(), ZoneOffset.systemDefault())));
 
         return data;
