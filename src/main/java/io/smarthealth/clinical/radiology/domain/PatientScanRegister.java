@@ -112,6 +112,9 @@ public class PatientScanRegister extends Identifiable {
         data.setIsWalkin(this.getIsWalkin());
         data.setTransactionId(this.getTransactionId());
         data.setVoided(this.getVoided());
+        data.setGender(this.getGender());
+        data.setOrderedDate(this.getReceivedDate());
+        data.setBillingDate(this.getBillingDate());
 //        data.setOrderedDate(this.);
         if(this.getPatientScanTest()!=null){
            data.setPatientScanTestData(
@@ -121,6 +124,10 @@ public class PatientScanRegister extends Identifiable {
                    .collect(Collectors.toList())
            );
            
+        }
+        if(this.getRequestedBy()!=null){
+            data.setRequestedBy(this.getRequestedBy().getFullName());
+            data.setRequestedById(this.getRequestedBy().getStaffNumber());
         }
         if(this.getVisit()!=null && !this.isWalkin){
             data.setPatientName(this.getVisit().getPatient().getFullName());

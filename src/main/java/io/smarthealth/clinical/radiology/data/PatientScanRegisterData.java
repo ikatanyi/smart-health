@@ -44,7 +44,7 @@ public class PatientScanRegisterData {
     @ApiModelProperty(required = false)
     private String requestedBy;
     @ApiModelProperty(hidden = true, required = false)
-    private String physicianName;
+    private String requestedById;    
     @ApiModelProperty(hidden = true, required = false)
     private LocalDate createdOn;
     private LocalDate billingDate;

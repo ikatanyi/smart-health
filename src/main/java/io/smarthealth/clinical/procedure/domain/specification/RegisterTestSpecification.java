@@ -12,21 +12,21 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Kelsas
  */
-public class PatientProcedureTestSpecification {
+public class RegisterTestSpecification {
 
-    public PatientProcedureTestSpecification() {
+    public RegisterTestSpecification() {
         super();
     }
 
-    public static Specification<PatientProcedureTest> createSpecification(String PatientNumber,String scanNo, String visitId, ProcedureTestState status, DateRange range) {
+    public static Specification<PatientProcedureRegister> createSpecification(String PatientNumber,String scanNo, String visitId, ProcedureTestState status, DateRange range) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
  
             if (PatientNumber != null) {
-                predicates.add(cb.equal(root.get("patientProcedureRegister").get("patient").get("patientNumber"), PatientNumber));
+                predicates.add(cb.equal(root.get("patientProcedureRegister").get("patientNo"), PatientNumber));
             }
             if (scanNo != null) {
-                predicates.add(cb.equal(root.get("accessNo"), scanNo));
+                predicates.add(cb.equal(root.get("patientProcedureRegister").get("accessNo"), scanNo));
             }
             if (visitId != null) {
                 predicates.add(cb.greaterThan(root.get("patientProcedureRegister").get("visit").get("visitId"), visitId));

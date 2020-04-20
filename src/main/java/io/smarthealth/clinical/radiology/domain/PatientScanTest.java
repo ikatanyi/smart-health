@@ -14,6 +14,7 @@ import io.smarthealth.organization.facility.domain.Employee;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -78,20 +79,17 @@ public class PatientScanTest extends Identifiable {
         
         entity.setEntryDateTime(this.getEntryDateTime());
         entity.setStatus(this.getStatus());
-//        entity.setVoidDatetime(this.getVoidDatetime());
-//        entity.setVoided(this.getVoided());
-//        entity.setVoidedBy(this.getVoidedBy());
-        entity.setStatus(this.getStatus());
         
         if(this.getRadiologyTest()!=null){
            entity.setScanName(this.getRadiologyTest().getScanName());
            entity.setTestCode(this.getRadiologyTest().getItem().getItemCode());
         }
-        if(this.getDoneBy()!=null){
-            entity.setDoneBy(this.getDoneBy().getFullName());
+        if(this.getMedic()!=null){
+            entity.setDoneBy(this.getMedic().getFullName());
         }
         if(this.getRadiologyResult()!=null){
             entity.setResultData(this.getRadiologyResult().toData());
+            entity.setReportResultData(Arrays.asList(this.getRadiologyResult().toData()));
         }
         
         entity.setPatientNumber(this.getPatientScanRegister().getPatientNo());

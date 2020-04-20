@@ -3,7 +3,9 @@ package io.smarthealth.clinical.radiology.data;
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -27,7 +29,7 @@ public class PatientScanTestData {
     private Boolean done;
     private Boolean paid=Boolean.FALSE;
     private String doneBy;
-    private LocalDateTime entryDateTime;
+    private LocalDateTime entryDateTime=LocalDateTime.now();
     private Boolean voided;
     private String voidedBy;
     private LocalDateTime voidDatetime;
@@ -49,6 +51,9 @@ public class PatientScanTestData {
     private String templateName;
     @ApiModelProperty(required=false, hidden=true)
     private Boolean supervisorConfirmation;
+    
+    @ApiModelProperty(required=false, hidden=true)
+    private List<RadiologyResultData> reportResultData;
     
     public PatientScanTest map(){
         PatientScanTest entity = new PatientScanTest();

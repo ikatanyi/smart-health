@@ -269,7 +269,7 @@ public class RadiologyService {
         return pscanRepository.findAll(spec, pgbl);
     }
 
-    public PatientScanRegister findPatientRadiologyTestByIdWithNotFoundDetection(String accessNo) {
+    public PatientScanRegister findPatientRadiologyTestByAccessNoWithNotFoundDetection(String accessNo) {
         return patientradiologyRepository.findByAccessNo(accessNo).orElseThrow(() -> APIException.notFound("Patient Scan identified by scanN Number {0} not found ", accessNo));
     }
 

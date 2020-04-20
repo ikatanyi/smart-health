@@ -181,11 +181,17 @@ public class AccountReportService {
         }
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
-//        sortField.setName("patientId");
+        sortField.setName("paymentMode");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-//        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        
+        sortField.setName("patientId");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
 
         reportData.setData(billData);
         reportData.setFormat(format);
@@ -255,6 +261,10 @@ public class AccountReportService {
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("date");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        sortField.setName("payer");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);

@@ -23,6 +23,7 @@ import io.smarthealth.report.data.ReportData;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -85,13 +86,9 @@ public class RadiologyReportService {
     
     public void getPatientRadiolgyReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        String visitNumber = reportParam.getFirst("visitNumber");
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        List<PatientScanRegisterData> procTests = scanService.findPatientScanRegisterByVisit(visit)
-                .stream()
-                .map((test) -> test.todata())
-                .collect(Collectors.toList());
-
+        String accessNumber = reportParam.getFirst("accessNumber");
+       PatientScanRegisterData procTests = scanService.findPatientRadiologyTestByAccessNoWithNotFoundDetection(accessNumber).todata();
+             
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("visitNumber");
@@ -99,14 +96,12 @@ public class RadiologyReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
-        reportData.setData(procTests);
-        if (visit.getHealthProvider() != null) {
-            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
-        }
+        reportData.setPatientNumber(procTests.getPatientNumber());
+        reportData.setData(Arrays.asList(procTests));
+        reportData.setEmployeeId(procTests.getRequestedById());
         reportData.setFormat(format);
-        reportData.setTemplate("/clinical/procedure/patient_procedure_report");
-        reportData.setReportName("procedure-report");
+        reportData.setTemplate("/clinical/radiology/patient_radiology_report");
+        reportData.setReportName("Patient-scan-report");
         reportService.generateReport(reportData, response);
     }
     
