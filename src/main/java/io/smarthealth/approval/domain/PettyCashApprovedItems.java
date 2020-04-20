@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.accounting.pettycash.domain;
+package io.smarthealth.approval.domain;
 
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
+import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -23,15 +24,15 @@ import lombok.Data;
  */
 @Data
 @Entity
-public class PettyCashApprovals extends Identifiable {
+public class PettyCashApprovedItems extends Identifiable {
 
     @ManyToOne(optional = false)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_approvals_employee"))
-    private Employee approvedBy;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_approvals_item_no"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_approvals_items_item_no"))
     private PettyCashRequestItems itemNo;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_approvals_items_approval"))
+    private PettyCashApprovals approval;
 
     @Enumerated(EnumType.STRING)
     private PettyCashStatus approvalStatus;

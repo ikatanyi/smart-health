@@ -5,14 +5,12 @@
  */
 package io.smarthealth.accounting.pettycash.domain.repository;
 
-import io.smarthealth.accounting.pettycash.domain.PettyCashApprovals;
-import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
-import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.approval.domain.PettyCashApprovals;
+import io.smarthealth.security.domain.User;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 /**
  *
@@ -20,11 +18,7 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface PettyCashApprovalsRepository extends JpaRepository<PettyCashApprovals, Long> {
 
-    Optional<PettyCashApprovals> findByApprovedByAndItemNo(final Employee employee, final PettyCashRequestItems itemNo);
+    List<PettyCashApprovals> findByRequestNo(final PettyCashRequests requestNo);
 
-    List<PettyCashApprovals> findByItemNo(final PettyCashRequestItems itemNo);
-
-    @Query("SELECT a FROM PettyCashApprovals a WHERE a.itemNo.requestNo=:requestNo")
-    List<PettyCashApprovals> fetchPettyCashApprovalsByRequestNo(final PettyCashRequests request);
-
+    Optional<PettyCashApprovals> findByApprovedByAndRequestNo(final User approvedBy, final PettyCashRequests request);
 }

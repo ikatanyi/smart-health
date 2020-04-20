@@ -5,10 +5,12 @@
  */
 package io.smarthealth.accounting.pettycash.service;
 
+import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
 import io.smarthealth.accounting.pettycash.domain.repository.PettyCashItemsRepository;
 import io.smarthealth.accounting.pettycash.domain.repository.PettyCashRequestsRepository;
+import io.smarthealth.accounting.pettycash.domain.specification.PettyCashRequestSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.DateFormatUtil;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -17,6 +19,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +47,11 @@ public class PettyCashRequestsService {
 
     public Optional<PettyCashRequestItems> findRequestedItemById(Long id) {
         return pettyCashItemsRepository.findById(id);
+    }
+
+    public Page<PettyCashRequests> findPettyCashRequests(final String requestNo, final Employee employee, final PettyCashStatus status, final Pageable pageable) {
+        Specification<PettyCashRequests> s = PettyCashRequestSpecification.createSpecification(requestNo, employee, status);
+        return cashRequestsRepository.findAll(s, pageable);
     }
 
     public Page<PettyCashRequests> findPettyCashRequestsByEmployeeWhoRequested(final Employee employee, final Pageable pageable) {

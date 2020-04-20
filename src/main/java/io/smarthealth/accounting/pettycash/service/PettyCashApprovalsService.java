@@ -5,16 +5,20 @@
  */
 package io.smarthealth.accounting.pettycash.service;
 
-import io.smarthealth.accounting.pettycash.domain.PettyCashApprovals;
+import io.smarthealth.approval.domain.PettyCashApprovedItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
 import io.smarthealth.accounting.pettycash.domain.repository.PettyCashApprovalsRepository;
+import io.smarthealth.approval.domain.PettyCashApprovals;
 import io.smarthealth.organization.facility.domain.Employee;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import io.smarthealth.accounting.pettycash.domain.repository.PettyCashApprovedItemsRepository;
+import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.security.domain.User;
 
 /**
  *
@@ -24,27 +28,35 @@ import org.springframework.transaction.annotation.Transactional;
 public class PettyCashApprovalsService {
 
     @Autowired
+    PettyCashApprovedItemsRepository pettyCashApprovedItemsRepository;
+
+    @Autowired
     PettyCashApprovalsRepository pettyCashApprovalsRepository;
 
     @Transactional
-    public List<PettyCashApprovals> createNewApproval(List<PettyCashApprovals> app) {
-        return pettyCashApprovalsRepository.saveAll(app);
+    public List<PettyCashApprovedItems> createItemApproval(List<PettyCashApprovedItems> app) {
+        return pettyCashApprovedItemsRepository.saveAll(app);
     }
 
-    public List<PettyCashApprovals> createPettyCashApprovals(List<PettyCashApprovals> a) {
-        return pettyCashApprovalsRepository.saveAll(a);
+    @Transactional
+    public PettyCashApprovals saveCashApproval(final PettyCashApprovals pca) {
+        return pettyCashApprovalsRepository.save(pca);
     }
 
-    public List<PettyCashApprovals> fetchPettyCashApprovalsByItemNo(final PettyCashRequestItems p) {
-        return pettyCashApprovalsRepository.findByItemNo(p);
+    public List<PettyCashApprovedItems> createPettyCashApprovals(List<PettyCashApprovedItems> a) {
+        return pettyCashApprovedItemsRepository.saveAll(a);
+    }
+
+    public List<PettyCashApprovedItems> fetchPettyCashApprovalsByItemNo(final PettyCashRequestItems p) {
+        return pettyCashApprovedItemsRepository.findByItemNo(p);
     }
 
     public List<PettyCashApprovals> fetchPettyCashApprovalsByRequisitionNo(final PettyCashRequests request) {
-        return pettyCashApprovalsRepository.fetchPettyCashApprovalsByRequestNo(request);
+        return pettyCashApprovalsRepository.findByRequestNo(request);
     }
 
-    public Optional<PettyCashApprovals> fetchApproverByEmployeeAndRequestNo(final Employee employee, final PettyCashRequestItems request) {
-        return pettyCashApprovalsRepository.findByApprovedByAndItemNo(employee, request);
+    public Optional<PettyCashApprovals> findByApprovedByAndRequestNo(final User user, final PettyCashRequests request) {
+        return pettyCashApprovalsRepository.findByApprovedByAndRequestNo(user, request);
     }
 
 }
