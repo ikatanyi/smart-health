@@ -1,13 +1,18 @@
 package io.smarthealth.accounting.invoice.domain;
 
-import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.payment.domain.Copayment;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNote;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.organization.person.patient.domain.Patient;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,12 +23,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
  *
@@ -33,13 +35,9 @@ import lombok.ToString;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "invoices", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"number"}, name = "uk_invoice_number")})
+@Table(name = "patient_invoice")
+//        , uniqueConstraints = {@UniqueConstraint(columnNames = {"number"}, name = "uk_invoice_number")}) //we add constraint later
 public class Invoice extends Auditable {
-
-    @OneToMany(mappedBy = "invoice")
-    private List<CreditNote> creditNotes = new ArrayList<>();
-    ;
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_payer_id"))
@@ -47,68 +45,88 @@ public class Invoice extends Auditable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_scheme_id"))
-    private Scheme payee;
+    private Scheme scheme;
 
-    @ToString.Exclude
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_bill_id"))
-    private PatientBill bill;
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_patient_id"))
+    private Patient patient;
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_invoices_visit_id"))
+    private Visit visit;
+
+    private String memberNumber;
+    private String memberName;
+    private String terms;
 
     @Column(name = "invoice_date")
     private LocalDate date;
-
     private LocalDate dueDate;
-
-    private String terms; // 'Net 30'
-
-    private String transactionNo;
-
-    private String reference;
-//    @NaturalId
     private String number;  //invoice number
-    private String currency;
-    private Boolean draft; // Outstanding true or false 
-    private Boolean closed; // bad debt or not
-    private Boolean paid; // fully paid or not
-    private Boolean isVerified; // fully paid or not
-    private Double subtotal;
-    private Double disounts;
-    private Double taxes;
-    private Double total;
-    private Double balance;
-    private String notes; // additional notes displayed on invoice
-
+    private BigDecimal amount;
+    private BigDecimal discount;
+    private BigDecimal tax;
+    private BigDecimal balance;
+    private String transactionNo;
+    private Boolean paid;
     @Enumerated(EnumType.STRING)
-    private InvoiceStatus status; //tracking status for the invoice
+    private InvoiceStatus status;
+    private String notes;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
-    private List<InvoiceLineItem> items = new ArrayList<>();
+    private List<InvoiceItem> items = new ArrayList<>();
 
-    @Transient
-    protected boolean invoiceNumberRequiresAutoGeneration = false;
+    @OneToMany(mappedBy = "invoice")
+    private List<Copayment> copays = new ArrayList<>();
+    
+     @OneToMany(mappedBy = "invoice")
+    private List<CreditNote> creditNotes = new ArrayList<>();
 
-//    @ManyToOne
-//    private Address shipTo; // include the supplier address here
-    // Inoivce
-    public void addItem(InvoiceLineItem item) {
+    public void addItem(InvoiceItem item) {
         item.setInvoice(this);
         items.add(item);
     }
 
-    public void addItems(List<InvoiceLineItem> items) {
+    public void addItems(List<InvoiceItem> items) {
         this.items = items;
         this.items.forEach(x -> x.setInvoice(this));
     }
 
-    public void addCreditNoteItem(CreditNote item) {
-        item.setInvoice(this);
-        creditNotes.add(item);
-    }
+    public InvoiceData toData() {
+        InvoiceData data = new InvoiceData();
+        data.setId(this.getId());
+        if (this.payer != null) {
+            data.setPayerId(this.payer.getId());
+            data.setPayer(this.payer.getPayerName());
+            data.setTerms(this.payer.getPaymentTerms() != null ? this.payer.getPaymentTerms().getTermsName() : "");
+        }
 
-    public void addCreditNoteItems(List<CreditNote> items) {
-        this.creditNotes = items;
-        this.creditNotes.forEach(x -> x.setInvoice(this));
+        if (this.scheme != null) {
+            data.setScheme(this.scheme.getSchemeName());
+            data.setSchemeId(this.scheme.getId());
+        }
+        if (this.patient != null) {
+            data.setPatientNumber(this.patient.getPatientNumber());
+            data.setPatientName(this.patient.getFullName());
+        }
+        if (this.visit != null) {
+            data.setVisitNumber(this.visit.getVisitNumber());
+            data.setVisitDate(this.visit.getStartDatetime().toLocalDate());
+        }
+        data.setMemberName(this.memberName);
+        data.setMemberNumber(this.memberNumber);
+        data.setInvoiceDate(this.date);
+        data.setDueDate(this.dueDate);
+        data.setNumber(this.number);
+        data.setAmount(this.amount);
+        data.setDiscount(this.discount);
+        data.setTax(this.tax);
+        data.setBalance(this.balance);
+        data.setTransactionNo(this.transactionNo);
+        data.setInvoiceItems(this.items.stream()
+                .map(x -> x.toData())
+                .collect(Collectors.toList())
+        );
+        return data;
     }
-
 }

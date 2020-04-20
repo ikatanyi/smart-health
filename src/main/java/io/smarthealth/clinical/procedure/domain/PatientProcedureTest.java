@@ -13,6 +13,7 @@ package io.smarthealth.clinical.procedure.domain;
 
 import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
+import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.stock.item.domain.Item;
@@ -37,8 +38,12 @@ public class PatientProcedureTest extends Identifiable{
     @ManyToOne
     @JoinColumn(foreignKey=@ForeignKey(name="fk_patient_procedure_tests_id_item_id"))
     private Item procedureTest;
-    private double testPrice;
-    private double quantity;
+    
+    @ManyToOne
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_patient_procedure_tests_id_request_id"))
+    private DoctorRequest request;
+    private Double testPrice;
+    private Double quantity;
     private Boolean paid;
     @Enumerated(EnumType.STRING)
     private ProcedureTestState status;
@@ -69,6 +74,10 @@ public class PatientProcedureTest extends Identifiable{
         if(this.getPatientProcedureRegister()!=null){
             entity.setPatientName(this.getPatientProcedureRegister().getPatientName());
             entity.setPatientNo(this.getPatientProcedureRegister().getPatientNo());
+        }
+        if(this.getRequest()!=null){
+            entity.setRequestedBy(this.getRequest().getRequestedBy().getName());
+            entity.setRequestId(this.getRequest().getRequestedBy().getId());
         }
         return entity;
     }

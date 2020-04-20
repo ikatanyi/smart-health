@@ -51,7 +51,7 @@ public class Receipt extends Auditable {
     @OneToMany(mappedBy = "receipt")
     private List<ReceiptTransaction> transactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receipt", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)
     private List<ReceiptItem> receiptItems = new ArrayList<>();
 
     public void addTransaction(ReceiptTransaction transaction) {

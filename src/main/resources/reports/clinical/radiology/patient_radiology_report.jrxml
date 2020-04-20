@@ -29,9 +29,6 @@
 	<field name="patientNumber" class="java.lang.String"/>
 	<field name="patientName" class="java.lang.String"/>
 	<field name="requestedBy" class="java.lang.String"/>
-	<field name="physicianName" class="java.lang.String"/>
-	<field name="receivedDate" class="java.lang.Object"/>
-	<field name="age" class="java.lang.Integer"/>
 	<field name="patientScanTestData" class="java.util.List"/>
 	<field name="isWalkin" class="java.lang.Boolean"/>
 	<background>
@@ -62,13 +59,6 @@
 	</title>
 	<pageHeader>
 		<band height="18" splitType="Stretch">
-			<textField pattern="dd-MM-yyyy">
-				<reportElement x="477" y="1" width="78" height="16" uuid="70e6d0b1-f36d-44f3-8fb7-d8e848c1b7ef"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
 			<line>
 				<reportElement x="1" y="17" width="553" height="1" uuid="51220d0c-28bd-4499-b2db-49b38453630b"/>
 				<graphicElement>
@@ -99,7 +89,7 @@
 				</graphicElement>
 			</line>
 			<subreport>
-				<reportElement x="279" y="0" width="277" height="34" uuid="0de24d60-b41c-4a99-b595-b454833deec3"/>
+				<reportElement x="279" y="15" width="277" height="34" uuid="0de24d60-b41c-4a99-b595-b454833deec3"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -176,12 +166,19 @@
 				</textElement>
 				<text><![CDATA[Request Date:]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="279" y="1" width="116" height="14" uuid="f2f7ab48-1357-4a31-a7fa-70b8685374e2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Requesting Physician.]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="14" splitType="Stretch">
 			<subreport>
-				<reportElement x="2" y="0" width="552" height="14" uuid="37d70e2f-325c-4ae8-bbf2-aa227506f19f"/>
+				<reportElement x="-1" y="0" width="555" height="14" uuid="37d70e2f-325c-4ae8-bbf2-aa227506f19f"/>
 				<subreportParameter name="SUBREPORT_DIR"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{patientScanTestData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_radiology_report_tests.jasper"]]></subreportExpression>

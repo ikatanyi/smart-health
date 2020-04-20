@@ -1,9 +1,8 @@
 package io.smarthealth.accounting.payment.api;
 
-import io.smarthealth.accounting.payment.data.ReceiptData;
-import io.smarthealth.accounting.payment.data.ReceivePayment;
-import io.smarthealth.accounting.payment.domain.Receipt;
-import io.smarthealth.accounting.payment.service.ReceivePaymentService;
+import io.smarthealth.accounting.payment.data.CopaymentData;
+import io.smarthealth.accounting.payment.domain.Copayment;
+import io.smarthealth.accounting.payment.service.CopaymentService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -18,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,46 +30,36 @@ import org.springframework.web.bind.annotation.RestController;
 @Api
 @RestController
 @RequestMapping("/api/")
-public class ReceiptingController {
+public class CopaymentController {
 
-    private final ReceivePaymentService service;
+    private final CopaymentService service;
 
-    public ReceiptingController(ReceivePaymentService service) {
+    public CopaymentController(CopaymentService service) {
         this.service = service;
     }
 
-    @PostMapping("/receipting")
-    public ResponseEntity<?> receivePayment(@Valid @RequestBody ReceivePayment paymentData) {
-
-        Receipt payment = service.receivePayment(paymentData);
-        Pager<ReceiptData> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Payment successfully Created.");
-        pagers.setContent(payment.toData());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    @PostMapping("/copayment")
+//    @PreAuthorize("hasAuthority('create_copayment')")
+    public ResponseEntity<?> createCopayment(@Valid @RequestBody CopaymentData data) {
+        Copayment copay = service.createCopayment(data);
+        return ResponseEntity.status(HttpStatus.CREATED).body(copay.toData());
     }
 
-    @GetMapping("/receipting/{id}")
-    public ResponseEntity<?> getPaymentReceipt(@PathVariable(value = "id") Long id) {
-        Receipt payment = service.getPaymentOrThrow(id);
-        return ResponseEntity.ok(payment.toData());
+    @GetMapping("/copayment/{id}")
+//    @PreAuthorize("hasAuthority('view_copayment')")
+    public ResponseEntity<?> getCopayment(@PathVariable(value = "id") Long id) {
+        Copayment copay = service.getCopaymentOrThrow(id);
+        return ResponseEntity.ok(copay.toData());
     }
 
-    @PutMapping("/receipting/{receiptNo}/void")
-    public ResponseEntity<?> voidPaymentReceipt(@PathVariable(value = "receiptNo") String receiptNo) {
-        service.voidPayment(receiptNo);
-        return ResponseEntity.accepted().build();
-    }
-    @GetMapping("/receipting")
+    @GetMapping("/copayment")
     @ResponseBody
-//    @PreAuthorize("hasAuthority('view_payment')")
-    public ResponseEntity<?> getPaymentReceipts(
-            @RequestParam(value = "payer", required = false) final String payer,
+//    @PreAuthorize("hasAuthority('view_copayment')")
+    public ResponseEntity<?> getCopayments(
+            @RequestParam(value = "visit_no", required = false) final String visitNumber,
+            @RequestParam(value = "patient_no", required = false) final String patientNumber,
             @RequestParam(value = "receipt_no", required = false) final String receiptNo,
-            @RequestParam(value = "transaction_no", required = false) final String transactionNo,
-            @RequestParam(value = "shift_no", required = false) final String shiftNo,
-            @RequestParam(value = "cashier_id", required = false) final Long cashier,
+            @RequestParam(value = "paid", required = false) final Boolean paid,
             @RequestParam(value = "date_range", required = false) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
@@ -79,10 +67,10 @@ public class ReceiptingController {
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<ReceiptData> list = service.getPayments(payer, receiptNo, transactionNo, shiftNo, cashier, range, pageable)
+        Page<CopaymentData> list = service.getCopayments(visitNumber, patientNumber, visitNumber, receiptNo, paid, range, pageable)
                 .map(x -> x.toData());
 
-        Pager<List<ReceiptData>> pagers = new Pager();
+        Pager<List<CopaymentData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());
@@ -91,10 +79,9 @@ public class ReceiptingController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Payments");
+        details.setReportName("Copayments");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-   
 
 }

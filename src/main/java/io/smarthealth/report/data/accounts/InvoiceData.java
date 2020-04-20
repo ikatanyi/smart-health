@@ -5,9 +5,7 @@
  */
 package io.smarthealth.report.data.accounts;
 
-import io.smarthealth.accounting.invoice.domain.InvoiceLineItem;
-import java.time.LocalDate;
-import java.util.Date;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.Data;
 
@@ -17,10 +15,10 @@ import lombok.Data;
  */
 @Data
 public class InvoiceData {
-    private Double amount;
-    private Double balance;
-    private Double discount;
-    private Double copay;
+    private BigDecimal amount;
+    private BigDecimal balance;
+    private BigDecimal discount;
+    private BigDecimal copay;
     private String patientId;
     private String patientName;
     private String payer;

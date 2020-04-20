@@ -17,6 +17,6 @@ public class ProcedureItemData {
     private Long requestItemId;
     private String medicId;
     private String itemCode;
-    private double itemPrice;
-    private int quantity;
+    private Double itemPrice;
+    private Double quantity;
 }

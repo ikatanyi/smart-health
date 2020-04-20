@@ -20,7 +20,7 @@ public class Scheme extends Auditable {
         Individual
     }
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_scheme_payer_id"))
     private Payer payer;
 

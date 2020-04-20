@@ -33,6 +33,7 @@ public class PatientProcedureTestData {
     @Enumerated(EnumType.STRING)
     private ProcedureTestState state;
     private Long requestId;
+    private String requestedBy;
     private Boolean paid;
     private double testPrice;
     private double discount;

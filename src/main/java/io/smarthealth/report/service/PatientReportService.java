@@ -193,26 +193,8 @@ public class PatientReportService {
         List<PatientVisitData> visitData = new ArrayList();
         PatientVisitData patientVisitData = new PatientVisitData();
         PatientData patient = patientService.convertToPatientData(patientService.findPatientOrThrow(PatientId));
-        if (!patient.getAddress().isEmpty()) {
-            patientVisitData.setAddressCountry(patient.getAddress().get(0).getCountry());
-            patientVisitData.setAddressCounty(patient.getAddress().get(0).getCounty());
-            patientVisitData.setAddressLine1(patient.getAddress().get(0).getLine1());
-            patientVisitData.setAddressLine2(patient.getAddress().get(0).getLine2());
-            patientVisitData.setAddressPostalCode(patient.getAddress().get(0).getPostalCode());
-            patientVisitData.setAddressTown(patient.getAddress().get(0).getTown());
-        }
-        if (!patient.getContact().isEmpty()) {
-            patientVisitData.setContactEmail(patient.getContact().get(0).getEmail());
-            patientVisitData.setContactMobile(patient.getContact().get(0).getMobile());
-            patientVisitData.setContactTelephone(patient.getContact().get(0).getTelephone());
-        }
-        patientVisitData.setDateOfBirth(String.valueOf(patient.getDateOfBirth()));
-        patientVisitData.setFullName(patient.getFullName());
-        patientVisitData.setGender(String.valueOf(patient.getGender()));
-        patientVisitData.setTitle(patient.getTitle());
-        patientVisitData.setPatientId(patient.getPatientNumber());
-        Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<Visit> visits = visitService.fetchVisitByPatientNumber(PatientId, pageable).getContent();
+        
+        List<Visit> visits = visitService.fetchVisitByPatientNumber(PatientId, Pageable.unpaged()).getContent();
         if (visits.isEmpty()) {
             visitData.add(patientVisitData);
         }
@@ -239,7 +221,7 @@ public class PatientReportService {
 
             }
 
-            List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(visit, pageable)
+            List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(visit, Pageable.unpaged())
                     .stream()
                     .map((diag) -> DiagnosisData.map(diag))
                     .collect(Collectors.toList());

@@ -57,27 +57,21 @@ public class ProcedureReportService {
         ProcedureTestState status=statusToEnum(reportParam.getFirst("status"));
         String dateRange=reportParam.getFirst("range");
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Pageable pgbl = PaginationUtil.createPage(1, 500);
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        List<PatientProcedureTestData> procTests = procedureService.findPatientProcedureTests(PatientNumber, scanNo, visitNumber, status, range, pgbl)
+        List<PatientProcedureTestData> procTests = procedureService.findPatientProcedureTests(PatientNumber, scanNo, visitNumber, status, range, Pageable.unpaged())
                 .stream()
                 .map((test) -> test.toData())
                 .collect(Collectors.toList());
 
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
-        sortField.setName("visitNumber");
+        sortField.setName("procedureDate");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         reportData.setData(procTests);
-        if (visit.getHealthProvider() != null) {
-            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
-        }
         reportData.setFormat(format);
-        reportData.setTemplate("/clinical/radiolgy/patient_radiology_report");
+        reportData.setTemplate("/clinical/procedure/procedure_statement");
         reportData.setReportName("procedure-report");
         reportService.generateReport(reportData, response);
     }
