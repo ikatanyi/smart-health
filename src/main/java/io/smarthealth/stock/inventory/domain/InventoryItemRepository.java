@@ -2,6 +2,8 @@ package io.smarthealth.stock.inventory.domain;
 
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,5 +23,7 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, Lo
     Page<InventoryItem> findByStore(Store store, Pageable page);
 
     Optional<InventoryItem> findByItemAndStore(Item item, Store store);
+
+    List<InventoryItem> findByStoreAndItemIn(Store store, Collection<Item> items);
 
 }

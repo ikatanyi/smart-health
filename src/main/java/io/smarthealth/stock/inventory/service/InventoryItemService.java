@@ -1,8 +1,11 @@
 package io.smarthealth.stock.inventory.service;
 
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.inventory.data.CreateInventoryItem;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
+import io.smarthealth.stock.inventory.data.ItemDTO;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.stock.inventory.domain.InventoryItemRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Propagation;
 
 /**
@@ -32,6 +36,7 @@ public class InventoryItemService {
 //    https://www.devglan.com/spring-boot/spring-boot-jms-activemq-example
     private final ItemService itemService;
     private final StoreService storeService;
+    private final ServicePointService servicePointService;
     private final InventoryItemRepository inventoryItemRepository;
 
     public void decrease(Item item, Store store, double qty) {
@@ -115,6 +120,15 @@ public class InventoryItemService {
         Item item = itemService.findItemEntityOrThrow(itemId);
         Store store = storeService.getStoreWithNoFoundDetection(storeId);
         return inventoryItemRepository.findByItemAndStore(item, store);
+    }
+
+    public List<InventoryItem> getInventoryItemList(Long storeId, List<ItemDTO> items) {
+        List<Item> itemlist = items.stream()
+                .map(x -> itemService.findItemEntityOrThrow(x.getItemId()))
+                .collect(Collectors.toList());
+
+        Store store = storeService.getStoreWithNoFoundDetection(storeId);
+        return inventoryItemRepository.findByStoreAndItemIn(store, itemlist);
     }
 
     public Page<InventoryItemData> getInventoryItemByStore(Long storeId, Pageable page) {
