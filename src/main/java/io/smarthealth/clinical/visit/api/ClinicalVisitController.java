@@ -428,7 +428,7 @@ public class ClinicalVisitController {
                 //update bill with current doctor if there is a difference between the visit activated one and the new one
                 if (!employee.equals(activeVisit.getHealthProvider())) {
                     //find doctor invoice with service item and visit
-                    
+                    //TODO: to complete this logic
                 }
             }
 
