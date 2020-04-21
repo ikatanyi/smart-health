@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.radiology.domain;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -19,4 +20,6 @@ public interface PatientScanTestRepository extends JpaRepository<PatientScanTest
      @Modifying
     @Query("UPDATE PatientScanTest d SET d.paid=true WHERE d.id=:id")
     int updateImagingPaid(@Param("id") Long id);
+    @Query("FROM PatientScanTest d WHERE d.patientScanRegister.visit.visitNumber=:visitNumber")
+    List<PatientScanTest>findByVisit(@Param("visitNumber")String visitNumber);
 }

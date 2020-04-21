@@ -45,9 +45,8 @@ public class PharmacyReportService {
     public void getPrescription(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<PrescriptionData> requestData = prescriptionService.fetchAllPrescriptionsByVisit(visit, pageable)
+        Visit visit = visitService.findVisitEntityOrThrow("O000002");
+        List<PrescriptionData> requestData = prescriptionService.fetchAllPrescriptionsByVisit(visit, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((test) -> PrescriptionData.map(test))

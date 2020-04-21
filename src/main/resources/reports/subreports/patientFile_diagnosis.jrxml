@@ -13,6 +13,23 @@
 	<background>
 		<band splitType="Stretch"/>
 	</background>
+	<pageHeader>
+		<band height="26">
+			<line>
+				<reportElement x="2" y="25" width="552" height="1" forecolor="#CC3300" uuid="9d67b5d5-e601-4e22-a28f-6cf150195e2b"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="2" y="3" width="100" height="20" forecolor="#3333FF" uuid="150fc605-194f-46b6-a3b1-cc1dbdca4190"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Diagnosis .]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
 	<columnHeader>
 		<band height="17" splitType="Stretch">
 			<staticText>

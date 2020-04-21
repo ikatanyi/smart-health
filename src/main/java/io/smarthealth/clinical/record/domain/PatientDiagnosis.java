@@ -5,7 +5,6 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 
 /**
@@ -30,6 +29,5 @@ public class PatientDiagnosis extends ClinicalRecord {
     @Type(type = "text")
     private String notes;
     
-    @Formula("YEAR(date_recorded) - YEAR(date_of_birth)")
-    private int age;
+//    private int age;
 }

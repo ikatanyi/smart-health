@@ -151,7 +151,7 @@
 		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\patient\\"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="Footer_Data" class="java.util.List"/>
 	<parameter name="Header_Data" class="java.util.List"/>
@@ -159,19 +159,6 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="title" class="java.lang.String"/>
-	<field name="dateOfBirth" class="java.lang.String"/>
-	<field name="gender" class="java.lang.String"/>
-	<field name="maritalStatus" class="java.lang.String"/>
-	<field name="addressLine1" class="java.lang.String"/>
-	<field name="addressLine2" class="java.lang.String"/>
-	<field name="addressTown" class="java.lang.String"/>
-	<field name="addressCounty" class="java.lang.String"/>
-	<field name="addressPostalCode" class="java.lang.String"/>
-	<field name="addressCountry" class="java.lang.String"/>
-	<field name="contactEmail" class="java.lang.String"/>
-	<field name="contactTelephone" class="java.lang.String"/>
-	<field name="contactMobile" class="java.lang.String"/>
 	<field name="fullName" class="java.lang.String"/>
 	<field name="visitNumber" class="java.lang.String"/>
 	<field name="chiefComplaint" class="java.lang.String"/>
@@ -183,20 +170,47 @@
 	<field name="procedures" class="java.util.List"/>
 	<field name="labTests" class="java.util.List"/>
 	<field name="diagnosis" class="java.util.List"/>
-	<field name="patientId" class="java.lang.String"/>
-	<field name="createdOn" class="java.lang.String"/>
+	<field name="createdOn" class="java.lang.Object"/>
 	<field name="practitionerName" class="java.lang.String"/>
-	<field name="PatientDrugsData" class="java.util.List"/>
+	<field name="drugsData" class="java.util.List"/>
+	<field name="age" class="java.lang.Integer"/>
 	<pageHeader>
-		<band height="55" splitType="Stretch">
+		<band height="82" splitType="Stretch">
 			<line>
-				<reportElement positionType="Float" x="1" y="54" width="570" height="1" forecolor="#CC3300" uuid="7e277ce6-dea7-4eae-833f-c62ef75773b2"/>
+				<reportElement positionType="Float" x="-1" y="81" width="570" height="1" forecolor="#CC3300" uuid="e798fa4d-52f1-4833-bbcf-472255c0e348"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="-2" y="68" width="57" height="14" forecolor="#CC0000" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Patient File]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="98" y="67" width="52" height="14" forecolor="#CC0000" backcolor="#9999FF" uuid="b0f4afea-1b92-4545-be36-354aaa2cec14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Visit Date :]]></text>
+			</staticText>
+			<textField>
+				<reportElement positionType="Float" x="152" y="68" width="107" height="14" uuid="45f4fe00-03c3-4f12-ae3b-bed97f679481"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{createdOn}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement positionType="Float" x="-1" y="53" width="570" height="1" forecolor="#CC3300" uuid="7e277ce6-dea7-4eae-833f-c62ef75773b2"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</line>
 			<subreport>
-				<reportElement x="-1" y="1" width="573" height="53" uuid="bcc512bb-37ca-4dad-bbdf-b131cc967f1c"/>
+				<reportElement x="-1" y="0" width="573" height="53" uuid="bcc512bb-37ca-4dad-bbdf-b131cc967f1c"/>
 				<subreportParameter name="PIC_DIR"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
@@ -207,18 +221,18 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="33">
+		<band height="71">
+			<subreport>
+				<reportElement positionType="Float" x="-1" y="2" width="573" height="67" uuid="723d9069-2550-4fab-889b-3030f26303b3"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
+			</subreport>
 			<line>
-				<reportElement positionType="Float" x="0" y="32" width="573" height="1" forecolor="#CC3300" uuid="5f46f972-c1e9-4a16-bea9-62717a522a18"/>
+				<reportElement positionType="Float" x="0" y="69" width="573" height="1" forecolor="#CC3300" uuid="5f46f972-c1e9-4a16-bea9-62717a522a18"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
-			<subreport>
-				<reportElement positionType="Float" x="1" y="0" width="572" height="32" uuid="723d9069-2550-4fab-889b-3030f26303b3"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
-			</subreport>
 		</band>
 	</columnHeader>
 	<detail>
@@ -229,13 +243,6 @@
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Symptoms]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="290" y="12" width="118" height="14" forecolor="#CC0000" backcolor="#9999FF" uuid="3134bc4c-c16b-449b-bbbe-cc495db20cec"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Diagnosis:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" mode="Transparent" x="2" y="47" width="152" height="14" forecolor="#CC0000" backcolor="#9999FF" uuid="5642e2ce-5f8e-4226-8776-4bb00ab5ba91"/>
@@ -279,14 +286,9 @@
 				<textFieldExpression><![CDATA[$F{historyNotes}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement positionType="Float" x="290" y="27" width="282" height="20" uuid="67471f2a-899b-48d4-af08-642768966e44"/>
+				<reportElement positionType="Float" x="290" y="11" width="282" height="97" uuid="67471f2a-899b-48d4-af08-642768966e44"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{diagnosis})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_diagnosis.jasper"]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement x="1" y="121" width="571" height="19" uuid="fb2c190b-7735-4627-900e-6077a2e91339"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labTests})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_lab_tests.jasper"]]></subreportExpression>
 			</subreport>
 			<line>
 				<reportElement positionType="Float" x="5" y="139" width="569" height="1" forecolor="#CC3300" uuid="4cce6c86-e7c4-442a-a9dd-2153e32c518b"/>
@@ -294,56 +296,44 @@
 					<pen lineWidth="0.25" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
+			<subreport>
+				<reportElement x="1" y="121" width="572" height="19" uuid="db8849ef-7fe2-4873-88a9-85637f6142c0"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labTests})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 		<band height="21">
 			<subreport>
-				<reportElement x="1" y="0" width="571" height="21" uuid="c04830be-f0cf-4eb7-b361-da150e0d2665"/>
+				<reportElement x="1" y="0" width="572" height="21" uuid="06d69107-dc01-4417-aec9-b0b009e1a27b"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{procedures})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_procedures.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_procedures_results.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="21">
 			<subreport>
-				<reportElement x="0" y="0" width="572" height="21" uuid="f3dbde4b-af9a-47c2-b2a4-190b850ae81b"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{PatientDrugsData})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_drugList.jasper"]]></subreportExpression>
+				<reportElement x="1" y="0" width="572" height="21" uuid="d692d663-2b65-496a-bdd8-e08beab882aa"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{drugsData})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_prescription.jasper"]]></subreportExpression>
 			</subreport>
+		</band>
+		<band height="28">
+			<subreport>
+				<reportElement x="0" y="0" width="572" height="26" uuid="fb7e8e83-0d42-4132-9ae1-f342721b211c"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{radiologyTests})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_radiology_report_tests.jasper"]]></subreportExpression>
+			</subreport>
+			<break>
+				<reportElement x="0" y="26" width="571" height="1" uuid="4871794c-4d2e-46d7-bd5a-09cd26419250"/>
+			</break>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="20" splitType="Stretch">
-			<textField pattern="MM/dd/yyyy">
-				<reportElement x="44" y="5" width="123" height="12" uuid="5e2705b7-f768-4a79-8fbb-003b4a4349cc"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="0" y="5" width="76" height="12" uuid="d78588ba-5d48-4a88-af90-e2b670438a59"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<text><![CDATA[Printed On :]]></text>
-			</staticText>
-			<line>
-				<reportElement x="2" y="0" width="570" height="1" forecolor="#CC3300" uuid="4e1ad707-0329-452d-988f-2fd4b37ba5bc"/>
-				<graphicElement>
-					<pen lineWidth="0.5"/>
-				</graphicElement>
-			</line>
-			<break>
-				<reportElement x="0" y="19" width="570" height="1" uuid="105e355e-9a01-44b3-8d77-14b7afb9a203"/>
-			</break>
-			<break>
-				<reportElement x="0" y="1" width="572" height="1" uuid="8316eb6d-aef1-4f87-929e-21fb9987bf3a"/>
-			</break>
-		</band>
-	</columnFooter>
 	<pageFooter>
 		<band height="28" splitType="Stretch">
 			<subreport>
-				<reportElement x="1" y="0" width="570" height="28" uuid="36683fba-4efa-4f0f-b114-81290ac93992"/>
+				<reportElement x="1" y="0" width="572" height="28" uuid="36683fba-4efa-4f0f-b114-81290ac93992"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
 			</subreport>
