@@ -5,22 +5,28 @@
  */
 package io.smarthealth.report.service;
 
+import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
+import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.service.ProcedureService;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
+import io.smarthealth.clinical.radiology.data.PatientScanTestData;
+import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.PatientTestsData;
+import io.smarthealth.clinical.record.data.PrescriptionData;
 import io.smarthealth.clinical.record.data.SickOffNoteData;
 import io.smarthealth.clinical.record.domain.PatientNotes;
 import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.DoctorRequestService;
 import io.smarthealth.clinical.record.service.PatientNotesService;
+import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.record.service.SickOffNoteService;
 import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -72,6 +78,7 @@ public class PatientReportService {
     private final PharmacyService pharmacyService;
     private final RadiologyService radiologyService;
     private final SickOffNoteService sickOffNoteService;
+    private final PrescriptionService prescriptionService;
     
     private final VisitService visitService;
     
@@ -166,8 +173,7 @@ public class PatientReportService {
         String visitNumber = reportParam.getFirst("visitNumber");
         DoctorRequestData.RequestType requestType = DoctorRequestData.RequestType.valueOf(reportParam.getFirst("requestType"));
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<DoctorRequestData> requestData = doctorRequestServcie.findAllRequestsByVisitAndRequestType(visit, requestType, pageable)
+        List<DoctorRequestData> requestData = doctorRequestServcie.findAllRequestsByVisitAndRequestType(visit, requestType, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((test) -> DoctorRequestData.map(test))
@@ -178,7 +184,6 @@ public class PatientReportService {
             reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
 
         }
-        reportData.getFilters().put("SUBREPORT_DIR", "/clinical/");
         reportData.setData(requestData);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/request_form");
@@ -192,24 +197,30 @@ public class PatientReportService {
         final String PatientId = reportParam.getFirst("patientId");
         List<PatientVisitData> visitData = new ArrayList();
         PatientVisitData patientVisitData = new PatientVisitData();
-        PatientData patient = patientService.convertToPatientData(patientService.findPatientOrThrow(PatientId));
+        PatientData patient = patientService.convertToPatientData(patientService.findPatientOrThrow("00001"));
         
-        List<Visit> visits = visitService.fetchVisitByPatientNumber(PatientId, Pageable.unpaged()).getContent();
+        List<Visit> visits = visitService.fetchVisitByPatientNumber("00001", Pageable.unpaged()).getContent();
         if (visits.isEmpty()) {
             visitData.add(patientVisitData);
         }
         for (Visit visit : visits) {
             PatientVisitData pVisitData = patientVisitData;
-            List<PatientScanRegisterData> scanData = radiologyService.findPatientScanRegisterByVisit(visit)
+            pVisitData.setVisitNumber(visit.getVisitNumber());
+            List<PatientScanTestData> scanData = radiologyService.getPatientScansTestByVisit(visit.getVisitNumber())
                     .stream()
-                    .map((scan) -> scan.todata())
+                    .map((scan) -> scan.toData())
                     .collect(Collectors.toList());
-            List<PatientProcedureRegisterData> procedures = procedureService.findPatientProcedureRegisterByVisit(visit.getVisitNumber())
+
+            
+            List<PatientProcedureTestData> procedures = procedureService.findProcedureResultsByVisit(visit)
                     .stream()
                     .map((proc) -> proc.toData())
                     .collect(Collectors.toList());
 
-             List<LabResultData> labTests = labService.getLabResultDataByVisit(visit);
+             List<LabRegisterTestData> labTests = labService.getTestsResultsByVisit(visit.getVisitNumber(), "")
+                    .stream()
+                    .map((test) -> test.toData(Boolean.TRUE))
+                    .collect(Collectors.toList());
 
             Optional<PatientNotes> patientNotes = patientNotesService.fetchPatientNotesByVisit(visit);
             if (patientNotes.isPresent()) {
@@ -225,7 +236,11 @@ public class PatientReportService {
                     .stream()
                     .map((diag) -> DiagnosisData.map(diag))
                     .collect(Collectors.toList());
-            List<PatientDrugsData> pharmacyData = pharmacyService.getByVisitIdAndPatientId(visit.getVisitNumber(), PatientId);
+            
+            List<PrescriptionData> pharmacyData = prescriptionService.fetchAllPrescriptionsByVisit(visit, Pageable.unpaged()).getContent()
+                    .stream()
+                    .map((presc)->PrescriptionData.map(presc))
+                    .collect(Collectors.toList());
 
             pVisitData.setVisitNumber(visit.getVisitNumber());
             pVisitData.setCreatedOn(String.valueOf(visit.getCreatedOn()));
@@ -244,10 +259,10 @@ public class PatientReportService {
 
         List<JRSortField> sortList = new ArrayList();
         ReportData reportData = new ReportData();
-        reportData.setPatientNumber(PatientId);
+        reportData.setPatientNumber("00001");
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("visitNumber");
-        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setOrder(SortOrderEnum.DESCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
