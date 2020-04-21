@@ -5,9 +5,15 @@
  */
 package io.smarthealth.accounting.pettycash.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
-import io.smarthealth.accounting.pettycash.domain.PettyCashApprovals;
-import io.swagger.annotations.ApiModelProperty;
+import io.smarthealth.approval.domain.PettyCashApprovals;
+import io.smarthealth.approval.domain.PettyCashApprovedItems;
+import io.smarthealth.infrastructure.lang.Constants;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -19,33 +25,38 @@ import lombok.Data;
 @Data
 public class PettyCashApprovalsData {
 
-    @ApiModelProperty(hidden = true)
-    private String staffNumber;
-
-    @ApiModelProperty(hidden = true)
-    private String staffName;
-
+    private String approverName;
+    private Long approverId;
+    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
+    private LocalDateTime approvalDate;
     @Enumerated(EnumType.STRING)
     private PettyCashStatus approvalStatus;
 
     private String approvalComments;
-
-    private Long itemNo;
-
-    private double pricePerUnit;
-    private int quantity;
     private double amount;
+    List<PettyCashApprovedItemsData> approvedItems;
 
     public static PettyCashApprovalsData map(PettyCashApprovals entity) {
         PettyCashApprovalsData data = new PettyCashApprovalsData();
         data.setApprovalComments(entity.getApprovalComments());
         data.setApprovalStatus(entity.getApprovalStatus());
-        data.setStaffName(entity.getApprovedBy().getFullName());
-        data.setStaffNumber(entity.getApprovedBy().getStaffNumber());
+        data.setApproverId(entity.getApprovedBy().getId());
+        data.setApproverName(entity.getApprovedBy().getName());
+        LocalDateTime ldt = LocalDateTime.ofInstant(entity.getCreatedOn(), ZoneOffset.systemDefault());
+        data.setApprovalDate(ldt);
 
-        data.setPricePerUnit(entity.getPricePerUnit());
-        data.setQuantity(entity.getQuantity());
-        data.setAmount(entity.getAmount());
+        //data.setAmount(entity.getAmount());
+        if (!entity.getApprovedItems().isEmpty()) {
+            double amount = 0;
+            List<PettyCashApprovedItemsData> itemDataList = new ArrayList<>();
+            for (PettyCashApprovedItems item : entity.getApprovedItems()) {
+                amount = amount + item.getAmount();
+                PettyCashApprovedItemsData itemData = PettyCashApprovedItemsData.map(item);
+                itemDataList.add(itemData);
+            }
+            data.setApprovedItems(itemDataList);
+            data.setAmount(amount);
+        }
         return data;
     }
 }

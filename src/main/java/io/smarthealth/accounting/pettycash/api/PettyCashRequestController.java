@@ -9,7 +9,7 @@ import io.smarthealth.accounting.pettycash.data.PettyCashApprovalsData;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestItemsData;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
-import io.smarthealth.accounting.pettycash.domain.PettyCashApprovals;
+import io.smarthealth.approval.domain.PettyCashApprovedItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
 import io.smarthealth.accounting.pettycash.service.PettyCashApprovalsService;
@@ -17,6 +17,7 @@ import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
 import io.smarthealth.approval.data.enums.ApprovalModule;
 import io.smarthealth.approval.domain.ApprovalConfig;
 import io.smarthealth.approval.domain.ModuleApprovers;
+import io.smarthealth.approval.domain.PettyCashApprovals;
 import io.smarthealth.approval.service.ApprovalConfigService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -118,31 +119,30 @@ public class PettyCashRequestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(data);
     }
 
-    @GetMapping("/petty-cash-request/{requestNo}/approvals")
-    public ResponseEntity<?> fetchPettyCashApprovalsByRequisitionNo(@PathVariable("requestNo") final String requestNo) {
-
-        PettyCashRequests request = pettyCashRequestsService.fetchCashRequestByRequestNo(requestNo);
-
-        List<PettyCashApprovals> list = approvalsService.fetchPettyCashApprovalsByRequisitionNo(request);//.map(r -> PettyCashRequestsData.map(r));
-        List<PettyCashApprovalsData> dataList = new ArrayList<>();
-        for (PettyCashApprovals a : list) {
-            dataList.add(PettyCashApprovalsData.map(a));
-        }
-        Pager<List<PettyCashApprovalsData>> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Success");
-        pagers.setContent(dataList);
-        PageDetails details = new PageDetails();
-        details.setPage(1);
-        details.setPerPage(dataList.size());
-        details.setTotalElements(Long.valueOf(dataList.size()));
-        details.setTotalPage(1);
-        details.setReportName("Petty cash request approvals");
-        pagers.setPageDetails(details);
-        return ResponseEntity.ok(pagers);
-
-    }
-
+//    @GetMapping("/petty-cash-request/{requestNo}/approvals")
+//    public ResponseEntity<?> fetchPettyCashApprovalsByRequisitionNo(@PathVariable("requestNo") final String requestNo) {
+//
+//        PettyCashRequests request = pettyCashRequestsService.fetchCashRequestByRequestNo(requestNo);
+//
+//        List<PettyCashApprovals> list = approvalsService.fetchPettyCashApprovalsByRequisitionNo(request);//.map(r -> PettyCashRequestsData.map(r));
+//        List<PettyCashApprovalsData> dataList = new ArrayList<>();
+//        for (PettyCashApprovals a : list) {
+//            dataList.add(PettyCashApprovalsData.map(a));
+//        }
+//        Pager<List<PettyCashApprovalsData>> pagers = new Pager();
+//        pagers.setCode("0");
+//        pagers.setMessage("Success");
+//        pagers.setContent(dataList);
+//        PageDetails details = new PageDetails();
+//        details.setPage(1);
+//        details.setPerPage(dataList.size());
+//        details.setTotalElements(Long.valueOf(dataList.size()));
+//        details.setTotalPage(1);
+//        details.setReportName("Petty cash request approvals");
+//        pagers.setPageDetails(details);
+//        return ResponseEntity.ok(pagers);
+//
+//    }
     @GetMapping("/petty-cash-request/me")
     public ResponseEntity<?> findMyPettyCashRequests(Authentication authentication, final Pageable pageable) {
         String username = authentication.getName();
@@ -161,6 +161,23 @@ public class PettyCashRequestController {
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
         details.setReportName("My petty cash requests");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/petty-cash")
+    public ResponseEntity<?> fetchPettyCashRequests(@RequestParam(value = "requestNo", required = false) final String requestNo, @RequestParam(value = "status", required = false) final PettyCashStatus status, Pageable pageable) {
+        Page<PettyCashRequestsData> list = pettyCashRequestsService.findPettyCashRequests(requestNo, null, status, pageable).map(r -> PettyCashRequestsData.map(r));
+        Pager<List<PettyCashRequestsData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Petty cash requests");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
@@ -201,7 +218,18 @@ public class PettyCashRequestController {
 
     @PutMapping("/petty-cash-request/{requestNo}/accept-all")
     public ResponseEntity<?> acceptAllItems(@PathVariable("requestNo") final String requestNo, Authentication authentication) {
+        String username = authentication.getName();
+
+        User user = service.findUserByUsernameOrEmail(username)
+                .orElseThrow(() -> APIException.badRequest("User not found"));
+//        Employee employee = employeeService.fetchEmployeeByUser(user);
         PettyCashRequests pettyCashRequest = pettyCashRequestsService.fetchCashRequestByRequestNo(requestNo);
+
+        PettyCashApprovals approval = new PettyCashApprovals();
+        approval.setApprovalStatus(PettyCashStatus.Approved);
+        approval.setApprovedBy(user);
+        approval.setRequestNo(pettyCashRequest);
+        approval = approvalsService.saveCashApproval(approval);
 
         //check if there is next level approver
         List<ModuleApprovers> approvers = approvalConfigService.fetchModuleApproversByModuleAndLevel(ApprovalModule.PettyCash, pettyCashRequest.getApprovalPendingLevel() + 1);
@@ -214,29 +242,26 @@ public class PettyCashRequestController {
             pettyCashRequest.setStatus(PettyCashStatus.Approved);
         }
         pettyCashRequestsService.createCashRequests(pettyCashRequest);
-        String username = authentication.getName();
 
-        User user = service.findUserByUsernameOrEmail(username)
-                .orElseThrow(() -> APIException.badRequest("User not found"));
-        Employee employee = employeeService.fetchEmployeeByUser(user);
-        List<PettyCashApprovals> approvedItems = new ArrayList<>();
+        List<PettyCashApprovedItems> approvedItems = new ArrayList<>();
         for (PettyCashRequestItems item : pettyCashRequest.getPettyCashRequestItems()) {
 
             //insert into approvals table 
-            PettyCashApprovals approve = new PettyCashApprovals();
+            PettyCashApprovedItems approve = new PettyCashApprovedItems();
             approve.setApprovalComments("Accepted");
             approve.setApprovalStatus(PettyCashStatus.Approved);
-            approve.setApprovedBy(employee);
+            //approve.setApprovedBy(employee);
             approve.setItemNo(item);
 
             approve.setAmount(item.getAmount());
             approve.setPricePerUnit(item.getPricePerUnit());
             approve.setQuantity(item.getQuantity());
+            approve.setApproval(approval);
 
             approvedItems.add(approve);
         }
 
-        List<PettyCashApprovals> savedApproval = approvalsService.createNewApproval(approvedItems);
+        List<PettyCashApprovedItems> savedApprovedItems = approvalsService.createItemApproval(approvedItems);
 
         Pager<PettyCashRequestsData> pagers = new Pager();
         pagers.setCode("0");
@@ -245,90 +270,89 @@ public class PettyCashRequestController {
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
-    //update petty cash status
-    @PutMapping("/petty-cash-request/{requestNo}/process-item")
-    public ResponseEntity<?> processPettyCashItem(@PathVariable("requestNo") final String requestNo, @Valid @RequestBody List<PettyCashApprovalsData> dataList, Authentication authentication) {
-        PettyCashRequests pettyCashRequests = pettyCashRequestsService.fetchCashRequestByRequestNo(requestNo);
-//        PettyCashRequestItems e = pettyCashRequestsService.findRequestedItemById(itemNo).orElseThrow(() -> APIException.notFound("Item not found << {0} >> ", itemNo));
-        //fetch approval settings by petty cash
-        ApprovalConfig config = approvalConfigService.fetchApprovalConfigByModuleName(ApprovalModule.PettyCash);
-        String username = authentication.getName();
-        User user = service.findUserByUsernameOrEmail(username)
-                .orElseThrow(() -> APIException.badRequest("User not found"));
-        Employee employee = employeeService.fetchEmployeeByUser(user);
-        //validate approver availability
-        ModuleApprovers app = approvalConfigService.fetchModuleApproverByModuleAndEmployee(ApprovalModule.PettyCash, employee);
-        List<PettyCashApprovals> approvedItems = new ArrayList<>();
-
-        int noOfRequestedItems = pettyCashRequests.getPettyCashRequestItems().size();
-        int noOfDeclinedItems = 0, noOfAcceptedItems = 0;
-        for (PettyCashApprovalsData data : dataList) {
-
-            PettyCashRequestItems item = pettyCashRequestsService.findRequestedItemById(data.getItemNo()).orElseThrow(() -> APIException.notFound("Item not found << {0} >> ", data.getItemNo()));
-
-            //check if employee has already processed
-            if (approvalsService.fetchApproverByEmployeeAndRequestNo(employee, item).isPresent()) {
-                throw APIException.conflict("You had already sent your approval response. ", employee.getFullName());
-            }
-
-            if (data.getAmount() > item.getAmount()) {
-                throw APIException.badRequest("You cannot approve amount greater than requested one << {0} >>", item.getAmount());
-            }
-            //insert into approvals table 
-            PettyCashApprovals approve = new PettyCashApprovals();
-            approve.setApprovalComments(data.getApprovalComments());
-            approve.setApprovalStatus(data.getApprovalStatus());
-            approve.setApprovedBy(employee);
-            approve.setItemNo(item);
-
-            approve.setAmount(data.getQuantity() * data.getPricePerUnit());
-            approve.setPricePerUnit(data.getPricePerUnit());
-            approve.setQuantity(data.getQuantity());
-
-            if (data.getApprovalStatus().equals(PettyCashStatus.Declined)) {
-                noOfDeclinedItems = noOfDeclinedItems + 1;
-            }
-            if (data.getApprovalStatus().equals(PettyCashStatus.Approved)) {
-                noOfAcceptedItems = noOfAcceptedItems + 1;
-            }
-            approvedItems.add(approve);
-        }
-
-        List<PettyCashApprovals> savedApproval = approvalsService.createNewApproval(approvedItems);
-        //update approval levels
-
-        /*
-        1. If all were declined, update the whole petty cash request as declined and send notification to the requester , then update the next approval level to null
-        2. If all were accepted, send the only accepted to next level , if no next level, update the whole petty cash request to approved
-        3. If partly were accepted, send the  accepted to next level, if no next level, update the whole petty cash request to partly approved
-        4. If partly were declined, send the  accepted to next level, if no next level, update the whole petty cash request to partly approved
-         */
-        //1.
-//fetch list of the approvals
-        if (noOfDeclinedItems >= noOfRequestedItems) {
-            pettyCashRequests.setApprovalPendingLevel(0);
-            pettyCashRequests.setStatus(PettyCashStatus.Declined);
-        }
-        if (noOfAcceptedItems >= noOfRequestedItems) {
-            pettyCashRequests.setApprovalPendingLevel(0);
-            pettyCashRequests.setStatus(PettyCashStatus.Approved);
-        }
-        if (noOfAcceptedItems > noOfDeclinedItems && noOfAcceptedItems <= noOfRequestedItems) {
-            //send the  accepted to next level, if no next level, update the whole petty cash request to partly approved
-            pettyCashRequests = updatePettyCashRequestsToPartialApproval(pettyCashRequests);
-        }
-        if (noOfAcceptedItems < noOfDeclinedItems && noOfAcceptedItems >= noOfRequestedItems) {
-            //send the  accepted to next level, if no next level, update the whole petty cash request to partly approved
-            pettyCashRequests = updatePettyCashRequestsToPartialApproval(pettyCashRequests);
-        }
-
-        Pager<PettyCashRequestsData> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Approval response submitted succesfully");
-        pagers.setContent(PettyCashRequestsData.map(pettyCashRequests));
-        return ResponseEntity.status(HttpStatus.OK).body(pagers);
-    }
-
+//    //update petty cash status
+//    @PutMapping("/petty-cash-request/{requestNo}/process-item")
+//    public ResponseEntity<?> processPettyCashItem(@PathVariable("requestNo") final String requestNo, @Valid @RequestBody List<PettyCashApprovalsData> dataList, Authentication authentication) {
+//        PettyCashRequests pettyCashRequests = pettyCashRequestsService.fetchCashRequestByRequestNo(requestNo);
+////        PettyCashRequestItems e = pettyCashRequestsService.findRequestedItemById(itemNo).orElseThrow(() -> APIException.notFound("Item not found << {0} >> ", itemNo));
+//        //fetch approval settings by petty cash
+//        ApprovalConfig config = approvalConfigService.fetchApprovalConfigByModuleName(ApprovalModule.PettyCash);
+//        String username = authentication.getName();
+//        User user = service.findUserByUsernameOrEmail(username)
+//                .orElseThrow(() -> APIException.badRequest("User not found"));
+//        Employee employee = employeeService.fetchEmployeeByUser(user);
+//        //validate approver availability
+//        ModuleApprovers app = approvalConfigService.fetchModuleApproverByModuleAndEmployee(ApprovalModule.PettyCash, employee);
+//        List<PettyCashApprovedItems> approvedItems = new ArrayList<>();
+//
+//        int noOfRequestedItems = pettyCashRequests.getPettyCashRequestItems().size();
+//        int noOfDeclinedItems = 0, noOfAcceptedItems = 0;
+//        for (PettyCashApprovalsData data : dataList) {
+//
+//            PettyCashRequestItems item = pettyCashRequestsService.findRequestedItemById(data.getItemNo()).orElseThrow(() -> APIException.notFound("Item not found << {0} >> ", data.getItemNo()));
+//
+//            //check if employee has already processed
+//            if (approvalsService.findByApprovedByAndRequestNo(user, pettyCashRequests).isPresent()) {
+//                throw APIException.conflict("You had already sent your approval response. ", employee.getFullName());
+//            }
+//
+//            if (data.getAmount() > item.getAmount()) {
+//                throw APIException.badRequest("You cannot approve amount greater than requested one << {0} >>", item.getAmount());
+//            }
+//            //insert into approvals table 
+//            PettyCashApprovedItems approve = new PettyCashApprovedItems();
+//            approve.setApprovalComments(data.getApprovalComments());
+//            approve.setApprovalStatus(data.getApprovalStatus());
+//            //approve.setApprovedBy(employee);
+//            approve.setItemNo(item);
+//
+//            approve.setAmount(data.getQuantity() * data.getPricePerUnit());
+//            approve.setPricePerUnit(data.getPricePerUnit());
+//            approve.setQuantity(data.getQuantity());
+//
+//            if (data.getApprovalStatus().equals(PettyCashStatus.Declined)) {
+//                noOfDeclinedItems = noOfDeclinedItems + 1;
+//            }
+//            if (data.getApprovalStatus().equals(PettyCashStatus.Approved)) {
+//                noOfAcceptedItems = noOfAcceptedItems + 1;
+//            }
+//            approvedItems.add(approve);
+//        }
+//
+//        List<PettyCashApprovedItems> savedApproval = approvalsService.createItemApproval(approvedItems);
+//        //update approval levels
+//
+//        /*
+//        1. If all were declined, update the whole petty cash request as declined and send notification to the requester , then update the next approval level to null
+//        2. If all were accepted, send the only accepted to next level , if no next level, update the whole petty cash request to approved
+//        3. If partly were accepted, send the  accepted to next level, if no next level, update the whole petty cash request to partly approved
+//        4. If partly were declined, send the  accepted to next level, if no next level, update the whole petty cash request to partly approved
+//         */
+//        //1.
+////fetch list of the approvals
+//        if (noOfDeclinedItems >= noOfRequestedItems) {
+//            pettyCashRequests.setApprovalPendingLevel(0);
+//            pettyCashRequests.setStatus(PettyCashStatus.Declined);
+//        }
+//        if (noOfAcceptedItems >= noOfRequestedItems) {
+//            pettyCashRequests.setApprovalPendingLevel(0);
+//            pettyCashRequests.setStatus(PettyCashStatus.Approved);
+//        }
+//        if (noOfAcceptedItems > noOfDeclinedItems && noOfAcceptedItems <= noOfRequestedItems) {
+//            //send the  accepted to next level, if no next level, update the whole petty cash request to partly approved
+//            pettyCashRequests = updatePettyCashRequestsToPartialApproval(pettyCashRequests);
+//        }
+//        if (noOfAcceptedItems < noOfDeclinedItems && noOfAcceptedItems >= noOfRequestedItems) {
+//            //send the  accepted to next level, if no next level, update the whole petty cash request to partly approved
+//            pettyCashRequests = updatePettyCashRequestsToPartialApproval(pettyCashRequests);
+//        }
+//
+//        Pager<PettyCashRequestsData> pagers = new Pager();
+//        pagers.setCode("0");
+//        pagers.setMessage("Approval response submitted succesfully");
+//        pagers.setContent(PettyCashRequestsData.map(pettyCashRequests));
+//        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+//    }
     private PettyCashRequests updatePettyCashRequestsToPartialApproval(PettyCashRequests pettyCashRequests) {
         pettyCashRequests.setStatus(PettyCashStatus.PartiallyApproved);
         //check if there is next level approver
