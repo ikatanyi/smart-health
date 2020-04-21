@@ -194,17 +194,22 @@ public class PatientReportService {
     
      public void getPatientFile(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         
-        final String PatientId = reportParam.getFirst("patientId");
+        final String patientNumber = reportParam.getFirst("patientId");
+        final String visitNumber = reportParam.getFirst("visitNumber");
         List<PatientVisitData> visitData = new ArrayList();
-        PatientVisitData patientVisitData = new PatientVisitData();
         PatientData patient = patientService.convertToPatientData(patientService.findPatientOrThrow("00001"));
         
-        List<Visit> visits = visitService.fetchVisitByPatientNumber("00001", Pageable.unpaged()).getContent();
+        List<Visit> visits = null;
+        
+        if(visitNumber!=null)
+            visits = visitService.fetchVisitByPatientNumberAndVisitNumber(patientNumber,visitNumber,Pageable.unpaged()).getContent();
+        else
+            visits = visitService.fetchVisitByPatientNumber(patientNumber,Pageable.unpaged()).getContent();
         if (visits.isEmpty()) {
-            visitData.add(patientVisitData);
+            visitData.add(new PatientVisitData());
         }
         for (Visit visit : visits) {
-            PatientVisitData pVisitData = patientVisitData;
+            PatientVisitData pVisitData = new PatientVisitData();
             pVisitData.setVisitNumber(visit.getVisitNumber());
             List<PatientScanTestData> scanData = radiologyService.getPatientScansTestByVisit(visit.getVisitNumber())
                     .stream()
@@ -244,11 +249,11 @@ public class PatientReportService {
 
             pVisitData.setVisitNumber(visit.getVisitNumber());
             pVisitData.setCreatedOn(String.valueOf(visit.getCreatedOn()));
-            pVisitData.setLabTests(labTests);
-            pVisitData.setProcedures(procedures);
-            pVisitData.setRadiologyTests(scanData);
-            pVisitData.setDrugsData(pharmacyData);
-            pVisitData.setDiagnosis(diagnosisData);
+            pVisitData.getLabTests().addAll(labTests);
+            pVisitData.getProcedures().addAll(procedures);
+            pVisitData.getRadiologyTests().addAll(scanData);
+            pVisitData.getDrugsData().addAll(pharmacyData);
+            pVisitData.getDiagnosis().addAll(diagnosisData);
             pVisitData.setAge(patient.getAge());
             if (visit.getHealthProvider() != null) {
                 pVisitData.setPractitionerName(visit.getHealthProvider().getFullName());

@@ -51,6 +51,12 @@ public class VisitService {
         Page<Visit> visits = visitRepository.findByPatient(patient, pageable);
         return visits;
     }
+    
+    public Page<Visit> fetchVisitByPatientNumberAndVisitNumber(String patientNumber, String visitNumber, final Pageable pageable) {
+        Patient patient = findPatientOrThrow(patientNumber);
+        Page<Visit> visits = visitRepository.findByPatientAndVisitNumber(patient, visitNumber, pageable);
+        return visits;
+    }
 
     public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Pageable pageable) {
         // Visit visit = null;

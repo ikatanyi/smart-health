@@ -35,7 +35,7 @@ public class VisitSpecification {
                 final String visitNumberExpression = "%" + visitNumber + "%";
                 predicates.add(
                         cb.or(
-                                cb.like(root.get("visit").get("visitNumber"), visitNumberExpression)
+                                cb.like(root.get("visitNumber"), visitNumberExpression)
                         )
                 );
             }

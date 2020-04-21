@@ -6,7 +6,7 @@
 	<field name="procedureName" class="java.lang.String"/>
 	<field name="comments" class="java.lang.String"/>
 	<field name="results" class="java.lang.String"/>
-	<field name="state" class="java.lang.String"/>
+	<field name="state" class="java.lang.Object"/>
 	<field name="requestedBy" class="java.lang.String"/>
 	<field name="medicName" class="java.lang.String"/>
 	<columnHeader>
