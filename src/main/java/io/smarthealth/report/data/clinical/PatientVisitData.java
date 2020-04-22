@@ -15,6 +15,7 @@ import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.PrescriptionData;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 
@@ -37,10 +38,11 @@ public class PatientVisitData {
     private String briefNotes;
     private Integer age;
     
-    List<PatientScanTestData> radiologyTests;
-    List<PatientProcedureTestData> procedures;
-    List<LabRegisterTestData> labTests;
-    List<DiagnosisData> diagnosis;
-    List<PrescriptionData> drugsData;
+    List<PatientScanTestData> radiologyTests = new ArrayList();
+    List<PatientProcedureTestData> procedures = new ArrayList();
+    List<LabRegisterTestData> labTests = new ArrayList();
+    List<DiagnosisData> diagnosis = new ArrayList();
+    List<PrescriptionData> drugsData = new ArrayList();
+    List<EmployeeBanner> employeeData = new ArrayList();
 }
 
