@@ -44,6 +44,7 @@ import net.sf.jasperreports.export.AbstractXlsReportConfiguration;
 import net.sf.jasperreports.export.Exporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
+import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
@@ -142,7 +143,7 @@ public class JasperReportsService {
     }
 
     public void generateReport(ReportData reportData, HttpServletResponse response) throws SQLException, JRException, IOException {
-        
+
         JasperPrint jasperPrint = null;
         ExportFormat format = reportData.getFormat();
         if (format == null) {
@@ -192,6 +193,14 @@ public class JasperReportsService {
             case HTML:
                 exporter = new HtmlExporter();
                 response.setContentType("text/html");
+                final SimpleHtmlReportConfiguration configuration = new SimpleHtmlReportConfiguration();
+
+                configuration.setIgnorePageMargins(true);
+//                configuration.setSizeUnit(POINT);
+
+                // Or try this instead of setSizeUnit(POINT)...
+                configuration.setZoomRatio(2.0f);
+                exporter.setConfiguration(configuration);
                 exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
@@ -206,6 +215,7 @@ public class JasperReportsService {
             case XML:
                 exporter = new JRXmlExporter();
                 response.setContentType("text/xml");
+                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
@@ -225,12 +235,14 @@ public class JasperReportsService {
                 config.setFontSizeFixEnabled(false);
                 config.setSheetNames(new String[]{"Sheet1"});
                 exporter.setConfiguration(config);
+                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
                 response.setContentType("application/vnd.ms-excel");
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
             case PDF:
                 exporter = new JRPdfExporter();
+                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
                 response.setContentType("application/pdf");
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
@@ -239,10 +251,10 @@ public class JasperReportsService {
                 throw new JRException("Unknown report format: " + type);
         }
 
-        if (!type.name().equalsIgnoreCase("HTML") && !type.name().equalsIgnoreCase("CSV")) {
-            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
-        }
-        exporterOutput = new SimpleOutputStreamExporterOutput(out);
+//        if (!type.name().equalsIgnoreCase("HTML") && !type.name().equalsIgnoreCase("CSV")) {
+//            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
+//        }
+//        exporterOutput = new SimpleOutputStreamExporterOutput(out);
         SimpleExporterInput exporterInput = new SimpleExporterInput(jprint);
         exporter.setExporterInput(exporterInput);
         exporter.exportReport();
@@ -306,7 +318,7 @@ public class JasperReportsService {
                 employeeDataArray.add(EmployeeBanner.map(employeeService.convertEmployeeEntityToEmployeeData(employee.get())));
             }
         }
-        
+
         if (supplierId != null) {
             Optional<Supplier> supplier = supplierService.getSupplierById(supplierId);
             if (supplier.isPresent()) {

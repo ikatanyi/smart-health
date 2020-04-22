@@ -43,5 +43,6 @@ public class PatientVisitData {
     List<LabRegisterTestData> labTests = new ArrayList();
     List<DiagnosisData> diagnosis = new ArrayList();
     List<PrescriptionData> drugsData = new ArrayList();
+    List<EmployeeBanner> employeeData = new ArrayList();
 }
 

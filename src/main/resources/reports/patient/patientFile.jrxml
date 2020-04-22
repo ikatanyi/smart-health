@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientFile" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="7f5d1719-2150-4099-8058-82165eccb7fc">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="186"/>
+	<property name="ireport.y" value="0"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -174,6 +174,7 @@
 	<field name="practitionerName" class="java.lang.String"/>
 	<field name="drugsData" class="java.util.List"/>
 	<field name="age" class="java.lang.Integer"/>
+	<field name="employeeData" class="java.util.List"/>
 	<pageHeader>
 		<band height="69" splitType="Stretch">
 			<line>
@@ -237,7 +238,7 @@
 	<columnHeader>
 		<band height="57">
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="573" height="54" uuid="723d9069-2550-4fab-889b-3030f26303b3"/>
+				<reportElement positionType="Float" x="0" y="0" width="289" height="56" uuid="723d9069-2550-4fab-889b-3030f26303b3"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -250,6 +251,11 @@
 					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
 				</graphicElement>
 			</line>
+			<subreport>
+				<reportElement x="290" y="0" width="282" height="57" uuid="efaeaba5-2b9b-4a48-9bfe-9bdbe239e0c6"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{employeeData})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "employee-banner.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</columnHeader>
 	<detail>
