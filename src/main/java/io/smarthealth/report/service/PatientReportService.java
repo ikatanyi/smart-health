@@ -7,6 +7,7 @@ package io.smarthealth.report.service;
 
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
+import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
@@ -19,6 +20,7 @@ import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
+import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.PatientTestsData;
 import io.smarthealth.clinical.record.data.PrescriptionData;
 import io.smarthealth.clinical.record.data.SickOffNoteData;
@@ -32,6 +34,7 @@ import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
@@ -59,6 +62,7 @@ import net.sf.jasperreports.engine.JRSortField;
 import net.sf.jasperreports.engine.design.JRDesignSortField;
 import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 import net.sf.jasperreports.engine.type.SortOrderEnum;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -175,7 +179,7 @@ public class PatientReportService {
     public void getPatientRequest(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
-        DoctorRequestData.RequestType requestType = DoctorRequestData.RequestType.valueOf(reportParam.getFirst("requestType"));
+        DoctorRequestData.RequestType requestType = requestTypeToEnum(reportParam.getFirst("requestType"));
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         List<DoctorRequestData> requestData = doctorRequestServcie.findAllRequestsByVisitAndRequestType(visit, requestType, Pageable.unpaged())
                 .getContent()
@@ -191,7 +195,7 @@ public class PatientReportService {
         reportData.setData(requestData);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/request_form");
-        reportData.setReportName(requestType.name() + "_request_form");
+        reportData.setReportName(requestType + "_request_form");
         reportService.generateReport(reportData, response);
     }
 
@@ -200,14 +204,14 @@ public class PatientReportService {
         final String patientNumber = reportParam.getFirst("patientId");
         final String visitNumber = reportParam.getFirst("visitNumber");
         List<PatientVisitData> visitData = new ArrayList();
-        PatientData patient = patientService.convertToPatientData(patientService.findPatientOrThrow("00001"));
+        PatientData patient = patientService.convertToPatientData(patientService.findPatientOrThrow(patientNumber));
 
         List<Visit> visits = null;
 
         if (visitNumber != null) {
             visits = visitService.fetchVisitByPatientNumberAndVisitNumber(patientNumber, visitNumber, Pageable.unpaged()).getContent();
         } else {
-            visits = visitService.fetchVisitByPatientNumber("00001", Pageable.unpaged()).getContent();
+            visits = visitService.fetchVisitByPatientNumber(patientNumber, Pageable.unpaged()).getContent();
         }
         if (visits.isEmpty()) {
             visitData.add(new PatientVisitData());
@@ -275,7 +279,7 @@ public class PatientReportService {
 
         List<JRSortField> sortList = new ArrayList();
         ReportData reportData = new ReportData();
-        reportData.setPatientNumber("00001");
+        reportData.setPatientNumber(patientNumber);
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("visitNumber");
         sortField.setOrder(SortOrderEnum.DESCENDING);
@@ -307,4 +311,13 @@ public class PatientReportService {
         reportService.generateReport(reportData, response);
     }
 
+    private RequestType requestTypeToEnum(String requestType) {
+        if (requestType == null || requestType.equals("null") || requestType.equals("")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(RequestType.class, requestType)) {
+            return RequestType.valueOf(requestType);
+        }
+        throw APIException.internalError("RequestType a Valid Bill Status");
+    }
 }
