@@ -7,14 +7,11 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
-import org.apache.commons.lang3.Validate;
 
 /**
  *

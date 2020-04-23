@@ -5,10 +5,12 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.inventory.data.CreateInventoryItem;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
+import io.smarthealth.stock.inventory.data.ItemDTO;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.swagger.annotations.Api;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +52,16 @@ public class InventoryItemController {
     public InventoryItemData getInventoryItem(@PathVariable(value = "id") Long code, @PathVariable(value = "storeId") Long storeId) {
         InventoryItem inventoryItem = service.getInventoryItemOrThrow(code, storeId);
         return inventoryItem.toData();
+    }
+    
+     @GetMapping("/inventoryItem/store/{storeId}")
+    public List<InventoryItemData> getInventoryItemLists(@PathVariable(value = "id") Long code, 
+            @RequestParam(value = "items", required = true) final List<ItemDTO> item ) {
+        List<InventoryItemData> inventoryItem = service.getInventoryItemList(code, item)
+                .stream()
+                .map(x -> x.toData()).collect(Collectors.toList());
+        
+        return inventoryItem;
     }
 
     @GetMapping("/inventoryItems")
