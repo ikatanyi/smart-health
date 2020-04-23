@@ -81,7 +81,7 @@ public class BedController {
     //api/beds - PUT
     @PutMapping("/beds/{id}")
 //    @PreAuthorize("hasAuthority('update_bed')")
-    public ResponseEntity<?> updateBed(@PathVariable(value = "id") Long id, BedData data) {
+    public ResponseEntity<?> updateBed(@PathVariable(value = "id") Long id, @RequestBody BedData data) {
         Bed ward = service.updateBed(id, data);
         return ResponseEntity.ok(ward.toData());
     }
