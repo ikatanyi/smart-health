@@ -3,14 +3,13 @@
 	<property name="ireport.zoom" value="3.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<field name="receiptNumber" class="java.lang.String"/>
 	<field name="itemName" class="java.lang.String"/>
 	<field name="itemCode" class="java.lang.String"/>
-	<field name="quantity" class="java.lang.String"/>
+	<field name="quantity" class="java.lang.Double"/>
 	<field name="price" class="java.math.BigDecimal"/>
 	<field name="discount" class="java.math.BigDecimal"/>
-	<field name="taxes" class="java.lang.String"/>
-	<field name="amountPaid" class="java.lang.String"/>
+	<field name="taxes" class="java.math.BigDecimal"/>
+	<field name="amountPaid" class="java.math.BigDecimal"/>
 	<columnHeader>
 		<band height="18" splitType="Stretch">
 			<staticText>
@@ -66,14 +65,14 @@
 				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="148" y="0" width="42" height="12" uuid="f7a667f1-10bd-4360-b3e9-a65515fa7771"/>
+				<reportElement x="148" y="0" width="36" height="12" uuid="f7a667f1-10bd-4360-b3e9-a65515fa7771"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="214" y="0" width="58" height="12" uuid="eeac2738-50c5-4902-956e-d604d05f863c"/>
+				<reportElement x="214" y="0" width="34" height="12" uuid="eeac2738-50c5-4902-956e-d604d05f863c"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>

@@ -65,9 +65,9 @@ public class ReceiptItem extends Identifiable {
             data.setItemName(this.getItem().getItem().getItemName());
             data.setItemCode(this.getItem().getItem().getItemCode());
             data.setAmountPaid(this.getAmountPaid());
-            data.setPrice(this.getPrice());
-            data.setQuantity(this.getQuantity());
-            data.setTaxes(this.getTaxes());
+            data.setPrice(BigDecimal.valueOf(this.getItem().getPrice()));
+            data.setQuantity(this.getItem().getQuantity());
+            data.setTaxes(BigDecimal.valueOf(this.getItem().getTaxes()));
         }
         return data;
     }

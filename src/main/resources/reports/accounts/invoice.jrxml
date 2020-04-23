@@ -16,33 +16,37 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="patientNo" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="date" class="java.lang.Object">
+	<field name="patientNumber" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="patientName" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="payee" class="java.lang.String"/>
+	<field name="scheme" class="java.lang.String"/>
 	<field name="payer" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="total" class="java.lang.Double"/>
-	<field name="balance" class="java.lang.Double"/>
-	<field name="items" class="java.util.Collection"/>
-	<field name="discounts" class="java.lang.Double"/>
+	<field name="amount" class="java.math.BigDecimal"/>
+	<field name="balance" class="java.math.BigDecimal"/>
+	<field name="invoiceItems" class="java.util.Collection"/>
 	<field name="terms" class="java.lang.String"/>
 	<field name="number" class="java.lang.String"/>
 	<field name="dueDate" class="java.lang.Object"/>
-	<field name="reference" class="java.lang.String"/>
+	<field name="memberNumber" class="java.lang.String"/>
+	<field name="memberName" class="java.lang.String"/>
+	<field name="tax" class="java.math.BigDecimal"/>
+	<field name="discount" class="java.math.BigDecimal"/>
+	<field name="visitDate" class="java.lang.Object"/>
 	<variable name="Price_1" class="java.lang.Double" resetType="Column" calculation="Sum">
 		<variableExpression><![CDATA[]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
 	</variable>
 	<variable name="bal" class="java.lang.Double">
 		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<variable name="copay" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[($F{amount})]]></variableExpression>
+		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>
 	</variable>
 	<background>
 		<band height="802" splitType="Stretch">
@@ -144,7 +148,7 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="109" splitType="Stretch">
+		<band height="120" splitType="Stretch">
 			<staticText>
 				<reportElement mode="Transparent" x="1" y="60" width="41" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
 				<textElement verticalAlignment="Middle">
@@ -171,14 +175,14 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{payee}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{scheme}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="1" y="27" width="60" height="11" uuid="fe562e29-aad3-45dd-b0c4-fa8ba349ed98"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Patient Name :]]></text>
+				<text><![CDATA[Member Name:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="15" width="60" height="11" uuid="dd747499-49e1-47a0-a0b4-e243aaeacf1d"/>
@@ -199,7 +203,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="62" y="3" width="132" height="11" forecolor="#000000" uuid="66ddc2a0-8061-4fa8-8c7d-b5a0c6704846"/>
@@ -213,14 +217,14 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{memberName}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="62" y="39" width="132" height="11" uuid="357516ad-e8d0-4046-9359-0e36ab26475a"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{reference}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{memberNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="1" y="3" width="60" height="11" forecolor="#000000" uuid="f65afb30-85e4-4d6b-b5f7-c1786359a0fb"/>
@@ -241,14 +245,13 @@
 		<band height="11" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="0" width="555" height="11" uuid="4fb7f8d0-65c0-4be1-86ff-bd6d8d263878"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{items})]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{invoiceItems})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "invoice_LineItems_subreport.jasper"]]></subreportExpression>
 			</subreport>
 			<break>
 				<reportElement x="0" y="10" width="555" height="1" uuid="3ff3d17c-e0e3-49c3-9a09-449ee4a52253"/>
 			</break>
 		</band>
-		<band height="50"/>
 	</detail>
 	<columnFooter>
 		<band height="117" splitType="Stretch">
@@ -260,7 +263,7 @@
 				<text><![CDATA[TOTAL AMOUNT :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="361" y="19" width="122" height="14" uuid="8faf028c-a4d3-469c-a85b-643104fb335e"/>
+				<reportElement positionType="Float" x="361" y="34" width="122" height="14" uuid="8faf028c-a4d3-469c-a85b-643104fb335e"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
@@ -292,10 +295,10 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
 			<textField pattern=" #,##0.00">
-				<reportElement positionType="Float" x="486" y="19" width="57" height="14" uuid="c932f3de-d592-4733-bd3b-cf904407985f"/>
+				<reportElement positionType="Float" x="486" y="34" width="57" height="14" uuid="c932f3de-d592-4733-bd3b-cf904407985f"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
@@ -307,6 +310,20 @@
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{terms}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="361" y="19" width="122" height="14" uuid="4777536e-1260-4452-86c9-a6b65398943d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RECEIPT AMOUNT :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="486" y="19" width="57" height="14" uuid="9c9650db-10ee-4990-a308-13e9b76e9e25"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnFooter>
@@ -333,7 +350,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{orgLegalName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="295" y="51" width="101" height="27" uuid="d34f5209-ff0b-4051-b8a3-ac76fb5a184c"/>

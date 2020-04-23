@@ -5,9 +5,9 @@
  */
 package io.smarthealth.report.data.accounts;
 
+import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 import lombok.Data;
 
 /**
@@ -22,16 +22,18 @@ public class InsuranceInvoiceData {
     private BigDecimal paid;
     private String patientId;
     private String patientName;
+    private String memberName;
+     private String memberNumber;
     private String payer;
-    private String payee;
-    private String invoiceNo;   
-    private String dueDate;
-    private String date;
-    private String status;
-    private Double lab;
-    private Double pharmacy;
-    private Double radiology;
-    private Double consultation;
-    private Double procedure;
-    private Double other;
+    private String scheme;
+    private String number;   
+    private LocalDate dueDate;
+    private LocalDate date;
+    private InvoiceStatus status;
+    private BigDecimal lab = BigDecimal.ZERO;
+    private BigDecimal pharmacy = BigDecimal.ZERO;
+    private BigDecimal radiology = BigDecimal.ZERO;
+    private BigDecimal consultation = BigDecimal.ZERO;
+    private BigDecimal procedure = BigDecimal.ZERO;
+    private BigDecimal other = BigDecimal.ZERO;
 }

@@ -5,12 +5,11 @@
 	<property name="ireport.y" value="0"/>
 	<field name="item" class="java.lang.String"/>
 	<field name="quantity" class="java.lang.Double"/>
-	<field name="price" class="java.lang.Double"/>
-	<field name="discount" class="java.lang.Double"/>
-	<field name="taxes" class="java.lang.Double"/>
-	<field name="amount" class="java.lang.Double"/>
+	<field name="price" class="java.math.BigDecimal"/>
+	<field name="discount" class="java.math.BigDecimal"/>
+	<field name="tax" class="java.math.BigDecimal"/>
+	<field name="amount" class="java.math.BigDecimal"/>
 	<field name="servicePoint" class="java.lang.String"/>
-	<field name="balance" class="java.lang.Double"/>
 	<detail>
 		<band height="21" splitType="Stretch">
 			<textField>
