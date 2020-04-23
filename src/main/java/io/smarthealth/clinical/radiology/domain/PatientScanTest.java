@@ -68,6 +68,8 @@ public class PatientScanTest extends Identifiable {
     @JoinColumn(foreignKey = @ForeignKey(name = "radiology_result_id"))
     private RadiologyResult radiologyResult;
     
+   
+    
      public PatientScanTestData toData(){
         PatientScanTestData entity = new PatientScanTestData();
         entity.setId(this.getId());
@@ -75,10 +77,17 @@ public class PatientScanTest extends Identifiable {
         entity.setTestPrice(this.getTestPrice());
         entity.setQuantity(this.getQuantity());  
         entity.setDone(this.getDone());
-        entity.setPaid(this.paid);
+        entity.setPaid(this.getPaid());
         
         entity.setEntryDateTime(this.getEntryDateTime());
         entity.setStatus(this.getStatus());
+        
+        if(patientScanRegister!=null){
+            entity.setAccessNo(this.getPatientScanRegister().getAccessNo());
+            entity.setPatientName(this.getPatientScanRegister().getPatientName());
+            entity.setPatientNumber(this.getPatientScanRegister().getPatientNo());
+            entity.setIsWalkin(this.getPatientScanRegister().getIsWalkin());
+        }
         
         if(this.getRadiologyTest()!=null){
            entity.setScanName(this.getRadiologyTest().getScanName());
