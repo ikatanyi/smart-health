@@ -80,13 +80,22 @@ public class RadiologyReportService {
              reportData.setTemplate("/clinical/radiology/radiology_statement_summary");
             else
               reportData.setTemplate("/clinical/radiology/radiology_statement");
+        
+        List<JRSortField> sortList = new ArrayList();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("status");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        
         reportData.setReportName("Radiology-Statement");
         reportService.generateReport(reportData, response);
     }    
     
     public void getPatientRadiolgyReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        String accessNumber = reportParam.getFirst("accessNumber");
+        String accessNumber = reportParam.getFirst("scanNumber");
        PatientScanRegisterData procTests = scanService.findPatientRadiologyTestByAccessNoWithNotFoundDetection(accessNumber).todata();
              
         List<JRSortField> sortList = new ArrayList();

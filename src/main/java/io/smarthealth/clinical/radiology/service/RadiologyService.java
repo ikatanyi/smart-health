@@ -12,6 +12,8 @@ import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.laboratory.data.LabResultData;
+import io.smarthealth.clinical.laboratory.domain.LabResult;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.data.RadiologyResultData;
@@ -83,6 +85,8 @@ public class RadiologyService {
     private final RadiologyConfigService radiologyConfigService;
 
     private final RadiologyResultRepository radiologyResultRepo;
+    
+    private final PatientScanTestRepository registerTestRepository;
 
     @Transactional
     public PatientScanRegister savePatientResults(PatientScanRegisterData patientScanRegData, final String visitNo) {
@@ -287,15 +291,30 @@ public class RadiologyService {
         return patientradiologyRepository.findById(id).orElseThrow(() -> APIException.notFound("Patient Scan identified by Id{0} not found ", id));
     }
 
+     public List<RadiologyResultData> getLabResultDataByVisit(Visit visit) {
+        return getResultByVisit(visit)
+                .stream()
+                .map(x -> x.toData())
+                .collect(Collectors.toList());
+    }
+
+    public List<RadiologyResult> getResultByVisit(Visit visit) {
+        return radiologyResultRepo.findByVisit(visit);
+    }
+    
+     public List<PatientScanTest> getPatientScansTestByVisit(String visitNumber) {
+        return registerTestRepository.findByVisit(visitNumber);
+    }
+    
     public List<PatientScanTest> findScanResultsByVisit(final Visit visit) {
         List<PatientScanRegister> scanTestFile = findPatientScanRegisterByVisit(visit);
         List<PatientScanTest> patientScansDone = new ArrayList<>();
         //find patient scans by labTestFile
-        for (PatientScanRegister scanFile : scanTestFile) {
+        scanTestFile.forEach((scanFile) -> {
             scanFile.getPatientScanTest().forEach((testDone) -> {
                 patientScansDone.add(testDone);
             });
-        }
+        });
         return patientScansDone;
     }
 

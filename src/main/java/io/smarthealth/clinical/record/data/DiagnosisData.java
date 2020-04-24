@@ -6,11 +6,13 @@ import io.smarthealth.clinical.record.domain.Diagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.patient.data.PatientData;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
+import org.apache.commons.lang3.time.DateUtils;
 
 /**
  *
@@ -49,6 +51,8 @@ public class DiagnosisData {
     private String notes;
 
     private PatientData patientData;
+    @ApiModelProperty(required=false,hidden=true)
+    private int age;
 
 
     public DiagnosisData() {
@@ -82,6 +86,7 @@ public class DiagnosisData {
         diagnos.setCertainty(Certainty.valueOf(entity.getCertainty()));
         diagnos.setDiagnosisOrder(Order.valueOf(entity.getDiagnosisOrder()));
         diagnos.setNotes(entity.getNotes());
+//        diagnos.setAge();
         return diagnos;
     }
 

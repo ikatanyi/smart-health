@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class ReceiptItemData {
   
     private Long id;
-    private String ReceiptNumber;
+    private String receiptNumber;
     private String itemName;
     private String itemCode;
     private Double quantity;

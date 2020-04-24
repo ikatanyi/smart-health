@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientFile_procedures_results" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="8737ae69-12d3-4b71-92f5-f55a4b380697">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<field name="procedureName" class="java.lang.String"/>
-	<field name="procId" class="java.lang.Long"/>
 	<field name="comments" class="java.lang.String"/>
 	<field name="results" class="java.lang.String"/>
-	<field name="state" class="java.lang.String"/>
+	<field name="state" class="java.lang.Object"/>
+	<field name="requestedBy" class="java.lang.String"/>
+	<field name="medicName" class="java.lang.String"/>
 	<columnHeader>
 		<band height="14" splitType="Stretch">
 			<staticText>
@@ -31,17 +32,17 @@
 					<font size="8" isBold="true"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<text><![CDATA[Results]]></text>
+				<text><![CDATA[RequestedBy:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="269" y="0" width="163" height="14" uuid="a6d8245c-ada1-4f42-9c16-944c534a9c24"/>
+				<reportElement x="365" y="0" width="114" height="14" uuid="a6d8245c-ada1-4f42-9c16-944c534a9c24"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Comments]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="444" y="0" width="111" height="14" uuid="f72b30a8-6b40-4490-bcc3-2615d42c8e1f"/>
+				<reportElement x="482" y="0" width="73" height="14" uuid="f72b30a8-6b40-4490-bcc3-2615d42c8e1f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -53,6 +54,14 @@
 					<pen lineWidth="0.25"/>
 				</graphicElement>
 			</line>
+			<staticText>
+				<reportElement x="259" y="-2" width="106" height="14" uuid="fba58cc3-024a-48ed-8c41-2c7a5cf3f646"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[DoneBy:]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
@@ -63,7 +72,7 @@
 					<font size="8"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{procId}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="17" y="0" width="99" height="14" uuid="6dd901a5-d20e-44ee-9cec-e8c315976a30"/>
@@ -78,17 +87,17 @@
 					<font size="8"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{results}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{requestedBy}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="269" y="0" width="163" height="14" uuid="9be39948-ba37-4fa1-83bd-b351e3c07276"/>
+				<reportElement x="365" y="0" width="114" height="14" uuid="9be39948-ba37-4fa1-83bd-b351e3c07276"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{comments}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="444" y="0" width="111" height="14" uuid="18db2592-da40-40ac-b1dc-99dc918d36e7"/>
+				<reportElement x="482" y="0" width="73" height="14" uuid="18db2592-da40-40ac-b1dc-99dc918d36e7"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -100,6 +109,13 @@
 					<pen lineWidth="0.25" lineStyle="Dashed" lineColor="#CC3300"/>
 				</graphicElement>
 			</line>
+			<textField>
+				<reportElement x="259" y="0" width="106" height="13" uuid="14b7c324-7814-43e6-9e7d-58b76d9acf17"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medicName}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 </jasperReport>

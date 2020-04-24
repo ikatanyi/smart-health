@@ -77,7 +77,7 @@ public class PatientTestsData {
         diagnos.setDescription(entity.getDiagnosis().getDescription());
         diagnos.setCertainty(Certainty.valueOf(entity.getCertainty()));
         diagnos.setDiagnosisOrder(Order.valueOf(entity.getDiagnosisOrder()));
-        diagnos.setAge(entity.getAge());
+//        diagnos.setAge(entity.getAge());
         return diagnos;
     }
 

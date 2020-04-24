@@ -5,11 +5,17 @@
  */
 package io.smarthealth.report.data.clinical;
 
+import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
+import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
+import io.smarthealth.clinical.radiology.data.PatientScanTestData;
+import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.record.data.DiagnosisData;
+import io.smarthealth.clinical.record.data.PrescriptionData;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 
@@ -19,24 +25,7 @@ import lombok.Data;
  */
 @Data
 public class PatientVisitData {
-
-    private String title;
-    private String dateOfBirth;
-    private String gender;
-    private String maritalStatus;
-    private String patientId;
-    
-    private String addressLine1;
-    private String addressLine2;
-    private String addressTown;
-    private String addressCounty;
-    private String addressPostalCode;
-    private String addressCountry;
-    
-    private String ContactEmail;
-    private String ContactTelephone;
-    private String contactMobile;
-    
+   
     private String fullName;
     private String visitNumber;
     private String createdOn;
@@ -49,9 +38,11 @@ public class PatientVisitData {
     private String briefNotes;
     private Integer age;
     
-    List<PatientScanRegisterData> radiologyTests;
-    List<PatientProcedureRegisterData> procedures;
-    List<LabResultData> labTests;
-    List<DiagnosisData> diagnosis;
-    List<PatientDrugsData> drugsData;
+    List<PatientScanTestData> radiologyTests = new ArrayList();
+    List<PatientProcedureTestData> procedures = new ArrayList();
+    List<LabRegisterTestData> labTests = new ArrayList();
+    List<DiagnosisData> diagnosis = new ArrayList();
+    List<PrescriptionData> drugsData = new ArrayList();
+    List<EmployeeBanner> employeeData = new ArrayList();
 }
+

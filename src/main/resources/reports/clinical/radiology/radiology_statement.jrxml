@@ -72,7 +72,9 @@
 			<subreport>
 				<reportElement x="0" y="0" width="555" height="69" uuid="05921211-9986-4f9b-a55e-0186167db752"/>
 				<subreportParameter name="PIC_DIR"/>
-				<subreportParameter name="IMAGE_DIR"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
@@ -132,7 +134,7 @@
 				<text><![CDATA[Test]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="289" y="0" width="18" height="11" uuid="a4050875-50e0-435f-8b7b-ca60b73b91b7"/>
+				<reportElement x="278" y="0" width="29" height="11" uuid="a4050875-50e0-435f-8b7b-ca60b73b91b7"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
@@ -206,20 +208,13 @@
 				<textFieldExpression><![CDATA[$F{scanName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="289" y="0" width="18" height="11" uuid="cf2fd3b6-33ae-45f4-b579-29ea3d9b06a4"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{paid}]]></textFieldExpression>
-			</textField>
-			<textField>
 				<reportElement x="320" y="0" width="83" height="11" uuid="adfcdddb-95c0-4d5d-834d-ed5a82d03a17"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{requestedBy}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="492" y="0" width="62" height="11" uuid="79e2aaed-fc87-45c0-a74a-cda85abf850d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
@@ -239,6 +234,24 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{testPrice}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="278" y="0" width="36" height="11" forecolor="#FF0000" uuid="1da9dd3a-acf0-4d75-ab91-de4b64ecc990">
+					<printWhenExpression><![CDATA[$F{paid}.equals( false )]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Unpaid]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="278" y="0" width="36" height="11" forecolor="#009900" uuid="9e7c92d4-6f50-43a9-838a-225a9ac8cd04">
+					<printWhenExpression><![CDATA[$F{paid}.equals( true )]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Paid]]></text>
+			</staticText>
 		</band>
 	</detail>
 	<pageFooter>

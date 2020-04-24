@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
-@Api(value = "Radiology-Controller", description = "Setup of Radiology tests")
+@Api(value = "Radiology-Controller", description = " Radiology Setup")
 public class RadiologyController {
 
     @Autowired

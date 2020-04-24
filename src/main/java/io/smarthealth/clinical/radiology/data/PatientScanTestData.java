@@ -34,6 +34,10 @@ public class PatientScanTestData {
     private String voidedBy;
     private LocalDateTime voidDatetime;
     private String comments;
+    @ApiModelProperty(required=false, hidden=true)
+    private String accessNo;
+    @ApiModelProperty(required=false, hidden=true)
+    private Boolean isWalkin;
     
     @ApiModelProperty(required=false, hidden=true)
     private RadiologyResultData resultData;

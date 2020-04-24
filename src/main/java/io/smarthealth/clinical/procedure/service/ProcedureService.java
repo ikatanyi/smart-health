@@ -271,15 +271,7 @@ public class ProcedureService {
         return patientprocedureRepository.findAll(spec, pgbl);
     }
 
-    public List<PatientProcedureTest> findProcedureResultsByVisit(final String visitNumber) {
-        List<PatientProcedureRegister> procedureTestFile = findPatientProcedureRegisterByVisit(visitNumber);
-        List<PatientProcedureTest> patientProceduresDone = new ArrayList<>();
-        //find patient procedures by labTestFile
-        for (PatientProcedureRegister procedureFile : procedureTestFile) {
-            procedureFile.getPatientProcedureTest().forEach((testDone) -> {
-                patientProceduresDone.add(testDone);
-            });
-        }
-        return patientProceduresDone;
+    public List<PatientProcedureTest> findProcedureResultsByVisit(Visit visit) {
+       return registerTestRepository.findByVisit(visit);
     }
 }

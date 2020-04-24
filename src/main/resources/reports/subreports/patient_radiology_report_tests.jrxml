@@ -4,6 +4,7 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
 	<field name="scanName" class="java.lang.String"/>
@@ -12,6 +13,7 @@
 	<field name="entryDateTime" class="java.lang.Object"/>
 	<field name="comments" class="java.lang.String"/>
 	<field name="doneBy" class="java.lang.String"/>
+	<field name="reportResultData" class="java.util.List"/>
 	<columnHeader>
 		<band height="35" splitType="Stretch">
 			<staticText>
@@ -82,10 +84,7 @@
 		<band height="25" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="5" width="555" height="20" uuid="f34baf56-bfab-4384-b0d4-f9233c4010e8"/>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{resultData})]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{reportResultData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_radiology_report_tests_results.jasper"]]></subreportExpression>
 			</subreport>
 		</band>

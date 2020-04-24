@@ -5,66 +5,35 @@
  */
 package io.smarthealth.report.service;
 
-import io.smarthealth.accounting.accounts.data.financial.statement.TrialBalance;
 import io.smarthealth.accounting.accounts.service.TrialBalanceService;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
-import io.smarthealth.accounting.invoice.domain.Invoice;
-import io.smarthealth.accounting.invoice.domain.InvoiceItem;
+import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.service.ReceivePaymentService;
-import io.smarthealth.clinical.laboratory.data.LabResultData;
-import io.smarthealth.clinical.laboratory.data.PatientResults;
-import io.smarthealth.clinical.laboratory.domain.LabSpecimen;
-import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
-import io.smarthealth.clinical.laboratory.service.LaboratoryService;
-import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
-import io.smarthealth.clinical.pharmacy.service.PharmacyService;
-import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
-import io.smarthealth.clinical.procedure.service.ProcedureService;
-import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
-import io.smarthealth.clinical.radiology.service.RadiologyService;
-import io.smarthealth.clinical.record.data.DiagnosisData;
-import io.smarthealth.clinical.record.data.DoctorRequestData;
-import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
-import io.smarthealth.clinical.record.data.PrescriptionData;
-import io.smarthealth.clinical.record.data.SickOffNoteData;
-import io.smarthealth.clinical.record.domain.PatientNotes;
-import io.smarthealth.clinical.record.domain.Prescription;
-import io.smarthealth.clinical.record.service.DiagnosisService;
-import io.smarthealth.clinical.record.service.DoctorRequestService;
-import io.smarthealth.clinical.record.service.PatientNotesService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
-import io.smarthealth.clinical.record.service.SickOffNoteService;
-import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
-import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.accounts.DailyBillingData;
 import io.smarthealth.report.data.accounts.InsuranceInvoiceData;
-import io.smarthealth.report.data.accounts.InvoiceItemData;
 import io.smarthealth.report.data.accounts.TrialBalanceData;
-import io.smarthealth.report.data.clinical.PatientVisitData;
-import io.smarthealth.report.data.clinical.specimenLabelData;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -218,41 +187,46 @@ public class AccountReportService {
         InvoiceStatus status = invoiceStatusToEnum(invoiceStatus);
 
         Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<Invoice> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable).getContent();
+        List<InvoiceData> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable).getContent()
+                .stream()
+                .map((invoice)->invoice.toData())
+                .collect(Collectors.toList());
 
-        for (Invoice invoice : invoices) {
+        for (InvoiceData invoice : invoices) {
             InsuranceInvoiceData data = new InsuranceInvoiceData();
             data.setAmount(invoice.getAmount());
             data.setBalance(invoice.getBalance());
             data.setDiscount(invoice.getDiscount());
-            data.setPatientId(invoice.getPatient().getPatientNumber());
-            data.setPatientName(invoice.getPatient().getFullName());
-            data.setDueDate(String.valueOf(invoice.getDueDate()));
-            data.setInvoiceNo(invoice.getNumber());
-            data.setPayer(invoice.getPayer().getPayerName());
-            data.setPayee(invoice.getScheme().getSchemeName());
-            data.setStatus(invoice.getStatus().name());
-            data.setDate(String.valueOf(invoice.getDate()));
+            data.setMemberName(invoice.getMemberName());
+            data.setMemberNumber(invoice.getMemberNumber());
+            data.setPatientId(invoice.getPatientNumber());
+            data.setPatientName(invoice.getPatientName());
+            data.setDueDate(invoice.getDueDate());
+            data.setNumber(invoice.getNumber());
+            data.setPayer(invoice.getPayer());
+            data.setScheme(invoice.getScheme());
+            data.setStatus(invoice.getStatus());
+            data.setDate(invoice.getInvoiceDate());
             data.setPaid(invoice.getAmount().subtract(invoice.getBalance()));
-            for (InvoiceItem item : invoice.getItems()) {
-                switch (item.getBillItem().getServicePoint()) {
+            for (InvoiceItemData item : invoice.getInvoiceItems()) {
+                switch (item.getServicePoint()) {
                     case "Laboratory":
-                        data.setLab(+item.getBillItem().getAmount());
+                        data.setLab(data.getLab().add(item.getAmount()));
                         break;
                     case "Pharmacy":
-                        data.setPharmacy(+item.getBillItem().getAmount());
+                        data.setPharmacy(data.getPharmacy().add(item.getAmount()));
                         break;
                     case "Procedure":
-                        data.setProcedure(+item.getBillItem().getAmount());
+                        data.setProcedure(data.getProcedure().add(item.getAmount()));
                         break;
                     case "Radiology":
-                        data.setRadiology(+item.getBillItem().getAmount());
+                        data.setRadiology(data.getRadiology().add(item.getAmount()));
                         break;
                     case "Consultation":
-                        data.setAmount(BigDecimal.valueOf(item.getBillItem().getAmount()));
+                        data.setConsultation(data.getConsultation().add(item.getAmount()));
                         break;
                     default:
-                        data.setOther(+item.getBillItem().getAmount());
+                        data.setOther(data.getOther()!=null?data.getOther().add(item.getAmount()):item.getAmount());
                         break;
                 }
             }
@@ -299,10 +273,17 @@ public class AccountReportService {
 
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
-        sortField.setName("date");
+        sortField.setName("visitDate");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
+        
+        sortField = new JRDesignSortField();
+        sortField.setName("payer");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setData(invoiceData);
         reportData.setFormat(format);
@@ -335,6 +316,7 @@ public class AccountReportService {
     public void getPatientReceipt(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String receiptNo= reportParam.getFirst("receiptNo"); 
+        //"RCT-00009"
         ReceiptData receiptData = paymentService.getPaymentByReceiptNumber(receiptNo).toData();
         reportData.setData(Arrays.asList(receiptData));
         reportData.setFormat(format);

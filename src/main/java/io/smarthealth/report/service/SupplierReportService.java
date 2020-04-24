@@ -114,12 +114,9 @@ public class SupplierReportService {
         String dateRange = reportParam.getFirst("range"); 
         
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Integer page = Integer.getInteger(reportParam.getFirst("page"));
-        Integer size = Integer.getInteger(reportParam.getFirst("size"));
         
-        Pageable pageable = PaginationUtil.createPage(page, size);
         
-         List<DoctorInvoiceData> doctorInvoiceData = doctorInvoiceService.getDoctorInvoices(doctorId, serviceItem, paid, paymentMode, patientNo, invoiceNumber, transactionId, range, pageable)
+         List<DoctorInvoiceData> doctorInvoiceData = doctorInvoiceService.getDoctorInvoices(doctorId, serviceItem, paid, paymentMode, patientNo, invoiceNumber, transactionId, range, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((invoice) -> invoice.toData())
@@ -162,11 +159,8 @@ public class SupplierReportService {
         String dateRange = reportParam.getFirst("range"); 
         
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Integer page = Integer.getInteger(reportParam.getFirst("page"));
-        Integer size = Integer.getInteger(reportParam.getFirst("size"));
-        Pageable pageable = PaginationUtil.createPage(page, size);
         
-        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, status, pageable)
+        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, status, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((invoice) -> invoice.toData())
