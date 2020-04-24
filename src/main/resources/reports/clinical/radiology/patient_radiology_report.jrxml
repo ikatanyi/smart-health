@@ -12,13 +12,13 @@
 	<parameter name="HEADER_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
-	</parameter>
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Patient_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Employee_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Footer_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -46,7 +46,7 @@
 	</background>
 	<title>
 		<band height="43" splitType="Stretch">
-			<subreport>
+			<subreport isUsingCache="false">
 				<reportElement x="1" y="0" width="554" height="42" uuid="e89e1818-4d89-4b2a-b6b3-78ffd1f66ae4"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
@@ -89,9 +89,6 @@
 			</line>
 			<subreport>
 				<reportElement x="279" y="15" width="277" height="34" uuid="0de24d60-b41c-4a99-b595-b454833deec3"/>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "employee-banner.jasper"]]></subreportExpression>
 			</subreport>
@@ -178,7 +175,6 @@
 		<band height="14" splitType="Stretch">
 			<subreport>
 				<reportElement x="-1" y="0" width="555" height="14" uuid="37d70e2f-325c-4ae8-bbf2-aa227506f19f"/>
-				<subreportParameter name="SUBREPORT_DIR"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{patientScanTestData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_radiology_report_tests.jasper"]]></subreportExpression>
 			</subreport>
