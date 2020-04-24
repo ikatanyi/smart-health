@@ -279,7 +279,7 @@ public class AccountReportService {
         sortList.add(sortField);
         
         sortField = new JRDesignSortField();
-        sortField.setName("Payer");
+        sortField.setName("payer");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);

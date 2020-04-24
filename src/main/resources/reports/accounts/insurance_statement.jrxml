@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="insurance_statement" pageWidth="555" pageHeight="802" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="81"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="from" class="java.util.Date"/>
 	<parameter name="to" class="java.util.Date"/>
@@ -40,39 +40,33 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="date" class="java.lang.Object">
+	<field name="patientNumber" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="patientName" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="payee" class="java.lang.String"/>
-	<field name="total" class="java.lang.Double"/>
-	<field name="payer" class="java.lang.String"/>
-	<field name="dueDate" class="java.lang.Object"/>
-	<field name="transactionNo" class="java.lang.String"/>
-	<field name="reference" class="java.lang.String"/>
+	<field name="scheme" class="java.lang.String"/>
+	<field name="payer" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="amount" class="java.math.BigDecimal"/>
+	<field name="balance" class="java.math.BigDecimal"/>
+	<field name="invoiceItems" class="java.util.Collection"/>
+	<field name="terms" class="java.lang.String"/>
 	<field name="number" class="java.lang.String"/>
-	<field name="status" class="java.lang.Object"/>
-	<field name="notes" class="java.lang.String"/>
-	<field name="patientNo" class="java.lang.String"/>
-	<field name="balance" class="java.lang.Double"/>
-	<variable name="total" class="java.lang.Double" calculation="Sum">
-		<variableExpression><![CDATA[]]></variableExpression>
-		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>
-	</variable>
-	<variable name="total_1" class="java.lang.Double" resetType="Group" resetGroup="payer" calculation="Sum">
-		<variableExpression><![CDATA[$F{total}]]></variableExpression>
-	</variable>
+	<field name="dueDate" class="java.lang.Object"/>
+	<field name="memberNumber" class="java.lang.String"/>
+	<field name="memberName" class="java.lang.String"/>
+	<field name="tax" class="java.math.BigDecimal"/>
+	<field name="discount" class="java.math.BigDecimal"/>
+	<field name="visitDate" class="java.lang.Object"/>
 	<variable name="balance_1" class="java.lang.Double" resetType="Group" resetGroup="payer" calculation="Sum">
 		<variableExpression><![CDATA[$F{balance}]]></variableExpression>
 	</variable>
-	<group name="reportGroup">
-		<groupExpression><![CDATA[$V{COLUMN_COUNT}]]></groupExpression>
-		<groupFooter>
-			<band/>
-		</groupFooter>
-	</group>
+	<variable name="amount_1" class="java.math.BigDecimal" resetType="Group" resetGroup="payer" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
+	</variable>
 	<group name="payer">
 		<groupExpression><![CDATA[$F{payer}]]></groupExpression>
 		<groupHeader>
@@ -96,13 +90,6 @@
 		<groupFooter>
 			<band height="15">
 				<textField>
-					<reportElement x="400" y="0" width="34" height="15" uuid="26a3b23d-74d5-4f59-bb93-94d057a8b0b9"/>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font size="8" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{total_1}]]></textFieldExpression>
-				</textField>
-				<textField>
 					<reportElement x="467" y="0" width="48" height="15" uuid="cbe8338f-d766-4715-bd69-ac0908407c6d"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
@@ -116,6 +103,13 @@
 					</textElement>
 					<text><![CDATA[Total :]]></text>
 				</staticText>
+				<textField>
+					<reportElement x="405" y="0" width="29" height="15" uuid="a464799d-7406-44e9-9ad7-2407dcbd20f4"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{amount_1}]]></textFieldExpression>
+				</textField>
 			</band>
 		</groupFooter>
 	</group>
@@ -171,7 +165,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Patient Name]]></text>
+				<text><![CDATA[MemberName]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Transparent" x="400" y="89" width="34" height="12" uuid="60d06f24-e225-44e6-89f1-960d465d5bca"/>
@@ -233,7 +227,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="14" height="15" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
@@ -247,7 +241,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{memberName}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="3" y="15" width="512" height="1" forecolor="#9999FF" uuid="0857bc25-5cba-42f9-920c-2039555116dd"/>
@@ -261,7 +255,7 @@
 					<font size="7"/>
 					<paragraph rightIndent="2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="310" y="1" width="86" height="14" uuid="ba34e96a-5356-4fa7-afa2-9dfe7fd7a67b"/>
@@ -269,7 +263,7 @@
 					<font size="7"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{payee}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{scheme}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="217" y="0" width="41" height="15" uuid="2d6e050e-2ef4-4dad-92ed-d48c91ec8afb"/>
@@ -289,7 +283,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{reference}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{memberNumber}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="263" y="0" width="44" height="15" uuid="35da206c-f13d-4615-a010-9a56d1158120"/>
