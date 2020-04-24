@@ -45,16 +45,7 @@
 		</band>
 	</background>
 	<title>
-		<band height="43" splitType="Stretch">
-			<subreport isUsingCache="false">
-				<reportElement x="1" y="0" width="554" height="42" uuid="e89e1818-4d89-4b2a-b6b3-78ffd1f66ae4"/>
-				<subreportParameter name="IMAGE_DIR">
-					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
-			</subreport>
-		</band>
+		<band height="46" splitType="Stretch"/>
 	</title>
 	<pageHeader>
 		<band height="18" splitType="Stretch">
@@ -172,7 +163,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="14" splitType="Stretch">
+		<band height="19" splitType="Stretch">
 			<subreport>
 				<reportElement x="-1" y="0" width="555" height="14" uuid="37d70e2f-325c-4ae8-bbf2-aa227506f19f"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{patientScanTestData})]]></dataSourceExpression>
