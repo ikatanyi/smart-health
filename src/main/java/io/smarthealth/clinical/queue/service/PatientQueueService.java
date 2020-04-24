@@ -57,7 +57,7 @@ public class PatientQueueService {
     @Autowired
     VisitRepository visitRepository;
     
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public PatientQueue createPatientQueue(PatientQueue patientQueue) {
         //if (!patientIsQueued(patientQueue.getDepartment(), patientQueue.getPatient())) {
         return patientQueueRepository.save(patientQueue);

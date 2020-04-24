@@ -33,10 +33,10 @@ public class BillData {
     private Double discount;
     private String reference;
     private String otherDetails;
-      private Boolean walkinFlag;
+    private Boolean walkinFlag;
     @Enumerated(EnumType.STRING)
     private BillStatus status;
 
     private List<BillItemData> billItems;
- 
+
 }
