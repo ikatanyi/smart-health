@@ -159,7 +159,13 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="19" splitType="Stretch"/>
+		<band height="19" splitType="Stretch">
+			<subreport>
+				<reportElement x="-1" y="0" width="555" height="14" uuid="37d70e2f-325c-4ae8-bbf2-aa227506f19f"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{patientScanTestData})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_radiology_report_tests.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
 	</detail>
 	<pageFooter>
 		<band height="26" splitType="Stretch">
