@@ -18,7 +18,7 @@ public class PaymentDetailsService {
     @Autowired
     PaymentDetailsRepository paymentDetailsRepository;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public PaymentDetails createPaymentDetails(PaymentDetails paymentDetails) {
         return paymentDetailsRepository.save(paymentDetails);
     }

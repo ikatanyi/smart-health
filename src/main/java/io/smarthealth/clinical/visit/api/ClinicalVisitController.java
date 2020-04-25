@@ -3,8 +3,11 @@ package io.smarthealth.clinical.visit.api;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.doctors.domain.DoctorClinicItems;
+import io.smarthealth.accounting.doctors.service.DoctorClinicService;
 import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.accounting.pricelist.domain.PriceListRepository;
+import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -60,6 +63,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -113,10 +117,14 @@ public class ClinicalVisitController {
     ItemService itemService;
 
     @Autowired
-    PriceListRepository priceListRepository;
+    DoctorClinicService clinicService;
+
+    @Autowired
+    PricelistService pricelistService;
 
     @PostMapping("/visits")
     @ApiOperation(value = "Submit a new patient visit", response = VisitData.class)
+    @Transactional(rollbackFor = Exception.class)
     public @ResponseBody
     ResponseEntity<?> addVisitRecord(@RequestBody @Valid final VisitData visitData) {
 
@@ -131,7 +139,7 @@ public class ClinicalVisitController {
             employee = employeeService.fetchEmployeeByNumberOrThrow(visitData.getPractitionerCode());
             visit.setHealthProvider(employee);
         }
-        ServicePoint servicePoint = servicePointService.getServicePoint(visitData.getServicePointIdentifier());
+        ServicePoint servicePoint = servicePointService.getServicePoint(visitData.getLocationIdentity());
 
         //generate visit number
         String visitNo = sequenceNumberService.next(1L, Sequences.Visit.name());
@@ -208,18 +216,18 @@ public class ClinicalVisitController {
         patientQueueService.createPatientQueue(patientQueue);
         //create bill if consultation
         if (visit.getServiceType().equals(VisitEnum.ServiceType.Consultation)) {
-            //this should be get from pricelist and not item list
-            PriceList pricelist = priceListRepository.findById(visitData.getItemToBill()).orElseThrow(() -> APIException.notFound("Price List Item with id {0} Not found", visitData.getItemToBill()));
-            //  Item item = pricelist.getItem();//itemService.findItemEntityOrThrow(visitData.getItemToBill());
-
+            DoctorClinicItems clinic = clinicService.fetchClinicById(visitData.getItemToBill());
+            //PriceList pricelist = pricelistService.fetchPriceListByItemAndPriceBook(clinic.getServiceType(), null);
+            //TODO: use pricelist not item service i.e fetchPriceListByItemAndPriceBook
+            Item item = clinic.getServiceType();
             List<BillItemData> billItems = new ArrayList<>();
             BillItemData itemData = new BillItemData();
-            itemData.setAmount(pricelist.getSellingRate().doubleValue());
-            itemData.setBalance(pricelist.getSellingRate().doubleValue());
+            itemData.setAmount(item.getRate().doubleValue());
+            itemData.setBalance(item.getRate().doubleValue());
             itemData.setBillingDate(LocalDate.now());
-            itemData.setPrice(pricelist.getSellingRate().doubleValue());
-            itemData.setItem(pricelist.getItem().getItemName());
-            itemData.setItemCode(pricelist.getItem().getItemCode());
+            itemData.setPrice(item.getRate().doubleValue());
+            itemData.setItem(item.getItemName());
+            itemData.setItemCode(item.getItemCode());
             if (employee != null) {
                 itemData.setMedicId(employee.getId());
                 itemData.setMedicName(employee.getFullName());
@@ -232,8 +240,8 @@ public class ClinicalVisitController {
             BillData data = new BillData();
             data.setWalkinFlag(false);
             data.setBillItems(billItems);
-            data.setAmount(pricelist.getSellingRate().doubleValue());
-            data.setBalance(pricelist.getSellingRate().doubleValue());
+            data.setAmount(item.getRate().doubleValue());
+            data.setBalance(item.getRate().doubleValue());
             data.setBillingDate(LocalDate.now());
             data.setDiscount(0.00);
             data.setPatientName(patient.getFullName());
@@ -498,7 +506,7 @@ public class ClinicalVisitController {
             visitData.setPractitionerName(visit.getHealthProvider().getTitle() + ". " + visit.getHealthProvider().getFullName());
         }
         if (visit.getServicePoint() != null) {
-            visitData.setServicePointIdentifier(visit.getServicePoint().getId());
+            visitData.setLocationIdentity(visit.getServicePoint().getId());
             visitData.setServicePointName(visit.getServicePoint().getName());
         }
         //fetch patient log

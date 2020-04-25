@@ -46,6 +46,7 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.stores.domain.Store;
 import java.util.ArrayList;
 import java.util.Map;
@@ -121,6 +122,9 @@ public class BillingService {
                     billItem.setItem(item);
                     billItem.setPaid(data.getPaymentMode().equals("Insurance"));
                     billItem.setPrice(lineData.getPrice());
+                    if (item.getCategory().equals(ItemCategory.CoPay)) {
+                        billItem.setPrice(data.getAmount());
+                    }
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getAmount());
                     billItem.setDiscount(lineData.getDiscount());
