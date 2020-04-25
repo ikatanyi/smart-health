@@ -37,6 +37,8 @@ import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecifi
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
+import io.smarthealth.accounting.payment.data.BilledItem;
+import io.smarthealth.accounting.payment.data.ReceivePayment;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
@@ -46,7 +48,9 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.stores.domain.Store;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -163,6 +167,10 @@ public class BillingService {
         bill.setTransactionId(trdId);
 
         PatientBill savedBill = patientBillRepository.saveAndFlush(bill);
+        
+        if (bill.getWalkinFlag()==null || bill.getWalkinFlag()) {
+            return savedBill;
+        }
         List<DoctorInvoice> doctorInvoices = toDoctorInvoice(savedBill);
         if (doctorInvoices.size() > 0) {
             doctorInvoices.forEach(inv -> doctorInvoiceService.save(inv));
@@ -318,8 +326,6 @@ public class BillingService {
                 items.add(new JournalEntryItem(debitAccount.get().getAccount(), desc, amount, BigDecimal.ZERO));
                 items.add(new JournalEntryItem(credit, desc, BigDecimal.ZERO, amount));
 
-//                items.add(new JournalEntryItem(desc, debitAcc, JournalEntryItem.Type.DEBIT, amount));
-//                items.add(new JournalEntryItem(desc, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
             });
             //if inventory expenses this shit!
             if (store != null) {
@@ -347,8 +353,6 @@ public class BillingService {
                         items.add(new JournalEntryItem(debit, desc, amount, BigDecimal.ZERO));
                         items.add(new JournalEntryItem(credit, desc, BigDecimal.ZERO, amount));
 
-//                        items.add(new JournalEntryItem(desc, debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
-//                        items.add(new JournalEntryItem(desc, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
                     });
                 }
 
@@ -419,5 +423,100 @@ public class BillingService {
 
         Specification<PatientBill> spec = builder.build();
         return patientBillRepository.findAll(spec);
+    }
+
+    @Transactional
+    public List<PatientBillItem> validatedBilledItem(ReceivePayment data) {
+
+        List<PatientBillItem> receiptingBills = new ArrayList<>();
+        List<PatientBillItem> toCreate = new ArrayList<>();
+ 
+        if (!data.getBillItems().isEmpty()) {
+            data.getBillItems().stream()
+                    .forEach(x -> {
+                        if (x.getBillItemId() != null) {
+                            PatientBillItem item = findBillItemById(x.getBillItemId());
+                            BigDecimal bal = BigDecimal.valueOf(item.getAmount()).subtract(x.getAmount());
+                            item.setPaid(Boolean.TRUE);
+                            item.setStatus(BillStatus.Paid);
+                            if (item.getItem().getCategory() == ItemCategory.CoPay) {
+                                item.setAmount((item.getAmount() * -1));
+                            }
+                            item.setPaymentReference(data.getReceiptNo());
+                            item.setBalance(bal.doubleValue());
+                            PatientBillItem i = updateBillItem(item);
+
+                            receiptingBills.add(i);
+
+                        } else {
+                            PatientBillItem item = createReciptItem(x);
+                            if (item.getItem().getCategory() == ItemCategory.CoPay) {
+                                item.setAmount((item.getAmount() * -1));
+                            }
+                            item.setMedicId(x.getMedicId());
+                            item.setTransactionId(data.getTransactionNo());
+                            item.setPaymentReference(data.getReceiptNo());
+                            toCreate.add(item);
+                        }
+                    });
+        }
+        if (!toCreate.isEmpty()) {
+            PatientBill patientbill = new PatientBill();
+            if (data.getWalkin()!=null && !data.getWalkin()) {
+                Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
+                patientbill.setVisit(visit);
+                patientbill.setPatient(visit.getPatient());
+                patientbill.setWalkinFlag(Boolean.FALSE);
+            } else {
+                patientbill.setReference(data.getPayerNumber());
+                patientbill.setOtherDetails(data.getPayer());
+                patientbill.setWalkinFlag(Boolean.TRUE);
+            }
+            Double amount = toCreate.stream()
+                    .collect(Collectors.summingDouble(x -> x.getAmount()));
+
+            patientbill.setAmount(amount);
+            patientbill.setDiscount(0D);
+            patientbill.setBalance(0D);
+
+            patientbill.setBillingDate(LocalDate.now());
+            patientbill.setPaymentMode("Cash");
+
+            patientbill.setStatus(BillStatus.Paid);
+
+            String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
+
+            patientbill.setBillNumber(bill_no);
+            patientbill.setTransactionId(data.getTransactionNo());
+            patientbill.addBillItems(toCreate);
+ 
+            PatientBill savedBill = save(patientbill);
+
+            receiptingBills.addAll(savedBill.getBillItems());
+
+        }
+
+        return receiptingBills;
+    }
+
+    private PatientBillItem createReciptItem(BilledItem billedItem) {
+        Item item = getItemByBy(billedItem.getPricelistItemId());
+
+        PatientBillItem savedItem = new PatientBillItem();
+        savedItem.setPrice(billedItem.getPrice());
+        savedItem.setQuantity(billedItem.getQuantity());
+        savedItem.setAmount(billedItem.getAmount().doubleValue());
+        savedItem.setBalance(billedItem.getAmount().doubleValue());
+        savedItem.setBillingDate(LocalDate.now());
+        savedItem.setDiscount(0D);
+        savedItem.setTaxes(0D);
+        savedItem.setItem(item);
+        savedItem.setPaid(Boolean.TRUE);
+        savedItem.setStatus(BillStatus.Paid);
+        savedItem.setBalance(0D);
+        savedItem.setServicePoint(billedItem.getServicePoint());
+        savedItem.setServicePointId(billedItem.getServicePointId());
+
+        return savedItem;
     }
 }

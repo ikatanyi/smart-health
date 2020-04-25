@@ -47,20 +47,20 @@ public class CopaymentService {
         return copaymentRepository.save(copayment);
     }
 
-    public Copayment createCopayment(String visitNumber, String patientNumber, BigDecimal amount, Receipt receipt) {
+    public Copayment createCopayment(String visitNumber, String patientNumber, BigDecimal amount, String receipt) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         Optional<Copayment> copayment = copaymentRepository.findByVisitAndAmountEqualsAndPaidFalse(visit, amount);
         if (copayment.isPresent()) {
             Copayment copay = copayment.get();
             copay.setPaid(Boolean.TRUE);
-            copay.setReceipt(receipt);
+            copay.setReceiptNumber(receipt);
             return copaymentRepository.save(copay);
         } else {
             Copayment copay = new Copayment();
             copay.setAmount(amount);
             copay.setDate(LocalDate.now());
             copay.setPaid(Boolean.TRUE);
-            copay.setReceipt(receipt);
+            copay.setReceiptNumber(receipt);
             copay.setVisit(visit);
             return copaymentRepository.save(copay);
         }

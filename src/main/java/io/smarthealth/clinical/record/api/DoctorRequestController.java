@@ -14,7 +14,6 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;

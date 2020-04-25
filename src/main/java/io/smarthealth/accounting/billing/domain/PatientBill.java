@@ -33,7 +33,9 @@ public class PatientBill extends Auditable {
     private String billNumber; //can also be an invoice
     private String paymentMode;
     private String transactionId;
+    @Column(columnDefinition = "default 0")
     private Double discount;
+    @Column(columnDefinition = "default 0")
     private Double taxes;
     private Double amount;
     private Double balance;

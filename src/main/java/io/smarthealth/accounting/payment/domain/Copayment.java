@@ -46,9 +46,8 @@ public class Copayment extends Auditable {
 
     private LocalDate date;
 
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_copay_receipt_id"))
-    private Receipt receipt;
+    private String receiptNumber;
+
     private BigDecimal amount;
     private Boolean paid;
 
@@ -64,9 +63,8 @@ public class Copayment extends Auditable {
             data.setVisitType(this.visit.getVisitType().name());
 
         }
-        if (this.receipt != null) {
-            data.setReceiptNumber(this.receipt.getReceiptNo());
-        }
+        data.setReceiptNumber(this.receiptNumber);
+
         if (this.scheme != null) {
             data.setScheme(this.scheme.getSchemeName());
             data.setSchemeId(this.scheme.getId());
