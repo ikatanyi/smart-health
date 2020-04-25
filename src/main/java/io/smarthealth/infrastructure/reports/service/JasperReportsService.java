@@ -172,6 +172,10 @@ public class JasperReportsService {
 //            param.putAll(param);
         param.putAll(reportData.getFilters());
         // Fill the report
+        JasperReportsContext jasperReportsContext = DefaultJasperReportsContext.getInstance();
+        jasperReportsContext.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
+        jasperReportsContext.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
+        
         if (dataList.isEmpty()) {
             Connection conn = jdbcTemplate.getDataSource().getConnection();
             jasperPrint = JasperFillManager.fillReport(jasperReport, param, conn);
