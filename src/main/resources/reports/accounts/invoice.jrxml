@@ -278,7 +278,7 @@
 			<staticText>
 				<reportElement positionType="Float" x="3" y="94" width="291" height="19" uuid="befe1fca-44e9-4912-ae25-8f28bb29bc1c"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Trebuchet MS" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<text><![CDATA[1. Total payment due in 30 days
 ]]></text>
@@ -286,7 +286,7 @@
 			<staticText>
 				<reportElement positionType="Float" mode="Transparent" x="3" y="13" width="291" height="20" forecolor="#000000" backcolor="#9966FF" uuid="4bb3ddc8-9b93-46e6-af64-0cf4e805150e"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Trebuchet MS" size="9" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Other comments or Special Instructions]]></text>
 			</staticText>
@@ -307,7 +307,7 @@
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="2" y="35" width="291" height="21" isRemoveLineWhenBlank="true" forecolor="#FF0033" uuid="59db33f4-6761-4fc2-aff8-67cb5167af94"/>
 				<textElement verticalAlignment="Middle">
-					<font size="9"/>
+					<font fontName="SansSerif" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{terms}]]></textFieldExpression>
 			</textField>
@@ -321,7 +321,7 @@
 			<textField>
 				<reportElement x="486" y="19" width="57" height="14" uuid="9c9650db-10ee-4990-a308-13e9b76e9e25"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="9" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
 			</textField>

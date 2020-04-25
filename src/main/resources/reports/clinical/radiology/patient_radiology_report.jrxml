@@ -31,19 +31,6 @@
 	<field name="requestedBy" class="java.lang.String"/>
 	<field name="patientScanTestData" class="java.util.List"/>
 	<field name="isWalkin" class="java.lang.Boolean"/>
-	<background>
-		<band height="159" splitType="Stretch">
-			<staticText>
-				<reportElement x="87" y="49" width="376" height="64" forecolor="#FF3333" uuid="6aeee70c-2e6a-447a-a105-a8261caa2c11">
-					<printWhenExpression><![CDATA[]]></printWhenExpression>
-				</reportElement>
-				<textElement textAlignment="Center" rotation="None">
-					<font size="48" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Incomplete]]></text>
-			</staticText>
-		</band>
-	</background>
 	<title>
 		<band height="46" splitType="Stretch">
 			<subreport isUsingCache="false">
@@ -172,13 +159,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="19" splitType="Stretch">
-			<subreport>
-				<reportElement x="-1" y="0" width="555" height="14" uuid="37d70e2f-325c-4ae8-bbf2-aa227506f19f"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{patientScanTestData})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_radiology_report_tests.jasper"]]></subreportExpression>
-			</subreport>
-		</band>
+		<band height="19" splitType="Stretch"/>
 	</detail>
 	<pageFooter>
 		<band height="26" splitType="Stretch">
