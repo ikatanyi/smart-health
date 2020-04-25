@@ -6,7 +6,7 @@ stages:
 build:
   stage: build
   tags:
-    - maven
+    - smarthealthv2
   script:  
     - mvn package -DskipTests
   artifacts:
@@ -16,7 +16,7 @@ build:
 deploy_dev:
     stage: staging
     tags:
-    - maven
+    - smarthealthv2
     script:
         - sudo rsync -rav -e --stats target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
         - sudo chmod 775 /var/log/smarthealth-app.log
@@ -25,7 +25,7 @@ deploy_dev:
 deploy_prod:
     stage: deploy
     tags:
-    - maven
+    - smarthealthv2
     script:
         - sshpass -V
         - sshpass -p "$QA_SERVER_PASSWORD" sudo rsync -rav -e --stats target/smart-health-1.0.0.jar smart@192.180.4.135:/opt/smarthealth/latest/smart-health-1.0.0.jar
