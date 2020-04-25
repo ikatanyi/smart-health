@@ -52,7 +52,7 @@ public class VisitService {
         Page<Visit> visits = visitRepository.findByPatient(patient, pageable);
         return visits;
     }
-    
+
     public Page<Visit> fetchVisitByPatientNumberAndVisitNumber(String patientNumber, String visitNumber, final Pageable pageable) {
         Patient patient = findPatientOrThrow(patientNumber);
         Page<Visit> visits = visitRepository.findByPatientAndVisitNumber(patient, visitNumber, pageable);
@@ -137,6 +137,10 @@ public class VisitService {
 
     public List<Employee> practionersByActiveVisits() {
         return visitRepository.practionersByActiveVisits();
+    }
+
+    public List<Visit> fetchAllVisitsSurpassed24hrs() {
+        return visitRepository.visitsPast24hours();
     }
 
 }
