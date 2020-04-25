@@ -125,6 +125,9 @@ public class BillingService {
                     billItem.setItem(item);
                     billItem.setPaid(data.getPaymentMode().equals("Insurance"));
                     billItem.setPrice(lineData.getPrice());
+                    if (item.getCategory().equals(ItemCategory.CoPay)) {
+                        billItem.setPrice(data.getAmount());
+                    }
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getAmount());
                     billItem.setDiscount(lineData.getDiscount());

@@ -25,7 +25,7 @@ import org.springframework.data.repository.query.Param;
 public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecificationExecutor<Visit> {
 
     Page<Visit> findByPatient(final Patient patient, Pageable page);
-    
+
     Page<Visit> findByPatientAndVisitNumber(final Patient patient, final String visitNumber, Pageable page);
 
     Page<Visit> findByServicePointAndStatusNot(final ServicePoint servicePoint, final VisitEnum.Status status, Pageable page);
@@ -50,5 +50,9 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
 
     @Query(value = "SELECT DISTINCT(c.healthProvider) FROM Visit c WHERE (c.status='CheckIn' OR c.status = 'Admitted')")
     List<Employee> practionersByActiveVisits();
+
+    @Query(value = "SELECT v FROM Visit v WHERE  TIMESTAMPDIFF(hour, start_datetime,now())  >= '24' AND v.status = 'CheckIn'")
+//    @Query(value = "SELECT v FROM Visit v WHERE v.startDatetime <= (now() - INTERVAL 1 DAY) AND v.status = 'CheckIn'")
+    List<Visit> visitsPast24hours();
 
 }

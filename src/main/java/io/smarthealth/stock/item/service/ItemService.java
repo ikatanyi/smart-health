@@ -185,7 +185,7 @@ public class ItemService {
 
     public Item findItemWithNoFoundDetection(String code) {
         return this.itemRepository.findByItemCode(code)
-                .orElseThrow(() -> APIException.notFound("Item id {0} not found.", code));
+                .orElseThrow(() -> APIException.notFound("Item code {0} not found.", code));
     }
 
     public Page<Item> findByItemsByCategory(final ItemCategory itemCategory, final Pageable pageable) {

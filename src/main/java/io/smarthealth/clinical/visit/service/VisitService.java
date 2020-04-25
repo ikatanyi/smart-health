@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -51,7 +52,7 @@ public class VisitService {
         Page<Visit> visits = visitRepository.findByPatient(patient, pageable);
         return visits;
     }
-    
+
     public Page<Visit> fetchVisitByPatientNumberAndVisitNumber(String patientNumber, String visitNumber, final Pageable pageable) {
         Patient patient = findPatientOrThrow(patientNumber);
         Page<Visit> visits = visitRepository.findByPatientAndVisitNumber(patient, visitNumber, pageable);
@@ -82,7 +83,8 @@ public class VisitService {
         return visits;
     }
 
-    @Transactional
+    //@Transactional
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Visit createAVisit(final Visit visit) {
 //        try {
         return visitRepository.save(visit);
@@ -135,6 +137,10 @@ public class VisitService {
 
     public List<Employee> practionersByActiveVisits() {
         return visitRepository.practionersByActiveVisits();
+    }
+
+    public List<Visit> fetchAllVisitsSurpassed24hrs() {
+        return visitRepository.visitsPast24hours();
     }
 
 }

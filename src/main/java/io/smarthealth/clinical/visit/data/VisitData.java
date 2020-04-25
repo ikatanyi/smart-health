@@ -47,8 +47,10 @@ public class VisitData {
     @Enumerated(EnumType.STRING)
     private VisitType visitType;
     private Boolean scheduled;
+    //@NotNull
+//    private Long servicePointIdentifier;
     @NotNull
-    private Long servicePointIdentifier;
+    private Long locationIdentity;
 
     @ApiModelProperty(required = false, hidden = true)
     private String servicePointName;

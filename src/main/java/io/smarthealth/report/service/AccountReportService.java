@@ -273,10 +273,17 @@ public class AccountReportService {
 
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
-        sortField.setName("date");
+        sortField.setName("visitDate");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
+        
+        sortField = new JRDesignSortField();
+        sortField.setName("payer");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setData(invoiceData);
         reportData.setFormat(format);
@@ -290,7 +297,7 @@ public class AccountReportService {
         String invoiceNo = reportParam.getFirst("invoiceNo"); 
         ReportData reportData = new ReportData();
        
-        InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow("INV-00005")).toData();                
+        InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();                
         
 //        List<JRSortField> sortList = new ArrayList<>();
 //        JRDesignSortField sortField = new JRDesignSortField();
