@@ -9,9 +9,9 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.stock.inventory.data.TransData;
 import io.swagger.annotations.Api;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,12 +37,12 @@ public class InvoiceController {
     @PostMapping("/invoices")
     public ResponseEntity<?> createInvoice(@Valid @RequestBody CreateInvoice invoiceData) {
 
-        String trans = service.createInvoice(invoiceData);
+        List<InvoiceData> trans = service.createInvoice(invoiceData).stream().map(x -> x.toData()).collect(Collectors.toList());
 
-        Pager<TransData> pagers = new Pager();
+        Pager<List<InvoiceData>> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Invoice successfully Created.");
-        pagers.setContent(new TransData(trans));
+        pagers.setMessage("Invoice (s) successfully Created.");
+        pagers.setContent(trans);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }

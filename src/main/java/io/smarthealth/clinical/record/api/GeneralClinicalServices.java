@@ -37,7 +37,6 @@ import io.swagger.annotations.Api;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -153,8 +152,7 @@ public class GeneralClinicalServices {
             //create bill for the referred doctor
             //find consultation service by doctor selected
             if (rd.getDoctorServiceId() != null) {
-                //TODO: Use multilocation capability 
-                ServicePoint sp = servicePointService.getServicePointByType(ServicePointType.Consultation);//.orElseThrow(() -> APIException.notFound("Consultation service point not set", ""));
+                ServicePoint sp = servicePointService.getServicePointByType(ServicePointType.Consultation);
                 DoctorItem docService = doctorItemService.getDoctorItem(rd.getDoctorServiceId());
                 PriceList pricelist = pricelistService.fetchPriceListByItemAndServicePoint(docService.getServiceType(), sp);
                 List<BillItemData> billItems = new ArrayList<>();

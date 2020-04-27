@@ -1,13 +1,10 @@
 package io.smarthealth.accounting.billing.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.stock.item.domain.Item;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.*;
 import lombok.Data;
@@ -36,11 +33,14 @@ public class PatientBillItem extends Auditable {
     private LocalDate billingDate;
     private String transactionId;
     private Double quantity;
-    private Double price;
-    private Double discount;
-    private Double taxes;
-    private Double amount;
-    private Double balance;
+    private Double price; 
+    @Column(columnDefinition = "default 0")
+    private Double discount =0.0;
+    @Column(columnDefinition = "default 0")
+    private Double taxes =0.0;
+    
+    private Double amount=0.0;
+    private Double balance=0.0;
     private String servicePoint;
     private Long servicePointId;
     private Boolean paid;

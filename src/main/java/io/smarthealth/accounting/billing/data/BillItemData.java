@@ -28,12 +28,12 @@ public class BillItemData {
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate billingDate;
     private String transactionId;
-    private Double quantity;
+    private Double quantity=1.0;
     private Double price;
-    private Double discount;
-    private Double taxes;
-    private Double amount;
-    private Double balance;
+    private Double discount=0.0;
+    private Double taxes=0.0;
+    private Double amount=0.0;
+    private Double balance=0.0;
     private String servicePoint;
     private Long servicePointId;
     //bill item to a medic 

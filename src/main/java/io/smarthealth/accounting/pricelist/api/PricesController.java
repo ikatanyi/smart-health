@@ -141,4 +141,30 @@ public class PricesController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
+
+    @GetMapping("/pricelists/search")
+    public ResponseEntity<?> getPriceListByLocation(
+            @RequestParam(value = "item") String item,
+            @RequestParam(value = "pricebook_id", required = false) Long priceBookId,
+            @RequestParam(value = "servicepoint_id", required = false) Long servicePointId,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        Page<PriceListData> list = priceService.searchPriceList(item, servicePointId, priceBookId, pageable)
+                .map(x -> x.toData());
+
+        Pager<List<PriceListData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Product & Service Pricelist");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+    }
 }

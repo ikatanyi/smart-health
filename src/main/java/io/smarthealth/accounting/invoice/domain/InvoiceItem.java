@@ -57,6 +57,9 @@ public class InvoiceItem extends Auditable {
     }
 
     private BigDecimal toBigDecimal(Double val) {
+        if (val == null) {
+            return BigDecimal.ZERO;
+        }
         return BigDecimal.valueOf(val);
     }
 }

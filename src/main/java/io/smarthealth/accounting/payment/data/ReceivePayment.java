@@ -14,13 +14,11 @@ import lombok.Data;
  * @author Kelsas
  */
 @Data
-//@Conditional(selected = "type", values = {"Copay"}, required = {"visitNumber"})
 public class ReceivePayment {
 
     public enum Type {
         Patient,
-        Insurance,
-        Copay,
+        Insurance, 
         Others
     }
     private Long payerId;
@@ -35,11 +33,10 @@ public class ReceivePayment {
     private String shiftNo;
     private String transactionNo;
     private String paymentMethod;
-    private String referenceNumber; //in the event is copay pass visit number here
-    //paying for what now
-    //determine the invoice or bill being paid for
+    private String referenceNumber;
     private String visitNumber;
     private String patientNumber;
+    private String receiptNo;
 
     private List<BilledItem> billItems = new ArrayList<>();
 

@@ -47,7 +47,7 @@ public class InvoiceSpecification {
             }
             if (range != null) {
                 predicates.add(
-                        cb.between(root.get("createdOn"), range.getStartDate(), range.getEndDate())
+                        cb.between(root.get("date"), range.getStartDate(), range.getEndDate())
                 );
             }
 //            if (amountGreaterThan > 0) {

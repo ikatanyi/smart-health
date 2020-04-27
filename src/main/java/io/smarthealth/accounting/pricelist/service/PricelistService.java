@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.accounting.pricelist.service;
 
 import io.smarthealth.accounting.pricelist.data.PriceListData;
@@ -22,7 +17,6 @@ import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -112,6 +106,9 @@ public class PricelistService {
         return repository.findAll(spec, page);
     }
 
+    /**
+     * Get PriceList by Location and optional filter of price book
+     */
     public Page<PriceList> getPricelistByLocation(Long servicePointId, Long priceBookId, Pageable page) {
         ServicePoint servicePoint = getServicePoint(servicePointId);
 
@@ -135,7 +132,35 @@ public class PricelistService {
                 }
             }
         }
-        return repository.findByServicePoint(servicePoint, page);
+        return prices;
+    }
+
+    /**
+     * Get PriceList by Item and optional filter by price book
+     */
+    public Page<PriceList> getPricelistByItem(String itemCode, Long priceBookId, Pageable page) {
+        Item item = findItem(itemCode);
+        Page<PriceList> prices = repository.findByItem(item, page);
+
+        if (priceBookId != null) {
+            Optional<PriceBook> priceBook = priceBookRepository.findById(priceBookId);
+            if (priceBook.isPresent()) {
+                PriceBook book = priceBook.get();
+                if (book.isGlobalRate()) {
+                    return prices.map(pb -> book.toPriceBookRate(pb));
+                } else {
+                    prices.map(pbi -> {
+                        PriceBookItem i = findPriceItem(book, pbi.getItem());
+                        System.err.println("finding i " + i);
+                        if (i != null) {
+                            return i.toPriceBookItemRate(pbi);
+                        }
+                        return pbi;
+                    });
+                }
+            }
+        }
+        return prices;
     }
 
     public PriceList fetchPriceListByItemAndServicePoint(final Item item, final ServicePoint servicePoint) {
@@ -159,5 +184,35 @@ public class PricelistService {
 
     private PriceBookItem findPriceItem(PriceBook book, Item item) {
         return book.getPriceBookItems().stream().filter(x -> x.getItem().getId().equals(item.getId())).findAny().orElse(null);
+    }
+
+    /**
+     * Search Item PriceList
+     */
+    public Page<PriceList> searchPriceList(String searchItem, Long servicePointId, Long priceBookId, Pageable page) {
+        
+        Specification<PriceList> searchSpec = PriceListSpecification.searchSpecification(searchItem, servicePointId);
+        
+        Page<PriceList> prices = repository.findAll(searchSpec, page);
+
+        if (priceBookId != null) {
+            Optional<PriceBook> priceBook = priceBookRepository.findById(priceBookId);
+            if (priceBook.isPresent()) {
+                PriceBook book = priceBook.get();
+                if (book.isGlobalRate()) {
+                    return prices.map(pb -> book.toPriceBookRate(pb));
+                } else {
+                    prices.map(pbi -> {
+                        PriceBookItem i = findPriceItem(book, pbi.getItem());
+                        System.err.println("finding i " + i);
+                        if (i != null) {
+                            return i.toPriceBookItemRate(pbi);
+                        }
+                        return pbi;
+                    });
+                }
+            }
+        }
+        return prices;
     }
 }
