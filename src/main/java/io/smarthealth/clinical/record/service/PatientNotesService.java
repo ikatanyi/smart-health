@@ -103,7 +103,7 @@ public class PatientNotesService {
         patientNotesData.setHistoryNotes(patientNotes.getHistoryNotes());
         patientNotesData.setSocialHistory(patientNotes.getSocialHistory());
         if (patientNotes.getHealthProvider() != null) {
-            patientNotesData.setHealthProvider(patientNotes.getHealthProvider().getFullName());
+            patientNotesData.setHealthProvider(patientNotes.getHealthProvider().getName());
         }
         return patientNotesData;
     }

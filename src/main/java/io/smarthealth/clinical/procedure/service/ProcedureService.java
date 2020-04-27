@@ -187,7 +187,6 @@ public class ProcedureService {
     }
 
     private PatientBill toBill(PatientProcedureRegister data) {
-        //get the service point from store
         ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(data.getVisit());

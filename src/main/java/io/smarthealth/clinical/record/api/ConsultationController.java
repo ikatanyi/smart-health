@@ -91,9 +91,9 @@ public class ConsultationController {
                 .orElseThrow(() -> APIException.notFound("Employee login account provided is not valid"));
         Patient patient = patientService.findPatientOrThrow(patientNotesData.getPatientNumber());
         PatientNotes patientNotes = patientNotesService.convertDataToEntity(patientNotesData);
-        Employee healthProvider = employeeService.fetchEmployeeByUser(user);
+//        Employee healthProvider = employeeService.fetchEmployeeByUser(user);
         patientNotes.setVisit(visit);
-        patientNotes.setHealthProvider(healthProvider);
+        patientNotes.setHealthProvider(user);
         patientNotes.setPatient(patient);
 
         //check if notes already exists by visit
@@ -106,7 +106,7 @@ public class ConsultationController {
             npn.setExaminationNotes(patientNotesData.getExaminationNotes());
             npn.setHistoryNotes(patientNotesData.getHistoryNotes());
             npn.setSocialHistory(patientNotesData.getSocialHistory());
-            npn.setHealthProvider(healthProvider);
+            npn.setHealthProvider(user);
             pns = patientNotesService.createPatientNote(npn);
 
         } else {

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
 import io.smarthealth.administration.servicepoint.domain.specification.ServicePointSpecification;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -57,15 +58,22 @@ public class ServicePointService {
                 .orElseThrow(() -> APIException.notFound("Service point with id {0} not found", id));
     }
 
-    public ServicePoint getServicePointByType(final ServicePointType servicePointType) {
-        return repository.findByServicePointType(servicePointType)
-                .orElseThrow(() -> APIException.notFound("Service point identified by  {0} not found", servicePointType.name()));
+    public List<ServicePoint> getServiceLocationsByType(final ServicePointType servicePointType) {
+        return repository.findByServicePointType(servicePointType);//.orElseThrow(() -> APIException.notFound("Service point identified by  {0} not found", servicePointType.name()));
     }
 
-    public Optional<ServicePoint> getServicePoint(final ServicePointType servicePointType) {
+    public List<ServicePoint> getServiceLocations(final ServicePointType servicePointType) {
         return repository
                 .findByServicePointType(servicePointType);
     }
+
+    public ServicePoint getServicePointByType(final ServicePointType servicePointType) {
+        return repository.findByServicePointType(servicePointType).get(0);//.orElseThrow(() -> APIException.notFound("Service point identified by  {0} not found", servicePointType.name()));
+    }
+
+//    public Optional<ServicePoint> getServicePoint(final ServicePointType servicePointType) {
+//        return repository.findByServicePointType(servicePointType).get(0);
+//    }
 
     public Page<ServicePoint> listServicePoints(ServicePointType servicePointType, String pointType, Pageable page) {
         Specification<ServicePoint> spec = ServicePointSpecification.createSpecification(servicePointType, pointType);
