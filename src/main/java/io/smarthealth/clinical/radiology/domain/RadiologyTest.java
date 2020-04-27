@@ -27,13 +27,13 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "radiology_tests",uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"scanName", "item_id"}, name="unique_scan_name_item_id")})
-@Inheritance(strategy = InheritanceType.JOINED)
-public class RadiologyTest extends Identifiable{
-    private String scanName; 
+@Table(name = "radiology_tests", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"scanName", "item_id"}, name = "unique_scan_name_item_id")})
+public class RadiologyTest extends Identifiable {
+
+    private String scanName;
     private String code;
-    private Boolean status; 
+    private Boolean status;
     private Boolean supervisorConfirmation;
     private String notes;
     @Enumerated(EnumType.STRING)
@@ -44,26 +44,28 @@ public class RadiologyTest extends Identifiable{
     private ServiceTemplate serviceTemplate;
     @Enumerated(EnumType.STRING)
     private Category category;
-    
-    public RadiologyTestData toData(){
+
+    public RadiologyTestData toData() {
         RadiologyTestData entity = new RadiologyTestData();
         entity.setId(this.getId());
         entity.setNotes(this.getNotes());
-        entity.setScanName(this.getScanName());       
+        entity.setScanName(this.getScanName());
         entity.setSupervisorConfirmation(this.getSupervisorConfirmation());
-        if(this.getServiceTemplate()!=null){
+        if (this.getServiceTemplate() != null) {
             entity.setTemplateName(this.getServiceTemplate().getTemplateName());
             entity.setTemplateId(this.getServiceTemplate().getId());
-            if(this.getServiceTemplate().getNotes()!=null)
-               entity.setTemplateNotes(new String(this.getServiceTemplate().getNotes(),StandardCharsets.UTF_8));          
+            if (this.getServiceTemplate().getNotes() != null) {
+                entity.setTemplateNotes(new String(this.getServiceTemplate().getNotes(), StandardCharsets.UTF_8));
+            }
         }
-        if(this.getItem()!=null)
+        if (this.getItem() != null) {
             entity.setItemCode(this.getItem().getItemCode());
-        
-        entity.setActive(this.getStatus());     
+        }
+
+        entity.setActive(this.getStatus());
         entity.setCategory(this.getCategory());
         entity.setGender(this.getGender());
-        
+
         return entity;
     }
 }

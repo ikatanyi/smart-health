@@ -37,7 +37,7 @@ public class RadiologyTestData {
     private Gender gender;  
     @Enumerated(EnumType.STRING)
     private Category category;
-    
+    private boolean paid;
     
     
      public RadiologyTest map(RadiologyTestData rtd){
