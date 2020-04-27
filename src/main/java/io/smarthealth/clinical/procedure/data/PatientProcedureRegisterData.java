@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -31,11 +32,13 @@ public class PatientProcedureRegisterData {
     private Long requestId;
     @ApiModelProperty(hidden = true, required = false)
     private String accessionNo;
-    @ApiModelProperty(hidden = true, required = false)
+    //@ApiModelProperty(hidden = true, required = false)
     private String patientNumber;
 
-    @ApiModelProperty(hidden = true, required = false)
+//    @ApiModelProperty(hidden = true, required = false)
     private String patientName;
+    @NotNull(message = "Walk-in flag is required")
+    private Boolean isWalkin = Boolean.FALSE;
     @ApiModelProperty(required = false)
     private String requestedBy;
     @ApiModelProperty(hidden = true, required = false)
@@ -46,12 +49,12 @@ public class PatientProcedureRegisterData {
     private LocalDate createdOn;
     @ApiModelProperty(required = false, hidden = true)
     private String createdBy;
-    
+
     @ApiModelProperty(required = false, hidden = true)
     private DoctorRequestData requestData;
 
     private Long servicePointId;
-    
+
     @ApiModelProperty(required = false, hidden = true)
     private String billNumber;
     @ApiModelProperty(required = false, hidden = true)
@@ -64,7 +67,7 @@ public class PatientProcedureRegisterData {
     @ApiModelProperty(required = false, hidden = true)
     private Double taxes;
     private Double discount;
-    
+
     private LocalDate billingDate;
 
     @ApiModelProperty(hidden = true, required = false)
@@ -78,7 +81,7 @@ public class PatientProcedureRegisterData {
     public static PatientProcedureRegister map(PatientProcedureRegisterData patientregister) {
         PatientProcedureRegister e = new PatientProcedureRegister();
         e.setAccessNo(patientregister.getAccessionNo());
-        e.setAmount(patientregister.getAmount());
+        //e.setAmount(patientregister.getAmount());
         e.setDiscount(patientregister.getDiscount());
         e.setBillingDate(patientregister.getBillingDate());
         return e;

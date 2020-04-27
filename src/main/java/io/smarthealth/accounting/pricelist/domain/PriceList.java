@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "pricelist")
+@Table(name = "pricelist") 
 public class PriceList extends Auditable {
 
     @ManyToOne

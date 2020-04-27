@@ -44,7 +44,6 @@ import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -85,7 +84,7 @@ public class RadiologyService {
     private final RadiologyConfigService radiologyConfigService;
 
     private final RadiologyResultRepository radiologyResultRepo;
-    
+
     private final PatientScanTestRepository registerTestRepository;
 
     @Transactional
@@ -102,8 +101,8 @@ public class RadiologyService {
             patientScanReg.setPatientName(visit.getPatient().getFullName());
             patientScanReg.setPatientNo(visit.getPatient().getPatientNumber());
         } else {
-            patientScanReg.setPatientName(patientScanReg.getPatientNo());
-            patientScanReg.setPatientNo(patientScanReg.getPatientNo());
+            patientScanReg.setPatientName(patientScanRegData.getPatientName());
+            patientScanReg.setPatientNo(patientScanRegData.getPatientNumber());
         }
 
         Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(patientScanRegData.getRequestedBy());
@@ -131,6 +130,7 @@ public class RadiologyService {
                 pte.setQuantity(id.getQuantity());
                 pte.setRadiologyTest(labTestType);
                 pte.setStatus(ScanTestState.Scheduled);
+                pte.setPaid(patientScanReg.getPaymentMode().equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
                 Optional<Employee> medic = employeeService.findEmployeeByStaffNumber(id.getMedicId());
                 if (medic.isPresent()) {
                     pte.setMedic(medic.get());
@@ -162,7 +162,7 @@ public class RadiologyService {
         if (data.getVisit() != null) {
             patientbill.setPatient(data.getVisit().getPatient());
         }
-          if (!data.getIsWalkin()) { 
+        if (!data.getIsWalkin()) {
             patientbill.setWalkinFlag(Boolean.FALSE);
         } else {
             patientbill.setReference(data.getPatientNo());
@@ -172,11 +172,11 @@ public class RadiologyService {
         patientbill.setBillingDate(data.getBillingDate());
         patientbill.setAmount(data.getAmount());
         patientbill.setDiscount(data.getDiscount());
-        patientbill.setBalance(data.getBalance());
+        patientbill.setBalance(data.getAmount());
         patientbill.setPaymentMode(data.getPaymentMode());
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
-        patientbill.setBillingDate(LocalDate.now());
+
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
 
         patientbill.setBillNumber(bill_no);
@@ -203,6 +203,7 @@ public class RadiologyService {
                     billItem.setServicePoint(servicePoint.getName());
                     billItem.setServicePointId(servicePoint.getId());
                     billItem.setStatus(BillStatus.Draft);
+                    billItem.setBillingDate(data.getBillingDate());
 
                     return billItem;
                 })
@@ -259,7 +260,7 @@ public class RadiologyService {
     }
 
     public Page<RadiologyResult> findAllRadiologyResults(String visitNumber, String patientNumber, String scanNumber, Boolean walkin, ScanTestState status, String orderNo, DateRange range, String search, Pageable pgbl) {
-        Specification spec = RadiologyResultSpecification.createSpecification(patientNumber, orderNo, visitNumber, walkin, status, range,search);
+        Specification spec = RadiologyResultSpecification.createSpecification(patientNumber, orderNo, visitNumber, walkin, status, range, search);
         return radiologyResultRepo.findAll(spec, pgbl);
 
     }
@@ -291,7 +292,7 @@ public class RadiologyService {
         return patientradiologyRepository.findById(id).orElseThrow(() -> APIException.notFound("Patient Scan identified by Id{0} not found ", id));
     }
 
-     public List<RadiologyResultData> getLabResultDataByVisit(Visit visit) {
+    public List<RadiologyResultData> getLabResultDataByVisit(Visit visit) {
         return getResultByVisit(visit)
                 .stream()
                 .map(x -> x.toData())
@@ -301,11 +302,11 @@ public class RadiologyService {
     public List<RadiologyResult> getResultByVisit(Visit visit) {
         return radiologyResultRepo.findByVisit(visit);
     }
-    
-     public List<PatientScanTest> getPatientScansTestByVisit(String visitNumber) {
+
+    public List<PatientScanTest> getPatientScansTestByVisit(String visitNumber) {
         return registerTestRepository.findByVisit(visitNumber);
     }
-    
+
     public List<PatientScanTest> findScanResultsByVisit(final Visit visit) {
         List<PatientScanRegister> scanTestFile = findPatientScanRegisterByVisit(visit);
         List<PatientScanTest> patientScansDone = new ArrayList<>();

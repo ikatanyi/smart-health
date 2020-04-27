@@ -5,7 +5,6 @@
  */
 package io.smarthealth.clinical.radiology.data;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
@@ -37,14 +36,13 @@ public class PatientScanRegisterData {
     private String accessionNo;
     private String patientNumber;
 
-    @ApiModelProperty(hidden = true, required = false)
     private String patientName;
     @ApiModelProperty(hidden = true, required = false)
     private String billNumber;
     @ApiModelProperty(required = false)
     private String requestedBy;
     @ApiModelProperty(hidden = true, required = false)
-    private String requestedById;    
+    private String requestedById;
     @ApiModelProperty(hidden = true, required = false)
     private LocalDate createdOn;
     private LocalDate billingDate;
@@ -52,17 +50,17 @@ public class PatientScanRegisterData {
     private Boolean voided;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    
+
     private Double amount;
-    
+
     private Double Discount;
-    
+
     private String paymentMode;
-    
+
     private Double balance;
 
     private String servicePoint;
-    
+
     @ApiModelProperty(hidden = true, required = false)
     private String transactionId;
 

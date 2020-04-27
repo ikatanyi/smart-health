@@ -11,6 +11,11 @@ import lombok.Data;
 public class BilledItem {
 
     private Long billItemId; //this can be the 
+    private Double quantity;
+    private Double price;
     private BigDecimal amount;
     private Long pricelistItemId;
+    private Long servicePointId;
+    private String servicePoint;
+    private Long medicId;
 }

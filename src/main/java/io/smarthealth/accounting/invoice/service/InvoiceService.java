@@ -33,6 +33,8 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,12 +66,14 @@ public class InvoiceService {
 //    private final TxnService txnService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public String createInvoice(CreateInvoice invoiceData) {
+    public  List<Invoice> createInvoice(CreateInvoice invoiceData) {
 
         Visit visit = visitService.findVisitEntityOrThrow(invoiceData.getVisitNumber());
 
         String trxId = sequenceNumberService.next(1L, Sequences.Transactions.name());
-
+        
+     List<Invoice> savedInvoices=new ArrayList<>();
+     
         invoiceData.getPayers()
                 .stream()
                 .forEach(
@@ -125,11 +129,11 @@ public class InvoiceService {
                                         });
                             }
 
-                            saveInvoice(invoice);
+                          savedInvoices.add(saveInvoice(invoice));
                         }
                 );
 
-        return trxId;
+        return savedInvoices;
 
     }
 

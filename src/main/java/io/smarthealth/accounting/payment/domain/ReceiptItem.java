@@ -57,6 +57,11 @@ public class ReceiptItem extends Identifiable {
         this.taxes = taxes;
         this.amountPaid = amountPaid;
     }
+    public static ReceiptItem createReceipt(PatientBillItem bill){
+        System.err.println("creating a receipti details "+ bill.getId()+" namr "+bill.getPatientBill().getPatient().getFullName());
+        System.err.println(bill.toData());
+        return new ReceiptItem(bill, bill.getQuantity(), BigDecimal.valueOf(bill.getPrice()), BigDecimal.valueOf(bill.getDiscount()), BigDecimal.valueOf(bill.getTaxes()), BigDecimal.valueOf(bill.getAmount()));
+    }
     
     public ReceiptItemData toData(){
         ReceiptItemData data = new ReceiptItemData();
@@ -65,10 +70,14 @@ public class ReceiptItem extends Identifiable {
             data.setItemName(this.getItem().getItem().getItemName());
             data.setItemCode(this.getItem().getItem().getItemCode());
             data.setAmountPaid(this.getAmountPaid());
-            data.setPrice(BigDecimal.valueOf(this.getItem().getPrice()));
+            data.setPrice(toBigDecimal(this.getItem().getPrice()));
             data.setQuantity(this.getItem().getQuantity());
-            data.setTaxes(BigDecimal.valueOf(this.getItem().getTaxes()));
+            data.setTaxes(toBigDecimal(this.getItem().getTaxes()));
         }
         return data;
+    }
+       private BigDecimal toBigDecimal(Double val){
+        if(val==null) return BigDecimal.ZERO;
+        return BigDecimal.valueOf(val);
     }
 }

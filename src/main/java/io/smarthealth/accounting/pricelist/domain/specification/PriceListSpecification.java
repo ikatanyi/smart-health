@@ -18,10 +18,27 @@ public class PriceListSpecification {
         super();
     }
 
+    public static Specification<PriceList> searchSpecification(String queryItem, Long servicePointId) {
+        return (root, query, cb) -> {
+            final ArrayList<Predicate> predicates = new ArrayList<>();
+
+            if (queryItem != null) {
+                final String likeExpression = "%" + queryItem + "%";
+                predicates.add(
+                        cb.or(
+                                cb.like(root.get("item").get("itemName"), likeExpression),
+                                cb.like(root.get("item").get("itemCode"), likeExpression)
+                        )
+                );
+            }
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
+
     public static Specification<PriceList> createSpecification(String queryItem, Long servicePointId, Boolean defaultPrice, ItemCategory category, ItemType itemType) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
-           
+
             if (queryItem != null) {
                 final String likeExpression = "%" + queryItem + "%";
                 predicates.add(
@@ -35,19 +52,19 @@ public class PriceListSpecification {
             if (defaultPrice != null) {
                 predicates.add(cb.equal(root.get("defaultPrice"), defaultPrice));
             }
-             if (category != null) {
+            if (category != null) {
                 predicates.add(cb.equal(root.get("item").get("category"), category));
             }
-              if (itemType != null) {
+            if (itemType != null) {
                 predicates.add(cb.equal(root.get("item").get("itemType"), itemType));
             }
-              if (servicePointId != null) {
+            if (servicePointId != null) {
                 predicates.add(cb.equal(root.get("servicePoint").get("id"), servicePointId));
             }
 //              if(names!=null && !names.isEmpty()) {
 //                    predicates.add(root.get("employeeName").in(names));
 //                }
- 
+
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

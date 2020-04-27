@@ -36,7 +36,6 @@ import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -50,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.procedure.domain.ProcedureRegisterRepository;
 import io.smarthealth.clinical.procedure.domain.RegisterTestRepository;
 import io.smarthealth.clinical.procedure.domain.specification.RegisterTestSpecification;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 
 /**
  *
@@ -127,34 +127,41 @@ public class ProcedureService {
     }
 
     @Transactional
-    public PatientProcedureRegister savePatientResults(PatientProcedureRegisterData patientProcRegData, final String visitNo) {
+    public PatientProcedureRegister savePatientProcedure(PatientProcedureRegisterData patientProcRegData, final String visitNo) {
         PatientProcedureRegister patientProcReg = PatientProcedureRegisterData.map(patientProcRegData);
         String transactionId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         patientProcReg.setTransactionId(transactionId);
-
-        if (visitNo != null) {
+        System.out.println("patientProcRegData.isWalkin() " + patientProcRegData.getIsWalkin());
+        if (patientProcRegData.getIsWalkin()) {
+            patientProcReg.setPatientName(patientProcRegData.getPatientName());
+            patientProcReg.setPatientNo(patientProcRegData.getPatientNumber());
+            patientProcReg.setIsWalkin(Boolean.TRUE);
+        } else {
             Visit visit = visitService.findVisitEntityOrThrow(visitNo);
             patientProcReg.setVisit(visit);
             patientProcReg.setPatientName(visit.getPatient().getFullName());
             patientProcReg.setPatientNo(visit.getPatient().getPatientNumber());
+            patientProcReg.setIsWalkin(Boolean.FALSE);
         }
+
         Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(patientProcRegData.getRequestedBy());
         if (emp.isPresent()) {
             patientProcReg.setRequestedBy(emp.get());
         }
 
-        
         if (patientProcRegData.getAccessionNo() == null || patientProcRegData.getAccessionNo().equals("")) {
             String accessionNo = sequenceNumberService.next(1L, Sequences.Procedure.name());
             patientProcReg.setAccessNo(accessionNo);
         }
 
         //PatientTestRegister savedPatientTestRegister = patientRegRepository.save(patientTestReg);
+        double amount = 0;
         if (!patientProcRegData.getItemData().isEmpty()) {
             List<PatientProcedureTest> patientProcTest = new ArrayList<>();
             for (ProcedureItemData id : patientProcRegData.getItemData()) {
                 Item item = itemService.findItemWithNoFoundDetection(id.getItemCode());
                 PatientProcedureTest pte = new PatientProcedureTest();
+                amount = amount + id.getItemPrice();
                 pte.setStatus(ProcedureTestState.Scheduled);
                 pte.setTestPrice(id.getItemPrice());
                 pte.setQuantity(id.getQuantity());
@@ -178,6 +185,8 @@ public class ProcedureService {
             patientProcReg.addPatientProcedures(patientProcTest);
 
         }
+        patientProcReg.setAmount(amount);
+        patientProcReg.setBalance(amount);
         PatientProcedureRegister savedProcedure = patientprocedureRepository.save(patientProcReg);
 
         PatientBill bill = toBill(savedProcedure);
@@ -187,28 +196,29 @@ public class ProcedureService {
     }
 
     private PatientBill toBill(PatientProcedureRegister data) {
-        //get the service point from store
         ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(data.getVisit());
         if (data.getVisit() != null) {
             patientbill.setPatient(data.getVisit().getPatient());
+
         }
-          if (!data.getIsWalkin()) { 
+        if (!data.getIsWalkin()) {
             patientbill.setWalkinFlag(Boolean.FALSE);
+            patientbill.setPaymentMode(data.getVisit().getPaymentMethod().name());
         } else {
             patientbill.setReference(data.getPatientNo());
             patientbill.setOtherDetails(data.getPatientName());
             patientbill.setWalkinFlag(Boolean.TRUE);
+            patientbill.setPaymentMode(VisitEnum.PaymentMethod.Cash.name());
         }
         patientbill.setAmount(data.getAmount());
         patientbill.setBillingDate(data.getBillingDate());
         patientbill.setDiscount(data.getDiscount());
         patientbill.setBalance(data.getAmount());
-        patientbill.setPaymentMode(data.getPaymentMode());
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
-        patientbill.setBillingDate(LocalDate.now());
+
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
 
         patientbill.setBillNumber(bill_no);
@@ -223,16 +233,18 @@ public class ProcedureService {
                     if (lineData.getMedic() != null) {
                         billItem.setMedicId(lineData.getMedic().getId());
                     }
-                    if (!lineData.getPatientProcedureRegister().getIsWalkin() && lineData.getRequest()!=null) {
+                    if (!lineData.getPatientProcedureRegister().getIsWalkin() && lineData.getRequest() != null) {
                         billItem.setRequestReference(lineData.getRequest().getId());
                     }
                     billItem.setItem(item);
                     billItem.setPrice(lineData.getTestPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getTestPrice() * lineData.getQuantity());
+                    billItem.setBalance(lineData.getTestPrice() * lineData.getQuantity());
                     billItem.setServicePoint(servicePoint.getName());
                     billItem.setServicePointId(servicePoint.getId());
                     billItem.setStatus(BillStatus.Draft);
+                    billItem.setBillingDate(data.getBillingDate());
 
                     return billItem;
                 })
@@ -253,14 +265,13 @@ public class ProcedureService {
     public PatientProcedureRegister findProceduresByIdWithNotFoundDetection(String accessNo) {
         return patientprocedureRepository.findByAccessNo(accessNo).orElseThrow(() -> APIException.notFound("Patient Procedure identified by procedure Number {0} not found ", accessNo));
     }
-    
 
     public List<PatientProcedureRegister> findPatientProcedureRegisterByVisit(String VisitNumber) {
         Visit visit = visitService.findVisitEntityOrThrow(VisitNumber);
         return patientprocedureRepository.findByVisit(visit);
     }
-    
-     public Page<PatientProcedureTest> findPatientProcedureTests(String PatientNumber,String scanNo, String visitId, ProcedureTestState status, DateRange range, Pageable pgbl) {
+
+    public Page<PatientProcedureTest> findPatientProcedureTests(String PatientNumber, String scanNo, String visitId, ProcedureTestState status, DateRange range, Pageable pgbl) {
         Specification spec = RegisterTestSpecification.createSpecification(PatientNumber, scanNo, visitId, status, range);
         return registerTestRepository.findAll(spec, pgbl);
     }
@@ -272,6 +283,6 @@ public class ProcedureService {
     }
 
     public List<PatientProcedureTest> findProcedureResultsByVisit(Visit visit) {
-       return registerTestRepository.findByVisit(visit);
+        return registerTestRepository.findByVisit(visit);
     }
 }

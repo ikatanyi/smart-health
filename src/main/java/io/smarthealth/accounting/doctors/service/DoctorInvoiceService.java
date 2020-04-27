@@ -126,13 +126,11 @@ public class DoctorInvoiceService {
         if (!debitAccount.isPresent()) {
             throw APIException.badRequest("Cost of Consultancy Account is Not Mapped");
         }
-        String debitAcc = debitAccount.get().getAccount().getIdentifier();
 
         Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Doctors_Fee);
         if (!creditAccount.isPresent()) {
             throw APIException.badRequest("Doctors Ledger Account is Not Mapped");
         }
-        String creditAcc = creditAccount.get().getAccount().getIdentifier();
 
         BigDecimal amount = invoice.getAmount();
         String narration = "Doctor " + invoice.getDoctor().getFullName() + " invoicing for patient " + invoice.getPatient().getPatientNumber() + " Bill Number: " + invoice.getInvoiceNumber();

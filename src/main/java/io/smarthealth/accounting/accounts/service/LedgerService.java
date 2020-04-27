@@ -122,7 +122,9 @@ public class LedgerService {
         parentLedgerEntity.setName(ledgerData.getName());
         parentLedgerEntity.setDescription(ledgerData.getDescription());
         parentLedgerEntity.setShowAccountsInChart(ledgerData.getShowAccountsInChart());
+        
         final Ledger savedParentLedger = this.ledgerRepository.save(parentLedgerEntity);
+        
         this.addSubLedgersInternal(ledgerData.getSubLedgers(), savedParentLedger);
 
         log.debug("Ledger {} created.", ledgerData.getIdentifier());

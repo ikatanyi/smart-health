@@ -15,6 +15,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface PriceListRepository extends JpaRepository<PriceList, Long>, JpaSpecificationExecutor<PriceList> {
 
     Page<PriceList> findByServicePoint(ServicePoint servicePoint, Pageable page);
-
+    
+    Page<PriceList> findByItem(Item item, Pageable page);
+      
     Optional<PriceList> findByItemAndServicePoint(final Item item, final ServicePoint servicePoint);
 }

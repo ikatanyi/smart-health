@@ -10,16 +10,12 @@ import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
-import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.cashier.domain.ShiftRepository;
-import io.smarthealth.accounting.payment.data.CopaymentData;
 import io.smarthealth.accounting.payment.data.ReceiptMethod;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
 import io.smarthealth.accounting.payment.domain.Banking;
-import io.smarthealth.accounting.payment.domain.Copayment;
-import io.smarthealth.accounting.payment.domain.CopaymentRepository;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.domain.ReceiptItem;
 import io.smarthealth.accounting.payment.domain.ReceiptTransaction;
@@ -54,9 +50,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.ReceiptRepository;
-import io.smarthealth.clinical.visit.domain.Visit;
-import io.smarthealth.clinical.visit.service.VisitService;
-import java.time.LocalDate;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 
 /**
  *
@@ -81,7 +75,6 @@ public class ReceivePaymentService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(ReceivePayment data) {
-        //TODO if walkin create the bill and pay for it
 
         Receipt receipt = new Receipt();
         receipt.setAmount(data.getAmount());
@@ -104,11 +97,7 @@ public class ReceivePaymentService {
                     receipt.setDescription("Patient Payment");
                     break;
                 case Insurance:
-                    //find the payer and add them
                     receipt.setDescription("Insurance Payment");
-                    break;
-                case Copay:
-                    receipt.setDescription("Copayment");
                     break;
                 default:
                     receipt.setDescription("Other Payment");
@@ -135,33 +124,50 @@ public class ReceivePaymentService {
 
         receipt.setTransactionNo(trdId);
         receipt.setReceiptNo(receiptNo);
+        data.setReceiptNo(receiptNo);
+        data.setTransactionNo(trdId);
 
-        List<PatientBillItem> billedItems = new ArrayList<>();
-        //update payments for the bills
-        if (data.getWalkin()) {
-            //check if we have a bill
+        List<PatientBillItem> billedItems = billingService.validatedBilledItem(data);
+        billedItems.stream()
+                .forEach(item -> {
+                    System.err.println("Billingss  "+item);
+                    if (item.getItem().getCategory() == ItemCategory.CoPay) {
+                        copaymentService.createCopayment(data.getVisitNumber(), data.getPatientNumber(), data.getAmount(), receiptNo);
+                    }
+                    System.out.print(item);
+                     receipt.addReceiptItem(
+                             new ReceiptItem(
+                                     item, item.getQuantity(), 
+                                     toBigDecimal(item.getPrice()),
+                                     toBigDecimal(item.getDiscount()), 
+                                     toBigDecimal(item.getTaxes()), 
+                                     toBigDecimal(item.getAmount())
+                             ));
+//                    receipt.addReceiptItem(ReceiptItem.createReceipt+" "+ill));
+                });
 
-        }
-        if (data.getBillItems() != null && !data.getBillItems().isEmpty()) {
-            if (!data.getBillItems().isEmpty()) {
-                data.getBillItems()
-                        .stream()
-                        .forEach(x -> {
-                            PatientBillItem item = billingService.findBillItemById(x.getBillItemId());
-                            BigDecimal bal = BigDecimal.valueOf(item.getAmount()).subtract(x.getAmount());
-                            item.setPaid(Boolean.TRUE);
-                            item.setStatus(BillStatus.Paid);
-                            item.setPaymentReference(receiptNo);
-                            item.setBalance(bal.doubleValue());
-                            PatientBillItem i = billingService.updateBillItem(item);
-
-                            billedItems.add(i);
-                            //update the bill as 
-                            receipt.addReceiptItem(new ReceiptItem(item, item.getQuantity(), BigDecimal.valueOf(item.getPrice()), BigDecimal.valueOf(item.getDiscount()), BigDecimal.valueOf(item.getTaxes()), BigDecimal.valueOf(item.getAmount())));
-                        });
-            }
-        }
-
+//        if (data.getBillItems() != null && !data.getBillItems().isEmpty()) {
+//            if (!data.getBillItems().isEmpty()) {
+//                data.getBillItems()
+//                        .stream()
+//                        .forEach(x -> {
+//                            if (x.getBillItemId() != null) {
+//                                //create the bill
+//                            }
+//                            PatientBillItem item = billingService.findBillItemById(x.getBillItemId());
+//                            BigDecimal bal = BigDecimal.valueOf(item.getAmount()).subtract(x.getAmount());
+//                            item.setPaid(Boolean.TRUE);
+//                            item.setStatus(BillStatus.Paid);
+//                            item.setPaymentReference(receiptNo);
+//                            item.setBalance(bal.doubleValue());
+//                            PatientBillItem i = billingService.updateBillItem(item);
+//
+//                            billedItems.add(i);
+//                            //update the bill as 
+//                            receipt.addReceiptItem(new ReceiptItem(item, item.getQuantity(), BigDecimal.valueOf(item.getPrice()), BigDecimal.valueOf(item.getDiscount()), BigDecimal.valueOf(item.getTaxes()), BigDecimal.valueOf(item.getAmount())));
+//                        });
+//            }
+//        }
         Receipt savedReceipt = repository.save(receipt); //save the payment
         //bank payments
         depositToBank(savedReceipt, toBank);
@@ -178,10 +184,7 @@ public class ReceivePaymentService {
                     journalEntryService.save(toJournalRemittance(payer.get(), receipt, toBank));
                 }
                 break;
-            case Copay:
-                Copayment copay=copaymentService.createCopayment(data.getVisitNumber(), data.getPatientNumber(), data.getAmount(),savedReceipt);
-//                 journalEntryService.save(toJournalRemittance(payer.get(), receipt, toBank));
-                break;
+
             case Others:
                 break;
             default:
@@ -242,15 +245,22 @@ public class ReceivePaymentService {
 
         Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
 
+        Optional<FinancialActivityAccount> copay = activityAccountRepository.findByFinancialActivity(FinancialActivity.Copayment);
+
         if (!debitAccount.isPresent()) {
             throw APIException.badRequest("Receipt Control Account is Not Mapped");
         }
+        if (!copay.isPresent()) {
+            throw APIException.badRequest("Copayment Account is Not Mapped");
+        }
+
 //        String debitAcc = debitAccount.get().getAccount().getIdentifier();
         List<JournalEntryItem> items = new ArrayList<>();
 
         if (!billedItems.isEmpty()) {
             Map<Long, Double> map = billedItems
                     .stream()
+                    .filter(x -> x.getItem().getCategory() != ItemCategory.CoPay)
                     .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
                             Collectors.summingDouble(PatientBillItem::getAmount)
                     )
@@ -265,9 +275,6 @@ public class ReceivePaymentService {
 
                 items.add(new JournalEntryItem(debitAccount.get().getAccount(), narration, amount, BigDecimal.ZERO));
                 items.add(new JournalEntryItem(credit, narration, BigDecimal.ZERO, amount));
-//                items.add(new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount));
-//                items.add(new JournalEntryItem(narration, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
-
             });
             //expenses
             Map<Long, Double> inventory = billedItems
@@ -288,31 +295,30 @@ public class ReceivePaymentService {
 
                     items.add(new JournalEntryItem(debit, narration, amount, BigDecimal.ZERO));
                     items.add(new JournalEntryItem(credit, narration, BigDecimal.ZERO, amount));
-
-//                    items.add(new JournalEntryItem(narration, debit.getIdentifier(), JournalEntryItem.Type.DEBIT, amount));
-//                    items.add(new JournalEntryItem(narration, credit.getIdentifier(), JournalEntryItem.Type.CREDIT, amount));
                 });
             }
         }
+
+        billedItems.stream()
+                .filter(x -> x.getItem().getCategory() == ItemCategory.CoPay)
+                .forEach(x -> {
+                    String narration = "Copayment Receipting for - " + x.getPatientBill().getPatient().getPatientNumber();
+                    BigDecimal amount = BigDecimal.valueOf(x.getAmount());
+                    items.add(new JournalEntryItem(debitAccount.get().getAccount(), narration, amount, BigDecimal.ZERO));
+                    items.add(new JournalEntryItem(copay.get().getAccount(), narration, BigDecimal.ZERO, amount));
+                });
         //
         if (!methods.isEmpty()) {
             methods.stream()
                     .forEach(method -> {
-                        //check if payment method has a bank
                         if (StringUtils.isNotBlank(method.getAccountNumber())) {
                             Optional<BankAccount> bank = bankingService.findBankAccountByNumber(method.getAccountNumber());
                             if (bank.isPresent()) {
                                 BankAccount account = bank.get();
-//                                String bankDebitAcc = account.getLedgerAccount().getIdentifier();//debit the bank account
-//                                String bankCreditAcc = debitAccount.get().getAccount().getIdentifier(); //credit receipt control
-
                                 String narration = "Banking Patient Receipt number - " + payment.getReceiptNo();
                                 BigDecimal amount = method.getAmount();
                                 items.add(new JournalEntryItem(account.getLedgerAccount(), narration, amount, BigDecimal.ZERO));
                                 items.add(new JournalEntryItem(debitAccount.get().getAccount(), narration, BigDecimal.ZERO, amount));
-
-//                                items.add(new JournalEntryItem(narration, bankDebitAcc, JournalEntryItem.Type.DEBIT, amount));
-//                                items.add(new JournalEntryItem(narration, bankCreditAcc, JournalEntryItem.Type.CREDIT, amount));
                             }
                         }
                     });
@@ -332,10 +338,6 @@ public class ReceivePaymentService {
         if (payer == null || payer.getDebitAccount() == null) {
             return null;
         }
-//        Optional<FinancialActivityAccount> creditors = activityAccountRepository.findByFinancialActivity(FinancialActivity.Accounts_Receivable);
-//        if (!creditors.isPresent()) {
-//            throw APIException.badRequest("Receipt Control Account is Not Mapped");
-//        }
         List<JournalEntryItem> items = new ArrayList<>();
         if (!methods.isEmpty()) {
             methods.stream()
@@ -345,15 +347,10 @@ public class ReceivePaymentService {
                             Optional<BankAccount> bank = bankingService.findBankAccountByNumber(method.getAccountNumber());
                             if (bank.isPresent()) {
                                 BankAccount account = bank.get();
-//                                String bankDebitAcc = account.getLedgerAccount().getIdentifier();//debit the bank account
-//                                String bankCreditAcc = payer.getDebitAccount().getIdentifier(); //credit receipt control
-
                                 String narration = "Banking Remittance Number - " + method.getReference();
                                 BigDecimal amount = method.getAmount();
                                 items.add(new JournalEntryItem(account.getLedgerAccount(), narration, amount, BigDecimal.ZERO));
                                 items.add(new JournalEntryItem(payer.getDebitAccount(), narration, BigDecimal.ZERO, amount));
-//                                items.add(new JournalEntryItem(narration, bankDebitAcc, JournalEntryItem.Type.DEBIT, amount));
-//                                items.add(new JournalEntryItem(narration, bankCreditAcc, JournalEntryItem.Type.CREDIT, amount));
                             }
                         }
                     });
@@ -367,22 +364,8 @@ public class ReceivePaymentService {
         toSave.setStatus(JournalState.PENDING);
         return toSave;
     }
-
-    private JournalEntry toJournalCopayment() {
-
-        Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
-
-        if (!debitAccount.isPresent()) {
-            throw APIException.badRequest("Receipt Control Account is Not Mapped");
-        }
-//        String debitAcc = debitAccount.get().getAccount().getIdentifier();
-        List<JournalEntryItem> items = new ArrayList<>();
-
-        String description = "";
-        JournalEntry toSave = new JournalEntry(LocalDate.now(), description, items);
-        toSave.setTransactionType(TransactionType.Remittance);
-        toSave.setTransactionNo("");
-        toSave.setStatus(JournalState.PENDING);
-        return toSave;
+    private BigDecimal toBigDecimal(Double val){
+        if(val==null) return BigDecimal.ZERO;
+        return BigDecimal.valueOf(val);
     }
 }
