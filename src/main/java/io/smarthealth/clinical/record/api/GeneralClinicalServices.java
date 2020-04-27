@@ -153,7 +153,8 @@ public class GeneralClinicalServices {
             //create bill for the referred doctor
             //find consultation service by doctor selected
             if (rd.getDoctorServiceId() != null) {
-                ServicePoint sp = servicePointService.getServicePoint(ServicePointType.Consultation).orElseThrow(() -> APIException.notFound("Consultation service point not set", ""));
+                //TODO: Use multilocation capability 
+                ServicePoint sp = servicePointService.getServicePointByType(ServicePointType.Consultation);//.orElseThrow(() -> APIException.notFound("Consultation service point not set", ""));
                 DoctorItem docService = doctorItemService.getDoctorItem(rd.getDoctorServiceId());
                 PriceList pricelist = pricelistService.fetchPriceListByItemAndServicePoint(docService.getServiceType(), sp);
                 List<BillItemData> billItems = new ArrayList<>();
