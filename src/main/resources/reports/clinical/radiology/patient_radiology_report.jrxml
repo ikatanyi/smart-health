@@ -129,7 +129,7 @@
 				<textFieldExpression><![CDATA[$F{isWalkin}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="68" y="2" width="201" height="14" uuid="fc71da6d-13f2-4f25-b973-86d06fe2856d"/>
+				<reportElement x="68" y="3" width="201" height="14" uuid="fc71da6d-13f2-4f25-b973-86d06fe2856d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>

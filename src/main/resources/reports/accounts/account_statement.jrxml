@@ -50,10 +50,6 @@
 	<field name="invoiceNo" class="java.lang.String"/>
 	<field name="patientName" class="java.lang.String"/>
 	<field name="date" class="java.lang.String"/>
-	<variable name="total" class="java.lang.Double" calculation="Sum">
-		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
-		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>
-	</variable>
 	<group name="reportGroup">
 		<groupExpression><![CDATA[$V{COLUMN_COUNT}]]></groupExpression>
 		<groupFooter>
@@ -284,14 +280,6 @@
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="452" y="1" width="60" height="13" uuid="e62e276a-9832-4f79-a8d8-fa6bf6244f89"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
-					<paragraph rightIndent="2"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{total}==null?0.00:$V{total}]]></textFieldExpression>
 			</textField>
 		</band>
 	</lastPageFooter>

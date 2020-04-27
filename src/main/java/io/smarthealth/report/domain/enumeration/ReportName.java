@@ -33,5 +33,8 @@ public enum ReportName {
         Patient_Visit,
         Patient_Diagnosis,   
         Patient_Card,
-        Patient_Receipt
+        Patient_Receipt,
+        Accounts,
+        Income_Expense_Account,
+        Chart_Of_Account
 }
