@@ -52,7 +52,6 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
     List<Employee> practionersByActiveVisits();
 
     @Query(value = "SELECT v FROM Visit v WHERE  TIMESTAMPDIFF(hour, start_datetime,now())  >= '24' AND v.status = 'CheckIn'")
-//    @Query(value = "SELECT v FROM Visit v WHERE v.startDatetime <= (now() - INTERVAL 1 DAY) AND v.status = 'CheckIn'")
     List<Visit> visitsPast24hours();
 
 }
