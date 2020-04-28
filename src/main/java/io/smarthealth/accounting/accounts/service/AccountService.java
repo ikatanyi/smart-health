@@ -56,8 +56,8 @@ public class AccountService {
     }
 
     public AccountPage fetchAccounts(
-            final boolean includeClosed, final String term, final AccountType type,
-            final boolean includeCustomerAccounts, final Pageable pageable) {
+            final Boolean includeClosed, final String term, final AccountType type,
+            final Boolean includeCustomerAccounts, final Pageable pageable) {
 
         final Page<Account> accountEntities = this.accountRepository.findAll(
                 AccountSpecification.createSpecification(includeClosed, term, type, includeCustomerAccounts), pageable

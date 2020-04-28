@@ -14,13 +14,13 @@ public class AccountSpecification {
     }
 
     public static Specification<Account> createSpecification(
-            final boolean includeClosed, final String term, final AccountType type, final boolean includeCustomerAccounts) {
+            final Boolean includeClosed, final String term, final AccountType type, final Boolean includeCustomerAccounts) {
 
         return (root, query, cb) -> {
 
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
-            if (!includeClosed) {
+            if (includeClosed!=null && !includeClosed) {
                 predicates.add(
                         root.get("state").in(
                                 AccountState.OPEN,

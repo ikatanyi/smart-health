@@ -41,7 +41,7 @@ public class AdmissionService {
     public Admission createAdmission(CreateAdmission data) {
         Patient patient = getPatientOrThrow(data.getPatientNumber());
         Bed bed = bedService.getBedOrThrow(data.getBedId());
-        Employee medic = employeeRepository.findById(data.getAdmittingDoctorId()).orElse(null);
+        Employee medic = data.getAdmittingDoctorId()!=null ? employeeRepository.findById(data.getAdmittingDoctorId()).orElse(null): null;
 
         Admission admission = new Admission();
         admission.setAdmissionDate(data.getAdmissionDate());

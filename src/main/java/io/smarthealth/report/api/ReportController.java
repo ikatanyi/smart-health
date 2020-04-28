@@ -116,6 +116,16 @@ public class ReportController {
                 break;
             case Patient_Receipt:
                 reportService.getPatientReceipt(queryParams, format, response);
+                break;
+            case Accounts:
+                reportService.getAccounts(queryParams, format, response);
+                break;
+            case Income_Expense_Account:
+                reportService.getIncomeExpenseAccounts(format, response);
+                break;
+            case Chart_Of_Account:
+                reportService.getChartOfAccounts(format, response);
+                break; 
             default:
                 break;
 

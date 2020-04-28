@@ -5,6 +5,12 @@
  */
 package io.smarthealth.report.service;
 
+import io.smarthealth.accounting.accounts.data.AccountData;
+import io.smarthealth.accounting.accounts.data.ChartOfAccountEntry;
+import io.smarthealth.accounting.accounts.domain.AccountType;
+import io.smarthealth.accounting.accounts.domain.IncomeExpenseData;
+import io.smarthealth.accounting.accounts.service.AccountService;
+import io.smarthealth.accounting.accounts.service.ChartOfAccountServices;
 import io.smarthealth.accounting.accounts.service.TrialBalanceService;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
@@ -63,8 +69,8 @@ public class AccountReportService {
     private final VisitService visitService;
     private final PatientService patientService;
     private final ReceivePaymentService paymentService;
-    
-    
+    private final AccountService accountService;
+    private final ChartOfAccountServices chartOfAccountsService;    
     private final PrescriptionService prescriptionService;
     
    
@@ -94,6 +100,80 @@ public class AccountReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/TrialBalance");
         reportData.setReportName("trialBalance");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getAccounts(MultiValueMap<String,String>reportParam,  ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException{
+        Boolean includeClosed = reportParam.getFirst("includeClosed")!=null?Boolean.getBoolean(reportParam.getFirst("includeClosed")):null;
+        String term = reportParam.getFirst("term");
+        AccountType type = AccountTypeToEnum(reportParam.getFirst("type"));
+        Boolean includeCustomerAccounts = reportParam.getFirst("includeCustomerAccounts")!=null?Boolean.getBoolean(reportParam.getFirst("includeCustomerAccounts")):null;
+        ReportData reportData = new ReportData();
+        List<AccountData> accountData = accountService.fetchAccounts(includeClosed, term, type, includeCustomerAccounts, Pageable.unpaged()).getAccounts();
+        
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("type");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+
+        reportData.setData(accountData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/accounts");
+        reportData.setReportName("accounts_Statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getIncomeExpenseAccounts(ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException{
+        ReportData reportData = new ReportData();
+        List incomeExpeData =new ArrayList();
+        IncomeExpenseData accountData = accountService.getIncomeExpenseAccounts();
+        
+        incomeExpeData.addAll(accountData.getIncomeAccounts());
+        incomeExpeData.addAll(accountData.getExpensesAccounts());
+        
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("type");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+
+        reportData.setData(incomeExpeData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/income_expense_account");
+        reportData.setReportName("income-expense-accounts");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getChartOfAccounts(ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException{
+        ReportData reportData = new ReportData();
+        List<ChartOfAccountEntry> chartofAccount = chartOfAccountsService.getChartOfAccounts();
+        
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("type");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        
+//        sortField = new JRDesignSortField();
+//        sortField.setName("level");
+//        sortField.setOrder(SortOrderEnum.ASCENDING);
+//        sortField.setType(SortFieldTypeEnum.FIELD);
+//        sortList.add(sortField);
+        
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+
+        reportData.setData(chartofAccount);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/chartOfAccount");
+        reportData.setReportName("chart-of-account");
         reportService.generateReport(reportData, response);
     }
 
@@ -379,5 +459,15 @@ public class AccountReportService {
             return InvoiceStatus.valueOf(status);
         }
         throw APIException.internalError("Provide a Valid Invoice Status");
+    }
+    
+    private AccountType AccountTypeToEnum(String status) {
+        if (status == null || status.equals("null") || status.equals("")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(AccountType.class, status)) {
+            return AccountType.valueOf(status);
+        }
+        throw APIException.internalError("Provide a Valid Account Type");
     }
 }
