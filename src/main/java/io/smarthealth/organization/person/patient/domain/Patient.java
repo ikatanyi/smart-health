@@ -1,6 +1,7 @@
 package io.smarthealth.organization.person.patient.domain;
 
 import io.smarthealth.organization.person.domain.Person;
+import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
 import java.util.List;
 import javax.persistence.*;
 import lombok.Data;
@@ -29,8 +30,8 @@ public class Patient extends Person {
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PatientIdentifier> identifications;
 
-    @Column(length = 50)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private PatientStatus status;
 
     @Column(length = 15)
     private String bloodType;
@@ -39,6 +40,5 @@ public class Patient extends Person {
 
     private String criticalInformation;
     private String basicNotes;
-   
 
 }

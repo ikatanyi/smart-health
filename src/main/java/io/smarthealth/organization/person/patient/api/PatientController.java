@@ -130,9 +130,9 @@ public class PatientController {
                 .body(pagers);
     }
 
-    @PutMapping("/patients/{id}")
+    @PutMapping("/patients/{patientNumber}")
     public @ResponseBody
-    ResponseEntity<PatientData> updatePatient(@PathVariable("id") final String patientNumber,
+    ResponseEntity<PatientData> updatePatient(@PathVariable("patientNumber") final String patientNumber,
             @RequestBody final PatientData patientData) {
         final Patient patient;
         if (this.patientService.patientExists(patientNumber)) {
@@ -145,7 +145,7 @@ public class PatientController {
             patient.setGivenName(patientData.getGivenName());
             patient.setMaritalStatus(patientData.getMaritalStatus().name());
             patient.setMiddleName(patientData.getMiddleName());
-            patient.setPatientNumber(patientData.getPatientNumber());
+            //patient.setPatientNumber(patientData.getPatientNumber());
             patient.setStatus(patientData.getStatus());
             patient.setSurname(patientData.getSurname());
             patient.setTitle(patientData.getTitle());
