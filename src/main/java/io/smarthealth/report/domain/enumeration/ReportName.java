@@ -38,5 +38,8 @@ public enum ReportName {
         Income_Expense_Account,
         Chart_Of_Account,
         Balance_Sheet,
-        Income_Statement
+        Income_Statement,
+        Petty_Cash_form,
+        Petty_Cash_statement
+        
 }

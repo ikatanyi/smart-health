@@ -131,6 +131,12 @@ public class ReportController {
             case Income_Statement:
                 reportService.getIncomeStatement(format, response);
                 break;
+            case Petty_Cash_form:
+                reportService.getPettyCash(queryParams, format, response);
+                break;
+            case Petty_Cash_statement:
+                reportService.getPettyCashRequests(queryParams, format, response);
+                break;
             default:
                 break;
 

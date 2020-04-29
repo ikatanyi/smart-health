@@ -29,6 +29,9 @@ import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.service.ReceivePaymentService;
+import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
+import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
+import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -36,6 +39,8 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.accounts.DailyBillingData;
@@ -47,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -81,6 +87,8 @@ public class AccountReportService {
     private final PrescriptionService prescriptionService;
     private final FinancialConditionService financialConditionService;
     private final IncomesStatementService incomesStatementService;
+    private final PettyCashRequestsService pettyCashRequestService;
+    private final EmployeeService employeeService;
     
    
 
@@ -411,21 +419,61 @@ public class AccountReportService {
         reportData.setReportName("insurance_statement");
         reportService.generateReport(reportData, response);
     }
+    
+    public void getPettyCashRequests(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+        String requestNo = reportParam.getFirst("requestNo");
+        String staffNumber = reportParam.getFirst("staffNumber"); 
+        String dateRange = reportParam.getFirst("dateRange"); 
+        PettyCashStatus status = PettyCashStatusToEnum(reportParam.getFirst("status"));       
+        Employee employee =null;
+        ReportData reportData = new ReportData();
+        Map<String, Object> map = reportData.getFilters();
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(staffNumber);
+        if(emp.isPresent())
+            employee=emp.get();
+        
+        List<PettyCashRequestsData> pettyCashData = pettyCashRequestService.findPettyCashRequests(requestNo, employee, status, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map(x -> PettyCashRequestsData.map(x))
+                .collect(Collectors.toList());
+
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("status");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.setData(pettyCashData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/pettyCash_statement");
+        reportData.setReportName("pettycash_requests_statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getPettyCash(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+        String requestNo = reportParam.getFirst("requestNo");    
+        ReportData reportData = new ReportData();
+        Map<String, Object> map = reportData.getFilters();
+        PettyCashRequestsData pettyCashData = PettyCashRequestsData.map(pettyCashRequestService.fetchCashRequestByRequestNo("2020-04-19-0"));
+        
+        reportData.setData(Arrays.asList(pettyCashData));
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/petty_cash");
+        reportData.setReportName("pettycash_request_form");
+        reportService.generateReport(reportData, response);
+    }
+    
 
     public void getInvoice(MultiValueMap<String,String>reportParam,  ExportFormat format,  HttpServletResponse response) throws SQLException, JRException, IOException {
         
         String invoiceNo = reportParam.getFirst("invoiceNo"); 
         ReportData reportData = new ReportData();
        
-        InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();                
-        
-//        List<JRSortField> sortList = new ArrayList<>();
-//        JRDesignSortField sortField = new JRDesignSortField();
-//        sortField.setName("date");
-//        sortField.setOrder(SortOrderEnum.ASCENDING);
-//        sortField.setType(SortFieldTypeEnum.FIELD);
-//        sortList.add(sortField);
-//        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();              
         reportData.setData(Arrays.asList(invoiceData));
         reportData.setTemplate("/accounts/invoice");
         reportData.setReportName("invoice");
@@ -509,5 +557,15 @@ public class AccountReportService {
             return AccountType.valueOf(status);
         }
         throw APIException.internalError("Provide a Valid Account Type");
+    }
+    
+    private PettyCashStatus PettyCashStatusToEnum(String status) {
+        if (status == null || status.equals("null") || status.equals("")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(AccountType.class, status)) {
+            return PettyCashStatus.valueOf(status);
+        }
+        throw APIException.internalError("Provide a Valid PettyCash Status");
     }
 }
