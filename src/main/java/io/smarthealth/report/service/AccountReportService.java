@@ -7,10 +7,17 @@ package io.smarthealth.report.service;
 
 import io.smarthealth.accounting.accounts.data.AccountData;
 import io.smarthealth.accounting.accounts.data.ChartOfAccountEntry;
+import io.smarthealth.accounting.accounts.data.financial.statement.FinancialCondition;
+import io.smarthealth.accounting.accounts.data.financial.statement.FinancialConditionSection;
+import io.smarthealth.accounting.accounts.data.financial.statement.IncomeStatement;
+import io.smarthealth.accounting.accounts.data.financial.statement.IncomeStatementSection;
 import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.domain.IncomeExpenseData;
+import io.smarthealth.accounting.accounts.domain.LedgerRepository;
 import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.accounting.accounts.service.ChartOfAccountServices;
+import io.smarthealth.accounting.accounts.service.FinancialConditionService;
+import io.smarthealth.accounting.accounts.service.IncomesStatementService;
 import io.smarthealth.accounting.accounts.service.TrialBalanceService;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
@@ -72,6 +79,8 @@ public class AccountReportService {
     private final AccountService accountService;
     private final ChartOfAccountServices chartOfAccountsService;    
     private final PrescriptionService prescriptionService;
+    private final FinancialConditionService financialConditionService;
+    private final IncomesStatementService incomesStatementService;
     
    
 
@@ -161,19 +170,50 @@ public class AccountReportService {
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
-//        sortField = new JRDesignSortField();
-//        sortField.setName("level");
-//        sortField.setOrder(SortOrderEnum.ASCENDING);
-//        sortField.setType(SortFieldTypeEnum.FIELD);
-//        sortList.add(sortField);
-        
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
 
         reportData.setData(chartofAccount);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/chartOfAccount");
         reportData.setReportName("chart-of-account");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getBalanceSheet(ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException{
+        ReportData reportData = new ReportData();
+        List<FinancialConditionSection> financialConditionSection = financialConditionService.getFinancialCondition().getFinancialConditionSections();
+        
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("type");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+
+        reportData.setData(financialConditionSection);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/balance_sheet");
+        reportData.setReportName("balance_sheet");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getIncomeStatement(ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException{
+        ReportData reportData = new ReportData();
+        List<IncomeStatementSection> incomeStatement = incomesStatementService.getIncomeStatement().getIncomeStatementSections();
+        
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("type");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+
+        reportData.setData(incomeStatement);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/income_statement");
+        reportData.setReportName("income_statement");
         reportService.generateReport(reportData, response);
     }
 
