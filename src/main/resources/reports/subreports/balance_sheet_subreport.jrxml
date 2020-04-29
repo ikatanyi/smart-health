@@ -36,14 +36,8 @@
 	<columnFooter>
 		<band height="14">
 			<frame>
-				<reportElement mode="Opaque" x="-18" y="0" width="552" height="14" forecolor="#CCCCFF" uuid="5d64a78a-a748-4716-bdb3-8006c8357d59"/>
+				<reportElement mode="Opaque" x="-18" y="0" width="494" height="14" forecolor="#CCCCFF" backcolor="#CCCCFF" uuid="5d64a78a-a748-4716-bdb3-8006c8357d59"/>
 			</frame>
-			<line>
-				<reportElement x="420" y="-1" width="56" height="1" uuid="65de28d0-477b-4001-9d3a-11715d38df15"/>
-				<graphicElement>
-					<pen lineWidth="0.2"/>
-				</graphicElement>
-			</line>
 			<textField>
 				<reportElement x="398" y="0" width="78" height="14" uuid="eb57b4f0-96c4-4b0f-a1a4-9dfc396a6c81"/>
 				<textElement textAlignment="Right">

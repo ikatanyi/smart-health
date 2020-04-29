@@ -50,35 +50,45 @@
 	<variable name="expense" class="java.math.BigDecimal">
 		<variableExpression><![CDATA[$F{type}.equals( "EXPENSES" )?$F{subtotal}:BigDecimal.ZERO]]></variableExpression>
 	</variable>
-	<variable name="initial_val" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[]]></variableExpression>
+	<variable name="profit" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$V{income}.subtract( $V{expense} )]]></variableExpression>
 	</variable>
 	<group name="type">
 		<groupFooter>
-			<band height="79">
+			<band height="101">
+				<frame>
+					<reportElement mode="Opaque" x="1" y="31" width="513" height="14" backcolor="#CCCCFF" uuid="49cc038c-be4f-4313-ba1d-82668f07bf16"/>
+					<textField>
+						<reportElement x="420" y="2" width="70" height="11" uuid="40618cec-5401-45c5-8333-25b906d0227c"/>
+						<textElement textAlignment="Right" verticalAlignment="Middle">
+							<font size="8" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{profit}]]></textFieldExpression>
+					</textField>
+				</frame>
 				<staticText>
-					<reportElement x="23" y="41" width="140" height="11" uuid="00eeeb52-3edc-4413-9ccf-9c254bd64703"/>
+					<reportElement x="23" y="63" width="140" height="11" uuid="00eeeb52-3edc-4413-9ccf-9c254bd64703"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Income from discontinued operations]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="23" y="65" width="140" height="11" uuid="120362bf-5f90-472a-9cce-04b0f3044b64"/>
+					<reportElement x="23" y="87" width="140" height="11" uuid="120362bf-5f90-472a-9cce-04b0f3044b64"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Extraordinary Items]]></text>
 				</staticText>
 				<staticText>
-					<reportElement mode="Opaque" x="0" y="26" width="514" height="12" forecolor="#FFFFFF" backcolor="#6666FF" uuid="9232f2be-eacf-49f9-8030-961bcd895bb8"/>
+					<reportElement mode="Opaque" x="0" y="48" width="514" height="12" forecolor="#FFFFFF" backcolor="#6666FF" uuid="9232f2be-eacf-49f9-8030-961bcd895bb8"/>
 					<textElement verticalAlignment="Middle" markup="none">
 						<font size="9" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Below-the-Line Items]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="23" y="53" width="140" height="11" uuid="38ed012c-80a6-4926-9b93-ac845044b624"/>
+					<reportElement x="23" y="75" width="140" height="11" uuid="38ed012c-80a6-4926-9b93-ac845044b624"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
@@ -89,7 +99,7 @@
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<text><![CDATA[Net Income After Taxes :]]></text>
+					<text><![CDATA[Income tax expense :]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="23" y="0" width="140" height="11" uuid="ea332f65-9cb9-41a6-976f-3f05c9580590"/>
@@ -103,15 +113,22 @@
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{income}.subtract( $V{expense} )]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{profit}]]></textFieldExpression>
 				</textField>
-				<textField>
-					<reportElement x="420" y="11" width="71" height="12" uuid="bea1879d-5f7a-4abd-8396-44acb9dc47e0"/>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
+				<staticText>
+					<reportElement x="420" y="11" width="71" height="12" uuid="105644e0-5d96-48a7-be95-8588e061b587"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{income}.subtract( $V{expense} )]]></textFieldExpression>
-				</textField>
+					<text><![CDATA[0.00]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="31" width="177" height="14" uuid="7d83dce1-4bdb-422d-afb4-ea6ba1eb455d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Income from Continuing Operations]]></text>
+				</staticText>
 			</band>
 		</groupFooter>
 	</group>
