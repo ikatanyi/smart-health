@@ -458,7 +458,7 @@ public class AccountReportService {
         String requestNo = reportParam.getFirst("requestNo");    
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
-        PettyCashRequestsData pettyCashData = PettyCashRequestsData.map(pettyCashRequestService.fetchCashRequestByRequestNo("2020-04-19-0"));
+        PettyCashRequestsData pettyCashData = PettyCashRequestsData.map(pettyCashRequestService.fetchCashRequestByRequestNo(requestNo));
         
         reportData.setData(Arrays.asList(pettyCashData));
         reportData.setFormat(format);
