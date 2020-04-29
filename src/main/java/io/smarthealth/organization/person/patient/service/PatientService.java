@@ -21,6 +21,7 @@ import io.smarthealth.organization.person.data.ContactData;
 import io.smarthealth.organization.person.domain.*;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.data.PatientIdentifierData;
+import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientIdentifier;
 import io.smarthealth.organization.person.patient.domain.PatientIdentifierRepository;
@@ -218,7 +219,7 @@ public class PatientService {
         final Patient patientEntity = modelMapper.map(patient, Patient.class);
         patientEntity.setAlive(true);
         patientEntity.setPatient(true);
-        patientEntity.setStatus("Active");
+        patientEntity.setStatus(PatientStatus.Active);
         patientEntity.setPatientNumber(patientNo);
 
         final Patient savedPatient = this.patientRepository.save(patientEntity);
@@ -334,8 +335,7 @@ public class PatientService {
     @Transactional
     public Patient updatePatient(String patientNumber, Patient patient) {
         try {
-            this.patientRepository.save(patient);
-            return patient;
+            return patientRepository.save(patient);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RestClientException("Error updating patient number" + patientNumber);
