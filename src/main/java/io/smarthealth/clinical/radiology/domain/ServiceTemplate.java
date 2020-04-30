@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import lombok.Data;
@@ -27,6 +28,7 @@ import lombok.Data;
 public class ServiceTemplate extends Identifiable{
     private String templateName; 
     private Gender gender;
+    @Lob
     private byte[] notes;
     
     

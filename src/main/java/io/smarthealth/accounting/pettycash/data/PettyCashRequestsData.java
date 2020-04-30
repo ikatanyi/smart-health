@@ -7,7 +7,12 @@ package io.smarthealth.accounting.pettycash.data;
 
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
+import io.smarthealth.infrastructure.lang.DateConverter;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EnumType;
@@ -29,6 +34,9 @@ public class PettyCashRequestsData {
     private String requesterDept;
 
     private String narration;
+    
+    @ApiModelProperty(hidden = true)
+    private LocalDate createdOn;
 
     @Enumerated(EnumType.STRING)
     private PettyCashStatus status;
@@ -44,6 +52,7 @@ public class PettyCashRequestsData {
         data.setTotalAmount(r.getTotalAmount());
         data.setRequestedBy(r.getRequestedBy().getFullName());
         data.setRequesterDept(r.getRequestedBy().getDepartment().getName());
+        data.setCreatedOn(LocalDate.from(r.getCreatedOn().atZone(ZoneId.systemDefault())));
         if (!r.getPettyCashRequestItems().isEmpty()) {
             List<PettyCashRequestItemsData> requestItems = new ArrayList<>();
             r.getPettyCashRequestItems().forEach((ri) -> {

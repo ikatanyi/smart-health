@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="petty_cash_subreport" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="cf82bea9-7287-46c7-8bf7-ae001a1d39da">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="item" class="java.lang.String"/>
+	<field name="pricePerUnit" class="java.lang.Double"/>
+	<field name="quantity" class="java.lang.Integer"/>
+	<field name="amount" class="java.lang.Double"/>
+	<field name="narration" class="java.lang.String"/>
+	<columnHeader>
+		<band height="15" splitType="Stretch">
+			<rectangle>
+				<reportElement mode="Transparent" x="2" y="0" width="513" height="14" uuid="bd8bf151-ac60-404e-af32-ac85e713a765"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<line>
+				<reportElement x="333" y="0" width="1" height="14" uuid="fa6eae29-e209-4bf8-8119-dd4369ae4bb6"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="269" y="0" width="1" height="14" uuid="85f13c2b-6ffa-4b76-a658-1746ff6d696d"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="20" y="0" width="1" height="14" uuid="cc487042-99e9-4f17-91d7-67ecffbcbd20"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="451" y="0" width="1" height="14" uuid="f01aa2ae-a5c0-493f-bbd8-ce520802eb19"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="20" y="0" width="80" height="14" uuid="00dcaa03-3cea-4c65-acd0-720655215aaa"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[  item]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="269" y="0" width="63" height="14" uuid="7e7f1da1-173b-453b-aee8-de9b4d2944fd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="333" y="0" width="118" height="14" uuid="5dd0d6f2-96c5-4a46-9e0b-20312cd8410a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Price]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="451" y="0" width="64" height="14" uuid="586d1570-9c6b-404e-a3a1-b0c00b8ebf04"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="167" height="14" uuid="8d5246c9-a12a-4652-84d1-259487fc747e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[  Description]]></text>
+			</staticText>
+			<line>
+				<reportElement x="100" y="0" width="1" height="14" uuid="0ef63d95-71fa-4526-90bf-1c4f492c90ae"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement x="21" y="0" width="79" height="16" uuid="9c3a6afa-590b-4b1c-a5c9-bbcfc55a1390"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="269" y="0" width="41" height="16" uuid="8d03a7f4-df94-415a-8a85-02266f975f70"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="333" y="0" width="72" height="16" uuid="aec7853c-29d2-48e3-a1d1-9cb5900e5636"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pricePerUnit}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="451" y="0" width="40" height="16" uuid="8c573681-2a62-45fb-ad24-74fae313f1f4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="167" height="16" uuid="d3ab759e-da40-462b-b106-59e40c790ae5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{narration}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2" y="0" width="19" height="16" uuid="042008f3-4431-432d-b4a0-fab1ad04a0ed"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="2" y="15" width="513" height="1" uuid="b1568a7b-b4fd-4931-86fc-6ce775490990"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

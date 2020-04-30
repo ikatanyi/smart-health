@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.infrastructure.lang.Constants;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import java.time.LocalDate;
 import lombok.Data;
 
@@ -25,15 +26,16 @@ public class BillItemData {
     private Long itemId;
     private String item;
     private String itemCode;
+    private ItemCategory itemCategory;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate billingDate;
     private String transactionId;
-    private Double quantity=1.0;
+    private Double quantity = 1.0;
     private Double price;
-    private Double discount=0.0;
-    private Double taxes=0.0;
-    private Double amount=0.0;
-    private Double balance=0.0;
+    private Double discount = 0.0;
+    private Double taxes = 0.0;
+    private Double amount = 0.0;
+    private Double balance = 0.0;
     private String servicePoint;
     private Long servicePointId;
     //bill item to a medic 
@@ -44,7 +46,7 @@ public class BillItemData {
     private BillStatus status;
     private Boolean paid;
     private Long requestReference;
-    private String paymentReference; 
+    private String paymentReference;
     private Boolean walkinFlag;
-    private String createdBy; 
+    private String createdBy;
 }

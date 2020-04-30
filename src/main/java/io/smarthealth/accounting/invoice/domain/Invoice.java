@@ -78,8 +78,8 @@ public class Invoice extends Auditable {
 
     @OneToMany(mappedBy = "invoice")
     private List<Copayment> copays = new ArrayList<>();
-    
-     @OneToMany(mappedBy = "invoice")
+
+    @OneToMany(mappedBy = "invoice")
     private List<CreditNote> creditNotes = new ArrayList<>();
 
     public void addItem(InvoiceItem item) {
@@ -127,6 +127,12 @@ public class Invoice extends Auditable {
                 .map(x -> x.toData())
                 .collect(Collectors.toList())
         );
+        if (!this.copays.isEmpty()) {
+            data.setCopayments(this.copays.stream()
+                    .map(x -> x.toData())
+                    .collect(Collectors.toList())
+            );
+        }
         return data;
     }
 }

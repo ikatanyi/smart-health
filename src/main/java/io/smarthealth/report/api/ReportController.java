@@ -126,6 +126,17 @@ public class ReportController {
             case Chart_Of_Account:
                 reportService.getChartOfAccounts(format, response);
                 break; 
+            case Balance_Sheet:
+                reportService.getBalanceSheet(format, response);
+            case Income_Statement:
+                reportService.getIncomeStatement(format, response);
+                break;
+            case Petty_Cash_form:
+                reportService.getPettyCash(queryParams, format, response);
+                break;
+            case Petty_Cash_statement:
+                reportService.getPettyCashRequests(queryParams, format, response);
+                break;
             default:
                 break;
 

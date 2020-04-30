@@ -30,6 +30,7 @@ public class JournalController {
     public JournalController(JournalService journalService) {
         this.journalService = journalService;
     }
+    //CRUD
  
     @PostMapping
     @ResponseBody 
