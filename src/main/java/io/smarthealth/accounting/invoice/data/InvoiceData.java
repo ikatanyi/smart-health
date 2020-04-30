@@ -1,7 +1,10 @@
 package io.smarthealth.accounting.invoice.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
+import io.smarthealth.accounting.payment.data.CopaymentData;
+import io.smarthealth.accounting.payment.domain.Copayment;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -45,5 +48,6 @@ public class InvoiceData {
     private InvoiceStatus status;
     private String notes;
     private List<InvoiceItemData> invoiceItems = new ArrayList<>();
-
+    private List<CopaymentData> copayments = new ArrayList<>();
+   
 }

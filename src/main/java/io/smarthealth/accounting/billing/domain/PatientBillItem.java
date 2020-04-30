@@ -85,6 +85,7 @@ public class PatientBillItem extends Auditable {
             data.setItemId(this.item.getId());
             data.setItemCode(this.item.getItemCode());
             data.setItem(this.item.getItemName());
+            data.setItemCategory(this.item.getCategory());
         }
         data.setServicePoint(this.servicePoint);
         data.setServicePointId(this.servicePointId);
