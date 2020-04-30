@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PettyCash" pageWidth="595" pageHeight="421" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="018d2ee7-c3a4-4254-930c-5053eede129a">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="11"/>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kennedy.ikatanyi\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Footer_Data" class="java.util.List" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="totalAmount" class="java.lang.Double"/>
+	<field name="requestNo" class="java.lang.String"/>
+	<field name="requestedBy" class="java.lang.String"/>
+	<field name="requesterDept" class="java.lang.String"/>
+	<field name="narration" class="java.lang.String"/>
+	<field name="status" class="java.lang.Object"/>
+	<field name="createdOn" class="java.lang.Object"/>
+	<field name="requestItemsData" class="java.util.List"/>
+	<group name="column">
+		<groupExpression><![CDATA[$V{COLUMN_COUNT}]]></groupExpression>
+		<groupFooter>
+			<band height="72">
+				<rectangle>
+					<reportElement mode="Transparent" x="6" y="6" width="522" height="66" uuid="eacb9a31-a2fa-49f9-8cdd-79c1cccc040d"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement mode="Opaque" x="6" y="3" width="522" height="18" backcolor="#CCCCCC" uuid="e45d9d73-ea9d-434f-bc3a-709a25103127"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[   APPROVAL INFORMATION]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="12" y="24" width="54" height="11" uuid="c45017a0-2b54-4fdf-8281-6d0651905a18"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Approved by   :]]></text>
+				</staticText>
+				<line>
+					<reportElement x="6" y="21" width="522" height="1" uuid="d66b3baf-da78-4f64-803e-f9f2e6e21fe1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="6" y="36" width="522" height="1" uuid="94c79750-e9ef-40f8-b810-a3555c9368ed"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="6" y="54" width="522" height="1" uuid="4ac14e0f-369c-4051-87b9-2f41a23c88eb"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="11" y="41" width="53" height="11" uuid="1373ad6d-1416-49be-8af2-7ccae7fd33d0"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Disbursed by :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="57" width="53" height="11" uuid="64597224-b60b-4fba-b603-ee0020f2ebeb"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Received by   :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="413" y="24" width="31" height="11" uuid="166d4dc7-5199-4997-b25b-d418feea8b89"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Date  :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="414" y="42" width="30" height="10" uuid="6c8d8ef0-f079-4ab9-b6e6-366c42f817d0"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Date  :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="414" y="57" width="30" height="11" uuid="825f6aa9-e5fa-4a31-a1b0-76433341cbd0"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Date  :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="231" y="24" width="49" height="11" uuid="9521a006-cdc1-4875-9595-d50af2973660"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Signature  :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="231" y="42" width="49" height="10" uuid="0d473d69-06be-41a9-be17-7cea689eae18"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Signature  :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="231" y="57" width="49" height="11" uuid="35054d5d-b57f-4abc-99b0-7e2238f1bf4b"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Signature  :]]></text>
+				</staticText>
+				<line>
+					<reportElement x="283" y="32" width="120" height="1" uuid="4aa15efb-25ba-4e5e-acdd-b16f875dc59c"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Dashed"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="283" y="49" width="120" height="1" uuid="58a0c392-380c-4ef7-82a0-599d6bbd072c"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Dashed"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="283" y="65" width="120" height="1" uuid="231983cd-2426-42d1-b410-fae52019fbc7"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Dashed"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="32">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="32" uuid="04c6449d-4ade-4979-b68a-306504bb52b1"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="41" splitType="Stretch">
+			<staticText>
+				<reportElement x="6" y="9" width="124" height="13" uuid="6ae07f03-f186-4831-8352-9f467f5288d9"/>
+				<textElement>
+					<font size="8" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[PETTY CASH REQUEST FORM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="23" width="170" height="13" forecolor="#CC0000" uuid="9cd84bc6-de32-435e-8fc0-2ac95edf0e9b"/>
+				<textElement>
+					<font size="8" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Note : Petty cash requests must not exceed ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="415" y="7" width="52" height="13" uuid="3e0270ac-3218-4207-882d-52e96037c7ed"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RequestNo.]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="467" y="7" width="88" height="13" uuid="fde25a95-ff82-4dfe-81a2-dda361fa1140"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{requestNo}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="58f0d9c0-74df-45a9-b287-481d43033c0d"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="100" splitType="Stretch">
+			<rectangle>
+				<reportElement mode="Transparent" x="8" y="9" width="522" height="86" uuid="a78c95ed-10e7-4e5b-92dd-a24ab5e44432"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement mode="Opaque" x="8" y="9" width="522" height="18" backcolor="#CCCCCC" uuid="83efae0b-78e5-4a23-8f8e-23c911c11aff"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[   REQUEST INFORMATION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="15" y="32" width="52" height="14" uuid="d8e10e36-be93-4bca-b8b9-50d1fcc5a824"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Date:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="15" y="53" width="108" height="14" uuid="94ec9db8-d89b-4ac2-b0da-8617866bd551"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Amount Requested  :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="203" y="53" width="73" height="14" uuid="43afc532-bc8d-4475-80b6-611faa85b924"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Department    :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="203" y="32" width="73" height="14" uuid="3081cd77-386c-477a-8d72-3d2e2c98d67a"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Requested by :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="15" y="76" width="108" height="14" uuid="d6b7a77e-0abb-4858-988a-d7b0686ea25c"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Description of Need :]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="68" y="32" width="80" height="14" uuid="8b50e447-37cf-417b-9641-cf8025939006"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="8" y="27" width="522" height="1" uuid="bfebdf55-194f-4630-a302-3ab4eb4574c5"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="8" y="49" width="522" height="1" uuid="a58fc88c-8ff8-481e-b5eb-8f7a5bfc1cbb"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="8" y="70" width="522" height="1" uuid="756ec0b1-f237-4848-83cd-a5fb9dcd918d"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="130" y="89" width="400" height="1" uuid="e6d7f66e-14cc-4340-9fea-8c9acfcf9960"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="132" y="75" width="387" height="14" uuid="30d39fd4-7d93-4390-ba8b-f12eda1d3d01"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{narration}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="262" y="53" width="156" height="14" uuid="fe16ed07-a8f2-403b-a882-7e3a725d1925"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{requesterDept}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="277" y="33" width="210" height="13" uuid="a606964a-4123-4243-b45e-896fbe063abb"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{requestedBy}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="126" y="53" width="67" height="14" uuid="971e1859-28ce-4113-bcb5-c56fd1cf4a28"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totalAmount}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="960fcfdf-2903-4c8f-9628-6c204299c47e"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<subreport>
+				<reportElement x="6" y="0" width="535" height="21" uuid="b42eb43f-b6ec-4264-8d78-d53bd7cffc93"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{requestItemsData})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "petty_cash_subreport.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20" splitType="Stretch"/>
+	</pageFooter>
+</jasperReport>
