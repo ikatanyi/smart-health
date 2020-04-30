@@ -2,7 +2,6 @@ package io.smarthealth.stock.item.service;
 
 import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.accounting.taxes.domain.Tax;
-import io.smarthealth.accounting.taxes.domain.TaxRepository;
 import io.smarthealth.administration.servicepoint.data.SimpleServicePoint;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
@@ -47,6 +46,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import io.smarthealth.accounting.taxes.domain.TaxRepository;
 
 /**
  *

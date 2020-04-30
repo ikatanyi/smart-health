@@ -14,6 +14,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -33,6 +34,7 @@ import lombok.NoArgsConstructor;
         uniqueConstraints
         = @UniqueConstraint(columnNames = {"visit_id", "service_item_id"}, name = "UK_items_acc_doctor_invoices_visit_service")
 )
+@NamedQuery(name = "tt", query = "SELECT d FROM DoctorInvoice d where d.invoiceNumber=:inv AND d.doctor.id=:docId")
 public class DoctorInvoice extends Auditable {
 
     public enum TransactionType {
@@ -72,7 +74,6 @@ public class DoctorInvoice extends Auditable {
             data.setDoctorId(this.doctor.getId());
             data.setDoctorName(this.doctor.getFullName());
             data.setStaffNumber(this.doctor.getStaffNumber());
-
         }
         data.setInvoiceDate(this.invoiceDate);
         data.setInvoiceNumber(this.invoiceNumber);

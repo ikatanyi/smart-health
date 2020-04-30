@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.visit.domain;
 
+import io.smarthealth.accounting.doctors.domain.DoctorClinicItems;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.visit.data.enums.TriageCategory;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
@@ -58,5 +59,9 @@ public class Visit extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private TriageCategory triageCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_visit_clinic"))
+    private DoctorClinicItems clinic;
 
 }

@@ -19,6 +19,7 @@ public class DoctorInvoiceData  {
 
     private Long id;
     private Long doctorId;
+    private String visitNumber;
     private String doctorName;
     @ApiModelProperty(required=false,hidden=true)
     private String staffNumber;

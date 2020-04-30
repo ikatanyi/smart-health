@@ -190,9 +190,9 @@ public class PricelistService {
      * Search Item PriceList
      */
     public Page<PriceList> searchPriceList(String searchItem, Long servicePointId, Long priceBookId, Pageable page) {
-        
+
         Specification<PriceList> searchSpec = PriceListSpecification.searchSpecification(searchItem, servicePointId);
-        
+
         Page<PriceList> prices = repository.findAll(searchSpec, page);
 
         if (priceBookId != null) {
@@ -214,5 +214,28 @@ public class PricelistService {
             }
         }
         return prices;
+    }
+
+    public double fetchPriceAmountByItemAndPriceBook(final Item item, final PriceBook book) {
+        if (book != null) {
+            if (book.isGlobalRate()) {
+                if (book.getIncrease()) {
+                    return (item.getRate().doubleValue() * (100 + book.getPercentage()) / 100);
+                } else {
+                    return (item.getRate().doubleValue() * (100 - book.getPercentage()) / 100);
+                }
+            } else {
+                PriceBookItem i = findPriceItem(book, item);
+                System.err.println("finding i " + i);
+                if (i != null) {
+                    return i.getAmount().doubleValue();
+                } else {
+                    return item.getRate().doubleValue();
+                }
+            }
+        } else {
+            return item.getRate().doubleValue();
+        }
+
     }
 }
