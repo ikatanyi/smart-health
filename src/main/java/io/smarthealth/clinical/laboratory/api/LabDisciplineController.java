@@ -3,7 +3,6 @@ package io.smarthealth.clinical.laboratory.api;
 import io.smarthealth.clinical.laboratory.data.LabDisciplineData;
 import io.smarthealth.clinical.laboratory.domain.LabDiscipline;
 import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
-import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;

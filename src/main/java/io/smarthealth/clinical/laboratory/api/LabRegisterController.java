@@ -126,7 +126,7 @@ public class LabRegisterController {
             @RequestParam(value = "orderNo", required = false) String orderNumber,
             @RequestParam(value = "visitNo", required = false) String visitNumber,
             @RequestParam(value = "patientNo", required = false) String patientNumber,
-            @RequestParam(value = "status", required = false) LabTestStatus status,
+            @RequestParam(value = "status", required = false) List<LabTestStatus> status,
              @ApiParam(value = "Date Range", required = false, example = "2020-03-01..2020-03-17") @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
