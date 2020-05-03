@@ -228,4 +228,8 @@ public class ItemService {
     private InventoryEvent.Type getEvent(MovementType type) {
         return type == MovementType.Dispensed ? InventoryEvent.Type.Decrease : InventoryEvent.Type.Increase;
     }
+    
+    public Optional<Item> findFirstByCategory(ItemCategory category){
+        return itemRepository.findFirstByCategory(category);
+    }
 }

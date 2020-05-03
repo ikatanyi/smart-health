@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SummaryBill {
-
+    
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     public LocalDate date;
     public String visitNumber;

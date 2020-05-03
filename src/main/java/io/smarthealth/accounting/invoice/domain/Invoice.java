@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.invoice.domain;
 
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceReceipt;
 import io.smarthealth.accounting.payment.domain.Copayment;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.debtor.claim.creditNote.domain.CreditNote;
@@ -8,6 +9,7 @@ import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -123,16 +125,31 @@ public class Invoice extends Auditable {
         data.setTax(this.tax);
         data.setBalance(this.balance);
         data.setTransactionNo(this.transactionNo);
-        data.setInvoiceItems(this.items.stream()
-                .map(x -> x.toData())
-                .collect(Collectors.toList())
+        data.setInvoiceItems(
+                this.items.stream()
+                        .filter(x -> x.getBillItem().getAmount() > 0)
+                        .map(x -> x.toData())
+                        .collect(Collectors.toList())
         );
-        if (!this.copays.isEmpty()) {
-            data.setCopayments(this.copays.stream()
-                    .map(x -> x.toData())
-                    .collect(Collectors.toList())
-            );
-        }
+
+        data.setInvoicePayments(
+                this.items.stream()
+                        .filter(x -> x.getBillItem().getAmount() < 0)
+                        .map(x -> {
+                            InvoiceReceipt.Type type = x.getBillItem().getItem().getCategory() == ItemCategory.CoPay ? InvoiceReceipt.Type.Copayment : InvoiceReceipt.Type.Receipt;
+                            return new InvoiceReceipt(x.getId(), type, x.getBillItem().getPaymentReference(), toBigDecimal(x.getBillItem().getAmount()).negate());
+                        })
+                        .collect(Collectors.toList())
+        );
+        
+
         return data;
+    }
+
+    private BigDecimal toBigDecimal(Double val) {
+        if (val == null) {
+            return BigDecimal.ZERO;
+        }
+        return BigDecimal.valueOf(val);
     }
 }

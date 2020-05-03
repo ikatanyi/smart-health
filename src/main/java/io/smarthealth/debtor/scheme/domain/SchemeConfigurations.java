@@ -29,6 +29,7 @@ public class SchemeConfigurations extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private DiscountType discountMethod;
+    
     private double discountValue;
     @Enumerated(EnumType.STRING)
     private CoPayType coPayType;

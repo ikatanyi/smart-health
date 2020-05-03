@@ -7,6 +7,7 @@ package io.smarthealth.accounting.billing.domain;
 
 import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.infrastructure.lang.DateRange;
+import java.math.BigDecimal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,4 +21,5 @@ public interface BillSummaryRepository {
 
     Page<SummaryBill> getWalkinBillSummary(String patientNumber, Boolean hasBalance, Pageable pageable);
 
+    BigDecimal getTotalBill(String visitNumber);
 }

@@ -33,8 +33,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "acc_doctor_invoices",
         uniqueConstraints
         = @UniqueConstraint(columnNames = {"visit_id", "service_item_id"}, name = "UK_items_acc_doctor_invoices_visit_service")
-)
-@NamedQuery(name = "tt", query = "SELECT d FROM DoctorInvoice d where d.invoiceNumber=:inv AND d.doctor.id=:docId")
+) 
 public class DoctorInvoice extends Auditable {
 
     public enum TransactionType {

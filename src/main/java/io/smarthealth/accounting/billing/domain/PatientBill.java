@@ -2,6 +2,7 @@ package io.smarthealth.accounting.billing.domain;
 
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
+import io.smarthealth.accounting.billing.data.nue.Bills;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -99,5 +100,5 @@ public class PatientBill extends Auditable {
 
         return data;
     }
-
+  
 }

@@ -34,7 +34,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
 
     Page<Visit> findByStatus(final VisitEnum.Status status, Pageable pageable);
 
-    Optional<Visit> findByVisitNumberAndStatus(final String visitNumber, final String status);
+    Optional<Visit> findByVisitNumberAndStatus(final String visitNumber, final VisitEnum.Status status);
 
     //Page<Visit> findByStatus(final String status, final Pageable pageable);
     Optional<Visit> findByPatientAndStatus(Patient patient, VisitEnum.Status status);
