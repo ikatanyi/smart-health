@@ -25,7 +25,8 @@ public class DoctorRequestData {
         Laboratory,
         Pharmacy,
         Radiology,
-        Procedure
+        Procedure,
+        Admission
     }
 
     public enum Urgency {
