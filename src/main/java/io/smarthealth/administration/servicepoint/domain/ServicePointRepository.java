@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Repository;
 public interface ServicePointRepository extends JpaRepository<ServicePoint, Long>, JpaSpecificationExecutor<ServicePoint> {
 
 //    Optional<ServicePoint> findByServicePointType(final ServicePointType servicePointType);
+    @Query("SELECT sp FROM ServicePoint sp WHERE sp.servicePointType=:servicePointType")
+    Optional<ServicePoint> findServicePointByServicePointType(final ServicePointType servicePointType);
 
     List<ServicePoint> findByServicePointType(final ServicePointType servicePointType);
 

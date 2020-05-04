@@ -33,6 +33,16 @@ public class ServicePointService {
 
     public ServicePointData createPoint(ServicePointData data) {
         ServicePoint point = new ServicePoint();
+        if (data.getServicePointType().equals(ServicePointType.Consultation) || data.getServicePointType().equals(ServicePointType.Triage)) {
+            //find if servicepoint type exists
+            Optional<ServicePoint> sp = repository.findServicePointByServicePointType(data.getServicePointType());
+            if (sp.isPresent()) {
+                throw APIException.conflict("Service point type {0} has already been registered", data.getServicePointType().name());
+            }
+        }
+        if (data.getServicePointType().equals(ServicePointType.Consultation)) {
+
+        }
         point.setActive(data.getActive());
         point.setDescription(data.getDescription());
         point.setName(data.getName());
@@ -74,7 +84,6 @@ public class ServicePointService {
 //    public Optional<ServicePoint> getServicePoint(final ServicePointType servicePointType) {
 //        return repository.findByServicePointType(servicePointType).get(0);
 //    }
-
     public Page<ServicePoint> listServicePoints(ServicePointType servicePointType, String pointType, Pageable page) {
         Specification<ServicePoint> spec = ServicePointSpecification.createSpecification(servicePointType, pointType);
         return repository.findAll(spec, page);
