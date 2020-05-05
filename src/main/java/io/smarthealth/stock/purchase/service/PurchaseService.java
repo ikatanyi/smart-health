@@ -48,12 +48,12 @@ public class PurchaseService {
     private final PricebookService pricebookService;
     private final StoreService storeService;
     private final ItemService itemService;
-     private final SequenceNumberService sequenceNumberService;
+    private final SequenceNumberService sequenceNumberService;
     private final TemplateEngine htmlTemplateEngine;
 
     @Transactional
     public PurchaseOrderData createPurchaseOrder(PurchaseOrderData data) {
-        String lpo=sequenceNumberService.next(1L, Sequences.PurchaseOrder.name());
+        String lpo = sequenceNumberService.next(1L, Sequences.PurchaseOrder.name());
         PurchaseOrder order = new PurchaseOrder();
         order.setOrderNumber(lpo);
         Supplier supplier = supplierService.getSupplierOrThrow(data.getSupplierId());
@@ -122,15 +122,21 @@ public class PurchaseService {
         return orderRepository.findByStatus(status, page);
     }
 
+    public PurchaseOrder cancelOrder(String orderNumber) {
+        PurchaseOrder order = findByOrderNumberOrThrow(orderNumber);
+        order.setStatus(PurchaseOrderStatus.Canceled);
+        return orderRepository.save(order);
+    }
+
     public HtmlData toHtml(String orderNo) {
         Path p = Paths.get("logo-light.png");
-        
+
         PurchaseOrder order = findByOrderNumberOrThrow(orderNo);
-        BigDecimal totals=order.getPurchaseOrderLines()
+        BigDecimal totals = order.getPurchaseOrderLines()
                 .stream()
                 .map(x -> x.getAmount())
                 .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
-        
+
         final Context ctx = new Context();
         ctx.setVariable("orderNumber", order.getOrderNumber());
         ctx.setVariable("requiredDate", order.getRequiredDate());
