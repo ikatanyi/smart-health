@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.payment.api;
 
+import io.smarthealth.accounting.payment.data.CreateRemittance;
 import io.smarthealth.accounting.payment.data.RemittanceData;
 import io.smarthealth.accounting.payment.domain.Remittance;
 import io.smarthealth.accounting.payment.service.RemittanceService;
@@ -9,11 +10,15 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +36,19 @@ public class RemittanceController {
 
     public RemittanceController(RemittanceService service) {
         this.service = service;
+    }
+
+    @PostMapping("/remittance")
+    public ResponseEntity<?> receivePayment(@Valid @RequestBody CreateRemittance data) {
+
+        Remittance remittance = service.createRemittance(data);
+
+        Pager<RemittanceData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Remittance Successfully Created.");
+        pagers.setContent(remittance.toData());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
     @GetMapping("/remittance/{id}")
