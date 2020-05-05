@@ -4,6 +4,7 @@ import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -35,7 +36,7 @@ public class PriceListSpecification {
         };
     }
 
-    public static Specification<PriceList> createSpecification(String queryItem, Long servicePointId, Boolean defaultPrice, ItemCategory category, ItemType itemType) {
+    public static Specification<PriceList> createSpecification(String queryItem, Long servicePointId, Boolean defaultPrice, List<ItemCategory> category, ItemType itemType) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
@@ -52,9 +53,15 @@ public class PriceListSpecification {
             if (defaultPrice != null) {
                 predicates.add(cb.equal(root.get("defaultPrice"), defaultPrice));
             }
-            if (category != null) {
-                predicates.add(cb.equal(root.get("item").get("category"), category));
+//            if (category != null) {
+//                predicates.add(cb.equal(root.get("item").get("category"), category));
+//            }
+//             predicates.add(root.get("status").in(status));
+             if (category != null && !category.isEmpty()) {
+                  predicates.add(root.get("item").get("category").in(category));
+//                predicates.add(cb.equal(root.get("item").get("category"), category));
             }
+             
             if (itemType != null) {
                 predicates.add(cb.equal(root.get("item").get("itemType"), itemType));
             }
