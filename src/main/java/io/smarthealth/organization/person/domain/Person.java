@@ -46,6 +46,8 @@ public class Person extends Auditable {
     private List<PersonAddress> addresses;
     @OneToMany(mappedBy = "person")
     private List<PersonContact> contacts;
+    @OneToMany(mappedBy = "person")
+    private List<PersonNextOfKin> nok;
 
 //    @Formula("case when exists (select * from patient p where p.patient_id = person_id) then 1 else 0 end")
     private boolean isPatient;

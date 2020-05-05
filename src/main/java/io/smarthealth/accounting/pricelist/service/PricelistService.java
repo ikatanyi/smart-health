@@ -41,6 +41,20 @@ public class PricelistService {
     @Transactional
     public PriceList createPriceList(PriceListData data) {
         PriceList items = toPriceList(data);
+        if (items.getItem().getCategory().equals(ItemCategory.DoctorFee) || items.getItem().getCategory().equals(ItemCategory.CoPay)) {
+            //look if item already exists under pricelist
+            List<PriceList> priceList = repository.findByItem(items.getItem());
+            if (priceList.size() > 0) {
+                throw APIException.conflict("Pricelist for the service {0} already exists ", items.getItem().getItemName());
+            }
+
+        }
+
+        Optional<PriceList> priceList = repository.findByItemAndServicePoint(items.getItem(), items.getServicePoint());
+        if (priceList.isPresent()) {
+            throw APIException.conflict("Pricelist for the service {0} already exists in the selected service point ", items.getItem().getItemName());
+        }
+
         return save(items);
     }
 

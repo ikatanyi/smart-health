@@ -44,6 +44,7 @@ public class PersonData {
     private MaritalStatus maritalStatus;
     private List<AddressData> address;
     private List<ContactData> contact;
+    private List<PersonNextOfKinData> nok;
     private String fullName;
     private LocalDate createdOn;
 
