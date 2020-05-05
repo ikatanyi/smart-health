@@ -41,10 +41,10 @@ public class AllocationController {
     @PostMapping("/allocation/{remmitanceId}")
     public ResponseEntity<?> createAllocation(@PathVariable("remmitanceId") final Long remmitanceId, @Valid @RequestBody List<AllocationData> allocationData) {
         Remittance remitance = remitanceService.getRemittanceOrThrow(remmitanceId);
-        List<Allocation> allocatedAmount = allocationService.createAllocation(allocationData, remitance);
+        List<Allocation> allocations = allocationService.createAllocation(allocationData, remitance);
         List<AllocationData> dataList = new ArrayList<>();
-        allocatedAmount.stream().map((a) -> AllocationData.map(a)).forEachOrdered((remittance) -> {
-            dataList.add(remittance);
+        allocations.stream().map((a) -> AllocationData.map(a)).forEachOrdered((a) -> {
+            dataList.add(a);
         });
 
         Pager<List<AllocationData>> pagers = new Pager();

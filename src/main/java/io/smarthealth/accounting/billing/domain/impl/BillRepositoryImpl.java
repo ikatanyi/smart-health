@@ -1,18 +1,26 @@
-package io.smarthealth.accounting.billing.domain;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package io.smarthealth.accounting.billing.domain.impl;
 
 import io.smarthealth.accounting.billing.data.SummaryBill;
+import io.smarthealth.accounting.billing.data.nue.BillItem;
+import io.smarthealth.accounting.billing.data.nue.Bills;
+import io.smarthealth.accounting.billing.domain.BillRepository;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,16 +30,19 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional(readOnly = true)
-public class BillSummaryRepositoryImpl implements BillSummaryRepository {
+public class BillRepositoryImpl implements BillRepository {
 
     EntityManager em;
 
-    public BillSummaryRepositoryImpl(EntityManager em) {
+    public BillRepositoryImpl(EntityManager em) {
         this.em = em;
     }
 
     @Override
-    public Page<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, DateRange range, Pageable pageable) {
+    public List<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin,VisitEnum.PaymentMethod paymentMode, DateRange range) {
+        if (isWalkin != null && isWalkin) {
+            return getWalkIn(patientNumber, hasBalance,paymentMode,range);
+        }
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<SummaryBill> cq = cb.createQuery(SummaryBill.class);
         Root<PatientBillItem> root = cq.from(PatientBillItem.class);
@@ -54,6 +65,9 @@ public class BillSummaryRepositoryImpl implements BillSummaryRepository {
         if (visitNumber != null) {
             predicates.add(cb.equal(root.get("patientBill").get("visit").get("visitNumber"), visitNumber));
         }
+        if (paymentMode != null) {
+            predicates.add(cb.equal(root.get("patientBill").get("paymentMode"), paymentMode.name()));
+        }
         if (range != null) {
             predicates.add(
                     cb.between(root.get("billingDate"), range.getStartDate(), range.getEndDate())
@@ -71,17 +85,38 @@ public class BillSummaryRepositoryImpl implements BillSummaryRepository {
             }
         }
 
-        List<SummaryBill> result = em.createQuery(cq).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        Root<PatientBillItem> rootCount = countQuery.from(PatientBillItem.class);
-        countQuery.select(cb.count(rootCount)).where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
-        Long count = em.createQuery(countQuery).getSingleResult();
-        Page<SummaryBill> result1 = new PageImpl<>(result, pageable, count);
-        return result1;
+        List<SummaryBill> result = em.createQuery(cq).getResultList();
+
+        if (isWalkin == null) {
+            if (patientNumber == null) {
+                patientNumber = visitNumber;
+            }
+
+            List<SummaryBill> walkin = getWalkIn(patientNumber, hasBalance,paymentMode,range);
+            result.addAll(walkin);
+        }
+
+        return result;
     }
 
     @Override
-    public Page<SummaryBill> getWalkinBillSummary(String patientNumber, Boolean hasBalance, Pageable pageable) {
+    public BigDecimal getBillTotal(String visitNumber) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Double> query = cb.createQuery(Double.class);
+        Root<PatientBillItem> patientBillItem = query.from(PatientBillItem.class);
+        query.select(cb.sum(patientBillItem.get("balance")));
+        List<Predicate> predicates = new ArrayList<>();
+        if (visitNumber != null) {
+            predicates.add(cb.equal(patientBillItem.get("patientBill").get("visit").get("visitNumber"), visitNumber));
+        }
+        query.where(predicates.toArray(new Predicate[0]));
+
+        TypedQuery<Double> typedQuery = em.createQuery(query);
+        Double sum = typedQuery.getSingleResult();
+        return BigDecimal.valueOf(sum);
+    }
+
+    private List<SummaryBill> getWalkIn(String patientNumber, Boolean hasBalance,VisitEnum.PaymentMethod paymentMode, DateRange range) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<SummaryBill> cq = cb.createQuery(SummaryBill.class);
         Root<PatientBillItem> root = cq.from(PatientBillItem.class);
@@ -101,12 +136,14 @@ public class BillSummaryRepositoryImpl implements BillSummaryRepository {
         if (patientNumber != null) {
             predicates.add(cb.equal(root.get("patientBill").get("reference"), patientNumber));
         }
-//        if (range != null) {
-//            predicates.add(
-//                    cb.between(root.get("billingDate"), range.getStartDate(), range.getEndDate())
-//            );
-//        }
-
+         if (paymentMode != null) {
+            predicates.add(cb.equal(root.get("patientBill").get("paymentMode"), paymentMode.name()));
+        }
+           if (range != null) {
+            predicates.add(
+                    cb.between(root.get("billingDate"), range.getStartDate(), range.getEndDate())
+            );
+        }
         cq.where(predicates.toArray(new Predicate[0]))
                 .groupBy(root.get("patientBill").get("reference"));
 
@@ -118,12 +155,12 @@ public class BillSummaryRepositoryImpl implements BillSummaryRepository {
             }
         }
 
-        List<SummaryBill> result = em.createQuery(cq).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        Root<PatientBillItem> rootCount = countQuery.from(PatientBillItem.class);
-        countQuery.select(cb.count(rootCount)).where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
-        Long count = em.createQuery(countQuery).getSingleResult();
-        Page<SummaryBill> result1 = new PageImpl<>(result, pageable, count);
-        return result1;
+        List<SummaryBill> result = em.createQuery(cq).getResultList();
+
+        return result;
     }
+    
+    //can I select the items independently so that I can have fully control
+   
+    
 }

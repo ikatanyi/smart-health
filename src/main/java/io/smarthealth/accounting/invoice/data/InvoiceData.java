@@ -48,6 +48,6 @@ public class InvoiceData {
     private InvoiceStatus status;
     private String notes;
     private List<InvoiceItemData> invoiceItems = new ArrayList<>();
-    private List<CopaymentData> copayments = new ArrayList<>();
+    private List<InvoiceReceipt> invoicePayments=new ArrayList<>();
    
 }

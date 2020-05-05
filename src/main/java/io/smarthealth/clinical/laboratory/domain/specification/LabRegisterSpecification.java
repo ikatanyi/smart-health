@@ -4,6 +4,7 @@ import io.smarthealth.clinical.laboratory.domain.LabRegister;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -18,7 +19,7 @@ public class LabRegisterSpecification {
         super();
     }
 
-    public static Specification<LabRegister> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status,DateRange range, String search) {
+    public static Specification<LabRegister> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, List<LabTestStatus> status,DateRange range, String search) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (orderNumber != null) {
@@ -30,8 +31,14 @@ public class LabRegisterSpecification {
             if (patientNumber != null) {
                 predicates.add(cb.equal(root.get("visit").get("patient").get("patientNumber"), patientNumber));
             }
-            if (status != null) {
-                predicates.add(cb.equal(root.get("status"), status));
+            if (status != null && !status.isEmpty()) {
+//                predicates.add(cb.equal(root.get("status"), status));
+                predicates.add(root.get("status").in(status));
+//                predicates.add(                    
+//                        cb.or(
+//                                cb.equal(root.get("status"), status), 
+//                        )
+//                );
             }
             
               if (range != null) {

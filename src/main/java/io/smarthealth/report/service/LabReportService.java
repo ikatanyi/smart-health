@@ -68,7 +68,7 @@ public class LabReportService {
         String dateRange = reportParam.getFirst("dateRange");
         Integer page = Integer.getInteger(reportParam.getFirst("page"));
         Integer size = Integer.getInteger(reportParam.getFirst("size"));
-        LabTestStatus status = statusToEnum(reportParam.getFirst("status"));
+        List<LabTestStatus> status = Arrays.asList(statusToEnum(reportParam.getFirst("status")));
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));

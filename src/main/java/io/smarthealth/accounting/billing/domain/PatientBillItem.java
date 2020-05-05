@@ -1,10 +1,14 @@
 package io.smarthealth.accounting.billing.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.billing.data.BillItemData;
+import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import java.time.LocalDate;
 import javax.persistence.*;
 import lombok.Data;
@@ -17,7 +21,6 @@ import lombok.ToString;
 @Entity
 @Data
 @Table(name = "patient_billing_item")
-//@NamedQuery(name = "t", query = "SELECT b.patientBill.billingDate as date, b.patientBill.reference as visitNumber, b.patientBill.reference as patientNumber, b.patientBill.otherDetails as patientName, SUM(b.amount) as amount, SUM(b.balance) as balance, b.patientBill.visit.paymentMethod as paymentMethod, 'True' as walkin FROM PatientBillItem b WHERE b.patientBill.reference =:visit GROUP BY 2,3")
 public class PatientBillItem extends Auditable {
 
     @JsonIgnore
@@ -33,14 +36,14 @@ public class PatientBillItem extends Auditable {
     private LocalDate billingDate;
     private String transactionId;
     private Double quantity;
-    private Double price; 
+    private Double price;
     @Column(columnDefinition = "default 0")
-    private Double discount =0.0;
+    private Double discount = 0.0;
     @Column(columnDefinition = "default 0")
-    private Double taxes =0.0;
-    
-    private Double amount=0.0;
-    private Double balance=0.0;
+    private Double taxes = 0.0;
+
+    private Double amount = 0.0;
+    private Double balance = 0.0;
     private String servicePoint;
     private Long servicePointId;
     private Boolean paid;
@@ -93,12 +96,47 @@ public class PatientBillItem extends Auditable {
         data.setRequestReference(this.requestReference);
         data.setPaymentReference(this.paymentReference);
 
-        if(this.getPatientBill().getWalkinFlag()!=null && this.getPatientBill().getWalkinFlag() ){
+        if (this.getPatientBill().getWalkinFlag() != null && this.getPatientBill().getWalkinFlag()) {
             data.setPatientName(this.getPatientBill().getOtherDetails());
-            data.setPatientNumber(this.getPatientBill().getReference());           
+            data.setPatientNumber(this.getPatientBill().getReference());
         }
         data.setWalkinFlag(this.getPatientBill().getWalkinFlag());
         return data;
+    }
+
+    public BillItem toBillItem() {
+        BillItem data = new BillItem();
+        data.setId(this.getId());
+        data.setBillId(this.patientBill.getId());
+        if (this.item != null) {
+            data.setItemId(this.item.getId());
+            data.setItemCode(this.item.getItemCode());
+            data.setItem(this.item.getItemName());
+            data.setItemCategory(this.item.getCategory());
+        }
+        data.setBillingDate(this.getBillingDate());
+        data.setQuantity(this.quantity);
+        data.setPrice(this.price);
+        data.setAmount(this.amount);
+        data.setDiscount(this.discount);
+        data.setTax(this.taxes);
+
+        data.setNetAmount(((toDouble(this.quantity) * toDouble(this.price)) + toDouble(discount)) - toDouble(taxes));
+
+        data.setServicePoint(this.servicePoint);
+        data.setServicePointId(this.servicePointId);
+        data.setPaid(this.paid);
+        data.setTransactionId(this.transactionId);
+        data.setReference(this.paymentReference);
+        data.setStatus(this.status);
+        return data;
+    }
+
+    private Double toDouble(Double val) {
+        if (val == null) {
+            return 0D;
+        }
+        return val;
     }
 
 }

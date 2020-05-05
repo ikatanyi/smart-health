@@ -19,4 +19,6 @@ public interface ItemRepository extends JpaRepository<Item, Long>, JpaSpecificat
 
     Page<Item> findByCategory(final ItemCategory itemCode, final Pageable pageable);
 
+     Optional<Item> findFirstByCategory(ItemCategory category);
+
 }

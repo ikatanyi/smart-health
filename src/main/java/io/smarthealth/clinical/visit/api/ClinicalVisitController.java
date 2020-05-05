@@ -2,6 +2,7 @@ package io.smarthealth.clinical.visit.api;
 
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
+import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.data.DoctorInvoiceData;
 import io.smarthealth.accounting.doctors.domain.DoctorClinicItems;
@@ -173,47 +174,49 @@ public class ClinicalVisitController {
             }
             paymentDetailsService.createPaymentDetails(pd);
             //create bill for copay
+            //Modification - reusing copayment billing (kelsas)
+             if (config.isPresent()) {
+                 billingService.createCopay(new CopayData(visit.getVisitNumber(), visitData.getPayment().getSchemeId()));
+             }
 
-            if (config.isPresent()) {
-                System.out.println("Config data found");
-                if (config.get().getCoPayType().equals(CoPayType.Fixed)) {
-                    System.out.println("Copay type is fixed");
-                    Pageable firstPageWithOneElement = PageRequest.of(0, 1);
-
-                    //find item where item category is copay
-                    Page<Item> item = itemService.findByItemsByCategory(ItemCategory.CoPay, firstPageWithOneElement);
-                    if (item.getContent().size() < 1) {
-                        throw APIException.notFound("Copay service item has not been set", "CoPay");
-                    }
-                    List<BillItemData> billItems = new ArrayList<>();
-                    BillItemData itemData = new BillItemData();
-                    itemData.setAmount(config.get().getCoPayValue());
-                    itemData.setBalance(config.get().getCoPayValue());
-                    itemData.setBillingDate(LocalDate.now());
-                    itemData.setItem(item.getContent().get(0).getItemName());
-                    itemData.setItemCode(item.getContent().get(0).getItemCode());
-                    
-                    itemData.setQuantity(1.0);
-                    itemData.setServicePoint(visit.getServicePoint().getName());
-                    itemData.setServicePointId(visit.getServicePoint().getId());
-                    billItems.add(itemData);
-                    
-                    BillData data = new BillData();
-                    data.setWalkinFlag(false);
-                    data.setBillItems(billItems);
-                    data.setAmount(config.get().getCoPayValue());
-                    data.setBalance(config.get().getCoPayValue());
-                    data.setBillingDate(LocalDate.now());
-                    data.setDiscount(0.00);
-                    data.setPatientName(patient.getFullName());
-                    data.setPatientNumber(patient.getPatientNumber());
-                    data.setPaymentMode(visit.getPaymentMethod().name());
-                    data.setVisitNumber(visit.getVisitNumber());
-                    System.out.println("About to bill copay " + config.get().getCoPayValue());
-                    billingService.createPatientBill(data);
-                    System.out.println("End of creating copay bill " + data.toString());
-                }
-            }
+//            if (config.isPresent()) {
+//                System.out.println("Config data found");
+//                if (config.get().getCoPayType().equals(CoPayType.Fixed)) {
+//                    System.out.println("Copay type is fixed");
+//                    Pageable firstPageWithOneElement = PageRequest.of(0, 1);
+//
+//                    //find item where item category is copay
+//                    Page<Item> item = itemService.findByItemsByCategory(ItemCategory.CoPay, firstPageWithOneElement);
+//                    if (item.getContent().size() < 1) {
+//                        throw APIException.notFound("Copay service item has not been set", "CoPay");
+//                    }
+//                    List<BillItemData> billItems = new ArrayList<>();
+//                    BillItemData itemData = new BillItemData();
+//                    itemData.setAmount(config.get().getCoPayValue());
+//                    itemData.setBalance(config.get().getCoPayValue());
+//                    itemData.setBillingDate(LocalDate.now());
+//                    itemData.setItem(item.getContent().get(0).getItemName());
+//                    itemData.setItemCode(item.getContent().get(0).getItemCode());
+//
+//                    itemData.setQuantity(1.0);
+//                    itemData.setServicePoint(visit.getServicePoint().getName());
+//                    itemData.setServicePointId(visit.getServicePoint().getId());
+//                    billItems.add(itemData);
+//
+//                    BillData data = new BillData();
+//                    data.setWalkinFlag(false);
+//                    data.setBillItems(billItems);
+//                    data.setAmount(config.get().getCoPayValue());
+//                    data.setBalance(config.get().getCoPayValue());
+//                    data.setBillingDate(LocalDate.now());
+//                    data.setDiscount(0.00);
+//                    data.setPatientName(patient.getFullName());
+//                    data.setPatientNumber(patient.getPatientNumber());
+//                    data.setPaymentMode(visit.getPaymentMethod().name());
+//                    data.setVisitNumber(visit.getVisitNumber()); 
+//                    billingService.createPatientBill(data); 
+//                }
+//            }
         }
         //Push it to queue
         PatientQueue patientQueue = new PatientQueue();

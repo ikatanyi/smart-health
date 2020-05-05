@@ -66,14 +66,14 @@ public class InvoiceService {
 //    private final TxnService txnService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public  List<Invoice> createInvoice(CreateInvoice invoiceData) {
+    public List<Invoice> createInvoice(CreateInvoice invoiceData) {
 
         Visit visit = visitService.findVisitEntityOrThrow(invoiceData.getVisitNumber());
 
         String trxId = sequenceNumberService.next(1L, Sequences.Transactions.name());
-        
-     List<Invoice> savedInvoices=new ArrayList<>();
-     
+
+        List<Invoice> savedInvoices = new ArrayList<>();
+
         invoiceData.getPayers()
                 .stream()
                 .forEach(
@@ -95,7 +95,7 @@ public class InvoiceService {
                             invoice.setBalance(payerData.getAmount());
                             invoice.setDate(invoiceData.getDate());
                             invoice.setDueDate(invoiceData.getDate().plusDays(creditDays));
-                            invoice.setBalance(payerData.getAmount());
+
                             invoice.setDiscount(invoiceData.getDiscount());
                             invoice.setMemberName(payerData.getMemberName());
                             invoice.setMemberNumber(payerData.getMemberNo());
@@ -110,7 +110,7 @@ public class InvoiceService {
                             invoice.setTax(invoiceData.getTaxes());
                             invoice.setTransactionNo(trxId);
                             invoice.setVisit(visit);
-
+                            BigDecimal balance = BigDecimal.ZERO;
                             if (!invoiceData.getItems().isEmpty()) {
                                 invoiceData.getItems()
                                         .stream()
@@ -124,12 +124,15 @@ public class InvoiceService {
                                             item.setBalance(0D);
                                             PatientBillItem updatedItem = billingService.updateBillItem(item);
                                             lineItem.setBillItem(updatedItem);
-                                            lineItem.setBalance(inv.getAmount());
+                                            balance.add(inv.getAmount());
+//                                            lineItem.setBalance(inv.getAmount().doubleValue() > 0 ? inv.getAmount() : BigDecimal.ZERO);
+                                              lineItem.setBalance(inv.getAmount());
                                             invoice.addItem(lineItem);
                                         });
                             }
+                            invoice.setBalance(balance);
 
-                          savedInvoices.add(saveInvoice(invoice));
+                            savedInvoices.add(saveInvoice(invoice));
                         }
                 );
 
@@ -175,7 +178,7 @@ public class InvoiceService {
     }
 
     public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo, Pageable pageable) {
-
+        System.out.println("Line 181");
         Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
         return invoices;

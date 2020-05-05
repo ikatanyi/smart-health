@@ -178,7 +178,7 @@ public class LaboratoryService {
 //        }
     }
 
-    public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range, String search, Pageable page) {
+    public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, List<LabTestStatus> status, DateRange range, String search, Pageable page) {
         Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status, range, search);
         return repository.findAll(spec, page);
     }

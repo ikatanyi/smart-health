@@ -130,11 +130,9 @@ public class ReceivePaymentService {
         List<PatientBillItem> billedItems = billingService.validatedBilledItem(data);
         billedItems.stream()
                 .forEach(item -> {
-                    System.err.println("Billingss  "+item);
                     if (item.getItem().getCategory() == ItemCategory.CoPay) {
                         copaymentService.createCopayment(data.getVisitNumber(), data.getPatientNumber(), data.getAmount(), receiptNo);
                     }
-                    System.out.print(item);
                      receipt.addReceiptItem(
                              new ReceiptItem(
                                      item, item.getQuantity(), 

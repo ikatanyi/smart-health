@@ -2,11 +2,13 @@ package io.smarthealth.accounting.billing.api;
 
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
+import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -28,12 +30,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class BillingController {
 
-    private final BillingService service;
+    private final BillingService service; 
 
     public BillingController(BillingService service) {
         this.service = service;
     }
-
+    
+ 
     @PostMapping("/billing")
     public ResponseEntity<?> createPatientBill(@Valid @RequestBody BillData billData) {
 
@@ -46,7 +49,7 @@ public class BillingController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-
+     
     @GetMapping("/billing/{id}")
     public BillData getPatientBill(@PathVariable(value = "id") Long code) {
         PatientBill bill = service.findOneWithNoFoundDetection(code);
@@ -88,7 +91,20 @@ public class BillingController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-
+    
+   @PostMapping("/billing/{visitNumber}/copay")
+    public ResponseEntity<?> createCopayBill(@PathVariable(value = "visitNumber") String visitNumber,@Valid @RequestBody  CopayData data) {
+        if(!visitNumber.equals(data.getVisitNumber())){
+            throw APIException.badRequest("Visit Number on path variable and body do not match");
+        }
+        data.setVisitStart(Boolean.FALSE);
+            PatientBill patientbill = service.createCopay(data);
+            if(patientbill ==null){
+                throw APIException.badRequest("Copay creation was not successful");
+            }
+ 
+        return ResponseEntity.status(HttpStatus.CREATED).body(patientbill.toData());
+    }
     @GetMapping("/billing/items")
     public ResponseEntity<?> getPatientBillItems(
             @RequestParam(value = "patientNumber", required = false) String patientNo,
@@ -121,7 +137,32 @@ public class BillingController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-    
+
+    @GetMapping("/billing/items/{visitNumber}/receipted")
+    public ResponseEntity<?> getReceiptedBillItems(
+            @PathVariable(value = "visitNumber", required = false) String visitNo,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+
+        Page<BillItemData> list = service.getReceiptedBillItems(visitNo, pageable)
+                .map(x -> x.toData());
+
+        Pager<List<BillItemData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Patient Invoice Receipted Items");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+    }
+
     @GetMapping("/billing/walkin")
     public ResponseEntity<?> getWalkinBillSummary(
             @RequestParam(value = "walkinNumber", required = false) String walkinNumber,
@@ -149,13 +190,13 @@ public class BillingController {
     }
 
     @GetMapping("/billing/walkin/items")
-    public ResponseEntity<?> getWalkinBillItems( 
-            @RequestParam(value = "walkinNo", required = false) String walkinNo, 
-            @RequestParam(value = "hasBalance", required = false) Boolean hasBalance, 
+    public ResponseEntity<?> getWalkinBillItems(
+            @RequestParam(value = "walkinNo", required = false) String walkinNo,
+            @RequestParam(value = "hasBalance", required = false) Boolean hasBalance,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createPage(page, size); 
+        Pageable pageable = PaginationUtil.createPage(page, size);
 
         Page<BillItemData> list = service.getWalkBillItems(walkinNo, hasBalance, pageable)
                 .map(x -> x.toData());
@@ -173,8 +214,6 @@ public class BillingController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-    
-    
 
 //    @GetMapping("/bills")
 //    public ResponseEntity<?> listBillSummary(
@@ -204,5 +243,5 @@ public class BillingController {
 //        details.setReportName("Patient Bill Items");
 //        pagers.setPageDetails(details);
 //        return ResponseEntity.ok(pagers);
-//    }
+//    } 
 }

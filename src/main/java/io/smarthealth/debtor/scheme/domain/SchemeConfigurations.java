@@ -10,6 +10,7 @@ import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.debtor.scheme.domain.enumeration.DiscountType;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -29,6 +30,7 @@ public class SchemeConfigurations extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private DiscountType discountMethod;
+
     private double discountValue;
     @Enumerated(EnumType.STRING)
     private CoPayType coPayType;
@@ -42,7 +44,10 @@ public class SchemeConfigurations extends Auditable {
 
     private LocalDate copayStartDate;
     private String schemeCover;
+
+    @Column(columnDefinition = "tinyint(1) default 0")
     private boolean checkMemberShipLimit;
-    private boolean hasClaimSwitching=true;
+    @Column(columnDefinition = "tinyint(1) default 0")
+    private boolean claimSwitching;
 
 }

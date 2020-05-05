@@ -51,6 +51,7 @@ public class PaymentDetails extends Auditable {
     private String comments;
 
     private String memberName, policyNo, relation, idNo;
+    
     private double limitAmount;
     @Enumerated(EnumType.STRING)
     private CoPayType coPayCalcMethod;

@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -19,8 +18,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "acc_remittance")
-@NamedQuery(name = "t", query = "update Remittance R set R.balance=:balance where R.id=:id ")
+@Table(name = "acc_remittance") 
 public class Remittance extends Auditable {
 
     @ManyToOne

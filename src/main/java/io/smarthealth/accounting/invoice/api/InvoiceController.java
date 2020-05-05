@@ -58,13 +58,11 @@ public class InvoiceController {
 //        InvoiceData trans = InvoiceData.map(service.updateInvoice(id, transactionData));
 //        return trans;
 //    }
-
 //    @PatchMapping("/invoices/{id}/verify")
 //    public InvoiceData updateInvoice(@PathVariable(value = "id") Long id, Boolean Isverified) {
 //        InvoiceData trans = InvoiceData.map(service.verifyInvoice(id, Isverified));
 //        return trans;
 //    }
-
     @GetMapping("/invoices")
     public ResponseEntity<?> getInvoices(
             @RequestParam(value = "payer", required = false) Long payer,
@@ -74,15 +72,16 @@ public class InvoiceController {
             @RequestParam(value = "patientNo", required = false) String patientNo,
             @RequestParam(value = "status", required = false) InvoiceStatus status,
             @RequestParam(value = "filterPastDue", required = false, defaultValue = "false") boolean filterPastDue,
-            @RequestParam(value = "amountGreaterThan", required = false, defaultValue = "0.00") double amountGreaterThan,
+            @RequestParam(value = "amountGreaterThan", required = false, defaultValue = "0.00") Double amountGreaterThan,
             @RequestParam(value = "amountLessThanOrEqualTo", required = false, defaultValue = "0.00") double amountLessThanOrEqualTo,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
         Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable)
-                .map(x-> x.toData());
+                .map(x -> x.toData());
 
         Pager<List<InvoiceData>> pagers = new Pager();
         pagers.setCode("0");

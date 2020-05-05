@@ -9,6 +9,7 @@ import io.smarthealth.accounting.billing.data.BillSummary;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -65,12 +66,28 @@ public class PatientBillSpecification {
         };
     }
 
+    public static Specification<PatientBillItem> getReceiptedItems(String visitNo, VisitEnum.PaymentMethod paymentMode) {
+        return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
+            final ArrayList<Predicate> predicates = new ArrayList<>();
+            if (paymentMode == VisitEnum.PaymentMethod.Cash) {
+                predicates.add(cb.equal(root.get("paid"), true));
+            } else {
+                predicates.add(cb.lessThan(root.get("amount"), 0));
+            }
+            if (visitNo != null) {
+                predicates.add(cb.equal(root.get("patientBill").get("visit").get("visitNumber"), visitNo));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
+
     public static Specification<PatientBillItem> getWalkinBillItems(String walkIn, Boolean hasBalance) {
         return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
-            
+
             predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), Boolean.TRUE));
-            
+
             if (walkIn != null) {
                 predicates.add(cb.equal(root.get("patientBill").get("reference"), walkIn));
             }
@@ -132,4 +149,7 @@ public class PatientBillSpecification {
 //    list.forEach(a -> {System.out.println(a.toString()); teacherInfo.append(a.toString()).append("\r\n");});
 //    return teacherInfo.toString();
 //}
+    ///
+    
+
 }
