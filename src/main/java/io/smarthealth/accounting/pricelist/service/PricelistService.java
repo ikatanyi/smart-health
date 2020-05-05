@@ -115,7 +115,7 @@ public class PricelistService {
         return save(toUpdateItem);
     }
 
-    public Page<PriceList> getPriceLists(String queryItem, Long servicePointId, Boolean defaultPrice, ItemCategory category, ItemType itemType, Pageable page) {
+    public Page<PriceList> getPriceLists(String queryItem, Long servicePointId, Boolean defaultPrice, List<ItemCategory> category, ItemType itemType, Pageable page) {
         Specification<PriceList> spec = PriceListSpecification.createSpecification(queryItem, servicePointId, defaultPrice, category, itemType);
         return repository.findAll(spec, page);
     }

@@ -297,23 +297,25 @@ public class LaboratoryService {
         }
         request.setRequestDatetime(data.getRequestDatetime());
         request.setStatus(LabTestStatus.AwaitingSpecimen);
-
+      
         request.addPatientTest(data.getTests()
-                .stream()
-                .map(x -> toLabRegisterTest(x))
+                .stream() 
+                .map(x -> toLabRegisterTest(x, data.getPaymentMode()))
                 .collect(Collectors.toList())
         );
 
         return request;
     }
 
-    private LabRegisterTest toLabRegisterTest(LabRegisterTestData data) {
+    private LabRegisterTest toLabRegisterTest(LabRegisterTestData data, String paymentMode) {
         LabTest labTest = getLabTest(data.getTestId());
         LabRegisterTest test = new LabRegisterTest();
         test.setCollected(Boolean.FALSE);
         test.setEntered(Boolean.FALSE);
         test.setLabTest(labTest);
-        test.setPaid(Boolean.FALSE);
+        
+        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
+        
         test.setVoided(Boolean.FALSE);
         test.setValidated(Boolean.FALSE);
         test.setRequestId(data.getRequestId());
