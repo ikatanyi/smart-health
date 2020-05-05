@@ -24,6 +24,7 @@ public class RadiologyResultData {
     @ApiModelProperty(required = false, hidden = true)
     private String patientName;
     @ApiModelProperty(required = false, hidden = true)
+    @Enumerated(EnumType.STRING)
     private Gender gender;
     @ApiModelProperty(required = false, hidden = true)
     private String visitNumber;
@@ -46,8 +47,8 @@ public class RadiologyResultData {
     @ApiModelProperty(required = false, hidden = true)
     private String imagePath;
     private Boolean voided = Boolean.FALSE;
-    
-    public RadiologyResult fromData(){
+
+    public RadiologyResult fromData() {
         RadiologyResult entity = new RadiologyResult();
         entity.setComments(this.getComments());
         entity.setImagePath(this.getImagePath());

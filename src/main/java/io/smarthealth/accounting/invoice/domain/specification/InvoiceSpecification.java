@@ -14,7 +14,7 @@ public class InvoiceSpecification {
         super();
     }
 
-    public static Specification<Invoice> createSpecification(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo) {
+    public static Specification<Invoice> createSpecification(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo) {
 
         return (root, query, cb) -> {
 
@@ -24,7 +24,7 @@ public class InvoiceSpecification {
                 predicates.add(cb.equal(root.get("payer").get("id"), payer));
             }
             if (scheme != null) {
-                predicates.add(cb.equal(root.get("payee").get("id"), scheme));
+                predicates.add(cb.equal(root.get("scheme").get("id"), scheme));
             }
 
 //             if (customer != null) {
@@ -50,15 +50,15 @@ public class InvoiceSpecification {
                         cb.between(root.get("date"), range.getStartDate(), range.getEndDate())
                 );
             }
-//            if (amountGreaterThan > 0) {
-//                predicates.add(cb.greaterThanOrEqualTo(root.get("balance"), amountGreaterThan));
-//            }
-//            if (amountLessThanOrEqualTo > 0) {
-//                predicates.add(cb.lessThanOrEqualTo(root.get("balance"), amountLessThanOrEqualTo));
-//            }
-//            if (filterPastDue) {
-//                predicates.add(cb.greaterThan(root.get("dueDate"), LocalDate.now()));
-//            }
+            if (amountGreaterThan != null) {
+                predicates.add(cb.greaterThan(root.get("balance"), amountGreaterThan));
+            }
+            if (amountLessThanOrEqualTo > 0) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("balance"), amountLessThanOrEqualTo));
+            }
+            if (filterPastDue) {
+                predicates.add(cb.greaterThan(root.get("dueDate"), LocalDate.now()));
+            }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

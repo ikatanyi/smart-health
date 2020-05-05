@@ -140,7 +140,7 @@ public class SchemeController {
             //save as new
             SchemeConfigurations configurations = SchemConfigData.map(data);
             configurations.setScheme(scheme);
-            configurations.setHasClaimSwitching(true);
+            //configurations.setClaimSwitching(true);
             configSaved = schemeService.updateSchemeConfigurations(configurations);
         } else {
             //look for scheme config 

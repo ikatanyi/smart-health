@@ -1,6 +1,7 @@
 package io.smarthealth.organization.person.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.organization.person.domain.enumeration.Gender;
 import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.*;
@@ -26,7 +27,8 @@ public class Person extends Auditable {
     @Column(length = 50)
     private String surname;
     @Column(length = 1)
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     private LocalDate dateOfBirth;
 
     //@Transient

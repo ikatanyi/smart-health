@@ -56,7 +56,7 @@ public class PersonData {
         person.setGivenName(personDTO.getGivenName());
         person.setMiddleName(personDTO.getMiddleName());
         person.setSurname(personDTO.getSurname());
-        person.setGender(personDTO.getGender().name());
+        person.setGender(personDTO.getGender());
         person.setPatient(personDTO.isPatient);
         person.setDateOfBirth(personDTO.getDateOfBirth());
         if (personDTO.getAddress() != null) {
