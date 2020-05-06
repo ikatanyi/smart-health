@@ -121,7 +121,8 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Arrays.asList("*"));
-        config.setAllowedMethods(Collections.singletonList("*"));
+        config.setAllowedMethods(Arrays.asList("'GET", "POST", "PUT", "DELETE", "OPTIONS'"));
+//        config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         source.registerCorsConfiguration("/**", config);
 
