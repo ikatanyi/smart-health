@@ -21,6 +21,7 @@ public class ReorderRule extends Identifiable {
     private Store store;
 
     @ToString.Exclude
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_reorder_rule_item_id"))
     private Item stockItem;
 
