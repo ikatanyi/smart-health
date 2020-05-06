@@ -162,9 +162,9 @@
 				</textElement>
 				<text><![CDATA[Prescription Note]]></text>
 			</staticText>
-			<image>
+			<image isLazy="true" onErrorType="Blank">
 				<reportElement positionType="Float" x="2" y="17" width="83" height="26" uuid="f2cc8d71-3ef5-46bf-bdd9-d98861714846"/>
-				<imageExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\art-rx.jpg"]]></imageExpression>
+				<imageExpression><![CDATA[$P{PIC_DIR}+"art-rx.jpg"]]></imageExpression>
 			</image>
 		</band>
 	</columnHeader>

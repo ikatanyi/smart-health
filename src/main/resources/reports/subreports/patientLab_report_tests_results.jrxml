@@ -4,8 +4,8 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<field name="analyte" class="java.lang.String"/>
-	<field name="upperLimit" class="java.lang.String"/>
-	<field name="lowerLimit" class="java.lang.String"/>
+	<field name="upperLimit" class="java.lang.Double"/>
+	<field name="lowerLimit" class="java.lang.Double"/>
 	<field name="units" class="java.lang.String"/>
 	<field name="resultValue" class="java.lang.String"/>
 	<field name="status" class="java.lang.String"/>

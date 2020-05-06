@@ -126,11 +126,11 @@ public class LabReportService {
     }    
     
     public void getPatientLabReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
-        ReportData reportData = new ReportData();
-        String labNo = reportParam.getFirst("labNo");
+        String labNumber= reportParam.getFirst("labNumber"); 
+        String visitNo= reportParam.getFirst("visitNo");
 //        Visit visit = visitService.findVisitEntityOrThrow("O000005");
-        LabRegisterData labTests = labService.getLabRegisterByNumber(labNo).toData(Boolean.TRUE);//tLabResultDataByVisit(visit);
-
+        LabRegisterData labTests = labService.getLabRegisterByNumber(labNumber).toData(Boolean.TRUE);//tLabResultDataByVisit(visit);
+        ReportData reportData = new ReportData();
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("visitNumber");
