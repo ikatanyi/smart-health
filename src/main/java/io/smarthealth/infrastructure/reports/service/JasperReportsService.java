@@ -163,7 +163,8 @@ public class JasperReportsService {
             jasperReport = (JasperReport) JRLoader.loadObject(reportInputStream);
         } // Compile report from source and save
         else {
-            String jrxml = storageService.loadJrxmlFile(template + ".jrxml");
+            reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jrxml").getInputStream();            
+            String jrxml = storageService.loadJrxmlFile(resourceLoader.getResource(appProperties.getReportLoc() + template + ".jrxml").getFile().getAbsolutePath());
             jasperReport = JasperCompileManager.compileReport(jrxml);
         }
         // Get your data source

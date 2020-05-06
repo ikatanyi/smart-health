@@ -8,25 +8,6 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TEST_DIR" class="java.lang.String"/>
-	<parameter name="HEADER_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
-	</parameter>
-	<parameter name="orgLegalName" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgName" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="TaxNumber" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgAddressCountry" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgAddressCounty" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgAddressLine1" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgPostalCode" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgAddressLine2" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgTown" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgType" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="contactEmail" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="contactFullName" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="contactMobile" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="salutation" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="telephone" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
 	</parameter>
@@ -187,6 +168,7 @@
 		<band height="28" splitType="Stretch">
 			<subreport>
 				<reportElement x="2" y="0" width="553" height="28" uuid="63390baa-54a8-40dc-b82c-52d9e9dfe675"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
