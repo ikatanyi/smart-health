@@ -7,10 +7,7 @@ package io.smarthealth.infrastructure.imports.service;
 
 import io.smarthealth.ApplicationProperties;
 import io.smarthealth.infrastructure.exception.FileStorageException;
-import io.smarthealth.infrastructure.exception.MyFileNotFoundException;
-import io.smarthealth.documents.domain.FileStorageProperties;
 import java.io.File;
-import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -20,12 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.ResourceUtils;
 
 /**
  *
@@ -47,8 +44,8 @@ public class UploadService {
     public void UploadService(String dir) {
         try {
             Resource input = resourceLoader.getResource(appProperties.getDocUploadDir() + "/" + dir);
-            File file = new File(appProperties.getDocUploadDir() + "/" + dir);
-            if(file.exists())
+            File file = ResourceUtils.getFile(input.getURI());
+            if(file.isDirectory())
                 System.out.println("it works");
             if(input.exists())                
               this.fileStorageLocation = input.getFile().toPath().toAbsolutePath();
