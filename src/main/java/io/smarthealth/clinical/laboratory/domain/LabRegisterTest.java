@@ -100,7 +100,7 @@ public class LabRegisterTest extends Identifiable {
             data.setTestId(this.labTest.getId());
             data.setTestCode(this.labTest.getCode());
             data.setTestName(this.labTest.getTestName());
-            data.setWithRef(this.labTest.getHasReferenceValue());
+            data.setWithRef(this.labTest.getHasReferenceValue()!=null?this.labTest.getHasReferenceValue():true);
         }
         //include the results 
         if (expand) {
