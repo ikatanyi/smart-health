@@ -158,9 +158,12 @@ public class JasperReportsService {
         JasperReport jasperReport = null;
         HashMap param = reportConfig(patientNumber, employeeId, supplierId);
         InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
+        
+        System.out.println("######################### name:"+appProperties.getReportLoc() + template + ".jasper");
         // Check if a compiled report exists
         if (reportInputStream != null) {
             jasperReport = (JasperReport) JRLoader.loadObject(reportInputStream);
+            System.out.println("====================not null");
         } // Compile report from source and save
         else {
             reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jrxml").getInputStream();            
