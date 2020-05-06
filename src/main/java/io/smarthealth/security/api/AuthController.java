@@ -4,6 +4,8 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.mail.EmailData;
 import io.smarthealth.infrastructure.mail.MailService;
+import io.smarthealth.infrastructure.utility.PageDetails;
+import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.infrastructure.utility.PassayPassword;
 import io.smarthealth.security.data.ApiResponse;
 import io.smarthealth.security.data.PasswordData;
@@ -16,6 +18,7 @@ import io.smarthealth.security.service.UserService;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -100,18 +103,38 @@ public class AuthController {
         mailSender.send(EmailData.of(user.getEmail(), "User Account", "<b>Welcome</b> " + user.getName().concat(". Your login credentials is <br/> username : " + user.getEmail() + "<br/> password : " + password)));
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/api/users/{username}")
+                .fromCurrentContextPath().path("/api/auth/users/{username}")
                 .buildAndExpand(result.getUsername()).toUri();
 
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
     }
 
     @GetMapping("/users")
-    public ResponseEntity<?> getAllUsers(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+    public ResponseEntity<?> getAllUsers(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+        
+         Pageable pageable = PaginationUtil.createPage(page, size);
+         
+        Page<UserData> list = userService.findAllUsers(pageable)
+                .map(u -> u.toData());
+//        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+ 
 
-        Page<UserData> page = userService.findAllUsers(pageable).map(u -> u.toData());
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+        Pager<List<UserData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Users");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+//        return ResponseEntity.ok(users);
     }
 
     @PutMapping("/users/{username}")
@@ -154,7 +177,7 @@ public class AuthController {
         final String token = UUID.randomUUID().toString();
         userService.createPasswordResetTokenForUser(user, token);
 
-        final String url = getAppUrl(request) + "/api/users/changePassword?id=" + user.getId() + "&token=" + token;
+        final String url = getAppUrl(request) + "/api/auth/users/changePassword?id=" + user.getId() + "&token=" + token;
         final String message = "Reset Password" + " \r\n" + url;
         mailSender.send(EmailData.of(user.getEmail(), "Reset Password", message));
 
@@ -173,7 +196,7 @@ public class AuthController {
             }
         }
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/api/users/updatePassword")
+                .fromCurrentContextPath().path("/api/auth/users/updatePassword")
                 .buildAndExpand().toUri();
         return ResponseEntity.ok(new ApiResponse(true, "Token Validated Success. \n Change Password : " + location.toString()));
     }

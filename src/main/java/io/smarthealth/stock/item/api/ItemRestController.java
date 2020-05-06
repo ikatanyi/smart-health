@@ -39,7 +39,7 @@ public class ItemRestController {
 
     @PostMapping("/items")
     public ResponseEntity<?> createItems(@Valid @RequestBody CreateItem itemData) {
-        if (itemData.getSku()!=null && service.findByItemCode(itemData.getSku()).isPresent()) {
+        if (itemData.getSku() != null && service.findByItemCode(itemData.getSku()).isPresent()) {
             throw APIException.conflict("Item with code {0} already exists.", itemData.getSku());
         }
 
@@ -59,6 +59,27 @@ public class ItemRestController {
         Item item = service.findByItemCode(code)
                 .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", code));
         return item.toData();
+    }
+
+    @GetMapping("/items/{id}/details")
+    public ResponseEntity<?> getItem(@PathVariable(value = "id") Long id) {
+        Item item = service.findById(id)
+                .orElseThrow(() -> APIException.notFound("Item with Id {0} not found.", id));
+        return ResponseEntity.ok(service.toItemData(item));
+    }
+
+    @PutMapping("/items/{id}")
+    public ResponseEntity<?> updateItems(@PathVariable(value = "id") Long id, @Valid @RequestBody CreateItem itemData) {
+
+        Item result = service.updateItem(id, itemData);
+
+        Pager<ItemData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Item update successful");
+        pagers.setContent(result.toData());
+
+        return ResponseEntity.ok(pagers);
+
     }
 
     @GetMapping("/items")
