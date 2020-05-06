@@ -120,14 +120,14 @@
 		<band height="20" splitType="Stretch">
 			<subreport>
 				<reportElement x="-1" y="0" width="555" height="19" uuid="8c9b1bca-d151-4bd0-bb56-9338ebcbde18">
-					<printWhenExpression><![CDATA[$F{withRef}.equals( true )||$F{withRef}.equals( null )]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{withRef}==true ]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labResults})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement x="-1" y="0" width="555" height="20" uuid="d315708f-db5a-4a94-8105-ae0ec8ccf30c">
-					<printWhenExpression><![CDATA[$F{withRef}.equals( false )]]></printWhenExpression>
+				<reportElement x="0" y="0" width="555" height="20" uuid="d315708f-db5a-4a94-8105-ae0ec8ccf30c">
+					<printWhenExpression><![CDATA[$F{withRef}== false]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labResults})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results_without_ref.jasper"]]></subreportExpression>
