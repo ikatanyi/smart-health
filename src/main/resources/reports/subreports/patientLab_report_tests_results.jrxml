@@ -4,8 +4,6 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<field name="analyte" class="java.lang.String"/>
-	<field name="upperLimit" class="java.lang.Double"/>
-	<field name="lowerLimit" class="java.lang.Double"/>
 	<field name="units" class="java.lang.String"/>
 	<field name="resultValue" class="java.lang.String"/>
 	<field name="status" class="java.lang.String"/>
@@ -72,28 +70,28 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{analyte}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="210" y="0" width="79" height="16" uuid="ca9fd1b4-2f0c-433b-9dad-b19dfd14611f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{units}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="298" y="0" width="79" height="16" uuid="c96208c4-157c-405e-81e8-26cd868fb028"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{referenceValue}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="377" y="0" width="97" height="16" uuid="cd9db49d-c9dc-4960-a0a5-7e5d0236328b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{comments}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="474" y="0" width="79" height="16" uuid="2bd68c43-d46e-46fd-acf2-42c0f058cb81"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
@@ -106,7 +104,7 @@
 					<pen lineWidth="0.25" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="82" y="2" width="125" height="14" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
