@@ -118,12 +118,17 @@
 	</columnHeader>
 	<detail>
 		<band height="20" splitType="Stretch">
+			<subreport isUsingCache="false">
+				<reportElement x="-1" y="0" width="555" height="19" uuid="8c9b1bca-d151-4bd0-bb56-9338ebcbde18"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labResults})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results.jasper"]]></subreportExpression>
+			</subreport>
 			<subreport>
-				<reportElement x="-1" y="0" width="555" height="19" uuid="8c9b1bca-d151-4bd0-bb56-9338ebcbde18">
+				<reportElement x="-1" y="0" width="555" height="20" uuid="fba2b4a8-80aa-4b96-aeaa-185b2175505f">
 					<printWhenExpression><![CDATA[$F{withRef}.equals( false )]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labResults})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results_without_ref.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
