@@ -151,11 +151,6 @@
 	</columnHeader>
 	<detail>
 		<band height="14" splitType="Stretch">
-			<subreport>
-				<reportElement x="1" y="0" width="555" height="14" uuid="fd029b6f-2e4d-4930-9618-295458b4b9f2"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{tests})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests.jasper"]]></subreportExpression>
-			</subreport>
 			<line>
 				<reportElement positionType="Float" x="0" y="-1" width="556" height="1" uuid="35b07815-3281-42b8-90a5-8a64208932e3"/>
 				<graphicElement>
