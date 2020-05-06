@@ -35,6 +35,10 @@ import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.documents.data.DocumentData;
+import io.smarthealth.documents.domain.Document;
+import io.smarthealth.documents.domain.enumeration.DocumentType;
+import io.smarthealth.documents.service.FileStorageService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -54,6 +58,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -86,6 +91,10 @@ public class RadiologyService {
     private final RadiologyResultRepository radiologyResultRepo;
 
     private final PatientScanTestRepository registerTestRepository;
+
+    private final FileStorageService fileStoerageService;
+
+    private final ServicePointService servicePoint;
 
     @Transactional
     public PatientScanRegister savePatientResults(PatientScanRegisterData patientScanRegData, final String visitNo) {
@@ -213,9 +222,11 @@ public class RadiologyService {
     }
 
     @Transactional
-    public RadiologyResult saveRadiologyResult(RadiologyResultData data) {
+    public RadiologyResult saveRadiologyResult(MultipartFile file, RadiologyResultData data) {
         RadiologyResult radiologyResult = data.fromData();
         PatientScanTest patientScanTest = findPatientRadiologyTestByIdWithNotFoundDetection(data.getTestId());
+
+        
         patientScanTest.setStatus(data.getStatus());
         radiologyResult.setPatientScanTest(patientScanTest);
         radiologyResult.setStatus(ScanTestState.Completed);
@@ -225,10 +236,9 @@ public class RadiologyService {
     }
 
     @Transactional
-    public RadiologyResult updateRadiologyResult(Long id, RadiologyResultData data) {
+    public RadiologyResult updateRadiologyResult(Long id, MultipartFile file, RadiologyResultData data) {
         RadiologyResult radiologyResult = findResultsByIdWithNotFoundDetection(id);
         radiologyResult.setComments(data.getComments());
-        radiologyResult.setImagePath(data.getImagePath());
         radiologyResult.setNotes(data.getTemplateNotes());
         PatientScanTest patientScanTest = findPatientRadiologyTestByIdWithNotFoundDetection(data.getTestId());
         radiologyResult.setPatientScanTest(patientScanTest);
@@ -259,6 +269,26 @@ public class RadiologyService {
         return pscanRepository.save(radiologyTest);
     }
 
+    @Transactional
+    public PatientScanTest uploadScanImage(Long id, MultipartFile file) {
+        PatientScanTest radiologyTest = findPatientRadiologyTestByIdWithNotFoundDetection(id);
+        
+        if (file != null) {
+            ServicePoint servPoint = servicePoint.getServicePointByType(ServicePointType.Radiology);
+            DocumentData documentData = new DocumentData();
+            documentData.setDocumentNumber(radiologyTest.getPatientScanRegister().getAccessNo());
+            documentData.setDocumentType(DocumentType.Scan);
+
+            documentData.setDocfile(file);
+            documentData.setServicePointId(servPoint.getId());
+            Document document = fileStoerageService.documentUpload(documentData);
+            radiologyTest.setDocument(document);
+        }
+        return pscanRepository.save(radiologyTest);
+    }
+    
+    
+    
     public Page<RadiologyResult> findAllRadiologyResults(String visitNumber, String patientNumber, String scanNumber, Boolean walkin, ScanTestState status, String orderNo, DateRange range, String search, Pageable pgbl) {
         Specification spec = RadiologyResultSpecification.createSpecification(patientNumber, orderNo, visitNumber, walkin, status, range, search);
         return radiologyResultRepo.findAll(spec, pgbl);

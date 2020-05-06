@@ -35,6 +35,7 @@ public class Receipt extends Auditable {
     private BigDecimal amount;
 //    private BigDecimal credit;
     private BigDecimal refundedAmount;
+    private BigDecimal paid;
     private String paymentMethod;
     private String referenceNumber; //voucher no,
     private String receiptNo;
@@ -87,6 +88,7 @@ public class Receipt extends Auditable {
         data.setTransactionNo(this.transactionNo);
         data.setReceiptNo(this.receiptNo);
         data.setCurrency(this.currency);
+        data.setPaid(this.getPaid());
         data.setCreatedBy(this.getCreatedBy());
         if (this.shift != null) {
             data.setShiftNo(this.shift.getShiftNo());

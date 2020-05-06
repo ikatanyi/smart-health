@@ -7,9 +7,12 @@ package io.smarthealth.clinical.radiology.domain;
 
 import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
+import io.smarthealth.documents.domain.Document;
+import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import java.time.LocalDate;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -26,19 +29,18 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "radiology_results")
-public class RadiologyResult extends Identifiable{
+public class RadiologyResult extends Auditable{
 
     @OneToOne(optional = false)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_radiology_result_patient_scan_test_id"))
     private PatientScanTest patientScanTest;
-
     
     private String notes;
     private String comments;
     private String imagePath;
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
-    private LocalDate resultsDate;
+    private LocalDate resultsDate;    
     private Boolean voided = Boolean.FALSE;     
 
     public RadiologyResultData toData() {
@@ -49,6 +51,7 @@ public class RadiologyResult extends Identifiable{
         data.setStatus(this.status);
         data.setComments(this.comments);
         data.setVoided(this.voided);
+        data.setCreatedBy(this.getCreatedBy());
 
         if (this.getPatientScanTest().getRadiologyTest() != null) {
             data.setTestId(this.patientScanTest.getRadiologyTest().getId());
@@ -56,6 +59,9 @@ public class RadiologyResult extends Identifiable{
             data.setTestName(this.patientScanTest.getRadiologyTest().getScanName());
             data.setScanNumber(this.getPatientScanTest().getPatientScanRegister().getAccessNo());
         } 
+        
+        if(this.getPatientScanTest().getDocument()!=null)
+            data.setDocumentData(this.getPatientScanTest().getDocument().toData());
         
         if (!this.patientScanTest.getPatientScanRegister().getIsWalkin()) {
             data.setPatientName(this.patientScanTest.getPatientScanRegister().getVisit().getPatient().getFullName());

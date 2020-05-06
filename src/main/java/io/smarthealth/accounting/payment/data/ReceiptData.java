@@ -26,6 +26,7 @@ public class ReceiptData {
     private String payer;
     private String description; //Insurance payment | Cheque deposit
     private BigDecimal amount;
+    private BigDecimal paid;
 //    private BigDecimal credit;
     private BigDecimal refundedAmount;
     private String paymentMethod;

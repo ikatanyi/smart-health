@@ -9,6 +9,7 @@ import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.documents.data.DocumentData;
 import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.domain.enumeration.Status;
+import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.math.BigDecimal;
@@ -32,7 +33,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Entity
 @Table(name = "document")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Document extends Identifiable{
+public class Document extends Auditable{
     private String fileName; 
     @ManyToOne
     @JoinColumn(foreignKey=@ForeignKey(name="fk_document_service_patient_id"))

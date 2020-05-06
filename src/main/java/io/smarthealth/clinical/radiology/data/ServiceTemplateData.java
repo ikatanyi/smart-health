@@ -6,7 +6,7 @@
 package io.smarthealth.clinical.radiology.data;
 
 import io.smarthealth.clinical.radiology.domain.ServiceTemplate;
-import io.smarthealth.organization.person.domain.enumeration.Gender;
+import io.smarthealth.clinical.radiology.domain.enumeration.Gender;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

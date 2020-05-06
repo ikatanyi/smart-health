@@ -8,9 +8,9 @@ package io.smarthealth.clinical.radiology.domain;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
-import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.documents.domain.Document;
+import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -33,7 +33,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "patient_scan_test")
-public class PatientScanTest extends Identifiable {
+public class PatientScanTest extends Auditable {
 
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_radiology_test_id"))
@@ -52,7 +52,7 @@ public class PatientScanTest extends Identifiable {
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_request_id"))
     private DoctorRequest request;
-
+    
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_radiology_patient_scan_register_id"))
     private PatientScanRegister patientScanRegister;
@@ -63,8 +63,12 @@ public class PatientScanTest extends Identifiable {
     private Employee medic;
 
     @OneToOne(mappedBy = "patientScanTest", cascade = CascadeType.ALL)
-    @JoinColumn(foreignKey = @ForeignKey(name = "radiology_result_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_radiology_result_id"))
     private RadiologyResult radiologyResult;
+    
+    @OneToOne(optional = true,  cascade = CascadeType.ALL)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_document_id"))
+    private Document document;
 
     public PatientScanTestData toData() {
         PatientScanTestData entity = new PatientScanTestData();
@@ -96,6 +100,8 @@ public class PatientScanTest extends Identifiable {
             entity.setResultData(this.getRadiologyResult().toData());
             entity.setReportResultData(Arrays.asList(this.getRadiologyResult().toData()));
         }
+         if(this.getDocument()!=null)
+            entity.setDocumentData(this.getDocument().toData());
 
         entity.setPatientNumber(this.getPatientScanRegister().getPatientNo());
         entity.setPatientName(this.getPatientScanRegister().getPatientName());

@@ -16,8 +16,11 @@ import io.smarthealth.documents.domain.specification.DocumentSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.imports.service.UploadService;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,17 +48,22 @@ public class FileStorageService {
     private final PatientService patientService;
 
     private final ServicePointService servicePointService;
+    private final SequenceNumberService sequenceNumberService;
+    
+    
 
     @Transactional
     public Document documentUpload(DocumentData documentData) {
         Document document = documentData.fromData();
-        Patient patient = patientService.findPatientOrThrow(documentData.getPatientNumber());
+        Optional<Patient> patient = patientService.findByPatientNumber(documentData.getPatientNumber());
         ServicePoint servicePoint = servicePointService.getServicePoint(documentData.getServicePointId());
-        
-        document.setPatient(patient);
+        if(documentData.getDocumentNumber()==null)
+            documentData.setDocumentNumber(sequenceNumberService.next(1L, Sequences.DocumentNumber.name()));
+        if(patient.isPresent())
+           document.setPatient(patient.get());
         document.setServicePoint(servicePoint);
 
-        String fileName = uploadService.storeFile(documentData.getDocfile());
+        String fileName = uploadService.storeFile(documentData.getDocfile(),servicePoint.getName());
         document.setFileName(fileName);
         return fileStorageRepository.save(document);
     }
@@ -88,7 +96,7 @@ public class FileStorageService {
         document.setFileType(fileType);
         document.setPatient(patient);
         document.setServicePoint(servicePoint);
-        String fileName = uploadService.storeFile(file);
+        String fileName = uploadService.storeFile(file,servicePoint.getName());
         document.setFileName(fileName);
 
         return fileStorageRepository.save(document);

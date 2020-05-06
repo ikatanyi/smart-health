@@ -9,6 +9,7 @@ import io.smarthealth.ApplicationProperties;
 import io.smarthealth.infrastructure.exception.FileStorageException;
 import io.smarthealth.infrastructure.exception.MyFileNotFoundException;
 import io.smarthealth.documents.domain.FileStorageProperties;
+import java.io.File;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -19,11 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.core.io.ResourceLoader;
 
 /**
  *
@@ -32,40 +34,42 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UploadService {
-    
-    private  Path fileStorageLocation;
-    
+
+    private Path fileStorageLocation;
+
     public String location;
-    
+
     private final ApplicationProperties appProperties;
 
-    public void UploadService() {
-        if(location==null){
-            this.fileStorageLocation = Paths.get(appProperties.getDocUploadDir())
-                .toAbsolutePath().normalize();
-        }
-        else{
-           this.fileStorageLocation = Paths.get(appProperties.getTemplateUploadDir())
-                .toAbsolutePath().normalize(); 
-        }
+    @Autowired
+    private ResourceLoader resourceLoader;
+
+    public void UploadService(String dir) {
         try {
-            Files.createDirectories(this.fileStorageLocation);
+            Resource input = resourceLoader.getResource(appProperties.getDocUploadDir() + "/" + dir);
+            File file = new File(appProperties.getDocUploadDir() + "/" + dir);
+            if(file.exists())
+                System.out.println("it works");
+            if(input.exists())                
+              this.fileStorageLocation = input.getFile().toPath().toAbsolutePath();
+            else{
+              this.fileStorageLocation = Paths.get((input.getURI().getPath()))
+                .toAbsolutePath().normalize();  
+              this.fileStorageLocation = Files.createDirectories(fileStorageLocation);
+            }
         } catch (IOException ex) {
             throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
         }
     }
-   
 
-    
-
-    public String storeFile(MultipartFile file) {
-        UploadService();
+    public String storeFile(MultipartFile file, String directory) {
+        UploadService(directory);
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         try {
             // Check if the file's name contains invalid characters
-            if(fileName.contains("..")) {
+            if (fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
 
@@ -79,13 +83,13 @@ public class UploadService {
         }
     }
 
-    public Resource loadFileAsResource(String fileName) {
-        UploadService();
-        Resource resource=null;
+    public Resource loadFileAsResource(String fileName, String directory) {
+        UploadService(directory);
+        Resource resource = null;
         try {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
             resource = new UrlResource(filePath.toUri());
-            if(resource.exists()) {
+            if (resource.exists()) {
                 return resource;
             } else {
 //                throw new MyFileNotFoundException("File not found " + fileName);
@@ -96,4 +100,3 @@ public class UploadService {
         return resource;
     }
 }
-

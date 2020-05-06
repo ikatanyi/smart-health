@@ -98,7 +98,7 @@ public class LaboratoryService {
 
     public LabRegister getLabRegisterByNumber(String labNo) {
         return repository.findByLabNumber(labNo)
-                .orElseThrow(() -> APIException.notFound("Lab Request with id {0} Not Found", labNo));
+                .orElseThrow(() -> APIException.notFound("Lab Test with LabNumber {0} Not Found", labNo));
     }
 
     public LabRegister getLabRegisterById(Long id) {

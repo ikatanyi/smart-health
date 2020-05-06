@@ -350,6 +350,10 @@ public class PatientService {
         return this.patientRepository.findByPatientNumber(patientNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Number {0} not found.", patientNumber));
     }
+    
+     public Optional<Patient> findByPatientNumber(String patientNumber) {
+        return this.patientRepository.findByPatientNumber(patientNumber);
+    }
 
     public void throwifDuplicatePatientNumber(String patientNumber) {
         if (patientRepository.existsByPatientNumber(patientNumber)) {

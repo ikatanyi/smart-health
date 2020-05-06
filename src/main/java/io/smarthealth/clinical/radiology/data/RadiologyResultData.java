@@ -3,6 +3,8 @@ package io.smarthealth.clinical.radiology.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.radiology.domain.RadiologyResult;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
+import io.smarthealth.documents.data.DocumentData;
+import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.swagger.annotations.ApiModelProperty;
@@ -10,6 +12,7 @@ import java.time.LocalDate;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -44,13 +47,18 @@ public class RadiologyResultData {
     private String templateNotes;
     private String comments;
     @ApiModelProperty(required = false, hidden = true)
-    private String imagePath;
+    private String createdBy;
     private Boolean voided = Boolean.FALSE;
+    @ApiModelProperty(required = false, hidden = true)
+    private DocumentData documentData;
+    
+//     private MultipartFile docfile;
+//     @Enumerated(EnumType.STRING)
+//     private DocumentType documentType;
     
     public RadiologyResult fromData(){
         RadiologyResult entity = new RadiologyResult();
         entity.setComments(this.getComments());
-        entity.setImagePath(this.getImagePath());
         entity.setNotes(this.getTemplateNotes());
         entity.setResultsDate(this.getResultsDate());
         entity.setVoided(this.getVoided());

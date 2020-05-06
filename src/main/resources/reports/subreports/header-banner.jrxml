@@ -64,7 +64,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{orgWebsite}]]></textFieldExpression>
 			</textField>
-			<image isLazy="true" onErrorType="Blank">
+			<image isUsingCache="true" isLazy="true" onErrorType="Blank">
 				<reportElement x="0" y="0" width="144" height="28" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
 				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
 			</image>

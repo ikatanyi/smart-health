@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.radiology.api;
 
+import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.radiology.domain.RadiologyResult;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
@@ -23,7 +24,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -42,9 +45,15 @@ public class RadiologyResultController {
 
     
     @PostMapping("/radiology/results")
-    public ResponseEntity<?> createRadiologyResult(@Valid @RequestBody RadiologyResultData data) {
-        RadiologyResult results = service.saveRadiologyResult(data);
+    public ResponseEntity<?> createRadiologyResult(MultipartFile file, @Valid @RequestBody RadiologyResultData data) {
+        RadiologyResult results = service.saveRadiologyResult(file, data);
         return ResponseEntity.status(HttpStatus.CREATED).body(results.toData());
+    }
+    
+    @PostMapping("/radiology/upload-image")
+    public ResponseEntity<?> uploadScanImage(Long testId, MultipartFile file) {
+        PatientScanTestData results = service.uploadScanImage(testId, file).toData();
+        return ResponseEntity.status(HttpStatus.CREATED).body(results);
     }
 
 
@@ -55,8 +64,8 @@ public class RadiologyResultController {
     }
 
     @PutMapping("/radiology/results/{id}")
-    public ResponseEntity<?> updateLabResult(@PathVariable(value = "id") Long id, @Valid @RequestBody RadiologyResultData data) {
-        RadiologyResult item = service.updateRadiologyResult(id, data);
+    public ResponseEntity<?> updateLabResult(@PathVariable(value = "id") Long id, MultipartFile file, @Valid @RequestBody RadiologyResultData data) {
+        RadiologyResult item = service.updateRadiologyResult(id, file, data);
         return ResponseEntity.ok(item.toData());
     }
 

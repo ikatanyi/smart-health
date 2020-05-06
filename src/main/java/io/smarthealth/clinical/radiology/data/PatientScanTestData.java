@@ -2,6 +2,7 @@ package io.smarthealth.clinical.radiology.data;
 
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
+import io.smarthealth.documents.data.DocumentData;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -58,6 +59,9 @@ public class PatientScanTestData {
     
     @ApiModelProperty(required=false, hidden=true)
     private List<RadiologyResultData> reportResultData;
+    
+    @ApiModelProperty(required = false, hidden = true)
+    private DocumentData documentData;
     
     public PatientScanTest map(){
         PatientScanTest entity = new PatientScanTest();

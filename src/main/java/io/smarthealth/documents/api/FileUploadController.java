@@ -42,8 +42,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
-@Api(value = "Patient-Document-Controller", description = "upload and download of documents")
-public class PatientDocumentController {
+@Api(value = "File-Upload-Controller", description = "upload and download of documents")
+public class FileUploadController {
 
     @Autowired
     FileStorageService fileService;
@@ -51,7 +51,7 @@ public class PatientDocumentController {
     @Autowired
     UploadService uploadService;
 
-    @PostMapping("/patient-document/batch")
+    @PostMapping("/upload/batch")
     public @ResponseBody
     ResponseEntity<?> batchUpload(@ModelAttribute @Valid final List<DocumentData> documentData) {
         List<DocumentData> documentDataArr = fileService.batchDocumentUpload(documentData)
@@ -64,19 +64,19 @@ public class PatientDocumentController {
         pagers.setMessage("Success");
         pagers.setContent(documentDataArr);
         PageDetails details = new PageDetails();
-        details.setReportName("Documents uploaded successfully");
+        details.setReportName("File uploaded successfully");
         pagers.setPageDetails(details);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
-    @GetMapping("/patient-document/{id}")
+    @GetMapping("/upload/{id}")
     public ResponseEntity<?> fetchServiceTemplate(@PathVariable("id") final Long id) {
         DocumentData documentData = fileService.getDocumentByIdWithFailDetection(id).toData();
         return ResponseEntity.ok(documentData);
 
     }
 
-    @GetMapping("/patient-document")
+    @GetMapping("/upload")
     public ResponseEntity<?> Documents(
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
             @RequestParam(value = "status", required = false) Status status,
@@ -106,7 +106,7 @@ public class PatientDocumentController {
         return ResponseEntity.ok(page);
     }
 
-    @PostMapping("/patient-document")
+    @PostMapping("/upload")
     public @ResponseBody
     ResponseEntity<?> Upload(@ModelAttribute @Valid final DocumentData documentData) {
         DocumentData savedDocumentData = fileService.documentUpload(documentData).toData();
@@ -122,9 +122,9 @@ public class PatientDocumentController {
     }
 
     @GetMapping("/downloadFile/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, String servicePoint, HttpServletRequest request) throws IOException {
         // Load file as Resource
-        Resource resource = uploadService.loadFileAsResource(fileName);
+        Resource resource = uploadService.loadFileAsResource(fileName,servicePoint);
 
         // Try to determine file's content type
         String contentType = null;

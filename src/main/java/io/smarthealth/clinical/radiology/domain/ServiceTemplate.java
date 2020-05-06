@@ -6,8 +6,8 @@
 package io.smarthealth.clinical.radiology.domain;
 
 import io.smarthealth.clinical.radiology.data.ServiceTemplateData;
+import io.smarthealth.clinical.radiology.domain.enumeration.Gender;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.organization.person.domain.enumeration.Gender;
 import java.nio.charset.StandardCharsets;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
