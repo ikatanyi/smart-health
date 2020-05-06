@@ -3,60 +3,61 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
 	<field name="analyte" class="java.lang.String"/>
-	<field name="upperLimit" class="java.lang.Double"/>
-	<field name="lowerLimit" class="java.lang.Double"/>
 	<field name="units" class="java.lang.String"/>
 	<field name="resultValue" class="java.lang.String"/>
 	<field name="status" class="java.lang.String"/>
 	<field name="comments" class="java.lang.String"/>
 	<field name="referenceValue" class="java.lang.String"/>
 	<columnHeader>
-		<band height="20" splitType="Stretch">
+		<band height="16" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="6" width="79" height="13" uuid="040f1ddd-8ead-4542-bd87-a998dc9de8c8"/>
+				<reportElement x="0" y="1" width="82" height="13" uuid="040f1ddd-8ead-4542-bd87-a998dc9de8c8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Analyte]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="210" y="6" width="79" height="13" uuid="c06638cb-4607-4a56-90ba-bb9a449de15f"/>
+				<reportElement x="210" y="1" width="88" height="13" uuid="c06638cb-4607-4a56-90ba-bb9a449de15f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Units]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="298" y="6" width="79" height="13" uuid="c2e7c84c-9679-44e5-a5e3-6bf7319d8eaf"/>
+				<reportElement x="298" y="1" width="79" height="13" uuid="c2e7c84c-9679-44e5-a5e3-6bf7319d8eaf"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Reference Value]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="82" y="6" width="125" height="13" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
+				<reportElement x="82" y="1" width="128" height="13" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Result]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="377" y="6" width="97" height="13" uuid="0cba2f73-babc-42a6-9ebc-072229ea1b81"/>
+				<reportElement x="377" y="1" width="97" height="13" uuid="0cba2f73-babc-42a6-9ebc-072229ea1b81"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Comments]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="474" y="6" width="79" height="13" uuid="5810cdd9-948c-4832-bbca-a7c4d93b8da1"/>
+				<reportElement x="474" y="1" width="79" height="13" uuid="5810cdd9-948c-4832-bbca-a7c4d93b8da1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[status]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="19" width="553" height="1" uuid="0198b9e1-ee13-46b3-bd8e-7c46ed849157"/>
+				<reportElement x="0" y="15" width="553" height="1" uuid="0198b9e1-ee13-46b3-bd8e-7c46ed849157"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
@@ -64,55 +65,55 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="19" splitType="Stretch">
+		<band height="15" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="79" height="16" uuid="0a442664-0b75-4eeb-9498-a8cff730778b"/>
+				<reportElement x="0" y="1" width="82" height="12" uuid="0a442664-0b75-4eeb-9498-a8cff730778b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{analyte}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="210" y="0" width="79" height="16" uuid="ca9fd1b4-2f0c-433b-9dad-b19dfd14611f"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="210" y="1" width="88" height="12" uuid="ca9fd1b4-2f0c-433b-9dad-b19dfd14611f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{units}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="298" y="0" width="79" height="16" uuid="c96208c4-157c-405e-81e8-26cd868fb028"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="298" y="1" width="79" height="12" uuid="c96208c4-157c-405e-81e8-26cd868fb028"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{referenceValue}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="377" y="0" width="97" height="16" uuid="cd9db49d-c9dc-4960-a0a5-7e5d0236328b"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="377" y="1" width="97" height="12" uuid="cd9db49d-c9dc-4960-a0a5-7e5d0236328b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{comments}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="474" y="0" width="79" height="16" uuid="2bd68c43-d46e-46fd-acf2-42c0f058cb81"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="474" y="1" width="79" height="12" uuid="2bd68c43-d46e-46fd-acf2-42c0f058cb81"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="3" y="17" width="553" height="1" uuid="27347eec-4b56-4f0a-8c0e-012f2149ef5b"/>
-				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Dashed"/>
-				</graphicElement>
-			</line>
-			<textField>
-				<reportElement x="82" y="2" width="125" height="14" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="82" y="1" width="128" height="12" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{resultValue}]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="1" y="14" width="553" height="1" uuid="27347eec-4b56-4f0a-8c0e-012f2149ef5b"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
 		</band>
 	</detail>
 </jasperReport>
