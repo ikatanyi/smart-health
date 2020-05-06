@@ -76,6 +76,7 @@ public class User extends Identifiable implements UserDetails {
         this.username = username;
         this.password = password;
         this.name = name;
+        
         this.enabled = true;
     }
 

@@ -21,7 +21,7 @@ public class UserData implements Serializable {
 
     @ApiModelProperty(hidden = true)
     private Long id;
-    @ApiModelProperty(hidden = true)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String uuid;
     @NotNull(message = "Email cannot be blank")
     private String email;
