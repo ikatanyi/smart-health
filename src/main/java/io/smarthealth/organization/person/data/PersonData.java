@@ -44,6 +44,7 @@ public class PersonData {
     private MaritalStatus maritalStatus;
     private List<AddressData> address;
     private List<ContactData> contact;
+    private List<PersonNextOfKinData> nok;
     private String fullName;
     private LocalDate createdOn;
 
@@ -56,7 +57,7 @@ public class PersonData {
         person.setGivenName(personDTO.getGivenName());
         person.setMiddleName(personDTO.getMiddleName());
         person.setSurname(personDTO.getSurname());
-        person.setGender(personDTO.getGender().name());
+        person.setGender(personDTO.getGender());
         person.setPatient(personDTO.isPatient);
         person.setDateOfBirth(personDTO.getDateOfBirth());
         if (personDTO.getAddress() != null) {

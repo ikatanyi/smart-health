@@ -58,27 +58,26 @@ public class RadiologyResult extends Auditable{
             data.setTestCode(this.patientScanTest.getRadiologyTest().getCode());
             data.setTestName(this.patientScanTest.getRadiologyTest().getScanName());
             data.setScanNumber(this.getPatientScanTest().getPatientScanRegister().getAccessNo());
-        } 
-        
-        if(this.getPatientScanTest().getDocument()!=null)
-            data.setDocumentData(this.getPatientScanTest().getDocument().toData());
-        
+        }
         if (!this.patientScanTest.getPatientScanRegister().getIsWalkin()) {
             data.setPatientName(this.patientScanTest.getPatientScanRegister().getVisit().getPatient().getFullName());
             data.setPatientNo(this.patientScanTest.getPatientScanRegister().getVisit().getPatient().getPatientNumber());
-            data.setGender(Gender.fromValue(this.patientScanTest.getPatientScanRegister().getVisit().getPatient().getGender()));
+            data.setGender(this.patientScanTest.getPatientScanRegister().getVisit().getPatient().getGender());
             data.setVisitNumber(this.patientScanTest.getPatientScanRegister().getVisit().getVisitNumber());
             data.setVisitDate(this.patientScanTest.getPatientScanRegister().getVisit().getStartDatetime().toLocalDate());
         } else {
             data.setPatientNo(this.patientScanTest.getPatientScanRegister().getPatientNo());
             data.setScanNumber(this.getPatientScanTest().getPatientScanRegister().getAccessNo());
             data.setGender(this.getPatientScanTest().getPatientScanRegister().getGender());
-            data.setPatientName("Walkin - "+this.patientScanTest.getPatientScanRegister().getPatientNo());
+            data.setPatientName("Walkin - " + this.patientScanTest.getPatientScanRegister().getPatientNo());
             data.setVisitNumber(this.patientScanTest.getPatientScanRegister().getPatientNo());
             data.setVisitDate(this.patientScanTest.getPatientScanRegister().getReceivedDate());
         }
-
+        if(this.getPatientScanTest().getDocument()!=null)
+            data.setDocumentData(this.getPatientScanTest().getDocument().toData());
         return data;
     }
-    
 }
+    
+        
+        

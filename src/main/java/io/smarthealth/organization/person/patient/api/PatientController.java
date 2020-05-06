@@ -141,7 +141,7 @@ public class PatientController {
             patient.setAlive(patientData.isAlive());
             patient.setAllergyStatus(patientData.getAllergyStatus());
             patient.setBloodType(patientData.getBloodType());
-            patient.setGender(patientData.getGender().name());
+            patient.setGender(patientData.getGender());
             patient.setGivenName(patientData.getGivenName());
             patient.setMaritalStatus(patientData.getMaritalStatus().name());
             patient.setMiddleName(patientData.getMiddleName());

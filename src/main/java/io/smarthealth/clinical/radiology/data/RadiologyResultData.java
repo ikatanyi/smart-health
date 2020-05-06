@@ -27,6 +27,7 @@ public class RadiologyResultData {
     @ApiModelProperty(required = false, hidden = true)
     private String patientName;
     @ApiModelProperty(required = false, hidden = true)
+    @Enumerated(EnumType.STRING)
     private Gender gender;
     @ApiModelProperty(required = false, hidden = true)
     private String visitNumber;

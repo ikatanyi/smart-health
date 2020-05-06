@@ -27,5 +27,6 @@ public class PersonNextOfKin extends Identifiable {
     private String name;
     private String relationship;
     private String specialNote;
+    private String primaryContact;
 
 }

@@ -1,6 +1,7 @@
 package io.smarthealth.organization.person.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.organization.person.domain.enumeration.Gender;
 import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.*;
@@ -26,7 +27,8 @@ public class Person extends Auditable {
     @Column(length = 50)
     private String surname;
     @Column(length = 1)
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     private LocalDate dateOfBirth;
 
     //@Transient
@@ -44,6 +46,8 @@ public class Person extends Auditable {
     private List<PersonAddress> addresses;
     @OneToMany(mappedBy = "person")
     private List<PersonContact> contacts;
+    @OneToMany(mappedBy = "person")
+    private List<PersonNextOfKin> nok;
 
 //    @Formula("case when exists (select * from patient p where p.patient_id = person_id) then 1 else 0 end")
     private boolean isPatient;

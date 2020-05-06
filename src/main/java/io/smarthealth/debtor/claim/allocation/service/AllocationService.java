@@ -39,23 +39,26 @@ public class AllocationService {
     @Transactional
     public List<Allocation> createAllocation(List<AllocationData> dataList, Remittance remitance) {
         List<Allocation> allocations = new ArrayList<>();
-        dataList.forEach((data) -> {
+        Double remittanceAmountUsed = 0.00;
+        for (AllocationData data : dataList) {
             Allocation allocation = AllocationData.map(data);
             Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(data.getInvoiceNo());
             BigDecimal bal = invoice.getBalance().subtract(data.getAmount());
-            InvoiceStatus status = bal.doubleValue() <= 0 ? InvoiceStatus.Paid : InvoiceStatus.PartialPaid;
+            InvoiceStatus status = bal.doubleValue() <= 0 ? InvoiceStatus.Paid : InvoiceStatus.Sent;
             invoice.setBalance(bal);
             invoice.setStatus(status);
 
             allocation.setInvoice(invoice);
 
-//            remitance.setBalance();
-//            remitanceRepository.save(remitance);
+            remittanceAmountUsed = remittanceAmountUsed + data.getAmount().doubleValue();
             invoiceService.updateInvoice(invoice);
             remitanceRepository.updateBalance((remitance.getReceipt().getAmount().subtract(data.getAmount())), remitance.getId());
 
             allocations.add(allocation);
-        });
+        }
+        Double balance = remitance.getBalance().doubleValue() - remittanceAmountUsed;
+        remitance.setBalance(BigDecimal.valueOf(balance));
+        remitanceRepository.save(remitance);
         return allocationRepository.saveAll(allocations);
     }
 

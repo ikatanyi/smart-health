@@ -94,7 +94,7 @@ public class PricesController {
             @RequestParam(value = "queryItem", required = false) String queryItem,
             @RequestParam(value = "servicePointId", required = false) Long servicePointId,
             @RequestParam(value = "is_default_price", required = false) Boolean defaultPrice,
-            @RequestParam(value = "item_category", required = false) ItemCategory itemCategory,
+            @RequestParam(value = "item_category", required = false) List<ItemCategory> itemCategory,
             @RequestParam(value = "item_type", required = false) ItemType itemType,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
