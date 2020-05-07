@@ -65,8 +65,10 @@ public class Document extends Auditable{
             data.setServicePointId(this.getServicePoint().getId());
         
         if(fileName!=null){
+            
             String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/downloadFile/")
+                .path(this.servicePoint.getName()+"/")
                 .path(this.fileName)
                 .toUriString();
             data.setFileDownloadUri(fileDownloadUri);

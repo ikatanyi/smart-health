@@ -7,6 +7,7 @@ package io.smarthealth.infrastructure.imports.service;
 
 import io.smarthealth.ApplicationProperties;
 import io.smarthealth.infrastructure.exception.FileStorageException;
+import io.smarthealth.report.storage.StorageException;
 import java.io.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -29,31 +30,37 @@ import org.springframework.util.ResourceUtils;
  * @author Kennedy.Imbenzi
  */
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class UploadService {
 
-    private Path fileStorageLocation;
+    private Path rootLocation;
 
     public String location;
 
-    private final ApplicationProperties appProperties;
+    private final ApplicationProperties properties;
 
     @Autowired
     private ResourceLoader resourceLoader;
+    
+    
+    public UploadService(ApplicationProperties properties) throws IOException {
+        this.properties = properties;
+        this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath());
+    }
+
+
+    public void init() {
+        try {
+            Files.createDirectory(rootLocation);
+        } catch (IOException e) {
+            throw new StorageException("Could not initialize storage", e);
+        }
+    }
 
     public void UploadService(String dir) {
         try {
-            Resource input = resourceLoader.getResource(appProperties.getDocUploadDir() + "/" + dir);
-            File file = ResourceUtils.getFile(input.getURI());
-            if(file.isDirectory())
-                System.out.println("it works");
-            if(input.exists())                
-              this.fileStorageLocation = input.getFile().toPath().toAbsolutePath();
-            else{
-              this.fileStorageLocation = Paths.get((input.getURI().getPath()))
-                .toAbsolutePath().normalize();  
-              this.fileStorageLocation = Files.createDirectories(fileStorageLocation);
-            }
+            this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath().concat("/").concat(dir));
+            Files.createDirectories(rootLocation);
         } catch (IOException ex) {
             throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
         }
@@ -71,7 +78,7 @@ public class UploadService {
             }
 
             // Copy file to the target location (Replacing existing file with the same name)
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            Path targetLocation = this.rootLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             return fileName;
@@ -81,10 +88,10 @@ public class UploadService {
     }
 
     public Resource loadFileAsResource(String fileName, String directory) {
-        UploadService(directory);
+//        UploadService(directory);
         Resource resource = null;
         try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Path filePath = this.rootLocation.resolve(fileName).normalize();
             resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;

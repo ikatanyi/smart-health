@@ -121,8 +121,8 @@ public class FileUploadController {
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
-    @GetMapping("/downloadFile/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, String servicePoint, HttpServletRequest request) throws IOException {
+    @GetMapping("/downloadFile/{servicePoint}/{fileName:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, @PathVariable String servicePoint, HttpServletRequest request) throws IOException {
         // Load file as Resource
         Resource resource = uploadService.loadFileAsResource(fileName,servicePoint);
 
