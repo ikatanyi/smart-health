@@ -36,10 +36,8 @@ public class PatientBillItem extends Auditable {
     private LocalDate billingDate;
     private String transactionId;
     private Double quantity;
-    private Double price;
-    @Column(columnDefinition = "default 0")
-    private Double discount = 0.0;
-    @Column(columnDefinition = "default 0")
+    private Double price; 
+    private Double discount = 0.0; 
     private Double taxes = 0.0;
 
     private Double amount = 0.0;
