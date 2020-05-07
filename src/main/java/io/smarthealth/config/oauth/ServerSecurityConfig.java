@@ -5,14 +5,12 @@
  */
 package io.smarthealth.config.oauth;
 
-import io.kelsas.accounting.security.service.CustomAccessDeniedHandler;
 import io.smarthealth.security.service.CustomAuthenticationEntryPoint;
 import io.smarthealth.security.service.CustomUserDetailsService;
 import java.security.KeyPair;
 import java.util.Arrays;
 import java.util.Collections;
 import javax.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -23,10 +21,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -120,9 +116,9 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("*"));
-        config.setAllowedMethods(Arrays.asList("'GET", "POST", "PUT", "DELETE", "OPTIONS'"));
-//        config.setAllowedMethods(Collections.singletonList("*"));
+        config.setAllowedOrigins(Arrays.asList("*"));//Access-Control-Allow-Origin
+//        config.setAllowedMethods(Arrays.asList("'GET", "POST", "PUT", "DELETE", "OPTIONS'"));
+        config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         source.registerCorsConfiguration("/**", config);
 
