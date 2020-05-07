@@ -108,7 +108,7 @@ public class PatientReportService {
         reportData.setData(patientData);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/PatientList");
-        reportData.setReportName("PatientList");
+        reportData.setReportName("Patient-list");
         reportService.generateReport(reportData, response);
     }
 
