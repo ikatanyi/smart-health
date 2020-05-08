@@ -110,11 +110,13 @@ public class InvoiceService {
                             invoice.setTax(invoiceData.getTaxes());
                             invoice.setTransactionNo(trxId);
                             invoice.setVisit(visit);
-                            BigDecimal balance = BigDecimal.ZERO;
+
                             if (!invoiceData.getItems().isEmpty()) {
+                                BigDecimal balance = BigDecimal.ZERO;
                                 invoiceData.getItems()
                                         .stream()
                                         .forEach(inv -> {
+
                                             InvoiceItem lineItem = new InvoiceItem();
                                             PatientBillItem item = billingService.findBillItemById(inv.getBillItemId());
                                             BigDecimal bal = BigDecimal.valueOf(item.getAmount()).subtract(inv.getAmount());
@@ -124,13 +126,18 @@ public class InvoiceService {
                                             item.setBalance(0D);
                                             PatientBillItem updatedItem = billingService.updateBillItem(item);
                                             lineItem.setBillItem(updatedItem);
-                                            balance.add(inv.getAmount());
+
 //                                            lineItem.setBalance(inv.getAmount().doubleValue() > 0 ? inv.getAmount() : BigDecimal.ZERO);
-                                              lineItem.setBalance(inv.getAmount());
+                                            lineItem.setBalance(inv.getAmount());
                                             invoice.addItem(lineItem);
                                         });
+
+                                invoice.setBalance(invoiceData.getItems()
+                                        .stream()
+                                        .map(x -> x.getAmount())
+                                        .reduce(BigDecimal.ZERO, (x, y) -> x.add(y))
+                                );
                             }
-                            invoice.setBalance(balance);
 
                             savedInvoices.add(saveInvoice(invoice));
                         }
@@ -177,8 +184,8 @@ public class InvoiceService {
         return null;
     }
 
-    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo, Pageable pageable) {
-        System.out.println("Line 181");
+    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, Boolean filterPastDue, Double amountLessThanOrEqualTo, Pageable pageable) {
+      
         Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
         return invoices;
