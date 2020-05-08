@@ -66,7 +66,7 @@ public class PatientScanTest extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_radiology_result_id"))
     private RadiologyResult radiologyResult;
     
-    @OneToOne(optional = true,  cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_document_id"))
     private Document document;
 

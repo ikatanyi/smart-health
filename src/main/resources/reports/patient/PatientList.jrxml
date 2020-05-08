@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="64"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
@@ -17,6 +17,7 @@
 	</parameter>
 	<parameter name="PatientData" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Footer_Data" class="java.util.List"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -44,24 +45,25 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="70" splitType="Stretch">
+		<band height="34" splitType="Stretch">
 			<line>
-				<reportElement positionType="Float" x="2" y="69" width="554" height="1" uuid="5d2fc52e-b224-419b-992e-58f23cb65a0b"/>
+				<reportElement positionType="Float" x="1" y="33" width="554" height="1" uuid="5d2fc52e-b224-419b-992e-58f23cb65a0b"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineStyle="Solid"/>
 				</graphicElement>
 			</line>
 			<subreport>
-				<reportElement x="2" y="0" width="553" height="69" uuid="05921211-9986-4f9b-a55e-0186167db752"/>
-				<subreportParameter name="PIC_DIR"/>
-				<subreportParameter name="IMAGE_DIR"/>
+				<reportElement x="1" y="1" width="553" height="31" uuid="05921211-9986-4f9b-a55e-0186167db752"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</title>
 	<pageHeader>
-		<band height="5"/>
+		<band/>
 	</pageHeader>
 	<columnHeader>
 		<band height="15">
@@ -134,56 +136,56 @@
 			<textField pattern="dd/MM/yyyy HH.mm.ss">
 				<reportElement x="321" y="0" width="55" height="12" uuid="fc3fae2c-4cbb-44a8-89ad-87636b67880e"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{dateOfBirth}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="79" y="0" width="114" height="12" uuid="3c105f01-5c48-4446-a091-7fd820d516e9"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fullName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="196" y="0" width="57" height="12" uuid="0797b2f2-15a9-4e18-8546-c0b543e4c3ad"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{gender}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="267" y="0" width="39" height="12" uuid="40d3bdb5-d777-4f35-b6c5-1b7665cf387d"/>
 				<textElement textAlignment="Center">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{age}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="19" y="0" width="58" height="12" uuid="aabcb449-0ebb-4ddc-aede-56381b6f08bc"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="2" y="0" width="17" height="12" uuid="3267125e-a357-4f46-8446-7f31e5ec3452"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="403" y="-1" width="43" height="13" uuid="16009c45-4c4a-4a8f-a9f2-0d550ea88423"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{bloodType}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="470" y="0" width="76" height="12" uuid="bf3f1f51-2d6b-49d7-8a9c-43f2f2e2bf96"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""+$F{createdOn}]]></textFieldExpression>
 			</textField>
@@ -197,23 +199,11 @@
 					<pen lineWidth="0.15" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
-			<textField pattern="dd/MM/yyyy HH.mm.ss">
-				<reportElement x="454" y="4" width="100" height="10" uuid="1a859c3e-8e17-4993-8f48-5372470cddf1"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="399" y="5" width="56" height="9" uuid="9f2aaab9-abe1-41df-a20d-32de88a0b28e"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<text><![CDATA[Print Date:]]></text>
-			</staticText>
+			<subreport>
+				<reportElement x="0" y="0" width="554" height="16" uuid="401c8037-56d1-43ab-80bf-e3c776bbb549"/>
+				<dataSourceExpression><![CDATA[$P{Footer_Data}]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</columnFooter>
-	<summary>
-		<band height="22" splitType="Stretch"/>
-	</summary>
 </jasperReport>
