@@ -7,12 +7,10 @@ package io.smarthealth.report.service;
 
 import io.smarthealth.clinical.laboratory.data.LabRegisterData;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
-import io.smarthealth.clinical.laboratory.data.PatientResults;
 import io.smarthealth.clinical.laboratory.domain.LabSpecimen;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
-import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -39,6 +37,7 @@ import net.sf.jasperreports.engine.design.JRDesignSortField;
 import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -66,14 +65,11 @@ public class LabReportService {
         String patientNumber = reportParam.getFirst("patientNumber");
         String search = reportParam.getFirst("search");
         String dateRange = reportParam.getFirst("dateRange");
-        Integer page = Integer.getInteger(reportParam.getFirst("page"));
-        Integer size = Integer.getInteger(reportParam.getFirst("size"));
         List<LabTestStatus> status = Arrays.asList(statusToEnum(reportParam.getFirst("status")));
-        Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));
         
-         List<LabRegisterData> patientData = labService.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status,range, search,pageable)
+         List<LabRegisterData> patientData = labService.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status,range, search,Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((register) -> register.toData(expand))
@@ -96,14 +92,11 @@ public class LabReportService {
         String patientNumber = reportParam.getFirst("patientNumber");
         String search = reportParam.getFirst("search");
         String dateRange = reportParam.getFirst("dateRange");
-        Integer page = Integer.getInteger(reportParam.getFirst("page"));
-        Integer size = Integer.getInteger(reportParam.getFirst("size"));
         LabTestStatus status = labService.LabTestStatusToEnum(reportParam.getFirst("status"));
-        Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));
         
-         List<LabRegisterTestData> patientData = labService.getLabRegisterTest(labNumber, orderNumber, visitNumber, patientNumber, status, range, search, pageable)
+         List<LabRegisterTestData> patientData = labService.getLabRegisterTest(labNumber, orderNumber, visitNumber, patientNumber, status, range, search, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((register) -> register.toData(expand))
@@ -152,7 +145,7 @@ public class LabReportService {
     public void genSpecimenLabel(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String patientNumber = reportParam.getFirst("patientNumber");
-        Long specimenId = Long.getLong(reportParam.getFirst("specimenId"),null);
+        Long specimenId = NumberUtils.createLong(reportParam.getFirst("specimenId"));
         specimenLabelData labelData = new specimenLabelData();
         Optional<PatientData> patientData = patientService.fetchPatientByPatientNumber(patientNumber);
         if (patientData.isPresent()) {
