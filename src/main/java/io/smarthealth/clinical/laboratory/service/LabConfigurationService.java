@@ -106,7 +106,13 @@ public class LabConfigurationService {
     }
 
     private LabTest toLabTest(LabTestData data) {
+        
+        
         Item item = findByItemCodeOrThrow(data.getItemCode());
+        if(repository.findByService(item).isPresent()){
+            throw APIException.badRequest("Lab Test with service {0} already exists", item.getItemName());
+        }
+        
         LabDiscipline displine=displineRepository.findById(data.getCategoryId()).orElse(null);
         LabTest labTest = new LabTest();
         labTest.setActive(Boolean.TRUE);

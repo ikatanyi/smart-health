@@ -44,13 +44,13 @@ public class LabRegister extends Auditable {
     private String requestedBy;
 
     private Boolean isWalkin;
-    
-     private String paymentMode;
-     
-     private String transactionId;
+
+    private String paymentMode;
+
+    private String transactionId;
 
     @Enumerated(EnumType.STRING)
-    private LabTestStatus status;
+    private LabTestStatus status; 
 
     private Boolean voided = Boolean.FALSE;
 
@@ -91,8 +91,17 @@ public class LabRegister extends Auditable {
                     .map(x -> x.toData(expand))
                     .collect(Collectors.toList())
             );
-            
+
         }
         return data;
+    }
+
+    public boolean isCompleted() {
+        long pending = this.getTests()
+                .stream()
+                .filter(x -> x.getStatus() == LabTestStatus.PendingResult)
+                .count();
+        System.err.println("Pending tests to report results... "+pending);
+        return pending == 1;
     }
 }
