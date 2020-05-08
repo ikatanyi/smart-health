@@ -473,7 +473,7 @@ public class AccountReportService {
         String invoiceNo = reportParam.getFirst("invoiceNo"); 
         ReportData reportData = new ReportData();
        
-        InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow("INV-00014")).toData();              
+        InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();              
         reportData.setData(Arrays.asList(invoiceData));
         reportData.setTemplate("/accounts/invoice");
         reportData.setReportName("invoice");

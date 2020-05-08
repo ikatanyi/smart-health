@@ -2,7 +2,6 @@ package io.smarthealth.security.api;
 
 import io.smarthealth.security.service.RoleService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
-import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.data.PermissionData;

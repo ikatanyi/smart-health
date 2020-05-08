@@ -14,7 +14,9 @@ import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -94,9 +96,22 @@ public class BillRepositoryImpl implements BillRepository {
 
             List<SummaryBill> walkin = getWalkIn(patientNumber, hasBalance,paymentMode,range);
             result.addAll(walkin);
+            
+//            List<User> sortedUsers = users
+//        .stream()
+//        .sorted(Comparator.comparing(User::getScore))
+//        .collect(Collectors.toList());
+           
+                            
+            
         }
+        
+         List<SummaryBill> sortedBills = result
+                    .stream()
+                    .sorted(Comparator.comparing(SummaryBill::getDate))
+                    .collect(Collectors.toList());
 
-        return result;
+        return sortedBills;
     }
 
     @Override

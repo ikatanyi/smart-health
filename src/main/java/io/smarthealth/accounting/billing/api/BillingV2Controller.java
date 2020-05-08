@@ -15,10 +15,15 @@ import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Kelsas
  */
 @Api
+@Slf4j
 @RestController
 @RequestMapping("/api/v2")
 public class BillingV2Controller {
@@ -94,18 +100,22 @@ public class BillingV2Controller {
 
         List<SummaryBill> list = service.getBillTotals(visitNumber, patientNumber, hasBalance, isWakin, paymentMode, range);
 
-//        Pager<List<SummaryBill>> pagers = new Pager();
-//        pagers.setCode("0");
-//        pagers.setMessage("Success");
-//        pagers.setContent(list.getContent());
-//        PageDetails details = new PageDetails();
-//        details.setPage(list.getNumber() + 1);
-//        details.setPerPage(list.getSize());
-//        details.setTotalElements(list.getTotalElements());
-//        details.setTotalPage(list.getTotalPages());
-//        details.setReportName("Patient Bills");
-//        pagers.setPageDetails(details);
-        return ResponseEntity.ok(list);
+        int start = (int) pageable.getOffset();
+        int end = (start + pageable.getPageSize()) > list.size() ? list.size() : (start + pageable.getPageSize());
+        Page<SummaryBill> pages = new PageImpl<>(list.subList(start, end), pageable, list.size());
+
+        Pager<List<SummaryBill>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(pages.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(pages.getNumber() + 1);
+        details.setPerPage(pages.getSize());
+        details.setTotalElements(pages.getTotalElements());
+        details.setTotalPage(pages.getTotalPages());
+        details.setReportName("Patient Bills");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
     }
 
     //get based on visit
@@ -132,4 +142,16 @@ public class BillingV2Controller {
         return ResponseEntity.ok(details);
     }
 
+    Page<SummaryBill> toPage(List<SummaryBill> list, int pagesize, int pageNo) {
+
+        int totalpages = list.size() / pagesize;
+        PageRequest pageable = PageRequest.of(pageNo, pagesize);
+
+        int max = pageNo >= totalpages ? list.size() : pagesize * (pageNo + 1);
+        int min = pageNo > totalpages ? max : pagesize * pageNo;
+
+        log.info("totalpages{} pagesize {} pageNo {}   list size {} min {}   max {} ...........", totalpages, pagesize, pageNo, list.size(), min, max);
+        Page<SummaryBill> pageResponse = new PageImpl<>(list.subList(min, max), pageable, list.size());
+        return pageResponse;
+    }
 }

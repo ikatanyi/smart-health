@@ -14,7 +14,7 @@ public class InvoiceSpecification {
         super();
     }
 
-    public static Specification<Invoice> createSpecification(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, boolean filterPastDue, double amountLessThanOrEqualTo) {
+    public static Specification<Invoice> createSpecification(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, Boolean filterPastDue, Double amountLessThanOrEqualTo) {
 
         return (root, query, cb) -> {
 
@@ -53,10 +53,17 @@ public class InvoiceSpecification {
             if (amountGreaterThan != null) {
                 predicates.add(cb.greaterThan(root.get("balance"), amountGreaterThan));
             }
-            if (amountLessThanOrEqualTo > 0) {
+            if (amountLessThanOrEqualTo != null && amountLessThanOrEqualTo > 0) {
                 predicates.add(cb.lessThanOrEqualTo(root.get("balance"), amountLessThanOrEqualTo));
             }
-            if (filterPastDue) {
+//            if (hasBalance != null) {
+//                if (hasBalance) {
+//                    predicates.add(cb.greaterThan(root.get("balance"), 0));
+//                } else {
+//                    predicates.add(cb.lessThanOrEqualTo(root.get("balance"), 0));
+//                }
+//            }
+            if (filterPastDue != null && filterPastDue) {
                 predicates.add(cb.greaterThan(root.get("dueDate"), LocalDate.now()));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

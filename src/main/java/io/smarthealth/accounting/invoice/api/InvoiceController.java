@@ -71,9 +71,9 @@ public class InvoiceController {
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "patientNo", required = false) String patientNo,
             @RequestParam(value = "status", required = false) InvoiceStatus status,
-            @RequestParam(value = "filterPastDue", required = false, defaultValue = "false") boolean filterPastDue,
-            @RequestParam(value = "amountGreaterThan", required = false, defaultValue = "0.00") Double amountGreaterThan,
-            @RequestParam(value = "amountLessThanOrEqualTo", required = false, defaultValue = "0.00") double amountLessThanOrEqualTo,
+            @RequestParam(value = "filterPastDue", required = false) Boolean filterPastDue,        
+            @RequestParam(value = "amountGreaterThan", required = false) Double amountGreaterThan,
+            @RequestParam(value = "amountLessThanOrEqualTo", required = false) Double amountLessThanOrEqualTo,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
