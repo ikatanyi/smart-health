@@ -170,8 +170,8 @@
 	</columnHeader>
 	<detail>
 		<band height="12" splitType="Stretch">
-			<textField>
-				<reportElement x="0" y="0" width="85" height="12" uuid="3dcd6e53-0e7d-4d13-9c1d-a8f6aabdcda1"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="85" height="12" isRemoveLineWhenBlank="true" uuid="3dcd6e53-0e7d-4d13-9c1d-a8f6aabdcda1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -183,8 +183,8 @@
 					<pen lineWidth="0.5" lineStyle="Dotted" lineColor="#9999FF"/>
 				</graphicElement>
 			</line>
-			<textField>
-				<reportElement x="85" y="0" width="80" height="12" uuid="ffc5e769-72b9-4196-9dc0-e09df4dd93c4"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="85" y="0" width="80" height="12" isRemoveLineWhenBlank="true" uuid="ffc5e769-72b9-4196-9dc0-e09df4dd93c4"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -197,8 +197,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Take "+$F{dose}+" "+$F{doseUnits}+" "+$F{frequency}+" for "+$F{duration}+""+$F{durationUnits}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="301" y="0" width="79" height="11" uuid="e84b4f6d-f2b7-4e79-9e59-0168f33afffc"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="301" y="0" width="79" height="11" isRemoveLineWhenBlank="true" uuid="e84b4f6d-f2b7-4e79-9e59-0168f33afffc"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>

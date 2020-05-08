@@ -64,7 +64,6 @@
 		<band height="43" splitType="Stretch">
 			<subreport>
 				<reportElement x="1" y="0" width="554" height="42" uuid="e89e1818-4d89-4b2a-b6b3-78ffd1f66ae4"/>
-				<subreportParameter name="PIC_DIR"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -133,6 +132,9 @@
 		<band height="14" splitType="Stretch">
 			<subreport>
 				<reportElement x="1" y="0" width="555" height="14" uuid="fd029b6f-2e4d-4930-9618-295458b4b9f2"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{patientLabTestData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_procedure_report_tests.jasper"]]></subreportExpression>
 			</subreport>

@@ -76,8 +76,7 @@ public class InvoiceService {
 
         invoiceData.getPayers()
                 .stream()
-                .forEach(
-                        payerData -> {
+                .forEach(payerData -> {
                             String invoiceNo = sequenceNumberService.next(1L, Sequences.Invoice.name());
 
                             Payer payer = payerService.findPayerByIdWithNotFoundDetection(payerData.getPayerId());

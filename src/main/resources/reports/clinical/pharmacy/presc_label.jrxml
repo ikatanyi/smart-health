@@ -31,32 +31,6 @@
 	<field name="frequency" class="java.lang.String"/>
 	<field name="duration" class="java.lang.Integer"/>
 	<field name="durationUnits" class="java.lang.String"/>
-	<title>
-		<band height="12">
-			<subreport>
-				<reportElement x="0" y="0" width="92" height="11" uuid="420f6fe6-2f77-418e-8515-5e4ed9f8e34b"/>
-				<subreportParameter name="PIC_DIR">
-					<subreportParameterExpression><![CDATA[]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="IMAGE_DIR">
-					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement x="115" y="0" width="95" height="11" uuid="78381bfd-523c-47eb-bdd9-5bf7b43ba3bb"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
-			</subreport>
-			<line>
-				<reportElement positionType="Float" x="0" y="11" width="210" height="1" uuid="7cb5c5a9-719f-44c7-a6ac-01310d5410a8"/>
-				<graphicElement>
-					<pen lineWidth="0.15" lineColor="#000000"/>
-				</graphicElement>
-			</line>
-		</band>
-	</title>
 	<detail>
 		<band height="38" splitType="Stretch">
 			<textField>
