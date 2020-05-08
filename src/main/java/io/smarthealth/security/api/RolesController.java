@@ -70,7 +70,7 @@ public class RolesController {
     }
 
     @PutMapping("/roles/{roleId}")
-    public ResponseEntity<?> actionsOnRoles(@PathVariable(value = "id") Long roleId, @Valid @RequestBody RoleData roleData) {
+    public ResponseEntity<?> actionsOnRoles(@PathVariable(value = "roleId") Long roleId, @Valid @RequestBody RoleData roleData) {
         RoleData data = service.updateRole(roleId, roleData);
         return ResponseEntity
                 .status(HttpStatus.OK)
