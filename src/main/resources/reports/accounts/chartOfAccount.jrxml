@@ -66,7 +66,7 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="-28" y="10" width="136" height="20" uuid="58bcc108-d8ef-413f-a71e-ff80df5fbb56"/>
+				<reportElement x="0" y="10" width="108" height="20" uuid="58bcc108-d8ef-413f-a71e-ff80df5fbb56"/>
 				<textElement verticalAlignment="Middle" markup="none">
 					<font size="9" isBold="true"/>
 				</textElement>

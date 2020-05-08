@@ -9,6 +9,7 @@ import io.smarthealth.administration.templates.domain.enumeration.TemplateType;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.scheme.data.SchemeData;
 import io.smarthealth.infrastructure.imports.service.ImportService;
+import io.smarthealth.organization.person.data.PersonData;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.stock.item.data.CreateItem;
 import java.io.IOException;
@@ -31,13 +32,16 @@ public class TemplateService {
     private final ImportService importService;
 
     public void generateTemplate(TemplateType type, HttpServletResponse response) throws IOException {
-        String[] list;
+        List list=null;
         HashMap<Integer, List> map = new HashMap();
         String fileName="";
         Class componentClass=null;
         switch(type){
             case Patients:
                 fileName="PatientImportFile";
+                List list1 = getFieldDescriptions(PersonData.class);
+                list=getFieldDescriptions(PatientData.class);
+                list.add(list1);
                 componentClass = PatientData.class;
                 break;
             case ServiceMasterList:
@@ -58,7 +62,7 @@ public class TemplateService {
                 break;
                 
         }
-        map.put(1,getFieldDescriptions(componentClass));
+        map.put(1,list);
         importService.exportExcel("SMARTHEALTH", fileName, map, response);
     }
 
