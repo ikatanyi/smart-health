@@ -303,7 +303,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$V{bal}.subtract($V{receipt_amount}==null?new BigDecimal(0):$V{receipt_amount})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{balance}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="2" y="35" width="291" height="21" isRemoveLineWhenBlank="true" forecolor="#FF0033" uuid="59db33f4-6761-4fc2-aff8-67cb5167af94"/>

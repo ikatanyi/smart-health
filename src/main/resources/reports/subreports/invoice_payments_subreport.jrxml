@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<field name="type" class="java.lang.Object"/>
+	<field name="type" class="java.lang.String"/>
 	<field name="reference" class="java.lang.String"/>
 	<field name="amount" class="java.math.BigDecimal"/>
 	<variable name="total_receipt" class="java.math.BigDecimal" calculation="Sum">
@@ -17,7 +17,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{type}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{type}.equals(null)?$F{type}.toUpperCase():""]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="124" y="0" width="57" height="12" uuid="9768a507-42d1-472e-aa41-c28076a0553d"/>

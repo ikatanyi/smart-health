@@ -63,6 +63,7 @@ import net.sf.jasperreports.engine.design.JRDesignSortField;
 import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -299,11 +300,11 @@ public class AccountReportService {
 
     public void getInvoiceStatement(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         String transactionNo = reportParam.getFirst("transactionNo");
-        Long payer  = Long.getLong(reportParam.getFirst("payerId"),null);
-        Long scheme = Long.getLong(reportParam.getFirst("schemeId"),null);
+        Long payer  = NumberUtils.createLong(reportParam.getFirst("payerId"));
+        Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
         String patientNo = reportParam.getFirst("patientNo");
         String invoiceNo = reportParam.getFirst("invoiceNo"); 
-        String dateRange = reportParam.getFirst("dateRange"); 
+        String dateRange = reportParam.getFirst("range"); 
         String invoiceStatus = reportParam.getFirst("invoiceStatus");
         Double amountGreaterThan = 0.0;
         Boolean filterPastDue = false;
@@ -379,11 +380,11 @@ public class AccountReportService {
     }
 
     public void genInsuranceStatement(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
-        Long payer  = Long.getLong(reportParam.getFirst("payerId"),null);
-        Long scheme = Long.getLong(reportParam.getFirst("schemeId"),null);
+        Long payer  = NumberUtils.createLong(reportParam.getFirst("payerId"));
+        Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
         String patientNo = reportParam.getFirst("patientNo");
         String invoiceNo = reportParam.getFirst("invoiceNo"); 
-        String dateRange = reportParam.getFirst("dateRange"); 
+        String dateRange = reportParam.getFirst("range"); 
         InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));       
         
         Double amountGreaterThan = 0.0;
@@ -471,7 +472,6 @@ public class AccountReportService {
     public void getInvoice(MultiValueMap<String,String>reportParam,  ExportFormat format,  HttpServletResponse response) throws SQLException, JRException, IOException {
         
         String invoiceNo = reportParam.getFirst("invoiceNo"); 
-        
         ReportData reportData = new ReportData();
        
         InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();              

@@ -49,6 +49,7 @@ import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
+import java.util.Optional;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.transaction.annotation.Propagation;
 
@@ -147,35 +148,14 @@ public class LaboratoryService {
         repository.save(requests);
     }
 
+    @Transactional
     private void updateRegisterStatus(LabRegister requests) {
-
-        long countEntered = requests.getTests()
-                .stream().filter(x -> x.getStatus() == LabTestStatus.ResultsEntered)
-                .count();
-        long size = requests.getTests().size();
-        if (countEntered >= size) {
+ 
+        if (requests.isCompleted()) {
             repository.updateLabRegisterStatus(LabTestStatus.Complete, requests.getId());
         } else {
             repository.updateLabRegisterStatus(LabTestStatus.PartialResult, requests.getId());
-        }
-
-//        long entered = requests.getTests()
-//                .stream() 
-//                .filter(x -> x.getEntered())
-//                .count();
-//        
-//        System.err.println("Entered results " + entered);
-//        long total = requests.getTests()
-//                .stream()
-//                .count();
-//        System.err.println("Tests totals " + total);
-//
-//        System.err.println("Test completed " + (entered >= total) + " for lab register " + requests.getId() + " lab number " + requests.getLabNumber());
-//        if (entered >= total) {
-//            repository.updateLabRegisterStatus(LabTestStatus.Complete, requests.getId()); 
-//        }else{
-//             repository.updateLabRegisterStatus(LabTestStatus.PartialResults, requests.getId()); 
-//        }
+        } 
     }
 
     public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, List<LabTestStatus> status, DateRange range, String search, Pageable page) {
@@ -199,7 +179,7 @@ public class LaboratoryService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<LabResult> createLabResult(List<LabResultData> data) {
-        ;
+
         List<LabResult> toSave = data
                 .stream()
                 .map(x -> toLabResult(x))
@@ -208,6 +188,7 @@ public class LaboratoryService {
         List<LabResult> savedResults = labResultRepository.saveAll(toSave);
 
         savedResults.forEach(x -> updateResultsEntry(x));
+         
         return savedResults;
     }
 
@@ -246,17 +227,11 @@ public class LaboratoryService {
         Specification<LabResult> spec = LabResultSpecification.createSpecification(visitNumber, patientNumber, labNumber, walkin, testName, orderNumber, range);
         return labResultRepository.findAll(spec, page);
     }
-
+    
+    @Transactional
     private void updateResultsEntry(LabResult savedResult) {
-//        System.err.println("results been entered for  ... "+savedResult.getLabRegisterTest().getLabTest().getTestName());
-//        LabRegisterTest test = savedResult.getLabRegisterTest();
-//        test.setEntered(Boolean.TRUE);
-//        test.setEnteredBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
-//        test.setEntryDateTime(LocalDateTime.now());
-//        test.setStatus(LabTestStatus.ResultsEntered);
-//        testRepository.save(test);
+        
         LabRegisterTest test = savedResult.getLabRegisterTest();
-
         testRepository.updateTestEntry(SecurityUtils.getCurrentUserLogin().orElse("system"), test.getId(), LabTestStatus.ResultsEntered);
 
         updateRegisterStatus(test.getLabRegister());
@@ -297,9 +272,9 @@ public class LaboratoryService {
         }
         request.setRequestDatetime(data.getRequestDatetime());
         request.setStatus(LabTestStatus.AwaitingSpecimen);
-      
+
         request.addPatientTest(data.getTests()
-                .stream() 
+                .stream()
                 .map(x -> toLabRegisterTest(x, data.getPaymentMode()))
                 .collect(Collectors.toList())
         );
@@ -313,9 +288,9 @@ public class LaboratoryService {
         test.setCollected(Boolean.FALSE);
         test.setEntered(Boolean.FALSE);
         test.setLabTest(labTest);
-        
+
         test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
-        
+
         test.setVoided(Boolean.FALSE);
         test.setValidated(Boolean.FALSE);
         test.setRequestId(data.getRequestId());

@@ -53,7 +53,6 @@
 		<band height="34">
 			<subreport>
 				<reportElement x="0" y="0" width="379" height="30" isRemoveLineWhenBlank="true" uuid="adfc9a30-3824-4d61-94f1-3e899ffa0ccc"/>
-				<subreportParameter name="PIC_DIR"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>

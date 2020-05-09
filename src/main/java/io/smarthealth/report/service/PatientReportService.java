@@ -6,17 +6,11 @@
 package io.smarthealth.report.service;
 
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
-import io.smarthealth.clinical.laboratory.data.LabResultData;
-import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
-import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
-import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
 import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.service.ProcedureService;
-import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
-import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
@@ -65,7 +59,6 @@ import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /**

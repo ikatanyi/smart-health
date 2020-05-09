@@ -39,7 +39,6 @@
 		<band height="35" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="0" width="211" height="34" uuid="8badccb3-6b16-40a3-94f1-5bc66f2a8eba"/>
-				<subreportParameter name="PIC_DIR"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
