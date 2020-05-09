@@ -7,6 +7,7 @@ package io.smarthealth.report.service;
 
 import io.smarthealth.accounting.accounts.data.AccountData;
 import io.smarthealth.accounting.accounts.data.ChartOfAccountEntry;
+import io.smarthealth.accounting.accounts.data.JournalEntryData;
 import io.smarthealth.accounting.accounts.data.financial.statement.FinancialCondition;
 import io.smarthealth.accounting.accounts.data.financial.statement.FinancialConditionSection;
 import io.smarthealth.accounting.accounts.data.financial.statement.IncomeStatement;
@@ -18,6 +19,7 @@ import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.accounting.accounts.service.ChartOfAccountServices;
 import io.smarthealth.accounting.accounts.service.FinancialConditionService;
 import io.smarthealth.accounting.accounts.service.IncomesStatementService;
+import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.accounts.service.TrialBalanceService;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
@@ -90,6 +92,7 @@ public class AccountReportService {
     private final IncomesStatementService incomesStatementService;
     private final PettyCashRequestsService pettyCashRequestService;
     private final EmployeeService employeeService;
+    private final JournalService journalService;
     
    
 
@@ -225,6 +228,20 @@ public class AccountReportService {
         reportData.setReportName("income_statement");
         reportService.generateReport(reportData, response);
     }
+    
+    public void getJournal(MultiValueMap<String,String>reportParam,ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException{
+        ReportData reportData = new ReportData();
+        Long journalId = NumberUtils.createLong(reportParam.getFirst("journalId"));
+        JournalEntryData journalData = journalService.findJournalIdOrThrow(journalId).toData();      
+
+        reportData.setData(Arrays.asList(journalData));
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/journal_statement");
+        reportData.setReportName("journal-statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    
 
     public void getDailyPayment(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         
