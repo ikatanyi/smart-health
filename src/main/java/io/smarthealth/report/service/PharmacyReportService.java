@@ -10,7 +10,6 @@ import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
-import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.organization.person.patient.service.PatientService;
@@ -24,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -66,7 +66,7 @@ public class PharmacyReportService {
     public void getPrescriptionLabel(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         PrescriptionData prescriptionData = null;
-        Long prescriptionId = Long.getLong(reportParam.getFirst("prescriptionId"),null);
+        Long prescriptionId = NumberUtils.createLong(reportParam.getFirst("prescriptionId"));
         Optional<Prescription> prescription = prescriptionService.fetchPrescriptionById(prescriptionId);
         if (prescription.isPresent()) {
             prescriptionData = PrescriptionData.map(prescription.get());

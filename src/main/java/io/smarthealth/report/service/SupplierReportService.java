@@ -35,6 +35,7 @@ import net.sf.jasperreports.engine.design.JRDesignSortField;
 import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -60,12 +61,8 @@ public class SupplierReportService {
         String type= reportParam.getFirst("type"); 
         Boolean includeClosed= Boolean.getBoolean(reportParam.getFirst("includeClose")); 
         String term = reportParam.getFirst("term"); 
-        Integer page = Integer.getInteger(reportParam.getFirst("page"));
-        Integer size = Integer.getInteger(reportParam.getFirst("size"));
         
-        Pageable pageable = PaginationUtil.createPage(page, size);
-        
-         List<SupplierData> patientData = supplierService.getSuppliers(type, true, term, pageable)
+         List<SupplierData> patientData = supplierService.getSuppliers(type, true, term, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((supplier) -> supplier.toData())
@@ -82,12 +79,8 @@ public class SupplierReportService {
         String type= reportParam.getFirst("type"); 
         Boolean includeClosed= Boolean.getBoolean(reportParam.getFirst("includeClose")); 
         String term = reportParam.getFirst("term"); 
-        Integer page = Integer.getInteger(reportParam.getFirst("page"));
-        Integer size = Integer.getInteger(reportParam.getFirst("size"));
         
-        Pageable pageable = PaginationUtil.createPage(page, size);
-        
-         List<SupplierData> patientData = supplierService.getSuppliers(type, true, term, pageable)
+         List<SupplierData> patientData = supplierService.getSuppliers(type, true, term, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((supplier) -> supplier.toData())
@@ -104,7 +97,7 @@ public class SupplierReportService {
     
     public void getDoctorInvoiceStatement(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        Long doctorId = Long.getLong(reportParam.getFirst("doctorId"));
+        Long doctorId = NumberUtils.createLong(reportParam.getFirst("doctorId"));
         String serviceItem = reportParam.getFirst("serviceItem");
         Boolean paid = reportParam.getFirst("paid")!=null?Boolean.valueOf(reportParam.getFirst("paid")):null;
         String paymentMode = reportParam.getFirst("paymentMode"); 
@@ -138,7 +131,7 @@ public class SupplierReportService {
     
     public void DoctorInvoice(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        Long id = Long.getLong(reportParam.getFirst("id"));     
+        Long id = NumberUtils.createLong(reportParam.getFirst("id"));     
         
         DoctorInvoiceData doctorInvoiceData = doctorInvoiceService.getDoctorInvoice(id).toData();
         reportData.setData(Arrays.asList(doctorInvoiceData));
@@ -152,7 +145,7 @@ public class SupplierReportService {
     
     public void SupplierInvoiceStatement(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        Long supplierId = Long.getLong(reportParam.getFirst("supplierId"));  
+        Long supplierId = NumberUtils.createLong(reportParam.getFirst("supplierId"));  
         String invoiceNumber = reportParam.getFirst("supplierId");
         Boolean paid = reportParam.getFirst("paid")!=null?Boolean.getBoolean(reportParam.getFirst("paid")):null;
         PurchaseInvoiceStatus status = PurchaseInvoiceStatusToEnum(reportParam.getFirst("status"));

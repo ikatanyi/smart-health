@@ -61,15 +61,12 @@ public class RadiologyReportService {
         String patientNumber = reportParam.getFirst("patientNumber");
         String dateRange = reportParam.getFirst("dateRange");
         String search = reportParam.getFirst("search");
-        Integer page = Integer.getInteger(reportParam.getFirst("page"));
-        Integer size = Integer.getInteger(reportParam.getFirst("size"));
         ScanTestState status = statusToEnum(reportParam.getFirst("status"));
         Boolean summary = Boolean.parseBoolean(reportParam.getFirst("summarized"));
         Boolean isWalkin = Boolean.parseBoolean(reportParam.getFirst("iswalkin"));
-        Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         
-         List<PatientScanTestData> patientData = scanService.findAllTests(patientNumber, search, scanNo, status, visitId, range, isWalkin, pageable)
+         List<PatientScanTestData> patientData = scanService.findAllTests(patientNumber, search, scanNo, status, visitId, range, isWalkin, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((register) -> register.toData())
