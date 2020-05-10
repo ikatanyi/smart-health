@@ -119,7 +119,7 @@ public class DoctorRequestData {
         if (doctorRequest.getPatient() != null) {
             doctorRequestData.setPatientData(new PatientData());
             doctorRequestData.getPatientData().setAge(doctorRequest.getPatient().getAge());
-            doctorRequestData.getPatientData().setAlive(doctorRequest.getPatient().isAlive());
+            doctorRequestData.getPatientData().setIsAlive(doctorRequest.getPatient().getIsAlive());
             doctorRequestData.getPatientData().setDateOfBirth(doctorRequest.getPatient().getDateOfBirth());
             doctorRequestData.getPatientData().setPatientNumber(doctorRequest.getPatient().getPatientNumber());
             doctorRequestData.getPatientData().setFullName(doctorRequest.getPatient().getFullName());

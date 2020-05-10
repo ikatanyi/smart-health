@@ -7,6 +7,7 @@ package io.smarthealth.infrastructure.imports.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ImportService {
+
     public void exportExcel(String name, String fileName, Map<Integer, List> data, HttpServletResponse response) throws IOException {
 
         //Blank workbook
@@ -63,7 +65,8 @@ public class ImportService {
                 Cell cell = row.createCell(cellnum++);
 
                 // Create cells
-                cell.setCellValue((String) obj);
+                cell.setCellValue(String.valueOf(obj));
+
                 cell.setCellStyle(headerCellStyle);
             }
         }

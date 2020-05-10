@@ -17,8 +17,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -28,53 +31,59 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class TemplateService {
-    
+
     private final ImportService importService;
 
     public void generateTemplate(TemplateType type, HttpServletResponse response) throws IOException {
-        List list=null;
+        List list = new ArrayList();
         HashMap<Integer, List> map = new HashMap();
-        String fileName="";
-        Class componentClass=null;
-        switch(type){
+        String fileName = "";
+        Class componentClass = null;
+        switch (type) {
             case Patients:
-                fileName="PatientImportFile";
-                List list1 = getFieldDescriptions(PersonData.class);
-                list=getFieldDescriptions(PatientData.class);
-                list.add(list1);
+                fileName = "PatientImportFile";
                 componentClass = PatientData.class;
                 break;
+
             case ServiceMasterList:
-                fileName="Service Master List";
+                fileName = "Service Master List";
                 componentClass = CreateItem.class;
                 break;
             case Insurances:
-                fileName="Insurances";
+                fileName = "Insurances";
                 componentClass = PayerData.class;
                 break;
             case Schemes:
-                fileName="Schemes";
-                 componentClass = SchemeData.class;
+                fileName = "Schemes";
+                componentClass = SchemeData.class;
                 break;
             case DoctorNotes:
                 break;
             default:
                 break;
-                
+
         }
-        map.put(1,list);
-        importService.exportExcel("SMARTHEALTH", fileName, map, response);
+        map.put(1, getFieldDescriptions(componentClass));
+        importService.exportExcel(type.name(), fileName, map, response);
     }
 
-    private List getFieldDescriptions(Class<?> componentClass) {
-        Field[] fields = componentClass.getDeclaredFields();
+    private List<String> getFieldDescriptions(Class<?> componentClass) {
+//        Field[] fields = componentClass.getDeclaredFields();
+        Field[] fields = getAllFields(componentClass);
         List<String> lines = new ArrayList<>(fields.length);
 
-        for(Field field:fields){
+        for (Field field : fields) {
             field.setAccessible(true);
-            lines.add(field.getName().toUpperCase());
-            
+            String str = field.getName();
+            lines.add(str.substring(0, 1).toUpperCase() + str.substring(1));
         }
         return lines;//.toArray(new String[lines.size()]);
+    }
+
+    public Field[] getAllFields(Class<?> type) {
+        if (type.getSuperclass() != null) {
+            return (Field[]) ArrayUtils.addAll(getAllFields(type.getSuperclass()), type.getDeclaredFields());
+        }
+        return type.getDeclaredFields();
     }
 }
