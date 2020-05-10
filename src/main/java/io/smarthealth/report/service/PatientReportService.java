@@ -136,6 +136,16 @@ public class PatientReportService {
                 .stream()
                 .map((visit) -> visitService.convertVisitEntityToData(visit))
                 .collect(Collectors.toList());
+        
+        List<JRSortField> sortList = new ArrayList();
+        reportData.setPatientNumber(patientNumber);
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("visitNumber");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        
         reportData.setData(visitData);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/PatientVisit");
@@ -164,7 +174,7 @@ public class PatientReportService {
                 .collect(Collectors.toList());
         reportData.setData(diagnosisData);
         reportData.setFormat(format);
-        reportData.setTemplate("/clinical/visit_report");
+        reportData.setTemplate("/clinical/diagnosis_report");
         reportData.setReportName("visit-report");
         reportService.generateReport(reportData, response);
     }

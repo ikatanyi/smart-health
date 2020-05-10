@@ -40,6 +40,11 @@ public enum ReportName {
         Balance_Sheet,
         Income_Statement,
         Petty_Cash_form,
-        Petty_Cash_statement
+        Petty_Cash_statement,
         
+        Payment_Voucher,
+        Payment_Statement,
+        Legder_report,
+        Ledger_statement,
+        Journal_report        
 }

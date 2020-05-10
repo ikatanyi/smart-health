@@ -29,7 +29,7 @@ public class LedgerService {
     private final LedgerRepository ledgerRepository;
     private final AccountRepository accountRepository;
 
-    public LedgerPage fetchLedgers(final boolean includeSubLedgers,
+    public LedgerPage fetchLedgers(final Boolean includeSubLedgers,
             final String term,
             final String type,
             final Pageable pageable) {

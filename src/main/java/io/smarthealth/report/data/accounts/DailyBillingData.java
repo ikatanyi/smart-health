@@ -19,6 +19,7 @@ public class DailyBillingData {
     private Double amount;
     private Double balance;
     private Double paid;
+    private String visitNo;
     private String patientId;
     private String patientName;
     private String receiptNo;   
@@ -33,4 +34,5 @@ public class DailyBillingData {
     private Double consultation;
     private Double procedure;
     private Double other;
+    private Boolean isWalkin;
 }

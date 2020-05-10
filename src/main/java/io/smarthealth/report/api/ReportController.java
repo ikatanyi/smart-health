@@ -6,6 +6,7 @@ import io.smarthealth.report.service.LabReportService;
 import io.smarthealth.report.service.PatientReportService;
 import io.smarthealth.report.service.RadiologyReportService;
 import io.smarthealth.report.service.AccountReportService;
+import io.smarthealth.report.service.PaymentReportService;
 import io.smarthealth.report.service.PharmacyReportService;
 import io.smarthealth.report.service.ProcedureReportService;
 import io.smarthealth.report.service.SupplierReportService;
@@ -36,6 +37,7 @@ public class ReportController {
     private final SupplierReportService supplierInvoiceService;
     private final ProcedureReportService procedureReportService;
     private final PharmacyReportService pharmacyReportService;
+    private final PaymentReportService paymentReportService;
     
     
     @GetMapping("/report")
@@ -58,7 +60,7 @@ public class ReportController {
                 reportService.getInvoiceStatement(queryParams, format, response);
                 break;
             case Invoice:
-                reportService.getInvoice(queryParams, format, response);
+                paymentReportService.getInvoice(queryParams, format, response);
                 break;
             case Patient_file:
                 patientReportService.getPatientFile(queryParams, format, response);
@@ -132,10 +134,25 @@ public class ReportController {
                 reportService.getIncomeStatement(format, response);
                 break;
             case Petty_Cash_form:
-                reportService.getPettyCash(queryParams, format, response);
+                paymentReportService.getPettyCash(queryParams, format, response);
                 break;
             case Petty_Cash_statement:
-                reportService.getPettyCashRequests(queryParams, format, response);
+                paymentReportService.getPettyCashRequests(queryParams, format, response);
+                break;
+            case Payment_Voucher:
+                paymentReportService.getPaymentVoucher(queryParams, format, response);
+                break;
+            case Payment_Statement:
+                paymentReportService.getPaymentStatement(queryParams, format, response);
+                break;
+            case Legder_report:
+                reportService.getLedger(queryParams, format, response);
+                break;
+            case Ledger_statement:
+                reportService.getLedgers(queryParams, format, response);
+                break;
+            case Journal_report:
+                reportService.getJournal(queryParams, format, response);
                 break;
             default:
                 break;
