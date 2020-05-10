@@ -315,7 +315,6 @@
 			<subreport>
 				<reportElement x="361" y="18" width="182" height="18" isRemoveLineWhenBlank="true" uuid="1ffcc075-b8e6-43dc-8c9f-166f6c6e5b7d"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{invoicePayments})]]></dataSourceExpression>
-				<returnValue subreportVariable="total_receipt" toVariable="receipt_amount"/>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "invoice_payments_subreport.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
