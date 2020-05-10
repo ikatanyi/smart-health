@@ -666,6 +666,52 @@ public class BillingService {
 //                     payments.add(new BillPayment(k, visitNumber, v));
 //                });
     }
+    
+    public BillDetail getAllBillDetails(String patientNo, String visitNo, String billNumber, String transactionId, Long servicePointId, Boolean hasBalance, BillStatus status, DateRange range, Pageable pageable) {
+        Specification spec = PatientBillSpecification.createSpecification(patientNo, visitNo, billNumber, transactionId, servicePointId, hasBalance, status, range);
+        List<PatientBillItem> patientItems = billItemRepository.findAll(spec);
+        List<PatientBillItem> walkinItems = billItemRepository.findAll(spec);
+        if (!walkinItems.isEmpty()) {
+            patientItems.addAll(walkinItems);
+        }
+        BillDetail details = new BillDetail();
+
+        List<BillItem> bills = new ArrayList<>();
+        List<BillItem> paidBills = new ArrayList<>();
+        List<BillPayment> payments = new ArrayList<>();
+
+        patientItems.stream()
+                .forEach(x -> {
+                    if (x.getBalance() > 0) {
+                        bills.add(x.toBillItem());
+                    } else {
+                        paidBills.add(x.toBillItem());
+                        BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
+                        BigDecimal amount = BigDecimal.valueOf(x.getAmount());
+                        if (amount.signum() == -1) {
+                            amount = amount.negate();
+                        }
+                        payments.add(new BillPayment(type, x.getPaymentReference(), amount));
+                    }
+                });
+
+        details.setBills(bills);
+        details.setPaidBills(paidBills);
+        details.setPayments(payments);
+
+        return details;
+
+//        Map<BillPayment.Type, Double> paymentlist = allPayments
+//                .stream()
+//                .collect(
+//                        Collectors.groupingBy(BillPayment::getType, Collectors.summingDouble(BillPayment::getAmount))
+//                );
+//          List<BillPayment> payments = new ArrayList<>();
+//        paymentlist
+//                .forEach((k, v) -> {
+//                     payments.add(new BillPayment(k, visitNumber, v));
+//                });
+    }
 
     private Specification<PatientBillItem> withVisitNumber(String visitNo) {
         return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
