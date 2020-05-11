@@ -100,7 +100,7 @@ public class AllocationService {
 
             allocations.add(allocation);
 
-            Double balance = remittance.getBalance().doubleValue() - remittanceAmountUsed;
+            Double balance = remittance.getBalance().doubleValue() - data.getAmount().doubleValue();
             remittance.setBalance(BigDecimal.valueOf(balance));
             remitanceRepository.save(remittance);
         }
