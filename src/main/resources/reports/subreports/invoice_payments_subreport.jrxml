@@ -17,7 +17,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{type}.equals(null)?$F{type}.toUpperCase():""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{type}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="124" y="0" width="57" height="12" uuid="9768a507-42d1-472e-aa41-c28076a0553d"/>
