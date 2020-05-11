@@ -49,7 +49,7 @@ public class AllocationController {
 
         Pager<List<AllocationData>> pagers = new Pager();
         pagers.setCode("0");
-        pagers.setMessage("Allocation successfully Created.");
+        pagers.setMessage("Allocation successful");
         pagers.setContent(dataList);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);

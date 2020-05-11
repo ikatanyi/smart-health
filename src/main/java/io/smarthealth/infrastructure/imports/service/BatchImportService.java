@@ -6,6 +6,9 @@
 package io.smarthealth.infrastructure.imports.service;
 
 import io.smarthealth.administration.templates.domain.enumeration.TemplateType;
+import io.smarthealth.debtor.claim.allocation.api.AllocationController;
+import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
+import io.smarthealth.debtor.claim.allocation.service.AllocationService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.patient.data.PatientData;
@@ -32,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class BatchImportService {
 
     private final PatientRepository patientRepository;
+    private final AllocationService allocationService;
 
     private final ModelMapper modelMapper;
 
@@ -48,6 +52,9 @@ public class BatchImportService {
                     importPatients(list);
                     break;
 
+                case Allocation:
+                    List<BatchAllocationData> allocationList = toPojoUtil.toPojo(BatchAllocationData.class, inputFilestream);
+                    allocationService.importAllocation(allocationList);
                 case Products:
                     // code block
                     break;
