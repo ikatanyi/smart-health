@@ -45,6 +45,8 @@ public class SupplierData {
     @ApiModelProperty(required=false, hidden=true)
     private String postalCode;
     @ApiModelProperty(required=false, hidden=true)
+    private String address;
+    @ApiModelProperty(required=false, hidden=true)
     private String email;
     @ApiModelProperty(required=false, hidden=true)
     private String phone;    

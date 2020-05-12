@@ -72,7 +72,7 @@ public class LedgerService {
 
     public Optional<LedgerData> findLedgerData(final String identifier) {
         final Optional<Ledger> ledgerEntity = findLedger(identifier);
-        if (ledgerEntity != null) {
+        if (ledgerEntity .isPresent()) {
             final LedgerData ledger = LedgerData.map(ledgerEntity.get());
             this.addSubLedgers(ledger, this.ledgerRepository.findByParentLedgerOrderByIdentifier(ledgerEntity.get()));
             return Optional.of(ledger);

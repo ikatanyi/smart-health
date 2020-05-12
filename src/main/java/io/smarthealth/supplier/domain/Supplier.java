@@ -98,6 +98,8 @@ public class Supplier extends Auditable {
         }
         if (this.getAddress() != null) {
             data.setAddresses(AddressData.map(this.getAddress()));
+            data.setAddress(this.getAddress().getLine1());
+
         }
         if (this.getContact() != null) {
             data.setContact(ContactData.map(this.getContact()));
