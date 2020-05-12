@@ -21,11 +21,13 @@ import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.lang.EnglishNumberToWords;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.report.data.ReportData;
+import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -135,10 +137,23 @@ public class PaymentReportService {
 
         PaymentData paymentData = paymentService.getPaymentByVoucherNo(voucherNo).toData();
 
+        reportData.getFilters().put("category", paymentData.getPayeeType().toString());
+        if(paymentData.getPayeeType()==PayeeType.Doctor ||paymentData.getPayeeType()==PayeeType.PettyCash ){
+            Employee emp = employeeService.findEmployeeByIdOrThrow(paymentData.getPayeeId());
+            reportData.setEmployeeId(emp.getStaffNumber());
+        }
+        if(paymentData.getPayeeType()==PayeeType.Supplier){
+           Optional<Supplier> supplier = supplierService.getSupplierById(paymentData.getPayeeId());
+           if(supplier.isPresent()){
+               reportData.getFilters().put("Supplier_Data", Arrays.asList(supplier.get().toData()));
+               
+           }
+        }
+        reportData.getFilters().put("amountInWords", EnglishNumberToWords.convert(paymentData.getAmount()).toUpperCase());    
         reportData.setData(Arrays.asList(paymentData));
         reportData.setFormat(format);
-        reportData.setTemplate("/clinical/payment/payment_voucher");
-        reportData.setReportName("Payment-voucher");
+        reportData.setTemplate("/payments/payment_voucher");
+        reportData.setReportName("Payment-voucher"+voucherNo);
         reportService.generateReport(reportData, response);
     }
     

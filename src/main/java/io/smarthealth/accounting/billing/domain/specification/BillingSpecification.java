@@ -60,6 +60,7 @@ public class BillingSpecification {
 //            if (type != null) {
 //                predicates.add(cb.equal(root.get("accountType"), type));
 //            }
+            query.groupBy(root.get("visit").get("visitNumber"));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

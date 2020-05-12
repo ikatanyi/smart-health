@@ -5,13 +5,7 @@
  */
 package io.smarthealth.report.data.clinical;
 
-import io.smarthealth.organization.facility.data.DepartmentData;
-import io.smarthealth.organization.facility.data.DepartmentUnitData;
 import io.smarthealth.organization.facility.data.EmployeeData;
-import io.smarthealth.organization.facility.domain.Employee;
-import io.smarthealth.organization.person.patient.data.PatientData;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**

@@ -16,7 +16,7 @@ import lombok.Data;
 @Data
 public class DailyBillingData {
 
-    private Double amount;
+    private Double amount=0.0;
     private Double balance;
     private Double paid;
     private String visitNo;
@@ -28,11 +28,11 @@ public class DailyBillingData {
     private String createdBy;
     private LocalDate createdOn;
     private String lastModifiedBy;
-    private Double lab;
-    private Double pharmacy;
-    private Double radiology;
-    private Double consultation;
-    private Double procedure;
-    private Double other;
+    private Double lab=0.0;
+    private Double pharmacy=0.0;
+    private Double radiology=0.0;
+    private Double consultation=0.0;
+    private Double procedure=0.0;
+    private Double other=0.0;
     private Boolean isWalkin;
 }
