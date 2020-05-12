@@ -32,6 +32,8 @@ public class AllocationData {
     @ApiModelProperty(hidden = true)
     private String receiptNo;
 
+  
+
     public static AllocationData map(Allocation allocation) {
         AllocationData data = new AllocationData();
         data.setAmount(allocation.getAmount());

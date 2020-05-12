@@ -6,6 +6,7 @@
 package io.smarthealth.administration.templates.service;
 
 import io.smarthealth.administration.templates.domain.enumeration.TemplateType;
+import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.scheme.data.SchemeData;
 import io.smarthealth.infrastructure.imports.service.ImportService;
@@ -43,6 +44,10 @@ public class TemplateService {
             case Patients:
                 fileName = "PatientImportFile";
                 componentClass = PatientData.class;
+                break;
+            case Allocation:
+                fileName = "Allocation File";
+                componentClass = BatchAllocationData.class;
                 break;
 
             case ServiceMasterList:

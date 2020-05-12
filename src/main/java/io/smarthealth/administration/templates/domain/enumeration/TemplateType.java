@@ -9,18 +9,19 @@ package io.smarthealth.administration.templates.domain.enumeration;
  *
  * @author Kennedy.Imbenzi
  */
-public enum TemplateType { 
-        Presciption,
-        DoctorNotes,
-        Patients,
-        Insurances,
-        Schemes,
-        ServiceMasterList,
-        PriceList,
-        Suppliers,
-        Products,
-        LabTests,
-        RadiologyTests,
-        ProcedureTests,
-        Specimens
+public enum TemplateType {
+    Allocation,
+    Presciption,
+    DoctorNotes,
+    Patients,
+    Insurances,
+    Schemes,
+    ServiceMasterList,
+    PriceList,
+    Suppliers,
+    Products,
+    LabTests,
+    RadiologyTests,
+    ProcedureTests,
+    Specimens
 }
