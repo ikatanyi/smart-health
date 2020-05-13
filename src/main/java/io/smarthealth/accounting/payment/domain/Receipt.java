@@ -34,6 +34,7 @@ public class Receipt extends Auditable {
     private String description; //Insurance payment | Cheque deposit
     private BigDecimal amount;
 //    private BigDecimal credit;
+     private BigDecimal tenderedAmount;
     private BigDecimal refundedAmount;
     private BigDecimal paid;
     private String paymentMethod;
@@ -83,6 +84,7 @@ public class Receipt extends Auditable {
         data.setAmount(this.amount);
 //        data.setCredit(this.credit);
         data.setRefundedAmount(this.refundedAmount);
+        data.setTenderedAmount(this.tenderedAmount);
         data.setPaymentMethod(this.paymentMethod);
         data.setReferenceNumber(this.referenceNumber);
         data.setTransactionNo(this.transactionNo);

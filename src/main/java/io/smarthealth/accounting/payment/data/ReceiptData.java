@@ -28,6 +28,7 @@ public class ReceiptData {
     private BigDecimal amount;
     private BigDecimal paid;
 //    private BigDecimal credit;
+     private BigDecimal tenderedAmount;
     private BigDecimal refundedAmount;
     private String paymentMethod;
     private String receiptNo;

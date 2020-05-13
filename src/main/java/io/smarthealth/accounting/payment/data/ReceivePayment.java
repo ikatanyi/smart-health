@@ -26,6 +26,7 @@ public class ReceivePayment {
     private String payerNumber;
     private Type type;
     private Boolean walkin;
+    private BigDecimal tenderedAmount;
     private BigDecimal amount; //total amount paid
     private String currency;
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)

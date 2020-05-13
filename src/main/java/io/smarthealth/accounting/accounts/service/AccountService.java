@@ -1,9 +1,12 @@
 package io.smarthealth.accounting.accounts.service;
 
+import io.smarthealth.accounting.accounts.data.AccountBalance;
 import io.smarthealth.accounting.accounts.data.AccountData;
 import io.smarthealth.accounting.accounts.data.AccountGroups;
 import io.smarthealth.accounting.accounts.data.AccountPage;
+import io.smarthealth.accounting.accounts.data.JournalEntryItemData;
 import io.smarthealth.accounting.accounts.data.SimpleAccountData;
+import io.smarthealth.accounting.accounts.data.financial.statement.TransactionList;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.AccountRepository;
 import io.smarthealth.accounting.accounts.domain.AccountState;
@@ -11,11 +14,18 @@ import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.domain.IncomeExpenseData;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItemRepository;
+import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.Ledger;
 import io.smarthealth.accounting.accounts.domain.LedgerRepository;
+import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.domain.specification.AccountSpecification;
+import io.smarthealth.accounting.accounts.domain.specification.JournalSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.utility.DateUtility;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -227,8 +237,112 @@ public class AccountService {
                 });
         return groups;
     }
-   public Page<JournalEntryItem> getAccountEntries(String identifier, Pageable page){
-       final Account accountEntity = findByAccountNumberOrThrow(identifier);
-       return journalEntryItemRepository.findByAccount(accountEntity, page);
-   }
+
+    public Page<JournalEntryItem> getAccountEntries(String identifier, Pageable page) {
+        final Account accountEntity = findByAccountNumberOrThrow(identifier);
+        return journalEntryItemRepository.findByAccount(accountEntity, page);
+    }
+
+    public BigDecimal getAccountBalance(String identifier, LocalDate date) {
+        return journalEntryItemRepository.getAccountsBalance(identifier, date);
+    }
+
+    public BigDecimal getAccountBalance(String identifier, DateRange period) {
+        return journalEntryItemRepository.getAccountsBalance(identifier, period);
+    }
+
+    public AccountBalance fetchAccountBalance(String identifier, LocalDate date, DateRange period) {
+        Account account = findByAccountNumberOrThrow(identifier);
+        String description;
+        BigDecimal balance;
+
+        if (period != null) {
+            description = String.format("Period : %s to %s", period.getStartDate().format(DateTimeFormatter.ISO_DATE), period.getEndDate().format(DateTimeFormatter.ISO_DATE));
+            balance = getAccountBalance(identifier, period);
+        } else {
+            LocalDate dte = date == null ? LocalDate.now() : date;
+            description = String.format("Balance as at : %s", dte.format(DateTimeFormatter.ISO_DATE));
+            balance = getAccountBalance(identifier, date);
+        }
+
+        return new AccountBalance(account.getIdentifier(), account.getName(), description, balance);
+    }
+
+//    public TransactionList getTransactionLists(String identifier, DateRange period) {
+//        //Get the list of the items first
+//        LocalDate startDate = (period == null ? DateUtility.getStartOfCurrentMonth() : period.getStartDate());
+//        LocalDate endDate = (period == null ? DateUtility.getEndOfCurrentMonth() : period.getEndDate());
+//
+//        AccountBalance balance = fetchAccountBalance(identifier, startDate.minusDays(1), null);
+//
+//        BigDecimal bal;
+//        List<JournalEntryItemData> transactions = journalEntryItemRepository.findAll(JournalSpecification.getTransactions(identifier, startDate, endDate))
+//                .stream()
+//                .map(x -> x.toData())
+//                .collect(Collectors.toList());
+//        TransactionList list = new TransactionList();
+//        list.setBalanceBroughtForward(balance);
+//        list.setTransactions(transactions);
+//
+//        return list;
+//    }
+
+    public List<JournalEntryItemData> getAccountTransaction(String identifier, DateRange period) {
+
+        LocalDate startDate = (period == null ? DateUtility.getStartOfCurrentMonth() : period.getStartDate());
+        LocalDate endDate = (period == null ? DateUtility.getEndOfCurrentMonth() : period.getEndDate());
+
+        BigDecimal bal = toDefault(getAccountBalance(identifier, startDate.minusDays(1)));
+
+        List<JournalEntryItemData> list = new ArrayList<>();
+
+        list.add(openingEntry(identifier, startDate.minusDays(1), bal));
+
+        List<JournalEntryItem> transactions = journalEntryItemRepository.findAll(JournalSpecification.getTransactions(identifier, startDate, endDate));
+
+        for (JournalEntryItem x : transactions) {
+            bal = bal.add((toDefault(x.getDebit()).subtract(toDefault(x.getCredit()))));
+            JournalEntryItemData data = x.toData();
+            data.setAmount(bal);
+            list.add(data);
+        }
+        
+        //period details From 01 May 2020 To 31 May 2020
+        
+        
+        
+
+        return list;
+    }
+
+    private JournalEntryItemData openingEntry(String identifier, LocalDate entryDate, BigDecimal balance) {
+        Account account = findByAccountNumber(identifier).orElse(null);
+
+        JournalEntryItemData data = new JournalEntryItemData();
+
+        data.setDate(entryDate);
+        if (account != null) {
+            data.setAccountName(account.getName());
+            data.setAccountNumber(account.getIdentifier());
+        }
+        data.setCredit(BigDecimal.ZERO);
+        data.setDebit(BigDecimal.ZERO);
+        data.setAmount(balance);
+        data.setDescription("Balance b/f");
+        data.setJournalId(0L);
+        data.setStatus(JournalState.PROCESSED);
+        data.setTransactionNo(entryDate.toString());
+        data.setCreatedBy("");
+        data.setType(TransactionType.Balance_Brought_Forward);
+
+        return data;
+    }
+
+    private BigDecimal toDefault(BigDecimal val) {
+        if (val == null) {
+            return BigDecimal.ZERO;
+        }
+
+        return val;
+    }
 }

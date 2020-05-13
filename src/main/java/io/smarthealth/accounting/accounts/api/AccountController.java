@@ -1,25 +1,30 @@
 package io.smarthealth.accounting.accounts.api;
 
+import io.smarthealth.accounting.accounts.data.AccountBalance;
 import io.smarthealth.accounting.accounts.data.AccountData;
 import io.smarthealth.accounting.accounts.data.AccountPage;
-import io.smarthealth.accounting.accounts.data.JournalEntryData;
 import io.smarthealth.accounting.accounts.data.JournalEntryItemData;
-import io.smarthealth.accounting.accounts.data.SimpleAccountData;
+import io.smarthealth.accounting.accounts.data.financial.statement.TransactionList;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.AccountState;
 import io.smarthealth.accounting.accounts.domain.AccountType;
+import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.accounts.domain.Ledger;
 import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.accounting.accounts.service.LedgerService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.utility.DateUtility;
 import io.swagger.annotations.Api;
-import java.util.HashSet;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -115,7 +120,9 @@ public class AccountController {
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         final DateRange range = DateRange.fromIsoString(dateRange);
-        Pageable pageable = PaginationUtil.createPage(page, size);
+
+        Pageable pageable = PaginationUtil.createPage(page, size, Sort.by("journalEntry_date").ascending());
+        System.err.println(pageable);
         Page<JournalEntryItemData> lists = accountService.getAccountEntries(identifier, pageable)
                 .map(x -> x.toData());
 //        accountService.fetchAccountEntries( identifier,range, pageable)
@@ -165,6 +172,41 @@ public class AccountController {
     @GetMapping("/accounts/income-expenses")
     public ResponseEntity<?> getIncomeExpenseAccount() {
         return ResponseEntity.ok(accountService.getIncomeExpenseAccounts());
+    }
+
+    @GetMapping("/accounts/{identifier}/balance")
+    @ResponseBody
+    ResponseEntity<?> getAccountBalance(@PathVariable("identifier") final String identifier,
+            @RequestParam(value = "balanceDate", required = false) final LocalDate date,
+            @RequestParam(value = "dateRange", required = false) final String dateRange) {
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        AccountBalance balance = accountService.fetchAccountBalance(identifier, date, range);
+
+        return ResponseEntity.ok(balance);
+    }
+
+    @GetMapping("/accounts/{identifier}/transactions")
+    @ResponseBody
+    ResponseEntity<?> getTransactions(
+            @PathVariable("identifier") final String identifier,
+            @RequestParam(value = "dateRange", required = false) final String dateRange,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size
+    ) {
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Pageable pageable = PaginationUtil.createPage(page, size);
+//        TransactionList list = accountService.getTransactionLists(identifier, range);
+        List<JournalEntryItemData> list = accountService.getAccountTransaction(identifier, range);
+
+        return ResponseEntity.ok(PaginationUtil.paginateList(list, "Accounts transactions",getReportPeriod(range), pageable));
+    }
+
+    private String getReportPeriod(DateRange range) {
+        LocalDate startDate = (range == null ? DateUtility.getStartOfCurrentMonth() : range.getStartDate());
+        LocalDate endDate = (range == null ? DateUtility.getEndOfCurrentMonth() : range.getEndDate());
+        String reportPeriod = String.format("From %s To %s", startDate.format(DateTimeFormatter.ofPattern("d MMM uuuu")), endDate.format(DateTimeFormatter.ofPattern("d MMM uuuu")));
+        return reportPeriod;
     }
 
 }

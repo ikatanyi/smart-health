@@ -3,7 +3,6 @@ package io.smarthealth.accounting.accounts.data;
 import io.smarthealth.accounting.accounts.domain.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Data;
 
 /**
@@ -26,6 +25,8 @@ public class JournalEntryItemData {
     private String formattedDebit;
     private BigDecimal credit;
     private String formattedCredit;
+     private BigDecimal amount;
+    private String formattedAmount;
      private String createdBy;
 
 }
