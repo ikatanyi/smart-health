@@ -1,5 +1,7 @@
 package io.smarthealth.infrastructure.utility;
   
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 
 /**
  *
@@ -12,6 +14,8 @@ public class PageDetails {
     private Integer totalPage;
     private Long totalElements;
     private String reportName;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String reportPeriod;
 
     public Integer getPage() {
         return page;
@@ -51,6 +55,14 @@ public class PageDetails {
 
     public void setReportName(String reportName) {
         this.reportName = reportName;
+    }
+
+    public String getReportPeriod() {
+        return reportPeriod;
+    }
+
+    public void setReportPeriod(String reportPeriod) {
+        this.reportPeriod = reportPeriod;
     }
     
     

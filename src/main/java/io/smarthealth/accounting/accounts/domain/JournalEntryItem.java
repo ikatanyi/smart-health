@@ -21,7 +21,7 @@ import lombok.Data;
 @Entity
 @Table(name = "acc_journal_entry_items")
 public class JournalEntryItem extends Auditable {
-
+ 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_journal_entry_items_journal_id"))

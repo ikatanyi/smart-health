@@ -81,6 +81,7 @@ public class ReceivePaymentService {
         receipt.setCurrency(data.getCurrency());
         receipt.setPayer(data.getPayer());
         receipt.setPaymentMethod(data.getPaymentMethod());
+        receipt.setTenderedAmount(data.getTenderedAmount()!=null ? data.getTenderedAmount() : BigDecimal.ZERO);
         receipt.setReferenceNumber(data.getReferenceNumber());
         receipt.setRefundedAmount(BigDecimal.ZERO);
         if (data.getShiftNo() != null) {
