@@ -43,8 +43,11 @@ public enum ReportName {
         Petty_Cash_statement,
         
         Payment_Voucher,
-        Payment_Statement,
+//        Payment_Statement,
         Legder_report,
-        Ledger_statement,
-        Journal_report        
+//        Ledger_statement,
+        Journal_report,
+        Payer_Credit_Note,
+        Supplier_Credit_Note,
+        Purchase_Order
 }

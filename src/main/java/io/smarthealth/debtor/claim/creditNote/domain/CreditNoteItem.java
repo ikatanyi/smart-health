@@ -10,6 +10,7 @@ package io.smarthealth.debtor.claim.creditNote.domain;
 
 
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.item.domain.Item;
 import javax.persistence.Entity;
@@ -26,7 +27,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "patient_credit_note_item")
-public class CreditNoteItem extends Identifiable {  
+public class CreditNoteItem extends Auditable {  
     
     @OneToOne
     @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_noteitem_id_bill_item_id"))

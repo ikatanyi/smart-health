@@ -19,6 +19,11 @@ import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.debtor.claim.creditNote.data.CreditNoteData;
+import io.smarthealth.debtor.claim.creditNote.service.CreditNoteService;
+import io.smarthealth.debtor.payer.data.PayerData;
+import io.smarthealth.debtor.payer.domain.Payer;
+import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.lang.EnglishNumberToWords;
@@ -30,6 +35,7 @@ import io.smarthealth.report.data.ReportData;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,11 +69,13 @@ public class PaymentReportService {
     private final SupplierService supplierService;
     private final PaymentService paymentService;
     private final LedgerService ledgerService;
+    private final CreditNoteService creditNoteService;
 
     private final VisitService visitService;
     private final InvoiceService invoiceService;
     private final EmployeeService employeeService;
     private final PettyCashRequestsService pettyCashRequestService;
+    private final PayerService payerService;
     
     
     public void getPettyCashRequests(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
@@ -157,6 +165,24 @@ public class PaymentReportService {
         reportService.generateReport(reportData, response);
     }
     
+    public void getcreditNote(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String creditNoteNo = reportParam.getFirst("creditNoteNo");
+
+        CreditNoteData creditNoteData = creditNoteService.getCreditNoteByNumberWithFailDetection("CR00001").toData();
+
+        reportData.getFilters().put("category", "Payer");
+        PayerData payerData = PayerData.map(payerService.findPayerByIdWithNotFoundDetection(creditNoteData.getPayerId()));
+        reportData.getFilters().put("Payer_Data", Arrays.asList(payerData));
+        
+        reportData.getFilters().put("amountInWords", EnglishNumberToWords.convert(BigDecimal.valueOf(creditNoteData.getAmount())).toUpperCase());    
+        reportData.setData(Arrays.asList(creditNoteData));
+        reportData.setFormat(format);
+        reportData.setTemplate("/payments/credit_note");
+        reportData.setReportName("Credit-Note"+creditNoteNo);
+        reportService.generateReport(reportData, response);
+    }
+    
     public void getPaymentStatement(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         PayeeType creditorType = PayeeTypeToEnum(reportParam.getFirst("creditorType"));
@@ -173,7 +199,7 @@ public class PaymentReportService {
                 .collect(Collectors.toList());
         reportData.setData(patientData);
         reportData.setFormat(format);
-        reportData.setTemplate("/clinical/payment/payment_statement");
+        reportData.setTemplate("/payment/payment_statement");
         
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();

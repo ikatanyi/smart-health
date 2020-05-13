@@ -50,8 +50,7 @@ public class PurchaseOrderController {
 
     @GetMapping("/purchaseorders/{id}")
     public PurchaseOrderData getPurchaseOrder(@PathVariable(value = "id") String code) {
-        PurchaseOrder po = service.findByOrderNumberOrThrow(code);
-        return PurchaseOrderData.map(po);
+        return service.findByOrderNumberOrThrow(code).toData();
     }
      @GetMapping("/purchaseorders/{id}/html")
     public ResponseEntity<?> getPurchaseOrderHtml(@PathVariable(value = "id") String code) {
@@ -69,7 +68,7 @@ public class PurchaseOrderController {
         Pageable pageable = PaginationUtil.createPage(page, size);
 
         Page<PurchaseOrderData> list = service.getPurchaseOrders(status, pageable)
-                .map(u -> PurchaseOrderData.map(u));
+                .map(u -> u.toData());
 
         Pager<List<PurchaseOrderData>> pagers = new Pager();
         pagers.setCode("0");

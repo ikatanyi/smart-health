@@ -10,6 +10,7 @@ package io.smarthealth.debtor.claim.creditNote.data;
 
 
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
 import lombok.Data;
 
 /**
@@ -23,6 +24,12 @@ public class CreditNoteItemData {
     private Long itemId;
     @ApiModelProperty(required=false, hidden=true)
     private String itemName;
+    @ApiModelProperty(required=false, hidden=true)
+    private String itemCode;
+    @ApiModelProperty(required=false, hidden=true)
+    private Double quantity;
+    @ApiModelProperty(required=false, hidden=true)
+    private BigDecimal unitPrice;
     @ApiModelProperty(required=false, hidden=true)
     private Double amount;
 }

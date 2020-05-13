@@ -45,7 +45,7 @@ public class CreditNote extends Auditable {
     private Invoice invoice;
 
     @OneToMany
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_credit_note_id_credit_note_item_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_credit_note_id_credit_note_credit_note_item_id"))
     private List<CreditNoteItem> items;
 
     public CreditNoteData toData() {
@@ -59,6 +59,9 @@ public class CreditNote extends Auditable {
             billItem.setAmount(item.getAmount());
             billItem.setBillItemId(item.getBillItem().getId());
             billItem.setItemId(item.getItem().getId());
+            billItem.setQuantity(item.getBillItem().getQuantity());
+            billItem.setItemCode(item.getBillItem().getItem().getItemCode());
+            billItem.setUnitPrice(item.getBillItem().getItem().getCostRate());
             return billItem;
         }).collect(Collectors.toList());
 

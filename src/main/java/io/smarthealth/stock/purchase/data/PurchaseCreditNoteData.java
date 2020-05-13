@@ -1,5 +1,6 @@
 package io.smarthealth.stock.purchase.data;
 
+import io.smarthealth.stock.purchase.domain.PurchaseCreditNoteItem;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
@@ -28,5 +29,5 @@ public class PurchaseCreditNoteData {
     private LocalDate creditDate;
     private BigDecimal amount;
     private String reason;
-    private List<PurchaseCreditNoteItem> items = new ArrayList<>();
+    private List<PurchaseCreditNoteItemData> items = new ArrayList<>();
 }

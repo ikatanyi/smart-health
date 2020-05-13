@@ -137,6 +137,10 @@ public class CreditNoteService {
     public CreditNote getCreditNoteByIdWithFailDetection(Long id) {
         return creditNoteRepository.findById(id).orElseThrow(() -> APIException.notFound("CreditNote identified by id {0} not found ", id));
     }
+    
+     public CreditNote getCreditNoteByNumberWithFailDetection(String creditNoteNumber) {
+        return creditNoteRepository.findByCreditNoteNo(creditNoteNumber).orElseThrow(() -> APIException.notFound("CreditNote identified by creditNoteNumber {0} not found ", creditNoteNumber));
+    }
 
     public Optional<CreditNote> getCreditNote(Long id) {
         return creditNoteRepository.findById(id);

@@ -37,6 +37,22 @@ public class PayerData {
     private String debitAccountNo;
     private List<AddressData> address;
     private List<ContactData> contact;
+    
+    //for reporting
+    @ApiModelProperty(required=false, hidden=true)
+    private String county;
+    @ApiModelProperty(required=false, hidden=true)
+    private String country;
+    @ApiModelProperty(required=false, hidden=true)
+    private String postalCode;
+    @ApiModelProperty(required=false, hidden=true)
+    private String addressLine1;
+    @ApiModelProperty(required=false, hidden=true)
+    private String email;
+    @ApiModelProperty(required=false, hidden=true)
+    private String phone;    
+    @ApiModelProperty(required=false, hidden=true)
+    private String mobile;
 
     public static PayerData map(final Payer payer) {
         PayerData payerData = new PayerData();
@@ -60,15 +76,24 @@ public class PayerData {
                 addressDataList.add(addressData);
             });
             payerData.setAddress(addressDataList);
+            
+            payerData.setAddressLine1(payer.getAddress().get(0).getLine1());
+            payerData.setEmail(payer.getAddress().get(0).getEmail());
+            payerData.setPostalCode(payer.getAddress().get(0).getPostalCode());
+            payerData.setPhone(payer.getAddress().get(0).getPhone());
+            payerData.setCountry(payer.getAddress().get(0).getCountry());
+            payerData.setCounty(payer.getAddress().get(0).getCounty());
         }
 
         if (!payer.getContacts().isEmpty()) {
             List<ContactData> contactDataList = new ArrayList<>();
             for (Contact contact : payer.getContacts()) {
                 ContactData contactData = ContactData.map(contact);
+                payerData.setMobile(contact.getMobile());
                 contactDataList.add(contactData);
             }
             payerData.setContact(contactDataList);
+            
         }
         payerData.setPayerId(payer.getId());
         if (payer.getPriceBook() != null) {

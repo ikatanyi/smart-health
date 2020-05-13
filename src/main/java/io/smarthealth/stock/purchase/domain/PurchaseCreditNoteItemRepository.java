@@ -12,6 +12,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author Kelsas
  */
-public interface PurchaseCreditNoteRepository extends JpaRepository<PurchaseCreditNote, Long>{
-    Optional<PurchaseCreditNote> findByNumber(String creditNoteNumber);
+public interface PurchaseCreditNoteItemRepository extends JpaRepository<PurchaseCreditNoteItem, Long>{
+//    Optional<PurchaseCreditNoteItem> findByCreditNoteNumber(String creditNoteNumber);
 }

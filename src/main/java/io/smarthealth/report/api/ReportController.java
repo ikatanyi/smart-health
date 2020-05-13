@@ -9,8 +9,10 @@ import io.smarthealth.report.service.AccountReportService;
 import io.smarthealth.report.service.PaymentReportService;
 import io.smarthealth.report.service.PharmacyReportService;
 import io.smarthealth.report.service.ProcedureReportService;
+import io.smarthealth.report.service.StockReportService;
 import io.smarthealth.report.service.SupplierReportService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.sql.SQLException;
 import javax.servlet.http.HttpServletResponse;
@@ -38,10 +40,14 @@ public class ReportController {
     private final ProcedureReportService procedureReportService;
     private final PharmacyReportService pharmacyReportService;
     private final PaymentReportService paymentReportService;
+    private final StockReportService stockReportService;
     
     
     @GetMapping("/report")
-    public ResponseEntity<?> generateReport(
+    @ApiOperation(value = "Daily_Income_Statement=[transactionNo,paymentMode,billNo,visitNumber,billStatus, patientNo,hasbalance,dateRange]"
+            + "genInsuranceStatement=[payerId,schemeId,patientNo,invoiceNo,range,invoiceStatus]"
+            + "Purchase_Order=[orderNo]")
+    public ResponseEntity<?> generateReport(            
             @RequestParam(value = "reportName", required = true) ReportName reportName,
             @RequestParam(required = false) MultiValueMap<String, String> queryParams,
             @RequestParam(value = "format", required = false) ExportFormat format,
@@ -142,26 +148,33 @@ public class ReportController {
             case Payment_Voucher:
                 paymentReportService.getPaymentVoucher(queryParams, format, response);
                 break;
-            case Payment_Statement:
-                paymentReportService.getPaymentStatement(queryParams, format, response);
-                break;
+//            case Payment_Statement:
+//                paymentReportService.getPaymentStatement(queryParams, format, response);
+//                break;
             case Legder_report:
                 reportService.getLedger(queryParams, format, response);
                 break;
-            case Ledger_statement:
-                reportService.getLedgers(queryParams, format, response);
-                break;
+//            case Ledger_statement:
+//                reportService.getLedgers(queryParams, format, response);
+//                break;
             case Journal_report:
                 reportService.getJournal(queryParams, format, response);
                 break;
+            case Payer_Credit_Note:
+                paymentReportService.getcreditNote(queryParams, format, response);
+                break;    
+            case Supplier_Credit_Note:
+                stockReportService.getSuppliercreditNote(queryParams, format, response);
+                break;
+            case Purchase_Order:
+                stockReportService.getPurchaseOrder(queryParams, format, response);
+                break;    
             default:
                 break;
 
         }
-         return ResponseEntity.ok(""); 
-    }
-
-    
+         return ResponseEntity.ok("success"); 
+    }    
 
     @GetMapping("/report/clinical/prescription-label/{prescriptionId}")
     public void generatePrescriptionLabel(

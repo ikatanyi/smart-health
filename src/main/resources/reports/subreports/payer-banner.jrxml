@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="supplier-banner" pageWidth="276" pageHeight="802" columnWidth="276" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f999e9d8-48c8-4d99-8793-0d8624a84a5f">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="PIC_DIR" class="java.lang.Byte"/>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<field name="payerName" class="java.lang.String"/>
+	<field name="legalName" class="java.lang.String"/>
+	<field name="taxNumber" class="java.lang.String"/>
+	<field name="website" class="java.lang.String"/>
+	<field name="county" class="java.lang.String"/>
+	<field name="country" class="java.lang.String"/>
+	<field name="email" class="java.lang.String"/>
+	<field name="phone" class="java.lang.String"/>
+	<field name="mobile" class="java.lang.String"/>
+	<field name="addressLine1" class="java.lang.String"/>
+	<detail>
+		<band height="58" splitType="Stretch">
+			<staticText>
+				<reportElement x="1" y="1" width="42" height="12" uuid="871076bf-eb5f-4662-96d6-aa7fec53f788"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="45" y="1" width="154" height="12" isRemoveLineWhenBlank="true" uuid="e9865714-00b3-4db4-8af1-82492bcbde9f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{payerName}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="12" width="42" height="12" uuid="d76393e5-cb06-4e48-b0c9-88e1ad05a986"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Telephone]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="45" y="12" width="154" height="12" isRemoveLineWhenBlank="true" uuid="511806e2-2cb1-496a-8a82-cacf24ac7b87"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{phone}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="23" width="42" height="12" uuid="565f9536-b1af-48d2-b7e1-20474881f891"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Address:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="34" width="42" height="12" uuid="ef68ac24-905b-4e4f-9087-5e3b37bcc5ae"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Email:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="45" y="34" width="154" height="12" isRemoveLineWhenBlank="true" uuid="a99a1f49-aba5-4697-b3a9-955ed87a1fe7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="45" width="42" height="12" uuid="5fd0220f-df1f-4007-b6e4-e2c880e60cb0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Website :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="45" y="45" width="154" height="12" isRemoveLineWhenBlank="true" uuid="62fb63a8-b796-4d59-9661-52d7659f3091"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{website}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="45" y="23" width="154" height="11" uuid="e2a128ef-600d-4b98-be13-3324c1e5de8d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{addressLine1}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

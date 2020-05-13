@@ -97,8 +97,7 @@ public class PurchaseService {
 
         order.addOrderItems(orderItems);
         //then we need to save this
-        PurchaseOrder savedOrder = orderRepository.save(order);
-        return PurchaseOrderData.map(savedOrder);
+        return orderRepository.save(order).toData();
     }
 
     public Optional<PurchaseOrder> findByOrderNumber(final String orderNo) {
@@ -146,6 +145,6 @@ public class PurchaseService {
         ctx.setVariable("purchaseOrderLines", order.getPurchaseOrderLines());
         ctx.setVariable("imageResourceName", p.getFileName().toString());
         final String htmlContent = this.htmlTemplateEngine.process("purchaseOrder", ctx);
-        return new HtmlData(htmlContent, PurchaseOrderData.map(order));
+        return new HtmlData(htmlContent, order.toData());
     }
 }

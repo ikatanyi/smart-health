@@ -1,13 +1,18 @@
 package io.smarthealth.stock.purchase.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
+import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.supplier.domain.Supplier;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -28,4 +33,37 @@ public class PurchaseCreditNote extends Auditable {
     private LocalDate creditDate;
     private BigDecimal amount;
     private String reason;
+    private String TransactionId;
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_purchase_credit_note_store_id"))
+    private Store store;
+    @OneToMany
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_purchase_credit_note_purchase_credit_note_item_id"))
+    private List<PurchaseCreditNoteItem> items;
+    
+    public PurchaseCreditNoteData toData(){
+        PurchaseCreditNoteData data = new PurchaseCreditNoteData();
+        data.setAmount(this.getAmount());
+        data.setCreditDate(this.getCreditDate());
+        data.setCreditNoteNumber(this.getNumber());
+        data.setInvoiceNumber(this.getInvoiceNumber());
+        if(!this.items.isEmpty())
+            data.setItems(
+                    this.getItems()
+                    .stream()
+                    .map(item->(item.toData()))
+                    .collect(Collectors.toList())
+            );
+        data.setReason(this.getReason());
+        if(this.getSupplier()!=null){
+           data.setSupplier(this.getSupplier().getSupplierName());
+           data.setSupplierId(this.getSupplier().getId());
+        }   
+        if(this.getStore()!=null){
+            data.setStore(this.getStore().getStoreName());
+            data.setStoreId(this.getStore().getId());
+        }
+        data.setTransactionId(this.getTransactionId());
+        return data;
+    }
 }

@@ -42,44 +42,5 @@ public class PurchaseOrderData {
     @JsonIgnore
     private boolean showItems;
 
-    public static PurchaseOrderData map(PurchaseOrder order) {
-        PurchaseOrderData data = new PurchaseOrderData();
-        data.setId(order.getId());
-        data.setOrderNumber(order.getOrderNumber());
-        if (order.getSupplier() != null) {
-            data.setSupplierId(order.getSupplier().getId());
-            data.setSupplierName(order.getSupplier().getSupplierName());
-        }
-        data.setTransactionDate(order.getTransactionDate());
-        data.setRequiredDate(order.getRequiredDate());
-        if (order.getAddress() != null) {
-            data.setAddressId(order.getAddress().getId());
-        }
-        if (order.getContact() != null) {
-            data.setContact(order.getContact().getFullName());
-            data.setContactId(order.getContact().getId());
-        }
-        if (order.getStore() != null) {
-            data.setStoreId(order.getId());
-            data.setStore(order.getStore().getStoreName());
-        }
-        if (order.getPriceList() != null) {
-            data.setStoreId(order.getPriceList().getId());
-            data.setPriceList(order.getPriceList().getName());
-        }
-        data.setStatus(order.getStatus());
-        data.setPurchaseAmount(order.getPurchaseAmount());
-        data.setBilled(order.getBilled());
-        data.setReceived(order.getReceived());
-        data.setCreatedBy(order.getCreatedBy());
-
-        List<PurchaseOrderItemData> list = order.getPurchaseOrderLines()
-                .stream()
-                .map(item -> PurchaseOrderItemData.map(item))
-                .collect(Collectors.toList());
-
-        data.setPurchaseOrderItems(list);
-
-        return data;
-    }
+    
 }

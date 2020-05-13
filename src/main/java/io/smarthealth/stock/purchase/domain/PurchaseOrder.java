@@ -4,6 +4,8 @@ import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.stock.purchase.data.PurchaseOrderData;
+import io.smarthealth.stock.purchase.data.PurchaseOrderItemData;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.supplier.domain.Supplier;
@@ -83,5 +85,46 @@ public class PurchaseOrder extends Auditable {
                 .stream()
                 .map(x -> x.getAmount())
                 .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
+    }
+    
+    public PurchaseOrderData toData() {
+        PurchaseOrderData data = new PurchaseOrderData();
+        data.setId(this.getId());
+        data.setOrderNumber(this.getOrderNumber());
+        if (this.getSupplier() != null) {
+            data.setSupplierId(this.getSupplier().getId());
+            data.setSupplierName(this.getSupplier().getSupplierName());
+        }
+        data.setTransactionDate(this.getTransactionDate());
+        data.setRequiredDate(this.getRequiredDate());
+        if (this.getAddress() != null) {
+            data.setAddressId(this.getAddress().getId());
+        }
+        if (this.getContact() != null) {
+            data.setContact(this.getContact().getFullName());
+            data.setContactId(this.getContact().getId());
+        }
+        if (this.getStore() != null) {
+            data.setStoreId(this.getId());
+            data.setStore(this.getStore().getStoreName());
+        }
+        if (this.getPriceList() != null) {
+            data.setStoreId(this.getPriceList().getId());
+            data.setPriceList(this.getPriceList().getName());
+        }
+        data.setStatus(this.getStatus());
+        data.setPurchaseAmount(this.getPurchaseAmount());
+        data.setBilled(this.getBilled());
+        data.setReceived(this.getReceived());
+        data.setCreatedBy(this.getCreatedBy());
+
+        List<PurchaseOrderItemData> list = this.getPurchaseOrderLines()
+                .stream()
+                .map(item -> PurchaseOrderItemData.map(item))
+                .collect(Collectors.toList());
+
+        data.setPurchaseOrderItems(list);
+
+        return data;
     }
 }

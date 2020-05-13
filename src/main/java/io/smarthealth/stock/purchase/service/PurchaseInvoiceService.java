@@ -23,6 +23,8 @@ import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
 import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
+import io.smarthealth.stock.purchase.domain.PurchaseCreditNote;
+import io.smarthealth.stock.purchase.domain.PurchaseCreditNoteRepository;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoiceRepository;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
@@ -60,6 +62,7 @@ public class PurchaseInvoiceService {
     private final StoreRepository storeRepository;
     private final StockEntryRepository stockEntryRepository;
     private final InventoryEventSender inventoryEventSender;
+    private final PurchaseCreditNoteRepository purchaseCreditNoteRepository;
     private final FinancialActivityAccountRepository activityAccountRepository;
 
     public PurchaseInvoice createPurchaseInvoice(PurchaseInvoiceData invoiceData) {
@@ -153,6 +156,11 @@ public class PurchaseInvoiceService {
     public PurchaseInvoice findOneWithNoFoundDetection(Long id) {
         return purchaseInvoiceRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Purchase Invoice with Id {0} not found", id));
+    }
+    
+    public PurchaseCreditNote findByNumberWithNoFoundDetection(String creditNoteNumber) {
+        return purchaseCreditNoteRepository.findByNumber(creditNoteNumber)
+                .orElseThrow(() -> APIException.notFound("Purchase Invoice with creditNoteNumber {0} not found", creditNoteNumber));
     }
 
     public Page<PurchaseInvoice> getSupplierInvoices(Long supplierId, String invoiceNumber, Boolean paid, PurchaseInvoiceStatus status, Pageable page) {

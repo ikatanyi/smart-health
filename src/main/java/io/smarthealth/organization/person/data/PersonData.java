@@ -47,6 +47,9 @@ public class PersonData {
     private List<PersonNextOfKinData> nok;
     private String fullName;
     private LocalDate createdOn;
+    private LocalDate dateRegistered;
+    private String phone;
+    private String addressLine;
 
     private boolean isPatient;
     private String primaryContact, residence, religion, nationalIdNumber;
@@ -60,7 +63,8 @@ public class PersonData {
         person.setGender(personDTO.getGender());
         person.setPatient(personDTO.isPatient);
         person.setDateOfBirth(personDTO.getDateOfBirth());
-        if (personDTO.getAddress() != null) {
+        person.setDateRegistered(personDTO.getDateRegistered());
+        if (personDTO.getAddress() != null) {           
             person.setAddresses(
                     personDTO.getAddress().stream()
                             .map(AddressData::map)
@@ -86,9 +90,11 @@ public class PersonData {
         persondto.setMiddleName(person.getMiddleName());
         persondto.setSurname(person.getSurname());
         persondto.setPatient(person.isPatient());
-        persondto.setDateOfBirth(person.getDateOfBirth());
+        persondto.setDateOfBirth(person.getDateOfBirth());        
         persondto.setCreatedOn(LocalDate.from(person.getCreatedOn().atZone(ZoneId.systemDefault())));
         if (person.getAddresses() != null) {
+            persondto.setAddressLine(person.getAddresses().get(0).getLine1());
+            
             persondto.setAddress(
                     person.getAddresses().stream()
                             .map(AddressData::map)
@@ -96,6 +102,7 @@ public class PersonData {
             );
         }
         if (person.getContacts() != null) {
+            persondto.setPhone(person.getContacts().get(0).getTelephone());
             persondto.setContact(person.getContacts().stream().map(ContactData::map).collect(Collectors.toList()));
         }
         persondto.setMaritalStatus(MaritalStatus.valueOf(person.getMaritalStatus()));
@@ -103,6 +110,7 @@ public class PersonData {
         persondto.setResidence(person.getResidence());
         persondto.setNationalIdNumber(person.getNationalIdNumber());
         persondto.setReligion(person.getReligion());
+        persondto.setDateRegistered(person.getDateRegistered());
         return persondto;
     }
 }
