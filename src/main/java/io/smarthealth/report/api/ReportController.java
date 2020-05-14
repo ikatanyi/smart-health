@@ -169,6 +169,9 @@ public class ReportController {
             case Purchase_Order:
                 stockReportService.getPurchaseOrder(queryParams, format, response);
                 break;    
+             case Account_Transactions:
+                reportService.getAccTransactions(queryParams, format, response);
+                break;    
             default:
                 break;
 

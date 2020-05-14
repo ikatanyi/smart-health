@@ -49,5 +49,6 @@ public enum ReportName {
         Journal_report,
         Payer_Credit_Note,
         Supplier_Credit_Note,
-        Purchase_Order
+        Purchase_Order,
+        Account_Transactions
 }

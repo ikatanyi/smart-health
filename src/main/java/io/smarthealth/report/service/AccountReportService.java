@@ -8,6 +8,7 @@ package io.smarthealth.report.service;
 import io.smarthealth.accounting.accounts.data.AccountData;
 import io.smarthealth.accounting.accounts.data.ChartOfAccountEntry;
 import io.smarthealth.accounting.accounts.data.JournalEntryData;
+import io.smarthealth.accounting.accounts.data.JournalEntryItemData;
 import io.smarthealth.accounting.accounts.data.LedgerData;
 import io.smarthealth.accounting.accounts.data.financial.statement.FinancialCondition;
 import io.smarthealth.accounting.accounts.data.financial.statement.FinancialConditionSection;
@@ -93,7 +94,6 @@ public class AccountReportService {
     private final PrescriptionService prescriptionService;
     private final FinancialConditionService financialConditionService;
     private final IncomesStatementService incomesStatementService;
-
     private final JournalService journalService;
     private final LedgerService ledgerService;
 
@@ -239,6 +239,30 @@ public class AccountReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/journal_report");
         reportData.setReportName("journal-statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getAccTransactions(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String identifier = reportParam.getFirst("identifier");
+        String dateRange = reportParam.getFirst("dateRange");
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        AccountData data = accountService.findAccount("10-11-002")
+                .orElseThrow(() -> APIException.notFound("Account with identifier {0} not found", identifier));
+        reportData.getFilters().put("accountNo", data.getIdentifier());
+        reportData.getFilters().put("accountName", data.getName());
+        reportData.getFilters().put("accountType", data.getType());
+        reportData.getFilters().put("status", data.getState());
+        reportData.getFilters().put("range", range);
+        reportData.getFilters().put("ledger", data.getLedger());
+        reportData.getFilters().put("balance", data.getBalance());
+        
+        List<JournalEntryItemData> list = accountService.getAccountTransaction("10-11-002", range);
+
+        reportData.setData(list);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/account_transaction_report");
+        reportData.setReportName("Account-Transactionst");
         reportService.generateReport(reportData, response);
     }
 
