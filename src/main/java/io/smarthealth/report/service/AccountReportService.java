@@ -257,7 +257,7 @@ public class AccountReportService {
         reportData.getFilters().put("ledger", data.getLedger());
         reportData.getFilters().put("balance", data.getBalance());
         
-        List<JournalEntryItemData> list = accountService.getAccountTransaction("10-11-002", range);
+        List<JournalEntryItemData> list = accountService.getAccountTransaction(identifier, range);
 
         reportData.setData(list);
         reportData.setFormat(format);
