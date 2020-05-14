@@ -5,13 +5,18 @@
  */
 package io.smarthealth.report.data.dashboard;
 
+import lombok.Data;
+
 /**
  *
  * @author Simon.waweru
  */
+@Data
 public class HomePageReportsData {
-    private int patientCount;
-    private int visitCount;
-    private int appointmentCount;
-    //private int active
+
+    private Long patientCount;
+    private Long visitCount;
+    private Long appointmentCount;
+    
+    
 }

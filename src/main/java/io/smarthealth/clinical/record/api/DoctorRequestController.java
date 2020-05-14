@@ -54,8 +54,6 @@ public class DoctorRequestController {
 
     private final ModelMapper modelMapper;
 
-    private final EmployeeService employeeService;
-
     private final ItemService itemService;
 
     private final PatientService patientService;
