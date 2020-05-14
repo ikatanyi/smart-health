@@ -71,7 +71,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Account Information Report]]></text>
+				<text><![CDATA[Account Transactions]]></text>
 			</staticText>
 		</band>
 	</pageHeader>
@@ -232,7 +232,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="18" splitType="Stretch">
+		<band height="14" splitType="Stretch">
 			<textField>
 				<reportElement x="493" y="0" width="37" height="12" uuid="53ca7fd2-1131-4583-a504-c7afd81475c2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -245,7 +245,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{formattedDebit}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{formattedDebit}.equals( null )?"0.00":$F{formattedDebit}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="222" y="0" width="147" height="12" uuid="de437833-239d-4ae1-911f-2500e9003024"/>
@@ -270,7 +270,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{formattedCredit}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{formattedCredit}.equals( null )?"0.00":$F{formattedCredit}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="5" y="0" width="56" height="12" uuid="ef13ae22-185e-4ea1-b2c2-2f132b862685"/>
@@ -279,6 +279,12 @@
 				</textElement>
 				<textFieldExpression><![CDATA[""+$F{date}]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement positionType="Float" x="1" y="13" width="554" height="1" uuid="da9ff8b5-ab50-4fa0-bd7a-e0044e38102e"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
 		</band>
 	</detail>
 	<columnFooter>

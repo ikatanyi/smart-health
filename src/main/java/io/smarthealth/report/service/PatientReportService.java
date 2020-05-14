@@ -204,7 +204,7 @@ public class PatientReportService {
 
     public void getPatientFile(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
-        final String patientNumber = reportParam.getFirst("patientId");
+        final String patientNumber = reportParam.getFirst("patientNumber");
         final String visitNumber = reportParam.getFirst("visitNumber");
         List<PatientVisitData> visitData = new ArrayList();
         PatientData patient = patientService.convertToPatientData(patientService.findPatientOrThrow(patientNumber));
