@@ -17,7 +17,7 @@ public enum ReportName {
         Invoice,
         Doctor_Invoice,
         Supplier_Invoice,
-        Patient_file ,
+        Patient_File ,
         Lab_Report,
         Procedure_Report,
         Request_Form,
@@ -49,5 +49,6 @@ public enum ReportName {
         Journal_report,
         Payer_Credit_Note,
         Supplier_Credit_Note,
-        Purchase_Order
+        Purchase_Order,
+        Account_Transactions
 }
