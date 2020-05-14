@@ -41,8 +41,10 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.clinical.EmployeeBanner;
 import io.smarthealth.report.data.clinical.PatientVisitData;
+import io.smarthealth.report.data.clinical.reportVisitData;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -128,15 +130,46 @@ public class PatientReportService {
         Integer page = Integer.getInteger(reportParam.getFirst("page"));
         Integer size = Integer.getInteger(reportParam.getFirst("size"));
         ReportData reportData = new ReportData();
-
+        
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        reportData.getFilters().put("range", range);
+        List<Visit> patientvisits = visitService.fetchVisitsGroupByVisitNumber(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, Pageable.unpaged()).getContent();
 
-        List<VisitData> visitData = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, pageable)
-                .stream()
-                .map((visit) -> visitService.convertVisitEntityToData(visit))
-                .collect(Collectors.toList());
-        
+        List<reportVisitData>visitArrayList = new ArrayList();
+        for (Visit visit : patientvisits) {
+            List<Visit> visits1 = visitService.fetchVisitByPatientNumberAndVisitNumber(visit.getPatient().getPatientNumber(), visit.getVisitNumber(), Pageable.unpaged()).getContent();
+            
+            reportVisitData data = reportVisitData.map(visits1.get(0));
+            data.setDuration(Math.abs(Duration.between(data.getStopDatetime(), data.getStartDatetime()).toMinutes()));
+            for (Visit visit2 : visits1) {
+                switch (visit2.getServicePoint().getServicePointType()) {
+                    case Consultation:
+                        data.setConsultation(Boolean.TRUE) ;
+                        break;
+                    case Triage:
+                        data.setTriage(Boolean.TRUE);
+                        break;
+                    case Radiology:
+                        data.setRadiology(Boolean.TRUE);
+                        break;
+                    case Laboratory:
+                        data.setLaboratory( Boolean.TRUE);
+                        break;
+                    case Pharmacy:
+                        data.setPharmacy(Boolean.TRUE);
+                        break;
+                    case Procedure:
+                        data.setProcedure(Boolean.TRUE);
+                        break;
+                    default:
+                        data.setOther(Boolean.TRUE);
+                        break;
+                }
+            }
+            visitArrayList.add(data);
+        }
+
         List<JRSortField> sortList = new ArrayList();
         reportData.setPatientNumber(patientNumber);
         JRDesignSortField sortField = new JRDesignSortField();
@@ -145,8 +178,8 @@ public class PatientReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
-        reportData.setData(visitData);
+
+        reportData.setData(visitArrayList);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/PatientVisit");
         reportData.setReportName("visit-report");
