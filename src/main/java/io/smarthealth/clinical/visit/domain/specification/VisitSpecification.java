@@ -89,6 +89,8 @@ public class VisitSpecification {
                 );
             }
 
+            query.orderBy(cb.asc(root.get("triageCategory")), cb.desc(root.get("startDatetime")));
+
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

@@ -9,9 +9,15 @@ package io.smarthealth.clinical.visit.data.enums;
  *
  * @author Simon.waweru
  */
-public enum TriageCategory {
-    RED,
-    YELLOW,
-    GREEN,
-    BLACK
-}
+//public enum TriageCategory {
+//Red,
+//Yell, 
+//Gree, 
+//Bl
+//
+//
+////2,  //RED,
+////    3,//YELLOW,
+////    4,//GREEN,
+////    1//BLACK
+//}

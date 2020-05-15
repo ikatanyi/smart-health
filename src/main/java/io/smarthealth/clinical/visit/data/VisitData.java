@@ -73,6 +73,7 @@ public class VisitData {
     private VisitEnum.ServiceType serviceType;
 
     private Long itemToBill;
+    private int triageCategory;
 
     public static Visit map(VisitData visitDTO) {
         Visit visitEntity = new Visit();
@@ -100,6 +101,7 @@ public class VisitData {
         visitDTO.setComments(visitEntity.getComments());
         visitDTO.setStartDate(visitEntity.getStartDatetime());
         visitDTO.setServiceType(visitEntity.getServiceType());
+        visitDTO.setTriageCategory(visitEntity.getTriageCategory());
         if (visitEntity.getPatient() != null) {
             visitDTO.setPatientName(visitEntity.getPatient().getFullName());
             visitDTO.setPatientNumber(visitEntity.getPatient().getPatientNumber());
