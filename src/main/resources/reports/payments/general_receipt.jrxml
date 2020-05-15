@@ -128,7 +128,7 @@
 	<columnHeader>
 		<band height="109" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="49" y="19" width="107" height="15" uuid="30691af1-f71d-4155-bbc4-5a351385705f"/>
+				<reportElement x="50" y="19" width="123" height="15" uuid="30691af1-f71d-4155-bbc4-5a351385705f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -156,14 +156,14 @@
 				<text><![CDATA[Shift :]]></text>
 			</staticText>
 			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="49" y="51" width="107" height="18" uuid="86fbffa6-34d2-4ade-933f-f88df1d52898"/>
+				<reportElement positionType="Float" x="50" y="51" width="123" height="18" uuid="86fbffa6-34d2-4ade-933f-f88df1d52898"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{paymentMethod}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="87" width="48" height="15" uuid="b1b3883e-d63c-4434-896b-44bb48f46b50"/>
+				<reportElement x="1" y="87" width="49" height="15" uuid="b1b3883e-d63c-4434-896b-44bb48f46b50"/>
 				<textElement verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
@@ -177,7 +177,7 @@
 				<text><![CDATA[Mode:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="49" y="35" width="107" height="15" uuid="8d99c74f-1758-49d4-8a55-b18c69008021"/>
+				<reportElement positionType="Float" x="50" y="35" width="123" height="15" uuid="8d99c74f-1758-49d4-8a55-b18c69008021"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -203,14 +203,14 @@
 				<textFieldExpression><![CDATA[$F{receiptNo}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="48" y="87" width="108" height="15" uuid="02113826-f210-4ff2-baf2-10389fad918d"/>
+				<reportElement x="49" y="87" width="124" height="15" uuid="02113826-f210-4ff2-baf2-10389fad918d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="48" y="70" width="108" height="16" uuid="1d9af465-481d-4eff-ae1b-c9833a8b1a92"/>
+				<reportElement x="49" y="70" width="124" height="16" uuid="1d9af465-481d-4eff-ae1b-c9833a8b1a92"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>

@@ -171,6 +171,9 @@ public class ReportController {
                 break;    
              case Account_Transactions:
                 reportService.getAccTransactions(queryParams, format, response);
+                break;
+            case Remittance_Report:
+                reportService.getRemittanceReport(queryParams, format, response);
                 break;    
             default:
                 break;

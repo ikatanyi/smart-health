@@ -33,7 +33,9 @@ import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.ReceiptData;
+import io.smarthealth.accounting.payment.data.RemittanceData;
 import io.smarthealth.accounting.payment.service.ReceivePaymentService;
+import io.smarthealth.accounting.payment.service.RemittanceService;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
@@ -96,6 +98,7 @@ public class AccountReportService {
     private final IncomesStatementService incomesStatementService;
     private final JournalService journalService;
     private final LedgerService ledgerService;
+    private final RemittanceService remittanceService;
 
     public void getTrialBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
@@ -227,6 +230,43 @@ public class AccountReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/income_statement");
         reportData.setReportName("income_statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getRemittanceReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String transactionNo = reportParam.getFirst("transactionNo");
+        Long payerId = NumberUtils.createLong(reportParam.getFirst("payerId"));
+        Boolean hasBalance = reportParam.getFirst("hasBalance")!=null?Boolean.getBoolean(reportParam.getFirst("hasBalance")):null;
+        String receipt = reportParam.getFirst("receipt");
+        String remittanceNo = reportParam.getFirst("invoiceNo");
+        String dateRange = reportParam.getFirst("range");
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        
+        List<RemittanceData> remittanceData = remittanceService.getRemittances(payerId, receipt, remittanceNo, hasBalance, range, Pageable.unpaged()).getContent()
+                .stream()
+                .map(rem->(rem.toData()))
+                .collect(Collectors.toList());
+
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("remittanceDate");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        
+        sortField = new JRDesignSortField();
+        sortField.setName("payer");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+
+        reportData.setData(remittanceData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/remmittance_report");
+        reportData.setReportName("Remittance_Statement");
         reportService.generateReport(reportData, response);
     }
 

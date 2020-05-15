@@ -43,7 +43,7 @@ public class AllocationController {
         Remittance remitance = remitanceService.getRemittanceOrThrow(remmitanceId);
         List<Allocation> allocations = allocationService.createAllocation(allocationData, remitance);
         List<AllocationData> dataList = new ArrayList<>();
-        allocations.stream().map((a) -> AllocationData.map(a)).forEachOrdered((a) -> {
+        allocations.stream().map((a) -> a.map()).forEachOrdered((a) -> {
             dataList.add(a);
         });
 
@@ -57,13 +57,13 @@ public class AllocationController {
 
     @GetMapping("/allocation/{id}")
     public AllocationData getAllocation(@PathVariable(value = "id") Long id) {
-        AllocationData allocation = AllocationData.map(allocationService.getAllocationByIdWithFailDetection(id));
+        AllocationData allocation = allocationService.getAllocationByIdWithFailDetection(id).map();
         return allocation;
     }
 
     @PutMapping("/allocation/{id}")
     public AllocationData updateRemitance(@PathVariable(value = "id") Long id, AllocationData allocationData) {
-        AllocationData allocation = AllocationData.map(allocationService.updateAllocation(id, allocationData));
+        AllocationData allocation = allocationService.updateAllocation(id, allocationData).map();
         return allocation;
     }
 
@@ -80,7 +80,7 @@ public class AllocationController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<AllocationData> list = allocationService.getAllocations(invoiceNo, receiptNo, receiptNo, payerId, schemeId, range, pageable)
-                .map(remit -> AllocationData.map(remit));
+                .map(remit -> remit.map());
 
         Pager<List<AllocationData>> pagers = new Pager();
         pagers.setCode("0");

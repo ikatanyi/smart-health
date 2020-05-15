@@ -18,6 +18,8 @@ import lombok.Data;
 public class AllocationData {
 
     private String invoiceNo;
+    private String payer;
+    private String scheme;
     private BigDecimal amount;
     @ApiModelProperty(hidden = true)
     private Long remitanceId;
@@ -32,24 +34,7 @@ public class AllocationData {
     @ApiModelProperty(hidden = true)
     private String receiptNo;
 
-  
-
-    public static AllocationData map(Allocation allocation) {
-        AllocationData data = new AllocationData();
-        data.setAmount(allocation.getAmount());
-        data.setBalance(allocation.getBalance());
-        if (allocation.getInvoice() != null) {
-            data.setInvoiceAmount(allocation.getInvoice().getAmount());
-            data.setInvoiceNo(allocation.getInvoice().getNumber());
-        }
-
-        data.setReceiptNo(allocation.getReceiptNo());
-        data.setRemittanceNo(allocation.getRemittanceNo());
-        data.setTransactionId(allocation.getTransactionId());
-        data.setRemitanceId(allocation.getId());
-        data.setBalance(allocation.getBalance());
-        return data;
-    }
+    
 
     public static Allocation map(AllocationData data) {
         Allocation allocation = new Allocation();

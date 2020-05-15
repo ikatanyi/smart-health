@@ -50,5 +50,6 @@ public enum ReportName {
         Payer_Credit_Note,
         Supplier_Credit_Note,
         Purchase_Order,
-        Account_Transactions
+        Account_Transactions,
+        Remittance_Report
 }
