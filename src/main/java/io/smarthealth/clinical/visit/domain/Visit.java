@@ -58,6 +58,8 @@ public class Visit extends Auditable {
     private VisitEnum.ServiceType serviceType;
 
     private int triageCategory;
+    
+    private Boolean isActiveOnConsultation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_visit_clinic"))

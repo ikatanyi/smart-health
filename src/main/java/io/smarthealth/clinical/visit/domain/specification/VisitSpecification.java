@@ -25,7 +25,7 @@ public class VisitSpecification {
         super();
     }
 
-    public static Specification<Visit> createSpecification(String visitNumber, Employee employee, ServicePoint servicePoint, Patient patient, String patientName, boolean visitIsRunning, DateRange dateRange) {
+    public static Specification<Visit> createSpecification(String visitNumber, Employee employee, ServicePoint servicePoint, Patient patient, String patientName, boolean visitIsRunning, DateRange dateRange, final Boolean isActiveOnConsultation) {
 
         return (root, query, cb) -> {
 
@@ -87,6 +87,10 @@ public class VisitSpecification {
                                 cb.like(root.get("patient").get("surname"), patientNameExpression)
                         )
                 );
+            }
+
+            if (isActiveOnConsultation != null) {
+                predicates.add(cb.equal(root.get("isActiveOnConsultation"), isActiveOnConsultation));
             }
 
             query.orderBy(cb.asc(root.get("triageCategory")), cb.desc(root.get("startDatetime")));
