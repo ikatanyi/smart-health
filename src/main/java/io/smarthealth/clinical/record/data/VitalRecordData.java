@@ -42,7 +42,7 @@ public class VitalRecordData {
     private String sendTo;
     private Long servicePointIdentifier;
     private String staffNumber;
-    private String urgency;
+    private int urgency;
     private String comments;
 
     public static VitalsRecord map(VitalRecordData triage) {
