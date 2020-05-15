@@ -12,6 +12,7 @@ import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
+import io.smarthealth.clinical.visit.domain.specification.ReportVisitSpecification;
 import io.smarthealth.clinical.visit.domain.specification.VisitSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -60,13 +61,9 @@ public class VisitService {
     }
 
     public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Pageable pageable) {
-        // Visit visit = null;
         Employee employee = null;
         ServicePoint servicePoint = null;
         Patient patient = null;
-//        if (visitNumber != null) {
-//           // visit = this.findVisitEntityOrThrow(visitNumber);
-//        }
         if (staffNumber != null) {
             employee = employeeService.fetchEmployeeByNumberOrThrow(staffNumber);
         }
@@ -77,7 +74,6 @@ public class VisitService {
             patient = findPatientOrThrow(patientNumber);
         }
 
-//        System.out.println(" LocalDate.now().atStartOfDay() " + LocalDate.now().atStartOfDay());
         Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visitNumber, employee, servicePoint, patient, patientName, runningStatus, range);
         Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
         return visits;
@@ -141,6 +137,30 @@ public class VisitService {
 
     public List<Visit> fetchAllVisitsSurpassed24hrs() {
         return visitRepository.visitsPast24hours();
+    }
+
+    public Page<Visit> fetchVisitsGroupByVisitNumber(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Pageable pageable) {
+// Visit visit = null;
+        Employee employee = null;
+        ServicePoint servicePoint = null;
+        Patient patient = null;
+// if (visitNumber != null) {
+// // visit = this.findVisitEntityOrThrow(visitNumber);
+// }
+        if (staffNumber != null) {
+            employee = employeeService.fetchEmployeeByNumberOrThrow(staffNumber);
+        }
+        if (servicePointType != null) {
+            servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(servicePointType));
+        }
+        if (patientNumber != null) {
+            patient = findPatientOrThrow(patientNumber);
+        }
+
+// System.out.println(" LocalDate.now().atStartOfDay() " + LocalDate.now().atStartOfDay());
+        Specification<Visit> visitSpecs = ReportVisitSpecification.createSpecification(visitNumber, employee, servicePoint, patient, patientName, runningStatus, range);
+        Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
+        return visits;
     }
 
 }

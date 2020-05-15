@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.visit.data;
+package io.smarthealth.report.data.clinical;
 
+import io.smarthealth.clinical.visit.data.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
@@ -16,7 +17,10 @@ import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -28,69 +32,45 @@ import lombok.Data;
  *
  * @author Simon.waweru
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-public class VisitData {
+public class reportVisitData {
 
     private String visitNumber;
     @NotBlank
     private String patientNumber;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
+    private String patientName;
     private LocalDateTime startDatetime;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDateTime startDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime stopDatetime;
+    private Long duration;
     @Enumerated(EnumType.STRING)
     private Status status;
     @Enumerated(EnumType.STRING)
     private VisitType visitType;
     private Boolean scheduled;
-    //@NotNull
-//    private Long servicePointIdentifier;
     @NotNull
     private Long locationIdentity;
-
-    @ApiModelProperty(required = false, hidden = true)
     private String servicePointName;
-    @ApiModelProperty(required = false, hidden = true)
-    private String patientName;
-
     private String practitionerCode;
     private String practitionerName;
     private String comments;
-
     @Enumerated(EnumType.STRING)
     private VisitEnum.PaymentMethod paymentMethod;
-
-    private PatientData patientData;
-
-    private PaymentDetailsData payment;
-
-    private List<PatientQueueData> patientQueueData;
+    private String paymentMode;
     @Enumerated(EnumType.STRING)
     private VisitEnum.ServiceType serviceType;
+    private Boolean consultation;
+    private Boolean procedure;
+    private Boolean radiology;
+    private Boolean triage;
+    private Boolean laboratory;
+    private Boolean pharmacy;
+    private Boolean other;
 
     private Long itemToBill;
-    private int triageCategory;
 
-    public static Visit map(VisitData visitDTO) {
-        Visit visitEntity = new Visit();
-        visitEntity.setScheduled(visitDTO.getScheduled());
-        visitEntity.setStartDatetime(visitDTO.getStartDatetime());
-        visitEntity.setStopDatetime(visitDTO.getStopDatetime());
-        visitEntity.setVisitNumber(visitDTO.getVisitNumber());
-        visitEntity.setVisitType(visitDTO.getVisitType());
-        visitEntity.setStatus(visitDTO.getStatus());
-        visitEntity.setPaymentMethod(visitDTO.getPaymentMethod());
-        visitEntity.setComments(visitDTO.getComments());
-        visitEntity.setServiceType(visitDTO.getServiceType());
-        return visitEntity;
-    }
-
-    public static VisitData map(Visit visitEntity) {
-        VisitData visitDTO = new VisitData();
+    public static reportVisitData map(Visit visitEntity) {
+        reportVisitData visitDTO = new reportVisitData();
         visitDTO.setScheduled(visitEntity.getScheduled());
         visitDTO.setStartDatetime(visitEntity.getStartDatetime());
         visitDTO.setStatus(visitEntity.getStatus());
@@ -100,8 +80,14 @@ public class VisitData {
         visitDTO.setPaymentMethod(visitEntity.getPaymentMethod());
         visitDTO.setComments(visitEntity.getComments());
         visitDTO.setStartDate(visitEntity.getStartDatetime());
-        visitDTO.setServiceType(visitEntity.getServiceType());
-        visitDTO.setTriageCategory(visitEntity.getTriageCategory());
+        visitDTO.setServiceType(visitEntity.getServiceType());        
+        visitDTO.setConsultation(Boolean.FALSE);
+        visitDTO.setLaboratory(Boolean.FALSE);
+        visitDTO.setRadiology(Boolean.FALSE);
+        visitDTO.setTriage(Boolean.FALSE);
+        visitDTO.setProcedure(Boolean.FALSE);
+        visitDTO.setOther(Boolean.FALSE);
+        
         if (visitEntity.getPatient() != null) {
             visitDTO.setPatientName(visitEntity.getPatient().getFullName());
             visitDTO.setPatientNumber(visitEntity.getPatient().getPatientNumber());

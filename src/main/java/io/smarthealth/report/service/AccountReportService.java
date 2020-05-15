@@ -247,7 +247,7 @@ public class AccountReportService {
         String identifier = reportParam.getFirst("identifier");
         String dateRange = reportParam.getFirst("dateRange");
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        AccountData data = accountService.findAccount("10-11-002")
+        AccountData data = accountService.findAccount(identifier)
                 .orElseThrow(() -> APIException.notFound("Account with identifier {0} not found", identifier));
         reportData.getFilters().put("accountNo", data.getIdentifier());
         reportData.getFilters().put("accountName", data.getName());
@@ -257,11 +257,11 @@ public class AccountReportService {
         reportData.getFilters().put("ledger", data.getLedger());
         reportData.getFilters().put("balance", data.getBalance());
         
-        List<JournalEntryItemData> list = accountService.getAccountTransaction("10-11-002", range);
+        List<JournalEntryItemData> list = accountService.getAccountTransaction(identifier, range);
 
         reportData.setData(list);
         reportData.setFormat(format);
-        reportData.setTemplate("/accounts/account_transaction_report");
+        reportData.setTemplate("/accounts/account_transactions_report");
         reportData.setReportName("Account-Transactionst");
         reportService.generateReport(reportData, response);
     }
