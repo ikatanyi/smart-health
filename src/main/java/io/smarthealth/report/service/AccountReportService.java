@@ -41,6 +41,8 @@ import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.debtor.claim.allocation.data.AllocationData;
+import io.smarthealth.debtor.claim.allocation.service.AllocationService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -99,6 +101,7 @@ public class AccountReportService {
     private final JournalService journalService;
     private final LedgerService ledgerService;
     private final RemittanceService remittanceService;
+    private final   AllocationService allocationService;
 
     public void getTrialBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
@@ -239,7 +242,7 @@ public class AccountReportService {
         Long payerId = NumberUtils.createLong(reportParam.getFirst("payerId"));
         Boolean hasBalance = reportParam.getFirst("hasBalance")!=null?Boolean.getBoolean(reportParam.getFirst("hasBalance")):null;
         String receipt = reportParam.getFirst("receipt");
-        String remittanceNo = reportParam.getFirst("invoiceNo");
+        String remittanceNo = reportParam.getFirst("remittanceNo");
         String dateRange = reportParam.getFirst("range");
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         
@@ -265,10 +268,50 @@ public class AccountReportService {
 
         reportData.setData(remittanceData);
         reportData.setFormat(format);
-        reportData.setTemplate("/accounts/remmittance_report");
+        reportData.setTemplate("/accounts/remittance_report");
         reportData.setReportName("Remittance_Statement");
         reportService.generateReport(reportData, response);
     }
+    
+    public void getAllocationReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        Long payerId = NumberUtils.createLong(reportParam.getFirst("payerId"));
+        Long schemeId = NumberUtils.createLong(reportParam.getFirst("schemeId"));
+        String receiptNo = reportParam.getFirst("receiptNo");
+        String invoiceNo = reportParam.getFirst("invoiceNo");
+        String remittanceNo = reportParam.getFirst("remittanceNo");
+        String dateRange = reportParam.getFirst("range");
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        
+        List<AllocationData> remittanceData = allocationService.getAllocations(invoiceNo, receiptNo, remittanceNo, payerId, schemeId, range, Pageable.unpaged()).getContent()
+                .stream()
+                .map(rem->(rem.map()))
+                .collect(Collectors.toList());
+
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("payer");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        
+        sortField = new JRDesignSortField();
+        sortField.setName("transactionDate");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+
+        reportData.setData(remittanceData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/allocation_trans_report");
+        reportData.setReportName("Allocation-Report");
+        reportService.generateReport(reportData, response);
+    }
+    
+    
+    
 
     public void getJournal(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();

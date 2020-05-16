@@ -98,9 +98,13 @@ public class InventoryItemService {
         inventoryItemRepository.save(balance);
     }
 
-    public Page<InventoryItemData> getInventoryItems(Long storeId, String item, Pageable page, boolean includeClosed) {
-        Store store = storeService.getStoreWithNoFoundDetection(storeId);
-
+    public Page<InventoryItemData> getInventoryItems(Long storeId, String item, Pageable page, Boolean includeClosed) {
+        Store store = null;
+        if(storeId!=null){
+            Optional<Store> stor = storeService.getStore(storeId);
+            if(stor.isPresent())
+                store = stor.get();
+        }
         Specification<InventoryItem> spec = InventoryItemSpecification.createSpecification(store, item, includeClosed);
         Page<InventoryItemData> inventoryItems = inventoryItemRepository.findAll(spec, page).map(itm -> itm.toData());
 

@@ -51,5 +51,9 @@ public enum ReportName {
         Supplier_Credit_Note,
         Purchase_Order,
         Account_Transactions,
-        Remittance_Report
+        Remittance_Report,
+        Allocation_Report,
+        Stock_Inventory,
+        Stock_Adjustment,
+        Referral_Form
 }

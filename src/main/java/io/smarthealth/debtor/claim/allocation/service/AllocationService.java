@@ -49,6 +49,7 @@ public class AllocationService {
             Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(data.getInvoiceNo());
             BigDecimal bal = invoice.getBalance().subtract(data.getAmount());
             InvoiceStatus status = bal.doubleValue() <= 0 ? InvoiceStatus.Paid : InvoiceStatus.Sent;
+            allocation.setBalance(bal);
             invoice.setBalance(bal);
             invoice.setStatus(status);
 

@@ -175,6 +175,18 @@ public class ReportController {
             case Remittance_Report:
                 reportService.getRemittanceReport(queryParams, format, response);
                 break;    
+            case Allocation_Report:
+                reportService.getAllocationReport(queryParams, format, response);
+                break;   
+            case Stock_Inventory:
+                stockReportService.getInventoryItems(queryParams, format, response);
+                break;
+            case Stock_Adjustment:
+                stockReportService.getInventoryAdjustedItems(queryParams, format, response);
+                break;
+            case Referral_Form:
+                patientReportService.getReferralForm(queryParams, format, response);
+                break;
             default:
                 break;
 

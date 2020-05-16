@@ -8,6 +8,7 @@ package io.smarthealth.debtor.claim.allocation.data;
 import io.smarthealth.debtor.claim.allocation.domain.*;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import lombok.Data;
 
 /**
@@ -33,7 +34,10 @@ public class AllocationData {
     private String transactionId;
     @ApiModelProperty(hidden = true)
     private String receiptNo;
-
+    @ApiModelProperty(hidden = true)
+    private LocalDate invoiceDate;
+    @ApiModelProperty(hidden = true)
+    private LocalDate transactionDate;
     
 
     public static Allocation map(AllocationData data) {

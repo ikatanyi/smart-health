@@ -17,6 +17,11 @@ import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
+import io.smarthealth.stock.inventory.data.InventoryItemData;
+import io.smarthealth.stock.inventory.data.StockAdjustmentData;
+import io.smarthealth.stock.inventory.service.InventoryAdjustmentService;
+import io.smarthealth.stock.inventory.service.InventoryItemService;
+import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
 import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;
@@ -56,11 +61,10 @@ import org.springframework.util.MultiValueMap;
 @RequiredArgsConstructor
 public class StockReportService {
     private final JasperReportsService reportService;
-    private final PatientService patientService;
-    private final RadiologyService scanService;
     
     private final SupplierService supplierService;
-    private final DoctorInvoiceService doctorInvoiceService;
+    private final InventoryItemService inventoryItemService;
+    private final InventoryAdjustmentService inventoryAdjustmentService;
     private final PurchaseInvoiceService purchaseInvoiceService;
     private final PurchaseService purchaseService;
     
@@ -122,6 +126,36 @@ public class StockReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/inventory/purchase_order");
         reportData.setReportName("Purchase-Order"+orderNo);
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getInventoryItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        Long storeId = NumberUtils.createLong(reportParam.getFirst("storeId"));
+        String item = reportParam.getFirst("item");
+        Boolean includeClosed = reportParam.getFirst("includeClosed")!=null?Boolean.getBoolean(reportParam.getFirst("includeClosed")):null;
+
+        List<InventoryItemData> inventoryItemData = inventoryItemService.getInventoryItems(storeId, item, Pageable.unpaged(), includeClosed).getContent();
+
+        reportData.setData(inventoryItemData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/inventory_statement");
+        reportData.setReportName("Inventory-Statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getInventoryAdjustedItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        Long storeId = NumberUtils.createLong(reportParam.getFirst("storeId"));
+        Long itemId = NumberUtils.createLong(reportParam.getFirst("itemId"));
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
+
+        List<StockAdjustmentData> inventoryItemData = inventoryAdjustmentService.getStockAdjustments(storeId, itemId, range, Pageable.unpaged()).getContent();
+
+        reportData.setData(inventoryItemData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/stock_adjustment_statement");
+        reportData.setReportName("Stock-Adjustment-Statement");
         reportService.generateReport(reportData, response);
     }
     

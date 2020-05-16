@@ -14,6 +14,21 @@
 	<parameter name="hospitalId" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="orgLegalName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="TaxNumber" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressCountry" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressCounty" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressLine1" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressLine2" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgPostalCode" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgTown" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgType" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactEmail" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactFullName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactMobile" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="salutation" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="telephone" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="Header_Data" class="java.util.List"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
@@ -22,25 +37,30 @@
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="Footer_Data" class="java.util.List" isForPrompting="false"/>
-	<parameter name="range" class="java.lang.Object"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="payerId" class="java.lang.Long">
+	<field name="patientNumber" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
+	<field name="patientName" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="scheme" class="java.lang.String"/>
 	<field name="payer" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="description" class="java.lang.String"/>
-	<field name="balance" class="java.math.BigDecimal"/>
 	<field name="amount" class="java.math.BigDecimal"/>
-	<field name="paymentMethod" class="java.lang.String"/>
-	<field name="referenceNumber" class="java.lang.String"/>
-	<field name="remittanceDate" class="java.lang.Object"/>
-	<field name="receiptNo" class="java.lang.String"/>
-	<field name="transactionNo" class="java.lang.String"/>
-	<field name="currency" class="java.lang.String"/>
+	<field name="balance" class="java.math.BigDecimal"/>
+	<field name="invoiceItems" class="java.util.Collection"/>
+	<field name="terms" class="java.lang.String"/>
+	<field name="number" class="java.lang.String"/>
+	<field name="dueDate" class="java.lang.Object"/>
+	<field name="memberNumber" class="java.lang.String"/>
+	<field name="memberName" class="java.lang.String"/>
+	<field name="tax" class="java.math.BigDecimal"/>
+	<field name="discount" class="java.math.BigDecimal"/>
+	<field name="visitDate" class="java.lang.Object"/>
 	<variable name="balance_1" class="java.lang.Double" resetType="Group" resetGroup="payer" calculation="Sum">
 		<variableExpression><![CDATA[$F{balance}]]></variableExpression>
 	</variable>
@@ -114,18 +134,18 @@
 	<columnHeader>
 		<band height="90" splitType="Stretch">
 			<staticText>
-				<reportElement x="12" y="79" width="66" height="11" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
+				<reportElement x="12" y="79" width="38" height="11" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Remittance Date]]></text>
+				<text><![CDATA[Date]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="29" width="227" height="20" uuid="2128f471-bc78-4bea-b26b-955f270cde40"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Remittance between The given Dates]]></text>
+				<text><![CDATA[Statement between The given Dates]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="52" width="50" height="13" uuid="6ae293a2-064a-4450-a97d-aa5796c28340"/>
@@ -135,47 +155,55 @@
 				<text><![CDATA[DateRange :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="78" y="79" width="50" height="11" uuid="e13a8d32-7e95-48f9-ad19-5457db79778c"/>
+				<reportElement x="58" y="79" width="94" height="11" uuid="e13a8d32-7e95-48f9-ad19-5457db79778c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[ReceiptNo]]></text>
+				<text><![CDATA[MemberName]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Transparent" x="423" y="79" width="34" height="11" uuid="60d06f24-e225-44e6-89f1-960d465d5bca"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Amount]]></text>
+				<text><![CDATA[Total]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="229" y="79" width="74" height="11" uuid="db90166d-3d72-4d13-8d8d-8e4ac04c3234"/>
+				<reportElement x="210" y="79" width="41" height="11" uuid="db90166d-3d72-4d13-8d8d-8e4ac04c3234"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Payment Method]]></text>
+				<text><![CDATA[Invoice No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="346" y="79" width="63" height="11" uuid="45378037-4a5e-4a8f-83bf-08e4726571f1"/>
+				<reportElement x="260" y="79" width="50" height="11" uuid="c0417d05-52d4-4bcc-85a0-b525f642236e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<text><![CDATA[TransactionNo.]]></text>
+				<text><![CDATA[Due Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="317" y="79" width="106" height="11" uuid="45378037-4a5e-4a8f-83bf-08e4726571f1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Scheme]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="0" width="125" height="20" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Remittance Statement]]></text>
+				<text><![CDATA[Insurance Statement]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="129" y="79" width="99" height="11" uuid="46d751bb-1a89-425f-8acc-de69bd7a8fe8"/>
+				<reportElement x="154" y="79" width="53" height="11" uuid="46d751bb-1a89-425f-8acc-de69bd7a8fe8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Description]]></text>
+				<text><![CDATA[MemberNo.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="467" y="79" width="48" height="11" uuid="34cbca87-f125-4a92-8a34-6b9c190fe78b"/>
@@ -197,23 +225,16 @@
 				</textElement>
 				<text><![CDATA[#]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="50" y="52" width="117" height="13" uuid="1a5c0348-9955-4604-bcba-c0e29ad653b4"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""+$P{range}]]></textFieldExpression>
-			</textField>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="13" splitType="Stretch">
 			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
-				<reportElement x="12" y="0" width="66" height="12" uuid="d2539c45-a4e2-42f0-8ef4-fee0acdab46b"/>
+				<reportElement x="12" y="0" width="43" height="12" uuid="d2539c45-a4e2-42f0-8ef4-fee0acdab46b"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{remittanceDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="12" height="12" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
@@ -223,11 +244,11 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="79" y="0" width="47" height="12" uuid="c67db78c-e18a-4e91-90d2-5b3d73d213f7"/>
+				<reportElement x="58" y="0" width="94" height="12" uuid="c67db78c-e18a-4e91-90d2-5b3d73d213f7"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{receiptNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{memberName}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="3" y="12" width="512" height="1" forecolor="#9999FF" uuid="0857bc25-5cba-42f9-920c-2039555116dd"/>
@@ -244,26 +265,33 @@
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="346" y="0" width="63" height="12" uuid="ba34e96a-5356-4fa7-afa2-9dfe7fd7a67b"/>
+				<reportElement x="318" y="0" width="105" height="12" uuid="ba34e96a-5356-4fa7-afa2-9dfe7fd7a67b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{transactionNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{scheme}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="230" y="0" width="73" height="12" uuid="2d6e050e-2ef4-4dad-92ed-d48c91ec8afb"/>
+				<reportElement x="210" y="0" width="41" height="12" uuid="2d6e050e-2ef4-4dad-92ed-d48c91ec8afb"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{paymentMethod}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{number}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="129" y="0" width="99" height="12" uuid="92a92b20-7cc8-473e-9f22-80b3e4191c90"/>
+				<reportElement x="152" y="0" width="55" height="12" uuid="92a92b20-7cc8-473e-9f22-80b3e4191c90"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{memberNumber}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="261" y="0" width="49" height="12" uuid="35da206c-f13d-4615-a010-9a56d1158120"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""+$F{dueDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="467" y="0" width="48" height="12" uuid="f303dd24-3e1c-4f78-9075-371e9a7e4728"/>
