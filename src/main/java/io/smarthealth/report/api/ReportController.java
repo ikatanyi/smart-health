@@ -136,6 +136,7 @@ public class ReportController {
                 break; 
             case Balance_Sheet:
                 reportService.getBalanceSheet(format, response);
+                break;
             case Income_Statement:
                 reportService.getIncomeStatement(format, response);
                 break;
