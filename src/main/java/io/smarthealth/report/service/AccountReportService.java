@@ -238,7 +238,6 @@ public class AccountReportService {
     
     public void getRemittanceReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        String transactionNo = reportParam.getFirst("transactionNo");
         Long payerId = NumberUtils.createLong(reportParam.getFirst("payerId"));
         Boolean hasBalance = reportParam.getFirst("hasBalance")!=null?Boolean.getBoolean(reportParam.getFirst("hasBalance")):null;
         String receipt = reportParam.getFirst("receipt");
@@ -328,7 +327,7 @@ public class AccountReportService {
     public void getAccTransactions(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String identifier = reportParam.getFirst("identifier");
-        String dateRange = reportParam.getFirst("dateRange");
+        String dateRange = reportParam.getFirst("range");
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         AccountData data = accountService.findAccount(identifier)
                 .orElseThrow(() -> APIException.notFound("Account with identifier {0} not found", identifier));

@@ -81,7 +81,7 @@ public class PaymentReportService {
     public void getPettyCashRequests(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
         String requestNo = reportParam.getFirst("requestNo");
         String staffNumber = reportParam.getFirst("staffNumber"); 
-        String dateRange = reportParam.getFirst("dateRange"); 
+        String dateRange = reportParam.getFirst("range"); 
         PettyCashStatus status = PettyCashStatusToEnum(reportParam.getFirst("status"));       
         Employee employee =null;
         ReportData reportData = new ReportData();
