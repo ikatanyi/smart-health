@@ -6,6 +6,7 @@
 package io.smarthealth.organization.person.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.smarthealth.organization.person.domain.Portrait;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -23,4 +24,11 @@ public class PortraitData {
     private String contentType;
     private String imageUrl;
     private String imageName;
+
+    public PortraitData map(Portrait p) {
+        PortraitData data = new PortraitData();
+        data.setImageName(p.getImageName());
+        data.setImageUrl(p.getImageUrl());
+        return data;
+    }
 }
