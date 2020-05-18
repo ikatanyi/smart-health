@@ -17,12 +17,14 @@ import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.PatientTestsData;
 import io.smarthealth.clinical.record.data.PrescriptionData;
+import io.smarthealth.clinical.record.data.ReferralData;
 import io.smarthealth.clinical.record.data.SickOffNoteData;
 import io.smarthealth.clinical.record.domain.PatientNotes;
 import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.DoctorRequestService;
 import io.smarthealth.clinical.record.service.PatientNotesService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
+import io.smarthealth.clinical.record.service.ReferralsService;
 import io.smarthealth.clinical.record.service.SickOffNoteService;
 import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -83,6 +85,7 @@ public class PatientReportService {
     private final SickOffNoteService sickOffNoteService;
     private final PrescriptionService prescriptionService;
     private final EmployeeService employeeService;
+    private final ReferralsService referralService;
 
     private final VisitService visitService;
 
@@ -232,6 +235,25 @@ public class PatientReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/patient/request_form");
         reportData.setReportName(requestType + "_request_form");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getReferralForm(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String visitNumber = reportParam.getFirst("visitNumber");
+        Visit visit = visitService.findVisitEntityOrThrow("O000037");
+        ReferralData referralData = ReferralData.map(referralService.fetchReferalByVisitOrThrowIfNotFound(visit));
+                
+
+        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        if (visit.getHealthProvider() != null) {
+            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
+
+        }
+        reportData.setData(Arrays.asList(referralData));
+        reportData.setFormat(format);
+        reportData.setTemplate("/patient/referral_form");
+        reportData.setReportName("Referral_Form");
         reportService.generateReport(reportData, response);
     }
 

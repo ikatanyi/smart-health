@@ -16,13 +16,13 @@ public class InventoryItemSpecification {
         super();
     }
 
-    public static Specification<InventoryItem> createSpecification(Store store, String item,boolean includeClosed) {
+    public static Specification<InventoryItem> createSpecification(Store store, String item,Boolean includeClosed) {
         
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
  
-             if (!includeClosed) {
-                predicates.add(cb.equal(root.get("item").get("active"), true));
+             if (includeClosed!=null) {
+                predicates.add(cb.equal(root.get("item").get("active"), includeClosed));
             }
              
             if (item != null) {
