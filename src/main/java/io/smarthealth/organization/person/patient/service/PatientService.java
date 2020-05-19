@@ -65,6 +65,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -178,7 +179,6 @@ public class PatientService {
             GlobalConfiguration config = globalConfigurationRepository.findByName("PatientPortrait").orElseThrow(() -> APIException.notFound("Patient files folder {0} not set", "PatientPortrait"));
             patientImageDirRoot = new File(config.getValue());
             System.out.println("-------------Deleting patient portrait--------------");
-            System.out.println("portrait.getImageName() " + portrait.get().getImageName());
             File file = new File(patientImageDirRoot, portrait.get().getImageName());
             if (file.exists()) {
                 if (file.delete()) {
@@ -206,21 +206,17 @@ public class PatientService {
         try (
                 InputStream in = file.getInputStream();
                 OutputStream out = new FileOutputStream(fileForPatient)) {
-            // FileCopyUtils.copy(in, out);
             Portrait portrait = new Portrait();
             portrait.setContentType(file.getContentType());
             //portrait.setImage(file.getBytes());
             portrait.setSize(file.getSize());
             portrait.setPerson(patient);
             portrait.setImageUrl(config.getValue());
-//          portrait.setImageName(file.getOriginalFilename());
             String extension = FilenameUtils.getExtension(file.getOriginalFilename());
             String imageName = patient.getPatientNumber().concat(".").concat(extension);
             portrait.setImageName(imageName);
             //delete if any existing
             deletePortrait(patient.getPatientNumber());
-            System.out.println("file.getName() " + file.getName());
-            //String fileName = uploadService.storeFile(file, config.getValue());
             File fileToSave = new File(config.getValue().concat(imageName));
             Files.copy(in, fileToSave.toPath());
 
@@ -461,6 +457,11 @@ public class PatientService {
                 data.setImageName(portrait.get().getImageName());
                 data.setImageUrl(portrait.get().getImageUrl());
                 patientData.setPortraitData(data);
+
+                File imgFile = new File(portrait.get().getImageUrl().concat(portrait.get().getImageName()));
+                byte[] bytes = Files.readAllBytes(imgFile.toPath());
+
+                data.setImage(bytes);
             }
 
             patientData.setFullName((patient.getGivenName() != null ? patient.getGivenName() : "") + " " + (patient.getMiddleName() != null ? patient.getMiddleName() : "").concat(" ").concat(patient.getSurname() != null ? patient.getSurname() : " "));

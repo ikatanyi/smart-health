@@ -10,7 +10,7 @@ package io.smarthealth.clinical.radiology.domain.enumeration;
  * @author Kennedy.Imbenzi
  */
 public enum Gender {
-    MALE,
-    FEMALE,
-    BOTH
+    Male,
+    Female,
+    Both
 }
