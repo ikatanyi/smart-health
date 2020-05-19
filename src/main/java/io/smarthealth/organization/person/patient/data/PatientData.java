@@ -2,6 +2,7 @@ package io.smarthealth.organization.person.patient.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.organization.person.data.PersonData;
+import io.smarthealth.organization.person.data.PortraitData;
 import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
@@ -35,6 +36,5 @@ public final class PatientData extends PersonData {
     private Integer age;
     private List<PatientIdentifierData> identifiers;
     private String visitType;
-    
-
+    private PortraitData portraitData;
 }

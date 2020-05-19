@@ -188,6 +188,11 @@ public class ClinicalVisitController {
         patientQueueService.createPatientQueue(patientQueue);
         //create bill if consultation
         if (visit.getServiceType().equals(VisitEnum.ServiceType.Consultation)) {
+            ServicePoint sp = servicePointService.getServicePointByType(ServicePointType.Consultation);
+            if (sp == null) {
+                throw APIException.notFound("Consultation service point not found", "");
+            }
+            
             if (visit.getServicePoint().getServicePointType().equals(ServicePointType.Consultation)) {
                 visit.setIsActiveOnConsultation(Boolean.TRUE);
             } else {
@@ -222,8 +227,8 @@ public class ClinicalVisitController {
                 itemData.setMedicName(employee.getFullName());
             }
             itemData.setQuantity(1.0);
-            itemData.setServicePoint(visit.getServicePoint().getName());
-            itemData.setServicePointId(visit.getServicePoint().getId());
+            itemData.setServicePoint(sp.getName());
+            itemData.setServicePointId(sp.getId());
             billItems.add(itemData);
 
             BillData data = new BillData();
@@ -483,11 +488,11 @@ public class ClinicalVisitController {
 
         patientQueue.setPatient(patient);
         patientQueue.setVisit(activeVisit);
-        
+
         if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
             activeVisit.setIsActiveOnConsultation(Boolean.TRUE);
         }
-        
+
         if (vital.getSendTo().equals("specialist")) {
             Employee newDoctorSelected = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());
             Optional<DoctorItem> newChargeableDoctorItem = doctorInvoiceService.getDoctorItem(newDoctorSelected, activeVisit.getClinic().getServiceType());

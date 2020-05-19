@@ -37,7 +37,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .authorizeRequests() 
                  .antMatchers("/tenants").permitAll()   
                 .antMatchers(HttpMethod.OPTIONS, "/api/**","/company/**").permitAll()
-                .antMatchers("/api/user/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE").and()
+                //.antMatchers("/api/user/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE").and()
+                .and()
                 .antMatcher("/api/**").authorizeRequests()
                 .antMatchers(HttpMethod.GET, /*"/api/users",*/ "/v2/api-docs/**", "/swagger-ui.html*", "/company/logo*").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/auth/signup").permitAll() /* This end-point should be dedicated to a scenario where this sytem is provided as a service. Different companies(hospitals) can signup and create their account*/
