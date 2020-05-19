@@ -59,8 +59,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Api
 public class PatientController {
 
-    @Value("${upload.image.max-size:524288}")
-    Long maxSize;
     @Autowired
     private PatientService patientService;
     @Autowired
@@ -77,14 +75,13 @@ public class PatientController {
 
     @PostMapping("/patients")
     public @ResponseBody
-    ResponseEntity<?> createPatient(@RequestBody @Valid final PatientData patientData) {
+    ResponseEntity<?> createPatient(@RequestPart PatientData patientData, @RequestPart("file") MultipartFile file) {
         LocalDate dateOfBirth = LocalDate.now().minusYears(Long.valueOf(patientData.getAge()));
         patientData.setDateOfBirth(dateOfBirth);
 
-        Patient patient = this.patientService.createPatient(patientData);
+        Patient patient = this.patientService.createPatient(patientData, file);
 
         PatientData savedpatientData = patientService.convertToPatientData(patient);
-
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
 
@@ -228,19 +225,11 @@ public class PatientController {
     @PostMapping("/patients/{id}/image")
     @ApiOperation(value = "Update a patient's image details", response = Portrait.class)
     public @ResponseBody
-    ResponseEntity<PortraitData> postPatientImage(@PathVariable("id") final String patientNumber,
-            @RequestParam final MultipartFile image) {
-        if (image == null) {
-            throw APIException.badRequest("Image not found");
-        }
-
+    ResponseEntity<PortraitData> postPatientImage(@PathVariable("id") final String patientNumber, @RequestParam final MultipartFile image) {
         Patient patient = patientService.findPatientOrThrow(patientNumber);
-        this.throwIfInvalidSize(image.getSize());
-        this.throwIfInvalidContentType(image.getContentType());
 
         try {
-            //delete if any existing
-            this.patientService.deletePortrait(patientNumber);
+
             Portrait portrait = this.patientService.createPortrait(patient, image);
             URI location = fromCurrentRequest().buildAndExpand(portrait.getId()).toUri();
             PortraitData data = modelMapper.map(portrait, PortraitData.class);
@@ -329,20 +318,6 @@ public class PatientController {
             data.add(atd);
         });
         return new ResponseEntity<>(data, HttpStatus.OK);
-    }
-
-    private void throwIfInvalidSize(final Long size) {
-
-        if (size > maxSize) {
-            throw APIException.badRequest("Image can''t exceed size of {0}", maxSize);
-        }
-    }
-
-    private void throwIfInvalidContentType(final String contentType) {
-        if (!contentType.contains(MediaType.IMAGE_JPEG_VALUE)
-                && !contentType.contains(MediaType.IMAGE_PNG_VALUE)) {
-            throw APIException.badRequest("Only content type {0} and {1} allowed", MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE);
-        }
     }
 
     //PDF Reports

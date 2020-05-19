@@ -160,7 +160,6 @@ public class ClinicalVisitController {
         //register payment details 
         Scheme scheme = null;
         if (visitData.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
-            System.out.println("Payment method is insurance ");
             scheme = schemeService.fetchSchemeById(visitData.getPayment().getSchemeId());
             Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
             PaymentDetails pd = PaymentDetailsData.map(visitData.getPayment());
@@ -179,44 +178,6 @@ public class ClinicalVisitController {
                 billingService.createCopay(new CopayData(visit.getVisitNumber(), visitData.getPayment().getSchemeId()));
             }
 
-//            if (config.isPresent()) {
-//                System.out.println("Config data found");
-//                if (config.get().getCoPayType().equals(CoPayType.Fixed)) {
-//                    System.out.println("Copay type is fixed");
-//                    Pageable firstPageWithOneElement = PageRequest.of(0, 1);
-//
-//                    //find item where item category is copay
-//                    Page<Item> item = itemService.findByItemsByCategory(ItemCategory.CoPay, firstPageWithOneElement);
-//                    if (item.getContent().size() < 1) {
-//                        throw APIException.notFound("Copay service item has not been set", "CoPay");
-//                    }
-//                    List<BillItemData> billItems = new ArrayList<>();
-//                    BillItemData itemData = new BillItemData();
-//                    itemData.setAmount(config.get().getCoPayValue());
-//                    itemData.setBalance(config.get().getCoPayValue());
-//                    itemData.setBillingDate(LocalDate.now());
-//                    itemData.setItem(item.getContent().get(0).getItemName());
-//                    itemData.setItemCode(item.getContent().get(0).getItemCode());
-//
-//                    itemData.setQuantity(1.0);
-//                    itemData.setServicePoint(visit.getServicePoint().getName());
-//                    itemData.setServicePointId(visit.getServicePoint().getId());
-//                    billItems.add(itemData);
-//
-//                    BillData data = new BillData();
-//                    data.setWalkinFlag(false);
-//                    data.setBillItems(billItems);
-//                    data.setAmount(config.get().getCoPayValue());
-//                    data.setBalance(config.get().getCoPayValue());
-//                    data.setBillingDate(LocalDate.now());
-//                    data.setDiscount(0.00);
-//                    data.setPatientName(patient.getFullName());
-//                    data.setPatientNumber(patient.getPatientNumber());
-//                    data.setPaymentMode(visit.getPaymentMethod().name());
-//                    data.setVisitNumber(visit.getVisitNumber()); 
-//                    billingService.createPatientBill(data); 
-//                }
-//            }
         }
         //Push it to queue
         PatientQueue patientQueue = new PatientQueue();
@@ -227,6 +188,16 @@ public class ClinicalVisitController {
         patientQueueService.createPatientQueue(patientQueue);
         //create bill if consultation
         if (visit.getServiceType().equals(VisitEnum.ServiceType.Consultation)) {
+            ServicePoint sp = servicePointService.getServicePointByType(ServicePointType.Consultation);
+            if (sp == null) {
+                throw APIException.notFound("Consultation service point not found", "");
+            }
+            
+            if (visit.getServicePoint().getServicePointType().equals(ServicePointType.Consultation)) {
+                visit.setIsActiveOnConsultation(Boolean.TRUE);
+            } else {
+                visit.setIsActiveOnConsultation(Boolean.FALSE);
+            }
             DoctorClinicItems clinic = clinicService.fetchClinicById(visitData.getItemToBill());
             visit.setClinic(clinic);
             //PriceList pricelist = pricelistService.fetchPriceListByItemAndPriceBook(clinic.getServiceType(), null);
@@ -256,8 +227,8 @@ public class ClinicalVisitController {
                 itemData.setMedicName(employee.getFullName());
             }
             itemData.setQuantity(1.0);
-            itemData.setServicePoint(visit.getServicePoint().getName());
-            itemData.setServicePointId(visit.getServicePoint().getId());
+            itemData.setServicePoint(sp.getName());
+            itemData.setServicePointId(sp.getId());
             billItems.add(itemData);
 
             BillData data = new BillData();
@@ -333,6 +304,27 @@ public class ClinicalVisitController {
         return ResponseEntity.status(HttpStatus.OK).body(visitDat);
     }
 
+    @PutMapping("/visits/{visitNumber}/consultation-status/{status}")
+    @ApiOperation(value = "Update patient visit consultation status", response = VisitData.class)
+    public @ResponseBody
+    ResponseEntity<?> updateConsultationStatus(
+            @PathVariable("visitNumber") final String visitNumber,
+            @PathVariable("status") final Boolean status) {
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+
+        visit.setIsActiveOnConsultation(status);
+        visit = this.visitService.createAVisit(visit);
+        //Convert to data
+        VisitData visitDat = VisitData.map(visit);
+
+        Pager<VisitData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Update Successful");
+        pagers.setContent(visitDat);
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
     @GetMapping("/visits")
     public ResponseEntity<List<VisitData>> fetchAllVisits(
             @RequestParam(value = "visitNumber", required = false)
@@ -349,10 +341,12 @@ public class ClinicalVisitController {
             final boolean runningStatus,
             @RequestParam(value = "dateRange", required = false)
             final String dateRange,
+            @RequestParam(value = "isActiveOnConsultation", required = false)
+            final Boolean isActiveOnConsultation,
             Pageable pageable
     ) {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, pageable).map(v -> convertToVisitData(v));
+        Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, pageable).map(v -> convertToVisitData(v));
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 
@@ -484,17 +478,21 @@ public class ClinicalVisitController {
             @Valid
             final VitalRecordData vital
     ) {
-        System.out.println("patientNo ");
-        System.out.println("patientNo " + patientNo);
+
         Patient patient = patientService.findPatientOrThrow(patientNo);
 
         VitalsRecord vitalR = this.triageService.addVitalRecordsByPatient(patient, vital);
         Visit activeVisit = vitalR.getVisit();
         //log queue
-        PatientQueue patientQueue = new PatientQueue(); //patientQueueService.fetchQueueByVisitNumber(vitalR.getVisit());
-        //patientQueue.setUrgency(TriageCategory.valueOf(vital.getUrgency()));
+        PatientQueue patientQueue = new PatientQueue();
+
         patientQueue.setPatient(patient);
         patientQueue.setVisit(activeVisit);
+
+        if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
+            activeVisit.setIsActiveOnConsultation(Boolean.TRUE);
+        }
+
         if (vital.getSendTo().equals("specialist")) {
             Employee newDoctorSelected = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());
             Optional<DoctorItem> newChargeableDoctorItem = doctorInvoiceService.getDoctorItem(newDoctorSelected, activeVisit.getClinic().getServiceType());

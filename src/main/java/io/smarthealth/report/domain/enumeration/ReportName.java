@@ -39,16 +39,21 @@ public enum ReportName {
         Chart_Of_Account,
         Balance_Sheet,
         Income_Statement,
-        Petty_Cash_form,
+        Petty_Cash_Form,
         Petty_Cash_statement,
         
         Payment_Voucher,
 //        Payment_Statement,
-        Legder_report,
+        Ledger_Report,
 //        Ledger_statement,
-        Journal_report,
+        Journal_Report,
         Payer_Credit_Note,
         Supplier_Credit_Note,
         Purchase_Order,
-        Account_Transactions
+        Account_Transactions,
+        Remittance_Report,
+        Allocation_Report,
+        Stock_Inventory,
+        Stock_Adjustment,
+        Referral_Form
 }

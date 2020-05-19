@@ -136,10 +136,11 @@ public class ReportController {
                 break; 
             case Balance_Sheet:
                 reportService.getBalanceSheet(format, response);
+                break;
             case Income_Statement:
                 reportService.getIncomeStatement(format, response);
                 break;
-            case Petty_Cash_form:
+            case Petty_Cash_Form:
                 paymentReportService.getPettyCash(queryParams, format, response);
                 break;
             case Petty_Cash_statement:
@@ -151,13 +152,13 @@ public class ReportController {
 //            case Payment_Statement:
 //                paymentReportService.getPaymentStatement(queryParams, format, response);
 //                break;
-            case Legder_report:
+            case Ledger_Report:
                 reportService.getLedger(queryParams, format, response);
                 break;
 //            case Ledger_statement:
 //                reportService.getLedgers(queryParams, format, response);
 //                break;
-            case Journal_report:
+            case Journal_Report:
                 reportService.getJournal(queryParams, format, response);
                 break;
             case Payer_Credit_Note:
@@ -171,7 +172,22 @@ public class ReportController {
                 break;    
              case Account_Transactions:
                 reportService.getAccTransactions(queryParams, format, response);
+                break;
+            case Remittance_Report:
+                reportService.getRemittanceReport(queryParams, format, response);
                 break;    
+            case Allocation_Report:
+                reportService.getAllocationReport(queryParams, format, response);
+                break;   
+            case Stock_Inventory:
+                stockReportService.getInventoryItems(queryParams, format, response);
+                break;
+            case Stock_Adjustment:
+                stockReportService.getInventoryAdjustedItems(queryParams, format, response);
+                break;
+            case Referral_Form:
+                patientReportService.getReferralForm(queryParams, format, response);
+                break;
             default:
                 break;
 

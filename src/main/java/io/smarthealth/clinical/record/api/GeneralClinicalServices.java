@@ -181,6 +181,7 @@ public class GeneralClinicalServices {
                 data.setPatientNumber(patient.getPatientNumber());
                 data.setPaymentMode(visit.getPaymentMethod().name());
                 data.setVisitNumber(visit.getVisitNumber());
+                data.setWalkinFlag(Boolean.FALSE);
                 billingService.createPatientBill(data);
             }
         }

@@ -60,7 +60,7 @@ public class VisitService {
         return visits;
     }
 
-    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Pageable pageable) {
+    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Boolean isActiveOnConsultation, final Pageable pageable) {
         Employee employee = null;
         ServicePoint servicePoint = null;
         Patient patient = null;
@@ -74,7 +74,7 @@ public class VisitService {
             patient = findPatientOrThrow(patientNumber);
         }
 
-        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visitNumber, employee, servicePoint, patient, patientName, runningStatus, range);
+        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visitNumber, employee, servicePoint, patient, patientName, runningStatus, range, isActiveOnConsultation);
         Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
         return visits;
     }
