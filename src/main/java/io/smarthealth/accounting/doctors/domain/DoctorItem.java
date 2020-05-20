@@ -40,6 +40,7 @@ public class DoctorItem extends Auditable {
     public DoctorItemData toData() {
         DoctorItemData data = new DoctorItemData();
         data.setId(this.getId());
+        data.setCommisionValue(this.getAmount());
         if (this.doctor != null) {
             data.setDoctorId(this.doctor.getId());
             data.setDoctorName(this.doctor.getFullName());

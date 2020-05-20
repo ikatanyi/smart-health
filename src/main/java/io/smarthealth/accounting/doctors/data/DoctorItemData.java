@@ -21,5 +21,6 @@ public class DoctorItemData {
     private BigDecimal amount;
     private Boolean isPercentage;
     private Boolean active;
+    private BigDecimal  commisionValue;
 
 }

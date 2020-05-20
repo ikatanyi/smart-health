@@ -103,9 +103,9 @@ public class EmployeeService {
             savedEmployee.setLoginAccount(userSaved);
 
             employeeRepository.save(savedEmployee);
-
+//.concat(" / ").concat(" ").concat(user.getUsername()
             //send welcome message to the new system user
-            notificationService.sendEmailNotification(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + savedContact.getEmail() + "<br/> password : " + password)));
+            notificationService.sendEmailNotification(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + userSaved.getUsername() + "<br/> password : " + password)));
         }
         return savedEmployee;
     }

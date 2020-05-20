@@ -77,7 +77,7 @@ public class PatientController {
     @PostMapping("/patients")
     @PreAuthorize("hasAuthority('create_patients')")
     public @ResponseBody
-    ResponseEntity<?> createPatient(@RequestPart PatientData patientData, @RequestPart("file") MultipartFile file) {
+    ResponseEntity<?> createPatient(@RequestPart PatientData patientData, @RequestPart(name = "file", required = false) MultipartFile file) {
         LocalDate dateOfBirth = LocalDate.now().minusYears(Long.valueOf(patientData.getAge()));
         patientData.setDateOfBirth(dateOfBirth);
 

@@ -20,7 +20,8 @@ public enum FinancialActivity {
     Bank_Charge("Bank Charges", AccountType.EXPENSE),
     Discount_Received("Discount Received", AccountType.REVENUE),
     Discount_Allowed("Discount Allowed", AccountType.EXPENSE),
-    Copayment("Copayment", AccountType.REVENUE);
+    Copayment("Copayment", AccountType.REVENUE),
+    Patient_Debt("Patient Debt", AccountType.ASSET);
 
     private final String activityName;
     private final AccountType accountType;
