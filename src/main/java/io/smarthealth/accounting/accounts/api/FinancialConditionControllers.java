@@ -4,6 +4,7 @@ import io.smarthealth.accounting.accounts.data.financial.statement.FinancialCond
 import io.smarthealth.accounting.accounts.service.FinancialConditionService;
 import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,6 +24,7 @@ public class FinancialConditionControllers {
 
     @GetMapping
     @ResponseBody
+    @PreAuthorize("hasAuthority('view_financialcondition')")  
     public ResponseEntity<FinancialCondition> getFinancialCondition() {
         return ResponseEntity.ok(this.financialConditionService.getFinancialCondition());
     }
