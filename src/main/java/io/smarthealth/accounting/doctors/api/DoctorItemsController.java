@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,7 @@ public class DoctorItemsController {
     }
 
     @PostMapping("/doctors-items")
+    @PreAuthorize("hasAuthority('create_doctorItems')") 
     public ResponseEntity<?> createDoctorItem(@Valid @RequestBody DoctorItemData data) {
 
         DoctorItem item = doctorService.createDoctorItem(data);
@@ -53,6 +55,7 @@ public class DoctorItemsController {
     }
 
     @PostMapping("/doctors-items/bulk")
+    @PreAuthorize("hasAuthority('create_doctorItems')") 
     public ResponseEntity<?> createDoctorItem(@Valid @RequestBody List<DoctorItemData> data) {
 
         List<DoctorItemData> item = doctorService.createDoctorItem(data)
@@ -69,24 +72,28 @@ public class DoctorItemsController {
     }
 
     @GetMapping("/doctors-items/{id}")
+    @PreAuthorize("hasAuthority('view_doctorItems')") 
     public ResponseEntity<?> getDoctorItem(@PathVariable(value = "id") Long id) {
         DoctorItem item = doctorService.getDoctorItem(id);
         return ResponseEntity.ok(item.toData());
     }
 
     @PutMapping("/doctors-items/{id}")
+    @PreAuthorize("hasAuthority('edit_doctorItems')") 
     public ResponseEntity<?> updateDoctorItem(@PathVariable(value = "id") Long id, @Valid @RequestBody DoctorItemData data) {
         DoctorItem item = doctorService.updateDoctorItem(id, data);
         return ResponseEntity.ok(item.toData());
     }
 
     @DeleteMapping("/doctors-items/{id}")
+    @PreAuthorize("hasAuthority('delete_doctorItems')") 
     public ResponseEntity<?> deleteDoctorItem(@PathVariable(value = "id") Long id) {
         doctorService.deleteDoctorItem(id);
         return ResponseEntity.accepted().build();
     }
 
     @GetMapping("/doctors-items")
+    @PreAuthorize("hasAuthority('view_doctorItems')") 
     public ResponseEntity<?> getDoctorItems(
             @RequestParam(value = "doctor", required = false) Long doctor,
             @RequestParam(value = "staffNo", required = false) String staffNo,

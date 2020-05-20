@@ -43,6 +43,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -84,6 +85,7 @@ public class ConsultationController {
 
     /* Patient Notes */
     @PostMapping("/patient-notes")
+    @PreAuthorize("hasAuthority('create_consultation')")
     public @ResponseBody
     ResponseEntity<?> savePatientNotes(Authentication authentication, @Valid @RequestBody PatientNotesData patientNotesData) {
         Visit visit = visitService.findVisitEntityOrThrow(patientNotesData.getVisitNumber());
@@ -117,6 +119,7 @@ public class ConsultationController {
     }
 
     @GetMapping("/visit/{visitNumber}/patient-notes")
+    @PreAuthorize("hasAuthority('view_consultation')")
     public @ResponseBody
     ResponseEntity<?> fetchPatientNotesByVisit(@PathVariable("visitNumber") final String visitNumber) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
@@ -130,6 +133,7 @@ public class ConsultationController {
     }
 
     @GetMapping("/patient/{patientNo}/patient-notes")
+    @PreAuthorize("hasAuthority('view_consultation')")
     public @ResponseBody
     ResponseEntity<?> fetchPatientNotesByPatient(@PathVariable("patientNo") final String patientNo, final Pageable pageable) {
         Patient patient = patientService.findPatientOrThrow(patientNo);
@@ -151,6 +155,7 @@ public class ConsultationController {
 
     /* Diagnosis End Points */
     @GetMapping("/disease")
+    @PreAuthorize("hasAuthority('view_consultation')")
     public ResponseEntity<?> fetchAllDiseases(
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page", required = false) Integer page,
@@ -179,6 +184,7 @@ public class ConsultationController {
     }
 
     @GetMapping("/visit/{visitNumber}/diagnosis")
+    @PreAuthorize("hasAuthority('view_consultation')")
     public ResponseEntity<?> fetchAllDiagnosisByVisit(
             @PathVariable("visitNumber") final String visitNumber,
             @RequestParam(value = "search", required = false) String search,
@@ -211,6 +217,7 @@ public class ConsultationController {
     }
 
     @PostMapping("/diagnosis")
+    @PreAuthorize("hasAuthority('create_consultation')")
     public @ResponseBody
     ResponseEntity<?> savePatientDiagnosis(@Valid @RequestBody List<DiagnosisData> diagnosisData) {
         List<PatientDiagnosis> patientDiagnosises = new ArrayList<>();
@@ -253,6 +260,7 @@ public class ConsultationController {
     }
 
     @GetMapping("/consultation-waiting-list")
+    @PreAuthorize("hasAuthority('view_consultation')")
     public ResponseEntity<?> consultationWaitingList(
             //@RequestParam(value = "requestParam", required = false) final String requestParam,
             Pageable pageable) {

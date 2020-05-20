@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +40,7 @@ public class RemittanceController {
     }
 
     @PostMapping("/remittance")
+    @PreAuthorize("hasAuthority('create_remittance')")
     public ResponseEntity<?> receivePayment(@Valid @RequestBody CreateRemittance data) {
 
         Remittance remittance = service.createRemittance(data);
@@ -52,6 +54,7 @@ public class RemittanceController {
     }
 
     @GetMapping("/remittance/{id}")
+    @PreAuthorize("hasAuthority('view_remittance')")
     public RemittanceData getRemittance(@PathVariable(value = "id") Long id) {
         Remittance remitance = service.getRemittanceOrThrow(id);
         return remitance.toData();
@@ -59,6 +62,7 @@ public class RemittanceController {
 //Long payerId, String receipt, String remittanceNo, Boolean hasBalance, DateRange range, Pageable page
 
     @GetMapping("/remittance")
+    @PreAuthorize("hasAuthority('view_remittance')")
     public ResponseEntity<?> getRemittance(
             @RequestParam(value = "payerId", required = false) Long payerId,
             @RequestParam(value = "receipt", required = false) Long receipt,

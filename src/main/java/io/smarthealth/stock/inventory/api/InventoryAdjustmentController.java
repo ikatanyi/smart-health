@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,6 +34,7 @@ public class InventoryAdjustmentController {
     private final InventoryAdjustmentService service;
 
     @PostMapping("/inventory-adjustment")
+    @PreAuthorize("hasAuthority('create_inventoryadjustment')")
     public ResponseEntity<?> createStockAdjustment(@Valid @RequestBody AdjustmentData data) {
 
         String result = service.createStockAdjustment(data);
@@ -47,12 +49,14 @@ public class InventoryAdjustmentController {
     }
 
     @GetMapping("/inventory-adjustment/{id}")
+    @PreAuthorize("hasAuthority('view_inventoryadjustment')")
     public StockAdjustmentData searchStockAdjustment(@PathVariable(value = "id") Long id) {
         StockAdjustmentData stocks = service.getStockAdjustment(id).toData();
         return stocks;
     }
  
     @GetMapping("/inventory-adjustment")
+    @PreAuthorize("hasAuthority('view_inventoryadjustment')")
     public ResponseEntity<?> getStockAdjustment(
             @RequestParam(value = "store", required = false) final Long store,
             @RequestParam(value = "item", required = false) final Long item,

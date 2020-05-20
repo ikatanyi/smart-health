@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -39,18 +40,21 @@ public class CashierController {
     }
 
     @PostMapping("/cashiers")
+    @PreAuthorize("hasAuthority('create_cashiers')") 
     public ResponseEntity<?> createCashier(@Valid @RequestBody CashierData cashierData) {
         Cashier result = service.createCashier(cashierData);
         return ResponseEntity.status(HttpStatus.CREATED).body(result.toData());
     }
 
     @GetMapping("/cashiers/{id}")
+    @PreAuthorize("hasAuthority('view_cashiers')") 
     public ResponseEntity<?> getCashier(@PathVariable(value = "id") Long code) {
         Cashier result = service.getCashier(code);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(result.toData());
     }
 
     @PostMapping("/cashiers/{id}/shift")
+    @PreAuthorize("hasAuthority('create_cashiersShift')") 
     public ResponseEntity<?> shiftCommands(@PathVariable(value = "id") Long code, @RequestParam("status") ShiftCommand status) {
         Cashier result = service.getCashier(code);
         Shift shift;
@@ -63,6 +67,7 @@ public class CashierController {
     }
 
     @GetMapping("/cashiers/{id}/shift")
+    @PreAuthorize("hasAuthority('view_cashiersShift')") 
     public ResponseEntity<?> getCashierShift(@PathVariable(value = "id") Long code, @RequestParam(value = "status", required = false) ShiftStatus status) {
         Cashier result = service.getCashier(code);
         List<Shift> shifts = service.getShiftsByCashier(result, status);
@@ -74,6 +79,7 @@ public class CashierController {
     }
 
     @GetMapping("/cashiers/{id}/shift/{shiftNo}/status")
+    @PreAuthorize("hasAuthority('view_cashiersShift')") 
     public ResponseEntity<?> getCashierShiftStatus(@PathVariable(value = "id") Long code, @PathVariable(value = "shiftNo") String shiftNo) {
         Cashier cashier = service.getCashier(code);
         Shift shift = service.findByCashierAndShiftNo(cashier, shiftNo);
@@ -82,6 +88,7 @@ public class CashierController {
     }
 
     @PutMapping("/cashiers/{id}/shift/{shiftNo}/close")
+    @PreAuthorize("hasAuthority('edit_cashiersShift')") 
     public ResponseEntity<?> endCashierShift(@PathVariable(value = "id") Long code, @PathVariable(value = "shiftNo") String shiftNo) {
 
         //check if this shift exist
@@ -91,12 +98,14 @@ public class CashierController {
     }
 
     @PutMapping("/cashiers/{id}")
+    @PreAuthorize("hasAuthority('edit_cashiers')") 
     public ResponseEntity<?> updateCashier(@PathVariable(value = "id") Long id, Cashier data) {
         Cashier cashDrawer = service.updateCashier(id, data);
         return ResponseEntity.ok(cashDrawer);
     }
 
     @GetMapping("/cashiers")
+    @PreAuthorize("hasAuthority('view_cashiers')") 
     public ResponseEntity<?> getAllCashiers(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
@@ -122,6 +131,7 @@ public class CashierController {
     }
 
     @GetMapping("/cashiers/shifts")
+    @PreAuthorize("hasAuthority('view_cashiersShifts')") 
     public ResponseEntity<?> getAllCashierShifts(
             @RequestParam(value = "showBalance", required = false) Boolean showBalance,
             @RequestParam(value = "status", required = false) ShiftStatus status,

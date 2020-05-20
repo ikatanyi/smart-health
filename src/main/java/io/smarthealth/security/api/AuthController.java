@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.MultiValueMap;
@@ -62,6 +63,7 @@ public class AuthController {
     private final MailService mailSender;
 
     @PostMapping("/users")
+    @PreAuthorize("hasAuthority('create_users')")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserData data) {
         if (userRepository.existsByUsername(data.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
@@ -110,6 +112,7 @@ public class AuthController {
     }
 
     @GetMapping("/users")
+    @PreAuthorize("hasAuthority('view_users')")
     public ResponseEntity<?> getAllUsers(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
@@ -138,6 +141,7 @@ public class AuthController {
     }
 
     @PutMapping("/users/{username}")
+    @PreAuthorize("hasAuthority('edit_users')")
     public ResponseEntity<?> updateUserProfile(@PathVariable(value = "username") String username, @Valid @RequestBody final UserData data) {
         User user = userService.findUserByUsernameOrEmail(username)
                 .orElseThrow(() -> APIException.notFound("Username or email {0} not found.... ", username));
@@ -159,6 +163,7 @@ public class AuthController {
     }
 
     @GetMapping("/users/{username}")
+    @PreAuthorize("hasAuthority('view_users')")
     public ResponseEntity<?> getUserProfile(@PathVariable(value = "username") String username) {
 
         User user = userService.findUserByUsernameOrEmail(username)
@@ -170,6 +175,7 @@ public class AuthController {
     // Reset password 
     @ResponseBody
     @PostMapping("/user/resetPassword")
+    @PreAuthorize("hasAuthority('create_users')")
     public ResponseEntity<?> resetPassword(final HttpServletRequest request, @RequestParam("email") final String userEmail) {
         final User user = userService.findUserByEmail(userEmail)
                 .orElseThrow(() -> APIException.notFound("No user with email {0} Found", userEmail));
@@ -185,6 +191,7 @@ public class AuthController {
     }
 
     @GetMapping(value = "/users/changePassword")
+    @PreAuthorize("hasAuthority('view_users')")
     public ResponseEntity<?> showChangePasswordPage(@RequestParam("id") final long id, @RequestParam("token") final String token) {
         final String result = userService.validatePasswordResetToken(id, token);
         if (result != null) {
@@ -203,6 +210,7 @@ public class AuthController {
 
     // change user password
     @ResponseBody
+    @PreAuthorize("hasAuthority('create_users')")
     @RequestMapping(value = "/users/updatePassword", method = RequestMethod.POST)
     public ResponseEntity<?> changeUserPassword(Authentication authentication, @Valid PasswordData passwordDto) {
 

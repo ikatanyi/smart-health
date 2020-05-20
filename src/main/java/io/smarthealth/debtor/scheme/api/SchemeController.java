@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +45,7 @@ public class SchemeController {
     SchemeService schemeService;
 
     @PostMapping("/scheme")
+    @PreAuthorize("hasAuthority('create_scheme')")
     public ResponseEntity<?> createScheme(@Valid @RequestBody SchemeData scheme) {
         //validate Payer
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(scheme.getPayerId());
@@ -67,6 +69,7 @@ public class SchemeController {
     }
 
     @GetMapping("/scheme")
+    @PreAuthorize("hasAuthority('view_scheme')")
     public ResponseEntity<?> fetchAllSchemes(Pageable pageable) {
         Page<SchemeData> scheme = schemeService.fetchSchemes(pageable).map(p
                 -> {
@@ -94,6 +97,7 @@ public class SchemeController {
     }
 
     @GetMapping("/payer/{id}/scheme")
+    @PreAuthorize("hasAuthority('view_scheme')")
     public ResponseEntity<?> fetchAllSchemesByPayer(@PathVariable("id") Long id, Pageable pageable) {
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(id);
         Page<SchemeData> scheme = schemeService.fetchSchemesByPayer(payer, pageable).map(p -> {
@@ -122,6 +126,7 @@ public class SchemeController {
     }
 
     @GetMapping("/scheme/{id}")
+    @PreAuthorize("hasAuthority('view_scheme')")
     public ResponseEntity<?> fetchSchemeById(@PathVariable("id") final Long schemeId) {
         Scheme scheme = schemeService.fetchSchemeById(schemeId);
         SchemeData schemeData = SchemeData.map(scheme);
@@ -133,6 +138,7 @@ public class SchemeController {
     }
 
     @PostMapping("/scheme/{id}/scheme-configuration")
+    @PreAuthorize("hasAuthority('create_scheme')")
     public ResponseEntity<?> updateSchemeConfiguration(@PathVariable("id") final Long schemeId, @Valid @RequestBody SchemConfigData data) {
         Scheme scheme = schemeService.fetchSchemeById(schemeId);
         SchemeConfigurations configSaved = null;
@@ -165,6 +171,7 @@ public class SchemeController {
     }
 
     @GetMapping("/scheme/{id}/scheme-configuration")
+    @PreAuthorize("hasAuthority('view_scheme')")
     public ResponseEntity<?> fetchSchemeConfigurationByScheme(@PathVariable("id") final Long id) {
         //look for scheme config
         Scheme scheme = schemeService.fetchSchemeById(id);
@@ -187,6 +194,7 @@ public class SchemeController {
     }
 
     @GetMapping("/scheme-configuration/{id}")
+    @PreAuthorize("hasAuthority('view_scheme')")
     public ResponseEntity<?> fetchSchemeConfiguration(@PathVariable("id") final Long id) {
         //look for scheme config
         SchemeConfigurations schemeConfig = schemeService.fetchSchemeConfigById(id);

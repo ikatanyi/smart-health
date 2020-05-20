@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,6 +46,7 @@ public class ProcedureController {
     ModelMapper modelMapper;
 
     @PostMapping("/procedure")
+    @PreAuthorize("hasAuthority('create_procedure')")
     public @ResponseBody
     ResponseEntity<?> createTests(@RequestBody @Valid final List<ProcedureData> procedureData) {
         List<ProcedureData> radiologyTestList = radiologyService.createProcedureTest(procedureData)
@@ -64,6 +66,7 @@ public class ProcedureController {
     }
 
     @GetMapping("/procedure/{id}")
+    @PreAuthorize("hasAuthority('view_procedure')")
     public ResponseEntity<?> fetchProcedureTest(@PathVariable("id") final Long id) {
         ProcedureData radiologyTests = ProcedureData.map(radiologyService.getById(id));
         if (radiologyTests != null) {
@@ -74,6 +77,7 @@ public class ProcedureController {
     }
 
     @GetMapping("/procedure")
+    @PreAuthorize("hasAuthority('view_procedure')")
     public ResponseEntity<?> fetchAllProcedure(
        @RequestParam(value = "page", required = false) Integer page1,
        @RequestParam(value = "pageSize", required = false) Integer size

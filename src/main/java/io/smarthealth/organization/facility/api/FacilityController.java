@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -34,6 +35,7 @@ public class FacilityController {
     }
 
     @PostMapping("/organization/{orgId}/facility")
+    @PreAuthorize("hasAuthority('create_facility')")
     public @ResponseBody
     ResponseEntity<?> createFacility(@PathVariable(name = "orgId") String id, @RequestBody @Valid final FacilityData facilityData) throws IOException {
 
@@ -49,6 +51,7 @@ public class FacilityController {
     }
 
     @PutMapping("/facility/{id}")
+    @PreAuthorize("hasAuthority('edit_facility')")
     public @ResponseBody
     ResponseEntity<?> updateFacility(@PathVariable(name = "id") Long id, @RequestBody @Valid final FacilityData facilityData) {
 
@@ -66,12 +69,14 @@ public class FacilityController {
     }
 
     @GetMapping("/organization/{orgId}/facility/{code}")
+    @PreAuthorize("hasAuthority('view_facility')")
     public FacilityData getFacility(@PathVariable(value = "orgId") String orgId, @PathVariable(value = "code") Long code) {
         Facility facility = service.findFacility(orgId, code);
         return FacilityData.map(facility);
     }
 
     @GetMapping("/organization/{orgId}/facility")
+    @PreAuthorize("hasAuthority('view_facility')")
     public @ResponseBody
     ResponseEntity<?> getOrganizationFacility(@PathVariable(name = "orgId") String id) {
 

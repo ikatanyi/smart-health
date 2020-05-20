@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -26,6 +27,7 @@ public class OrganisationController {
     }
 
     @PostMapping("/organization")
+    @PreAuthorize("hasAuthority('create_organization')")
     public @ResponseBody
     ResponseEntity<?> createOrganization(@RequestBody @Valid final OrganisationData orgData) {
         OrganisationData result = service.createOrganization(orgData);
@@ -38,12 +40,14 @@ public class OrganisationController {
     }
 
     @GetMapping("/organization/{id}")
+    @PreAuthorize("hasAuthority('view_organization')")
     public OrganisationData getOrganization(@PathVariable(value = "id") String id) {
         Organisation org = service.getOrganization(id);
         return OrganisationData.map(org);
     }
 
     @GetMapping("/organization")
+    @PreAuthorize("hasAuthority('view_organization')")
     public OrganisationData getActiveOrganization() {
         Organisation org = service.getActiveOrganization();
 
@@ -51,6 +55,7 @@ public class OrganisationController {
     }
     
     @PutMapping("/organization/{id}")
+    @PreAuthorize("hasAuthority('edit_organization')")
     public OrganisationData OrganizationData(@PathVariable(value = "id") String id, OrganisationData data) {
         return service.updateOrganization(id, data);
     }

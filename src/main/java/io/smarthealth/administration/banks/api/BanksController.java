@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,6 +49,7 @@ public class BanksController {
 
      
     @PostMapping("/bank")
+    @PreAuthorize("hasAuthority('create_bank')")
     public ResponseEntity<?> createBank(@Valid @RequestBody BankData bankData) {
         if (bankService.fetchBankByName(bankData.getBankName()).isPresent()) {
             throw APIException.conflict("Bank with name {0} already exists.", bankData.getBankName());
@@ -76,6 +78,7 @@ public class BanksController {
     }
 
     @GetMapping("/bank")
+    @PreAuthorize("hasAuthority('view_bank')")
     public ResponseEntity<?> fetchAllBanks(Pageable pageable) {
 
         Page<Bank> result = bankService.fetchAllMainBanks(pageable);
@@ -118,6 +121,7 @@ public class BanksController {
     }
 
     @PostMapping("/bank/{bankId}/bank-branch")
+    @PreAuthorize("hasAuthority('create_bank')")
     public ResponseEntity<?> createBranch(@PathVariable("bankId") final Long bankId, @Valid @RequestBody List<BankBranchData> bankBranchData) {
         Bank mainBank = bankService.fetchBankById(bankId);
         List<BankBranch> branchList = new ArrayList<>();
@@ -142,6 +146,7 @@ public class BanksController {
     }
 
     @GetMapping("/bank/{bankId}/bank-branch")
+    @PreAuthorize("hasAuthority('view_bank')")
     public ResponseEntity<?> fetchBranchesByBank(@PathVariable("bankId") final Long bankId, Pageable pageable) {
         Bank mainBank = bankService.fetchBankById(bankId);
         Page<BankBranch> result = bankService.fetchBranchByMainBank(mainBank, pageable);

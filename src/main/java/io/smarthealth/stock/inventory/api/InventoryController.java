@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -34,6 +35,7 @@ public class InventoryController {
     private final InventoryService service;
 
     @PostMapping("/inventory-entries")
+    @PreAuthorize("hasAuthority('create_inventory')")
     public ResponseEntity<?> createStockEntry(@Valid @RequestBody CreateStockEntry stocks) {
 
         String result = service.createStockEntry(stocks);
@@ -48,6 +50,7 @@ public class InventoryController {
     }
     
      @PostMapping("/inventory-entries/supplier")
+     @PreAuthorize("hasAuthority('create_inventory')")
     public ResponseEntity<?> createStockEntrySupplier(@Valid @RequestBody SupplierStockEntry stocks) {
 
         String result = service.receiveSupplierStocks(stocks);
@@ -63,12 +66,14 @@ public class InventoryController {
     
     //inventories/{id}
     @GetMapping("/inventory-entries/{id}")
+    @PreAuthorize("hasAuthority('view_inventory')")
     public StockEntryData searchStockEntry(@PathVariable(value = "id") Long id) {
         StockEntryData stocks = service.getStockEntry(id).toData();
         return stocks;
     }
 
     @GetMapping("/inventory-entries")
+    @PreAuthorize("hasAuthority('view_inventory')")
     public ResponseEntity<?> getAllStockEntries(
             @RequestParam(value = "store", required = false) final String store,
             @RequestParam(value = "item", required = false) final String item,

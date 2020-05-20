@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,6 +61,7 @@ public class ApprovalProcessingController {
     PettyCashApprovalsService approvalsService;
 
     @GetMapping("/approval-request/{moduleName}")
+    @PreAuthorize("hasAuthority('view_approvalRequests')")
     public ResponseEntity<?> fetchApprovalRequests(@PathVariable("moduleName") final ApprovalModule moduleName, Authentication authentication, final Pageable pageable) {
         String username = authentication.getName();
         User user = service.findUserByUsernameOrEmail(username)
@@ -94,6 +96,7 @@ public class ApprovalProcessingController {
     }
 
     @GetMapping("/approval-history/{moduleName}/{requestNo}")
+    @PreAuthorize("hasAuthority('view_approvals')")
     public ResponseEntity<?> fetchApprovalsDoneByModuleName(@PathVariable("moduleName") final ApprovalModule moduleName, @PathVariable("requestNo") final String requestNo, final Pageable pageable) {
 
         switch (moduleName) {

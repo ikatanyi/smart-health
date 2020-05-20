@@ -5,6 +5,7 @@ import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ public class SequenceController {
     private SequenceNumberService sequenceNumberService;
 
 //    @Secured("ROLE_ADMIN")
+    @PreAuthorize("hasAuthority('view_sequences')")
     @GetMapping("/api/sequence/{tenant}")
     public ResponseEntity<?> list(final @PathVariable("tenant") Long tenant) {
         return ResponseEntity.ok(sequenceNumberService.getDefinitions(tenant));
@@ -28,6 +30,7 @@ public class SequenceController {
 
 //    @Secured("ROLE_ADMIN")
     @PostMapping("/api/sequence/{tenant}/{name}")
+    @PreAuthorize("hasAuthority('create_sequences')")
     @Transactional
     public SequenceDefinition create(final @PathVariable("tenant") Long tenant,
             final @PathVariable("name") String name,
@@ -39,6 +42,7 @@ public class SequenceController {
 
 //    @Secured("ROLE_USER")
     @GetMapping(value = "/api/sequence/{tenant}/{name}")
+    @PreAuthorize("hasAuthority('view_sequences')")
     @Transactional
     public SequenceStatus status(final @PathVariable("tenant") Long tenant,
             final @PathVariable("name") String name) {
@@ -47,6 +51,7 @@ public class SequenceController {
 
 //    @Secured("ROLE_ADMIN")
     @PutMapping("/api/sequence/{tenant}/{name}")
+    @PreAuthorize("hasAuthority('edit_sequences')")
     @Transactional
     public SequenceDefinition update(final @PathVariable("tenant") Long tenant,
             final @PathVariable("name") String name,
@@ -56,6 +61,7 @@ public class SequenceController {
 
 //    @Secured("ROLE_ADMIN")
     @DeleteMapping("/api/sequence/{tenant}/{name}")
+    @PreAuthorize("hasAuthority('delete_sequences')")
     @Transactional
     public SequenceDefinition delete(final @PathVariable("tenant") Long tenant, final @PathVariable("name") String name) {
         return sequenceNumberService.delete(tenant, name);
@@ -72,6 +78,7 @@ public class SequenceController {
 //        return response;
 //    }
     @GetMapping("/api/sequence/{tenant}/{name}/next")
+    @PreAuthorize("hasAuthority('view_sequences')")
     @Transactional
     public ResponseEntity<?> next(final @PathVariable("tenant") Long tenant, final @PathVariable("name") String name) {
 //        DeferredResult<String> response = new DeferredResult<>();

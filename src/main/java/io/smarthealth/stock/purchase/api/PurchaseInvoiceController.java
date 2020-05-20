@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -35,6 +36,7 @@ public class PurchaseInvoiceController {
     }
 
     @PostMapping("/purchaseinvoices")
+    @PreAuthorize("hasAuthority('create_purchaseinvoices')")
     public ResponseEntity<?> createPurchaseInvoice(@Valid @RequestBody PurchaseInvoiceData orderData) {
 
         PurchaseInvoice result = service.createPurchaseInvoice(orderData);
@@ -49,12 +51,14 @@ public class PurchaseInvoiceController {
     }
 
     @GetMapping("/purchaseinvoices/{id}")
+    @PreAuthorize("hasAuthority('view_purchaseinvoices')")
     public PurchaseInvoiceData getPurchaseInvoice(@PathVariable(value = "id") Long code) {
         PurchaseInvoice po = service.findOneWithNoFoundDetection(code);
         return po.toData();
     }
 
     @GetMapping("/purchaseinvoices")
+    @PreAuthorize("hasAuthority('view_purchaseinvoices')")
     public ResponseEntity<?> getAllPurchaseInvoices(
             @RequestParam(value = "supplier_id", required = false) Long supplierId,
             @RequestParam(value = "paid", required = false) Boolean paid,
@@ -84,6 +88,7 @@ public class PurchaseInvoiceController {
     }
 
     @PostMapping("/purchaseinvoices/credit-note")
+    @PreAuthorize("hasAuthority('create_purchaseinvoices')")
     public ResponseEntity<?> createCreditNote(@Valid @RequestBody PurchaseCreditNoteData data) {
         PurchaseInvoice result = service.doCreditNote(data);
 
