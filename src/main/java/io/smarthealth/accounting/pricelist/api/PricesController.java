@@ -79,6 +79,7 @@ public class PricesController {
     @PutMapping("/pricelists/{id}")
     public ResponseEntity<?> updatePriceList(@PathVariable(value = "id") Long id, @Valid @RequestBody PriceListData data) {
         PriceList item = priceService.updatePriceList(id, data);
+        System.out.println("Pricelist saved selling rate "+item.getSellingRate());
         return ResponseEntity.ok(item.toData());
     }
 

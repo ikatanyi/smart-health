@@ -100,7 +100,7 @@ public class AuthController {
         }
         User result = userRepository.save(user);
 //send welcome message to the new system user
-        mailSender.send(EmailData.of(user.getEmail(), "User Account", "<b>Welcome</b> " + user.getName().concat(". Your login credentials is <br/> username : " + user.getEmail() + "<br/> password : " + password)));
+        mailSender.send(EmailData.of(user.getEmail(), "User Account", "<b>Welcome</b> " + user.getName().concat(". Your login credentials is <br/> username : " + user.getUsername() + "<br/> password : " + password)));
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/auth/users/{username}")
@@ -113,13 +113,12 @@ public class AuthController {
     public ResponseEntity<?> getAllUsers(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
-        
-         Pageable pageable = PaginationUtil.createPage(page, size);
-         
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+
         Page<UserData> list = userService.findAllUsers(pageable)
                 .map(u -> u.toData());
 //        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
- 
 
         Pager<List<UserData>> pagers = new Pager();
         pagers.setCode("0");
