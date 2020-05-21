@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -32,6 +33,7 @@ public class PaymentMethodApiController {
     }
 
     @PostMapping("/payment-method")
+    @PreAuthorize("hasAuthority('create_paymentMethod')")
     public ResponseEntity<?> createPaymentMethod(@Valid @RequestBody PaymentMethodData data) {
 
         PaymentMethodData result = service.createPaymentMethod(data);
@@ -45,12 +47,14 @@ public class PaymentMethodApiController {
     }
 
     @GetMapping("/payment-method/{id}")
+    @PreAuthorize("hasAuthority('view_paymentMethod')")
     public ResponseEntity<?> getPaymentMethod(@PathVariable(value = "id") Long id) {
         PaymentMethodData data = service.getPaymentMethod(id).toData();
         return ResponseEntity.ok(data);
     }
 
     @PutMapping("/payment-method/{id}")
+     @PreAuthorize("hasAuthority('edit_paymentMethod')")
     public ResponseEntity<?> updatePaymentMethod(@PathVariable(value = "id") Long id, PaymentMethodData data) {
         PaymentMethodData result = service.updatePaymentMethod(id, data);
 
@@ -63,6 +67,7 @@ public class PaymentMethodApiController {
     }
 
     @GetMapping("/payment-method")
+    @PreAuthorize("hasAuthority('view_paymentMethod')")
     public ResponseEntity<?> listPaymentMethods(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {

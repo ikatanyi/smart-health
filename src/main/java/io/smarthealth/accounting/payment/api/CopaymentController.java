@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,14 +40,14 @@ public class CopaymentController {
     }
 
     @PostMapping("/copayment")
-//    @PreAuthorize("hasAuthority('create_copayment')")
+    @PreAuthorize("hasAuthority('create_copayment')")
     public ResponseEntity<?> createCopayment(@Valid @RequestBody CopaymentData data) {
         Copayment copay = service.createCopayment(data);
         return ResponseEntity.status(HttpStatus.CREATED).body(copay.toData());
     }
 
     @GetMapping("/copayment/{id}")
-//    @PreAuthorize("hasAuthority('view_copayment')")
+    @PreAuthorize("hasAuthority('view_copayment')")
     public ResponseEntity<?> getCopayment(@PathVariable(value = "id") Long id) {
         Copayment copay = service.getCopaymentOrThrow(id);
         return ResponseEntity.ok(copay.toData());
@@ -54,7 +55,7 @@ public class CopaymentController {
 
     @GetMapping("/copayment")
     @ResponseBody
-//    @PreAuthorize("hasAuthority('view_copayment')")
+    @PreAuthorize("hasAuthority('view_copayment')")
     public ResponseEntity<?> getCopayments(
             @RequestParam(value = "visit_no", required = false) final String visitNumber,
             @RequestParam(value = "patient_no", required = false) final String patientNumber,

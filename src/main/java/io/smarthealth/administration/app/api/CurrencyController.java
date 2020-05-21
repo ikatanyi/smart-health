@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,6 +34,7 @@ public class CurrencyController {
     }
 
     @PostMapping("/currencies")
+    @PreAuthorize("hasAuthority('create_currencies')")
     public ResponseEntity<?> createCurrency(@Valid @RequestBody Currency currency) {
         if (service.getCurrencyByName(currency.getName()).isPresent()) {
             throw APIException.conflict("Currency with name {0} already exists.", currency.getName());
@@ -50,6 +52,7 @@ public class CurrencyController {
     }
 
     @GetMapping("/currencies/{id}")
+    @PreAuthorize("hasAuthority('view_currencies')")
     public Currency getCurrency(@PathVariable(value = "id") Long code) {
         Currency currencyService = service.getCurrency(code)
                 .orElseThrow(() -> APIException.notFound("Payment Terms with id {0} not found.", code));
@@ -57,6 +60,7 @@ public class CurrencyController {
     }
 
     @GetMapping("/currencies")
+    @PreAuthorize("hasAuthority('view_currencies')")
     public ResponseEntity<?> getAllCurrency(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "page", required = false) Integer page,

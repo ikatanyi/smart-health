@@ -35,6 +35,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -70,6 +71,7 @@ public class PettyCashRequestController {
     PettyCashApprovalsService approvalsService;
 
     @PostMapping("/petty-cash-request")
+    @PreAuthorize("hasAuthority('create_pettyCashRequest')")
     public ResponseEntity<?> createPettyCashRequest(@Valid @RequestBody List<PettyCashRequestItemsData> data, Authentication authentication, @RequestParam(value = "staffNo", required = false) final String staffNo) {
 
         Employee employee = null;
@@ -144,6 +146,7 @@ public class PettyCashRequestController {
 //
 //    }
     @GetMapping("/petty-cash-request/me")
+    @PreAuthorize("hasAuthority('view_pettyCashRequest')")
     public ResponseEntity<?> findMyPettyCashRequests(Authentication authentication, final Pageable pageable) {
         String username = authentication.getName();
         User user = service.findUserByUsernameOrEmail(username)
@@ -166,6 +169,7 @@ public class PettyCashRequestController {
     }
 
     @GetMapping("/petty-cash")
+    @PreAuthorize("hasAuthority('view_pettyCashRequest')")
     public ResponseEntity<?> fetchPettyCashRequests(@RequestParam(value = "requestNo", required = false) final String requestNo, @RequestParam(value = "status", required = false) final PettyCashStatus status, Pageable pageable) {
         Page<PettyCashRequestsData> list = pettyCashRequestsService.findPettyCashRequests(requestNo, null, status, pageable).map(r -> PettyCashRequestsData.map(r));
         Pager<List<PettyCashRequestsData>> pagers = new Pager();
@@ -183,6 +187,7 @@ public class PettyCashRequestController {
     }
 
     @GetMapping("/petty-cash-request")
+    @PreAuthorize("hasAuthority('view_pettyCashRequest')")
     public ResponseEntity<?> fetchPettyCashRequestsPendingApproval(Authentication authentication, final Pageable pageable) {
         String username = authentication.getName();
         User user = service.findUserByUsernameOrEmail(username)
@@ -207,6 +212,7 @@ public class PettyCashRequestController {
     }
 
     @GetMapping("/petty-cash-request/{requestNo}")
+    @PreAuthorize("hasAuthority('view_pettyCashRequest')")
     public ResponseEntity<?> fetchPettyCashRequestByNo(@PathVariable("requestNo") final String requestNo, final Pageable pageable) {
         PettyCashRequestsData data = PettyCashRequestsData.map(pettyCashRequestsService.fetchCashRequestByRequestNo(requestNo));
         Pager<PettyCashRequestsData> pagers = new Pager();
@@ -217,6 +223,7 @@ public class PettyCashRequestController {
     }
 
     @PutMapping("/petty-cash-request/{requestNo}/accept-all")
+    @PreAuthorize("hasAuthority('edit_pettyCashRequest')")
     public ResponseEntity<?> acceptAllItems(@PathVariable("requestNo") final String requestNo, Authentication authentication) {
         String username = authentication.getName();
 

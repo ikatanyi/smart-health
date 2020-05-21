@@ -25,7 +25,7 @@ import org.hibernate.annotations.NaturalId;
 public class Appointment extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "patient_id")
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_appointment_patient_id"))
     private Patient patient;
 
     @NaturalId

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,12 +34,14 @@ public class UomRestController {
     } 
      
     @GetMapping("/uom/{id}")
+    @PreAuthorize("hasAuthority('view_uom')")
     public Uom getItem(@PathVariable(value = "id") Long code) {
         Uom uom = service.fetchUomById(code);
         return  uom;
     }
 
     @GetMapping("/uom")
+    @PreAuthorize("hasAuthority('view_uom')")
     public ResponseEntity<?> getAllItems(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "q", required = false) final String term,
@@ -66,6 +69,7 @@ public class UomRestController {
     }
     
      @PostMapping("/uom")
+     @PreAuthorize("hasAuthority('create_uom')")
     public ResponseEntity<?> createUom(@Valid @RequestBody UomData uomData) {
         
         UomData result = UomData.map(service.createUom(uomData));

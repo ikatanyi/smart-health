@@ -44,6 +44,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -74,6 +75,7 @@ public class PatientController {
     ModelMapper modelMapper;
 
     @PostMapping("/patients")
+    @PreAuthorize("hasAuthority('create_patients')")
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestPart PatientData patientData, @RequestPart(name = "file", required = false) MultipartFile file) {
         LocalDate dateOfBirth = LocalDate.now().minusYears(Long.valueOf(patientData.getAge()));
@@ -89,6 +91,7 @@ public class PatientController {
     }
 
     @GetMapping("/patients/{id}")
+    @PreAuthorize("hasAuthority('view_patients')")
     public @ResponseBody
     ResponseEntity<PatientData> findPatientByPatientNumber(@PathVariable("id") final String patientNumber) {
         final Optional<PatientData> patient = this.patientService.fetchPatientByPatientNumber(patientNumber);
@@ -100,6 +103,7 @@ public class PatientController {
     }
 
     @GetMapping("/patients")
+    @PreAuthorize("hasAuthority('view_patients')")
     public ResponseEntity<?> fetchAllPatients(@RequestParam(required = false) MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         int pageNo = 1;
         int size = 10;
@@ -128,6 +132,7 @@ public class PatientController {
     }
 
     @PutMapping("/patients/{patientNumber}")
+    @PreAuthorize("hasAuthority('edit_patients')")
     public @ResponseBody
     ResponseEntity<PatientData> updatePatient(@PathVariable("patientNumber") final String patientNumber,
             @RequestBody final PatientData patientData) {
@@ -160,6 +165,7 @@ public class PatientController {
     }
 
     @GetMapping("/identifier/{identifier}/patient/{no}")
+    @PreAuthorize("hasAuthority('view_patients')")
     public @ResponseBody
     ResponseEntity<PatientData> getPatientByIdentifier(@PathVariable("identifier") /*Identifier type*/ final String patientNumber, @PathVariable("no") final String patientNo) {
         final Optional<PatientData> patient = this.patientService.fetchPatientByPatientNumber(patientNumber);
@@ -171,6 +177,7 @@ public class PatientController {
     }
 
     @PutMapping("/patients/{patientid}/contacts/{contactid}")
+    @PreAuthorize("hasAuthority('edit_patients')")
     @ApiOperation(value = "Update a patient's contact details", response = PatientData.class)
     public @ResponseBody
     ResponseEntity<PatientData> updatePatientContacts(
@@ -196,6 +203,7 @@ public class PatientController {
     }
 
     @PutMapping("/patients/{patientid}/address/{addressid}")
+    @PreAuthorize("hasAuthority('edit_patients')")
     @ApiOperation(value = "Update a patient's address details", response = PatientData.class)
     public @ResponseBody
     ResponseEntity<PatientData> updatePatientAddress(
@@ -223,6 +231,7 @@ public class PatientController {
     }
 
     @PostMapping("/patients/{id}/image")
+    @PreAuthorize("hasAuthority('create_patients')")
     @ApiOperation(value = "Update a patient's image details", response = Portrait.class)
     public @ResponseBody
     ResponseEntity<PortraitData> postPatientImage(@PathVariable("id") final String patientNumber, @RequestParam final MultipartFile image) {
@@ -242,6 +251,7 @@ public class PatientController {
     }
 
     @PostMapping("/patient_identification_type")
+    @PreAuthorize("hasAuthority('create_patients')")
     public @ResponseBody
     ResponseEntity<?> createPatientIdtype(@RequestBody @Valid final PatientIdentificationType patientIdentificationType) {
 
@@ -262,6 +272,7 @@ public class PatientController {
     }
      */
     @GetMapping("/patient_identification_type")
+    @PreAuthorize("hasAuthority('view_patients')")
     public ResponseEntity<List<PatientIdentificationType>> fetchAllPatientIdTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
 
 //        return new ResponseEntity<List<PatientIdentificationType>>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
@@ -269,12 +280,14 @@ public class PatientController {
     }
 
     @GetMapping("/patient_identification_type/{id}")
+    @PreAuthorize("hasAuthority('view_patients')")
     public PatientIdentificationType fetchAllPatientIdTypes(@PathVariable("id") final String patientIdType) {
         return patientIdentificationTypeService.fetchIdType(Long.valueOf(patientIdType));
     }
 
     /* Functions pertaining patient allergies */
     @PostMapping("/allergy")
+    @PreAuthorize("hasAuthority('create_patients')")
     public @ResponseBody
     ResponseEntity<?> createPatientAllergy(@RequestBody @Valid final PatientAllergiesData patientAllergiesData) {
         Patient patient = patientService.findPatientOrThrow(patientAllergiesData.getPatientNumber());
@@ -290,6 +303,7 @@ public class PatientController {
     }
 
     @PostMapping("/allergy-type")
+    @PreAuthorize("hasAuthority('create_patients')")
     public @ResponseBody
     ResponseEntity<?> createAllergyType(@RequestBody @Valid final AllergyTypeData allergyTypeData) {
         AllergyType allergyType = allergiesService.createAllergyType(allergiesService.convertAllergyTypeDataToEntity(allergyTypeData));
@@ -300,6 +314,7 @@ public class PatientController {
     }
 
     @GetMapping("/patient/{patientNumber}/allergy")
+    @PreAuthorize("hasAuthority('view_patients')")
     public ResponseEntity<?> fetchAllPatientsAllergy(@PathVariable("patientNumber") final String patientNumber, @RequestParam MultiValueMap<String, String> queryParams, Pageable pageable) {
         Patient patient = patientService.findPatientOrThrow(patientNumber);
         Page<PatientAllergiesData> page = allergiesService.fetchPatientAllergies(patient, pageable).map(p -> allergiesService.convertPatientAllergiesToData(p));
@@ -307,6 +322,7 @@ public class PatientController {
     }
 
     @GetMapping("/allergy-type")
+    @PreAuthorize("hasAuthority('view_patients')")
     public ResponseEntity<List<AllergyTypeData>> fetchAllAllergyTypes() {
         List<AllergyTypeData> data = new ArrayList<>();
         allergiesService.findAllAllergyTypes().stream().map((at) -> {
@@ -334,6 +350,7 @@ public class PatientController {
 //    }
     //PDF Reports
     @RequestMapping(value = "/patient/patientFile", method = RequestMethod.GET)
+    @PreAuthorize("hasAuthority('view_patients')")
     public void exportPatientFile(HttpServletResponse response) throws JRException, SQLException, IOException {
         String contentType = null;
         patientService.exportPatientPdfFile(response);

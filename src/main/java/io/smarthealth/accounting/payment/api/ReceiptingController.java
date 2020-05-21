@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +42,7 @@ public class ReceiptingController {
     }
 
     @PostMapping("/receipting")
+    @PreAuthorize("hasAuthority('create_receipt')")
     public ResponseEntity<?> receivePayment(@Valid @RequestBody ReceivePayment paymentData) {
 
         Receipt payment = service.receivePayment(paymentData);
@@ -53,19 +55,21 @@ public class ReceiptingController {
     }
 
     @GetMapping("/receipting/{id}")
+    @PreAuthorize("hasAuthority('view_receipt')")
     public ResponseEntity<?> getPaymentReceipt(@PathVariable(value = "id") Long id) {
         Receipt payment = service.getPaymentOrThrow(id);
         return ResponseEntity.ok(payment.toData());
     }
 
     @PutMapping("/receipting/{receiptNo}/void")
+    @PreAuthorize("hasAuthority('edit_receipt')")
     public ResponseEntity<?> voidPaymentReceipt(@PathVariable(value = "receiptNo") String receiptNo) {
         service.voidPayment(receiptNo);
         return ResponseEntity.accepted().build();
     }
     @GetMapping("/receipting")
     @ResponseBody
-//    @PreAuthorize("hasAuthority('view_payment')")
+    @PreAuthorize("hasAuthority('view_receipt')")
     public ResponseEntity<?> getPaymentReceipts(
             @RequestParam(value = "payer", required = false) final String payer,
             @RequestParam(value = "receipt_no", required = false) final String receiptNo,

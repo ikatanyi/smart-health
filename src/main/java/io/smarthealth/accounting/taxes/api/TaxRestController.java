@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -32,6 +33,7 @@ public class TaxRestController {
     }
 
     @PostMapping("/taxes")
+    @PreAuthorize("hasAuthority('create_tax')")
     public ResponseEntity<?> createTax(@Valid @RequestBody Tax tax) {
 
         Tax result = service.createTax(tax);
@@ -45,6 +47,7 @@ public class TaxRestController {
     }
 
     @GetMapping("/taxes/{id}")
+    @PreAuthorize("hasAuthority('view_tax')")
     public ResponseEntity<?> getTax(@PathVariable(value = "id") Long code) {
         Tax result = service.getTax(code);
         Pager<Tax> pagers = new Pager();
@@ -56,12 +59,14 @@ public class TaxRestController {
     }
 
     @PutMapping("/taxes/{id}")
+    @PreAuthorize("hasAuthority('edit_tax')")
     public ResponseEntity<?> updatetax(@PathVariable(value = "id") Long id, Tax data) {
         Tax tax = service.updateTax(id, data);
         return ResponseEntity.ok(tax);
     }
 
     @GetMapping("/taxes")
+    @PreAuthorize("hasAuthority('view_tax')")
     public ResponseEntity<?> getAllTaxes(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false, defaultValue = "1000") Integer size) {

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,6 +34,7 @@ public class ServicePointController {
     }
 
     @PostMapping("/servicepoints")
+    @PreAuthorize("hasAuthority('create_servicepoints')")
     public ResponseEntity<?> createServicepoint(@Valid @RequestBody ServicePointData data) {
 
         ServicePointData result = service.createPoint(data);
@@ -46,12 +48,14 @@ public class ServicePointController {
     }
 
     @GetMapping("/servicepoints/{id}")
+    @PreAuthorize("hasAuthority('view_servicepoints')")
     public ResponseEntity<?> getServicepoint(@PathVariable(value = "id") Long id) {
         ServicePointData data = service.getServicePoint(id).toData();
         return ResponseEntity.ok(data);
     }
 
     @PutMapping("/servicepoints/{id}")
+    @PreAuthorize("hasAuthority('edit_servicepoints')")
     public ResponseEntity<?> updateServicepoint(@PathVariable(value = "id") Long id, ServicePointData data) {
         ServicePointData result = service.updateServicePoint(id, data);
 
@@ -64,6 +68,7 @@ public class ServicePointController {
     }
 
     @GetMapping("/servicepoints")
+    @PreAuthorize("hasAuthority('view_servicepoints')")
     public ResponseEntity<?> listServicepoint(
             @RequestParam(value = "type", required = false) ServicePointType type,
             @RequestParam(value = "point_type", required = false) String pointType,

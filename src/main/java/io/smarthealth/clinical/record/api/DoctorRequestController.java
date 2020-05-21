@@ -15,7 +15,6 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.clinical.PatientVisitData;
 import io.smarthealth.security.domain.User;
@@ -38,6 +37,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -67,6 +67,7 @@ public class DoctorRequestController {
     private final UserService userService;
 
     @PostMapping("/visit/{visitNo}/doctor-request")
+    @PreAuthorize("hasAuthority('create_doctorrequest')")
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
@@ -108,6 +109,7 @@ public class DoctorRequestController {
     }
 
     @GetMapping("/doctor-request/{id}")
+    @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> fetchRequestById(@PathVariable("id") final Long id) {
         Optional<DoctorRequestData> specimens = requestService.getDocRequestById(id);
         if (specimens != null) {
@@ -118,6 +120,7 @@ public class DoctorRequestController {
     }
 
     @GetMapping("/visit/{visitNo}/doctor-request")
+    @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> fetchAllRequestsByVisit(@PathVariable("visitNo") final String visitNo, Pageable pageable) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
         Page<DoctorRequest> page = requestService.findAllRequestsByVisit(visit, pageable);
@@ -199,6 +202,7 @@ public class DoctorRequestController {
     }
 
     @GetMapping("/doctor-request")
+    @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> waitingListByRequestType(
             @RequestParam(value = "visitNo", required = false) final String visitNo,
             @RequestParam(value = "patientNo", required = false) final String patientNo,
@@ -249,6 +253,7 @@ public class DoctorRequestController {
     }
 
     @GetMapping("/visit/{visitNo}/doctor-request/{requestType}")
+    @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> fetchAllRequestsByVisitAndRequestType(
             @PathVariable("visitNo") final String visitNo,
             @RequestParam(value = "patientNo", required = false) final String patientNo,
@@ -283,6 +288,7 @@ public class DoctorRequestController {
     }
 
     @DeleteMapping("/doc-request/{id}")
+    @PreAuthorize("hasAuthority('delete_doctorrequest')")
     public ResponseEntity<?> deleteRequest(@PathVariable("id") final Long id) {
         return requestService.deleteById(id);
     }

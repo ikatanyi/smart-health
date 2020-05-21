@@ -21,10 +21,10 @@ public class AllocationSpecification {
             final ArrayList<Predicate> predicates = new ArrayList<>();
  
             if (payerId != null) {
-                predicates.add(cb.equal(root.get("Invoice").get("PayerId"), payerId));
+                predicates.add(cb.equal(root.get("invoice").get("payer").get("id"), payerId));
             }
             if (schemeId != null) {
-                predicates.add(cb.equal(root.get("Invoice").get("schemeId"), schemeId));
+                predicates.add(cb.equal(root.get("invoice").get("scheme").get("id"), schemeId));
             }
             if (invoiceNo != null) {
                 predicates.add(cb.greaterThan(root.get("invoice").get("invoiceNo"), invoiceNo));

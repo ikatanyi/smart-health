@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -39,6 +40,7 @@ public class AllocationController {
     }
 
     @PostMapping("/allocation/{remmitanceId}")
+    @PreAuthorize("hasAuthority('create_allocation')")
     public ResponseEntity<?> createAllocation(@PathVariable("remmitanceId") final Long remmitanceId, @Valid @RequestBody List<AllocationData> allocationData) {
         Remittance remitance = remitanceService.getRemittanceOrThrow(remmitanceId);
         List<Allocation> allocations = allocationService.createAllocation(allocationData, remitance);
@@ -56,18 +58,21 @@ public class AllocationController {
     }
 
     @GetMapping("/allocation/{id}")
+    @PreAuthorize("hasAuthority('view_allocation')")
     public AllocationData getAllocation(@PathVariable(value = "id") Long id) {
         AllocationData allocation = allocationService.getAllocationByIdWithFailDetection(id).map();
         return allocation;
     }
 
     @PutMapping("/allocation/{id}")
+    @PreAuthorize("hasAuthority('edit_allocation')")
     public AllocationData updateRemitance(@PathVariable(value = "id") Long id, AllocationData allocationData) {
         AllocationData allocation = allocationService.updateAllocation(id, allocationData).map();
         return allocation;
     }
 
     @GetMapping("/allocation")
+    @PreAuthorize("hasAuthority('view_allocation')")
     public ResponseEntity<?> getAllAllocations(
             @RequestParam(value = "invoiceNo", required = false) String invoiceNo,
             @RequestParam(value = "receiptNo", required = false) String receiptNo,

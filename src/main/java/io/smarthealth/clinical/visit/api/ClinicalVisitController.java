@@ -68,6 +68,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -131,6 +132,7 @@ public class ClinicalVisitController {
     DoctorInvoiceService doctorInvoiceService;
 
     @PostMapping("/visits")
+    @PreAuthorize("hasAuthority('create_visits')")
     @ApiOperation(value = "Submit a new patient visit", response = VisitData.class)
     @Transactional(rollbackFor = Exception.class)
     public @ResponseBody
@@ -258,6 +260,7 @@ public class ClinicalVisitController {
     }
 
     @PutMapping("/visits/{visitNumber}")
+    @PreAuthorize("hasAuthority('edit_visits')")
     @ApiOperation(value = "Update patient visit record", response = VisitData.class)
     public @ResponseBody
     ResponseEntity<?> updateVisitRecord(@PathVariable("visitNumber")
@@ -287,6 +290,7 @@ public class ClinicalVisitController {
     }
 
     @PutMapping("/visits/{visitNumber}/status/{status}")
+    @PreAuthorize("hasAuthority('edit_visits')")
     @ApiOperation(value = "Update patient visit status", response = VisitData.class)
     public @ResponseBody
     ResponseEntity<?> updateVisitStatus(@PathVariable("visitNumber")
@@ -305,6 +309,7 @@ public class ClinicalVisitController {
     }
 
     @PutMapping("/visits/{visitNumber}/consultation-status/{status}")
+    @PreAuthorize("hasAuthority('edit_visits')")
     @ApiOperation(value = "Update patient visit consultation status", response = VisitData.class)
     public @ResponseBody
     ResponseEntity<?> updateConsultationStatus(
@@ -326,6 +331,7 @@ public class ClinicalVisitController {
     }
 
     @GetMapping("/visits")
+    @PreAuthorize("hasAuthority('view_visits')")
     public ResponseEntity<List<VisitData>> fetchAllVisits(
             @RequestParam(value = "visitNumber", required = false)
             final String visitNumber,
@@ -351,6 +357,7 @@ public class ClinicalVisitController {
     }
 
     @GetMapping("/visits/{visitNo}/payment-mode")
+    @PreAuthorize("hasAuthority('view_visits')")
     public ResponseEntity<?> fetchpaymentModeByVisit(@PathVariable("visitNo") String visitNo
     ) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
@@ -364,6 +371,7 @@ public class ClinicalVisitController {
     }
 
     @GetMapping("/patients/{patientNumber}/active-visit")
+    @PreAuthorize("hasAuthority('view_visits')")
     public ResponseEntity<?> fetchActiveVisitByPatient(@PathVariable("patientNumber") String patientNumber
     ) {
         Patient patient = visitService.findPatientOrThrow(patientNumber);
@@ -381,6 +389,7 @@ public class ClinicalVisitController {
     }
 
     @GetMapping("/patients/{id}/visits")
+    @PreAuthorize("hasAuthority('view_visits')")
     public ResponseEntity<List<VisitData>> fetchAllVisitsByPatient(@PathVariable("id")
             final String patientNumber,
             @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,
@@ -393,6 +402,7 @@ public class ClinicalVisitController {
     }
 
     @PostMapping("/visits/{visitNumber}/vitals")
+    @PreAuthorize("hasAuthority('create_visits')")
     @ApiOperation(value = "Create/Add a new patient vital by visit number", response = VitalRecordData.class)
     public @ResponseBody
     ResponseEntity<VitalRecordData> addVitalRecordByVisit(@PathVariable("visitNumber") String visitNumber,
@@ -413,6 +423,7 @@ public class ClinicalVisitController {
     }
 
     @PostMapping("/visits/{visitNumber}/triage-notes")
+    @PreAuthorize("hasAuthority('create_visits')")
     @ApiOperation(value = "Create/Add a new patient triage notes by visit number", response = VitalRecordData.class)
     public @ResponseBody
     ResponseEntity<?> addTriageNotesByVisit(@PathVariable("visitNumber") String visitNumber,
@@ -435,6 +446,7 @@ public class ClinicalVisitController {
     }
 
     @GetMapping("/visits/{visitNumber}/triage-notes")
+    @PreAuthorize("hasAuthority('view_visits')")
     @ApiOperation(value = "Create/Add a new patient triage notes by visit number", response = VitalRecordData.class)
     public @ResponseBody
     ResponseEntity<?> fetchTriageNotesByVisit(@PathVariable("visitNumber") String visitNumber, final Pageable pageable
@@ -457,6 +469,7 @@ public class ClinicalVisitController {
     }
 
     @GetMapping("/triage-notes/{id}")
+    @PreAuthorize("hasAuthority('view_visits')")
     @ApiOperation(value = "Fetch triage notes by id", response = VitalRecordData.class)
     public @ResponseBody
     ResponseEntity<?> findTriageNotesById(@PathVariable("v")
@@ -471,6 +484,7 @@ public class ClinicalVisitController {
     }
 
     @PostMapping("/patient/{patientNo}/vitals")
+    @PreAuthorize("hasAuthority('create_visits')")
     //@ApiOperation(value = "", response = VitalRecordData.class)
     public @ResponseBody
     ResponseEntity<VitalRecordData> addVitalRecordByPatient(@PathVariable("patientNo") String patientNo,
@@ -557,6 +571,7 @@ public class ClinicalVisitController {
     }
 
     @GetMapping("/visits/{visitNumber}/vitals")
+    @PreAuthorize("hasAuthority('view_visits')")
     @ApiOperation(value = "Fetch all patient vitals by visits", response = VitalRecordData.class)
     public ResponseEntity<List<VitalRecordData>> fetchAllVitalsByVisit(@PathVariable("visitNumber")
             final String visitNumber,
@@ -569,6 +584,7 @@ public class ClinicalVisitController {
     }
 
     @GetMapping("/patients/{patientNumber}/vitals")
+    @PreAuthorize("hasAuthority('view_visits')")
     @ApiOperation(value = "Fetch all patient vitals by patient", response = VitalRecordData.class)
     public ResponseEntity<List<VitalRecordData>> fetchAllVitalsByPatient(@PathVariable("patientNumber")
             final String patientNumber,
@@ -582,6 +598,7 @@ public class ClinicalVisitController {
     }
 
     @GetMapping("/patients/{patientNumber}/vitals/last")
+    @PreAuthorize("hasAuthority('view_visits')")
     @ApiOperation(value = "Fetch all patient's last vitals by patient", response = VitalRecordData.class)
     public ResponseEntity<?> fetchLatestVitalsByPatient(@PathVariable("patientNumber")
             final String patientNumber

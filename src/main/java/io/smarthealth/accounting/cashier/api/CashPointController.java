@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,6 +34,7 @@ public class CashPointController {
     }
  
     @PostMapping("/cashpoints")
+    @PreAuthorize("hasAuthority('create_cashPoints')") 
     public ResponseEntity<?> createCashPoint(@Valid @RequestBody CashPointData cashPoint) {
 
         CashPoint result = service.createCashPoint(cashPoint);
@@ -46,6 +48,7 @@ public class CashPointController {
     }
 
     @GetMapping("/cashpoints/{id}")
+    @PreAuthorize("hasAuthority('view_cashPoints')") 
     public ResponseEntity<?> getCashPoint(@PathVariable(value = "id") Long code) {
         CashPoint result = service.getCashPoint(code);
         Pager<CashPointData> pagers = new Pager();
@@ -57,12 +60,14 @@ public class CashPointController {
     }
 
     @PutMapping("/cashpoints/{id}")
+    @PreAuthorize("hasAuthority('edit_cashPoints')") 
     public ResponseEntity<?> updateCashPoint(@PathVariable(value = "id") Long id, CashPoint data) {
         CashPoint cashPoint = service.updateCashPoint(id, data);
         return ResponseEntity.ok(cashPoint.toData());
     }
 
     @GetMapping("/cashpoints")
+    @PreAuthorize("hasAuthority('view_cashPoints')") 
     public ResponseEntity<?> getAllCashPointes(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {

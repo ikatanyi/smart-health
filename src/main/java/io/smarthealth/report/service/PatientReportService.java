@@ -5,6 +5,8 @@
  */
 package io.smarthealth.report.service;
 
+import io.smarthealth.appointment.data.AppointmentData;
+import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
@@ -86,6 +88,7 @@ public class PatientReportService {
     private final PrescriptionService prescriptionService;
     private final EmployeeService employeeService;
     private final ReferralsService referralService;
+    private final AppointmentService appointmentService;
 
     private final VisitService visitService;
 
@@ -241,7 +244,7 @@ public class PatientReportService {
     public void getReferralForm(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
-        Visit visit = visitService.findVisitEntityOrThrow("O000037");
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         ReferralData referralData = ReferralData.map(referralService.fetchReferalByVisitOrThrowIfNotFound(visit));
                 
 
@@ -254,6 +257,41 @@ public class PatientReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/patient/referral_form");
         reportData.setReportName("Referral_Form");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getVisitNote(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String visitNumber = reportParam.getFirst("visitNumber");
+        VisitData visit = VisitData.map(visitService.findVisitEntityOrThrow(visitNumber));        
+                
+
+        reportData.setPatientNumber(visit.getPatientNumber());
+        if (visit.getPractitionerCode() != null) {
+            reportData.setEmployeeId(visit.getPractitionerCode());
+
+        }
+        reportData.setData(Arrays.asList(visit));
+        reportData.setFormat(format);
+        reportData.setTemplate("/patient/visit_note");
+        reportData.setReportName("Medical-Note");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getAppointmentLetter(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String appointmentNumber = reportParam.getFirst("appointmentNumber");
+        AppointmentData appointmentData = AppointmentData.map(appointmentService.fetchAppointmentByNo(appointmentNumber));
+        
+         reportData.setPatientNumber(appointmentData.getPatientNumber());
+        if (appointmentData.getPractitionerCode()!= null) {
+            reportData.setEmployeeId(appointmentData.getPractitionerCode());
+        }
+            
+        reportData.setData(Arrays.asList(appointmentData));
+        reportData.setFormat(format);
+        reportData.setTemplate("/patient/appointment_letter");
+        reportData.setReportName("Appointment-Letter");
         reportService.generateReport(reportData, response);
     }
 

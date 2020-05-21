@@ -12,6 +12,7 @@ import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -62,6 +63,7 @@ public class AuditResource {
      * AuditEvents in body
      */
     @GetMapping
+    @PreAuthorize("hasAuthority('view_auditResource')")
     public ResponseEntity<Pager<List<AuditEvent>>> getAll(
             @RequestParam(value = "fromDate", required = false) LocalDate fromDate,
             @RequestParam(value = "toDate", required = false) LocalDate toDate,
@@ -101,6 +103,7 @@ public class AuditResource {
      * body, or status 404 (Not Found)
      */
     @GetMapping("/{id:.+}")
+    @PreAuthorize("hasAuthority('view_auditResource')")
     public ResponseEntity<AuditEvent> get(@PathVariable Long id) {
         return ResponseUtil.wrapOrNotFound(auditEventService.find(id));
     }

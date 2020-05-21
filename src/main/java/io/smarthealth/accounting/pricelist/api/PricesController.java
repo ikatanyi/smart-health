@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,7 @@ public class PricesController {
     }
 
     @PostMapping("/pricelists")
+    @PreAuthorize("hasAuthority('create_pricelist')")
     public ResponseEntity<?> createPriceList(@Valid @RequestBody PriceListData data) {
 
         PriceList item = priceService.createPriceList(data);
@@ -55,6 +57,7 @@ public class PricesController {
     }
 
     @PostMapping("/pricelists/bulk")
+    @PreAuthorize("hasAuthority('create_pricelist')")
     public ResponseEntity<?> createPriceList(@Valid @RequestBody List<PriceListData> data) {
 
         List<PriceListData> item = priceService.createPriceList(data)
@@ -71,19 +74,21 @@ public class PricesController {
     }
 
     @GetMapping("/pricelists/{id}")
+    @PreAuthorize("hasAuthority('view_pricelist')")
     public ResponseEntity<?> getPriceList(@PathVariable(value = "id") Long id) {
         PriceList item = priceService.getPriceList(id);
         return ResponseEntity.ok(item.toData());
     }
 
     @PutMapping("/pricelists/{id}")
+    @PreAuthorize("hasAuthority('edit_pricelist')")
     public ResponseEntity<?> updatePriceList(@PathVariable(value = "id") Long id, @Valid @RequestBody PriceListData data) {
         PriceList item = priceService.updatePriceList(id, data);
-        System.out.println("Pricelist saved selling rate "+item.getSellingRate());
         return ResponseEntity.ok(item.toData());
     }
 
     @DeleteMapping("/pricelists/{id}")
+    @PreAuthorize("hasAuthority('delete_pricelist')")
     public ResponseEntity<?> deletePriceList(@PathVariable(value = "id") Long id) {
         priceService.deletePriceList(id);
         return ResponseEntity.accepted().build();
@@ -91,6 +96,7 @@ public class PricesController {
 //String queryItem, Long servicePointId, Boolean defaultPrice
 
     @GetMapping("/pricelists")
+    @PreAuthorize("hasAuthority('view_pricelist')")
     public ResponseEntity<?> getPriceLists(
             @RequestParam(value = "queryItem", required = false) String queryItem,
             @RequestParam(value = "servicePointId", required = false) Long servicePointId,
@@ -119,6 +125,7 @@ public class PricesController {
     }
 
     @GetMapping("/pricelists/location/{servicepointId}")
+    @PreAuthorize("hasAuthority('view_pricelist')")
     public ResponseEntity<?> getPriceListByLocation(
             @PathVariable(value = "servicepointId") Long servicePointId,
             @RequestParam(value = "pricebook_id", required = false) Long priceBookId,
@@ -144,6 +151,7 @@ public class PricesController {
     }
 
     @GetMapping("/pricelists/search")
+    @PreAuthorize("hasAuthority('view_pricelist')")
     public ResponseEntity<?> getPriceListByLocation(
             @RequestParam(value = "item") String item,
             @RequestParam(value = "pricebook_id", required = false) Long priceBookId,

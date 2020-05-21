@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,7 @@ public class WalkInController {
     private WalkingService walkInService;
 
     @PostMapping("/walk-in")
+    @PreAuthorize("hasAuthority('create_walkin')")
     public ResponseEntity<?> createWalkingPatient(@Valid @RequestBody WalkInData WalkInData) {
 
         WalkIn w = WalkInData.convertToWalkingEntity(WalkInData);
@@ -53,6 +55,7 @@ public class WalkInController {
     }
 
     @GetMapping("/walk-in/{WalkInNo}")
+    @PreAuthorize("hasAuthority('view_walkin')")
     public ResponseEntity<?> createWalkingPatient(@PathVariable("WalkInNo") final String WalkInNo) {
         WalkIn w = walkInService.fetchWalkingByWalkingNoWithNotFoundDetection(WalkInNo);
         Pager<WalkInData> pagers = new Pager();
@@ -64,6 +67,7 @@ public class WalkInController {
     }
 
     @GetMapping("/walk-in")
+    @PreAuthorize("hasAuthority('view_walkin')")
     public ResponseEntity<?> fetchAllWalkingPatients(@RequestParam(required = false) MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         int pageNo = 1;
         int size = 10;

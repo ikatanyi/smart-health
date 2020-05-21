@@ -5,6 +5,7 @@ import io.smarthealth.accounting.accounts.service.TrialBalanceService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Api
@@ -23,6 +24,7 @@ public class TrialBalanceController {
 
     @GetMapping
     @ResponseBody
+    @PreAuthorize("hasAuthority('view_trialBalance')") 
     public ResponseEntity<TrialBalance> getTrialBalance(
             @RequestParam(value = "includeEmptyEntries", required = false) final boolean includeZeroBalance) {
         return ResponseEntity.ok(this.trialBalanceService.getTrialBalance(includeZeroBalance));

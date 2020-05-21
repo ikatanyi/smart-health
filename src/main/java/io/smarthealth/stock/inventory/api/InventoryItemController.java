@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -34,6 +35,7 @@ public class InventoryItemController {
     private final InventoryItemService service;
 
     @PostMapping("/inventoryItem")
+    @PreAuthorize("hasAuthority('create_inventoryitem')")
     public ResponseEntity<?> createInventoryItem(@Valid @RequestBody CreateInventoryItem itemData) {
 
 //        InventoryItem result = 
@@ -49,12 +51,14 @@ public class InventoryItemController {
     }
 
     @GetMapping("/inventoryItem/{id}/store/{storeId}")
+    @PreAuthorize("hasAuthority('view_inventoryItem')")
     public InventoryItemData getInventoryItem(@PathVariable(value = "id") Long code, @PathVariable(value = "storeId") Long storeId) {
         InventoryItem inventoryItem = service.getInventoryItemOrThrow(code, storeId);
         return inventoryItem.toData();
     }
     
      @GetMapping("/inventoryItem/store/{storeId}")
+     @PreAuthorize("hasAuthority('view_inventoryItem')")
     public List<InventoryItemData> getInventoryItemLists(@PathVariable(value = "id") Long code, 
             @RequestParam(value = "items", required = true) final List<ItemDTO> item ) {
         List<InventoryItemData> inventoryItem = service.getInventoryItemList(code, item)
@@ -65,6 +69,7 @@ public class InventoryItemController {
     }
 
     @GetMapping("/inventoryItems")
+    @PreAuthorize("hasAuthority('view_inventoryItem')")
     public ResponseEntity<?> getInventoryItems(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "item", required = false) final String item,

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -35,6 +36,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/invoices")
+    @PreAuthorize("hasAuthority('create_invoices')") 
     public ResponseEntity<?> createInvoice(@Valid @RequestBody CreateInvoice invoiceData) {
 
         List<InvoiceData> trans = service.createInvoice(invoiceData).stream().map(x -> x.toData()).collect(Collectors.toList());
@@ -48,6 +50,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/invoices/{id}")
+    @PreAuthorize("hasAuthority('view_invoices')") 
     public ResponseEntity<?> getInvoice(@PathVariable(value = "id") Long id) {
         Invoice trans = service.getInvoiceByIdOrThrow(id);
         return ResponseEntity.ok(trans.toData());
@@ -64,6 +67,7 @@ public class InvoiceController {
 //        return trans;
 //    }
     @GetMapping("/invoices")
+    @PreAuthorize("hasAuthority('view_invoices')") 
     public ResponseEntity<?> getInvoices(
             @RequestParam(value = "payer", required = false) Long payer,
             @RequestParam(value = "scheme", required = false) Long scheme,
@@ -98,11 +102,13 @@ public class InvoiceController {
     }
 
     @PostMapping("/invoices/{id}/emails")
+    @PreAuthorize("hasAuthority('send_invoices')") 
     public String sendReceipt(@PathVariable(value = "id") Long id) {
         return service.emailInvoice(id);
     }
 
     @PostMapping("/invoices/{id}/edi")
+    @PreAuthorize("hasAuthority('create_invoices')") 
     public ResponseEntity<?> sendInvoiceToEDI(@PathVariable(value = "id") Long id) {
         InvoiceData trans = service.invoiceToEDI(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(trans);

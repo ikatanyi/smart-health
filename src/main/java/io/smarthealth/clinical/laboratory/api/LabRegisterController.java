@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,6 +47,7 @@ public class LabRegisterController {
     }
 
     @PostMapping("/labs/register")
+    @PreAuthorize("hasAuthority('create_labregister')")
     public ResponseEntity<?> createLabRequest(@Valid @RequestBody LabRegisterData data) {
         LabRegister item = service.createLabRegister(data);
 
@@ -73,6 +75,7 @@ public class LabRegisterController {
 //        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 //    }
     @GetMapping("/labs/register/{labNo}")
+    @PreAuthorize("hasAuthority('view_labregister')")
     public ResponseEntity<?> getLabRequest(@PathVariable(value = "labNo") String labNo, @RequestParam(value = "expand", required = false) Boolean expand) {
 
         LabRegister request = service.getLabRegisterByNumber(labNo);
@@ -80,12 +83,14 @@ public class LabRegisterController {
     }
 
     @PutMapping("/labs/register/{labNo}/tests/{id}")
+    @PreAuthorize("hasAuthority('edit_labregister')")
     public ResponseEntity<?> updateLabRegisterTests(@PathVariable(value = "labNo") String labNo, @PathVariable(value = "id") Long testId, @Valid @RequestBody StatusRequest status) {
         int results = service.updateLabRegisteredTest(labNo, testId, status);
         return ResponseEntity.ok(results);
     }
 
     @GetMapping("/labs/register/{labNo}/tests")
+    @PreAuthorize("hasAuthority('view_labregister')")
     public ResponseEntity<?> getLabRequestTests(@PathVariable(value = "labNo") String labNo) {
         LabRegister item = service.getLabRegisterByNumber(labNo);
         List<LabRegisterTestData> list = item.getTests()
@@ -96,6 +101,7 @@ public class LabRegisterController {
     }
 
     @GetMapping("/labs/register/{labNo}/results")
+    @PreAuthorize("hasAuthority('view_labregister')")
     public ResponseEntity<?> getLabRegisterResults(@PathVariable(value = "labNo") String labNo) {
         LabRegister request = service.getLabRegisterByNumber(labNo);
         List<LabResultData> results = service.getResultByRegister(request)
@@ -106,12 +112,14 @@ public class LabRegisterController {
     }
 
     @PutMapping("/labs/register/{id}")
+    @PreAuthorize("hasAuthority('edit_labregister')")
     public ResponseEntity<?> updateLabRequest(@PathVariable(value = "id") Long id, @Valid @RequestBody LabRegisterData data) {
         LabRegister item = service.updateLabRegister(id, data);
         return ResponseEntity.ok(item.toData(false));
     }
 
     @DeleteMapping("/labs/register/{id}")
+    @PreAuthorize("hasAuthority('delete_labregister')")
     public ResponseEntity<?> deleteLabRequest(@PathVariable(value = "id") Long id) {
         service.voidLabRegister(id);
         return ResponseEntity.accepted().build();
@@ -119,6 +127,7 @@ public class LabRegisterController {
 //String labNumber, String orderNumber, String visitNumber,String patientNumber, TestStatus status
 
     @GetMapping("/labs/register")
+    @PreAuthorize("hasAuthority('view_labregister')")
     public ResponseEntity<?> getLabRequests(
             @RequestParam(value = "expand", required = false) Boolean expand,
             @RequestParam(value = "labNo", required = false) String labNumber,
@@ -152,6 +161,7 @@ public class LabRegisterController {
     }
 
     @GetMapping("/labs/register/{visitNo}/test-results")
+    @PreAuthorize("hasAuthority('view_labregister')")
     public ResponseEntity<?> getLabResults(@PathVariable(value = "visitNo") String visitNo,
             @RequestParam(value = "lab_no", required = false) String labNumber) {
         List<LabRegisterTestData> labRegisterTests = service.getTestsResultsByVisit(visitNo, labNumber)

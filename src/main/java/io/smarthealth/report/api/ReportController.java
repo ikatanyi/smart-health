@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,7 @@ public class ReportController {
     
     
     @GetMapping("/report")
+    @PreAuthorize("hasAuthority('view_reports')")
     @ApiOperation(value = "Daily_Income_Statement=[transactionNo,paymentMode,billNo,visitNumber,billStatus, patientNo,hasbalance,dateRange]"
             + "genInsuranceStatement=[payerId,schemeId,patientNo,invoiceNo,range,invoiceStatus]"
             + "Purchase_Order=[orderNo]")
@@ -187,6 +189,12 @@ public class ReportController {
                 break;
             case Referral_Form:
                 patientReportService.getReferralForm(queryParams, format, response);
+                break;
+            case Medical_Report:
+                patientReportService.getVisitNote(queryParams, format, response);
+                break;
+            case Appointment_Letter:
+                patientReportService.getAppointmentLetter(queryParams, format, response);
                 break;
             default:
                 break;

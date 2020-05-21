@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -34,6 +35,7 @@ public class WriteOffController {
 
     
     @PostMapping("/writeOff")
+    @PreAuthorize("hasAuthority('create_writeoff')")
     public ResponseEntity<?> createWriteOff(@Valid @RequestBody WriteOffData writeOffData) {
 
         WriteOffData remittance = writeOffService.map(writeOffService.createWriteOff(writeOffData));
@@ -47,18 +49,21 @@ public class WriteOffController {
     }
 
     @GetMapping("/writeOff/{id}")
+    @PreAuthorize("hasAuthority('view_writeoff')")
     public WriteOffData getWriteOff(@PathVariable(value = "id") Long id) {
         WriteOffData writeOff = writeOffService.map(writeOffService.getWriteOffByIdWithFailDetection(id));
         return writeOff;
     }
 
     @PutMapping("/writeOff/{id}")
+    @PreAuthorize("hasAuthority('edit_writeoff')")
     public WriteOffData updateRemitance(@PathVariable(value = "id") Long id, WriteOffData writeOffData) {
         WriteOffData writeOff = writeOffService.map(writeOffService.updateWriteOff(id, writeOffData));
         return writeOff;
     }
 
     @GetMapping("/writeOff")
+    @PreAuthorize("hasAuthority('view_writeoff')")
     public ResponseEntity<?> getAllWriteOffes(
             @RequestParam(value = "payerId", required = false) Long payerId, 
             @RequestParam(value = "schemeId", required = false) Long schemeId, 
