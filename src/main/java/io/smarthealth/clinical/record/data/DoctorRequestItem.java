@@ -24,4 +24,7 @@ public class DoctorRequestItem {
     @ApiModelProperty(hidden = true)
     private PrescriptionData prescriptionData;
 
+    private String orderNo;
+    private String requestedByName, requestedByNo;
+
 }
