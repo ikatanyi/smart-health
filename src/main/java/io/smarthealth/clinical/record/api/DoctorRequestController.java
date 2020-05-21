@@ -15,6 +15,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.clinical.PatientVisitData;
 import io.smarthealth.security.domain.User;
@@ -154,8 +155,9 @@ public class DoctorRequestController {
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
+        Patient patient = patientService.findPatientOrThrow(patientNo);
         //fetch all visits by patient
-        Page<Visit> patientVisits = visitService.fetchVisitByPatientNumber(patientNo, pageable);
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, pageable);
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
 
         for (Visit v : patientVisits.getContent()) {
@@ -163,15 +165,16 @@ public class DoctorRequestController {
 
             for (DoctorRequest docReq : pageList.getContent()) {
                 HistoricalDoctorRequestsData waitingRequest = new HistoricalDoctorRequestsData();
-                waitingRequest.setPatientName(docReq.getPatient().getFullName());
-                waitingRequest.setPatientNumber(docReq.getPatient().getPatientNumber());
+                waitingRequest.setPatientName(patient.getFullName());
+                waitingRequest.setPatientNumber(patient.getPatientNumber());
 
-                waitingRequest.setStartDate(docReq.getVisit().getStartDatetime());
-                waitingRequest.setStopDatetime(docReq.getVisit().getStopDatetime());
+                waitingRequest.setStartDate(v.getStartDatetime());
+                waitingRequest.setStopDatetime(v.getStopDatetime());
 
-                waitingRequest.setVisitNumber(docReq.getVisit().getVisitNumber());
+                waitingRequest.setVisitNumber(v.getVisitNumber());
+                waitingRequest.setVisitNotes(v.getComments());
                 //find line items by request_id
-                List<DoctorRequest> serviceItems = requestService.fetchServiceRequestsByPatient(docReq.getPatient(), fulfillerStatus, requestType);
+                List<DoctorRequest> serviceItems = requestService.fetchServiceRequests(docReq.getPatient(), fulfillerStatus, requestType, v);
                 List<DoctorRequestItem> requestItems = new ArrayList<>();
                 for (DoctorRequest r : serviceItems) {
                     requestItems.add(requestService.toData(r));

@@ -6,10 +6,7 @@
 package io.smarthealth.clinical.record.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.clinical.visit.data.VisitData;
-import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
-import io.smarthealth.organization.person.patient.data.PatientData;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,17 +17,19 @@ import lombok.Data;
  * @author Simon.waweru
  */
 @Data
-public class HistoricalDoctorRequestsData {
+public class HistoricalDiagnosisData {
 
     private String patientNumber;
     private String patientName;
     private String visitNumber;
     private String visitNotes;
+    private Long visitId;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime stopDatetime;
 
-    private List<DoctorRequestItem> item = new ArrayList<>();
+    private List<DiagnosisData> diagnosisData ;//= new ArrayList<>();
+
 }

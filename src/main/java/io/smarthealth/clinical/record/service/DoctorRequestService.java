@@ -123,6 +123,12 @@ public class DoctorRequestService implements DateConverter {
 //        return doctorRequestRepository.findRequestLine(fulfillerStatus, requestType, pageable);
 //    }
 //    
+    public List<DoctorRequest> fetchServiceRequests(final Patient patient, final FullFillerStatusType fullfillerStatus, final RequestType requestType, final Visit visit) {
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visit.getVisitNumber(), patient.getPatientNumber(), requestType, fullfillerStatus, null);
+        Pageable wholePage = Pageable.unpaged();
+        return doctorRequestRepository.findAll(spec, wholePage).getContent();
+    }
+
     public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final FullFillerStatusType fullfillerStatus, final RequestType requestType) {
         return doctorRequestRepository.findServiceRequestsByPatient(patient, fullfillerStatus, requestType);
     }
@@ -173,6 +179,7 @@ public class DoctorRequestService implements DateConverter {
         }
         requestItem.setOrderNo(d.getOrderNumber());
         requestItem.setRequestedByName(d.getRequestedBy().getUsername());
+        requestItem.setStatus(d.getFulfillerStatus().name());
 
         return requestItem;
     }

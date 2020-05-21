@@ -25,6 +25,6 @@ public class DoctorRequestItem {
     private PrescriptionData prescriptionData;
 
     private String orderNo;
-    private String requestedByName, requestedByNo;
+    private String requestedByName, requestedByNo, status;
 
 }
