@@ -14,7 +14,6 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
@@ -233,7 +232,7 @@ public class DoctorRequestController {
     }
 
     @DeleteMapping("/doc-request/{id}")
-    @PreAuthorize("hasAuthority('create_doctorrequest')")
+    @PreAuthorize("hasAuthority('delete_doctorrequest')")
     public ResponseEntity<?> deleteRequest(@PathVariable("id") final Long id) {
         return requestService.deleteById(id);
     }

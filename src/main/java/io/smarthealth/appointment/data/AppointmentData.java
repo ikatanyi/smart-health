@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -21,7 +22,7 @@ import org.modelmapper.ModelMapper;
 
 /**
  *
- * @author Kelsas
+ * @author Kennedy.Ikatanyi
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
@@ -58,6 +59,7 @@ public class AppointmentData implements Serializable {
     private String LastName;
     private String gender;
     private String phoneNumber;
+    private LocalDate createdOn;
 
     @ApiModelProperty(required = false, hidden = true)
     private SimpleItemData procedureData;
@@ -80,6 +82,17 @@ public class AppointmentData implements Serializable {
         if (appointment.getPatient() != null) {
             data.setPatientNumber(appointment.getPatient().getPatientNumber());
             data.setPatientName(appointment.getPatient().getFullName());
+            data.setFirstName(appointment.getPatient().getGivenName());
+            data.setLastName(appointment.getPatient().getSurname());
+            data.setGender(String.valueOf(appointment.getPatient().getGender()));
+            if(!appointment.getPatient().getContacts().isEmpty())
+               data.setPhoneNumber(appointment.getPatient().getContacts().get(0).getTelephone());
+        }
+        else{
+            data.setFirstName(appointment.getFirstName());
+            data.setLastName(appointment.getLastName());
+            data.setGender(appointment.getGender());
+            data.setPhoneNumber(appointment.getPhoneNumber());
         }
 
         if (appointment.getService() != null) {
@@ -92,9 +105,7 @@ public class AppointmentData implements Serializable {
             data.setDepartmentName(appointment.getPractitioner().getDepartment().getName());
             data.setPractitionerCategory(appointment.getPractitioner().getEmployeeCategory());
         }
-        data.setFirstName(appointment.getFirstName());
-        data.setLastName(appointment.getLastName());
-        data.setGender(appointment.getGender());
+        
         data.setAppointmentId(appointment.getId());
         data.setAppointmentDate(appointment.getAppointmentDate());
         data.setAppointmentNo(appointment.getAppointmentNo());
@@ -102,8 +113,8 @@ public class AppointmentData implements Serializable {
         data.setEndTime(appointment.getEndTime());
         data.setStartTime(appointment.getStartTime());
         data.setStatus(appointment.getStatus());
-        data.setUrgency(appointment.getUrgency());
-        data.setPhoneNumber(appointment.getPhoneNumber());
+        data.setUrgency(appointment.getUrgency());        
+        data.setCreatedOn(LocalDate.from(appointment.getCreatedOn().atZone(ZoneId.systemDefault())));
         return data;
     }
 }

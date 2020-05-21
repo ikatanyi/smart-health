@@ -190,6 +190,12 @@ public class ReportController {
             case Referral_Form:
                 patientReportService.getReferralForm(queryParams, format, response);
                 break;
+            case Medical_Report:
+                patientReportService.getVisitNote(queryParams, format, response);
+                break;
+            case Appointment_Letter:
+                patientReportService.getAppointmentLetter(queryParams, format, response);
+                break;
             default:
                 break;
 
