@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
  */
 public interface CashierShift {
 
+    public Long getId();
+
     String getCashPoint();
 
     public String getCashier();
@@ -27,6 +29,6 @@ public interface CashierShift {
     public ShiftStatus getStatus();
 
     public BigDecimal getBalance();
-   
+
     public Long getCashierId();
 }
