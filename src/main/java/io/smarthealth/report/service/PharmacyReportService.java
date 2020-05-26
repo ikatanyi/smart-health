@@ -66,12 +66,19 @@ public class PharmacyReportService {
     public void getPrescriptionLabel(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         PrescriptionData prescriptionData = null;
-        Long prescriptionId = NumberUtils.createLong(reportParam.getFirst("prescriptionId"));
+        Long prescriptionId = NumberUtils.createLong(reportParam.getFirst("3"));
         Optional<Prescription> prescription = prescriptionService.fetchPrescriptionById(prescriptionId);
         if (prescription.isPresent()) {
             prescriptionData = PrescriptionData.map(prescription.get());
             reportData.setPatientNumber(prescriptionData.getPatientNumber());
+            reportData.getFilters().put("age", prescriptionData.getPatientData().getAge());
         }
+        if(prescriptionData.getItemType().equalsIgnoreCase("tablet")||prescriptionData.getItemType().equalsIgnoreCase("capsule"))
+            reportData.getFilters().put("type", "TABLET/CAPSULES");
+        if(prescriptionData.getItemType().equalsIgnoreCase("syrup"))
+            reportData.getFilters().put("type", "SYRUP/SUSPENSION");
+        else
+            reportData.getFilters().put("type", "PESSARIES/SUPPOSITORIES");
         reportData.setData(Arrays.asList(prescriptionData));
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/pharmacy/presc_label");

@@ -124,6 +124,7 @@ public class Invoice extends Auditable {
         data.setDiscount(this.discount);
         data.setTax(this.tax);
         data.setBalance(this.balance);
+        data.setCreatedBy(this.getCreatedBy());
         data.setTransactionNo(this.transactionNo);
         data.setInvoiceItems(
                 this.items.stream()
