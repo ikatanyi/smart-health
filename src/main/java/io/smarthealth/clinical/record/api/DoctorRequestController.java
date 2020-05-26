@@ -61,6 +61,7 @@ public class DoctorRequestController {
 
 //    private final PricelistService pricelist;
     private final UserService userService;
+    
     private final RequestEventPublisher requestEventPublisher;
 
     @PostMapping("/visit/{visitNo}/doctor-request")

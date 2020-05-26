@@ -27,7 +27,7 @@ public class RequestEventListener {//implements ApplicationListener<RequestCreat
 //    @EventListener
     @TransactionalEventListener(phase=TransactionPhase.AFTER_COMPLETION)
     public void handleRequestedUpdatedEvent(RequestUpdatedEvent e) {
-        messagingTemplate.convertAndSend("/topic/requests." + e.getRequestType().name(), requestService.getUnfilledDoctorRequests(e.getRequestType()));
+        messagingTemplate.convertAndSend("/topic/requests." + e.getRequestType().name(), requestService.getUnfilledDoctorRequests(e.getRequestType()));        
     }
     
     @Async
