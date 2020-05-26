@@ -99,14 +99,14 @@
 				<text><![CDATA[S/N]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="99" y="0" width="60" height="15" uuid="c98df0e6-e4db-45dc-a260-28bfb050ccc1"/>
+				<reportElement x="108" y="0" width="60" height="15" uuid="c98df0e6-e4db-45dc-a260-28bfb050ccc1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Item Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="41" y="0" width="42" height="15" uuid="1a782066-8108-4631-93dd-12e9fd693df6"/>
+				<reportElement x="41" y="0" width="58" height="15" uuid="1a782066-8108-4631-93dd-12e9fd693df6"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -164,7 +164,7 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="99" y="0" width="60" height="12" uuid="cd5a298b-885b-4c89-9fa0-8b866cd0f4d9"/>
+				<reportElement x="108" y="0" width="60" height="12" uuid="cd5a298b-885b-4c89-9fa0-8b866cd0f4d9"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -205,7 +205,7 @@
 				<textFieldExpression><![CDATA[$F{quantityCounted}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="41" y="0" width="42" height="12" uuid="23bac9f3-1c9d-4cea-83dd-b3286d80781b"/>
+				<reportElement x="41" y="0" width="64" height="12" uuid="23bac9f3-1c9d-4cea-83dd-b3286d80781b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>

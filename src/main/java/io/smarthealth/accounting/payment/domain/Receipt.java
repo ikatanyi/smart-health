@@ -4,6 +4,7 @@ import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +92,7 @@ public class Receipt extends Auditable {
         data.setReceiptNo(this.receiptNo);
         data.setCurrency(this.currency);
         data.setPaid(this.getPaid());
+        data.setTransactionDate(this.getTransactionDate());
         data.setCreatedBy(this.getCreatedBy());
         if (this.shift != null) {
             data.setShiftNo(this.shift.getShiftNo());
