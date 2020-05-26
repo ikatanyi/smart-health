@@ -667,7 +667,7 @@ public class BillingService {
 //                });
     }
     
-    public BillDetail getAllBillDetails(String patientNo, String visitNo, String billNumber, String transactionId, Long servicePointId, Boolean hasBalance, BillStatus status, DateRange range, Pageable pageable) {
+    public List<BillItem> getAllBillDetails(String patientNo, String visitNo, String billNumber, String transactionId, Long servicePointId, Boolean hasBalance, BillStatus status, DateRange range, Pageable pageable) {
         Specification spec = PatientBillSpecification.createSpecification(patientNo, visitNo, billNumber, transactionId, servicePointId, hasBalance, status, range);
         List<PatientBillItem> patientItems = billItemRepository.findAll(spec);
         List<PatientBillItem> walkinItems = billItemRepository.findAll(spec);
@@ -677,29 +677,29 @@ public class BillingService {
         BillDetail details = new BillDetail();
 
         List<BillItem> bills = new ArrayList<>();
-        List<BillItem> paidBills = new ArrayList<>();
-        List<BillPayment> payments = new ArrayList<>();
+//        List<BillItem> paidBills = new ArrayList<>();
+//        List<BillPayment> payments = new ArrayList<>();
 
         patientItems.stream()
                 .forEach(x -> {
-                    if (x.getBalance() > 0) {
+//                    if (x.getBalance() > 0) {
                         bills.add(x.toBillItem());
-                    } else {
-                        paidBills.add(x.toBillItem());
-                        BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
-                        BigDecimal amount = BigDecimal.valueOf(x.getAmount());
-                        if (amount.signum() == -1) {
-                            amount = amount.negate();
-                        }
-                        payments.add(new BillPayment(type, x.getPaymentReference(), amount));
-                    }
+//                    } else {
+//                        paidBills.add(x.toBillItem());
+//                        BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
+//                        BigDecimal amount = BigDecimal.valueOf(x.getAmount());
+//                        if (amount.signum() == -1) {
+//                            amount = amount.negate();
+//                        }
+//                        payments.add(new BillPayment(type, x.getPaymentReference(), amount));
+//                    }
                 });
 
         details.setBills(bills);
-        details.setPaidBills(paidBills);
-        details.setPayments(payments);
+//        details.setPaidBills(paidBills);
+//        details.setPayments(payments);
 
-        return details;
+        return bills;
 
 //        Map<BillPayment.Type, Double> paymentlist = allPayments
 //                .stream()
