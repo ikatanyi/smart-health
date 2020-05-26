@@ -8,12 +8,14 @@ package io.smarthealth.clinical.pharmacy.service;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.domain.PatientDrugs;
 import io.smarthealth.clinical.pharmacy.domain.PatientDrugsRepository;
+import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.domain.PrescriptionRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.notifications.service.RequestEventPublisher;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.lang.reflect.Type;
@@ -48,7 +50,7 @@ public class PharmacyService {
 
     @Autowired
     ModelMapper modelMapper;
-
+     
     @Transactional
     public List<PatientDrugsData> savePatientDrugs(List<PatientDrugsData> patientdrugsData) {
         try {
@@ -75,6 +77,7 @@ public class PharmacyService {
                 }
                 prescriptionRepository.save(presc);
             }
+             
             return savedDrugsList;
         } catch (Exception e) {
             e.printStackTrace();

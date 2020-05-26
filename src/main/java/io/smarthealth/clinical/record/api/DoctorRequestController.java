@@ -1,6 +1,5 @@
 package io.smarthealth.clinical.record.api;
 
-import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.DoctorRequestItem;
@@ -14,7 +13,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.facility.service.EmployeeService;
+import io.smarthealth.notifications.service.RequestEventPublisher;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
@@ -60,9 +59,9 @@ public class DoctorRequestController {
 
     private final SequenceNumberService sequenceNumberService;
 
-    private final PricelistService pricelist;
-
+//    private final PricelistService pricelist;
     private final UserService userService;
+    private final RequestEventPublisher requestEventPublisher;
 
     @PostMapping("/visit/{visitNo}/doctor-request")
     public @ResponseBody
@@ -74,6 +73,7 @@ public class DoctorRequestController {
 //        Employee employee = employeeService.findEmployeeByUsername(SecurityUtils.getCurrentUserLogin().get()).orElse(null);
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceNumberService.next(1L, Sequences.DoctorRequest.name());
+        List<DoctorRequestData.RequestType> requestType = new ArrayList<>();
         for (DoctorRequestData data : docRequestData) {
             DoctorRequest doctorRequest = DoctorRequestData.map(data);
             Item item = itemService.findById(Long.valueOf(data.getItemCode())).get();
@@ -90,9 +90,14 @@ public class DoctorRequestController {
             doctorRequest.setFulfillerComment(FullFillerStatusType.Unfulfilled.name());
             doctorRequest.setRequestType(data.getRequestType());
             docRequests.add(doctorRequest);
+            if (!requestType.contains(data.getRequestType())) {
+                requestType.add(data.getRequestType());
+            }
         }
 
         List<DoctorRequest> docReqs = requestService.createRequest(docRequests);
+
+        requestEventPublisher.publishCreateEvent(requestType);
 
         List<DoctorRequestData> requestList = modelMapper.map(docReqs, new TypeToken<List<DoctorRequest>>() {
         }.getType());

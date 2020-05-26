@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api
 @RestController
 @RequestMapping("/api/chartofaccounts")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAuthority('view_chartofaccounts')")
 public class ChartOfAccountsControllers {
 
     private final ChartOfAccountServices chartOfAccountsService;
