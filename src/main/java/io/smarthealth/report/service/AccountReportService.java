@@ -554,7 +554,7 @@ public class AccountReportService {
         ReportData reportData = new ReportData();
         String receiptNo = reportParam.getFirst("receiptNo");
         //"RCT-00009"
-        ReceiptData receiptData = paymentService.getPaymentByReceiptNumber(receiptNo).toData();
+        ReceiptData receiptData = paymentService.getPaymentByReceiptNumber("RCT-000213003").toData();
         reportData.setData(Arrays.asList(receiptData));
         reportData.setFormat(format);
         reportData.setTemplate("/payments/general_receipt");

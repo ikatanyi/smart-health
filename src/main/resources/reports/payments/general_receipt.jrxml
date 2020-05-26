@@ -24,7 +24,7 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="transactionDate" class="java.lang.String"/>
+	<field name="transactionDate" class="java.lang.Object"/>
 	<field name="payer" class="java.lang.String"/>
 	<field name="description" class="java.lang.String"/>
 	<field name="amount" class="java.math.BigDecimal"/>
