@@ -30,22 +30,22 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class PatientNotesService {
-
+    
     @Autowired
     PatientNotesRepository patientNotesRepository;
-
+    
     @Autowired
     PatientService patientService;
-
+    
     @Autowired
     EmployeeService employeeService;
-
+    
     @Autowired
     PersonService personService;
-
+    
     @Autowired
     PersonRepository personRepository;
-
+    
     @Autowired
     ModelMapper modelMapper;
 
@@ -74,7 +74,7 @@ public class PatientNotesService {
 
     //c. Read all patient notes by patient number
     public Page<PatientNotes> fetchAllPatientNotesByPatient(final Patient patient, final Pageable pageable) {
-        return patientNotesRepository.findByPatient(patient, pageable);
+        return patientNotesRepository.findByPatientOrderByDateRecordedDesc(patient, pageable);
     }
 
     //d. Read patient notes by doctor and by patient number
@@ -88,14 +88,14 @@ public class PatientNotesService {
     public Optional<PatientNotes> fetchPatientNotesByVisit(Visit visit) {
         return patientNotesRepository.findByVisit(visit);
     }
-
+    
     public PatientNotes convertDataToEntity(PatientNotesData patientNotesData) {
         modelMapper.getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.STRICT);
         PatientNotes patientNotes = modelMapper.map(patientNotesData, PatientNotes.class);
         return patientNotes;
     }
-
+    
     public PatientNotesData convertEntityToData(PatientNotes patientNotes) {
         PatientNotesData patientNotesData = new PatientNotesData();//modelMapper.map(patientNotes, PatientNotesData.class);
         patientNotesData.setChiefComplaint(patientNotes.getChiefComplaint());
@@ -105,7 +105,10 @@ public class PatientNotesService {
         if (patientNotes.getHealthProvider() != null) {
             patientNotesData.setHealthProvider(patientNotes.getHealthProvider().getName());
         }
+        patientNotesData.setDateRecorded(patientNotes.getDateRecorded());
+        patientNotesData.setVisitNumber(patientNotes.getVisit().getVisitNumber());
+        patientNotesData.setVisitStartDate(patientNotes.getVisit().getStartDatetime());
         return patientNotesData;
     }
-
+    
 }

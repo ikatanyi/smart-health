@@ -4,6 +4,7 @@ import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.DoctorRequestItem;
+import io.smarthealth.clinical.record.data.HistoricalDoctorRequestsData;
 import io.smarthealth.clinical.record.data.WaitingRequestsData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
@@ -14,7 +15,9 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.report.data.clinical.PatientVisitData;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
 import io.smarthealth.security.util.SecurityUtils;
@@ -125,8 +128,6 @@ public class DoctorRequestController {
 
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);
-//            dd.setEmployeeData(employeeService.convertEmployeeEntityToEmployeeData(r.getRequestedBy()));
-//            dd.setPatientNumber(r.getPatient().getPatientNumber());
             dd.setVisitNumber(visit.getVisitNumber());
             return dd;
         });
@@ -140,6 +141,64 @@ public class DoctorRequestController {
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Doctor Requests");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/doctor-request/{patientNo}/past")
+    public ResponseEntity<?> pastDocRequests(
+            @PathVariable(value = "patientNo", required = false) final String patientNo,
+            @RequestParam(value = "requestType", required = false) final RequestType requestType,
+            @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final FullFillerStatusType fulfillerStatus,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size
+    ) {
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        Patient patient = patientService.findPatientOrThrow(patientNo);
+        //fetch all visits by patient
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, pageable);
+        List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
+
+        for (Visit v : patientVisits.getContent()) {
+            Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(v.getVisitNumber(), patientNo, requestType, fulfillerStatus, "patient", pageable);
+
+            for (DoctorRequest docReq : pageList.getContent()) {
+                HistoricalDoctorRequestsData waitingRequest = new HistoricalDoctorRequestsData();
+                waitingRequest.setPatientName(patient.getFullName());
+                waitingRequest.setPatientNumber(patient.getPatientNumber());
+
+                waitingRequest.setStartDate(v.getStartDatetime());
+                waitingRequest.setStopDatetime(v.getStopDatetime());
+
+                waitingRequest.setVisitNumber(v.getVisitNumber());
+                waitingRequest.setVisitNotes(v.getComments());
+                //find line items by request_id
+                List<DoctorRequest> serviceItems = requestService.fetchServiceRequests(docReq.getPatient(), fulfillerStatus, requestType, v);
+                List<DoctorRequestItem> requestItems = new ArrayList<>();
+                for (DoctorRequest r : serviceItems) {
+                    requestItems.add(requestService.toData(r));
+                }
+                waitingRequest.setItem(requestItems);
+                doctorRequestsData.add(waitingRequest);
+            }
+
+        }
+
+        PagedListHolder waitingPage = new PagedListHolder(doctorRequestsData);
+        waitingPage.setPageSize(pageable.getPageSize()); // number of items per page
+        waitingPage.setPage(pageable.getPageNumber());
+
+        Pager<List<HistoricalDoctorRequestsData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(waitingPage.getPageList());
+        PageDetails details = new PageDetails();
+        details.setPage(waitingPage.getPage() + 1);
+        details.setPerPage(waitingPage.getPageSize());
+        details.setTotalElements(Long.valueOf(doctorRequestsData.size()));
+        details.setTotalPage(waitingPage.getPageCount());
+        details.setReportName("History Doctor Requests");
         pagers.setPageDetails(details);
 
         return ResponseEntity.ok(pagers);

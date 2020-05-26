@@ -21,9 +21,9 @@ import lombok.Data;
 public class PatientNotesData {
 
     private String chiefComplaint;
-    @NotNull
+    //@NotNull
     private String historyNotes; //history of present complaints
-    @NotNull
+    //@NotNull
     private String examinationNotes;
     private String socialHistory;
 
@@ -45,5 +45,8 @@ public class PatientNotesData {
     private String voidedBy;
     @ApiModelProperty(required = false, hidden = true)
     private LocalDateTime voidedDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
+    private LocalDateTime visitStartDate;
 
 }

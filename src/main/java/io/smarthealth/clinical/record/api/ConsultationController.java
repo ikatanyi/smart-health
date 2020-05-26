@@ -9,6 +9,7 @@ package io.smarthealth.clinical.record.api;
 //import io.smarthealth.auth.service.UserService;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.record.data.DiagnosisData;
+import io.smarthealth.clinical.record.data.HistoricalDiagnosisData;
 import io.smarthealth.clinical.record.data.PatientNotesData;
 import io.smarthealth.clinical.record.domain.Disease;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
@@ -34,10 +35,12 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
 import io.swagger.annotations.Api;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -97,6 +100,7 @@ public class ConsultationController {
         patientNotes.setVisit(visit);
         patientNotes.setHealthProvider(user);
         patientNotes.setPatient(patient);
+        patientNotes.setDateRecorded(LocalDateTime.now());
 
         //check if notes already exists by visit
         Optional<PatientNotes> patientNoteExisting = patientNotesService.fetchPatientNotesByVisit(visit);
@@ -213,6 +217,55 @@ public class ConsultationController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Patient diagnosis");
         pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/patients/{patientNo}/diagnosis")
+    @PreAuthorize("hasAuthority('view_consultation')")
+    public ResponseEntity<?> fetchAllDiagnosisByPatient(
+            @PathVariable(value = "patientNo", required = true) final String patientNo,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        Patient patient = patientService.findPatientOrThrow(patientNo);
+        List<HistoricalDiagnosisData> list = new ArrayList<>();
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, pageable);
+        for (Visit v : patientVisits) {
+            HistoricalDiagnosisData dd = new HistoricalDiagnosisData();
+            dd.setPatientName(patient.getFullName());
+            dd.setPatientNumber(patient.getPatientNumber());
+            dd.setStartDate(v.getStartDatetime());
+            dd.setStopDatetime(v.getStopDatetime());
+            dd.setVisitNotes(v.getComments());
+            dd.setVisitNumber(v.getVisitNumber());
+            dd.setVisitId(v.getId());
+
+            Page<PatientDiagnosis> pdList = diagnosisService.fetchAllDiagnosisByVisit(v, Pageable.unpaged());
+
+            Page<DiagnosisData> dlist = pdList.map(pd -> {
+                return DiagnosisData.map(pd);
+            });
+            
+            dd.setDiagnosisData(dlist.getContent());
+            list.add(dd);
+        }
+
+        PagedListHolder visitDiagnosisPage = new PagedListHolder(list);
+        visitDiagnosisPage.setPageSize(pageable.getPageSize()); // number of items per page
+        visitDiagnosisPage.setPage(pageable.getPageNumber());
+
+        Pager<List<HistoricalDiagnosisData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(visitDiagnosisPage.getPageList());
+        PageDetails details = new PageDetails();
+        details.setPage(visitDiagnosisPage.getPage() + 1);
+        details.setPerPage(visitDiagnosisPage.getPageSize());
+        details.setTotalElements(Long.valueOf(visitDiagnosisPage.getPageSize()));
+        details.setTotalPage(visitDiagnosisPage.getPageCount());
+        details.setReportName("Patient diagnosis");
+        pagers.setPageDetails(details);
+
         return ResponseEntity.ok(pagers);
     }
 
