@@ -25,6 +25,7 @@ import io.smarthealth.clinical.record.service.SickOffNoteService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.data.EmployeeData;
@@ -217,35 +218,6 @@ public class GeneralClinicalServices {
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
-    @GetMapping("/referrals")
-    @PreAuthorize("hasAuthority('view_clinicalservice')")
-    public @ResponseBody
-    ResponseEntity<?> fetchReferrals(
-            @RequestParam(value = "visitNo", required = false) final String visitNo,
-            @RequestParam(value = "patientNo", required = false) final String patientNo,
-            @RequestParam(value = "pageSize", required = false) final Integer pageSize,
-            @RequestParam(value = "pageNo", required = false) final Integer pageNo
-    ) {
-        Pageable pageable = Pageable.unpaged();
-        if (pageNo != null && pageSize != null) {
-            pageable = PageRequest.of(pageNo, pageSize);
-        }
-        Page<ReferralData> page = referralsService.fetchReferrals(visitNo, patientNo, pageable).map((r) -> ReferralData.map(r));
-
-        Pager< List< ReferralData>> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Success");
-        pagers.setContent(page.getContent());
-        PageDetails details = new PageDetails();
-        details.setPage(page.getNumber());
-        details.setPerPage(page.getSize());
-        details.setTotalElements(page.getTotalElements());
-        details.setTotalPage(page.getTotalPages());
-        details.setReportName("Patient Referrals");
-        pagers.setPageDetails(details);
-        return ResponseEntity.status(HttpStatus.OK).body(pagers);
-    }
-
     @GetMapping("/visits/requested-practioners")
     @PreAuthorize("hasAuthority('view_clinicalservice')")
     public @ResponseBody
@@ -274,6 +246,35 @@ public class GeneralClinicalServices {
         pagers.setPageDetails(details);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pagers);
+    }
+
+    @GetMapping("/referrals")
+    @PreAuthorize("hasAuthority('view_clinicalservice')")
+    public @ResponseBody
+    ResponseEntity<?> fetchReferrals(
+            @RequestParam(value = "visitNo", required = false) final String visitNo,
+            @RequestParam(value = "patientNo", required = false) final String patientNo,
+            @RequestParam(value = "pageSize", required = false) final Integer pageSize,
+            @RequestParam(value = "pageNo", required = false) final Integer pageNo
+    ) {
+        Pageable pageable = Pageable.unpaged();
+        if (pageNo != null && pageSize != null) {
+            pageable = PageRequest.of(pageNo, pageSize);
+        }
+        Page<ReferralData> page = referralsService.fetchReferrals(visitNo, patientNo, pageable).map((r) -> ReferralData.map(r));
+
+        Pager< List< ReferralData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(page.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(page.getNumber());
+        details.setPerPage(page.getSize());
+        details.setTotalElements(page.getTotalElements());
+        details.setTotalPage(page.getTotalPages());
+        details.setReportName("Patient Referrals");
+        pagers.setPageDetails(details);
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
 }

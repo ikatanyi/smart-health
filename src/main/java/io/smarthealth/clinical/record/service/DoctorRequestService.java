@@ -14,6 +14,7 @@ import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.DoctorRequestItem;
 import io.smarthealth.clinical.record.data.PrescriptionData;
+import io.smarthealth.clinical.record.data.WaitingRequestsData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
@@ -21,14 +22,21 @@ import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.domain.PrescriptionRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.lang.DateConverter;
+import io.smarthealth.infrastructure.utility.PageDetails;
+import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.service.PatientService;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +62,10 @@ public class DoctorRequestService implements DateConverter {
     private final ServicePointService servicePointService;
 
     private final PrescriptionRepository prescriptionRepository;
+
+    private final VisitService visitService;
+
+    private final PatientService patientService;
 
     @Transactional
     public List<DoctorRequest> createRequest(List<DoctorRequest> docRequests) {
@@ -182,5 +194,55 @@ public class DoctorRequestService implements DateConverter {
         requestItem.setStatus(d.getFulfillerStatus().name());
 
         return requestItem;
+    }
+
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Page<DoctorRequestItem> fetchUnfilledRequests(RequestType requestType) {
+        return doctorRequestRepository.findAll(DoctorRequestSpecification.unfullfilledRequests(requestType), PageRequest.of(0, 50)).map(x -> toData(x));
+    }
+
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Pager<?> getUnfilledDoctorRequests(RequestType requestType) {
+        Pageable pageable = PageRequest.of(0, 50);
+        Page<DoctorRequest> pageList = doctorRequestRepository.findAll(DoctorRequestSpecification.unfullfilledRequests(requestType), pageable);
+        List<WaitingRequestsData> waitingRequests = new ArrayList<>();
+
+        pageList.getContent().stream().map((docReq) -> {
+
+            WaitingRequestsData waitingRequest = new WaitingRequestsData();
+            waitingRequest.setPatientData(patientService.convertToPatientData(docReq.getPatient()));
+            waitingRequest.setPatientNumber(docReq.getPatient().getPatientNumber());
+            waitingRequest.setVisitData(visitService.convertVisitEntityToData(docReq.getVisit()));
+            waitingRequest.setVisitNumber(docReq.getVisit().getVisitNumber());
+            waitingRequest.setRequestId(docReq.getId());
+            //find line items by request_id
+            List<DoctorRequest> serviceItems = doctorRequestRepository.findAll(DoctorRequestSpecification.unfullfilledRequests(docReq.getPatient().getPatientNumber(), requestType));
+            List<DoctorRequestItem> requestItems = new ArrayList<>();
+            serviceItems.forEach((r) -> {
+                requestItems.add(toData(r));
+            });
+            waitingRequest.setItem(requestItems);
+            return waitingRequest;
+        }).forEachOrdered((waitingRequest) -> {
+            waitingRequests.add(waitingRequest);
+        });
+
+        PagedListHolder waitingPage = new PagedListHolder(waitingRequests);
+        waitingPage.setPageSize(pageable.getPageSize()); // number of items per page
+        waitingPage.setPage(pageable.getPageNumber());
+
+        Pager<List<WaitingRequestsData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(waitingPage.getPageList());
+        PageDetails details = new PageDetails();
+        details.setPage(waitingPage.getPage() + 1);
+        details.setPerPage(waitingPage.getPageSize());
+        details.setTotalElements(Long.valueOf(waitingRequests.size()));
+        details.setTotalPage(waitingPage.getPageCount());
+        details.setReportName("Doctor Requests");
+        pagers.setPageDetails(details);
+
+        return pagers;
     }
 }

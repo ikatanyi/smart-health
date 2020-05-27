@@ -80,6 +80,7 @@ public class ReceivePaymentService {
         receipt.setAmount(data.getAmount());
         receipt.setCurrency(data.getCurrency());
         receipt.setPayer(data.getPayer());
+        receipt.setPaid(data.getTenderedAmount());
         receipt.setPaymentMethod(data.getPaymentMethod());
         receipt.setTenderedAmount(data.getTenderedAmount()!=null ? data.getTenderedAmount() : BigDecimal.ZERO);
         receipt.setReferenceNumber(data.getReferenceNumber());
@@ -284,7 +285,7 @@ public class ReceivePaymentService {
                                     Collectors.summingDouble(x -> (x.getItem().getCostRate().doubleValue() * x.getQuantity())))
                     );
             if (!inventory.isEmpty()) {
-                inventory.forEach((k, v) -> {
+            inventory.forEach((k, v) -> {
                     //revenue
                     ServicePoint srv = servicePointService.getServicePoint(k);
                     String narration = "Expensing Inventory for " + srv.getName();

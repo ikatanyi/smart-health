@@ -42,14 +42,13 @@ public class ReportController {
     private final PharmacyReportService pharmacyReportService;
     private final PaymentReportService paymentReportService;
     private final StockReportService stockReportService;
-    
-    
+
     @GetMapping("/report")
     @PreAuthorize("hasAuthority('view_reports')")
     @ApiOperation(value = "Daily_Income_Statement=[transactionNo,paymentMode,billNo,visitNumber,billStatus, patientNo,hasbalance,dateRange]"
             + "genInsuranceStatement=[payerId,schemeId,patientNo,invoiceNo,range,invoiceStatus]"
             + "Purchase_Order=[orderNo]")
-    public ResponseEntity<?> generateReport(            
+    public ResponseEntity<?> generateReport(
             @RequestParam(value = "reportName", required = true) ReportName reportName,
             @RequestParam(required = false) MultiValueMap<String, String> queryParams,
             @RequestParam(value = "format", required = false) ExportFormat format,
@@ -80,7 +79,7 @@ public class ReportController {
                 procedureReportService.getPatientProcedureReport(queryParams, format, response);
                 break;
             case Request_Form:
-                 patientReportService.getPatientRequest(queryParams, format, response);
+                patientReportService.getPatientRequest(queryParams, format, response);
                 break;
             case Prescription:
                 pharmacyReportService.getPrescription(queryParams, format, response);
@@ -111,7 +110,7 @@ public class ReportController {
                 break;
             case Patient_Card:
                 patientReportService.getPatientCard(queryParams, format, response);
-                break;    
+                break;
             case Patient_Visit:
                 patientReportService.getVisit(queryParams, format, response);
                 break;
@@ -135,7 +134,7 @@ public class ReportController {
                 break;
             case Chart_Of_Account:
                 reportService.getChartOfAccounts(format, response);
-                break; 
+                break;
             case Balance_Sheet:
                 reportService.getBalanceSheet(format, response);
                 break;
@@ -165,22 +164,22 @@ public class ReportController {
                 break;
             case Payer_Credit_Note:
                 paymentReportService.getcreditNote(queryParams, format, response);
-                break;    
+                break;
             case Supplier_Credit_Note:
                 stockReportService.getSuppliercreditNote(queryParams, format, response);
                 break;
             case Purchase_Order:
                 stockReportService.getPurchaseOrder(queryParams, format, response);
-                break;    
-             case Account_Transactions:
+                break;
+            case Account_Transactions:
                 reportService.getAccTransactions(queryParams, format, response);
                 break;
             case Remittance_Report:
                 reportService.getRemittanceReport(queryParams, format, response);
-                break;    
+                break;
             case Allocation_Report:
                 reportService.getAllocationReport(queryParams, format, response);
-                break;   
+                break;
             case Stock_Inventory:
                 stockReportService.getInventoryItems(queryParams, format, response);
                 break;
@@ -200,15 +199,14 @@ public class ReportController {
                 break;
 
         }
-         return ResponseEntity.ok("success"); 
-    }    
+        return ResponseEntity.ok("success");
+    }
 
     @GetMapping("/report/clinical/prescription-label/{prescriptionId}")
     public void generatePrescriptionLabel(
             @PathVariable Long prescriptionId,
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
-        
 
     }
 

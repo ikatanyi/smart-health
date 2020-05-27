@@ -38,6 +38,7 @@
 	<field name="discount" class="java.math.BigDecimal"/>
 	<field name="visitDate" class="java.lang.Object"/>
 	<field name="invoicePayments" class="java.util.List"/>
+	<field name="createdBy" class="java.lang.String"/>
 	<variable name="Price_1" class="java.lang.Double" resetType="Column" calculation="Sum">
 		<variableExpression><![CDATA[]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
@@ -322,28 +323,21 @@
 	<pageFooter>
 		<band height="86" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="11" width="259" height="14" uuid="17f31811-0ef9-4546-b89f-1122b3500a8c"/>
+				<reportElement x="1" y="11" width="259" height="35" uuid="17f31811-0ef9-4546-b89f-1122b3500a8c"/>
 				<textElement>
 					<font size="7"/>
 				</textElement>
-				<text><![CDATA[If you have any questions about this invoice, please contact
-[Name, Phone #, E-mail]
+				<text><![CDATA[If you have any questions about this invoice, please contact us using the contacts above
+[Phone #, E-mail]
 ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="361" y="11" width="172" height="14" uuid="e29a706a-6346-45c6-a5e6-5ed96d75aaf5"/>
+				<reportElement x="361" y="11" width="182" height="14" uuid="e29a706a-6346-45c6-a5e6-5ed96d75aaf5"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<text><![CDATA[Make all cheques payable to		]]></text>
+				<text><![CDATA[Make all cheques payable to the Company stated above]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="361" y="25" width="192" height="12" isRemoveLineWhenBlank="true" uuid="beb90d54-4781-4030-acc5-b0fbb9c92b85"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement x="295" y="51" width="101" height="27" uuid="d34f5209-ff0b-4051-b8a3-ac76fb5a184c"/>
 				<textElement verticalAlignment="Middle">
@@ -363,13 +357,6 @@
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Served by :]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="23" width="259" height="14" uuid="9fd8d218-5fee-483e-a090-9f1197a4b488"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<text><![CDATA[don't hesitate to contact us]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="434" y="78" width="80" height="8" uuid="e7649eda-3681-4858-982c-f4a93e5a9b72"/>
@@ -391,6 +378,13 @@
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="61" y="46" width="219" height="20" uuid="31462754-0376-4c15-aac1-fe59ab0c155a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>

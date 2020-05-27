@@ -20,7 +20,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{servicePoint}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="111" y="0" width="150" height="20" uuid="c8c0fd8d-b5af-4df5-8ca7-8b0e4413f1c8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>

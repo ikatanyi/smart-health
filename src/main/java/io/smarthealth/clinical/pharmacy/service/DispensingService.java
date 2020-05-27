@@ -21,12 +21,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
 import io.smarthealth.clinical.pharmacy.domain.specification.DispensingSpecification;
+import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.notifications.service.RequestEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -60,6 +62,7 @@ public class DispensingService {
     private final VisitService visitService;
     private final DoctorsRequestRepository doctorRequestRepository;
     private final WalkingService walkingService;
+    private final RequestEventPublisher requestEventPublisher;
 
     private void dispenseItem(Store store, DrugRequest drugRequest) {
 
@@ -118,6 +121,8 @@ public class DispensingService {
         billingService.save(toBill(drugRequest, store));
 
         dispenseItem(store, drugRequest);
+
+        requestEventPublisher.publishUpdateEvent(DoctorRequestData.RequestType.Pharmacy);
 
         return trdId;
     }

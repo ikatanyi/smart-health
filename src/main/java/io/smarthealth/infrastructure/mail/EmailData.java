@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 /**
  * Data needed for sending a mail. Override this if you need more data to be
  * sent.
- */
+ */ 
 @Data
 @Component
 public class EmailData {

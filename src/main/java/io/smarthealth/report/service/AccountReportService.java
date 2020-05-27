@@ -24,6 +24,7 @@ import io.smarthealth.accounting.accounts.service.IncomesStatementService;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.accounts.service.LedgerService;
 import io.smarthealth.accounting.accounts.service.TrialBalanceService;
+import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
@@ -56,7 +57,6 @@ import io.smarthealth.report.data.accounts.DailyBillingData;
 import io.smarthealth.report.data.accounts.InsuranceInvoiceData;
 import io.smarthealth.report.data.accounts.TrialBalanceData;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -378,9 +378,12 @@ public class AccountReportService {
             }
             data.setPaymentMode(bill.getPaymentMode());
             data.setPaid(0.0);
-            List<PatientBillItem> items = billService.getReceiptedBillItems(bill.getVisit().getVisitNumber(), Pageable.unpaged()).getContent();
-            for (PatientBillItem item : items) {
+            String visitNumber = bill.getWalkinFlag()?bill.getReference():bill.getVisit().getVisitNumber();
+            List<BillItem> items = billService.getAllBillDetails(data.getPatientId(), visitNumber, null, null, null, null, null, null, Pageable.unpaged());
+            for (BillItem item : items) {
                 data.setAmount(data.getAmount() + item.getAmount());
+                if(item.getStatus()==item.getStatus().Paid)
+                    data.setPaid(data.getPaid()+item.getAmount());
                 switch (item.getServicePoint()) {
                     case "Laboratory":
                         data.setLab(data.getLab() + item.getAmount());
@@ -389,6 +392,7 @@ public class AccountReportService {
                         data.setPharmacy(data.getPharmacy() + item.getAmount());
                         break;
                     case "Procedure":
+                    case "Triage":
                         data.setProcedure(data.getProcedure() + item.getAmount());
                         break;
                     case "Radiology":
@@ -397,6 +401,9 @@ public class AccountReportService {
                     case "Consultation":
                         data.setConsultation(data.getConsultation() + item.getAmount());
                         break;
+                    case "Copayment":
+                         data.setConsultation(data.getCopay()+item.getAmount());  
+                         break;
                     default:
                         data.setOther(data.getOther() + item.getAmount());
                         break;
