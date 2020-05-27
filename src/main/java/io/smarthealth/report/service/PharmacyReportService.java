@@ -74,7 +74,7 @@ public class PharmacyReportService {
             if(prescriptionData.getPatientData()!=null)
                reportData.getFilters().put("age", prescriptionData.getPatientData().getAge());
             else
-               reportData.getFilters().put("age", 0);
+               reportData.getFilters().put("age", "");
         }
         if(prescriptionData.getItemType().equalsIgnoreCase("tablet")||prescriptionData.getItemType().equalsIgnoreCase("capsule"))
             reportData.getFilters().put("type", "TABLET/CAPSULES");
