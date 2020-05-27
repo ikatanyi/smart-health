@@ -55,7 +55,7 @@ public class BatchImportService {
                 case Allocation:
                     List<BatchAllocationData> allocationList = toPojoUtil.toPojo(BatchAllocationData.class, inputFilestream);
                     allocationService.importAllocation(allocationList);
-                case Products:
+                case Payers:
                     // code block
                     break;
                 default:

@@ -10,7 +10,6 @@ import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.scheme.data.SchemeData;
 import io.smarthealth.infrastructure.imports.service.ImportService;
-import io.smarthealth.organization.person.data.PersonData;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.stock.item.data.CreateItem;
 import java.io.IOException;
@@ -18,8 +17,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
@@ -54,15 +51,13 @@ public class TemplateService {
                 fileName = "Service Master List";
                 componentClass = CreateItem.class;
                 break;
-            case Insurances:
+            case Payers:
                 fileName = "Insurances";
                 componentClass = PayerData.class;
                 break;
             case Schemes:
                 fileName = "Schemes";
                 componentClass = SchemeData.class;
-                break;
-            case DoctorNotes:
                 break;
             default:
                 break;

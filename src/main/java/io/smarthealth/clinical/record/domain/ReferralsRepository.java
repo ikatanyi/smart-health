@@ -8,6 +8,7 @@ package io.smarthealth.clinical.record.domain;
 import io.smarthealth.clinical.visit.domain.Visit;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Repository;
  * @author Simon.waweru
  */
 @Repository
-public interface ReferralsRepository extends JpaRepository<Referrals, Long> {
-
+public interface ReferralsRepository extends JpaRepository<Referrals, Long>, JpaSpecificationExecutor<Referrals> {
+    
     Optional<Referrals> findByVisit(final Visit visit);
 }

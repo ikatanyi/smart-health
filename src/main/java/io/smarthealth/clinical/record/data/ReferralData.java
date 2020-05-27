@@ -29,6 +29,8 @@ public class ReferralData {
     private String chiefComplaints;
     private String examinationNotes;
     private Long doctorServiceId;
+    private String patientName;
+    private String patientNumber;
     
     public static ReferralData map(Referrals r) {
         ReferralData data = new ReferralData();
@@ -43,6 +45,8 @@ public class ReferralData {
         data.setIncludeVisitClinalNotes(r.isIncludeVisitClinalNotes());
         data.setChiefComplaints(r.getChiefComplaints());
         data.setExaminationNotes(r.getExaminationNotes());
+        data.setPatientName(r.getPatient().getFullName());
+        data.setPatientNumber(r.getPatient().getPatientNumber());
         return data;
     }
     
