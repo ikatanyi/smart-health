@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,7 @@ public class DoctorInvoiceController {
     }
 
     @PostMapping("/doctor-invoices")
+    @PreAuthorize("hasAuthority('create_doctorInvoices')") 
     public ResponseEntity<?> createDoctorInvoice(@Valid @RequestBody DoctorInvoiceData data) {
 
         DoctorInvoice item = doctorService.createDoctorInvoice(data);
@@ -53,23 +55,27 @@ public class DoctorInvoiceController {
     }
 
     @GetMapping("/doctor-invoices/{id}")
+    @PreAuthorize("hasAuthority('view_doctorInvoices')") 
     public ResponseEntity<?> getDoctorInvoice(@PathVariable(value = "id") Long id) {
         DoctorInvoice item = doctorService.getDoctorInvoice(id);
         return ResponseEntity.ok(item.toData());
     }
 
     @PutMapping("/doctor-invoices/{id}")
+    @PreAuthorize("hasAuthority('edit_doctorInvoices')") 
     public ResponseEntity<?> updateDoctorInvoice(@PathVariable(value = "id") Long id, @Valid @RequestBody DoctorInvoiceData data) {
         DoctorInvoice item = doctorService.updateDoctorInvoice(id, data);
         return ResponseEntity.ok(item.toData());
     }
 
     @DeleteMapping("/doctor-invoices/{id}")
+    @PreAuthorize("hasAuthority('delete_doctorInvoices')") 
     public ResponseEntity<?> deleteDoctorInvoice(@PathVariable(value = "id") Long id) {
         doctorService.deleteDoctorInvoice(id);
         return ResponseEntity.accepted().build();
     }
     @GetMapping("/doctor-invoices")
+    @PreAuthorize("hasAuthority('view_doctorInvoices')") 
     public ResponseEntity<?> getDoctorInvoices(
             @RequestParam(value = "doctorId", required = false) Long doctorId,
             @RequestParam(value = "serviceItem", required = false) String serviceItem,

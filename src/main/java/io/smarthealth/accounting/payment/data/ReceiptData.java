@@ -5,6 +5,7 @@ import io.smarthealth.accounting.payment.domain.ReceiptItem;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class ReceiptData {
   
     private Long id;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
-    private LocalDate transactionDate;
+    private LocalDateTime transactionDate;
     private String payer;
     private String description; //Insurance payment | Cheque deposit
     private BigDecimal amount;

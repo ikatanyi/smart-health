@@ -38,6 +38,10 @@ public class CashierService {
     private final UserService userService;
     private final ShiftRepository shiftRepository;
     private final SequenceNumberService sequenceNumberService;
+    
+    public Optional<Cashier> findByUser(final User user){
+        return repository.findByUser(user);
+    }
 
     public Cashier createCashier(CashierData data) {
         User user = userService.getUser(data.getUserId())

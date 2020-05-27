@@ -27,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,6 +53,7 @@ public class BillingV2Controller {
     }
 
     @PostMapping("/billing")
+    @PreAuthorize("hasAuthority('create_billV2')") 
     public ResponseEntity<?> createBill(@Valid @RequestBody BillData billData) {
 
         PatientBill patientbill = service.createPatientBill(billData);
@@ -65,12 +67,14 @@ public class BillingV2Controller {
     }
 
     @GetMapping("/billing/{id}")
+    @PreAuthorize("hasAuthority('view_billV2')") 
     public BillData getBill(@PathVariable(value = "id") Long code) {
         PatientBill bill = service.findOneWithNoFoundDetection(code);
         return bill.toData();
     }
 
     @PostMapping("/billing/{visitNumber}/copay")
+    @PreAuthorize("hasAuthority('create_billV2')") 
     public ResponseEntity<?> createCopay(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody CopayData data) {
         if (!visitNumber.equals(data.getVisitNumber())) {
             throw APIException.badRequest("Visit Number on path variable and body do not match");
@@ -85,6 +89,7 @@ public class BillingV2Controller {
     }
 
     @GetMapping("/billing")
+    @PreAuthorize("hasAuthority('view_billV2')") 
     public ResponseEntity<?> getBills(
             @RequestParam(value = "visitNumber", required = false) String visitNumber,
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
@@ -120,6 +125,7 @@ public class BillingV2Controller {
 
     //get based on visit
     @GetMapping("/billing/{visitNumber}/items")
+    @PreAuthorize("hasAuthority('view_billV2')") 
     public ResponseEntity<?> getBillDetails(
             @PathVariable(value = "visitNumber") String visitNumber,
             @RequestParam(value = "page", required = false) Integer page,

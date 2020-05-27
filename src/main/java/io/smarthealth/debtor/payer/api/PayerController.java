@@ -20,6 +20,7 @@ import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,6 +53,7 @@ public class PayerController {
     }
 
     @PostMapping("/payer")
+    @PreAuthorize("hasAuthority('create_payer')")
     public ResponseEntity<?> createPayer(@Valid @RequestBody PayerData payerData) {
 
         Payer payer = PayerData.map(payerData);
@@ -85,6 +87,7 @@ public class PayerController {
     }
 
     @GetMapping("/payer/{id}")
+    @PreAuthorize("hasAuthority('view_payer')")
     public ResponseEntity<?> fetchPayerByID(@PathVariable("id") final Long payerId) {
         PayerData payers = PayerData.map(payerService.findPayerByIdWithNotFoundDetection(payerId));
 
@@ -100,6 +103,7 @@ public class PayerController {
     }
 
     @GetMapping("/payer")
+    @PreAuthorize("hasAuthority('view_payer')")
     public ResponseEntity<?> fetchAllPayers(Pageable pageable) {
         Page<PayerData> payers = payerService.fetchPayers(pageable).map(p -> PayerData.map(p));
 

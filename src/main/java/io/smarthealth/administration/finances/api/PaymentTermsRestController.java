@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,6 +34,7 @@ public class PaymentTermsRestController {
     }
 
     @PostMapping("/payment-terms")
+    @PreAuthorize("hasAuthority('create_paymentTerms')")
     public ResponseEntity<?> createPaymentTerms(@Valid @RequestBody PaymentTerms paymentTerms) {
         if (service.getPaymentTermByName(paymentTerms.getTermsName()).isPresent()) {
             throw APIException.conflict("Payment Terms with name {0} already exists.", paymentTerms.getTermsName());
@@ -50,12 +52,14 @@ public class PaymentTermsRestController {
     }
 
     @GetMapping("/payment-terms/{id}")
+    @PreAuthorize("hasAuthority('view_paymentTerms')")
     public PaymentTerms getPaymentterm(@PathVariable(value = "id") Long id) {
         PaymentTerms paymentTerms = service.getPaymentTermByIdWithFailDetection(id);
         return paymentTerms;
     }
 
     @GetMapping("/payment-terms")
+    @PreAuthorize("hasAuthority('view_paymentTerms')")
     public ResponseEntity<?> getAllPaymentTerms(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "page", required = false) Integer page,

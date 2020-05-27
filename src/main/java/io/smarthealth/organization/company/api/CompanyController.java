@@ -28,6 +28,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 /**
@@ -46,6 +47,7 @@ public class CompanyController {
     }
 
     @PostMapping("/company")
+    @PreAuthorize("hasAuthority('create_company')")
     public @ResponseBody
     ResponseEntity<?> createCompany(@RequestBody @Valid final CompanyData orgData) {
         Company result = service.createOrganization(orgData);
@@ -58,6 +60,7 @@ public class CompanyController {
     }
 
     @GetMapping("/company/{id}")
+    @PreAuthorize("hasAuthority('view_company')")
     public @ResponseBody
     ResponseEntity<?> getCompany(@PathVariable(value = "id") String id) {
         Company result = service.getOrganizationOrThrow(id);
@@ -66,6 +69,7 @@ public class CompanyController {
     }
 
     @GetMapping("/company/current")
+    @PreAuthorize("hasAuthority('view_company')")
     public @ResponseBody
     ResponseEntity<?> getCurrentCompany() {
         Company result = service.getCurrentOrganization();
@@ -74,6 +78,7 @@ public class CompanyController {
     }
 
     @PutMapping("/company/{id}")
+    @PreAuthorize("hasAuthority('edit_company')")
     public @ResponseBody
     ResponseEntity<?> updateCompany(@PathVariable(value = "id") String id, CompanyData data) {
         Company result = service.updateOrganization(id, data);
@@ -87,6 +92,7 @@ public class CompanyController {
 
     //Your logo has been saved.
     @PostMapping("/company/{id}/logo")
+    @PreAuthorize("hasAuthority('create_company')")
     public LogoResponse uploadLogo(@PathVariable("id") final String id, @RequestParam("file") MultipartFile file) {
         CompanyLogo logo = service.storeLogo(id, file);
 
@@ -98,6 +104,7 @@ public class CompanyController {
     }
 
     @GetMapping("/company/logo/{logoId}")
+    @PreAuthorize("hasAuthority('view_company')")
     public ResponseEntity<Resource> downloadLogo(@PathVariable String logoId) {
         // Load file from database
         CompanyLogo dbFile = service.getLogo(logoId);
@@ -109,6 +116,7 @@ public class CompanyController {
     }
 
     @DeleteMapping("/company/logo/{logoId}")
+    @PreAuthorize("hasAuthority('delete_company')")
     public ResponseEntity<?> deleteLogo(@PathVariable String logoId) {
         service.deleteLogo(logoId);
         return ResponseEntity.noContent().build();

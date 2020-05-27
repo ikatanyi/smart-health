@@ -21,7 +21,7 @@ public interface PatientNotesRepository extends JpaRepository<PatientNotes, Long
 
     Page<PatientNotes> findByHealthProviderAndPatient(final Employee employee, Patient patient, final Pageable pageable);
 
-    Page<PatientNotes> findByPatient(Patient patient, final Pageable pageable);
+    Page<PatientNotes> findByPatientOrderByDateRecordedDesc(Patient patient, final Pageable pageable);
 
     Page<PatientNotes> findByVisit(Visit visit, final Pageable pageable);
 

@@ -55,5 +55,7 @@ public enum ReportName {
         Allocation_Report,
         Stock_Inventory,
         Stock_Adjustment,
-        Referral_Form
+        Referral_Form,
+        Medical_Report,
+        Appointment_Letter
 }

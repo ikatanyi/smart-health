@@ -100,7 +100,6 @@ public class PricelistService {
     }
 
     public PriceList updatePriceList(Long id, PriceListData data) {
-
         PriceList toUpdateItem = getPriceList(id);
         Item item = findItem(data.getItemCode());
         ServicePoint servicePoint = getServicePoint(data.getServicePointId());
@@ -109,9 +108,8 @@ public class PricelistService {
         toUpdateItem.setDefaultPrice(data.getDefaultPrice());
         toUpdateItem.setEffectiveDate(data.getEffectiveDate());
         toUpdateItem.setItem(item);
-        toUpdateItem.setSellingRate(BigDecimal.ZERO);
+        toUpdateItem.setSellingRate(data.getSellingRate());
         toUpdateItem.setServicePoint(servicePoint);
-
         return save(toUpdateItem);
     }
 

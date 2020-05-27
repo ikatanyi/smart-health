@@ -28,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -60,6 +61,7 @@ public class PatientQueueController {
     private ServicePointService servicePointService;
 
     @GetMapping("/department/{servicePoint}/queue")
+    @PreAuthorize("hasAuthority('view_patientqueue')")
     public ResponseEntity<List<PatientQueueData>> fetchQueuesByDepartment(@PathVariable("servicePoint") final String servicePoint, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         boolean status = true;
         if (queryParams.getFirst("status") != null) {
@@ -112,6 +114,7 @@ public class PatientQueueController {
 //    }
 
     @GetMapping("/patient/{patientNo}/queue")
+    @PreAuthorize("hasAuthority('view_patientqueue')")
     public ResponseEntity<List<PatientQueueData>> fetchQueuesBPatient(@PathVariable("patientNo") String patientNumber, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Patient patient = patientService.findPatientOrThrow(patientNumber);
         Page<PatientQueueData> page = patientQueueService.fetchQueueByPatient(patient, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
@@ -127,12 +130,14 @@ public class PatientQueueController {
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }*/
     @GetMapping("/queue")
+    @PreAuthorize("hasAuthority('view_patientqueue')")
     public ResponseEntity<List<PatientQueueData>> fetchQueue(@RequestParam(value = "visitNumber", required = false) final String visitNumber, @RequestParam(value = "staffNumber", required = false) final String staffNumber, @RequestParam(value = "servicePoint", required = false) final String servicePoint, @RequestParam(value = "patientNumber", required = false) final String patientNumber, Pageable pageable) {
         Page<PatientQueueData> page = patientQueueService.fetchQueue(visitNumber, staffNumber, servicePoint, patientNumber, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 
     @PostMapping("/queue/{queueNo}/deactivate-queue")
+    @PreAuthorize("hasAuthority('edit_patientqueue')")
     public ResponseEntity<?> deactivateFromQueue(@PathVariable("queueNo") final Long queueNo) {
         PatientQueue pq = patientQueueService.fetchQueueByID(queueNo);
         pq.setStatus(false);

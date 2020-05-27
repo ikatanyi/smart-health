@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -38,6 +39,7 @@ public class BillingController {
     
  
     @PostMapping("/billing")
+    @PreAuthorize("hasAuthority('create_patientBill')") 
     public ResponseEntity<?> createPatientBill(@Valid @RequestBody BillData billData) {
 
         PatientBill patientbill = service.createPatientBill(billData);
@@ -51,12 +53,14 @@ public class BillingController {
     }
      
     @GetMapping("/billing/{id}")
+    @PreAuthorize("hasAuthority('view_patientBill')") 
     public BillData getPatientBill(@PathVariable(value = "id") Long code) {
         PatientBill bill = service.findOneWithNoFoundDetection(code);
         return bill.toData();
     }
 
     @PostMapping("/billing/{id}/items")
+    @PreAuthorize("hasAuthority('create_patientBill')") 
     public BillData addPatientBillItem(@PathVariable(value = "id") Long id, List<BillItemData> billLines) {
         PatientBill bill = service.findOneWithNoFoundDetection(id);
         return bill.toData();
@@ -65,6 +69,7 @@ public class BillingController {
 //String visitNumber, String patientNumber, Boolean hasBalance, DateRange range
 
     @GetMapping("/billing/summary")
+    @PreAuthorize("hasAuthority('view_patientBill')") 
     public ResponseEntity<?> getPatientBillSummary(
             @RequestParam(value = "visitNumber", required = false) String visitNumber,
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
@@ -93,6 +98,7 @@ public class BillingController {
     }
     
    @PostMapping("/billing/{visitNumber}/copay")
+   @PreAuthorize("hasAuthority('create_patientBill')") 
     public ResponseEntity<?> createCopayBill(@PathVariable(value = "visitNumber") String visitNumber,@Valid @RequestBody  CopayData data) {
         if(!visitNumber.equals(data.getVisitNumber())){
             throw APIException.badRequest("Visit Number on path variable and body do not match");
@@ -106,6 +112,7 @@ public class BillingController {
         return ResponseEntity.status(HttpStatus.CREATED).body(patientbill.toData());
     }
     @GetMapping("/billing/items")
+    @PreAuthorize("hasAuthority('view_patientBill')") 
     public ResponseEntity<?> getPatientBillItems(
             @RequestParam(value = "patientNumber", required = false) String patientNo,
             @RequestParam(value = "visitNumber", required = false) String visitNo,
@@ -139,6 +146,7 @@ public class BillingController {
     }
 
     @GetMapping("/billing/items/{visitNumber}/receipted")
+    @PreAuthorize("hasAuthority('view_patientBill')") 
     public ResponseEntity<?> getReceiptedBillItems(
             @PathVariable(value = "visitNumber", required = false) String visitNo,
             @RequestParam(value = "page", required = false) Integer page,
@@ -164,6 +172,7 @@ public class BillingController {
     }
 
     @GetMapping("/billing/walkin")
+    @PreAuthorize("hasAuthority('view_patientBill')") 
     public ResponseEntity<?> getWalkinBillSummary(
             @RequestParam(value = "walkinNumber", required = false) String walkinNumber,
             @RequestParam(value = "hasBalance", required = false) Boolean hasBalance,
@@ -190,6 +199,7 @@ public class BillingController {
     }
 
     @GetMapping("/billing/walkin/items")
+    @PreAuthorize("hasAuthority('view_patientBill')") 
     public ResponseEntity<?> getWalkinBillItems(
             @RequestParam(value = "walkinNo", required = false) String walkinNo,
             @RequestParam(value = "hasBalance", required = false) Boolean hasBalance,

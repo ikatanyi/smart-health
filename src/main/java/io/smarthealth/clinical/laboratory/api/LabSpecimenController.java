@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,12 +36,14 @@ public class LabSpecimenController {
     }
 
     @PostMapping("/labs/specimens")
+    @PreAuthorize("hasAuthority('create_labspecimen')")
     public ResponseEntity<?> createLabSpecimen(@Valid @RequestBody LabSpecimenData data) {
         LabSpecimen test = service.createSpecimen(data); 
         return ResponseEntity.status(HttpStatus.CREATED).body(test.toData());
     }
 
     @PostMapping("/labs/specimens/batch")
+    @PreAuthorize("hasAuthority('create_labspecimen')")
     public ResponseEntity<?> createLabSpecimen(@Valid @RequestBody List<LabSpecimenData> data) {
 
         List<LabSpecimenData> specimens = service.createSpecimen(data)
@@ -53,24 +56,28 @@ public class LabSpecimenController {
     }
 
     @GetMapping("/labs/specimens/{id}")
+    @PreAuthorize("hasAuthority('view_labspecimen')")
     public ResponseEntity<?> getLabSpecimen(@PathVariable(value = "id") Long id) {
         LabSpecimen item = service.getLabSpecimenOrThrow(id);
         return ResponseEntity.ok(item.toData());
     }
 
     @PutMapping("/labs/specimens/{id}")
+    @PreAuthorize("hasAuthority('edit_labspecimen')")
     public ResponseEntity<?> updateLabSpecimen(@PathVariable(value = "id") Long id, @Valid @RequestBody LabSpecimenData data) {
         LabSpecimen test = service.updateSpecimen(id, data);
         return ResponseEntity.ok(test.toData());
     }
 
     @DeleteMapping("/labs/specimens/{id}")
+    @PreAuthorize("hasAuthority('delete_labspecimen')")
     public ResponseEntity<?> deleteLabSpecimen(@PathVariable(value = "id") Long id) {
         service.deleteSpecimen(id);
         return ResponseEntity.accepted().build();
     }
 
     @GetMapping("/labs/specimens")
+    @PreAuthorize("hasAuthority('view_labspecimen')")
     public ResponseEntity<?> getLabSpecimen() {
         List<LabSpecimenData> lists = service.findLabSpecimens()
                 .stream()

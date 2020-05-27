@@ -43,6 +43,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -89,6 +90,7 @@ public class GeneralClinicalServices {
 
 //    prepare sick-off note
     @PostMapping("/sick-off")
+    @PreAuthorize("hasAuthority('create_clinicalservice')")
     public @ResponseBody
     ResponseEntity<?> saveSickOffNote(@Valid @RequestBody SickOffNoteData sod) {
         Visit visit = visitService.findVisitEntityOrThrow(sod.getVisitNo());
@@ -105,6 +107,7 @@ public class GeneralClinicalServices {
     }
 
     @PostMapping("/visits/{visitNo}/sick-off")
+    @PreAuthorize("hasAuthority('create_clinicalservice')")
     public @ResponseBody
     ResponseEntity<?> fetchSickOffNoteByVisit(@PathVariable("visitNo") final String visitNo) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
@@ -117,6 +120,7 @@ public class GeneralClinicalServices {
     }
 
     @GetMapping("/patients/{patientNo}/sick-off")
+    @PreAuthorize("hasAuthority('view_clinicalservice')")
     public @ResponseBody
     ResponseEntity<?> fetchSickOffNoteByPatient(@PathVariable("patientNo") final String patientNo, final Pageable pageable) {
         Patient patient = patientService.findPatientOrThrow(patientNo);
@@ -138,6 +142,7 @@ public class GeneralClinicalServices {
 
     //referral 
     @PostMapping("/referrals")
+    @PreAuthorize("hasAuthority('create_clinicalservice')")
     public @ResponseBody
     ResponseEntity<?> saveReferral(@Valid @RequestBody ReferralData rd) {
         Visit visit = visitService.findVisitEntityOrThrow(rd.getVisitNo());
@@ -199,6 +204,7 @@ public class GeneralClinicalServices {
     }
 
     @GetMapping("/visits/{visitNo}/referrals")
+    @PreAuthorize("hasAuthority('view_clinicalservice')")
     public @ResponseBody
     ResponseEntity<?> fetchReferralsByVisit(@PathVariable("visitNo") final String visitNo) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
@@ -211,6 +217,7 @@ public class GeneralClinicalServices {
     }
 
     @GetMapping("/visits/requested-practioners")
+    @PreAuthorize("hasAuthority('view_clinicalservice')")
     public @ResponseBody
     ResponseEntity<?> fetchDistinctPractionersRequestedByActiveVisits() {
         List<Employee> empList = visitService.practionersByActiveVisits();

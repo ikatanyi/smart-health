@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +47,7 @@ public class PatientRadiologyController {
     ModelMapper modelMapper;   
     
     @PostMapping("/patient-scan")
+    @PreAuthorize("hasAuthority('create_patientradiology')")
     public @ResponseBody
     ResponseEntity<?> createPatientScan(@RequestBody final PatientScanRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo) {
         PatientScanRegisterData Patientscans = radiologyService.savePatientResults(patientRegData, visitNo).todata();
@@ -61,6 +63,7 @@ public class PatientRadiologyController {
     }
     
     @GetMapping("/patient-scan/test/{scanAccessionNo}")
+    @PreAuthorize("hasAuthority('view_patientradiology')")
     public @ResponseBody
     ResponseEntity<?> fetchPatientTestsByAccessionNo(@PathVariable("scanAccessionNo") final String scanAccessionNo) {
         PatientScanRegister scanReg = radiologyService.findPatientRadiologyTestByAccessNoWithNotFoundDetection(scanAccessionNo);
@@ -73,6 +76,7 @@ public class PatientRadiologyController {
     }
 
     @PutMapping("/patient-scan/test/{testId}")
+    @PreAuthorize("hasAuthority('edit_patientradiology')")
     public @ResponseBody
     ResponseEntity<?> updateRadiolgyTest(@PathVariable("testId") final Long testId, @Valid @RequestBody PatientScanTestData patientScanTestData) {
         PatientScanTest savedResult = radiologyService.updatePatientScanTest(testId, patientScanTestData);
@@ -80,6 +84,7 @@ public class PatientRadiologyController {
     }
 
     @GetMapping("/patient-scan/{id}")
+    @PreAuthorize("hasAuthority('view_patientradiology')")
     public ResponseEntity<?> fetchPatientScanById(@PathVariable("id") final Long id) {
         PatientScanTestData result = radiologyService.findPatientRadiologyTestByIdWithNotFoundDetection(id).toData();
         Pager<PatientScanTestData> pagers = new Pager();
@@ -96,6 +101,7 @@ public class PatientRadiologyController {
     }
     
     @GetMapping("/patient-scan")
+    @PreAuthorize("hasAuthority('view_patientradiology')")
     public ResponseEntity<?> getRadiologyPatientTests(
             @RequestParam(value = "visit_no", required = false) String visitNumber,
             @RequestParam(value = "patient_no", required = false) String patientNumber,

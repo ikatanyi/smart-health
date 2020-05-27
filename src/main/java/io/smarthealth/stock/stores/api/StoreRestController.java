@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -32,6 +33,7 @@ public class StoreRestController {
         this.service = service;
     }
     @PostMapping("/stores")
+    @PreAuthorize("hasAuthority('create_stores')")
     public ResponseEntity<?> createStore(@Valid @RequestBody StoreData data) {
         
         Store result = service.createStore(data);
@@ -44,6 +46,7 @@ public class StoreRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
     @GetMapping("/stores/{id}")
+    @PreAuthorize("hasAuthority('view_stores')")
     public ResponseEntity<?> getStore(@PathVariable(value = "id") Long code) {
         Store store = service.getStore(code)
                 .orElseThrow(() -> APIException.notFound("Store with id  {0} not found.", code));
@@ -51,6 +54,7 @@ public class StoreRestController {
         
     }
     @GetMapping("/stores")
+    @PreAuthorize("hasAuthority('view_stores')")
     public ResponseEntity<?> getAllStorees( 
              @RequestParam(value = "isPatientStore", required = false) Boolean patientStore,
             @RequestParam(value = "page", required = false) Integer page,
@@ -75,6 +79,7 @@ public class StoreRestController {
     }
     
      @GetMapping("/stores/$metadata")
+     @PreAuthorize("hasAuthority('view_stores')")
     public ResponseEntity<?> getStoresMetadata(){
         
         return ResponseEntity.ok(service.getStoreMetadata());

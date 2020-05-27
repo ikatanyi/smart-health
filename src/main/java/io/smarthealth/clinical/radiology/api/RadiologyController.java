@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -67,6 +68,7 @@ public class RadiologyController {
 //        return ResponseEntity.status(HttpStatus.OK).body(pagers);      
 //    }
     @PostMapping("/radiology-template")
+    @PreAuthorize("hasAuthority('create_radiology')")
     public @ResponseBody
     ResponseEntity<?> uploadTemplate(@RequestBody @Valid final ServiceTemplateData serviceTemplateData) {
         ServiceTemplateData savedTemplateData = radiologyConfigService.saveTemplate(serviceTemplateData).toData();
@@ -81,6 +83,7 @@ public class RadiologyController {
     }
 
     @PostMapping("/radiology-template/batch")
+    @PreAuthorize("hasAuthority('create_radiology')")
     public @ResponseBody
     ResponseEntity<?> batchUploadTemplates(@RequestBody @Valid final List<ServiceTemplateData> serviceTemplateData) {
         List<ServiceTemplateData> serviceTemplateDataArr = radiologyConfigService.batchTemplateUpload(serviceTemplateData)
@@ -101,6 +104,7 @@ public class RadiologyController {
     }
 
     @GetMapping("/radiology-template/{id}")
+    @PreAuthorize("hasAuthority('view_radiology')")
     public ResponseEntity<?> fetchServiceTemplate(@PathVariable("id") final Long id) {
         ServiceTemplateData serviceTemplates = radiologyConfigService.getServiceTemplateByIdWithFailDetection(id).toData();
         if (serviceTemplates != null) {
@@ -111,6 +115,7 @@ public class RadiologyController {
     }
 
     @GetMapping("/radiology-template")
+    @PreAuthorize("hasAuthority('view_radiology')")
     public ResponseEntity<?> fetchAllServiceTemplates(
             @RequestParam(value = "page", required = false) Integer page1,
             @RequestParam(value = "pageSize", required = false) Integer size
@@ -136,6 +141,7 @@ public class RadiologyController {
     }
 
     @PostMapping("/radiology-tests")
+    @PreAuthorize("hasAuthority('create_radiology')")
     public @ResponseBody
     ResponseEntity<?> createTests(@RequestBody @Valid final List<RadiologyTestData> radiologyTestData) {
         List<RadiologyTestData> radiologyTestList = radiologyConfigService.createRadiologyTest(radiologyTestData)
@@ -155,6 +161,7 @@ public class RadiologyController {
     }
 
     @GetMapping("/radiology-tests/{id}")
+    @PreAuthorize("hasAuthority('view_radiology')")
     public ResponseEntity<?> fetchRadiologyTest(@PathVariable("id") final Long id) {
         RadiologyTestData radiologyTests = radiologyConfigService.getById(id).toData();
         if (radiologyTests != null) {
@@ -165,6 +172,7 @@ public class RadiologyController {
     }
 
     @GetMapping("/radiology-tests")
+    @PreAuthorize("hasAuthority('view_radiology')")
     public ResponseEntity<?> fetchAllRadiology(
             @RequestParam(value = "page", required = false) Integer page1,
             @RequestParam(value = "pageSize", required = false) Integer size

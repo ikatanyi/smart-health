@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -35,6 +36,7 @@ public class PurchaseOrderController {
     }
 
     @PostMapping("/purchaseorders")
+    @PreAuthorize("hasAuthority('create_purchaseorders')")
     public ResponseEntity<?> createPurchaseOrder(@Valid @RequestBody PurchaseOrderData orderData) {
 
         PurchaseOrderData result = service.createPurchaseOrder(orderData);
@@ -49,16 +51,19 @@ public class PurchaseOrderController {
     }
 
     @GetMapping("/purchaseorders/{id}")
+    @PreAuthorize("hasAuthority('view_purchaseorders')")
     public PurchaseOrderData getPurchaseOrder(@PathVariable(value = "id") String code) {
         return service.findByOrderNumberOrThrow(code).toData();
     }
      @GetMapping("/purchaseorders/{id}/html")
+     @PreAuthorize("hasAuthority('view_purchaseorders')")
     public ResponseEntity<?> getPurchaseOrderHtml(@PathVariable(value = "id") String code) {
         HtmlData data=service.toHtml(code);
         return ResponseEntity.ok(data);
     }
 
     @GetMapping("/purchaseorders")
+    @PreAuthorize("hasAuthority('view_purchaseorders')")
     public ResponseEntity<?> getAllPurchaseOrders(  
              @RequestParam(value = "showItems", required = false) boolean  showItems,
             @RequestParam(value = "status", required = false) final PurchaseOrderStatus status,

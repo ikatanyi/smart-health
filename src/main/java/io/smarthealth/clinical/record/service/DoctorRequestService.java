@@ -116,6 +116,13 @@ public class DoctorRequestService implements DateConverter {
         return docReqs;
     }
 
+    public Page<DoctorRequest> fetchAllPastDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, final String groupBy, Pageable pageable) {
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy);
+
+        Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
+        return docReqs;
+    }
+
     public Page<DoctorRequest> fetchAllDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, final String groupBy, Pageable pageable) {
         Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy);
 
@@ -123,7 +130,17 @@ public class DoctorRequestService implements DateConverter {
         return docReqs;
     }
 
-    //only to fetch requests that have active visits and are unfilled
+//    public Page<DoctorRequest> fetchDoctorRequestLine(final String fulfillerStatus, final RequestType requestType, Pageable pageable) {
+//        
+//        return doctorRequestRepository.findRequestLine(fulfillerStatus, requestType, pageable);
+//    }
+//    
+    public List<DoctorRequest> fetchServiceRequests(final Patient patient, final FullFillerStatusType fullfillerStatus, final RequestType requestType, final Visit visit) {
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visit.getVisitNumber(), patient.getPatientNumber(), requestType, fullfillerStatus, null);
+        Pageable wholePage = Pageable.unpaged();
+        return doctorRequestRepository.findAll(spec, wholePage).getContent();
+    }
+
     public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final FullFillerStatusType fullfillerStatus, final RequestType requestType) {
         return doctorRequestRepository.findServiceRequestsByPatient(patient, fullfillerStatus, requestType);
     }
@@ -172,6 +189,10 @@ public class DoctorRequestService implements DateConverter {
         if (d.getRequestType().equals(DoctorRequestData.RequestType.Pharmacy)) {
             requestItem.setPrescriptionData(PrescriptionData.map(prescriptionRepository.findPresriptionByRequestId(d.getId())));
         }
+        requestItem.setOrderNo(d.getOrderNumber());
+        requestItem.setRequestedByName(d.getRequestedBy().getUsername());
+        requestItem.setStatus(d.getFulfillerStatus().name());
+
         return requestItem;
     }
 

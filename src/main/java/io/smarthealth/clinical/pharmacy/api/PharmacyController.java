@@ -23,6 +23,7 @@ import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.facility.service.FacilityService;
@@ -44,6 +45,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -80,6 +82,7 @@ public class PharmacyController {
     private final UserService userService;
 
     @PostMapping("/patient-drug")
+    @PreAuthorize("hasAuthority('create_pharmacy')")
     public @ResponseBody
     ResponseEntity<?> savePatientDrugs(@RequestBody @Valid final List<PatientDrugsData> patientdrugsData) {
         //validate visit
@@ -89,6 +92,7 @@ public class PharmacyController {
     }
 
     @PostMapping("/visit/{visitNo}/prescription")
+    @PreAuthorize("hasAuthority('create_pharmacy')")
     public @ResponseBody
     ResponseEntity<?> savePatientPrescriptions(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<PrescriptionData> prescriptionData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
@@ -135,6 +139,7 @@ public class PharmacyController {
     }
 
     @GetMapping("/visit/{visitNo}/prescription")
+    @PreAuthorize("hasAuthority('view_pharmacy')")
     public @ResponseBody
     ResponseEntity<?> fetchPatientPrescriptionsByVisit(@PathVariable("visitNo") final String visitNumber, Pageable pageable) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
@@ -164,6 +169,7 @@ public class PharmacyController {
     }
 
     @GetMapping("/patientDrug/{id}")
+    @PreAuthorize("hasAuthority('view_pharmacy')")
     public ResponseEntity<?> fetchPatientDrugsById(@PathVariable("id") final Long id) {
         PatientDrugsData patientdrugsdata = pharmService.getById(id);
         if (patientdrugsdata != null) {
@@ -174,6 +180,7 @@ public class PharmacyController {
     }
 
     @GetMapping("/patientDrug")
+    @PreAuthorize("hasAuthority('view_pharmacy')")
     public ResponseEntity<?> fetchAllPatientDrugs(
             @RequestParam(value = "visitNumber", defaultValue = "") String visitNumber,
             @RequestParam(value = "patientNumber", defaultValue = "") String patientNumber,
@@ -186,6 +193,7 @@ public class PharmacyController {
     }
 
     @DeleteMapping("/patientDrug/{id}")
+    @PreAuthorize("hasAuthority('view_pharmacy')")
     public ResponseEntity<?> deleteSpecimen(@PathVariable("id") final Long id) {
         pharmService.deletePatientDrug(id);
         return ResponseEntity.ok("200");

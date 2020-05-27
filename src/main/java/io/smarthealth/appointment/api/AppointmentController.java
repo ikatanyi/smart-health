@@ -31,6 +31,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -55,6 +56,7 @@ public class AppointmentController {
     EmployeeService employeeService;
 
     @PostMapping("/appointmentTypes")
+    @PreAuthorize("hasAuthority('create_appoinmentType')")
     public @ResponseBody
     ResponseEntity<?> createAppointmentType(@RequestBody @Valid final AppointmentTypeData appointmentTypeData) {        
         AppointmentType result = appointmentTypeService.createAppointmentType(appointmentTypeData);        
@@ -67,6 +69,7 @@ public class AppointmentController {
     }
 
     @PostMapping("/appointment")
+    @PreAuthorize("hasAuthority('create_appoinment')")
     public @ResponseBody
     ResponseEntity<?> createAppointment(@RequestBody @Valid final AppointmentData appointmentData) {
         System.out.println("appointmentData " + appointmentData);
@@ -85,6 +88,7 @@ public class AppointmentController {
     }
     
     @PutMapping("/appointment/{id}")
+    @PreAuthorize("hasAuthority('edit_appoinment')")
     public @ResponseBody
     ResponseEntity<?> updateAppointment(@RequestBody @Valid final AppointmentData appointmentData, @PathVariable("id") final Long id) {
         Appointment appointment = this.appointmentService.UpdateAppointment(id, appointmentData);
@@ -100,6 +104,7 @@ public class AppointmentController {
     }
     
     @PostMapping("/appointment/{id}/reschedule")
+    @PreAuthorize("hasAuthority('create_appoinment')")
     public @ResponseBody
     ResponseEntity<?> updateAppointment(@PathVariable("id") final Long id,
             @RequestBody @Valid final AppRescheduleData data) {
@@ -127,6 +132,7 @@ public class AppointmentController {
 //    }
 
     @GetMapping("/appointment")
+    @PreAuthorize("hasAuthority('create_appoinment')")
     public @ResponseBody
     ResponseEntity<?> fetchAllAppointments(
         @RequestParam(value = "practitionerNumber", required = false) final String practitionerNumber,
@@ -164,6 +170,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/appointment/{appointmentNo}")
+    @PreAuthorize("hasAuthority('view_appoinment')")
     public @ResponseBody
     ResponseEntity<?> fetchAppointmentByappointmentNo(@PathVariable("appointmentNo") final String appointmentNo) {
 
@@ -174,6 +181,7 @@ public class AppointmentController {
 
     //fetchAllAppointmentTypes
     @GetMapping("/appointmentTypes")
+    @PreAuthorize("hasAuthority('view_appoinment')")
     public ResponseEntity<?> fetchAllAppTypes(
         @RequestParam(value = "page", required = false) Integer page,
         @RequestParam(value = "pageSize", required = false) Integer size
@@ -193,12 +201,14 @@ public class AppointmentController {
     }
 
     @GetMapping("/appointmentTypes/{id}")
+    @PreAuthorize("hasAuthority('view_appoinment')")
     public ResponseEntity<AppointmentTypeData> fetchAppTypeById(@PathVariable("id") final Long id) {
         AppointmentTypeData appointmentTypeData = appointmentTypeService.toData(appointmentTypeService.fetchAppointmentTypeWithNoFoundDetection(id));
         return ResponseEntity.ok(appointmentTypeData);
     }
 
     @PutMapping("/appointmentTypes/{id}")
+    @PreAuthorize("hasAuthority('edit_appoinment')")
     public ResponseEntity<?> fetchAppTypeById(@PathVariable("id") final Long id,@RequestBody @Valid final AppointmentTypeData appointmentTypeD) {
         AppointmentType result = appointmentTypeService.updateAppointmentType(id, appointmentTypeD);
         Pager<AppointmentTypeData> pagers = new Pager();
@@ -216,6 +226,7 @@ public class AppointmentController {
 //        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
 //    }
     @DeleteMapping("/appointmentTypes/{id}")
+    @PreAuthorize("hasAuthority('delete_appoinment')")
     public @ResponseBody
     ResponseEntity<ApiResponse> deleteAppointmentType(@PathVariable("id") final Long appId) {
         try {

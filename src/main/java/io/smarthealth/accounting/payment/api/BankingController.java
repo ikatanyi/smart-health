@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,7 @@ public class BankingController {
     }
 
     @PostMapping("/banking/deposit")
+    @PreAuthorize("hasAuthority('create_bankDeposit')") 
     public ResponseEntity<?> bankDeposit(@Valid @RequestBody BankingData data) {
 
         Banking banking = service.deposit(data);
@@ -54,6 +56,7 @@ public class BankingController {
     }
 
     @PostMapping("/banking/withdraw")
+    @PreAuthorize("hasAuthority('create_bankWithdrawal')") 
     public ResponseEntity<?> bankWithdrawal(@Valid @RequestBody BankingData data) {
 
         Banking banking = service.withdraw(data);
@@ -66,12 +69,14 @@ public class BankingController {
     }
 
     @PostMapping("/banking/transfer")
+    @PreAuthorize("hasAuthority('create_bankTransfer')") 
     public ResponseEntity<?> bankTransfer(@Valid @RequestBody InterbankData data) {
         String banking = service.transfer(data);
         return ResponseEntity.ok(banking);
     }
 
     @PostMapping("/banking/charges")
+    @PreAuthorize("hasAuthority('create_bankTransfer')") 
     public ResponseEntity<?> bankTransfer(@Valid @RequestBody BankChargeData data) {
         Banking banking = service.bankingCharges(data);
         Pager<BankingData> pagers = new Pager();
@@ -82,6 +87,7 @@ public class BankingController {
     }
 
     @GetMapping("/banking/{id}")
+    @PreAuthorize("hasAuthority('view_banking')") 
     public ResponseEntity<?> getBanking(@PathVariable(value = "id") Long id) {
         Banking banking = service.getBanking(id);
         return ResponseEntity.ok(banking.toData());
@@ -90,7 +96,7 @@ public class BankingController {
 
     @GetMapping("/banking")
     @ResponseBody
-//    @PreAuthorize("hasAuthority('view_payment')")
+    @PreAuthorize("hasAuthority('view_banking')") 
     public ResponseEntity<?> getBanking(
             @RequestParam(value = "account_number", required = false) final String accountNumber,
             @RequestParam(value = "client", required = false) final String client,

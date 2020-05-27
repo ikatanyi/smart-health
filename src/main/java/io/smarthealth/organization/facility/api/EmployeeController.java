@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -46,6 +47,7 @@ public class EmployeeController {
     EmployeeService employeeService;
 
     @PostMapping("/employee")
+    @PreAuthorize("hasAuthority('create_employee')")
     public @ResponseBody
     ResponseEntity<?> createEmployee(@RequestBody @Valid final EmployeeData employeeData) {
         if (employeeData.isCreateUserAccount()) {
@@ -77,6 +79,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/employee")
+    @PreAuthorize("hasAuthority('view_employee')")
     public ResponseEntity<List<EmployeeData>> fetchAllEmployees(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Page<EmployeeData> page = employeeService.fetchAllEmployees(queryParams, pageable).map(p -> employeeService.convertEmployeeEntityToEmployeeData(p));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
@@ -84,6 +87,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/department/{code}/employee")
+    @PreAuthorize("hasAuthority('view_employee')")
     public ResponseEntity<List<EmployeeData>> fetchEmployeesByDepartment(@PathVariable("code") final String departmentCode, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Department department = departmentService.fetchDepartmentByCode(departmentCode);
         List<Employee> employeeList = employeeService.findEmployeeByDepartment(queryParams, department, pageable);
@@ -97,6 +101,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/employee/{category}")
+    @PreAuthorize("hasAuthority('view_employee')")
     public ResponseEntity<List<EmployeeData>> fetchEmployeesByCategory(@PathVariable("category") final String category, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
 
         List<Employee> employeeList = employeeService.findEmployeeByCategory(queryParams, category, pageable);

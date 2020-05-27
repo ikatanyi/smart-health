@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -35,6 +36,7 @@ public class SupplierApiController {
     }
 
     @PostMapping("/suppliers")
+    @PreAuthorize("hasAuthority('create_suppliers')")
     public ResponseEntity<?> createSupplier(@Valid @RequestBody SupplierData supplierData) {
         if (service.getSupplierByName(supplierData.getSupplierName(), supplierData.getLegalName()).isPresent()) {
             throw APIException.conflict("Supplier with name {0} already exists.", supplierData.getSupplierName());
@@ -52,6 +54,7 @@ public class SupplierApiController {
     }
 
     @GetMapping("/suppliers/{id}")
+    @PreAuthorize("hasAuthority('view_suppliers')")
     public SupplierData getSupplier(@PathVariable(value = "id") Long code) {
         Supplier supplier = service.getSupplierById(code)
                 .orElseThrow(() -> APIException.notFound("Supplier with id {0} not found.", code));
@@ -59,6 +62,7 @@ public class SupplierApiController {
     }
 
     @GetMapping("/suppliers")
+    @PreAuthorize("hasAuthority('view_suppliers')")
     public ResponseEntity<?> getAllSuppliers(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "q", required = false) final String term,
@@ -87,6 +91,7 @@ public class SupplierApiController {
 
     //generate a single api that returns all the setup required for this object
     @GetMapping("/suppliers/$metadata")
+    @PreAuthorize("hasAuthority('view_suppliers')")
     public ResponseEntity<?> getSupplierMetadata() {
         SupplierMetadata metadata = service.getSupplierMetadata();
         return ResponseEntity.ok(metadata);

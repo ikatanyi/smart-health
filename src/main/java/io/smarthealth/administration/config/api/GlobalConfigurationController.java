@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 ;
@@ -38,17 +39,21 @@ public class GlobalConfigurationController {
     }
 
     @GetMapping("/configurations/{id}")
+    @PreAuthorize("hasAuthority('view_configurations')")
     public ResponseEntity<?> getConfiguration(@PathVariable(value = "id") Long code) {
         GlobalConfiguration config = service.getWithNonFoundDetection(code);
         return ResponseEntity.ok(config);
     }
-        @GetMapping("/configurations/{configName}/name")
+    
+    @GetMapping("/configurations/{configName}/name")
+    @PreAuthorize("hasAuthority('view_globalConfigurations')")
     public ResponseEntity<?> getConfigurationByName(@PathVariable(value = "configName") GlobalConfigNum configName) {
         GlobalConfiguration config = service.getByNameOrThrow(configName.name());
         return ResponseEntity.ok(config);
     }
 
     @PutMapping("/configurations/{id}")
+    @PreAuthorize("hasAuthority('edit_configurations')")
     public ResponseEntity<?> updateConfiguration(@PathVariable(value = "id") Long code, @Valid @RequestBody GlobalConfiguration config) {
 
         GlobalConfiguration savedConfig = service.updateConfig(code, config);
@@ -57,6 +62,7 @@ public class GlobalConfigurationController {
     }
 
     @GetMapping("/configurations")
+    @PreAuthorize("hasAuthority('view_configurations')")
     public ResponseEntity<?> listConfigurations(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {

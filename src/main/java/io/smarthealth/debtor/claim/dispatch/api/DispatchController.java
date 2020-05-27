@@ -13,11 +13,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
  *
- * @author Kelsas
+ * @author Kennedy.Ikatanyi
  */
 @Api
 @RestController
@@ -28,12 +29,11 @@ public class DispatchController {
 
     public DispatchController(DispatchService dispatchService) {
         this.dispatchService = dispatchService;
-    }
-
-    
+    }  
 
     
     @PostMapping("/dispatch")
+    @PreAuthorize("hasAuthority('create_dispatch')")
     public ResponseEntity<?> createDispatch(@Valid @RequestBody DispatchData dispatchData) {
 
         DispatchData remittance = dispatchService.map(dispatchService.createDispatch(dispatchData));
@@ -47,18 +47,21 @@ public class DispatchController {
     }
 
     @GetMapping("/dispatch/{id}")
+    @PreAuthorize("hasAuthority('view_dispatch')")
     public DispatchData getDispatch(@PathVariable(value = "id") Long id) {
         DispatchData dispatch = DispatchData.map(dispatchService.getDispatchByIdWithFailDetection(id));
         return dispatch;
     }
 
     @PutMapping("/dispatch/{id}")
+    @PreAuthorize("hasAuthority('edit_dispatch')")
     public DispatchData updateRemitance(@PathVariable(value = "id") Long id, DispatchData dispatchData) {
         DispatchData dispatch = DispatchData.map(dispatchService.updateDispatch(id, dispatchData));
         return dispatch;
     }
 
     @GetMapping("/dispatch")
+    @PreAuthorize("hasAuthority('view_dispatch')")
     public ResponseEntity<?> getAllDispatches(
             @RequestParam(value = "payerId", required = false) Long payerId,      
             @RequestParam(value = "dateRange", required = false) String dateRange,

@@ -20,6 +20,5 @@ public interface PatientDiagnosisRepository extends JpaRepository<PatientDiagnos
 
     Page<PatientDiagnosis> findByPatient(final Patient patient, Pageable page);
 
-//    ContentPage<PatientTestsData> findByVisit(String visitNumber, Pageable page);
     Page<PatientDiagnosis> findByVisit(Visit visit, Pageable pageable);
 }

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,7 @@ public class PaymentController {
     }
 
     @PostMapping("/payments")
+    @PreAuthorize("hasAuthority('create_payment')")
     public ResponseEntity<?> makePayment(@Valid @RequestBody MakePayment data) {
 
         Payment payment = service.makePayment(data);
@@ -54,6 +56,7 @@ public class PaymentController {
     }
 
     @GetMapping("/payments/{id}")
+    @PreAuthorize("hasAuthority('view_payment')")
     public ResponseEntity<?> getPayment(@PathVariable(value = "id") Long id) {
         Payment payment = service.getPaymentOrThrow(id);
         return ResponseEntity.ok(payment.toData());
@@ -62,7 +65,7 @@ public class PaymentController {
 //     CreditorType creditorType, Long creditorId, String creditor, String transactionNo, DateRange range
     @GetMapping("/payments")
     @ResponseBody
-//    @PreAuthorize("hasAuthority('view_payment')")
+    @PreAuthorize("hasAuthority('view_payment')")
     public ResponseEntity<?> getPayments(
             @RequestParam(value = "payee_type", required = false) final PayeeType creditorType,
             @RequestParam(value = "payee", required = false) final String creditor,
@@ -93,6 +96,7 @@ public class PaymentController {
     }
 
     @PostMapping("/payments/pettycash")
+    @PreAuthorize("hasAuthority('create_paymentPettyCash')")
     public ResponseEntity<?> makePayment(@Valid @RequestBody MakePettyCashPayment data) {
 
         Payment payment = service.makePayment(data);

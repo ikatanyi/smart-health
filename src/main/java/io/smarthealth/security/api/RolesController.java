@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -35,6 +36,7 @@ public class RolesController {
     }
 
     @PostMapping("/roles")
+    @PreAuthorize("hasAuthority('create_roles')")
     public ResponseEntity<?> createRole(@Valid @RequestBody RoleData roleData) {
 
         RoleData result = service.createRole(roleData);
@@ -48,6 +50,7 @@ public class RolesController {
     }
 
     @PostMapping("/roles/{id}")
+    @PreAuthorize("hasAuthority('create_roles')")
     public ResponseEntity<?> actionsOnRoles(@PathVariable(value = "id") Long roleId,
             @RequestParam(value = "command", required = true) Command commandParam) {
         return ResponseEntity
@@ -64,12 +67,14 @@ public class RolesController {
     }
 
     @GetMapping("/roles/{id}")
+    @PreAuthorize("hasAuthority('view_roles')")
     public RoleData retrieveRole(@PathVariable(value = "id") Long code) {
         return service.getRoleWithNoFoundDetection(code)
                 .toData();
     }
 
     @PutMapping("/roles/{roleId}")
+    @PreAuthorize("hasAuthority('edit_roles')")
     public ResponseEntity<?> actionsOnRoles(@PathVariable(value = "roleId") Long roleId, @Valid @RequestBody RoleData roleData) {
         RoleData data = service.updateRole(roleId, roleData);
         return ResponseEntity
@@ -78,24 +83,28 @@ public class RolesController {
     }
 
     @GetMapping("/roles/{id}/permissions")
+    @PreAuthorize("hasAuthority('view_roles')")
     public ResponseEntity<?> retrieveRolePermissions(@PathVariable(value = "id") Long roleId) {
         RolePermissionsData data = service.getRolePermissions(roleId);
         return ResponseEntity.ok(data);
     }
 
     @PutMapping("/roles/{id}/permissions")
+    @PreAuthorize("hasAuthority('edit_roles')")
     public ResponseEntity<?> updateRolePermissions(@PathVariable(value = "id") Long roleId, @Valid @RequestBody List<PermissionData> data) {
         RoleData rd = service.updateRolePermissions(roleId, data);
         return ResponseEntity.ok(rd);
     }
 
     @DeleteMapping("/roles/{id}")
+    @PreAuthorize("hasAuthority('delete_roles')")
     public ResponseEntity<?> deleteRole(@PathVariable(value = "id") Long code) {
         service.deleteRole(code);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @GetMapping("/roles")
+    @PreAuthorize("hasAuthority('view_roles')")
     public ResponseEntity<?> retrieveAllRoles(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "page", required = false) Integer page,

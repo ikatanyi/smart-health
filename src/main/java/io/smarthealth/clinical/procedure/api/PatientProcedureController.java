@@ -20,6 +20,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +47,7 @@ public class PatientProcedureController {
     ModelMapper modelMapper;   
     
     @PostMapping("/patient-procedure")
+    @PreAuthorize("hasAuthority('create_patientprocedure')")
     public @ResponseBody
     ResponseEntity<?> createPatientProcedure(@RequestBody final PatientProcedureRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo, @RequestParam(value = "requestId", required = false) final Long requestId) {
         PatientProcedureRegisterData Patientprocedures = procedureService.savePatientProcedure(patientRegData, visitNo).toData();
@@ -61,6 +63,7 @@ public class PatientProcedureController {
     }
     
     @GetMapping("/patient-procedure/results/{procedureAccessionNo}")
+    @PreAuthorize("hasAuthority('view_patientprocedure')")
     public @ResponseBody
     ResponseEntity<?> fetchPatientProceduressByAccessionNo(@PathVariable("procedureAccessionNo") final String procedureAccessionNo) {
         PatientProcedureRegister procedureReg = procedureService.findProceduresByIdWithNotFoundDetection(procedureAccessionNo);
@@ -74,6 +77,7 @@ public class PatientProcedureController {
     }
     
     @PutMapping("/patient-procedure/results/{resultId}")
+    @PreAuthorize("hasAuthority('edit_patientprocedure')")
     public @ResponseBody
     ResponseEntity<?> updateProcedureResults(@PathVariable("resultId") final Long resultId, @Valid @RequestBody PatientProcedureTestData resultData) {
         PatientProcedureTest r = procedureService.findResultsByIdWithNotFoundDetection(resultId);
@@ -86,6 +90,7 @@ public class PatientProcedureController {
     }
 
     @GetMapping("/patient-procedure/{id}")
+    @PreAuthorize("hasAuthority('view_patientprocedure')")
     public ResponseEntity<?> fetchPatientProcedureById(@PathVariable("id") final Long id) {
         PatientProcedureTestData result = procedureService.findResultsByIdWithNotFoundDetection(id).toData();
         Pager<PatientProcedureTestData> pagers = new Pager();

@@ -67,11 +67,21 @@ public class PharmacyReportService {
         ReportData reportData = new ReportData();
         PrescriptionData prescriptionData = null;
         Long prescriptionId = NumberUtils.createLong(reportParam.getFirst("prescriptionId"));
-        Optional<Prescription> prescription = prescriptionService.fetchPrescriptionById(prescriptionId);
+        Optional<Prescription> prescription = prescriptionService.fetchPrescriptionById(4L);
         if (prescription.isPresent()) {
             prescriptionData = PrescriptionData.map(prescription.get());
             reportData.setPatientNumber(prescriptionData.getPatientNumber());
+            if(prescriptionData.getPatientData()!=null)
+               reportData.getFilters().put("age", prescriptionData.getPatientData().getAge());
+            else
+               reportData.getFilters().put("age", 0);
         }
+        if(prescriptionData.getItemType().equalsIgnoreCase("tablet")||prescriptionData.getItemType().equalsIgnoreCase("capsule"))
+            reportData.getFilters().put("type", "TABLET/CAPSULES");
+        if(prescriptionData.getItemType().equalsIgnoreCase("syrup"))
+            reportData.getFilters().put("type", "SYRUP/SUSPENSION");
+        else
+            reportData.getFilters().put("type", "PESSARIES/SUPPOSITORIES");
         reportData.setData(Arrays.asList(prescriptionData));
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/pharmacy/presc_label");

@@ -11,12 +11,12 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,12 +44,14 @@ public class RadiologyResultController {
 
     
     @PostMapping("/radiology/results")
+    @PreAuthorize("hasAuthority('create_radiologyresults')")
     public ResponseEntity<?> createRadiologyResult(MultipartFile file, @Valid @RequestBody RadiologyResultData data) {
         RadiologyResult results = service.saveRadiologyResult(file, data);
         return ResponseEntity.status(HttpStatus.CREATED).body(results.toData());
     }
     
     @PostMapping("/radiology/upload-image")
+    @PreAuthorize("hasAuthority('create_radiologyresults')")
     public ResponseEntity<?> uploadScanImage(Long testId, MultipartFile file) {
         PatientScanTestData results = service.uploadScanImage(testId, file).toData();
         return ResponseEntity.status(HttpStatus.CREATED).body(results);
@@ -58,12 +59,14 @@ public class RadiologyResultController {
 
 
     @GetMapping("/radiology/results/{id}")
+    @PreAuthorize("hasAuthority('view_radiologyresults')")
     public ResponseEntity<?> getRadiologyResult(@PathVariable(value = "id") Long id) {
         RadiologyResult request = service.findResultsByIdWithNotFoundDetection(id);
         return ResponseEntity.ok(request.toData());
     }
 
     @PutMapping("/radiology/results/{id}")
+    @PreAuthorize("hasAuthority('edit_radiologyresults')")
     public ResponseEntity<?> updateLabResult(@PathVariable(value = "id") Long id, MultipartFile file, @Valid @RequestBody RadiologyResultData data) {
         RadiologyResult item = service.updateRadiologyResult(id, file, data);
         return ResponseEntity.ok(item.toData());

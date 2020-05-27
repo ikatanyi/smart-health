@@ -27,6 +27,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,6 +53,7 @@ public class FileUploadController {
     UploadService uploadService;
 
     @PostMapping("/upload/batch")
+    @PreAuthorize("hasAuthority('create_fileupload')")
     public @ResponseBody
     ResponseEntity<?> batchUpload(@ModelAttribute @Valid final List<DocumentData> documentData) {
         List<DocumentData> documentDataArr = fileService.batchDocumentUpload(documentData)
@@ -70,6 +72,7 @@ public class FileUploadController {
     }
 
     @GetMapping("/upload/{id}")
+    @PreAuthorize("hasAuthority('view_fileupload')")
     public ResponseEntity<?> fetchServiceTemplate(@PathVariable("id") final Long id) {
         DocumentData documentData = fileService.getDocumentByIdWithFailDetection(id).toData();
         return ResponseEntity.ok(documentData);
@@ -77,6 +80,7 @@ public class FileUploadController {
     }
 
     @GetMapping("/upload")
+    @PreAuthorize("hasAuthority('view_fileupload')")
     public ResponseEntity<?> Documents(
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
             @RequestParam(value = "status", required = false) Status status,
@@ -107,6 +111,7 @@ public class FileUploadController {
     }
 
     @PostMapping("/upload")
+    @PreAuthorize("hasAuthority('create_fileupload')")
     public @ResponseBody
     ResponseEntity<?> Upload(@ModelAttribute @Valid final DocumentData documentData) {
         DocumentData savedDocumentData = fileService.documentUpload(documentData).toData();
@@ -122,6 +127,7 @@ public class FileUploadController {
     }
 
     @GetMapping("/downloadFile/{servicePoint}/{fileName:.+}")
+    @PreAuthorize("hasAuthority('view_fileupload')")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, @PathVariable String servicePoint, HttpServletRequest request) throws IOException {
         // Load file as Resource
         Resource resource = uploadService.loadFileAsResource(fileName,servicePoint);

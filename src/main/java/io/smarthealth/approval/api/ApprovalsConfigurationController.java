@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,6 +50,7 @@ public class ApprovalsConfigurationController {
     EmployeeService employeeService;
 
     @PostMapping("/approval-settings")
+    @PreAuthorize("hasAuthority('create_approvalConfiguration')")
     public ResponseEntity<?> createApprovalConfiguration(@Valid @RequestBody ApprovalConfigData configData) {
         ApprovalConfig config = ApprovalConfigData.map(configData);
         config.setApprovalModule(configData.getModuleName());
@@ -56,6 +58,7 @@ public class ApprovalsConfigurationController {
     }
 
     @GetMapping("/approval-settings/{moduleName}")
+    @PreAuthorize("hasAuthority('view_approvalConfiguration')")
     public ResponseEntity<?> fetchApprovalConfigurationByModuleName(@PathVariable("moduleName") final ApprovalModule moduleName, @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {
 
@@ -77,6 +80,7 @@ public class ApprovalsConfigurationController {
     }
 
     @GetMapping("/approval-settings")
+    @PreAuthorize("hasAuthority('view_approvalConfiguration')")
     public ResponseEntity<?> fetchAllApprovalConfiguration(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {
@@ -99,6 +103,7 @@ public class ApprovalsConfigurationController {
     }
 
     @PutMapping("/approval-settings")
+    @PreAuthorize("hasAuthority('edit_approvalConfiguration')")
     public ResponseEntity<?> updateApprovalConfigurations(@PathVariable(value = "id") Long approvalId, @Valid @RequestBody ApprovalConfigData configData) {
         ApprovalConfig config = approvalConfigService.fetchApprovalConfigById(approvalId);
 
@@ -111,6 +116,7 @@ public class ApprovalsConfigurationController {
 
     /* Start of module approvers end points */
     @PostMapping("/module-approver")
+    @PreAuthorize("hasAuthority('create_approvers')")
     public ResponseEntity<?> addNewModuleApprovers(@Valid @RequestBody List<ModuleApproversData> approversData) {
         List<ModuleApprovers> approvers = new ArrayList<>();
 
@@ -135,6 +141,7 @@ public class ApprovalsConfigurationController {
     }
 
     @GetMapping("/module-approver/{moduleName}")
+    @PreAuthorize("hasAuthority('view_approvers')")
     public ResponseEntity<?> fetchModuleApprovers(@PathVariable("moduleName") final String moduleName) {
 
         List<ModuleApprovers> entities = approvalConfigService.fetchModuleApproversByModule(ApprovalModule.valueOf(moduleName));

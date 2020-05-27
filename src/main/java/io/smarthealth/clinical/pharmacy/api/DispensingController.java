@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +42,7 @@ public class DispensingController {
     }
 
     @PostMapping("/pharmacybilling")
+    @PreAuthorize("hasAuthority('create_dispense')")
     public ResponseEntity<?> dispenseAndBilling(@Valid @RequestBody DrugRequest data) {
 
         String patientbill = service.dispense(data);
@@ -53,6 +55,7 @@ public class DispensingController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
     @PostMapping("/pharmacybilling/{}/return")
+    @PreAuthorize("hasAuthority('create_dispense')")
     public ResponseEntity<?> dispenseReturns(@Valid @RequestBody DrugRequest data) {
 
         String patientbill = service.dispense(data);
@@ -66,12 +69,14 @@ public class DispensingController {
     }
 
     @GetMapping("/pharmacybilling/{id}")
+    @PreAuthorize("hasAuthority('view_dispense')")
     public DispensedDrugData getDispensedDrug(@PathVariable(value = "id") Long code) {
         DispensedDrug bill = service.findDispensedDrugOrThrow(code);
         return bill.toData();
     }
 
     @GetMapping("/pharmacybilling")
+    @PreAuthorize("hasAuthority('view_dispense')")
     public ResponseEntity<?> getDispensedDrugs(
             @RequestParam(value = "transaction_id", required = false) String referenceNumber,
             @RequestParam(value = "visitNumber", required = false) String visitNumber,
@@ -101,6 +106,7 @@ public class DispensingController {
     }
     
     @PostMapping("/pharmacybilling/{visitNumber}/returns")
+    @PreAuthorize("hasAuthority('create_dispense')")
     public ResponseEntity<?> DrugsReturn(@PathVariable String visitNumber, @Valid @RequestBody List<ReturnedDrugData> data) {
 
         List<DispensedDrugData> returned = service.returnItems(visitNumber, data)

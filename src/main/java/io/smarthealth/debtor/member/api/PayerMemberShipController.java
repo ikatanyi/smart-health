@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +44,7 @@ public class PayerMemberShipController {
     SchemeService schemeService;
 
     @GetMapping("/scheme/{id}/scheme-member")
+    @PreAuthorize("hasAuthority('view_schememember')")
     public ResponseEntity<?> fetchMembersByScheme(@PathVariable("id") final Long schemeId, Pageable pageable) {
         Scheme scheme = schemeService.fetchSchemeById(schemeId);
 
@@ -63,6 +65,7 @@ public class PayerMemberShipController {
     }
 
     @PostMapping("/scheme/{id}/scheme-member")
+    @PreAuthorize("hasAuthority('create_schememember')")
     public ResponseEntity<?> addMemberToAScheme(@PathVariable("id") final Long schemeId, @Valid @RequestBody PayerMemberData data) {
         Scheme scheme = schemeService.fetchSchemeById(schemeId);
 
@@ -82,6 +85,7 @@ public class PayerMemberShipController {
     }
 
     @GetMapping("/scheme-member/{policyNo}")
+    @PreAuthorize("hasAuthority('view_schememember')")
     public ResponseEntity<?> fetchMemberByPolicyNo(/*@PathVariable("id") final Long schemeId,*/@PathVariable("policyNo") String policyNo) {
         PayerMember pm = payerMemberService.fetchMemberByPolicyNo(policyNo);
         PayerMemberData member = PayerMemberData.map(pm);

@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -41,6 +42,7 @@ public class BiometricController {
     PatientService patientService;
 
     @PostMapping("/patient/enroll")
+    @PreAuthorize("hasAuthority('create_biometric')")
     public @ResponseBody
     ResponseEntity<?> enrollPatientFP(@Valid @RequestBody PatientBiometricRequest biometrics) {
         Patient patient = patientService.findPatientOrThrow(biometrics.getPatientNumber());
@@ -59,6 +61,7 @@ public class BiometricController {
     }
 
     @PostMapping("/patient/verify")
+    @PreAuthorize("hasAuthority('create_biometric')")
     public @ResponseBody
     ResponseEntity<?> verifyPatient(@RequestBody JsonNode biometrics) {
         String fingerprint = biometrics.get("finger_data").textValue();

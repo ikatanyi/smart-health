@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,7 @@ public class LabTestController {
     }
 
     @PostMapping("/labs/tests")
+    @PreAuthorize("hasAuthority('create_labtests')")
     public ResponseEntity<?> createLabTest(@Valid @RequestBody LabTestData data) {
 
         LabTest test = service.createTest(data);
@@ -53,6 +55,7 @@ public class LabTestController {
     }
 
     @PostMapping("/labs/tests/batch")
+    @PreAuthorize("hasAuthority('create_labtests')")
     public ResponseEntity<?> createLabTest(@Valid @RequestBody List<LabTestData> data) {
 
         List<LabTestData> item = service.createTest(data)
@@ -69,24 +72,28 @@ public class LabTestController {
     }
 
     @GetMapping("/labs/tests/{id}")
+    @PreAuthorize("hasAuthority('view_labtests')")
     public ResponseEntity<?> getLabTest(@PathVariable(value = "id") Long id) {
         LabTest item = service.getTestById(id);
         return ResponseEntity.ok(item.toData());
     }
 
     @PutMapping("/labs/tests/{id}")
+    @PreAuthorize("hasAuthority('edit_labtests')")
     public ResponseEntity<?> updateLabTest(@PathVariable(value = "id") Long id, @Valid @RequestBody LabTestData data) {
         LabTest test = service.updateTest(id, data);
         return ResponseEntity.ok(test.toData());
     }
 
     @DeleteMapping("/labs/tests/{id}")
+    @PreAuthorize("hasAuthority('delete_labtests')")
     public ResponseEntity<?> voidLabTest(@PathVariable(value = "id") Long id) {
         service.voidLabTest(id);
         return ResponseEntity.accepted().build();
     }
 
     @GetMapping("/labs/tests")
+    @PreAuthorize("hasAuthority('view_labtests')")
     public ResponseEntity<?> getLabTests(
             @RequestParam(value = "search", required = false) String query,
             @RequestParam(value = "displine", required = false) String displine,
@@ -112,6 +119,7 @@ public class LabTestController {
     }
 
     @GetMapping("/labs")
+    @PreAuthorize("hasAuthority('view_labtests')")
     public ResponseEntity<?> search(@RequestParam(value = "search") String test) {
         List<LabTestData> lists = service.searchLabTest(test)
                 .stream().map(x -> x.toData())

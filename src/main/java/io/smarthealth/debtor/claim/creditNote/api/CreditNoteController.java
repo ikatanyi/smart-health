@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -34,6 +35,7 @@ public class CreditNoteController {
 
     
     @PostMapping("/credit-note")
+    @PreAuthorize("hasAuthority('create_creditnote')")
     public ResponseEntity<?> createCreditNote(@Valid @RequestBody CreditNoteData creditNoteData) {
 
         CreditNoteData creditNote = creditNoteService.createCreditNote(creditNoteData).toData();
@@ -47,18 +49,21 @@ public class CreditNoteController {
     }
 
     @GetMapping("/credit-note/{id}")
+    @PreAuthorize("hasAuthority('view_creditnote')")
     public CreditNoteData getCreditNote(@PathVariable(value = "id") Long id) {
         CreditNoteData creditNote = creditNoteService.getCreditNoteByIdWithFailDetection(id).toData();
         return creditNote;
     }
 
     @PutMapping("/credit-note/{id}")
+    @PreAuthorize("hasAuthority('edit_creditnote')")
     public CreditNoteData updateRemitance(@PathVariable(value = "id") Long id, CreditNoteData creditNoteData) {
         CreditNoteData creditNote = creditNoteService.updateCreditNote(id, creditNoteData).toData();
         return creditNote;
     }
 
     @GetMapping("/credit-note")
+    @PreAuthorize("hasAuthority('view_creditnote')")
     public ResponseEntity<?> getAllCreditNotes(
             @RequestParam(value = "invoiceNo", required = false) String invoiceNo,
             @RequestParam(value = "payerId", required = false) Long payerId,     

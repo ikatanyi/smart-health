@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -36,6 +37,7 @@ public class FinancialActivityAccountController {
     }
 
     @PostMapping("/financialactivityaccounts")
+    @PreAuthorize("hasAuthority('create_financialActivityAccounts')")    
     public ResponseEntity<?> createAccountMapping(@Valid @RequestBody ActivityAccount activityAccount) {
         FinancialActivityAccount result = service.createMapping(activityAccount);
         URI location = ServletUriComponentsBuilder
@@ -46,16 +48,19 @@ public class FinancialActivityAccountController {
     }
 
     @GetMapping("/financialactivityaccounts/{id}")
+    @PreAuthorize("hasAuthority('view_financialActivityAccounts')")    
     public FinancialActivityAccount getActivityMappedByAccounts(@PathVariable(value = "id") Long identifier) {
         return service.getActivityById(identifier);
     }
 
     @PutMapping("/financialactivityaccounts/{id}")
+    @PreAuthorize("hasAuthority('edit_financialActivityAccounts')") 
     public FinancialActivityAccount getActivityMappedByAccounts(@PathVariable(value = "id") Long identifier, @Valid @RequestBody ActivityAccount activityAccount) {
         return service.updateFinancialActivity(identifier, activityAccount);
     }
 
     @GetMapping("/financialactivityaccounts")
+    @PreAuthorize("hasAuthority('view_financialActivityAccounts')") 
     public ResponseEntity<?> getAllFinancialActivities(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
@@ -80,6 +85,7 @@ public class FinancialActivityAccountController {
     }
 
     @GetMapping("/financialActivities")
+    @PreAuthorize("hasAuthority('view_financialActivityAccounts')") 
     public List<FinancialActivityData> getActivities() {
         return service.getActivities()
                 .stream()

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -36,6 +37,7 @@ public class PricebookRestController {
     }
 
     @PostMapping("/pricebooks")
+    @PreAuthorize("hasAuthority('create_pricebook')")
     public ResponseEntity<?> createPricebook(@Valid @RequestBody PriceBookData priceBookData) {
         if (service.getPricebookByName(priceBookData.getName()).isPresent()) {
             throw APIException.conflict("Price Book with name {0} already exists.", priceBookData.getName());
@@ -53,6 +55,7 @@ public class PricebookRestController {
     }
 
     @GetMapping("/pricebooks/{id}")
+    @PreAuthorize("hasAuthority('view_pricebook')")
     public PriceBookData getPricebook(@PathVariable(value = "id") Long code) {
         PriceBook pricebook = service.getPricebook(code)
                 .orElseThrow(() -> APIException.notFound("Price Book with id {0} not found.", code));
@@ -60,6 +63,7 @@ public class PricebookRestController {
     }
 
     @GetMapping("/pricebooks")
+    @PreAuthorize("hasAuthority('view_pricebook')")
     public ResponseEntity<?> getAllPricebook(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "type", required = false) final PriceType type,

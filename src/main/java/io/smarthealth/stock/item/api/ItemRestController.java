@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -38,6 +39,7 @@ public class ItemRestController {
     }
 
     @PostMapping("/items")
+    @PreAuthorize("hasAuthority('create_items')")
     public ResponseEntity<?> createItems(@Valid @RequestBody CreateItem itemData) {
         if (itemData.getSku() != null && service.findByItemCode(itemData.getSku()).isPresent()) {
             throw APIException.conflict("Item with code {0} already exists.", itemData.getSku());
@@ -55,6 +57,7 @@ public class ItemRestController {
     }
 
     @GetMapping("/items/{code}")
+    @PreAuthorize("hasAuthority('view_items')")
     public ItemData getItem(@PathVariable(value = "code") String code) {
         Item item = service.findByItemCode(code)
                 .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", code));
@@ -62,6 +65,7 @@ public class ItemRestController {
     }
 
     @GetMapping("/items/{id}/details")
+    @PreAuthorize("hasAuthority('view_items')")
     public ResponseEntity<?> getItem(@PathVariable(value = "id") Long id) {
         Item item = service.findById(id)
                 .orElseThrow(() -> APIException.notFound("Item with Id {0} not found.", id));
@@ -69,6 +73,7 @@ public class ItemRestController {
     }
 
     @PutMapping("/items/{id}")
+    @PreAuthorize("hasAuthority('edit_items')")
     public ResponseEntity<?> updateItems(@PathVariable(value = "id") Long id, @Valid @RequestBody CreateItem itemData) {
 
         Item result = service.updateItem(id, itemData);
@@ -83,6 +88,7 @@ public class ItemRestController {
     }
 
     @GetMapping("/items")
+    @PreAuthorize("hasAuthority('view_items')")
     public ResponseEntity<?> getAllItems(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "q", required = false) final String term,
@@ -112,6 +118,7 @@ public class ItemRestController {
 
     //generate a single api that returns all the setup required for this object
     @GetMapping("/items/$metadata")
+    @PreAuthorize("hasAuthority('view_items')")
     public ResponseEntity<?> getItemMetadata() {
         ItemMetadata metadata = service.getItemMetadata();
         return ResponseEntity.ok(metadata);

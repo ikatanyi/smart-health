@@ -11,7 +11,7 @@ import lombok.Data;
 
 /**
  *
- * @author Kelsas
+ * @author Kent
  */
 @Data
 public class UserPermission {

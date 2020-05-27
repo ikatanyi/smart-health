@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,6 +34,7 @@ public class RequisitionController {
     }
 
     @PostMapping("/requisitions")
+    @PreAuthorize("hasAuthority('create_requisition')")
     public ResponseEntity<?> createRequisition(@Valid @RequestBody RequisitionData orderData) {
 
         RequisitionData result = service.createRequisition(orderData);
@@ -47,12 +49,14 @@ public class RequisitionController {
     }
 
     @GetMapping("/requisitions/{id}")
+    @PreAuthorize("hasAuthority('view_requisition')")
     public RequisitionData getRequisition(@PathVariable(value = "id") Long code) {
         Requisition po = service.findOneWithNoFoundDetection(code);
         return RequisitionData.map(po);
     }
 
     @GetMapping("/requisitions")
+    @PreAuthorize("hasAuthority('view_requisition')")
     public ResponseEntity<?> getAllRequisitions(  
             @RequestParam(value = "status", required = false) final String status,
             @RequestParam(value = "page", required = false) Integer page,

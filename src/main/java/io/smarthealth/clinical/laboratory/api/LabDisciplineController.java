@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,12 +35,14 @@ public class LabDisciplineController {
     }//LabDiscipline
 
     @PostMapping("/labs/disciplines")
+    @PreAuthorize("hasAuthority('create_disciplines')")
     public ResponseEntity<?> createDispline(@Valid @RequestBody LabDisciplineData data) {
         LabDiscipline displine = service.createDispline(data); 
         return ResponseEntity.status(HttpStatus.CREATED).body(displine.toData());
     }
 
     @PostMapping("/labs/disciplines/batch")
+    @PreAuthorize("hasAuthority('create_disciplines')")
     public ResponseEntity<?> createDispline(@Valid @RequestBody List<LabDisciplineData> data) {
 
         List<LabDisciplineData> disciplines = service.createDispline(data)
@@ -51,24 +54,28 @@ public class LabDisciplineController {
     }
 
     @GetMapping("/labs/disciplines/{id}")
+    @PreAuthorize("hasAuthority('view_disciplines')")
     public ResponseEntity<?> getDispline(@PathVariable(value = "id") Long id) {
         LabDiscipline item = service.getDisplineOrThrow(id);
         return ResponseEntity.ok(item.toData());
     }
 
     @PutMapping("/labs/disciplines/{id}")
+    @PreAuthorize("hasAuthority('edit_disciplines')")
     public ResponseEntity<?> updateDispline(@PathVariable(value = "id") Long id, @Valid @RequestBody LabDisciplineData data) {
         LabDiscipline test = service.updateDispline(id, data);
         return ResponseEntity.ok(test.toData());
     }
 
     @DeleteMapping("/labs/disciplines/{id}")
+    @PreAuthorize("hasAuthority('delete_disciplines')")
     public ResponseEntity<?> deleteDispline(@PathVariable(value = "id") Long id) {
         service.deleteDispline(id);
         return ResponseEntity.accepted().build();
     }
 
     @GetMapping("/labs/disciplines")
+    @PreAuthorize("hasAuthority('view_disciplines')")
     public ResponseEntity<?> getDispline() {
         List<LabDisciplineData> lists = service.findDisplines()
                 .stream()

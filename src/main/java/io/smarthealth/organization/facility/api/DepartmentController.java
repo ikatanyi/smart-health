@@ -26,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -53,6 +54,7 @@ public class DepartmentController {
     ModelMapper modelMapper;
 
     @PostMapping("/department")
+    @PreAuthorize("hasAuthority('create_department')")
     public @ResponseBody
     ResponseEntity<?> createFacilityDepartment(@RequestBody @Valid final DepartmentData departmentData) {
 
@@ -89,6 +91,7 @@ public class DepartmentController {
     }
 
     @PutMapping("/department/{id}")
+    @PreAuthorize("hasAuthority('edit_department')")
     public @ResponseBody
     ResponseEntity<?> updateFacilityDepartment(@PathVariable("id") final Long id, @RequestBody @Valid final DepartmentData departmentData) {
         Department department = departmentService.fetchDepartmentById(id);
@@ -112,6 +115,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/department")
+    @PreAuthorize("hasAuthority('view_department')")
     public ResponseEntity<List<DepartmentData>> fetchAllDepartments(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
 
         Page<DepartmentData> page = departmentService.fetchAllDepartments(pageable).map(d -> convertToDeptData(d));
@@ -120,6 +124,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/facility/{id}/department")
+    @PreAuthorize("hasAuthority('view_department')")
     public ResponseEntity<List<DepartmentData>> fetchDepartmentsByFacility(@PathVariable("id") final String facilityId, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Facility facility = facilityService.findFacility(Long.valueOf(facilityId));
         Page<DepartmentData> page = departmentService.fetchDepartmentByFacility(facility, pageable).map(d -> convertToDeptData(d));
@@ -128,6 +133,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/logged-in-facility/department")
+    @PreAuthorize("hasAuthority('view_department')")
     public ResponseEntity<List<DepartmentData>> fetchDepartmentsByLoggedFacility(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Facility facility = facilityService.loggedFacility();
         Page<DepartmentData> page = departmentService.fetchDepartmentByFacility(facility, pageable).map(d -> convertToDeptData(d));

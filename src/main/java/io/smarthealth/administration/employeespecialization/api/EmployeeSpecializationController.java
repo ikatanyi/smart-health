@@ -20,6 +20,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +44,7 @@ public class EmployeeSpecializationController {
     EmployeeSpecializationService employeeSpecializationService;
 
     @PostMapping("/employee-specialization")
+    @PreAuthorize("hasAuthority('create_employeeSpecialization')")
     public ResponseEntity<?> createEmployeeSpecialization(@Valid @RequestBody EmployeeSpecializationData employeeSpecializationData) {
         EmployeeSpecialization result = employeeSpecializationService.createEmployeeSpecialization(EmployeeSpecializationData.map(employeeSpecializationData));
         Pager<EmployeeSpecializationData> pagers = new Pager();
@@ -54,6 +56,7 @@ public class EmployeeSpecializationController {
     }
 
     @GetMapping("/employee-specialization")
+    @PreAuthorize("hasAuthority('view_employeeSpecialization')")
     public ResponseEntity<?> fetchAllEmployeeSpecializations() {
 
         List<EmployeeSpecialization> specialization = employeeSpecializationService.fetchAllSpecializations();
@@ -78,6 +81,7 @@ public class EmployeeSpecializationController {
     }
 
     @GetMapping("/employee-specialization/{category}/category")
+    @PreAuthorize("hasAuthority('view_employeeSpecialization')")
     public ResponseEntity<?> fetchAllEmployeeSpecializationsByCategory(@PathVariable("category") final EmployeeCategory.Category category) {
 
         List<EmployeeSpecialization> specialization = employeeSpecializationService.filterSpecializationsByCategory(category);
@@ -102,6 +106,7 @@ public class EmployeeSpecializationController {
     }
 
     @GetMapping("/employee-specialization/{id}")
+    @PreAuthorize("hasAuthority('view_employeeSpecialization')")
     public ResponseEntity<?> fetchEmployeeSpecializationById(@PathVariable("id") final Long id) {
         EmployeeSpecialization result = employeeSpecializationService.fetchSpecializationById(id);
         Pager<EmployeeSpecializationData> pagers = new Pager();
@@ -113,6 +118,7 @@ public class EmployeeSpecializationController {
     }
 
     @PutMapping("/employee-specialization/{id}")
+    @PreAuthorize("hasAuthority('edit_employeeSpecialization')")
     public ResponseEntity<?> updateEmployeeSpecializationById(@Valid @RequestBody EmployeeSpecializationData d, @PathVariable("id") final Long id) {
         EmployeeSpecialization result = employeeSpecializationService.fetchSpecializationById(id);
         //EmployeeSpecialization es =  EmployeeSpecializationData.map(d);
@@ -128,6 +134,7 @@ public class EmployeeSpecializationController {
     }
 
     @DeleteMapping("/employee-specialization/{id}")
+    @PreAuthorize("hasAuthority('delete_employeeSpecialization')")
     public ResponseEntity<?> deleteEmployeeSpecializationById(@PathVariable("id") final Long id) {
         employeeSpecializationService.deleteSpecialization(id);
         return ResponseEntity.ok(ApiResponse.successMessage("Specialization details identified by id " + id + " was successfully deleted", HttpStatus.OK, id));

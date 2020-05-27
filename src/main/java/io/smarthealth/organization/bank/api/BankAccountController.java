@@ -14,11 +14,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
  *
- * @author Kelsas
+ * @author Kennedy.Ikatanyi
  */
 @Api
 @RestController
@@ -32,6 +33,7 @@ public class BankAccountController {
     }
 
     @PostMapping("/bank-account")
+    @PreAuthorize("hasAuthority('create_bankaccount')")
     public ResponseEntity<?> createBankAccount(@Valid @RequestBody BankAccountData bankAccountData) {
 //   bankAccountData.setAccountNumber("70-14-003");
         BankAccountData bankAccount = BankAccountData.map(bankAccountservice.createBankAccount(bankAccountData));
@@ -45,18 +47,21 @@ public class BankAccountController {
     }
 
     @GetMapping("/bank-account/{id}")
+    @PreAuthorize("hasAuthority('view_bankaccount')")
     public BankAccountData getBankAccount(@PathVariable(value = "id") Long id) {
         BankAccount bankAccount = bankAccountservice.getBankAccountByIdWithFailDetection(id);
         return BankAccountData.map(bankAccount);
     }
 
     @PatchMapping("/bank-account/{id}")
+    @PreAuthorize("hasAuthority('edit_bankaccount')")
     public BankAccountData updateBankAccount(@PathVariable(value = "id") Long id, BankAccountData bankAccountData) {
         BankAccountData bankAccount = BankAccountData.map(bankAccountservice.updateBankAccount(id, bankAccountData));
         return bankAccount;
     }
 
     @GetMapping("/bank-account")
+    @PreAuthorize("hasAuthority('view_bankaccount')")
     public ResponseEntity<?> getBankAccounts(
             @RequestParam(value = "accountNumber", required = false) String accountNumber,
             @RequestParam(value = "bankName", required = false) String bankName,

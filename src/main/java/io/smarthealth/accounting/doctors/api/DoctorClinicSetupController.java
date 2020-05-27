@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,6 +50,7 @@ public class DoctorClinicSetupController {
     ItemService itemService;
 
     @PostMapping("/clinics")
+    @PreAuthorize("hasAuthority('create_doctorClinic')") 
     public ResponseEntity<?> createDoctorClinic(@Valid @RequestBody DoctorClinicData data) {
 //find
         Item item = itemService.findItemEntityOrThrow(data.getServiceId());
@@ -68,6 +70,7 @@ public class DoctorClinicSetupController {
     }
 
     @GetMapping("/clinics")
+    @PreAuthorize("hasAuthority('view_doctorClinic')") 
     public ResponseEntity<?> getDoctorInvoices(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
@@ -90,6 +93,7 @@ public class DoctorClinicSetupController {
     }
 
     @GetMapping("/clinics/{id}")
+    @PreAuthorize("hasAuthority('view_doctorClinic')") 
     public ResponseEntity<?> fetchDoctorClinicById(@PathVariable("id") final Long clinicId) {
 
         DoctorClinicItems clinic = doctorClinicService.fetchClinicById(clinicId);
