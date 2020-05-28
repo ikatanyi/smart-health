@@ -44,7 +44,7 @@ public class PurchaseOrder extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_purch_order_store_id"))
     private Store store;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_purch_order_pricelist_id"))
     private PriceBook priceList;
     @Enumerated(EnumType.STRING)

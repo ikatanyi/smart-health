@@ -98,5 +98,8 @@ public class PatientBill extends Auditable {
 
         return data;
     }
-  
+//    @Override
+//    public String toString() {
+//        return "Patient Bill[id=" + getId() + ", patient number=" + patient!=null ? patient.getPatientNumber(): null + " , bill number=" +billNumber+ ", payment mode=" +paymentMode+ ", transaction id=" + transactionId + ", amount=" +amount+ ",  ]";
+//    }
 }

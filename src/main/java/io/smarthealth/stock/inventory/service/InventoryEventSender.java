@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 /**
  *
  * @author Kelsas
- */
+ */ 
 @Service
 public class InventoryEventSender {
 

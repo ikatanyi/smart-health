@@ -21,16 +21,20 @@ import io.smarthealth.stock.inventory.domain.specification.StockEntrySpecificati
 import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
+import io.smarthealth.stock.purchase.domain.PurchaseOrder;
+import io.smarthealth.stock.purchase.domain.PurchaseOrderItemRepository;
+import io.smarthealth.stock.purchase.domain.PurchaseOrderRepository;
+import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.purchase.service.PurchaseInvoiceService;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -46,6 +50,8 @@ public class InventoryService {
     private final StoreService storeService;
     private final InventoryEventSender inventoryEventSender;
     private final PurchaseInvoiceService purchaseInvoiceService;
+    private final PurchaseOrderItemRepository purchaseOrderItemRepository;
+    private final PurchaseOrderRepository purchaseOrderRepository;
 
     private final SequenceNumberService sequenceNumberService;
     private final JournalService journalService;
@@ -114,7 +120,7 @@ public class InventoryService {
             BigDecimal costAmount = stockData.getItems()
                     .stream()
                     .map(x -> (x.getPrice().multiply(BigDecimal.valueOf(x.getQuantity()))))
-                            .reduce(BigDecimal.ZERO, (x,y) -> (x.add(y)));
+                    .reduce(BigDecimal.ZERO, (x, y) -> (x.add(y)));
 
             journalService.save(toJournal(store, stockData.getTransactionDate(), trdId, costAmount));
         }
@@ -130,8 +136,8 @@ public class InventoryService {
         if (store.getExpenseAccount() == null) {
             throw APIException.notFound("Expense Account is Not Defined for the Store " + store.getStoreName());
         }
-        String debitAcc = store.getExpenseAccount().getIdentifier();
-        String creditAcc = store.getInventoryAccount().getIdentifier();
+//        String debitAcc = store.getExpenseAccount().getIdentifier();
+//        String creditAcc = store.getInventoryAccount().getIdentifier();
 
         String narration = "Issuing Stocks for  - " + store.getStoreName();
         JournalEntry toSave = new JournalEntry(date, narration,
@@ -148,7 +154,7 @@ public class InventoryService {
         return toSave;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public String receiveSupplierStocks(SupplierStockEntry stockData) {
         // we will do stock entry and then create a bill out of this for easy 
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
@@ -176,14 +182,40 @@ public class InventoryService {
                         stock.setTransactionDate(stockData.getTransactionDate());
                         stock.setTransactionNumber(trdId);
                         stock.setUnit(st.getUnit());
+                        stock.setExpiryDate(st.getExpiryDate());
+                        stock.setBatchNo(stock.getBatchNo());
 
                         StockEntry savedEntry = stockEntryRepository.save(stock);
+
+                        if (st.getPurchaseOrderId() != null) {
+                            purchaseOrderItemRepository.updateReceivedQuantity(st.getQuantity(), st.getPurchaseOrderId());
+                        }
+
                         inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), store, item, qty.doubleValue()));
                     });
 
         }
 
         purchaseInvoiceService.createPurchaseInvoice(store, stockData);
+
+        if (stockData.getOrderNumber() != null) {
+            PurchaseOrder order = purchaseOrderRepository.findByOrderNumber(stockData.getOrderNumber()).orElse(null);
+            if (order != null) {
+                Double balance = 0D;
+                balance = stockData.getItems().stream().map((x) -> (x.getQtyOrdered() - x.getQuantity())).reduce(balance, (x, y) -> x + y);
+                PurchaseOrderStatus status = PurchaseOrderStatus.Received;
+                if (balance > 0) {
+                    status = PurchaseOrderStatus.PartialReceived;
+                } else {
+                    order.setReceived(Boolean.TRUE);
+                }
+                order.setStatus(status);
+                order.setBilled(Boolean.TRUE);
+
+                purchaseOrderRepository.save(order);
+            }
+
+        }
 
         return trdId;
     }
@@ -226,17 +258,17 @@ public class InventoryService {
                 .orElseThrow(() -> APIException.notFound("Stock Movement with Id {0} not found", id));
     }
 
-    public Page<StockEntry> getStockEntries(String store, String itemName, String referenceNumber, String transactionId, String deliveryNumber, String purpose, String moveType, DateRange range, Pageable pageable) {
-        MovementPurpose p = null;
-        if (purpose != null) {
-            p = MovementPurpose.valueOf(purpose);
-        }
-        MovementType type = null;
-        if (moveType != null) {
-            type = MovementType.valueOf(moveType);
-        }
+    public Page<StockEntry> getStockEntries(String store, String itemName, String referenceNumber, String transactionId, String deliveryNumber, MovementPurpose purpose, MovementType moveType, DateRange range, Pageable pageable) {
+//        MovementPurpose p = null;
+//        if (purpose != null) {
+//            p = MovementPurpose.valueOf(purpose);
+//        }
+//        MovementType type = null;
+//        if (moveType != null) {
+//            type = MovementType.valueOf(moveType);
+//        }
 
-        Specification<StockEntry> spec = StockEntrySpecification.createSpecification(store, itemName, referenceNumber, transactionId, deliveryNumber, range, p, type);
+        Specification<StockEntry> spec = StockEntrySpecification.createSpecification(store, itemName, referenceNumber, transactionId, deliveryNumber, range, purpose, moveType);
         Page<StockEntry> stocks = stockEntryRepository.findAll(spec, pageable);
         return stocks;
     }

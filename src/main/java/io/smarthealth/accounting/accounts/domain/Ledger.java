@@ -12,14 +12,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author Kelsas
  */
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Data 
 @Entity
 @Table(name = "acc_ledgers")
 public class Ledger extends Auditable {
@@ -56,5 +54,8 @@ public class Ledger extends Auditable {
     public int hashCode() {
         return identifier.hashCode();
     }
-
+    @Override
+    public String toString() {
+        return "Ledger [id=" + getId() + ", name=" + name + ", number=" + identifier + ", type=" + type + ", parent ledger=" +parentLedger!=null ? parentLedger.getName() : null + " ]";
+    }
 }

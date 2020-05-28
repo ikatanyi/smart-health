@@ -16,24 +16,28 @@ public class InventoryItemSpecification {
         super();
     }
 
-    public static Specification<InventoryItem> createSpecification(Store store, String item,Boolean includeClosed) {
-        
+    public static Specification<InventoryItem> createSpecification(Long storeId, Long itemId, String search, Boolean includeClosed) {
+
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
- 
-             if (includeClosed!=null) {
-                predicates.add(cb.equal(root.get("item").get("active"), includeClosed));
+
+            if (includeClosed == null) {
+                predicates.add(cb.equal(root.get("item").get("active"), true));
+            } else {
+                if (!includeClosed) {
+                    predicates.add(cb.equal(root.get("item").get("active"), true));
+                }
             }
-             
-            if (item != null) {
-                predicates.add(cb.equal(root.get("item"), item));
+
+            if (itemId != null) {
+                predicates.add(cb.equal(root.get("item").get("id"), itemId));
             }
-            if (store != null) {
-                predicates.add(cb.equal(root.get("store"), store));
+            if (storeId != null) {
+                predicates.add(cb.equal(root.get("store").get("id"), storeId));
             }
-            
-             if (item != null) {
-                final String likeExpression = "%" + item + "%";
+
+            if (search != null) {
+                final String likeExpression = "%" + search + "%";
                 predicates.add(
                         cb.or(
                                 cb.like(root.get("item").get("itemName"), likeExpression),
@@ -41,7 +45,7 @@ public class InventoryItemSpecification {
                         )
                 );
             }
-             
+
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

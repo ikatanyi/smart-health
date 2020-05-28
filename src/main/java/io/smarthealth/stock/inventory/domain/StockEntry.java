@@ -22,13 +22,11 @@ import lombok.ToString;
 @Data
 @Table(name = "stock_inventory_entries")
 public class StockEntry extends Auditable {
-
-    @ToString.Exclude
+ 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_entry_store_id"))
     private Store store;
-
-    @ToString.Exclude
+ 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_entry_item_id"))
     private Item item;
@@ -48,6 +46,9 @@ public class StockEntry extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private MovementPurpose purpose;
+    
+    private LocalDate expiryDate;
+    private String batchNo;
 
     /*
     Perpetual Inventory

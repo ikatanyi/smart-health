@@ -30,14 +30,12 @@ import lombok.ToString;
 @EqualsAndHashCode(exclude = {"item", "priceBook"})
 public class PriceBookItem implements Serializable {
 
-    @Id
-    @ToString.Exclude
+    @Id 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pricebook_item_book_id"))
     private PriceBook priceBook;
 
-    @Id
-    @ToString.Exclude
+    @Id 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pricebook_item_item_id"))
     private Item item;
@@ -62,5 +60,8 @@ public class PriceBookItem implements Serializable {
         
         return priceList;
     }
-    
+     @Override
+    public String toString() {
+        return "PriceBookItem [item=" + item.getItemName() + ", pricebook=" + priceBook.getName() + "]";
+    }
 }

@@ -92,4 +92,8 @@ public class PriceBook extends Auditable {
         priceList.setPriceBookAmount(newPrice);
         return priceList;
     }
+     @Override
+    public String toString() {
+        return "Price Book [id=" + getId() + ", name=" + name + "]";
+    }
 }

@@ -8,6 +8,8 @@ import io.smarthealth.stock.inventory.data.CreateStockEntry;
 import io.smarthealth.stock.inventory.data.StockEntryData;
 import io.smarthealth.stock.inventory.data.SupplierStockEntry;
 import io.smarthealth.stock.inventory.data.TransData;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.service.InventoryService;
 import io.swagger.annotations.Api;
 import java.util.List;
@@ -80,8 +82,8 @@ public class InventoryController {
             @RequestParam(value = "reference", required = false) final String referenceNumber,
             @RequestParam(value = "transactionId", required = false) final String transactionId,
             @RequestParam(value = "deliveryNo", required = false) final String deliveryNumber,
-            @RequestParam(value = "purpose", required = false) final String purpose,
-            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "purpose", required = false) final MovementPurpose purpose,
+            @RequestParam(value = "type", required = false) MovementType type,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {

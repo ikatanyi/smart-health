@@ -41,4 +41,9 @@ public class Account extends Auditable {
     @Column(name = "a_state")
     @Enumerated(EnumType.STRING)
     private AccountState state;
+    
+     @Override
+    public String toString() {
+        return "Account [id=" + getId() + ", name=" + name + ", number=" + identifier + ", type=" + type + ", ledger=" +ledger!=null ? ledger.getName() : null + " ]";
+    }
 }
