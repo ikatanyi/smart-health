@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="specimen_label" pageWidth="216" pageHeight="72" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="212" leftMargin="2" rightMargin="2" topMargin="2" bottomMargin="2" uuid="2f814b8f-8694-40a1-9d18-81e03b0a4b32">
-	<property name="ireport.zoom" value="4.0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="specimen_label" pageWidth="200" pageHeight="82" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="196" leftMargin="2" rightMargin="2" topMargin="2" bottomMargin="2" uuid="2f814b8f-8694-40a1-9d18-81e03b0a4b32">
+	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="name" class="java.lang.String"/>
@@ -8,38 +8,144 @@
 	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["C:\\Users\\kennedy.ikatanyi\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
 	</parameter>
-	<field name="specimenName" class="java.lang.String"/>
+	<field name="specimen" class="java.lang.String"/>
 	<field name="patientName" class="java.lang.String"/>
-	<field name="dateOfBirth" class="java.lang.String"/>
-	<field name="requestedBy" class="java.lang.String"/>
+	<field name="testCode" class="java.lang.String"/>
+	<field name="patientNumber" class="java.lang.String"/>
+	<field name="DOB" class="java.lang.Object"/>
+	<field name="orderNumber" class="java.lang.String"/>
+	<field name="testName" class="java.lang.String"/>
+	<field name="collectionDateTime" class="java.lang.Object"/>
+	<field name="collectedBy" class="java.lang.String"/>
+	<field name="gender" class="java.lang.String"/>
 	<background>
-		<band splitType="Stretch"/>
+		<band height="78">
+			<rectangle radius="10">
+				<reportElement x="0" y="0" width="196" height="78" uuid="b94c778c-e994-4557-862c-e71339fa1ed7"/>
+			</rectangle>
+		</band>
 	</background>
 	<columnHeader>
-		<band splitType="Stretch"/>
+		<band height="34" splitType="Prevent">
+			<componentElement>
+				<reportElement stretchType="RelativeToBandHeight" x="4" y="7" width="119" height="27" isPrintInFirstWholeBand="true" uuid="5bb5d64c-6d9d-40b1-8290-8266c55f61c0"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code39 (Extended)" drawText="true" checksumRequired="false" barWidth="0" barHeight="40">
+					<jr:codeExpression><![CDATA[$F{patientName}+"-"+$F{patientNumber}+"-"+$F{testCode}+"-"+$F{specimen}+"-"+$F{collectionDateTime}]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+		</band>
 	</columnHeader>
 	<detail>
-		<band height="29" splitType="Stretch">
-			<textField>
-				<reportElement x="1" y="0" width="211" height="9" uuid="14346eb0-a88e-4c82-812e-b807fed1d3ae"/>
+		<band height="42" splitType="Stretch">
+			<staticText>
+				<reportElement x="4" y="1" width="37" height="8" uuid="15212590-44bd-4ab4-964b-e68cd2d08ac0"/>
 				<textElement>
-					<font size="7"/>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Order Req.No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="9" width="37" height="8" uuid="bbcbd894-bdb9-452f-95d6-d8af276e2e7c"/>
+				<textElement>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pt (ID) Name :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="17" width="37" height="8" uuid="2cd6711f-e404-43c7-adb8-9baba0848d32"/>
+				<textElement>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pt DOB :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="89" y="17" width="25" height="8" uuid="b2e4ae3b-c921-45bb-8698-97a42ff3f0ef"/>
+				<textElement>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pt Sex :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="109" y="1" width="34" height="8" uuid="0fb74501-0b85-44fd-9db3-bb4e88a1ac34"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Coll.Date:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="109" y="9" width="34" height="8" uuid="402232f8-b0f5-4e0f-9303-b2a0c27a4ff6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Coll. By:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="143" y="8" width="51" height="1" uuid="7ca60031-c13f-4f9e-9039-c8ed858297e0"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="143" y="15" width="51" height="1" uuid="6a1763d2-b16c-48c4-9e64-f13e7a51f805"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="4" y="25" width="85" height="8" isRemoveLineWhenBlank="true" uuid="4600b991-d6ac-40a9-9115-79a1456ef220"/>
+				<textElement>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{testCode}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="4" y="33" width="85" height="8" isRemoveLineWhenBlank="true" uuid="a1b4fe72-4a8a-4738-b226-801ab2977cb8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{specimen}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="112" y="17" width="34" height="8" isRemoveLineWhenBlank="true" uuid="e61434ab-5820-4ed4-9589-766bcf26598b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{gender}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="41" y="17" width="64" height="8" isRemoveLineWhenBlank="true" uuid="e1beb6f8-d868-4403-a49d-08e2275ba36e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DOB}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="41" y="9" width="64" height="8" isRemoveLineWhenBlank="true" uuid="10efadb5-8c0b-4652-a020-56d2d20ae99b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="1" y="9" width="116" height="9" uuid="0f46232d-60ee-4ab3-9514-7fabe5c0c530"/>
-				<textElement>
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{dateOfBirth}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="1" y="18" width="161" height="9" uuid="b32fb28b-dff5-41ec-8fe9-c0dc6e884e9b"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="41" y="1" width="64" height="8" uuid="3dcc1194-33cc-46aa-8b36-8f0279237e9c"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{specimenName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{orderNumber}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="143" y="9" width="51" height="7" uuid="9f9abfee-1b98-45dc-8841-27124ac3636e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="4"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{collectedBy}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="143" y="2" width="51" height="7" uuid="73caccb1-f772-4036-b657-4e0b26df1b7c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="4"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{collectionDateTime}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
