@@ -5,8 +5,13 @@
  */
 package io.smarthealth.clinical.record.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.record.data.enums.ReferralType;
 import io.smarthealth.clinical.record.domain.Referrals;
+import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -17,7 +22,7 @@ import lombok.Data;
  */
 @Data
 public class ReferralData {
-    
+
     @Enumerated(EnumType.STRING)
     private ReferralType referralType;
     private String staffNumber;
@@ -31,7 +36,10 @@ public class ReferralData {
     private Long doctorServiceId;
     private String patientName;
     private String patientNumber;
-    
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
+    private LocalDateTime referralDate;
+
     public static ReferralData map(Referrals r) {
         ReferralData data = new ReferralData();
         if (r.getDoctor() != null) {
@@ -47,9 +55,11 @@ public class ReferralData {
         data.setExaminationNotes(r.getExaminationNotes());
         data.setPatientName(r.getPatient().getFullName());
         data.setPatientNumber(r.getPatient().getPatientNumber());
+        LocalDateTime ldt = LocalDateTime.ofInstant(r.getCreatedOn(), ZoneOffset.systemDefault());
+        data.setReferralDate(ldt);
         return data;
     }
-    
+
     public static Referrals map(ReferralData data) {
         Referrals r = new Referrals();
         r.setDoctorSpeciality(data.getDoctorSpeciality());

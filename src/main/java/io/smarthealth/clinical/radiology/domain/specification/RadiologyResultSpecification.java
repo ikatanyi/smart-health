@@ -17,32 +17,32 @@ public class RadiologyResultSpecification {
         super();
     }
 
-    public static Specification<RadiologyResult> createSpecification(String PatientNumber,String scanNo, String visitId, Boolean isWalkin, ScanTestState status, DateRange range, String search) {
+    public static Specification<RadiologyResult> createSpecification(String PatientNumber, String scanNo, String visitNumber, Boolean isWalkin, ScanTestState status, DateRange range, String search) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
- 
+
             if (PatientNumber != null) {
-                predicates.add(cb.equal(root.get("patientScanTest").get("patientScanRegister").get("patient").get("patientNumber"), PatientNumber));
+                predicates.add(cb.equal(root.get("patientScanTest").get("patientScanRegister").get("patientNo"), PatientNumber));
             }
             if (scanNo != null) {
                 predicates.add(cb.equal(root.get("patientScanTest").get("patientScanRegister").get("accessNo"), scanNo));
             }
-            if (visitId != null) {
-                predicates.add(cb.equal(root.get("patientScanTest").get("patientScanRegister").get("visit").get("visitId"), visitId));
+            if (visitNumber != null) {
+                predicates.add(cb.equal(root.get("patientScanTest").get("patientScanRegister").get("visit").get("visitNumber"), visitNumber));
             }
             if (isWalkin != null) {
                 predicates.add(cb.equal(root.get("patientScanTest").get("patientScanRegister").get("isWalkin"), isWalkin));
             }
-             if (status != null) {
+            if (status != null) {
                 predicates.add(cb.equal(root.get("status"), status));
             }
-             if(range!=null){
-                  predicates.add(
-                     cb.between(root.get("resultsDate"), range.getStartDate(), range.getEndDate())
-                  );
-              }
-            
-             if (search != null) {
+            if (range != null) {
+                predicates.add(
+                        cb.between(root.get("resultsDate"), range.getStartDate(), range.getEndDate())
+                );
+            }
+
+            if (search != null) {
                 final String likeExpression = "%" + search + "%";
                 predicates.add(
                         cb.or(
@@ -54,7 +54,7 @@ public class RadiologyResultSpecification {
                                 cb.like(root.get("patientScanTest").get("patientScanRegister").get("accessNo"), likeExpression)
                         )
                 );
-            } 
+            }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
