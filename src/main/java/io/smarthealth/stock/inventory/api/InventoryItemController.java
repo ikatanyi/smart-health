@@ -55,6 +55,7 @@ public class InventoryItemController {
         InventoryItem inventoryItem = service.getInventoryItem(code, storeId).orElse(null);
         return inventoryItem.toData();
     }
+    
 
     @GetMapping("/inventoryItem/store/{storeId}")
     @PreAuthorize("hasAuthority('view_inventoryItem')")
@@ -94,6 +95,12 @@ public class InventoryItemController {
         pagers.setPageDetails(details);
 
         return ResponseEntity.ok(pagers);
+    }
+    
+    @GetMapping("/inventoryItem/{itemCode}/item-count")
+    @PreAuthorize("hasAuthority('view_inventoryItem')")
+    public Double getInventoryItemCount(@PathVariable(value = "itemCode") String itemCode) {
+        return service.getItemCount(itemCode);
     }
 
 //    @GetMapping("/inventory-balances")
