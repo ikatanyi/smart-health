@@ -93,7 +93,7 @@ public class VisitSpecification {
                 predicates.add(cb.equal(root.get("isActiveOnConsultation"), isActiveOnConsultation));
             }
 
-            query.orderBy(cb.asc(root.get("triageCategory")), cb.desc(root.get("startDatetime")));
+            query.orderBy(cb.asc(root.get("triageCategory")), cb.asc(root.get("startDatetime")));
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };

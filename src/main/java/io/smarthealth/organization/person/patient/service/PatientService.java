@@ -453,15 +453,19 @@ public class PatientService {
             //fetch portrait
             Optional<Portrait> portrait = portraitRepository.findByPerson(patient);
             if (portrait.isPresent()) {
-                PortraitData data = new PortraitData();
-                data.setImageName(portrait.get().getImageName());
-                data.setImageUrl(portrait.get().getImageUrl());
-                patientData.setPortraitData(data);
+                try {
+                    PortraitData data = new PortraitData();
+                    data.setImageName(portrait.get().getImageName());
+                    data.setImageUrl(portrait.get().getImageUrl());
+                    patientData.setPortraitData(data);
 
-                File imgFile = new File(portrait.get().getImageUrl().concat(portrait.get().getImageName()));
-                byte[] bytes = Files.readAllBytes(imgFile.toPath());
+                    File imgFile = new File(portrait.get().getImageUrl().concat(portrait.get().getImageName()));
+                    byte[] bytes = Files.readAllBytes(imgFile.toPath());
 
-                data.setImage(bytes);
+                    data.setImage(bytes);
+                } catch (Exception e) {
+                    System.out.println("Error loading "+e.getMessage());
+                }
             }
 
             patientData.setFullName((patient.getGivenName() != null ? patient.getGivenName() : "") + " " + (patient.getMiddleName() != null ? patient.getMiddleName() : "").concat(" ").concat(patient.getSurname() != null ? patient.getSurname() : " "));
