@@ -2,7 +2,7 @@ package io.smarthealth.stock.inventory.domain;
 
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.stock.inventory.data.StockEntryData;
+import io.smarthealth.stock.inventory.data.StockEntryData1;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.item.domain.Item;
@@ -22,13 +22,11 @@ import lombok.ToString;
 @Data
 @Table(name = "stock_inventory_entries")
 public class StockEntry extends Auditable {
-
-    @ToString.Exclude
+ 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_entry_store_id"))
     private Store store;
-
-    @ToString.Exclude
+ 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_entry_item_id"))
     private Item item;
@@ -48,6 +46,9 @@ public class StockEntry extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private MovementPurpose purpose;
+    
+    private LocalDate expiryDate;
+    private String batchNo;
 
     /*
     Perpetual Inventory
@@ -55,8 +56,8 @@ public class StockEntry extends Auditable {
     Periodic
         Do not post stocks
      */
-    public StockEntryData toData() {
-        StockEntryData data = new StockEntryData();
+    public StockEntryData1 toData() {
+        StockEntryData1 data = new StockEntryData1();
         data.setId(this.getId());
         if (this.getStore() != null) {
             data.setStoreId(this.getStore().getId());

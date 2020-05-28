@@ -3,13 +3,12 @@ package io.smarthealth.stock.inventory.domain;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.item.domain.Item;
-import io.smarthealth.stock.item.domain.ReorderRule;
 import io.smarthealth.stock.stores.domain.Store;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
  * Balance Transaction Line of a given {@link Item } . It holds the current
@@ -22,17 +21,16 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "stock_inventory_item")
+@EqualsAndHashCode(callSuper = false)
 //@IdClass(InventoryId.class)
 public class InventoryItem extends Identifiable {
 
 //    @Id
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_store_id"))
     private Store store;
 
 //    @Id
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_item_id_"))
     private Item item;
@@ -83,4 +81,10 @@ public class InventoryItem extends Identifiable {
 
         return data;
     }
+    
+     @Override
+    public String toString() {
+        return "Inventory Item [id=" + getId() + ", item=" +item!=null? item.getItemName() :null+ ", Store=" + store!=null ? store.getStoreName() : null+ ", available stock=" + availableStock + "]";
+    }
+    
 }

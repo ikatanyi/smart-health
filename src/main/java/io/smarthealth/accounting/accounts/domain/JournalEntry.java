@@ -140,4 +140,9 @@ public class JournalEntry extends Auditable {
         data.setState(this.status);
         return data;
     }
+    
+      @Override
+    public String toString() {
+        return "Journal Entry [id=" + getId() + ", description=" + description + ", transaction_no=" + transactionNo + ", date=" + date + ", status=" +status+ " ]";
+    }
 }

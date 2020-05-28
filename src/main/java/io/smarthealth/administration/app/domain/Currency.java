@@ -18,4 +18,5 @@ public class Currency extends Identifiable {
     private Integer decimalPlaces;
     private String format;
     private boolean active;
+    
 }

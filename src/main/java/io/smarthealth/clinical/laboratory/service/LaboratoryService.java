@@ -4,7 +4,6 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
-import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -41,15 +40,16 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterRepository;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTestRepository;
 import io.smarthealth.clinical.laboratory.domain.specification.LabRegisterTestSpecification;
+import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
+import io.smarthealth.notifications.service.RequestEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
-import java.util.Optional;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.transaction.annotation.Propagation;
 
@@ -71,6 +71,7 @@ public class LaboratoryService {
     private final ServicePointService servicePointService;
     private final BillingService billingService;
     private final DoctorsRequestRepository doctorRequestRepository;
+    private final RequestEventPublisher requestEventPublisher;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public LabRegister createLabRegister(LabRegisterData data) {
@@ -93,7 +94,7 @@ public class LaboratoryService {
                 .forEach(x -> {
                     fulfillDocRequest(x.getRequestId());
                 });
-
+        requestEventPublisher.publishUpdateEvent(DoctorRequestData.RequestType.Laboratory);
         return savedRegister;
     }
 
@@ -150,12 +151,12 @@ public class LaboratoryService {
 
     @Transactional
     private void updateRegisterStatus(LabRegister requests) {
- 
+
         if (requests.isCompleted()) {
             repository.updateLabRegisterStatus(LabTestStatus.Complete, requests.getId());
         } else {
             repository.updateLabRegisterStatus(LabTestStatus.PartialResult, requests.getId());
-        } 
+        }
     }
 
     public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, List<LabTestStatus> status, DateRange range, String search, Pageable page) {
@@ -188,7 +189,7 @@ public class LaboratoryService {
         List<LabResult> savedResults = labResultRepository.saveAll(toSave);
 
         savedResults.forEach(x -> updateResultsEntry(x));
-         
+
         return savedResults;
     }
 
@@ -227,10 +228,10 @@ public class LaboratoryService {
         Specification<LabResult> spec = LabResultSpecification.createSpecification(visitNumber, patientNumber, labNumber, walkin, testName, orderNumber, range);
         return labResultRepository.findAll(spec, page);
     }
-    
+
     @Transactional
     private void updateResultsEntry(LabResult savedResult) {
-        
+
         LabRegisterTest test = savedResult.getLabRegisterTest();
         testRepository.updateTestEntry(SecurityUtils.getCurrentUserLogin().orElse("system"), test.getId(), LabTestStatus.ResultsEntered);
 

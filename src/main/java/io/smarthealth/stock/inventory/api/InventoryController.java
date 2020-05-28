@@ -5,9 +5,11 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.inventory.data.CreateStockEntry;
-import io.smarthealth.stock.inventory.data.StockEntryData;
+import io.smarthealth.stock.inventory.data.StockEntryData1;
 import io.smarthealth.stock.inventory.data.SupplierStockEntry;
 import io.smarthealth.stock.inventory.data.TransData;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.service.InventoryService;
 import io.swagger.annotations.Api;
 import java.util.List;
@@ -67,8 +69,8 @@ public class InventoryController {
     //inventories/{id}
     @GetMapping("/inventory-entries/{id}")
     @PreAuthorize("hasAuthority('view_inventory')")
-    public StockEntryData searchStockEntry(@PathVariable(value = "id") Long id) {
-        StockEntryData stocks = service.getStockEntry(id).toData();
+    public StockEntryData1 searchStockEntry(@PathVariable(value = "id") Long id) {
+        StockEntryData1 stocks = service.getStockEntry(id).toData();
         return stocks;
     }
 
@@ -80,19 +82,19 @@ public class InventoryController {
             @RequestParam(value = "reference", required = false) final String referenceNumber,
             @RequestParam(value = "transactionId", required = false) final String transactionId,
             @RequestParam(value = "deliveryNo", required = false) final String deliveryNumber,
-            @RequestParam(value = "purpose", required = false) final String purpose,
-            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "purpose", required = false) final MovementPurpose purpose,
+            @RequestParam(value = "type", required = false) MovementType type,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<StockEntryData> list = service
+        Page<StockEntryData1> list = service
                 .getStockEntries(store, item, referenceNumber, transactionId, deliveryNumber, purpose, type, range, pageable)
-                .map(u -> StockEntryData.map(u));
+                .map(u -> StockEntryData1.map(u));
 
-        Pager<List<StockEntryData>> pagers = new Pager();
+        Pager<List<StockEntryData1>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());

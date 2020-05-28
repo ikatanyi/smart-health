@@ -12,5 +12,6 @@ public enum Code {
     DurationUnit,
     DoseUnit,
     DrugInstruction,
-    LabUnits
+    LabUnits,
+    InventoryAdjustmentReason
 }

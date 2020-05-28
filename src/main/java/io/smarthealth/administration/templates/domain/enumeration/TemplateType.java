@@ -11,17 +11,17 @@ package io.smarthealth.administration.templates.domain.enumeration;
  */
 public enum TemplateType {
     Allocation,
-    Presciption,
-    DoctorNotes,
+    //Presciption,
+    //DoctorNotes,
     Patients,
-    Insurances,
+    Payers,
     Schemes,
     ServiceMasterList,
-    PriceList,
+    //PriceList,
     Suppliers,
     Products,
-    LabTests,
-    RadiologyTests,
-    ProcedureTests,
-    Specimens
+    //LabTests,
+    //RadiologyTests,
+    //ProcedureTests,
+    //Specimens
 }

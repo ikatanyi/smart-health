@@ -3,7 +3,6 @@ package io.smarthealth.config.oauth;
 import io.kelsas.accounting.security.service.CustomAccessDeniedHandler;
 import io.smarthealth.security.service.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -31,20 +30,17 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        http
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests() 
-                 .antMatchers("/tenants").permitAll()   
-                .antMatchers(HttpMethod.OPTIONS, "/api/**","/company/**").permitAll()
-                //.antMatchers("/api/user/updatePassword*").hasAuthority("CHANGE_PASSWORD_PRIVILEGE").and()
-                .and()
-                .antMatcher("/api/**").authorizeRequests()
-                .antMatchers(HttpMethod.GET, /*"/api/users",*/ "/v2/api-docs/**", "/swagger-ui.html*", "/company/logo*").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/auth/signup").permitAll() /* This end-point should be dedicated to a scenario where this sytem is provided as a service. Different companies(hospitals) can signup and create their account*/
+                .authorizeRequests()
+                .antMatchers("/app/**", "/ws/**", "/notifications/**").permitAll()
+                .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**").permitAll()
+                //               .antMatchers("/api/users/**").hasAuthority("ADMIN")
+                //                .antMatchers(HttpMethod.GET, "/v2/api-docs/**", "/swagger-ui.html*", "/company/logo*").permitAll()
+                .antMatchers("/api/**").authenticated()
                 .anyRequest().authenticated()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint)
-                .accessDeniedHandler(new CustomAccessDeniedHandler());
+                .and().exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint).accessDeniedHandler(new CustomAccessDeniedHandler());
     }
+
 }

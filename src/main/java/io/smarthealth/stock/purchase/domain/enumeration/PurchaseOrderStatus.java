@@ -8,5 +8,6 @@ public enum PurchaseOrderStatus {
         Draft,
         Approved,
         Canceled,
-        To_Receive_And_Bill 
+        PartialReceived,
+        Received
 }

@@ -285,7 +285,7 @@ public class ReceivePaymentService {
                                     Collectors.summingDouble(x -> (x.getItem().getCostRate().doubleValue() * x.getQuantity())))
                     );
             if (!inventory.isEmpty()) {
-                inventory.forEach((k, v) -> {
+            inventory.forEach((k, v) -> {
                     //revenue
                     ServicePoint srv = servicePointService.getServicePoint(k);
                     String narration = "Expensing Inventory for " + srv.getName();

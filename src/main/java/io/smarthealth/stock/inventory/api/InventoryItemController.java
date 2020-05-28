@@ -39,13 +39,12 @@ public class InventoryItemController {
     public ResponseEntity<?> createInventoryItem(@Valid @RequestBody CreateInventoryItem itemData) {
 
 //        InventoryItem result = 
-                service.createInventoryItem(itemData);
+        service.createInventoryItem(itemData);
 
 //        Pager<InventoryItemData> pagers = new Pager();
 //        pagers.setCode("0");
 //        pagers.setMessage("Inventory Item created successful");
 //        pagers.setContent(result.toData());
-
         return ResponseEntity.status(HttpStatus.CREATED).build();
 
     }
@@ -53,18 +52,17 @@ public class InventoryItemController {
     @GetMapping("/inventoryItem/{id}/store/{storeId}")
     @PreAuthorize("hasAuthority('view_inventoryItem')")
     public InventoryItemData getInventoryItem(@PathVariable(value = "id") Long code, @PathVariable(value = "storeId") Long storeId) {
-        InventoryItem inventoryItem = service.getInventoryItemOrThrow(code, storeId);
+        InventoryItem inventoryItem = service.getInventoryItem(code, storeId).orElse(null);
         return inventoryItem.toData();
     }
-    
-     @GetMapping("/inventoryItem/store/{storeId}")
-     @PreAuthorize("hasAuthority('view_inventoryItem')")
-    public List<InventoryItemData> getInventoryItemLists(@PathVariable(value = "id") Long code, 
-            @RequestParam(value = "items", required = true) final List<ItemDTO> item ) {
+
+    @GetMapping("/inventoryItem/store/{storeId}")
+    @PreAuthorize("hasAuthority('view_inventoryItem')")
+    public List<InventoryItemData> getInventoryItemLists(@PathVariable(value = "id") Long code, @RequestParam(value = "items", required = true) final List<ItemDTO> item) {
         List<InventoryItemData> inventoryItem = service.getInventoryItemList(code, item)
                 .stream()
                 .map(x -> x.toData()).collect(Collectors.toList());
-        
+
         return inventoryItem;
     }
 
@@ -72,14 +70,15 @@ public class InventoryItemController {
     @PreAuthorize("hasAuthority('view_inventoryItem')")
     public ResponseEntity<?> getInventoryItems(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
-            @RequestParam(value = "item", required = false) final String item,
+            @RequestParam(value = "search", required = false) final String search,
+            @RequestParam(value = "item_id", required = false) final Long itemId,
             @RequestParam(value = "store", required = false) final Long storeId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<InventoryItemData> list = service.getInventoryItems(storeId, item, pageable, includeClosed);
+        Page<InventoryItemData> list = service.getInventoryItems(storeId, itemId, search, includeClosed, pageable);
 
 //        Page<InventoryItemData> list = service.getPricebooks(category, type, pageable, includeClosed).map(u -> InventoryItemData.map(u));
         Pager<List<InventoryItemData>> pagers = new Pager();
@@ -91,7 +90,7 @@ public class InventoryItemController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Pricebook");
+        details.setReportName("Inventory Items");
         pagers.setPageDetails(details);
 
         return ResponseEntity.ok(pagers);

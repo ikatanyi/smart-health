@@ -14,13 +14,11 @@ import lombok.ToString;
 @Data
 @Table(name = "stock_reorder_rule")
 public class ReorderRule extends Identifiable {
-
-    @ToString.Exclude
+ 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_reorder_rule_store_id"))
     private Store store;
-
-    @ToString.Exclude
+ 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_reorder_rule_item_id"))
     private Item stockItem;

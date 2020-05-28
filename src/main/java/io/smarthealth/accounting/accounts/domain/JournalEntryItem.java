@@ -103,4 +103,9 @@ public class JournalEntryItem extends Auditable {
         data.setType(this.journalEntry.getTransactionType());
         return data;
     }
+    
+      @Override
+    public String toString() {
+        return "Journal Entry Item [id=" + getId() + ", Journal =" + journalEntry.getDescription() + ", account=" + account!=null ? account.getName(): null + ", debit=" + debit + ", credit=" +credit+ " ]";
+    }
 }

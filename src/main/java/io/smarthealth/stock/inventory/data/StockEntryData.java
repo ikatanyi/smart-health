@@ -40,6 +40,8 @@ public class StockEntryData {
     private LocalDate transactionDate;
     private MovementType moveType;
     private MovementPurpose purpose;
+     private LocalDate expiryDate;
+    private String batchNo;
 
     public static StockEntryData map(StockEntry stock) {
         StockEntryData data = new StockEntryData();
@@ -65,6 +67,8 @@ public class StockEntryData {
         data.setTransactionDate(stock.getTransactionDate());
         data.setMoveType(stock.getMoveType());
         data.setPurpose(stock.getPurpose());
+        data.setBatchNo(stock.getBatchNo());
+        data.setExpiryDate(stock.getExpiryDate());
 
         return data;
     }

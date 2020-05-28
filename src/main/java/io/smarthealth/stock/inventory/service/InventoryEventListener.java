@@ -19,21 +19,22 @@ public class InventoryEventListener {
 
     @JmsListener(destination = "stockBalanceQueue", containerFactory = "connectionFactory")
     public void receive(InventoryEvent inventoryEvent) {
-
-        InventoryEvent event = inventoryEvent;
-        
-        switch (event.getType()) {
-            case Increase:
-                service.increase(event.getItem(), event.getStore(), event.getQuantity());
-                break;
-            case Decrease:
-                service.decrease(event.getItem(), event.getStore(), event.getQuantity());
-                break;
-            case Adjustment:
-                service.adjustment(event.getItem(), event.getStore(), event.getQuantity());
-            default:
-                log.info("Nothing to calculate balance");
-        }
+            service.processInventoryBalance(inventoryEvent);
+            
+//        InventoryEvent event = inventoryEvent;
+//        
+//        switch (event.getType()) {
+//            case Increase:
+//                service.increase(event.getItem(), event.getStore(), event.getQuantity());
+//                break;
+//            case Decrease:
+//                service.decrease(event.getItem(), event.getStore(), event.getQuantity());
+//                break;
+//            case Adjustment:
+//                service.adjustment(event.getItem(), event.getStore(), event.getQuantity());
+//            default:
+//                log.info("Nothing to calculate balance");
+//        }
     }
 
 }

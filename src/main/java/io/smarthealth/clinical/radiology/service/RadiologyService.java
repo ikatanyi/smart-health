@@ -30,6 +30,7 @@ import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyRegisterSpecification;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyResultSpecification;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyTestSpecification;
+import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
@@ -41,6 +42,7 @@ import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.service.FileStorageService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.notifications.service.RequestEventPublisher;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
@@ -95,6 +97,8 @@ public class RadiologyService {
     private final FileStorageService fileStoerageService;
 
     private final ServicePointService servicePoint;
+    
+    private final RequestEventPublisher requestEventPublisher;
 
     @Transactional
     public PatientScanRegister savePatientResults(PatientScanRegisterData patientScanRegData, final String visitNo) {
@@ -159,6 +163,7 @@ public class RadiologyService {
         PatientScanRegister scanRegister = patientradiologyRepository.save(patientScanReg);
         PatientBill bill = toBill(scanRegister);
         billService.save(bill);
+        requestEventPublisher.publishUpdateEvent(DoctorRequestData.RequestType.Radiology);
         return scanRegister;
     }
 

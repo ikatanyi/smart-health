@@ -6,6 +6,7 @@ import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.service.AdminService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
@@ -16,6 +17,7 @@ import io.smarthealth.stock.purchase.domain.PurchaseOrder;
 import io.smarthealth.stock.purchase.domain.PurchaseOrderItem;
 import io.smarthealth.stock.purchase.domain.PurchaseOrderRepository;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
+import io.smarthealth.stock.purchase.domain.specification.PurchaseOrderSpecification;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import io.smarthealth.supplier.domain.Supplier;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
@@ -114,11 +117,9 @@ public class PurchaseService {
                 .orElseThrow(() -> APIException.notFound("Purchase Order with Id {0} not found", id));
     }
 
-    public Page<PurchaseOrder> getPurchaseOrders(PurchaseOrderStatus status, Pageable page) {
-        if (status == null) {
-            return orderRepository.findAll(page);
-        }
-        return orderRepository.findByStatus(status, page);
+    public Page<PurchaseOrder> getPurchaseOrders(Long supplierId, List<PurchaseOrderStatus> status,  String search,DateRange range, Pageable page) {
+        Specification<PurchaseOrder> spec=PurchaseOrderSpecification.createSpecification(supplierId, status, search, range);
+        return orderRepository.findAll(spec,page);
     }
 
     public PurchaseOrder cancelOrder(String orderNumber) {

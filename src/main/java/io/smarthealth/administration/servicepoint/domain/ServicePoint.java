@@ -69,4 +69,8 @@ public class ServicePoint extends Identifiable {
         data.setName(this.getName());
         return data;
     }
+    @Override
+    public String toString() {
+        return "Service Point [id=" + getId() + ", name=" + name + ", type=" + pointType + "]";
+    }
 }

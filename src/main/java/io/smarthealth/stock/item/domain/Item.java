@@ -58,23 +58,19 @@ public class Item extends Identifiable {
     private String unit;
     private String description;
 
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_item_tax_id"))
     private Tax tax;
 
     //this should be populated if it's a stock item
-    @ToString.Exclude
     @JsonIgnore
     @OneToMany(mappedBy = "stockItem")
     private List<ReorderRule> reorderRules;
     //sales, purchase, inventory accounts to be linked via the store
-    @ToString.Exclude
     @JsonIgnore
     @OneToMany(mappedBy = "priceBook", cascade = CascadeType.ALL)
     private Set<PriceBookItem> priceBookItems = new HashSet<>();
 
-     @ToString.Exclude
     @JsonIgnore
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<PriceList> priceLists = new ArrayList<>();
@@ -127,5 +123,10 @@ public class Item extends Identifiable {
         data.setItemId(this.getId());
         data.setItemName(this.itemName);
         return data;
+    }
+    
+    @Override
+    public String toString() {
+        return "Item [id=" + getId() + ", name=" + itemName + ", code=" + itemCode + ", type=" + itemType + "]";
     }
 }

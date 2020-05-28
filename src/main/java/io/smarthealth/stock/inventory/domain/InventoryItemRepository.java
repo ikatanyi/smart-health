@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
  *
  * @author Kelsas
  */
-@Repository
+
 public interface InventoryItemRepository extends JpaRepository<InventoryItem, Long>, JpaSpecificationExecutor<InventoryItem> {
 
     Page<InventoryItem> findByItem(Item item, Pageable page);

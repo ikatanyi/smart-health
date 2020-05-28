@@ -1,6 +1,5 @@
 package io.smarthealth.clinical.record.api;
-
-import io.smarthealth.accounting.pricelist.service.PricelistService;
+ 
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.DoctorRequestItem;
@@ -15,9 +14,9 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.notifications.service.RequestEventPublisher;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
-import io.smarthealth.report.data.clinical.PatientVisitData;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
 import io.smarthealth.security.util.SecurityUtils;
@@ -61,23 +60,24 @@ public class DoctorRequestController {
 
     private final PatientService patientService;
 
-    private final SequenceNumberService sequenceNumberService;
-
-    private final PricelistService pricelist;
-
+    private final SequenceNumberService sequenceNumberService; 
+    
     private final UserService userService;
 
+    private final RequestEventPublisher requestEventPublisher;
+    
     @PostMapping("/visit/{visitNo}/doctor-request")
     @PreAuthorize("hasAuthority('create_doctorrequest')")
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
 
         Optional<User> user = userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().get());
 
 //        Employee employee = employeeService.findEmployeeByUsername(SecurityUtils.getCurrentUserLogin().get()).orElse(null);
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceNumberService.next(1L, Sequences.DoctorRequest.name());
+        List<DoctorRequestData.RequestType> requestType = new ArrayList<>();
         for (DoctorRequestData data : docRequestData) {
             DoctorRequest doctorRequest = DoctorRequestData.map(data);
             Item item = itemService.findById(Long.valueOf(data.getItemCode())).get();
@@ -94,9 +94,14 @@ public class DoctorRequestController {
             doctorRequest.setFulfillerComment(FullFillerStatusType.Unfulfilled.name());
             doctorRequest.setRequestType(data.getRequestType());
             docRequests.add(doctorRequest);
+            if (!requestType.contains(data.getRequestType())) {
+                requestType.add(data.getRequestType());
+            }
         }
 
         List<DoctorRequest> docReqs = requestService.createRequest(docRequests);
+
+        requestEventPublisher.publishCreateEvent(requestType);
 
         List<DoctorRequestData> requestList = modelMapper.map(docReqs, new TypeToken<List<DoctorRequest>>() {
         }.getType());
@@ -161,7 +166,7 @@ public class DoctorRequestController {
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
 
         for (Visit v : patientVisits.getContent()) {
-            Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(v.getVisitNumber(), patientNo, requestType, fulfillerStatus, "patient", pageable);
+            Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(v.getVisitNumber(), patientNo, requestType, fulfillerStatus, "patient", pageable,null);
 
             for (DoctorRequest docReq : pageList.getContent()) {
                 HistoricalDoctorRequestsData waitingRequest = new HistoricalDoctorRequestsData();
@@ -211,11 +216,12 @@ public class DoctorRequestController {
             @RequestParam(value = "patientNo", required = false) final String patientNo,
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
             @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final FullFillerStatusType fulfillerStatus,
+            @RequestParam(value = "activeVisit", required = false) final Boolean activeVisit,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable);
+        Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable,activeVisit);
         //Page<DoctorRequest> pageList = requestService.fetchDoctorRequestLine(fulfillerStatus, requestType, pageable);
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
 
@@ -266,7 +272,7 @@ public class DoctorRequestController {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
 
 //        Page<DoctorRequest> page = requestService.findAllRequestsByOrderNoAndRequestType(visitNo, requestType, pageable);
-        Page<DoctorRequest> page = requestService.fetchAllDoctorRequests(visit.getVisitNumber(), patientNo, requestType, fulfillerStatus, null, pageable);
+        Page<DoctorRequest> page = requestService.fetchAllDoctorRequests(visit.getVisitNumber(), patientNo, requestType, fulfillerStatus, null, pageable,null);
 
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);

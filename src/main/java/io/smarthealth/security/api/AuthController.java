@@ -33,13 +33,11 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,7 +49,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  *
@@ -123,13 +120,12 @@ public class AuthController {
     public ResponseEntity<?> getAllUsers(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
-        
-         Pageable pageable = PaginationUtil.createPage(page, size);
-         
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+
         Page<UserData> list = userService.findAllUsers(pageable)
                 .map(u -> u.toData());
 //        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
- 
 
         Pager<List<UserData>> pagers = new Pager();
         pagers.setCode("0");
@@ -177,6 +173,28 @@ public class AuthController {
                 .orElseThrow(() -> APIException.notFound("Username or email {0} not found.... ", username));
 
         return ResponseEntity.ok(user.toData());
+    }
+
+    @GetMapping("/users/{username}/permissions")
+    public ResponseEntity<?> getPermissions(@PathVariable(value = "username") String username) {
+
+        User user = userService.findUserByUsernameOrEmail(username)
+                .orElseThrow(() -> APIException.notFound("Username or email {0} not found.... ", username));
+
+        ArrayList<UserPermission> list = new ArrayList<>();
+
+        user.getRoles().stream()
+                .forEach(role -> {
+                    Map<String, List<Permission>> permissions = role.getPermissions().stream()
+                            .collect(groupingBy(Permission::getPermissionGroup));
+
+                    permissions.forEach((k, v) -> {
+                        List<PermissionData> data = v.stream().map(x -> x.toData()).collect(Collectors.toList());
+                        list.add(new UserPermission(k, data));
+                    });
+
+                });
+        return ResponseEntity.ok(list);
     }
 
     // Reset password 
@@ -236,26 +254,5 @@ public class AuthController {
     private String getAppUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
-    
-    @GetMapping("/users/{username}/permissions")
-    public ResponseEntity<?> getPermissions(@PathVariable(value = "username") String username) {
-
-        User user = userService.findUserByUsernameOrEmail(username)
-                .orElseThrow(() -> APIException.notFound("Username or email {0} not found.... ", username));
-
-        ArrayList<UserPermission> list = new ArrayList<>();
-
-        user.getRoles().stream()
-                .forEach(role -> {
-                    Map<String, List<Permission>> permissions = role.getPermissions().stream()
-                            .collect(groupingBy(Permission::getPermissionGroup));
-
-                    permissions.forEach((k, v) -> {
-                        List<PermissionData> data = v.stream().map(x -> x.toData()).collect(Collectors.toList());
-                        list.add(new UserPermission(k, data));
-                    });
-
-                });
-        return ResponseEntity.ok(list);
-    }
+     
 }
