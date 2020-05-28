@@ -56,6 +56,6 @@ public class Ledger extends Auditable {
     }
     @Override
     public String toString() {
-        return "Ledger [id=" + getId() + ", name=" + name + ", number=" + identifier + ", type=" + type + ", parent ledger=" +parentLedger!=null ? parentLedger.getName() : null + " ]";
+        return "Ledger [id=" + getId() + ", name=" + name + ", number=" + identifier + ", type=" + type + ", parent ledger=" +parentLedger+ " ]";
     }
 }

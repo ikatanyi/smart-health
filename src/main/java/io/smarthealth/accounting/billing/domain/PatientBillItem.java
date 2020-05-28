@@ -138,7 +138,7 @@ public class PatientBillItem extends Auditable {
     
       @Override
     public String toString() {
-        return "Patient Bill Item [id=" + getId() + ", bill number=" + patientBill!=null ? patientBill.getBillNumber(): null + " , service point=" +servicePoint+ ", quantity=" +quantity+ ", price=" + price + ", amount=" +amount+ " ]";
+        return "Patient Bill Item [id=" + getId() + ",patientBill=" + patientBill + " , service point=" +servicePoint+ ", quantity=" +quantity+ ", price=" + price + ", amount=" +amount+ " ]";
     }
 
 }

@@ -44,6 +44,6 @@ public class Account extends Auditable {
     
      @Override
     public String toString() {
-        return "Account [id=" + getId() + ", name=" + name + ", number=" + identifier + ", type=" + type + ", ledger=" +ledger!=null ? ledger.getName() : null + " ]";
+        return "Account [id=" + getId() + ", name=" + name + ", number=" + identifier + ", type=" + type + ", ledger=" +ledger + " ]";
     }
 }
