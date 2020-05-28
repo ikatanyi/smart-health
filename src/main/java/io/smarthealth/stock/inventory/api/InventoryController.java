@@ -5,7 +5,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.inventory.data.CreateStockEntry;
-import io.smarthealth.stock.inventory.data.StockEntryData1;
+import io.smarthealth.stock.inventory.data.StockEntryData;
 import io.smarthealth.stock.inventory.data.SupplierStockEntry;
 import io.smarthealth.stock.inventory.data.TransData;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
@@ -69,8 +69,8 @@ public class InventoryController {
     //inventories/{id}
     @GetMapping("/inventory-entries/{id}")
     @PreAuthorize("hasAuthority('view_inventory')")
-    public StockEntryData1 searchStockEntry(@PathVariable(value = "id") Long id) {
-        StockEntryData1 stocks = service.getStockEntry(id).toData();
+    public StockEntryData searchStockEntry(@PathVariable(value = "id") Long id) {
+        StockEntryData stocks = service.getStockEntry(id).toData();
         return stocks;
     }
 
@@ -90,11 +90,11 @@ public class InventoryController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<StockEntryData1> list = service
+        Page<StockEntryData> list = service
                 .getStockEntries(store, item, referenceNumber, transactionId, deliveryNumber, purpose, type, range, pageable)
-                .map(u -> StockEntryData1.map(u));
+                .map(u -> StockEntryData.map(u));
 
-        Pager<List<StockEntryData1>> pagers = new Pager();
+        Pager<List<StockEntryData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());

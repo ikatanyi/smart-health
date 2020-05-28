@@ -2,7 +2,7 @@ package io.smarthealth.stock.inventory.domain;
 
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.stock.inventory.data.StockEntryData1;
+import io.smarthealth.stock.inventory.data.StockEntryData;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.item.domain.Item;
@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.*;
 import lombok.Data;
-import lombok.ToString;
 
 /**
  * Stock Entry
@@ -56,8 +55,8 @@ public class StockEntry extends Auditable {
     Periodic
         Do not post stocks
      */
-    public StockEntryData1 toData() {
-        StockEntryData1 data = new StockEntryData1();
+    public StockEntryData toData() {
+        StockEntryData data = new StockEntryData();
         data.setId(this.getId());
         if (this.getStore() != null) {
             data.setStoreId(this.getStore().getId());
