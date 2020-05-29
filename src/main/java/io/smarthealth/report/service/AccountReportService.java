@@ -10,13 +10,10 @@ import io.smarthealth.accounting.accounts.data.ChartOfAccountEntry;
 import io.smarthealth.accounting.accounts.data.JournalEntryData;
 import io.smarthealth.accounting.accounts.data.JournalEntryItemData;
 import io.smarthealth.accounting.accounts.data.LedgerData;
-import io.smarthealth.accounting.accounts.data.financial.statement.FinancialCondition;
 import io.smarthealth.accounting.accounts.data.financial.statement.FinancialConditionSection;
-import io.smarthealth.accounting.accounts.data.financial.statement.IncomeStatement;
 import io.smarthealth.accounting.accounts.data.financial.statement.IncomeStatementSection;
 import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.domain.IncomeExpenseData;
-import io.smarthealth.accounting.accounts.domain.LedgerRepository;
 import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.accounting.accounts.service.ChartOfAccountServices;
 import io.smarthealth.accounting.accounts.service.FinancialConditionService;
@@ -24,9 +21,9 @@ import io.smarthealth.accounting.accounts.service.IncomesStatementService;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.accounts.service.LedgerService;
 import io.smarthealth.accounting.accounts.service.TrialBalanceService;
+import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.domain.PatientBill;
-import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
@@ -37,10 +34,8 @@ import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.data.RemittanceData;
 import io.smarthealth.accounting.payment.service.ReceivePaymentService;
 import io.smarthealth.accounting.payment.service.RemittanceService;
-import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
-import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
-import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum.PaymentMethod;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
@@ -49,8 +44,6 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
-import io.smarthealth.organization.facility.domain.Employee;
-import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.accounts.DailyBillingData;
@@ -62,7 +55,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -101,7 +93,7 @@ public class AccountReportService {
     private final JournalService journalService;
     private final LedgerService ledgerService;
     private final RemittanceService remittanceService;
-    private final   AllocationService allocationService;
+    private final AllocationService allocationService;
 
     public void getTrialBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
@@ -351,39 +343,34 @@ public class AccountReportService {
     public void getDailyPayment(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
         String transactionNo = reportParam.getFirst("transactionNo");
-        String paymentMode = reportParam.getFirst("paymentMode");
-        String billNo = reportParam.getFirst("billNo");
-        String visitNo = reportParam.getFirst("visitNumber");
-        BillStatus billStatus = statusToEnum(reportParam.getFirst("billStatus"));
-        String patientNo = reportParam.getFirst("patientNo");
+        PaymentMethod paymentMode = PaymentMethodToEnum(reportParam.getFirst("paymentMode"));
+        String visitNumber = reportParam.getFirst("visitNumber");
+        String patientNumber = reportParam.getFirst("patientNo");
         Boolean hasBalance = reportParam.getFirst("hasbalance") != null ? Boolean.valueOf(reportParam.getFirst("hasbalance")) : null;
-        String dateRange = reportParam.getFirst("dateRange");
+        Boolean isWalkin = reportParam.getFirst("isWakin") != null ? Boolean.valueOf(reportParam.getFirst("isWakin")) : null;
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
 
         List<DailyBillingData> billData = new ArrayList();
         ReportData reportData = new ReportData();
-        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<PatientBill> bills = billService.findAllBills(transactionNo, visitNo, patientNo, paymentMode, billNo, (billStatus), range, pageable).getContent();
-        for (PatientBill bill : bills) {
+        List<SummaryBill> bills = billService.getBillTotals(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range);
+        for (SummaryBill bill : bills) {
             DailyBillingData data = new DailyBillingData();
 
             data.setBalance(bill.getBalance());
-            data.setCreatedBy(bill.getCreatedBy());
-            data.setCreatedOn(bill.getBillingDate());
-            data.setVisitNo(bill.getVisit() != null ? bill.getVisit().getVisitNumber() : "-");
-            data.setIsWalkin(bill.getWalkinFlag());
-            if (bill.getPatient() != null) {
-                data.setPatientId(bill.getPatient().getPatientNumber());
-                data.setPatientName(bill.getPatient().getFullName());
-            }
-            data.setPaymentMode(bill.getPaymentMode());
-            data.setPaid(0.0);
-            String visitNumber = bill.getWalkinFlag()?bill.getReference():bill.getVisit().getVisitNumber();
-            List<BillItem> items = billService.getAllBillDetails(data.getPatientId(), visitNumber, null, null, null, null, null, null, Pageable.unpaged());
+            data.setCreatedOn(bill.getDate());
+            data.setVisitNo(bill.getVisitNumber());
+            data.setIsWalkin(bill.getIsWalkin());
+            data.setPatientId(bill.getPatientNumber());
+            data.setPatientName(bill.getPatientName());
+            data.setPaymentMode(bill.getPaymentMethod());
+//            data.setAmount(bill.getAmount());
+            data.setBalance(bill.getBalance());
+//            data.setPaid(bill.getAmount().subtract(bill.getBalance()));
+            List<BillItem> items = billService.getAllBillDetails(bill.getVisitNumber());
             for (BillItem item : items) {
-                data.setAmount(data.getAmount() + item.getAmount());
+                data.setAmount(data.getAmount().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
                 if(item.getStatus()==item.getStatus().Paid)
-                    data.setPaid(data.getPaid()+item.getAmount());
+                    data.setPaid(data.getPaid().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
                 switch (item.getServicePoint()) {
                     case "Laboratory":
                         data.setLab(data.getLab() + item.getAmount());
@@ -402,7 +389,7 @@ public class AccountReportService {
                         data.setConsultation(data.getConsultation() + item.getAmount());
                         break;
                     case "Copayment":
-                         data.setConsultation(data.getCopay()+item.getAmount());  
+                         data.setCopay(data.getCopay()+item.getAmount());  
                          break;
                     default:
                         data.setOther(data.getOther() + item.getAmount());
@@ -418,13 +405,13 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
 
-        sortField.setName("patientId");
+        sortField.setName("paymentMode");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
 
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.getFilters().put("range", dateRange);
+        reportData.getFilters().put("range", reportParam.getFirst("dateRange"));
 
         reportData.setData(billData);
         reportData.setFormat(format);
@@ -645,6 +632,16 @@ public class AccountReportService {
             return AccountType.valueOf(status);
         }
         throw APIException.internalError("Provide a Valid Account Type");
+    }
+    
+    private PaymentMethod PaymentMethodToEnum(String status) {
+        if (status == null || status.equals("null") || status.equals("")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(PaymentMethod.class, status)) {
+            return PaymentMethod.valueOf(status);
+        }
+        throw APIException.internalError("Provide a Valid Payment Method");
     }
 
 }

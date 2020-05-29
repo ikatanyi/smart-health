@@ -16,9 +16,9 @@ import lombok.Data;
 @Data
 public class DailyBillingData {
 
-    private Double amount=0.0;
-    private Double balance;
-    private Double paid=0.0;
+    private BigDecimal amount=BigDecimal.ZERO;
+    private BigDecimal balance =BigDecimal.ZERO;
+    private BigDecimal paid = BigDecimal.ZERO;
     private String visitNo;
     private String patientId;
     private String patientName;
