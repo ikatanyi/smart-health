@@ -105,7 +105,7 @@ public class RadiologyResultController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
-        details.setReportName("Lab Results list");
+        details.setReportName("Radiology Results list");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     } 

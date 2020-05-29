@@ -71,6 +71,7 @@ public class VisitData {
     private List<PatientQueueData> patientQueueData;
     @Enumerated(EnumType.STRING)
     private VisitEnum.ServiceType serviceType;
+    private String clinic;
 
     private Long itemToBill;
     private int triageCategory;
@@ -109,6 +110,9 @@ public class VisitData {
         if (visitEntity.getHealthProvider() != null) {
             visitDTO.setPractitionerCode(visitEntity.getHealthProvider().getStaffNumber());
             visitDTO.setPractitionerName(visitEntity.getHealthProvider().getFullName());
+        }
+        if (visitEntity.getClinic() != null) {
+            visitDTO.setClinic(visitEntity.getClinic().getClinicName());
         }
         return visitDTO;
     }

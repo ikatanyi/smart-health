@@ -20,8 +20,11 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
+import io.smarthealth.security.domain.User;
+import io.smarthealth.security.service.UserService;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,19 +37,14 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Simon.waweru
  */
 @Service
+@RequiredArgsConstructor
 public class VisitService {
 
     private final VisitRepository visitRepository;
     private final ServicePointService servicePointService;
     private final PatientRepository patientRepository;
     private final EmployeeService employeeService;
-
-    public VisitService(VisitRepository visitRepository, ServicePointService servicePointService, PatientRepository patientRepository, EmployeeService employeeService) {
-        this.visitRepository = visitRepository;
-        this.servicePointService = servicePointService;
-        this.patientRepository = patientRepository;
-        this.employeeService = employeeService;
-    }
+    private final UserService userService;
 
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
         Patient patient = findPatientOrThrow(patientNumber);
@@ -60,10 +58,11 @@ public class VisitService {
         return visits;
     }
 
-    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Boolean isActiveOnConsultation, final Pageable pageable) {
+    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Boolean isActiveOnConsultation, final String username, final Pageable pageable) {
         Employee employee = null;
         ServicePoint servicePoint = null;
         Patient patient = null;
+        User user = null;
         if (staffNumber != null) {
             employee = employeeService.fetchEmployeeByNumberOrThrow(staffNumber);
         }
@@ -72,6 +71,16 @@ public class VisitService {
         }
         if (patientNumber != null) {
             patient = findPatientOrThrow(patientNumber);
+        }
+
+        if (username != null) {
+//            user = userService.findUserByUsernameOrEmail(username).orElseThrow(() -> APIException.notFound("User {0} not found ", username));
+            Optional<Employee> presentEmployee = employeeService.findEmployeeByUsername(username);
+            if (presentEmployee.isPresent()) {
+                employee = presentEmployee.get();
+            } else {
+                employee = null;
+            }
         }
 
         Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visitNumber, employee, servicePoint, patient, patientName, runningStatus, range, isActiveOnConsultation);
