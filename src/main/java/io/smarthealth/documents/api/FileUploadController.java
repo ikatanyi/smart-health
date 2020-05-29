@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.documents.api;
 
 import io.smarthealth.documents.data.DocumentData;
@@ -127,7 +122,7 @@ public class FileUploadController {
     }
 
     @GetMapping("/downloadFile/{servicePoint}/{fileName:.+}")
-    @PreAuthorize("hasAuthority('view_fileupload')")
+//    @PreAuthorize("hasAuthority('view_fileupload')")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, @PathVariable String servicePoint, HttpServletRequest request) throws IOException {
         // Load file as Resource
         Resource resource = uploadService.loadFileAsResource(fileName,servicePoint);

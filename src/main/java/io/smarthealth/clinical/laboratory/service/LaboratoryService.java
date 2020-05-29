@@ -44,6 +44,11 @@ import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
+import io.smarthealth.documents.data.DocResponse;
+import io.smarthealth.documents.data.DocumentData;
+import io.smarthealth.documents.domain.enumeration.DocumentType;
+import io.smarthealth.documents.service.FileStorageService;
+import io.smarthealth.infrastructure.lang.SystemUtils;
 import io.smarthealth.notifications.service.RequestEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
@@ -52,6 +57,7 @@ import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -72,6 +78,7 @@ public class LaboratoryService {
     private final BillingService billingService;
     private final DoctorsRequestRepository doctorRequestRepository;
     private final RequestEventPublisher requestEventPublisher;
+    private final FileStorageService fileService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public LabRegister createLabRegister(LabRegisterData data) {
@@ -127,7 +134,7 @@ public class LaboratoryService {
         switch (status.getStatus()) {
             case Collected:
                 repository.updateLabRegisterStatus(LabTestStatus.PendingResult, requests.getId());
-                return testRepository.updateTestCollected(status.getDoneBy(), status.getSpecimen(), testId, LabTestStatus.PendingResult);
+                return testRepository.updateTestCollected(SecurityUtils.getCurrentUserLogin().orElse(""), status.getSpecimen(), testId, LabTestStatus.PendingResult);
             case Entered:
                 repository.updateLabRegisterStatus(LabTestStatus.ResultsEntered, requests.getId());
                 updateRegisterStatus(requests);
@@ -252,6 +259,10 @@ public class LaboratoryService {
         results.setResultsDate(LocalDateTime.now());
         results.setUnits(data.getUnits());
         results.setUpperLimit(data.getUpperLimit());
+        results.setComments(data.getComments());
+        results.setStatus(data.getStatus());
+        results.setEnteredBy(data.getEnteredBy());
+        results.setValidatedBy(data.getValidatedBy());
         return results;
     }
 
@@ -421,5 +432,22 @@ public class LaboratoryService {
             return LabTestStatus.valueOf(status);
         }
         throw APIException.internalError("Provide a Valid Invoice Status");
+    }
+    @Transactional
+    public DocResponse uploadDocument(Long testId, String name, MultipartFile file) {
+//        LabRegisterTest labRequestTest = getLabRegisterTest(testId);
+        ServicePoint srvpoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
+
+        DocumentData data = new DocumentData();
+        data.setDocfile(file);
+        data.setDocumentNumber("" + testId);
+        data.setDocumentType(DocumentType.LabReport);
+        data.setFileName(name);
+        data.setServicePointId(srvpoint.getId());
+        DocResponse doc = fileService.documentUpload(data).toSimpleData();
+
+        testRepository.addAttachment(doc.getDocumentName(), testId);
+
+        return doc;
     }
 }

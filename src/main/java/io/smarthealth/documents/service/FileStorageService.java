@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -49,21 +50,20 @@ public class FileStorageService {
 
     private final ServicePointService servicePointService;
     private final SequenceNumberService sequenceNumberService;
-    
-    
 
     @Transactional
     public Document documentUpload(DocumentData documentData) {
         Document document = documentData.fromData();
         Optional<Patient> patient = patientService.findByPatientNumber(documentData.getPatientNumber());
         ServicePoint servicePoint = servicePointService.getServicePoint(documentData.getServicePointId());
-        if(documentData.getDocumentNumber()==null)
-            documentData.setDocumentNumber(sequenceNumberService.next(1L, Sequences.DocumentNumber.name()));
-        if(patient.isPresent())
-           document.setPatient(patient.get());
+        String docNo = documentData.getDocumentNumber() == null ? sequenceNumberService.next(1L, Sequences.DocumentNumber.name()) : documentData.getDocumentNumber();
+        documentData.setDocumentNumber(docNo);
+        if (patient.isPresent()) {
+            document.setPatient(patient.get());
+        }
         document.setServicePoint(servicePoint);
 
-        String fileName = uploadService.storeFile(documentData.getDocfile(),servicePoint.getName());
+        String fileName = uploadService.storeFile(documentData.getDocfile(), servicePoint.getName());
         document.setFileName(fileName);
         return fileStorageRepository.save(document);
     }
@@ -96,7 +96,7 @@ public class FileStorageService {
         document.setFileType(fileType);
         document.setPatient(patient);
         document.setServicePoint(servicePoint);
-        String fileName = uploadService.storeFile(file,servicePoint.getName());
+        String fileName = uploadService.storeFile(file, servicePoint.getName());
         document.setFileName(fileName);
 
         return fileStorageRepository.save(document);
@@ -112,8 +112,13 @@ public class FileStorageService {
     }
 
     @Transactional
-    public Page<Document> findAllDocuments(String PatientNumber,DocumentType documentType, Status status, Long servicePointId, DateRange range, Pageable pgbl) {
-        Specification spec =  DocumentSpecification.createSpecification(PatientNumber, documentType, status, servicePointId, range);
+    public Page<Document> findAllDocuments(String PatientNumber, DocumentType documentType, Status status, Long servicePointId, DateRange range, Pageable pgbl) {
+        Specification spec = DocumentSpecification.createSpecification(PatientNumber, documentType, status, servicePointId, range);
         return fileStorageRepository.findAll(spec, pgbl);
+    }
+
+    public Resource downloadResource(String fileName, String servicePoint) {
+        Resource resource = uploadService.loadFileAsResource(fileName, servicePoint);
+        return resource;
     }
 }

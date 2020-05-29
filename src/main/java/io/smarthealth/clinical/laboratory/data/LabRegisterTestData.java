@@ -49,6 +49,7 @@ public class LabRegisterTestData {
     
     private Boolean validated;
     private String validatedBy; 
+    private String attachment;
     
      @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime validationDateTime;

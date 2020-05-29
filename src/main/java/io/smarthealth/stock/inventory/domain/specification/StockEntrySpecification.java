@@ -48,7 +48,7 @@ public class StockEntrySpecification {
             }
               if(range!=null){
                   predicates.add(
-                     cb.between(root.get("transactionDate"), range.getStartDateTime(), range.getEndDateTime())
+                     cb.between(root.get("transactionDate"), range.getStartDate(), range.getEndDate())
                   );
               }
 

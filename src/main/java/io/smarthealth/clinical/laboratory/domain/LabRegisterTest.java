@@ -3,7 +3,6 @@ package io.smarthealth.clinical.laboratory.domain;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.security.util.SecurityUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,10 +13,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  *
@@ -25,7 +24,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "lab_register_tests") 
+@Table(name = "lab_register_tests")
 public class LabRegisterTest extends Identifiable {
 
     @ManyToOne
@@ -64,6 +63,9 @@ public class LabRegisterTest extends Identifiable {
     @OneToMany(mappedBy = "labRegisterTest")
     private List<LabResult> labResults;
 
+    //we can have attachment link here
+    private String attachment;
+
     public LabRegisterTestData toData(Boolean expand) {
         LabRegisterTestData data = new LabRegisterTestData();
         data.setId(this.getId());
@@ -100,8 +102,9 @@ public class LabRegisterTest extends Identifiable {
             data.setTestId(this.labTest.getId());
             data.setTestCode(this.labTest.getCode());
             data.setTestName(this.labTest.getTestName());
-            data.setWithRef(this.labTest.getHasReferenceValue()!=null?this.labTest.getHasReferenceValue():true);
+            data.setWithRef(this.labTest.getHasReferenceValue() != null ? this.labTest.getHasReferenceValue() : true);
         }
+        data.setAttachment(this.attachment);
         //include the results 
         if (expand) {
             data.setLabResults(
@@ -115,4 +118,18 @@ public class LabRegisterTest extends Identifiable {
         return data;
 
     }
+
+//    private String getAttachmentUrl() {
+//        if (this.attachment != null) {
+//
+//            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+//                    .path("/api/downloadFile/")
+//                    .path("Laboratory/")
+//                    .path(this.attachment)
+//                    .toUriString();
+//            
+//            return fileDownloadUri;
+//        }
+//        return null;
+//    }
 }

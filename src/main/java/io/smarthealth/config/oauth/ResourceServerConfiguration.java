@@ -39,6 +39,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 //               .antMatchers("/api/users/**").hasAuthority("ADMIN")
                 //                .antMatchers(HttpMethod.GET, "/v2/api-docs/**", "/swagger-ui.html*", "/company/logo*").permitAll()
                 .antMatchers("/api/**").authenticated()
+                .antMatchers("/api/downloadFile/**").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint).accessDeniedHandler(new CustomAccessDeniedHandler());
     }

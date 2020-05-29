@@ -8,7 +8,6 @@ package io.smarthealth.infrastructure.imports.service;
 import io.smarthealth.ApplicationProperties;
 import io.smarthealth.infrastructure.exception.FileStorageException;
 import io.smarthealth.report.storage.StorageException;
-import java.io.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -21,9 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.ResourceUtils;
 
 /**
  *
