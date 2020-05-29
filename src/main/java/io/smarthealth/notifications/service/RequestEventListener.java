@@ -1,6 +1,5 @@
 package io.smarthealth.notifications.service;
 
-import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.service.DoctorRequestService;
 import io.smarthealth.notifications.data.RequestCreatedEvent;
 import io.smarthealth.notifications.data.RequestUpdatedEvent;

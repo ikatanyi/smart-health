@@ -88,16 +88,16 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="56" splitType="Stretch">
+		<band height="63" splitType="Stretch">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="45" width="145" height="11" forecolor="#000000" uuid="0049eb58-ff0e-479c-add6-18dfd4165ed0"/>
+				<reportElement positionType="Float" x="0" y="52" width="145" height="11" forecolor="#000000" uuid="0049eb58-ff0e-479c-add6-18dfd4165ed0"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Product Name]]></text>
+				<text><![CDATA[Service]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="145" y="45" width="234" height="11" forecolor="#000000" uuid="00bd2919-53f6-49f1-8679-45d9c56a166f"/>
+				<reportElement positionType="Float" x="145" y="52" width="234" height="11" forecolor="#000000" uuid="00bd2919-53f6-49f1-8679-45d9c56a166f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -123,9 +123,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{urgency}.getClass().getName().equals( "Low" )?"Low":
-$F{urgency}.getClass().getName().equals( "Medium" )?"Medium":
-"High"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{urgency}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="-1" y="0" width="60" height="14" forecolor="#000000" uuid="36597ef7-3f80-48c5-9794-b54ff77dd17c"/>
@@ -144,11 +142,26 @@ $F{urgency}.getClass().getName().equals( "Medium" )?"Medium":
 				<text><![CDATA[Urgency :]]></text>
 			</staticText>
 			<line>
-				<reportElement positionType="Float" x="-1" y="55" width="380" height="1" uuid="501a2ac4-d39c-4f36-8f94-fc7d1fcf84ef"/>
+				<reportElement positionType="Float" x="-1" y="62" width="380" height="1" uuid="501a2ac4-d39c-4f36-8f94-fc7d1fcf84ef"/>
 				<graphicElement>
 					<pen lineWidth="0.15" lineColor="#666666"/>
 				</graphicElement>
 			</line>
+			<staticText>
+				<reportElement x="-1" y="37" width="60" height="11" forecolor="#000000" uuid="4449c86b-ac7b-419b-8775-02b46dd12e96"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[RequestType :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="59" y="37" width="81" height="11" uuid="7b0d376f-e3b9-4050-9354-b3d757156f56"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{requestType}]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnHeader>
 	<detail>

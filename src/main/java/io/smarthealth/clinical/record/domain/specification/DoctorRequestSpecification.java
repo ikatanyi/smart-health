@@ -10,6 +10,7 @@ import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -23,11 +24,18 @@ public class DoctorRequestSpecification {
         super();
     }
 
-    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus/*, Date from , Date to*/, String groupBy) {
+    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus/*, Date from , Date to*/, String groupBy, Boolean activeVisit) {
         System.out.println("visitNumber to request " + visitNumber);
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
+            if (activeVisit != null) {
+                if (activeVisit) {
+                    predicates.add(root.get("visit").get("status").in(Arrays.asList(VisitEnum.Status.CheckIn, VisitEnum.Status.Admitted)));
+                } else {
+                    predicates.add(root.get("visit").get("status").in(Arrays.asList(VisitEnum.Status.CheckOut, VisitEnum.Status.Discharged)));
+                }
+            }
             if (visitNumber != null) {
                 predicates.add(cb.equal(root.get("visit").get("visitNumber"), visitNumber));
             }
@@ -65,8 +73,8 @@ public class DoctorRequestSpecification {
             if (requestType != null) {
                 predicates.add(cb.equal(root.get("requestType"), requestType));
             }
-             query.groupBy(root.get("patient"));
-             
+            query.groupBy(root.get("patient"));
+
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

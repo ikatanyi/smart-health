@@ -1,7 +1,5 @@
 package io.smarthealth.stock.inventory.service;
 
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
-import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.inventory.data.CreateInventoryItem;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
@@ -18,28 +16,29 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import java.util.Optional;
-import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.stock.inventory.domain.InventoryItemRepository;
+import io.smarthealth.stock.inventory.events.InventoryEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.transaction.annotation.Propagation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Kelsas
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InventoryItemService {
 
-//    https://www.devglan.com/spring-boot/spring-boot-jms-activemq-example
     private final ItemService itemService;
     private final StoreService storeService;
-    private final ServicePointService servicePointService;
+//    private final ServicePointService servicePointService;
     private final InventoryItemRepository inventoryItemRepository;
 
-    public void decrease(Item item, Store store, double qty) {
+    private void decrease(Item item, Store store, double qty) {
         InventoryItem balance = inventoryItemRepository
                 .findByItemAndStore(item, store)
                 .orElse(InventoryItem.create(store, item));
@@ -48,7 +47,7 @@ public class InventoryItemService {
         inventoryItemRepository.save(balance);
     }
 
-    public void increase(Item item, Store store, double qty) {
+    private void increase(Item item, Store store, double qty) {
         InventoryItem balance = inventoryItemRepository
                 .findByItemAndStore(item, store)
                 .orElse(InventoryItem.create(store, item));
@@ -57,6 +56,7 @@ public class InventoryItemService {
         inventoryItemRepository.save(balance);
     }
 
+    @Transactional
     public InventoryItem createInventoryItem(InventoryItemData itemData) {
         Item item = itemService.findItemEntityOrThrow(itemData.getItemId());
         Store store = storeService.getStoreWithNoFoundDetection(itemData.getStoreId());
@@ -89,7 +89,7 @@ public class InventoryItemService {
         return inventoryItemRepository.save(item);
     }
 
-    public void adjustment(Item item, Store store, double qty) {
+    private void adjustment(Item item, Store store, double qty) {
         InventoryItem balance = inventoryItemRepository
                 .findByItemAndStore(item, store)
                 .orElse(InventoryItem.create(store, item));
@@ -98,21 +98,27 @@ public class InventoryItemService {
         inventoryItemRepository.save(balance);
     }
 
-    public Page<InventoryItemData> getInventoryItems(Long storeId, String item, Pageable page, Boolean includeClosed) {
-        Store store = null;
-        if(storeId!=null){
-            Optional<Store> stor = storeService.getStore(storeId);
-            if(stor.isPresent())
-                store = stor.get();
-        }
-        Specification<InventoryItem> spec = InventoryItemSpecification.createSpecification(store, item, includeClosed);
+    public Page<InventoryItemData> getInventoryItems(Long storeId, Long itemId, String search, Boolean includeClosed, Pageable page) {
+//        Store store = null;
+//        if (storeId != null) {
+//            Optional<Store> stor = storeService.getStore(storeId);
+//            if (stor.isPresent()) {
+//                store = stor.get();
+//            }
+//        }
+        Specification<InventoryItem> spec = InventoryItemSpecification.createSpecification(storeId, itemId, search, includeClosed);
         Page<InventoryItemData> inventoryItems = inventoryItemRepository.findAll(spec, page).map(itm -> itm.toData());
 
         return inventoryItems;
     }
-
+    
     public Optional<InventoryItem> getInventoryItem(Long inventoryId) {
         return inventoryItemRepository.findById(inventoryId);
+    }
+
+    public Double getItemCount(String itemCode) {
+        Item item = itemService.findByItemCodeOrThrow(itemCode);
+        return inventoryItemRepository.findItemCount(item);
     }
 
     public InventoryItem getInventoryItemOrThrow(Long itemId, Long storeId) {
@@ -140,4 +146,19 @@ public class InventoryItemService {
         return inventoryItemRepository.findByStore(store, page).map(d -> d.toData());
     }
 
+    @Transactional
+    public void processInventoryBalance(InventoryEvent event) {
+        switch (event.getType()) {
+            case Increase:
+                increase(event.getItem(), event.getStore(), event.getQuantity());
+                break;
+            case Decrease:
+                decrease(event.getItem(), event.getStore(), event.getQuantity());
+                break;
+            case Adjustment:
+                adjustment(event.getItem(), event.getStore(), event.getQuantity());
+            default:
+                log.info("Nothing to calculate balance");
+        }
+    }
 }

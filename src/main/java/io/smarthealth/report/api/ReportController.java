@@ -45,8 +45,8 @@ public class ReportController {
 
     @GetMapping("/report")
     @PreAuthorize("hasAuthority('view_reports')")
-    @ApiOperation(value = "Daily_Income_Statement=[transactionNo,paymentMode,billNo,visitNumber,billStatus, patientNo,hasbalance,dateRange]"
-            + "genInsuranceStatement=[payerId,schemeId,patientNo,invoiceNo,range,invoiceStatus]"
+    @ApiOperation(value = "Daily_Income_Statement=[transactionNo,paymentMode,billNo,visitNumber,billStatus, patientNo,hasbalance,dateRange]\n"
+            + "genInsuranceStatement=[payerId,schemeId,patientNo,invoiceNo,range,invoiceStatus]\n"
             + "Purchase_Order=[orderNo]")
     public ResponseEntity<?> generateReport(
             @RequestParam(value = "reportName", required = true) ReportName reportName,

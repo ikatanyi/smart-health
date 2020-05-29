@@ -7,8 +7,8 @@ import io.smarthealth.stock.stores.domain.Store;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
  * Balance Transaction Line of a given {@link Item } . It holds the current
@@ -21,17 +21,16 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "stock_inventory_item")
+@EqualsAndHashCode(callSuper = false)
 //@IdClass(InventoryId.class)
 public class InventoryItem extends Identifiable {
 
 //    @Id
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_store_id"))
     private Store store;
 
 //    @Id
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_inventory_item_item_id_"))
     private Item item;
@@ -64,6 +63,14 @@ public class InventoryItem extends Identifiable {
             data.setItemCode(this.getItem().getItemCode());
             data.setSellingPrice(this.getItem().getRate());
             data.setCostPrice(this.getItem().getCostRate());
+            if (!this.getItem().getReorderRules().isEmpty()) {
+                this.getItem().getReorderRules().stream().filter((rule) -> (rule.getStore() == this.getStore())).forEachOrdered((rule) -> {
+                    data.setReorderLevel(rule.getReorderLevel());
+                });
+                if (data.getReorderLevel() == null) {
+                    data.setReorderLevel(this.getItem().getReorderRules().get(0).getReorderLevel());
+                }
+            }
         }
 
         if (this.getStore() != null) {
@@ -74,4 +81,10 @@ public class InventoryItem extends Identifiable {
 
         return data;
     }
+    
+     @Override
+    public String toString() {
+        return "Inventory Item [id=" + getId() + ", item=" +item!=null? item.getItemName() :null+ ", Store=" + store!=null ? store.getStoreName() : null+ ", available stock=" + availableStock + "]";
+    }
+    
 }

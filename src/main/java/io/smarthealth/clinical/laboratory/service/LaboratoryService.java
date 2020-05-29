@@ -315,7 +315,7 @@ public class LaboratoryService {
                 .orElseThrow(() -> APIException.notFound("Visit with Id {0} Not Found", visitNo));
     }
 
-    private LabRegisterTest getLabRegisterTest(Long id) {
+    public LabRegisterTest getLabRegisterTest(Long id) {
         return testRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Lab Request Test with Id {0} Not Found", id));
     }

@@ -4,11 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.lang.Constants; 
+import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -60,6 +64,13 @@ public class LabRegisterTestData {
     private List<LabResultData> labResults=new ArrayList<>();
     @ApiModelProperty(required=false, hidden = true)
     private String patientNumber;
+    @ApiModelProperty(required=false, hidden = true)
+    private String patientName;
+    @ApiModelProperty(required=false, hidden = true)
+    private LocalDate DOB;
+    @ApiModelProperty(required=false, hidden = true)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     @ApiModelProperty(required=false, hidden = true)
     private Boolean withRef;
 

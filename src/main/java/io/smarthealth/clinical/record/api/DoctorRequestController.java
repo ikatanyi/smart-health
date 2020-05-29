@@ -166,7 +166,7 @@ public class DoctorRequestController {
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
 
         for (Visit v : patientVisits.getContent()) {
-            Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(v.getVisitNumber(), patientNo, requestType, fulfillerStatus, "patient", pageable);
+            Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(v.getVisitNumber(), patientNo, requestType, fulfillerStatus, "patient", pageable,null);
 
             for (DoctorRequest docReq : pageList.getContent()) {
                 HistoricalDoctorRequestsData waitingRequest = new HistoricalDoctorRequestsData();
@@ -216,11 +216,12 @@ public class DoctorRequestController {
             @RequestParam(value = "patientNo", required = false) final String patientNo,
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
             @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final FullFillerStatusType fulfillerStatus,
+            @RequestParam(value = "activeVisit", required = false) final Boolean activeVisit,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable);
+        Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable,activeVisit);
         //Page<DoctorRequest> pageList = requestService.fetchDoctorRequestLine(fulfillerStatus, requestType, pageable);
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
 
@@ -271,7 +272,7 @@ public class DoctorRequestController {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
 
 //        Page<DoctorRequest> page = requestService.findAllRequestsByOrderNoAndRequestType(visitNo, requestType, pageable);
-        Page<DoctorRequest> page = requestService.fetchAllDoctorRequests(visit.getVisitNumber(), patientNo, requestType, fulfillerStatus, null, pageable);
+        Page<DoctorRequest> page = requestService.fetchAllDoctorRequests(visit.getVisitNumber(), patientNo, requestType, fulfillerStatus, null, pageable,null);
 
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);

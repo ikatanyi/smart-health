@@ -13,7 +13,7 @@
 	<columnHeader>
 		<band height="18" splitType="Stretch">
 			<staticText>
-				<reportElement x="148" y="2" width="53" height="15" uuid="18345010-68b6-4e61-a798-9146f0e47c6e"/>
+				<reportElement x="154" y="2" width="47" height="15" uuid="18345010-68b6-4e61-a798-9146f0e47c6e"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -27,14 +27,14 @@
 				<text><![CDATA[Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="102" y="2" width="42" height="15" uuid="a3839aa6-c68b-4699-b26a-cc979305fca5"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement x="122" y="2" width="31" height="15" uuid="a3839aa6-c68b-4699-b26a-cc979305fca5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Qty]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="2" width="98" height="15" uuid="4241356f-771e-4e85-81c4-81be960b6dc8"/>
+				<reportElement x="1" y="2" width="119" height="15" uuid="4241356f-771e-4e85-81c4-81be960b6dc8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -51,21 +51,21 @@
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="1" y="0" width="98" height="12" uuid="366d03f8-0b6b-4bc5-8e9b-14b8b124e9e5"/>
+				<reportElement x="1" y="0" width="119" height="12" uuid="366d03f8-0b6b-4bc5-8e9b-14b8b124e9e5"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="102" y="0" width="42" height="12" uuid="cca98489-cc58-4a83-b52f-27ae01241ece"/>
-				<textElement>
+				<reportElement x="122" y="0" width="20" height="12" uuid="cca98489-cc58-4a83-b52f-27ae01241ece"/>
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="148" y="0" width="36" height="12" uuid="f7a667f1-10bd-4360-b3e9-a65515fa7771"/>
+				<reportElement x="154" y="0" width="30" height="12" uuid="f7a667f1-10bd-4360-b3e9-a65515fa7771"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>

@@ -17,4 +17,9 @@ public class Tax extends Identifiable {
     private String taxName;
     private double rate;
     private Boolean active;
+    
+     @Override
+    public String toString() {
+        return "Tax [id=" + getId() + ", tax name=" + taxName + ", rate=" + rate + "]";
+    }
 }

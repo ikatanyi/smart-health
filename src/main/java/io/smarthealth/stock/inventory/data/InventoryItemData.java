@@ -24,6 +24,7 @@ public class InventoryItemData {
 
     private BigDecimal costPrice;
     private BigDecimal sellingPrice;
+    private Double reorderLevel;
 
-    private double availableStock;
+    private Double availableStock;
 }

@@ -24,7 +24,6 @@ import lombok.ToString;
 public class PatientBillItem extends Auditable {
 
     @JsonIgnore
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_item_bill_id"))
     private PatientBill patientBill;
@@ -135,6 +134,11 @@ public class PatientBillItem extends Auditable {
             return 0D;
         }
         return val;
+    }
+    
+      @Override
+    public String toString() {
+        return "Patient Bill Item [id=" + getId() + ",patientBill=" + patientBill + " , service point=" +servicePoint+ ", quantity=" +quantity+ ", price=" + price + ", amount=" +amount+ " ]";
     }
 
 }

@@ -120,7 +120,6 @@ public class LabReportService {
     
     public void getPatientLabReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         String labNumber= reportParam.getFirst("labNumber"); 
-        String visitNo= reportParam.getFirst("visitNo");
 //        Visit visit = visitService.findVisitEntityOrThrow("O000005");
         LabRegisterData labTests = labService.getLabRegisterByNumber(labNumber).toData(Boolean.TRUE);//tLabResultDataByVisit(visit);
         ReportData reportData = new ReportData();
@@ -144,21 +143,10 @@ public class LabReportService {
     
     public void genSpecimenLabel(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        String patientNumber = reportParam.getFirst("patientNumber");
-        Long specimenId = NumberUtils.createLong(reportParam.getFirst("specimenId"));
-        specimenLabelData labelData = new specimenLabelData();
-        Optional<PatientData> patientData = patientService.fetchPatientByPatientNumber(patientNumber);
-        if (patientData.isPresent()) {
-            labelData.setDateOfBitrh(patientData.get().getDateOfBirth());
-            labelData.setPatientName(patientData.get().getPatientNumber() + ", " + patientData.get().getFullName());
-
-        }
-        LabSpecimen specimen = labSetUpService.getLabSpecimenOrThrow(specimenId);
-        labelData.setSpecimenCode(specimen.getId().toString());
-        labelData.setSpecimenName(specimen.getSpecimen());
-
-        List<specimenLabelData> requestData = Arrays.asList(labelData);
-        reportData.setData(requestData);
+        Long testId = NumberUtils.createLong(reportParam.getFirst("labRegisterTestId"));
+        LabRegisterTestData testData = labService.getLabRegisterTest(testId).toData(false);
+        
+        reportData.setData(Arrays.asList(testData));
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/laboratory/specimen_label");
         reportData.setReportName("specimen-label");
