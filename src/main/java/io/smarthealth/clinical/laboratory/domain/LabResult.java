@@ -7,8 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import lombok.Data;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  *
@@ -22,9 +24,8 @@ public class LabResult extends Auditable {
 //    @ManyToOne
 //    @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_results_visit_id"))
 //    private Visit visit;
-    
     private String patientNo;
-    
+
     private String labNumber;
 
     @ManyToOne
@@ -40,7 +41,9 @@ public class LabResult extends Auditable {
     private String referenceValue;
     private String status;
     private String comments;
-    private Boolean voided = Boolean.FALSE;
+    private Boolean voided = Boolean.FALSE; 
+    private String enteredBy;
+    private String validatedBy;
 
     public LabResultData toData() {
         LabResultData data = new LabResultData();
@@ -55,14 +58,16 @@ public class LabResult extends Auditable {
         data.setResultsDate(this.resultsDate);
         data.setStatus(this.status);
         data.setComments(this.comments);
-        data.setVoided(this.voided);
+        data.setVoided(this.voided); 
+        data.setEnteredBy(this.enteredBy);
+        data.setValidatedBy(this.validatedBy);
 
         if (this.labRegisterTest.getLabTest() != null) {
             data.setTestId(this.labRegisterTest.getLabTest().getId());
             data.setTestCode(this.labRegisterTest.getLabTest().getCode());
             data.setTestName(this.labRegisterTest.getLabTest().getTestName());
-        } 
-        
+        }
+
         if (!this.labRegisterTest.getLabRegister().getIsWalkin()) {
             data.setPatientName(this.labRegisterTest.getLabRegister().getVisit().getPatient().getFullName());
             data.setPatientNo(this.labRegisterTest.getLabRegister().getVisit().getPatient().getPatientNumber());
@@ -70,7 +75,7 @@ public class LabResult extends Auditable {
             data.setVisitDate(this.labRegisterTest.getLabRegister().getVisit().getStartDatetime().toLocalDate());
         } else {
             data.setPatientNo(this.patientNo);
-            data.setPatientName("Walkin - "+this.patientNo);
+            data.setPatientName("Walkin - " + this.patientNo);
             data.setVisitNumber(this.patientNo);
             data.setVisitDate(this.labRegisterTest.getLabRegister().getRequestDatetime().toLocalDate());
         }
@@ -78,4 +83,5 @@ public class LabResult extends Auditable {
 
         return data;
     }
+ 
 }

@@ -11,7 +11,7 @@ public interface LedgerRepository extends JpaRepository<Ledger, Long>, JpaSpecif
 
     List<Ledger> findByParentLedgerIsNull();
 
-    List<Ledger> findByParentLedgerIsNullAndType(final AccountType type);
+    List<Ledger> findByParentLedgerIsNullAndAccountType(final AccountType type);
 
     List<Ledger> findByParentLedgerOrderByIdentifier(final Ledger parentLedger);
 

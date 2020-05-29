@@ -73,7 +73,7 @@ public class InventoryItemController {
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "search", required = false) final String search,
             @RequestParam(value = "item_id", required = false) final Long itemId,
-            @RequestParam(value = "store", required = false) final Long storeId,
+            @RequestParam(value = "store_id", required = false) final Long storeId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 

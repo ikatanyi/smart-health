@@ -78,7 +78,7 @@ public class LedgerController {
         final Optional<Ledger> optionalParentLedger = this.ledgerService.findLedger(identifier);
         if (optionalParentLedger.isPresent()) {
             final Ledger parentLedger = optionalParentLedger.get();
-            if (!parentLedger.getType().equals(subLedger.getType())) {
+            if (!parentLedger.getAccountType().equals(subLedger.getType())) {
                 throw APIException.badRequest("Ledger type must be the same.");
             }
         } else {

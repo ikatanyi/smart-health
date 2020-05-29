@@ -58,8 +58,8 @@ public class InventoryAdjustmentController {
     @GetMapping("/inventory-adjustment")
     @PreAuthorize("hasAuthority('view_inventoryadjustment')")
     public ResponseEntity<?> getStockAdjustment(
-            @RequestParam(value = "store", required = false) final Long store,
-            @RequestParam(value = "item", required = false) final Long item,
+            @RequestParam(value = "store_id", required = false) final Long store,
+            @RequestParam(value = "item_id", required = false) final Long item,
             @RequestParam(value = "dateRange", required = false) String dateRange, //2020-01-01..2020-01-24
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {

@@ -48,7 +48,7 @@ public class LabRegister extends Auditable {
     private String paymentMode;
 
     private String transactionId;
-
+    
     @Enumerated(EnumType.STRING)
     private LabTestStatus status; 
 

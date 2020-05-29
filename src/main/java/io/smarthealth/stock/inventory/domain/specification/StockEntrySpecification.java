@@ -19,16 +19,16 @@ public class StockEntrySpecification {
         super();
     }
   
-        public static Specification<StockEntry> createSpecification(String store, String itemName,String referenceNumber,String transactionId, String deliveryNumber, DateRange range, MovementPurpose purpose,MovementType moveType) {
+        public static Specification<StockEntry> createSpecification(Long storeId, Long itemId,String referenceNumber,String transactionId, String deliveryNumber, DateRange range, MovementPurpose purpose,MovementType moveType) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             
-            if (store != null) {
-                predicates.add(cb.equal(root.get("store").get("storeName"), store));
+            if (storeId != null) {
+                predicates.add(cb.equal(root.get("store").get("id"), storeId));
             }
             
-             if (itemName != null) {
-                predicates.add(cb.equal(root.get("item").get("itemName"), itemName));
+             if (itemId != null) {
+                predicates.add(cb.equal(root.get("item").get("id"), itemId));
             }
              
             if (transactionId != null) {
@@ -48,7 +48,7 @@ public class StockEntrySpecification {
             }
               if(range!=null){
                   predicates.add(
-                     cb.between(root.get("transactionDate"), range.getStartDateTime(), range.getEndDateTime())
+                     cb.between(root.get("transactionDate"), range.getStartDate(), range.getEndDate())
                   );
               }
 

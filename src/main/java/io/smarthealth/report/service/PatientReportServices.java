@@ -73,7 +73,7 @@ import org.springframework.util.MultiValueMap;
  */
 @Service
 @RequiredArgsConstructor
-public class PatientReportService {
+public class PatientReportServices {
 
     private final JasperReportsService reportService;
     private final PatientService patientService;

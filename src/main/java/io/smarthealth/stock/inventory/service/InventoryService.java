@@ -258,7 +258,7 @@ public class InventoryService {
                 .orElseThrow(() -> APIException.notFound("Stock Movement with Id {0} not found", id));
     }
 
-    public Page<StockEntry> getStockEntries(String store, String itemName, String referenceNumber, String transactionId, String deliveryNumber, MovementPurpose purpose, MovementType moveType, DateRange range, Pageable pageable) {
+    public Page<StockEntry> getStockEntries(Long storeId, Long itemId, String referenceNumber, String transactionId, String deliveryNumber, MovementPurpose purpose, MovementType moveType, DateRange range, Pageable pageable) {
 //        MovementPurpose p = null;
 //        if (purpose != null) {
 //            p = MovementPurpose.valueOf(purpose);
@@ -268,7 +268,7 @@ public class InventoryService {
 //            type = MovementType.valueOf(moveType);
 //        }
 
-        Specification<StockEntry> spec = StockEntrySpecification.createSpecification(store, itemName, referenceNumber, transactionId, deliveryNumber, range, purpose, moveType);
+        Specification<StockEntry> spec = StockEntrySpecification.createSpecification(storeId, itemId, referenceNumber, transactionId, deliveryNumber, range, purpose, moveType);
         Page<StockEntry> stocks = stockEntryRepository.findAll(spec, pageable);
         return stocks;
     }

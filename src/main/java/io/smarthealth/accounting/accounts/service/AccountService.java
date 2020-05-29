@@ -6,7 +6,6 @@ import io.smarthealth.accounting.accounts.data.AccountGroups;
 import io.smarthealth.accounting.accounts.data.AccountPage;
 import io.smarthealth.accounting.accounts.data.JournalEntryItemData;
 import io.smarthealth.accounting.accounts.data.SimpleAccountData;
-import io.smarthealth.accounting.accounts.data.financial.statement.TransactionList;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.AccountRepository;
 import io.smarthealth.accounting.accounts.domain.AccountState;

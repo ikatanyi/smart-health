@@ -34,7 +34,7 @@ public class IncomesStatementService {
     private void createIncomeStatementSection(final IncomeStatement incomeStatement, final AccountType accountType,
             final IncomeStatementSection.Type incomeStatementType) {
 
-        this.ledgerRepository.findByParentLedgerIsNullAndType(accountType)
+        this.ledgerRepository.findByParentLedgerIsNullAndAccountType(accountType)
                 .forEach(ledgerEntity -> {
                     final IncomeStatementSection incomeStatementSection = new IncomeStatementSection();
                     incomeStatementSection.setType(incomeStatementType.name());

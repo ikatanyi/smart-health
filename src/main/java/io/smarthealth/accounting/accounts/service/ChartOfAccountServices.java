@@ -33,7 +33,7 @@ public class ChartOfAccountServices {
             chartOfAccountEntry.setCode(ledgerEntity.getIdentifier());
             chartOfAccountEntry.setName(ledgerEntity.getName());
             chartOfAccountEntry.setDescription(ledgerEntity.getDescription());
-            chartOfAccountEntry.setType(ledgerEntity.getType());
+            chartOfAccountEntry.setType(ledgerEntity.getAccountType());
             chartOfAccountEntry.setLevel(level);
             final int nextLevel = level + 1;
             this.traverseHierarchy(chartOfAccountEntries, nextLevel, ledgerEntity);
@@ -64,7 +64,7 @@ public class ChartOfAccountServices {
                 chartOfAccountEntries.add(chartOfAccountEntry);
                 chartOfAccountEntry.setCode(subLedger.getIdentifier());
                 chartOfAccountEntry.setName(subLedger.getName());
-                chartOfAccountEntry.setType(subLedger.getType());
+                chartOfAccountEntry.setType(subLedger.getAccountType());
                 chartOfAccountEntry.setLevel(level);
                 final int nextLevel = level + 1;
                 this.traverseHierarchy(chartOfAccountEntries, nextLevel, subLedger);

@@ -39,4 +39,8 @@ public interface LabRegisterTestRepository extends JpaRepository<LabRegisterTest
     List<LabRegisterTest> findTestsByVisitAndLabNo(@Param("visitNo") String visitNo, @Param("labNo") String labNo);
 
     Long countByStatus(LabTestStatus status);
+
+    @Modifying
+    @Query("UPDATE LabRegisterTest r SET r.attachment =:attachment WHERE r.id=:id")
+    int addAttachment(@Param("attachment") String attachment, @Param("id") Long id);
 }

@@ -43,10 +43,13 @@ public class DocumentData {
     
     public Document fromData(){
         Document document = new Document();
-        document.setNotes(notes);
-        document.setDocumentType(this.getDocumentType());    
+        document.setNotes(this.notes);
+        document.setDocumentType(this.getDocumentType());
+        document.setDocumentNumber(this.documentNumber);
         document.setSize(this.getDocfile().getSize());
         document.setFileType(this.getDocfile().getContentType());
         return document;
-    }
+    } 
+    
+    
 }

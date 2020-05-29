@@ -3,6 +3,10 @@ package io.smarthealth.clinical.laboratory.api;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.laboratory.domain.LabResult;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
+import io.smarthealth.documents.data.DocResponse;
+import io.smarthealth.documents.data.DocumentData;
+import io.smarthealth.documents.domain.enumeration.DocumentType;
+import io.smarthealth.documents.service.FileStorageService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -80,7 +85,8 @@ public class LabResultController {
         service.voidLabResult(id);
         return ResponseEntity.accepted().build();
     }
- //String visitNumber, String patientNumber, String labNumber, Boolean walkin, String testName, DateRange range, Pageable page
+    //String visitNumber, String patientNumber, String labNumber, Boolean walkin, String testName, DateRange range, Pageable page
+
     @GetMapping("/labs/results")
     @PreAuthorize("hasAuthority('view_labresults')")
     public ResponseEntity<?> getLabResults(
@@ -96,7 +102,7 @@ public class LabResultController {
 
         final DateRange range = DateRange.fromIsoString(dateRange);
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<LabResultData> list = service.getLabResults(visitNumber, patientNumber, labNumber, walkin, testName,orderNo, range, pageable)
+        Page<LabResultData> list = service.getLabResults(visitNumber, patientNumber, labNumber, walkin, testName, orderNo, range, pageable)
                 .map(x -> x.toData());
 
         Pager<List<LabResultData>> pagers = new Pager();
@@ -111,5 +117,18 @@ public class LabResultController {
         details.setReportName("Lab Results list");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
-    } 
+    }
+
+    //upload the file to server
+    @PostMapping("/labs/results/{id}/upload")
+//    @PreAuthorize("hasAuthority('view_labresults')")
+    public ResponseEntity<?> uploadResults(
+            @PathVariable(value = "id") Long testId,
+            @RequestParam(required = false) String name,
+            @RequestParam MultipartFile file
+    ) {
+
+        DocResponse doc = service.uploadDocument(testId, name, file);
+        return ResponseEntity.status(HttpStatus.OK).body(doc);
+    }
 }

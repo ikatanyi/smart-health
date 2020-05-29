@@ -5,7 +5,6 @@
  */
 package io.smarthealth.report.service;
 
-import io.smarthealth.accounting.accounts.data.LedgerData;
 import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.service.LedgerService;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
@@ -16,13 +15,10 @@ import io.smarthealth.accounting.payment.service.PaymentService;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
-import io.smarthealth.clinical.radiology.data.PatientScanTestData;
-import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.claim.creditNote.data.CreditNoteData;
 import io.smarthealth.debtor.claim.creditNote.service.CreditNoteService;
 import io.smarthealth.debtor.payer.data.PayerData;
-import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;

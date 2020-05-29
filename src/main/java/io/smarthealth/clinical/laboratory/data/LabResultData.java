@@ -11,7 +11,7 @@ import lombok.Data;
  * @author Kelsas
  */
 @Data
-public class LabResultData{
+public class LabResultData {
 
     private Long id;
     private String patientNo;
@@ -37,4 +37,6 @@ public class LabResultData{
     private String createdBy;
     private String specimen;
     private Boolean voided = Boolean.FALSE;
+    private String enteredBy;
+    private String validatedBy;
 }

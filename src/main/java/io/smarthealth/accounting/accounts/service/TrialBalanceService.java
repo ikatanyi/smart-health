@@ -28,7 +28,7 @@ public class TrialBalanceService {
                     }
                     final TrialBalanceEntry trialBalanceEntry = new TrialBalanceEntry();
                     trialBalanceEntry.setLedger(LedgerData.map(subLedger));
-                    switch (subLedger.getType()) {
+                    switch (subLedger.getAccountType()) {
                         case ASSET:
                         case EXPENSE:
                             trialBalanceEntry.setType(TrialBalanceEntry.Type.DEBIT.name());

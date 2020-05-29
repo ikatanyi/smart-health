@@ -4,11 +4,9 @@ import io.smarthealth.accounting.accounts.data.AccountBalance;
 import io.smarthealth.accounting.accounts.data.AccountData;
 import io.smarthealth.accounting.accounts.data.AccountPage;
 import io.smarthealth.accounting.accounts.data.JournalEntryItemData;
-import io.smarthealth.accounting.accounts.data.financial.statement.TransactionList;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.AccountState;
 import io.smarthealth.accounting.accounts.domain.AccountType;
-import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.accounts.domain.Ledger;
 import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.accounting.accounts.service.LedgerService;
@@ -161,7 +159,7 @@ public class AccountController {
     private void validateLedger(final @RequestBody @Valid AccountData account) {
         Ledger ledger = ledgerService.findLedgerOrThrow(account.getLedger());
 
-        if (!ledger.getType().equals(account.getType())) {
+        if (!ledger.getAccountType().equals(account.getType())) {
             throw APIException.badRequest("Account type {0} must match ledger type {1}.", account.getType(), ledger.getIdentifier());
         }
     }

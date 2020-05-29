@@ -78,7 +78,7 @@ public class FinancialActivityAccountService {
     }
 
     private void validateActivityMapping(FinancialActivity activity, Account account) {
-        if (!activity.getAccountType().equals(account.getLedger().getType())) {
+        if (!activity.getAccountType().equals(account.getLedger().getAccountType())) {
             String error = "Financial Activity {0}  can only be associated with a Ledger Account of Type {1} the provided Ledger Account {2} ({3})'  is not of the required type";
             throw APIException.badRequest(error, activity.getActivityName(), activity.getAccountType().name(), account.getName(), account.getIdentifier());
         }
