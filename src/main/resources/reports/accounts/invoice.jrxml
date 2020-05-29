@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="4aae1193-a82d-4555-b88f-e537201ac06a">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="460"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
@@ -120,8 +120,8 @@
 				</graphicElement>
 			</line>
 			<image onErrorType="Blank">
-				<reportElement x="3" y="0" width="306" height="160" uuid="378db843-ff47-44bf-bcf4-e4377c5e5ca8">
-					<printWhenExpression><![CDATA["Paid".equals($F{status}.getClass().getName().equals( "Paid" )?"Paid":"Not Paid")]]></printWhenExpression>
+				<reportElement mode="Opaque" x="3" y="3" width="306" height="175" uuid="378db843-ff47-44bf-bcf4-e4377c5e5ca8">
+					<printWhenExpression><![CDATA[$F{status}.getClass().getName().equals( "Paid" )]]></printWhenExpression>
 				</reportElement>
 				<imageExpression><![CDATA[$P{PIC_DIR}+"paid-image.png"]]></imageExpression>
 			</image>

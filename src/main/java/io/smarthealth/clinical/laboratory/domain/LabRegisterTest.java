@@ -90,6 +90,11 @@ public class LabRegisterTest extends Identifiable {
             data.setLabNumber(this.labRegister.getLabNumber());
             data.setPatientNumber(this.labRegister.getPatientNo());
 
+            if (this.labRegister.getVisit() != null) {
+                data.setPatientName(this.labRegister.getVisit().getPatient().getGivenName());
+                data.setDOB(this.labRegister.getVisit().getPatient().getDateOfBirth());
+                data.setGender(this.labRegister.getVisit().getPatient().getGender());
+            }
         }
 
         data.setPaid(this.paid);

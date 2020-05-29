@@ -17,14 +17,14 @@ import lombok.Data;
  *
  * @author Kelsas
  */
-@Data 
+@Data
 @Entity
 @Table(name = "acc_ledgers")
 public class Ledger extends Auditable {
 
     @Column(name = "a_type")
-      @Enumerated(EnumType.STRING)
-    private AccountType type;
+    @Enumerated(EnumType.STRING)
+    private AccountType accountType;
     private String identifier;
     @Column(name = "a_name")
     private String name;
@@ -54,8 +54,9 @@ public class Ledger extends Auditable {
     public int hashCode() {
         return identifier.hashCode();
     }
+
     @Override
     public String toString() {
-        return "Ledger [id=" + getId() + ", name=" + name + ", number=" + identifier + ", type=" + type + ", parent ledger=" +parentLedger+ " ]";
+        return "Ledger [id=" + getId() + ", name=" + name + ", number=" + identifier + ", type=" + accountType + ", parent ledger=" + parentLedger + " ]";
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.FileSystemUtils;
 
 /**
- * @author Kelsas
+ * @author Kennedy.ikatanyi
  *
  */
 @Slf4j
@@ -29,7 +29,8 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public void init() {
         try {
-            Files.createDirectory(rootLocation);
+            if(Files.notExists(rootLocation))
+                Files.createDirectory(rootLocation);
         } catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
         }

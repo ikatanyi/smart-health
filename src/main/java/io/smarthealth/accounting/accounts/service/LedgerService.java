@@ -118,7 +118,7 @@ public class LedgerService {
 
         final Ledger parentLedgerEntity = new Ledger();
         parentLedgerEntity.setIdentifier(ledgerData.getIdentifier());
-        parentLedgerEntity.setType(ledgerData.getType());
+        parentLedgerEntity.setAccountType(ledgerData.getType());
         parentLedgerEntity.setName(ledgerData.getName());
         parentLedgerEntity.setDescription(ledgerData.getDescription());
         parentLedgerEntity.setShowAccountsInChart(ledgerData.getShowAccountsInChart());
@@ -171,22 +171,22 @@ public class LedgerService {
             log.debug("Add {} sub ledger(s) to parent ledger {}.", subLedgers.size(), parentLedgerEntity.getIdentifier());
 
             for (final LedgerData subLedger : subLedgers) {
-                if (!subLedger.getType().equals(parentLedgerEntity.getType())) {
+                if (!subLedger.getType().equals(parentLedgerEntity.getAccountType())) {
                     log.error(
                             "Type of sub ledger {} must match parent ledger {}. Expected {}, was {}",
                             subLedger.getIdentifier(), parentLedgerEntity.getIdentifier(),
-                            parentLedgerEntity.getType(), subLedger.getType()
+                            parentLedgerEntity.getAccountType(), subLedger.getType()
                     );
 
                     throw APIException.badRequest(
                             "Type of sub ledger {0} must match parent ledger {1}. Expected {2}, was {3}",
                             subLedger.getIdentifier(), parentLedgerEntity.getIdentifier(),
-                            parentLedgerEntity.getType(), subLedger.getType()
+                            parentLedgerEntity.getAccountType(), subLedger.getType()
                     );
                 }
                 final Ledger subLedgerEntity = new Ledger();
                 subLedgerEntity.setIdentifier(subLedger.getIdentifier());
-                subLedgerEntity.setType(subLedger.getType());
+                subLedgerEntity.setAccountType(subLedger.getType());
                 subLedgerEntity.setName(subLedger.getName());
                 subLedgerEntity.setDescription(subLedger.getDescription());
                 subLedgerEntity.setShowAccountsInChart(subLedger.getShowAccountsInChart());

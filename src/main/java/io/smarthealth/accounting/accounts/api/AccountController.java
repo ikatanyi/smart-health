@@ -159,7 +159,7 @@ public class AccountController {
     private void validateLedger(final @RequestBody @Valid AccountData account) {
         Ledger ledger = ledgerService.findLedgerOrThrow(account.getLedger());
 
-        if (!ledger.getType().equals(account.getType())) {
+        if (!ledger.getAccountType().equals(account.getType())) {
             throw APIException.badRequest("Account type {0} must match ledger type {1}.", account.getType(), ledger.getIdentifier());
         }
     }

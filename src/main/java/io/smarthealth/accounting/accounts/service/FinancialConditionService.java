@@ -40,7 +40,7 @@ public class FinancialConditionService {
 
     private void createFinancialConditionSection(final FinancialCondition financialCondition, final AccountType accountType,
             final FinancialConditionSection.Type financialConditionType) {
-        this.ledgerRepository.findByParentLedgerIsNullAndType(accountType)
+        this.ledgerRepository.findByParentLedgerIsNullAndAccountType(accountType)
                 .forEach(ledgerEntity -> {
             final FinancialConditionSection financialConditionSection = new FinancialConditionSection();
             financialConditionSection.setType(financialConditionType.name());

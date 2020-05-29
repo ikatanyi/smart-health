@@ -8,6 +8,9 @@ package io.smarthealth.infrastructure.imports.service;
 import io.smarthealth.ApplicationProperties;
 import io.smarthealth.infrastructure.exception.FileStorageException;
 import io.smarthealth.report.storage.StorageException;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
+import java.io.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -20,7 +23,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.ResourceUtils;
 
 /**
  *
@@ -35,13 +40,15 @@ public class UploadService {
     public String location;
 
     private final ApplicationProperties properties;
+    private final SequenceNumberService sequenceNumberService;
 
     @Autowired
     private ResourceLoader resourceLoader;
     
     
-    public UploadService(ApplicationProperties properties) throws IOException {
+    public UploadService(ApplicationProperties properties,SequenceNumberService sequenceNumberService) throws IOException {
         this.properties = properties;
+        this.sequenceNumberService = sequenceNumberService;
         this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath());
     }
 
@@ -75,7 +82,9 @@ public class UploadService {
             }
 
             // Copy file to the target location (Replacing existing file with the same name)
-            Path targetLocation = this.rootLocation.resolve(fileName);
+            String documentNo = sequenceNumberService.next(1L, Sequences.DocumentNumber.name());
+            
+            Path targetLocation = this.rootLocation.resolve(documentNo);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             return fileName;

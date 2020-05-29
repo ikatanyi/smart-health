@@ -77,8 +77,8 @@ public class InventoryController {
     @GetMapping("/inventory-entries")
     @PreAuthorize("hasAuthority('view_inventory')")
     public ResponseEntity<?> getAllStockEntries(
-            @RequestParam(value = "store", required = false) final String store,
-            @RequestParam(value = "item", required = false) final String item,
+            @RequestParam(value = "store_id", required = false) final Long storeId,
+            @RequestParam(value = "item_id", required = false) final Long itemId,
             @RequestParam(value = "reference", required = false) final String referenceNumber,
             @RequestParam(value = "transactionId", required = false) final String transactionId,
             @RequestParam(value = "deliveryNo", required = false) final String deliveryNumber,
@@ -91,7 +91,7 @@ public class InventoryController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<StockEntryData> list = service
-                .getStockEntries(store, item, referenceNumber, transactionId, deliveryNumber, purpose, type, range, pageable)
+                .getStockEntries(storeId, itemId, referenceNumber, transactionId, deliveryNumber, purpose, type, range, pageable)
                 .map(u -> StockEntryData.map(u));
 
         Pager<List<StockEntryData>> pagers = new Pager();

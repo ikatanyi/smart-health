@@ -6,9 +6,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull; 
 import lombok.Data;
-
+ 
 @Data
 public final class LedgerData {
 
@@ -34,7 +34,7 @@ public final class LedgerData {
     public static LedgerData map(final Ledger ledgerEntity) {
         final LedgerData data = new LedgerData();
         
-        data.setType(ledgerEntity.getType());
+        data.setType(ledgerEntity.getAccountType());
         
         data.setIdentifier(ledgerEntity.getIdentifier());
         data.setName(ledgerEntity.getName());
