@@ -17,7 +17,7 @@
 	<field name="testName" class="java.lang.String"/>
 	<field name="collectionDateTime" class="java.lang.Object"/>
 	<field name="collectedBy" class="java.lang.String"/>
-	<field name="gender" class="java.lang.String"/>
+	<field name="gender" class="java.lang.Object"/>
 	<background>
 		<band height="78">
 			<rectangle radius="10">
