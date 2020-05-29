@@ -1,5 +1,5 @@
 package io.smarthealth.clinical.record.api;
- 
+
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.DoctorRequestItem;
@@ -60,17 +60,17 @@ public class DoctorRequestController {
 
     private final PatientService patientService;
 
-    private final SequenceNumberService sequenceNumberService; 
-    
+    private final SequenceNumberService sequenceNumberService;
+
     private final UserService userService;
 
     private final RequestEventPublisher requestEventPublisher;
-    
+
     @PostMapping("/visit/{visitNo}/doctor-request")
     @PreAuthorize("hasAuthority('create_doctorrequest')")
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
-         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
 
         Optional<User> user = userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().get());
 
@@ -162,7 +162,7 @@ public class DoctorRequestController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Patient patient = patientService.findPatientOrThrow(patientNo);
         //fetch all visits by patient
-        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, pageable);
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, pageable);
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
 
         for (Visit v : patientVisits.getContent()) {

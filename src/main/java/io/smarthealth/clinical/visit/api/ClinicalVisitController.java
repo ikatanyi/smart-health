@@ -194,7 +194,7 @@ public class ClinicalVisitController {
             if (sp == null) {
                 throw APIException.notFound("Consultation service point not found", "");
             }
-            
+
             if (visit.getServicePoint().getServicePointType().equals(ServicePointType.Consultation)) {
                 visit.setIsActiveOnConsultation(Boolean.TRUE);
             } else {
@@ -345,14 +345,13 @@ public class ClinicalVisitController {
             final String patientName,
             @RequestParam(value = "runningStatus", required = false, defaultValue = "true")
             final boolean runningStatus,
-            @RequestParam(value = "dateRange", required = false)
-            final String dateRange,
-            @RequestParam(value = "isActiveOnConsultation", required = false)
-            final Boolean isActiveOnConsultation,
+            @RequestParam(value = "dateRange", required = false) final String dateRange,
+            @RequestParam(value = "isActiveOnConsultation", required = false) final Boolean isActiveOnConsultation,
+            @RequestParam(value = "username", required = false) final String username,
             Pageable pageable
     ) {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, pageable).map(v -> convertToVisitData(v));
+        Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, username, pageable).map(v -> convertToVisitData(v));
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 
@@ -505,6 +504,9 @@ public class ClinicalVisitController {
 
         if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
             activeVisit.setIsActiveOnConsultation(Boolean.TRUE);
+            if (activeVisit.getHealthProvider() == null && vital.getSendTo().equals("Service Point")) {
+                throw APIException.badRequest("Please specify the doctor", "");
+            }
         }
 
         if (vital.getSendTo().equals("specialist")) {
@@ -541,11 +543,21 @@ public class ClinicalVisitController {
                 }
             }
 
-            patientQueue.setStaffNumber(newDoctorSelected);
-            patientQueue.setServicePoint(newDoctorSelected.getDepartment().getServicePointType());
             patientQueue.setSpecialNotes("Sent from triage");
-            activeVisit.setServicePoint(newDoctorSelected.getDepartment().getServicePointType());
+
+            if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
+                ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Consultation);
+                patientQueue.setServicePoint(servicePoint);
+                activeVisit.setServicePoint(servicePoint);
+            } else {
+                patientQueue.setStaffNumber(newDoctorSelected);
+                patientQueue.setServicePoint(newDoctorSelected.getDepartment().getServicePointType());
+            }
+
             activeVisit.setHealthProvider(newDoctorSelected);
+//            if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
+//                activeVisit.setIsActiveOnConsultation(Boolean.TRUE);
+//            }
         } else if (vital.getSendTo().equals("Service Point")) {
             ServicePoint servicePoint = servicePointService.getServicePoint(vital.getServicePointIdentifier());
             if (servicePoint.getServicePointType().equals(ServicePointType.Triage)) {
@@ -631,6 +643,9 @@ public class ClinicalVisitController {
                 queueData.add(data);
             });
             visitData.setPatientQueueData(queueData);
+        }
+        if (visit.getClinic() != null) {
+            visitData.setClinic(visit.getClinic().getClinicName());
         }
         Patient patient = patientService.findPatientOrThrow(visitData.getPatientNumber());
         visitData.setPatientData(patientService.convertToPatientData(patient));

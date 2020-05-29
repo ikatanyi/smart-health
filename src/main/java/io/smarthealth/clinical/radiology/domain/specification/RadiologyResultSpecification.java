@@ -18,6 +18,7 @@ public class RadiologyResultSpecification {
     }
 
     public static Specification<RadiologyResult> createSpecification(String PatientNumber, String scanNo, String visitNumber, Boolean isWalkin, ScanTestState status, DateRange range, String search) {
+        //System.out.println("To search "+search);
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
@@ -44,12 +45,13 @@ public class RadiologyResultSpecification {
 
             if (search != null) {
                 final String likeExpression = "%" + search + "%";
+//                System.out.println("likeExpression "+likeExpression);
                 predicates.add(
                         cb.or(
                                 cb.like(root.get("patientScanTest").get("patientScanRegister").get("visit").get("visitNumber"), likeExpression),
                                 cb.like(root.get("patientScanTest").get("patientScanRegister").get("patientNo"), likeExpression),
                                 cb.like(root.get("patientScanTest").get("patientScanRegister").get("patientName"), likeExpression),
-                                cb.like(root.get("patientScanTest").get("patientScanRegister").get("visit").get("patient").get("fullName"), likeExpression),
+                                //cb.like(root.get("patientScanTest").get("patientScanRegister").get("visit").get("patient").get("fullName"), likeExpression),
                                 cb.like(root.get("patientScanTest").get("patientScanRegister").get("visit").get("patient").get("patientNumber"), likeExpression), //
                                 cb.like(root.get("patientScanTest").get("patientScanRegister").get("accessNo"), likeExpression)
                         )
