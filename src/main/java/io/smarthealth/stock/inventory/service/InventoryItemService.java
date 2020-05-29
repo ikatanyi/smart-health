@@ -111,9 +111,14 @@ public class InventoryItemService {
 
         return inventoryItems;
     }
-
+    
     public Optional<InventoryItem> getInventoryItem(Long inventoryId) {
         return inventoryItemRepository.findById(inventoryId);
+    }
+
+    public Double getItemCount(String itemCode) {
+        Item item = itemService.findByItemCodeOrThrow(itemCode);
+        return inventoryItemRepository.findItemCount(item);
     }
 
     public InventoryItem getInventoryItemOrThrow(Long itemId, Long storeId) {

@@ -63,6 +63,14 @@ public class InventoryItem extends Identifiable {
             data.setItemCode(this.getItem().getItemCode());
             data.setSellingPrice(this.getItem().getRate());
             data.setCostPrice(this.getItem().getCostRate());
+            if (!this.getItem().getReorderRules().isEmpty()) {
+                this.getItem().getReorderRules().stream().filter((rule) -> (rule.getStore() == this.getStore())).forEachOrdered((rule) -> {
+                    data.setReorderLevel(rule.getReorderLevel());
+                });
+                if (data.getReorderLevel() == null) {
+                    data.setReorderLevel(this.getItem().getReorderRules().get(0).getReorderLevel());
+                }
+            }
         }
 
         if (this.getStore() != null) {

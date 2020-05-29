@@ -3,7 +3,7 @@ package io.smarthealth.report.api;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.report.domain.enumeration.ReportName;
 import io.smarthealth.report.service.LabReportService;
-import io.smarthealth.report.service.PatientReportService;
+import io.smarthealth.report.service.PatientReportServices;
 import io.smarthealth.report.service.RadiologyReportService;
 import io.smarthealth.report.service.AccountReportService;
 import io.smarthealth.report.service.PaymentReportService;
@@ -36,7 +36,7 @@ public class ReportController {
     private final AccountReportService reportService;
     private final LabReportService labReportService;
     private final RadiologyReportService radiologyReportService;
-    private final PatientReportService patientReportService;
+    private final PatientReportServices patientReportService;
     private final SupplierReportService supplierInvoiceService;
     private final ProcedureReportService procedureReportService;
     private final PharmacyReportService pharmacyReportService;
@@ -45,8 +45,8 @@ public class ReportController {
 
     @GetMapping("/report")
     @PreAuthorize("hasAuthority('view_reports')")
-    @ApiOperation(value = "Daily_Income_Statement=[transactionNo,paymentMode,billNo,visitNumber,billStatus, patientNo,hasbalance,dateRange]"
-            + "genInsuranceStatement=[payerId,schemeId,patientNo,invoiceNo,range,invoiceStatus]"
+    @ApiOperation(value = "Daily_Income_Statement=[transactionNo,paymentMode,billNo,visitNumber,billStatus, patientNo,hasbalance,dateRange]\n"
+            + "genInsuranceStatement=[payerId,schemeId,patientNo,invoiceNo,range,invoiceStatus]\n"
             + "Purchase_Order=[orderNo]")
     public ResponseEntity<?> generateReport(
             @RequestParam(value = "reportName", required = true) ReportName reportName,

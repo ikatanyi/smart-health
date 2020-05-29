@@ -47,7 +47,7 @@ public class SickOffNoteData {
         data.setSickOffNumber(s.getSickOffNumber());
         data.setRecommendation(s.getRecommendation());
         data.setReason(s.getReason());
-        data.setDuration(ChronoUnit.DAYS.between(s.getStartDate(), s.getEndDate())-1);
+        data.setDuration(ChronoUnit.DAYS.between(s.getStartDate(), s.getEndDate())+1);
         data.setCreatedBy(s.getCreatedBy());
 
         return data;

@@ -73,7 +73,7 @@ import org.springframework.util.MultiValueMap;
  */
 @Service
 @RequiredArgsConstructor
-public class PatientReportService {
+public class PatientReportServices {
 
     private final JasperReportsService reportService;
     private final PatientService patientService;
@@ -394,6 +394,11 @@ public class PatientReportService {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        
+        if (visit.getHealthProvider() != null) {
+                reportData.getFilters().put("practionerName", visit.getHealthProvider().getFullName());
+            }
+        
         List<SickOffNoteData> requestData = Arrays.asList(SickOffNoteData.map(sickOffNoteService.fetchSickNoteByVisitWithNotFoundThrow(visit)));
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         reportData.setData(requestData);

@@ -28,6 +28,7 @@
 	<field name="costPrice" class="java.math.BigDecimal"/>
 	<field name="sellingPrice" class="java.math.BigDecimal"/>
 	<field name="availableStock" class="java.lang.Double"/>
+	<field name="reorderLevel" class="java.lang.Double"/>
 	<variable name="PatientCount" class="java.lang.Integer" calculation="Count">
 		<variableExpression><![CDATA[]]></variableExpression>
 	</variable>
@@ -113,21 +114,21 @@
 				<text><![CDATA[Item Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="205" y="0" width="63" height="15" uuid="1a782066-8108-4631-93dd-12e9fd693df6"/>
+				<reportElement x="205" y="0" width="54" height="15" uuid="1a782066-8108-4631-93dd-12e9fd693df6"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[CostPrice]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="283" y="0" width="59" height="15" uuid="b14feb82-769e-4d19-a52f-4ff6f1060e14"/>
+				<reportElement x="268" y="0" width="59" height="15" uuid="b14feb82-769e-4d19-a52f-4ff6f1060e14"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Selling Price]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="359" y="0" width="75" height="15" uuid="39a56b9d-4c64-426d-bff4-302e706ebb28"/>
+				<reportElement x="334" y="0" width="75" height="15" uuid="39a56b9d-4c64-426d-bff4-302e706ebb28"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -153,11 +154,18 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="106" y="1" width="93" height="13" uuid="29f991f3-ba06-4270-bdf5-d4bd6ec208b2"/>
+				<reportElement x="106" y="1" width="84" height="13" uuid="29f991f3-ba06-4270-bdf5-d4bd6ec208b2"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="405" y="0" width="75" height="15" uuid="f9551b5d-bd32-421c-b08c-50e694df258d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reorder Level]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -178,21 +186,21 @@
 				<textFieldExpression><![CDATA[$F{itemCode}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="205" y="0" width="63" height="12" uuid="2498ce6b-e469-4c8a-8424-6e46a1aedf33"/>
+				<reportElement x="205" y="0" width="54" height="12" uuid="2498ce6b-e469-4c8a-8424-6e46a1aedf33"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{costPrice}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="283" y="0" width="35" height="12" uuid="4fa51bbb-2419-4490-834d-c6d20a5a7211"/>
+				<reportElement x="268" y="0" width="35" height="12" uuid="4fa51bbb-2419-4490-834d-c6d20a5a7211"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{sellingPrice}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="360" y="0" width="64" height="12" uuid="ea160521-7cdc-444d-8d71-33d966c33782"/>
+				<reportElement x="335" y="0" width="64" height="12" uuid="ea160521-7cdc-444d-8d71-33d966c33782"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -206,7 +214,7 @@
 				<textFieldExpression><![CDATA[$V{total}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="106" y="0" width="93" height="13" uuid="e0ad7c0b-4560-4d9c-b762-eb9917ecf4d3"/>
+				<reportElement x="106" y="0" width="84" height="13" uuid="e0ad7c0b-4560-4d9c-b762-eb9917ecf4d3"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -218,6 +226,13 @@
 					<pen lineWidth="0.15" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
+			<textField>
+				<reportElement x="414" y="0" width="47" height="12" uuid="0f7abf5e-ead4-4bb5-be93-ff1925183b02"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reorderLevel}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<columnFooter>

@@ -33,7 +33,9 @@ public final class LedgerData {
 
     public static LedgerData map(final Ledger ledgerEntity) {
         final LedgerData data = new LedgerData();
+        
         data.setType(ledgerEntity.getType());
+        
         data.setIdentifier(ledgerEntity.getIdentifier());
         data.setName(ledgerEntity.getName());
         data.setDescription(ledgerEntity.getDescription());
