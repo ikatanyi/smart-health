@@ -4,8 +4,9 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="PIC_DIR" class="java.lang.Byte"/>
-	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<field name="facilityName" class="java.lang.String"/>
 	<field name="facilityType" class="java.lang.String"/>
@@ -65,7 +66,7 @@
 				<textFieldExpression><![CDATA[$F{orgWebsite}]]></textFieldExpression>
 			</textField>
 			<image isUsingCache="true" isLazy="true" onErrorType="Blank">
-				<reportElement x="0" y="0" width="144" height="28" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
+				<reportElement x="0" y="0" width="136" height="28" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
 				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
 			</image>
 		</band>

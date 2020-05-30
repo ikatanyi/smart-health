@@ -5,6 +5,7 @@
  */
 package io.smarthealth.report.domain;
 
+import io.smarthealth.organization.facility.data.FacilityData;
 import io.smarthealth.organization.facility.domain.Facility;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ public class Header {
 
     private String facilityName;
     private String facilityType;
-    private byte[] logo;
+    private String logo;
     private String orgLegalName;
     private String orgName;
     private String taxNumber;
@@ -63,7 +64,7 @@ public class Header {
             header.setTaxNumber(facility.getOrganization().getTaxNumber());
             header.setFacilityName(facility.getFacilityName());
             header.setFacilityType(facility.getFacilityType());
-            header.setLogo(facility.getLogo());
+            header.setLogo(FacilityData.encodeImage(facility.getCompanyLogo().getData()));
         }
 
         return header;

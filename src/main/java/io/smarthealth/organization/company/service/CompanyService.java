@@ -103,7 +103,7 @@ public class CompanyService {
 
     public CompanyLogo storeLogo(String companyId, MultipartFile file) {
         // Normalize file name
-        Company company = getOrganizationOrThrow(companyId);
+//        Company company = getOrganizationOrThrow(companyId);
 
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
@@ -114,7 +114,7 @@ public class CompanyService {
             }
 
             CompanyLogo logo = new CompanyLogo(fileName, file.getContentType(), file.getBytes());
-            logo.setCompany(company);
+//            logo.setCompany(company);
 
             return logoRepository.save(logo);
         } catch (IOException ex) {
@@ -122,12 +122,12 @@ public class CompanyService {
         }
     }
 
-    public CompanyLogo getLogo(String fileId) {
+    public CompanyLogo getLogo(Long fileId) {
         return logoRepository.findById(fileId)
                 .orElseThrow(() -> APIException.notFound("Logo not found with id " + fileId));
     }
 
-    public void deleteLogo(String logoId) {
+    public void deleteLogo(Long logoId) {
         CompanyLogo logo = getLogo(logoId);
         logoRepository.delete(logo);
 

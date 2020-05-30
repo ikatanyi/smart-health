@@ -8,24 +8,9 @@
 	<parameter name="HEADER_DIR" class="java.lang.String">
 		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["C:\\Users\\kent\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="orgLegalName" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgName" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="TaxNumber" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgAddressCountry" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgAddressCounty" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgAddressLine1" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgAddressLine2" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgPostalCode" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgTown" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgType" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="contactEmail" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="contactFullName" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="contactMobile" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="salutation" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="telephone" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="Header_Data" class="java.util.List"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>

@@ -55,8 +55,8 @@ public class FacilityData {
         facilityData.setFacilityClass(facility.getFacilityClass());
         facilityData.setFacilityName(facility.getFacilityName());
         facilityData.setEnabled(facility.isEnabled());
-        if(facility.getLogo()!=null){
-            facilityData.setLogo(encodeImage(facility.getLogo()));
+        if(facility.getCompanyLogo()!=null){
+            facilityData.setLogo(encodeImage(facility.getCompanyLogo().getData()));
         }
         
         facilityData.setOrganizationName(facility.getOrganization().getOrganizationName());

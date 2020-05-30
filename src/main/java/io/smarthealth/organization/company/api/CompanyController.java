@@ -98,14 +98,14 @@ public class CompanyController {
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/company/logo/")
-                .path(logo.getId())
+                .path(String.valueOf(logo.getId()))
                 .toUriString();
         return new LogoResponse(logo.getFileName(), fileDownloadUri, file.getContentType(), file.getSize());
     }
 
     @GetMapping("/company/logo/{logoId}")
     @PreAuthorize("hasAuthority('view_company')")
-    public ResponseEntity<Resource> downloadLogo(@PathVariable String logoId) {
+    public ResponseEntity<Resource> downloadLogo(@PathVariable Long logoId) {
         // Load file from database
         CompanyLogo dbFile = service.getLogo(logoId);
 
@@ -117,7 +117,7 @@ public class CompanyController {
 
     @DeleteMapping("/company/logo/{logoId}")
     @PreAuthorize("hasAuthority('delete_company')")
-    public ResponseEntity<?> deleteLogo(@PathVariable String logoId) {
+    public ResponseEntity<?> deleteLogo(@PathVariable Long logoId) {
         service.deleteLogo(logoId);
         return ResponseEntity.noContent().build();
     }

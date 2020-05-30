@@ -16,7 +16,7 @@
 	</parameter>
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Patient_Data" class="java.util.List" isForPrompting="false"/>
-	<parameter name="IMAGE_DIR" class="java.lang.String"/>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream"/>
 	<parameter name="type" class="java.lang.String"/>
 	<parameter name="age" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>

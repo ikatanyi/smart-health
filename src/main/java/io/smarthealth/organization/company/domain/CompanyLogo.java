@@ -5,6 +5,8 @@
  */
 package io.smarthealth.organization.company.domain;
 
+import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.organization.facility.domain.Facility;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -28,16 +30,12 @@ import org.hibernate.annotations.GenericGenerator;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "company_logo")
-public class CompanyLogo implements Serializable {
+public class CompanyLogo extends Identifiable {
 
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
-     
+    
+    
     @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_company_logo_id"))
-    private Company company;
+    private Facility facility;
     
     private String fileName;
 

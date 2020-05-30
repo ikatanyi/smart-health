@@ -2,6 +2,7 @@ package io.smarthealth.infrastructure.reports.service;
 
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.ApplicationProperties;
+import io.smarthealth.organization.facility.data.FacilityData;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.EmployeeService;
@@ -16,6 +17,7 @@ import io.smarthealth.report.storage.StorageService;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +50,7 @@ import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ResourceLoader;
@@ -288,7 +291,8 @@ public class JasperReportsService {
 
         jasperParameter.put("facilityName", facility.getFacilityName());
         jasperParameter.put("facilityType", facility.getFacilityType());
-        jasperParameter.put("logo", facility.getLogo());
+        if(facility.getCompanyLogo()!=null)
+           jasperParameter.put("logo", facility.getCompanyLogo().getData());
         jasperParameter.put("orgLegalName", facility.getOrganization().getLegalName());
         jasperParameter.put("orgName", facility.getOrganization().getOrganizationName());
         jasperParameter.put("TaxNumber", facility.getOrganization().getTaxNumber());
@@ -338,10 +342,10 @@ public class JasperReportsService {
         jasperParameter.put("Employee_Data", employeeDataArray);
         jasperParameter.put("Supplier_Data", Arrays.asList(supplierData));
 
-        if (facility.getLogo() == null) {
-            jasperParameter.put("IMAGE_DIR", appProperties.getReportLoc() + "/logo.png");
+        if (facility.getCompanyLogo() == null) {
+            jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
         } else {
-            jasperParameter.put("IMAGE", facility.getLogo());
+              jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream(facility.getCompanyLogo().getData()));
         }
         return jasperParameter;
     }

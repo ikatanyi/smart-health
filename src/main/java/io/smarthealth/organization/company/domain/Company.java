@@ -58,8 +58,8 @@ public class Company implements Serializable {
     private String currency;
      private String contactName;
     private String contactEmail;
-       @OneToOne(mappedBy = "company", fetch = FetchType.LAZY)
-    private CompanyLogo logo;
+//       @OneToOne(mappedBy = "company", fetch = FetchType.LAZY)
+//    private CompanyLogo logo;
        
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_company_address_id"))
@@ -83,9 +83,9 @@ public class Company implements Serializable {
     public CompanyData toData() {
         CompanyData data = new CompanyData();
         data.setId(this.id);
-        if (this.logo != null) {
-            data.setLogoId(this.logo.getId());
-        }
+//        if (this.logo != null) {
+//            data.setLogoId(this.logo.getId());
+//        }
         data.setName(this.name);
         data.setLocation(this.location);
         data.setTaxId(this.taxId);

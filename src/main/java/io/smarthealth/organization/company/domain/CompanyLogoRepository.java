@@ -5,12 +5,15 @@
  */
 package io.smarthealth.organization.company.domain;
 
+import io.smarthealth.organization.facility.domain.Facility;
+import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 
 /**
  *
  * @author Kelsas
  */
-public interface CompanyLogoRepository extends CrudRepository<CompanyLogo, String>{
+public interface CompanyLogoRepository extends CrudRepository<CompanyLogo, Long>{
+    Optional<CompanyLogo>findByFacility(Facility facility);
     
 }

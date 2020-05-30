@@ -9,7 +9,7 @@
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="Header_Data" class="java.util.List"/>

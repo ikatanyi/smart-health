@@ -1,6 +1,10 @@
 package io.smarthealth.organization.facility.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.exception.FileStorageException;
+import io.smarthealth.organization.company.domain.Company;
+import io.smarthealth.organization.company.domain.CompanyLogo;
+import io.smarthealth.organization.company.domain.CompanyLogoRepository;
 import io.smarthealth.organization.facility.data.FacilityData;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.domain.FacilityRepository;
@@ -13,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -23,10 +29,12 @@ public class FacilityService {
 
     private final FacilityRepository facilityRepository;
     private final OrganisationService orgService;
+    private final CompanyLogoRepository logoRepository;
 
-    public FacilityService(FacilityRepository facilityRepository, OrganisationService orgService) {
+    public FacilityService(FacilityRepository facilityRepository, OrganisationService orgService, CompanyLogoRepository logoRepository) {
         this.facilityRepository = facilityRepository;
         this.orgService = orgService;
+        this.logoRepository = logoRepository;
     }
 
     @Transactional
@@ -40,10 +48,7 @@ public class FacilityService {
                 facility.setParentFacility(pf.get());
             }
         }
-        if(facilityData.getFile()!=null){
-           bytes = facilityData.getFile().getBytes();
-           facility.setLogo(bytes);
-        }        
+           
         facility.setFacilityType(facilityData.getFacilityType());
         facility.setTaxNumber(facilityData.getTaxNumber());
         facility.setFacilityClass(facilityData.getFacilityClass());
@@ -67,7 +72,6 @@ public class FacilityService {
         facility.setFacilityClass(facilityData.getFacilityClass());
         facility.setFacilityName(facilityData.getFacilityName());
         facility.setEnabled(facilityData.isEnabled());
-        facility.setLogo(FacilityData.decodeImage(facilityData.getLogo()));
         facility.setRegistrationNumber(facilityData.getRegistrationNumber());
         return facilityRepository.save(facility);
     }
@@ -103,6 +107,46 @@ public class FacilityService {
     public Facility loggedFacility() {
         return getFacility(Long.valueOf("1"))
                 .orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", Long.valueOf("1")));
+    }
+    
+     public CompanyLogo storeLogo(Long facilityId, MultipartFile file) {
+        // Normalize file name
+        Facility facility = findFacility(facilityId);
+         CompanyLogo logo=null;
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+        try {
+            // Check if the file's name contains invalid characters
+            if (fileName.contains("..")) {
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+            }
+            
+            Optional<CompanyLogo> savedLogo = logoRepository.findByFacility(facility);
+            if(savedLogo.isPresent()){
+                logo = savedLogo.get();
+                logo.setData(file.getBytes());
+                logo.setFileName(fileName);
+                logo.setFileType(file.getContentType());
+            }
+            else
+                logo = new CompanyLogo(fileName, file.getContentType(), file.getBytes());
+            logo.setFacility(facility);
+            facility.setCompanyLogo(logo);
+            return facilityRepository.save(facility).getCompanyLogo();
+        } catch (IOException ex) {
+            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+        }
+    }
+
+    public CompanyLogo getLogo(Long fileId) {
+        return logoRepository.findById(fileId)
+                .orElseThrow(() -> APIException.notFound("Logo not found with id " + fileId));
+    }
+
+    public void deleteLogo(Long logoId) {
+        CompanyLogo logo = getLogo(logoId);
+        logoRepository.delete(logo);
+
     }
 
 }

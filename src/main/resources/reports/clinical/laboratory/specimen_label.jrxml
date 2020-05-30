@@ -5,7 +5,7 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="name" class="java.lang.String"/>
 	<parameter name="notes" class="java.lang.String"/>
-	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
 		<defaultValueExpression><![CDATA["C:\\Users\\kennedy.ikatanyi\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
 	</parameter>
 	<field name="specimen" class="java.lang.String"/>

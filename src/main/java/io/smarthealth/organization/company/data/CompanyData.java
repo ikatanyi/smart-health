@@ -6,21 +6,9 @@
 package io.smarthealth.organization.company.data;
 
 import io.smarthealth.administration.app.data.AddressData;
-import io.smarthealth.administration.app.data.ContactData;
-import io.smarthealth.administration.app.domain.Address;
-import io.smarthealth.administration.app.domain.Contact;
-import io.smarthealth.administration.app.domain.Currency;
 import java.io.Serializable;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
-import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,7 +23,7 @@ import lombok.NoArgsConstructor;
 public class CompanyData implements Serializable {
 
     private String id;
-    private String logoId;
+    private Long logoId;
     private String name;
     private String location;
     private String taxId;

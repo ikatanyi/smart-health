@@ -6,6 +6,8 @@
 package io.smarthealth.organization.facility.api;
 
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.organization.company.data.LogoResponse;
+import io.smarthealth.organization.company.domain.CompanyLogo;
 import io.smarthealth.organization.facility.data.FacilityData;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.FacilityService;
@@ -14,10 +16,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  *
@@ -87,4 +95,35 @@ public class FacilityController {
         return ResponseEntity.status(HttpStatus.CREATED).body(list);
     }
 
+    //Your logo has been saved.
+    @PostMapping("/facility/{facilityId}/logo")
+    @PreAuthorize("hasAuthority('create_company')")
+    public LogoResponse uploadLogo(@PathVariable("facilityId") final Long facilityId, @RequestParam("file") MultipartFile file) {
+        CompanyLogo logo = service.storeLogo(facilityId, file);
+
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/facility/logo/")
+                .path(String.valueOf(logo.getId()))
+                .toUriString();
+        return new LogoResponse(logo.getFileName(), fileDownloadUri, file.getContentType(), file.getSize());
+    }
+
+    @GetMapping("/facility/logo/{logoId}")
+    @PreAuthorize("hasAuthority('view_company')")
+    public ResponseEntity<Resource> downloadLogo(@PathVariable Long logoId) {
+        // Load file from database
+        CompanyLogo dbFile = service.getLogo(logoId);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(dbFile.getFileType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dbFile.getFileName() + "\"")
+                .body(new ByteArrayResource(dbFile.getData()));
+    }
+
+    @DeleteMapping("/facility/logo/{logoId}")
+    @PreAuthorize("hasAuthority('delete_company')")
+    public ResponseEntity<?> deleteLogo(@PathVariable Long logoId) {
+        service.deleteLogo(logoId);
+        return ResponseEntity.noContent().build();
+    }
 }
