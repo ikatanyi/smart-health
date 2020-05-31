@@ -47,6 +47,7 @@ public class LabTest extends Auditable {
     }
 
     public void addAnalytes(List<Analyte> analytes) {
+        this.analytes=new ArrayList<>();
         this.analytes = analytes;
         this.analytes.forEach(x -> x.setLabTest(this));
     }
@@ -62,6 +63,7 @@ public class LabTest extends Auditable {
         data.setGender(this.gender);
         if(this.displine!=null){
         data.setCategory(this.displine.getDisplineName());
+        data.setCategoryId(this.displine.getId());
         }
         data.setTestName(this.testName);
         if (this.service != null) {
@@ -77,5 +79,8 @@ public class LabTest extends Auditable {
         ); 
 
         return data;
+    }
+    public void resetAnalytes(){
+        this.analytes=new ArrayList<>();
     }
 }

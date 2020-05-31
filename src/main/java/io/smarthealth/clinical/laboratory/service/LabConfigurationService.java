@@ -5,6 +5,7 @@ import io.smarthealth.clinical.laboratory.data.LabDisciplineData;
 import io.smarthealth.clinical.laboratory.data.LabSpecimenData;
 import io.smarthealth.clinical.laboratory.data.LabTestData;
 import io.smarthealth.clinical.laboratory.domain.Analyte;
+import io.smarthealth.clinical.laboratory.domain.AnalyteRepository;
 import io.smarthealth.clinical.laboratory.domain.LabDiscipline;
 import io.smarthealth.clinical.laboratory.domain.LabSpecimen;
 import io.smarthealth.clinical.laboratory.domain.LabSpecimenRepository;
@@ -22,25 +23,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import io.smarthealth.clinical.laboratory.domain.LabDisciplineRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Kelsas
  */
 @Service
+@RequiredArgsConstructor
 public class LabConfigurationService {
 
+    private final AnalyteRepository analyteRepository;
     private final LabSpecimenRepository specimenRepository;
     private final LabDisciplineRepository displineRepository;
     private final ItemRepository itemRepository;
     private final LabTestRepository repository;
-
-    public LabConfigurationService(LabSpecimenRepository specimenRepository, LabDisciplineRepository displineRepository, ItemRepository itemRepository, LabTestRepository repository) {
-        this.specimenRepository = specimenRepository;
-        this.displineRepository = displineRepository;
-        this.itemRepository = itemRepository;
-        this.repository = repository;
-    }
 
     public LabTest createTest(LabTestData data) {
         LabTest toSave = toLabTest(data);
@@ -69,13 +68,36 @@ public class LabConfigurationService {
                 .orElseThrow(() -> APIException.notFound("Lab Test with id {0} not found.", id));
     }
 
+    @Transactional
+    private void clearAnalyte(Long testId) { 
+        analyteRepository.deleteByTestId(testId);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public LabTest updateTest(Long id, LabTestData data) {
         LabTest toUpdateTest = getTestById(id);
+        clearAnalyte(toUpdateTest.getId()); 
+        
         Item item = findByItemCodeOrThrow(data.getItemCode());
-        toUpdateTest.setActive(Boolean.TRUE);
+        LabDiscipline displine = displineRepository.findById(data.getCategoryId()).orElse(null);
+//        toUpdateTest.setActive(data.getActive()!=null ? data.getActive() : true);
+        toUpdateTest.setRequiresConsent(data.getRequiresConsent());
+        toUpdateTest.setTurnAroundTime(data.getTurnAroundTime());
+        toUpdateTest.setGender(data.getGender());
+        toUpdateTest.setHasReferenceValue(data.getHasReferenceValue());
         toUpdateTest.setCode(data.getShortName());
+        toUpdateTest.setDispline(displine);
         toUpdateTest.setTestName(data.getTestName());
         toUpdateTest.setService(item);
+
+        //delete the 
+        toUpdateTest.addAnalytes(
+                data.getAnalytes()
+                        .stream()
+                        .map(x -> updateAnalyte(x))
+                        .collect(Collectors.toList())
+        );
+ 
         return repository.save(toUpdateTest);
     }
 
@@ -106,14 +128,13 @@ public class LabConfigurationService {
     }
 
     private LabTest toLabTest(LabTestData data) {
-        
-        
+
         Item item = findByItemCodeOrThrow(data.getItemCode());
-        if(repository.findByService(item).isPresent()){
+        if (repository.findByService(item).isPresent()) {
             throw APIException.badRequest("Lab Test with service {0} already exists", item.getItemName());
         }
-        
-        LabDiscipline displine=displineRepository.findById(data.getCategoryId()).orElse(null);
+
+        LabDiscipline displine = displineRepository.findById(data.getCategoryId()).orElse(null);
         LabTest labTest = new LabTest();
         labTest.setActive(Boolean.TRUE);
         labTest.setRequiresConsent(data.getRequiresConsent());
@@ -123,7 +144,7 @@ public class LabConfigurationService {
         labTest.setCode(data.getShortName());
         labTest.setDispline(displine);
         labTest.setTestName(data.getTestName());
-        labTest.setService(item); 
+        labTest.setService(item);
 
         labTest.addAnalytes(
                 data.getAnalytes()
@@ -136,6 +157,21 @@ public class LabConfigurationService {
 
     private Analyte createAnalyte(AnalyteData data) {
         Analyte analyte = new Analyte();
+        analyte.setAnalyte(data.getAnalyte());
+        analyte.setUnits(data.getUnits());
+        analyte.setLowerLimit(data.getLowerLimit());
+        analyte.setUpperLimit(data.getUpperLimit());
+        analyte.setReferenceValue(data.getReferenceValue());
+        return analyte;
+    }
+
+    private Analyte updateAnalyte(AnalyteData data) {
+        Analyte analyte;
+        if (data.getId() == null) {
+            analyte = new Analyte();
+        } else {
+            analyte = analyteRepository.findById(data.getId()).orElse(new Analyte());
+        }
         analyte.setAnalyte(data.getAnalyte());
         analyte.setUnits(data.getUnits());
         analyte.setLowerLimit(data.getLowerLimit());

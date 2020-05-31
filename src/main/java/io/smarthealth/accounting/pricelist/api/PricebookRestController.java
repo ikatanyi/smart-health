@@ -54,6 +54,24 @@ public class PricebookRestController {
 
     }
 
+    @PutMapping("/pricebooks/{id}")
+    @PreAuthorize("hasAuthority('edit_pricebook')")
+    public ResponseEntity<?> updatePricebook(@PathVariable(value = "id") Long id, @Valid @RequestBody PriceBookData priceBookData) {
+//        if (service.getPricebookByName(priceBookData.getName()).isPresent()) {
+//            throw APIException.conflict("Price Book with name {0} already exists.", priceBookData.getName());
+//        }
+
+        PriceBookData result = service.updatePricebook(id, priceBookData);
+
+        Pager<PriceBookData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Pricebook updated successful");
+        pagers.setContent(result);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+
+    }
+
     @GetMapping("/pricebooks/{id}")
     @PreAuthorize("hasAuthority('view_pricebook')")
     public PriceBookData getPricebook(@PathVariable(value = "id") Long code) {
@@ -73,7 +91,7 @@ public class PricebookRestController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<PriceBookData> list = service.getPricebooks(category, type, pageable,includeClosed).map(u -> PriceBookData.map(u));
+        Page<PriceBookData> list = service.getPricebooks(category, type, pageable, includeClosed).map(u -> PriceBookData.map(u));
 
         Pager<List<PriceBookData>> pagers = new Pager();
         pagers.setCode("0");

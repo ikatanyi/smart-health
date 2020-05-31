@@ -78,6 +78,42 @@ public class PricebookService {
         return PriceBookData.map(savedBook);
     }
 
+    @Transactional
+    public PriceBookData updatePricebook(Long id, PriceBookData priceBook) {
+        PriceBook book = getPricebookWithNotFoundExeption(id);
+        if (priceBook.getCurrencyId() != null) {
+            Optional<Currency> currency = currencyRepository.findById(priceBook.getCurrencyId());
+
+            if (currency.isPresent()) {
+                book.setCurrency(currency.get());
+            }
+        }
+        book.setDecimalPlace(priceBook.getDecimalPlace());
+        book.setDescription(priceBook.getDescription());
+        book.setIncrease(priceBook.getIsIncrease());
+        book.setName(priceBook.getName());
+        book.setPercentage(priceBook.getPercentage());
+        book.setPriceType(priceBook.getPriceType());
+        book.setPriceCategory(priceBook.getPriceCategory());
+        book.setActive(true);
+//        book.setStatus(priceBook.isStatus() ? "active" : "inactive");
+
+        if (priceBook.getPricebookItems() != null) {
+            Set<PriceBookItem> itemlist = new HashSet<>();
+            priceBook.getPricebookItems()
+                    .stream()
+                    .forEach(x -> {
+                        Item item = itemService.findById(x.getItemId()).get();
+                        itemlist.add(new PriceBookItem(item, x.getAmount()));
+                    });
+
+            book.addPriceItems(itemlist);
+        }
+
+        PriceBook savedBook = priceBookRepository.save(book);
+        return PriceBookData.map(savedBook);
+    }
+
     public Optional<PriceBook> getPricebook(Long id) {
         return priceBookRepository.findById(id);
     }
@@ -110,7 +146,12 @@ public class PricebookService {
                 .map(price -> PriceBookData.map(price))
                 .collect(Collectors.toList());
     }
-
+public List<PriceBookData> getPricebooks(PriceCategory category) {
+        return priceBookRepository.findByPriceCategory(category)
+                .stream()
+                .map(price -> PriceBookData.map(price))
+                .collect(Collectors.toList());
+    }
     //
     public List<PriceListDTO> getPricelist() {
         return priceBookRepository.getPriceLists();
