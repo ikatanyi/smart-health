@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -108,8 +109,22 @@ public class FileUploadController {
     @PostMapping("/upload")
     @PreAuthorize("hasAuthority('create_fileupload')")
     public @ResponseBody
-    ResponseEntity<?> Upload(@ModelAttribute @Valid final DocumentData documentData) {
-        DocumentData savedDocumentData = fileService.documentUpload(documentData).toData();
+    ResponseEntity<?> Upload(
+            @RequestParam(value = "docfile", required = true) MultipartFile docfile,
+            @RequestParam(value = "patientNumber", required = false) String patientNumber,
+            @RequestParam(value = "notes", required = false) String notes,
+            @RequestParam(value = "documentType", required = false) DocumentType documentType,
+            @RequestParam(value = "servicePointId", required = true) Long servicePointId
+    
+    ) {
+        DocumentData doc = new DocumentData();
+        doc.setNotes(notes);
+        doc.setDocumentType(documentType);
+        doc.setDocfile(docfile);
+        doc.setPatientNumber(patientNumber);
+        doc.setServicePointId(servicePointId);
+        
+        DocumentData savedDocumentData = fileService.documentUpload(doc).toData();
 
         Pager<DocumentData> pagers = new Pager();
         pagers.setCode("0");
