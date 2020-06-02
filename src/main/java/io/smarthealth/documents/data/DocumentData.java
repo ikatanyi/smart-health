@@ -11,6 +11,7 @@ import io.smarthealth.documents.domain.enumeration.Status;
 import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Data
 public class DocumentData {
+    @NotNull
     private MultipartFile docfile;
     @ApiModelProperty(required=true, hidden=true)
     private String fileName; 
@@ -46,8 +48,10 @@ public class DocumentData {
         document.setNotes(this.notes);
         document.setDocumentType(this.getDocumentType());
         document.setDocumentNumber(this.documentNumber);
-        document.setSize(this.getDocfile().getSize());
-        document.setFileType(this.getDocfile().getContentType());
+        if(this.getDocfile()!=null){
+            document.setSize(this.getDocfile().getSize());
+            document.setFileType(this.getDocfile().getContentType());
+        }
         return document;
     } 
     
