@@ -64,7 +64,7 @@ public class Header {
             header.setTaxNumber(facility.getOrganization().getTaxNumber());
             header.setFacilityName(facility.getFacilityName());
             header.setFacilityType(facility.getFacilityType());
-            header.setLogo(FacilityData.encodeImage(facility.getCompanyLogo().getData()));
+//            header.setLogo(FacilityData.encodeImage(facility.getCompanyLogo().getData()));
         }
 
         return header;
