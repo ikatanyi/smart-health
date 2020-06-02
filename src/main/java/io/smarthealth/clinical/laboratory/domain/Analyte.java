@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "lab_analytes")
+@Table(name = "lab_analytes") 
 public class Analyte extends Identifiable {
     //Sequence | Analyte | Lower Limit | Upper Limit | Reference | Units
     //1 | HGB | 11.0 | 16.0 | 11-16.0 | g/dL 
