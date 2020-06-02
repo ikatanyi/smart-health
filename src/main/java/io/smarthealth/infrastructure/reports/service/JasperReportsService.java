@@ -161,15 +161,15 @@ public class JasperReportsService {
         JasperReport jasperReport = null;
         HashMap param = reportConfig(patientNumber, employeeId, supplierId);
         InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
-        
-        System.out.println("######################### name:"+appProperties.getReportLoc() + template + ".jasper");
+
+        System.out.println("######################### name:" + appProperties.getReportLoc() + template + ".jasper");
         // Check if a compiled report exists
         if (reportInputStream != null) {
             jasperReport = (JasperReport) JRLoader.loadObject(reportInputStream);
             System.out.println("====================not null");
         } // Compile report from source and save
         else {
-            reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jrxml").getInputStream();            
+            reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jrxml").getInputStream();
             String jrxml = storageService.loadJrxmlFile(resourceLoader.getResource(appProperties.getReportLoc() + template + ".jrxml").getFile().getAbsolutePath());
             jasperReport = JasperCompileManager.compileReport(jrxml);
         }
@@ -182,12 +182,13 @@ public class JasperReportsService {
         JasperReportsContext jasperReportsContext = DefaultJasperReportsContext.getInstance();
         jasperReportsContext.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
         jasperReportsContext.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
-        
+
         if (dataList.isEmpty()) {
             Connection conn = jdbcTemplate.getDataSource().getConnection();
             jasperPrint = JasperFillManager.fillReport(jasperReport, param, conn);
         } else {
             jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
+
         }
 
         export(jasperPrint, format, reportName, response);
@@ -291,8 +292,9 @@ public class JasperReportsService {
 
         jasperParameter.put("facilityName", facility.getFacilityName());
         jasperParameter.put("facilityType", facility.getFacilityType());
-        if(facility.getCompanyLogo()!=null)
-           jasperParameter.put("logo", facility.getCompanyLogo().getData());
+        if (facility.getCompanyLogo() != null) {
+            jasperParameter.put("logo", facility.getCompanyLogo().getData());
+        }
         jasperParameter.put("orgLegalName", facility.getOrganization().getLegalName());
         jasperParameter.put("orgName", facility.getOrganization().getOrganizationName());
         jasperParameter.put("TaxNumber", facility.getOrganization().getTaxNumber());
@@ -345,9 +347,38 @@ public class JasperReportsService {
         if (facility.getCompanyLogo() == null) {
             jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
         } else {
-              jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream(facility.getCompanyLogo().getData()));
+            jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream(facility.getCompanyLogo().getData()));
         }
         return jasperParameter;
     }
 
+    public String generateReportHtml(ReportData reportData) throws SQLException, JRException, IOException {
+
+        List dataList = reportData.getData();
+        String template = reportData.getTemplate();
+        String patientNumber = reportData.getPatientNumber();
+        String employeeId = reportData.getEmployeeId();
+        Long supplierId = reportData.getSupplierId();
+        HashMap param = reportConfig(patientNumber, employeeId, supplierId);
+        InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
+
+        JasperReport jasperReport = (JasperReport) JRLoader.loadObject(reportInputStream);
+        JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(dataList, false);
+        param.putAll(reportData.getFilters());
+        // Fill the report
+        JasperReportsContext jasperReportsContext = DefaultJasperReportsContext.getInstance();
+        jasperReportsContext.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
+        jasperReportsContext.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
+
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        Exporter exporter = new HtmlExporter();
+        exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.exportReport();
+
+        byte[] bytes = out.toByteArray();
+        return new String(bytes);
+    }
 }

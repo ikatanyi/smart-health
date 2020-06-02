@@ -5,7 +5,6 @@
  */
 package io.smarthealth.accounting.pettycash.api;
 
-import io.smarthealth.accounting.pettycash.data.PettyCashApprovalsData;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestItemsData;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
@@ -15,7 +14,6 @@ import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
 import io.smarthealth.accounting.pettycash.service.PettyCashApprovalsService;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
 import io.smarthealth.approval.data.enums.ApprovalModule;
-import io.smarthealth.approval.domain.ApprovalConfig;
 import io.smarthealth.approval.domain.ModuleApprovers;
 import io.smarthealth.approval.domain.PettyCashApprovals;
 import io.smarthealth.approval.service.ApprovalConfigService;

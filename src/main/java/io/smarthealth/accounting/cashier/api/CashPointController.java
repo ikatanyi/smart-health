@@ -61,7 +61,7 @@ public class CashPointController {
 
     @PutMapping("/cashpoints/{id}")
     @PreAuthorize("hasAuthority('edit_cashPoints')") 
-    public ResponseEntity<?> updateCashPoint(@PathVariable(value = "id") Long id, CashPoint data) {
+    public ResponseEntity<?> updateCashPoint(@PathVariable(value = "id") Long id, @Valid @RequestBody CashPoint data) {
         CashPoint cashPoint = service.updateCashPoint(id, data);
         return ResponseEntity.ok(cashPoint.toData());
     }
