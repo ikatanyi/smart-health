@@ -126,7 +126,7 @@ public class InventoryItemService {
                 .orElseThrow(() -> APIException.notFound("Item with given identifier can not be in given Store"));
     }
 
-    public Optional<InventoryItem> getInventoryItem(Long storeId, Long itemId) {
+    public Optional<InventoryItem> getInventoryItem(Long itemId,Long storeId) {
         Item item = itemService.findItemEntityOrThrow(itemId);
         Store store = storeService.getStoreWithNoFoundDetection(storeId);
         return inventoryItemRepository.findByItemAndStore(item, store);

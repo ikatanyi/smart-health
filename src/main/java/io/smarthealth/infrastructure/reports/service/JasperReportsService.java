@@ -374,6 +374,10 @@ public class JasperReportsService {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         Exporter exporter = new HtmlExporter();
+        SimpleHtmlReportConfiguration configuration = new SimpleHtmlReportConfiguration();
+        configuration.setIgnorePageMargins(true);
+        configuration.setZoomRatio(1.8f);
+        exporter.setConfiguration(configuration);
         exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
         exporter.exportReport();

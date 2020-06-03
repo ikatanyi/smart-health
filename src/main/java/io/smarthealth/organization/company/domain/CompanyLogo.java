@@ -50,4 +50,8 @@ public class CompanyLogo extends Identifiable {
         this.data = data;
     }
 
+        @Override
+    public String toString() {
+        return "Company Logo [id=" + getId() + ", filename=" + fileName + ", fileType=" + fileType + " ]";
+    }
 }
