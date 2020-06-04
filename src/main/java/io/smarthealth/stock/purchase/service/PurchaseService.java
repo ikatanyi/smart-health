@@ -1,5 +1,6 @@
 package io.smarthealth.stock.purchase.service;
 
+import io.smarthealth.ApplicationProperties;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.accounting.pricelist.service.PricebookService;
 import io.smarthealth.administration.app.domain.Address;
@@ -7,6 +8,9 @@ import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.service.AdminService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.lang.EnglishNumberToWords;
+import io.smarthealth.infrastructure.reports.service.JasperReportsService;
+import io.smarthealth.report.data.ReportData;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
@@ -22,13 +26,20 @@ import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.JRException;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -53,6 +64,7 @@ public class PurchaseService {
     private final ItemService itemService;
     private final SequenceNumberService sequenceNumberService;
     private final TemplateEngine htmlTemplateEngine;
+    private final JasperReportsService reportsService;
 
     @Transactional
     public PurchaseOrderData createPurchaseOrder(PurchaseOrderData data) {
@@ -117,9 +129,9 @@ public class PurchaseService {
                 .orElseThrow(() -> APIException.notFound("Purchase Order with Id {0} not found", id));
     }
 
-    public Page<PurchaseOrder> getPurchaseOrders(Long supplierId, List<PurchaseOrderStatus> status,  String search,DateRange range, Pageable page) {
-        Specification<PurchaseOrder> spec=PurchaseOrderSpecification.createSpecification(supplierId, status, search, range);
-        return orderRepository.findAll(spec,page);
+    public Page<PurchaseOrder> getPurchaseOrders(Long supplierId, List<PurchaseOrderStatus> status, String search, DateRange range, Pageable page) {
+        Specification<PurchaseOrder> spec = PurchaseOrderSpecification.createSpecification(supplierId, status, search, range);
+        return orderRepository.findAll(spec, page);
     }
 
     public PurchaseOrder cancelOrder(String orderNumber) {
@@ -148,4 +160,31 @@ public class PurchaseService {
         final String htmlContent = this.htmlTemplateEngine.process("purchaseOrder", ctx);
         return new HtmlData(htmlContent, order.toData());
     }
+
+    //TODO generate the html version for the report 
+    public HtmlData purchaseOrderHtml(String orderNo) {
+        ReportData reportData = new ReportData();
+        PurchaseOrderData purchaseOrderData = findByOrderNumberOrThrow(orderNo).toData();
+
+        reportData.getFilters().put("category", "Supplier");
+        Optional<Supplier> supplier = supplierService.getSupplierById(purchaseOrderData.getSupplierId());
+        if (supplier.isPresent()) {
+            reportData.getFilters().put("Supplier_Data", Arrays.asList(supplier.get().toData()));
+
+        }
+
+        reportData.getFilters().put("amountInWords", EnglishNumberToWords.convert(purchaseOrderData.getPurchaseAmount()).toUpperCase());
+        reportData.setData(Arrays.asList(purchaseOrderData));
+        reportData.setTemplate("/inventory/purchase_order");
+        reportData.setReportName("Purchase-Order" + orderNo);
+
+        try {
+            String htmlContent = reportsService.generateReportHtml(reportData);
+            return new HtmlData(htmlContent, purchaseOrderData);
+        } catch (IOException | SQLException | JRException ex) {
+            Logger.getLogger(PurchaseService.class.getName()).log(Level.SEVERE, null, ex);
+            throw APIException.internalError("Error Occurred while Generating report \n {0} ", ex.getMessage());
+        }
+    }
+
 }

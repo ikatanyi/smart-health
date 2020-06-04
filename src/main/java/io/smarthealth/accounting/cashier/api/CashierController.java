@@ -105,7 +105,7 @@ public class CashierController {
 
     @PutMapping("/cashiers/{id}")
     @PreAuthorize("hasAuthority('edit_cashiers')")
-    public ResponseEntity<?> updateCashier(@PathVariable(value = "id") Long id, Cashier data) {
+    public ResponseEntity<?> updateCashier(@PathVariable(value = "id") Long id, @Valid @RequestBody Cashier data) {
         Cashier cashDrawer = service.updateCashier(id, data);
         return ResponseEntity.ok(cashDrawer);
     }

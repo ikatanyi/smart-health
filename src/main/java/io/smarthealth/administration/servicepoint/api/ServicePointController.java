@@ -56,7 +56,7 @@ public class ServicePointController {
 
     @PutMapping("/servicepoints/{id}")
     @PreAuthorize("hasAuthority('edit_servicepoints')")
-    public ResponseEntity<?> updateServicepoint(@PathVariable(value = "id") Long id, ServicePointData data) {
+    public ResponseEntity<?> updateServicepoint(@PathVariable(value = "id") Long id,@Valid @RequestBody ServicePointData data) {
         ServicePointData result = service.updateServicePoint(id, data);
 
         Pager<ServicePointData> pagers = new Pager();
