@@ -10,7 +10,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -30,8 +29,9 @@ import org.hibernate.annotations.OnDeleteAction;
     @UniqueConstraint(columnNames = {"facilityName"}, name="unique_facility_name")})
 public class Facility extends Auditable {
 
-    @OneToOne(mappedBy = "facility", cascade = CascadeType.ALL)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    
+    
+    @OneToOne(cascade=CascadeType.ALL)    
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_facility_company_logo_id"))
     private CompanyLogo companyLogo;
 

@@ -33,10 +33,6 @@ import org.hibernate.annotations.GenericGenerator;
 public class CompanyLogo extends Identifiable {
 
     
-    
-    @OneToOne
-    private Facility facility;
-    
     private String fileName;
 
     private String fileType;
@@ -44,10 +40,10 @@ public class CompanyLogo extends Identifiable {
     @Lob
     private byte[] data;
 
-    public CompanyLogo(String fileName, String fileType, byte[] data) {
-        this.fileName = fileName;
-        this.fileType = fileType;
-        this.data = data;
-    }
+//    public CompanyLogo(String fileName, String fileType, byte[] data) {
+//        this.fileName = fileName;
+//        this.fileType = fileType;
+//        this.data = data;
+//    }
 
 }

@@ -136,22 +136,22 @@ public class PatientReportServices {
         Integer page = Integer.getInteger(reportParam.getFirst("page"));
         Integer size = Integer.getInteger(reportParam.getFirst("size"));
         ReportData reportData = new ReportData();
-        
+
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         reportData.getFilters().put("range", range);
         List<Visit> patientvisits = visitService.fetchVisitsGroupByVisitNumber(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, Pageable.unpaged()).getContent();
 
-        List<reportVisitData>visitArrayList = new ArrayList();
+        List<reportVisitData> visitArrayList = new ArrayList();
         for (Visit visit : patientvisits) {
             List<Visit> visits1 = visitService.fetchVisitByPatientNumberAndVisitNumber(visit.getPatient().getPatientNumber(), visit.getVisitNumber(), Pageable.unpaged()).getContent();
-            
+
             reportVisitData data = reportVisitData.map(visits1.get(0));
             data.setDuration(Math.abs(Duration.between(data.getStopDatetime(), data.getStartDatetime()).toMinutes()));
             for (Visit visit2 : visits1) {
                 switch (visit2.getServicePoint().getServicePointType()) {
                     case Consultation:
-                        data.setConsultation(Boolean.TRUE) ;
+                        data.setConsultation(Boolean.TRUE);
                         break;
                     case Triage:
                         data.setTriage(Boolean.TRUE);
@@ -160,7 +160,7 @@ public class PatientReportServices {
                         data.setRadiology(Boolean.TRUE);
                         break;
                     case Laboratory:
-                        data.setLaboratory( Boolean.TRUE);
+                        data.setLaboratory(Boolean.TRUE);
                         break;
                     case Pharmacy:
                         data.setPharmacy(Boolean.TRUE);
@@ -240,31 +240,76 @@ public class PatientReportServices {
         reportData.setReportName(requestType + "_request_form");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getReferralForm(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         ReferralData referralData = ReferralData.map(referralService.fetchReferalByVisitOrThrowIfNotFound(visit));
-                
 
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         if (visit.getHealthProvider() != null) {
             reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
 
         }
+
+        PatientVisitData pVisitData = new PatientVisitData();
+        pVisitData.setVisitNumber(visit.getVisitNumber());
+
+        List<PatientScanTestData> scanData = radiologyService.getPatientScansTestByVisit(visit.getVisitNumber())
+                .stream()
+                .map((scan) -> scan.toData())
+                .collect(Collectors.toList());
+
+        List<PatientProcedureTestData> procedures = procedureService.findProcedureResultsByVisit(visit)
+                .stream()
+                .map((proc) -> proc.toData())
+                .collect(Collectors.toList());
+
+        List<LabRegisterTestData> labTests = labService.getTestsResultsByVisit(visit.getVisitNumber(), "")
+                .stream()
+                .map((test) -> test.toData(Boolean.TRUE))
+                .collect(Collectors.toList());
+
+        Optional<PatientNotes> patientNotes = patientNotesService.fetchPatientNotesByVisit(visit);
+        if (patientNotes.isPresent()) {
+            PatientNotes notes = patientNotes.get();
+            pVisitData.setBriefNotes(notes.getBriefNotes());
+            pVisitData.setChiefComplaint(notes.getChiefComplaint());
+            pVisitData.setExaminationNotes(notes.getExaminationNotes());
+            pVisitData.setHistoryNotes(notes.getHistoryNotes());
+
+        }
+
+        List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(visit, Pageable.unpaged())
+                .stream()
+                .map((diag) -> DiagnosisData.map(diag))
+                .collect(Collectors.toList());
+
+        List<PrescriptionData> pharmacyData = prescriptionService.fetchAllPrescriptionsByVisit(visit, Pageable.unpaged()).getContent()
+                .stream()
+                .map((presc) -> PrescriptionData.map(presc))
+                .collect(Collectors.toList());
+
+        if (visit.getHealthProvider() != null) {
+            pVisitData.setPractitionerName(visit.getHealthProvider().getFullName());
+        }
+
+        reportData.getFilters().put("drugsData",pharmacyData );
+        reportData.getFilters().put("labTests", labTests);
+        reportData.getFilters().put("diagnosis", diagnosisData);
+        reportData.getFilters().put("scanData", scanData);
         reportData.setData(Arrays.asList(referralData));
         reportData.setFormat(format);
-        reportData.setTemplate("/patient/referral_form");
+        reportData.setTemplate("/patient/referral");
         reportData.setReportName("Referral_Form");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getVisitNote(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
-        VisitData visit = VisitData.map(visitService.findVisitEntityOrThrow(visitNumber));        
-                
+        VisitData visit = VisitData.map(visitService.findVisitEntityOrThrow(visitNumber));
 
         reportData.setPatientNumber(visit.getPatientNumber());
         if (visit.getPractitionerCode() != null) {
@@ -277,17 +322,17 @@ public class PatientReportServices {
         reportData.setReportName("Medical-Note");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getAppointmentLetter(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String appointmentNumber = reportParam.getFirst("appointmentNumber");
         AppointmentData appointmentData = AppointmentData.map(appointmentService.fetchAppointmentByNo(appointmentNumber));
-        
-         reportData.setPatientNumber(appointmentData.getPatientNumber());
-        if (appointmentData.getPractitionerCode()!= null) {
+
+        reportData.setPatientNumber(appointmentData.getPatientNumber());
+        if (appointmentData.getPractitionerCode() != null) {
             reportData.setEmployeeId(appointmentData.getPractitionerCode());
         }
-            
+
         reportData.setData(Arrays.asList(appointmentData));
         reportData.setFormat(format);
         reportData.setTemplate("/patient/appointment_letter");
@@ -394,11 +439,11 @@ public class PatientReportServices {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        
+
         if (visit.getHealthProvider() != null) {
-                reportData.getFilters().put("practionerName", visit.getHealthProvider().getFullName());
-            }
-        
+            reportData.getFilters().put("practionerName", visit.getHealthProvider().getFullName());
+        }
+
         List<SickOffNoteData> requestData = Arrays.asList(SickOffNoteData.map(sickOffNoteService.fetchSickNoteByVisitWithNotFoundThrow(visit)));
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         reportData.setData(requestData);
