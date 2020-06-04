@@ -55,7 +55,7 @@ public class PaymentMethodApiController {
 
     @PutMapping("/payment-method/{id}")
      @PreAuthorize("hasAuthority('edit_paymentMethod')")
-    public ResponseEntity<?> updatePaymentMethod(@PathVariable(value = "id") Long id, PaymentMethodData data) {
+    public ResponseEntity<?> updatePaymentMethod(@PathVariable(value = "id") Long id, @Valid @RequestBody PaymentMethodData data) {
         PaymentMethodData result = service.updatePaymentMethod(id, data);
 
         Pager<PaymentMethodData> pagers = new Pager();

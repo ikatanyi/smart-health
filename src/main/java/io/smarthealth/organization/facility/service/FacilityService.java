@@ -121,16 +121,16 @@ public class FacilityService {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
             
-            Optional<CompanyLogo> savedLogo = logoRepository.findByFacility(facility);
-            if(savedLogo.isPresent()){
-                logo = savedLogo.get();
-                logo.setData(file.getBytes());
-                logo.setFileName(fileName);
-                logo.setFileType(file.getContentType());
+            CompanyLogo savedLogo = facility.getCompanyLogo();
+            
+            if(savedLogo!=null){
+                savedLogo.setData(file.getBytes());
+                savedLogo.setFileName(fileName);
+                savedLogo.setFileType(file.getContentType());
             }
             else
                 logo = new CompanyLogo(fileName, file.getContentType(), file.getBytes());
-            logo.setFacility(facility);
+//            logo.setFacility(facility);
             facility.setCompanyLogo(logo);
             return facilityRepository.save(facility).getCompanyLogo();
         } catch (IOException ex) {

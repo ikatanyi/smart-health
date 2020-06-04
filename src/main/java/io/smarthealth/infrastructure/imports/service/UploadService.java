@@ -20,10 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ResourceUtils;
 
@@ -55,7 +57,8 @@ public class UploadService {
 
     public void init() {
         try {
-            Files.createDirectory(rootLocation);
+            if(!Files.isDirectory(rootLocation, LinkOption.NOFOLLOW_LINKS))
+               Files.createDirectory(rootLocation);
         } catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
         }
@@ -64,7 +67,8 @@ public class UploadService {
     public void UploadService(String dir) {
         try {
             this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath().concat("/").concat(dir));
-            Files.createDirectories(rootLocation);
+            if(!Files.isDirectory(rootLocation, LinkOption.NOFOLLOW_LINKS))
+                Files.createDirectories(rootLocation);
         } catch (IOException ex) {
             throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
         }
@@ -72,6 +76,7 @@ public class UploadService {
 
     public String storeFile(MultipartFile file, String directory) {
         UploadService(directory);
+        String documentNo=null;
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
@@ -81,15 +86,15 @@ public class UploadService {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
 
-            // Copy file to the target location (Replacing existing file with the same name)
-            String documentNo = sequenceNumberService.next(1L, Sequences.DocumentNumber.name());
+            // Copy file to the target location (Replacing existing file with the Document No.)
+            documentNo = sequenceNumberService.next(1L, Sequences.DocumentNumber.name())+"."+FilenameUtils.getExtension(fileName);
             
             Path targetLocation = this.rootLocation.resolve(documentNo);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            return fileName;
+            return documentNo;
         } catch (IOException ex) {
-            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+            throw new FileStorageException("Could not store file " + documentNo + ". Please try again!", ex);
         }
     }
 

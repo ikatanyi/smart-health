@@ -60,7 +60,7 @@ public class TaxRestController {
 
     @PutMapping("/taxes/{id}")
     @PreAuthorize("hasAuthority('edit_tax')")
-    public ResponseEntity<?> updatetax(@PathVariable(value = "id") Long id, Tax data) {
+    public ResponseEntity<?> updatetax(@PathVariable(value = "id") Long id, @Valid @RequestBody Tax data) {
         Tax tax = service.updateTax(id, data);
         return ResponseEntity.ok(tax);
     }
