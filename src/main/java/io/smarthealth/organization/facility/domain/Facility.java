@@ -62,5 +62,5 @@ public class Facility extends Auditable {
     public void addBank(FacilityBank bank) {
         bank.setFacility(this);
         facilityBanks.add(bank);
-    }
+    } 
 }
