@@ -99,6 +99,7 @@ public class DoctorInvoiceService {
     }
 
     public void removeDoctorInvoice(DoctorInvoice doctorInvoice) {
+        System.out.println("To Remove Doctor Invoice " + doctorInvoice.getInvoiceNumber());
         repository.delete(doctorInvoice);
         //Adjust journals
         reverseJournal(doctorInvoice);

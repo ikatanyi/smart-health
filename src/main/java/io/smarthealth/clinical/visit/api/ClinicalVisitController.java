@@ -330,6 +330,33 @@ public class ClinicalVisitController {
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
+    @PutMapping("/visits/{visitNumber}/doctor/{staffNumber}")
+    @PreAuthorize("hasAuthority('edit_visits')")
+    @ApiOperation(value = "Update patient visit's doctor", response = VisitData.class)
+    public @ResponseBody
+    ResponseEntity<?> updateVisitPractitioner(
+            @PathVariable("visitNumber") final String visitNumber,
+            @PathVariable("staffNumber") final String staffNumber) {
+        Employee employee = employeeService.fetchEmployeeByNumberOrThrow(staffNumber);
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+
+        updateVisitDoctor(visit, employee);
+
+        visit.setHealthProvider(employee);
+
+        visit = visitService.createAVisit(visit);
+
+        //Convert to data
+        VisitData visitDat = VisitData.map(visit);
+
+        Pager<VisitData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Update Successful");
+        pagers.setContent(visitDat);
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
     @GetMapping("/visits")
     @PreAuthorize("hasAuthority('view_visits')")
     public ResponseEntity<List<VisitData>> fetchAllVisits(
@@ -511,37 +538,7 @@ public class ClinicalVisitController {
 
         if (vital.getSendTo().equals("specialist")) {
             Employee newDoctorSelected = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());
-            Optional<DoctorItem> newChargeableDoctorItem = doctorInvoiceService.getDoctorItem(newDoctorSelected, activeVisit.getClinic().getServiceType());
-            //check if visit already has a doctor
-            if (activeVisit.getHealthProvider() != null) {
-                //update bill with current doctor if there is a difference between the visit activated one and the new one
-                if (!newDoctorSelected.equals(activeVisit.getHealthProvider())) {
-                    //find doctor invoice with service item and visit
-                    Optional<DoctorItem> previousChargeDoctorItem = doctorInvoiceService.getDoctorItem(activeVisit.getHealthProvider(), activeVisit.getClinic().getServiceType());
-                    if (previousChargeDoctorItem.isPresent()) {
-                        Optional<DoctorInvoice> previousDoctorInvoice = doctorInvoiceService.fetchDoctorInvoiceByVisitDoctorItemAndDoctor(activeVisit, previousChargeDoctorItem.get(), activeVisit.getHealthProvider());
-                        if (previousDoctorInvoice.isPresent()) {
-                            //update to the new one
-                            DoctorInvoice doctorInvoice = previousDoctorInvoice.get();
-                            doctorInvoiceService.removeDoctorInvoice(doctorInvoice);
-                            //create a new doctor invoice
-                            if (newChargeableDoctorItem.isPresent()) {
-                                createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
-                            }
-                        } else {
-                            //create new doctor invoice
-                            if (newChargeableDoctorItem.isPresent()) {
-                                createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
-                            }
-                        }
-                    }
-                }
-            } else {
-                //create  new doctor invoice
-                if (newChargeableDoctorItem.isPresent()) {
-                    createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
-                }
-            }
+            updateVisitDoctor(activeVisit, newDoctorSelected);
 
             patientQueue.setSpecialNotes("Sent from triage");
 
@@ -656,7 +653,7 @@ public class ClinicalVisitController {
         return modelMapper.map(vitalsRecord, VitalRecordData.class);
     }
 
-    private void createDoctorInvoice(Visit activeVisit, Employee newDoctorSelected, DoctorItem doctorItem) {
+    private void createDoctorInvoice(Visit visit, Employee newDoctorSelected, DoctorItem doctorItem) {
         DoctorInvoiceData data = new DoctorInvoiceData();
         data.setAmount(doctorItem.getAmount());
         data.setBalance(doctorItem.getAmount());
@@ -664,12 +661,56 @@ public class ClinicalVisitController {
         data.setDoctorName(newDoctorSelected.getFullName());
         data.setInvoiceDate(LocalDate.now());
         data.setPaid(Boolean.FALSE);
-        data.setPatientName(activeVisit.getPatient().getFullName());
-        data.setPatientNumber(activeVisit.getPatient().getPatientNumber());
+        data.setPatientName(visit.getPatient().getFullName());
+        data.setPatientNumber(visit.getPatient().getPatientNumber());
         data.setStaffNumber(newDoctorSelected.getStaffNumber());
-        data.setVisitNumber(activeVisit.getVisitNumber());
+        data.setVisitNumber(visit.getVisitNumber());
         data.setServiceId(doctorItem.getId());
+        data.setPaymentMode(visit.getPaymentMethod().name());
         doctorInvoiceService.createDoctorInvoice(data);
+    }
+
+    private void updateVisitDoctor(Visit activeVisit, Employee newDoctorSelected) {
+        Optional<DoctorItem> newChargeableDoctorItem = doctorInvoiceService.getDoctorItem(newDoctorSelected, activeVisit.getClinic().getServiceType());
+
+        //check if visit already has a doctor
+        if (activeVisit.getHealthProvider() != null) {
+            //update bill with current doctor if there is a difference between the visit activated one and the new one
+            if (!newDoctorSelected.equals(activeVisit.getHealthProvider())) {
+                //find doctor invoice with service item and visit
+                Optional<DoctorItem> previousChargeDoctorItem = doctorInvoiceService.getDoctorItem(activeVisit.getHealthProvider(), activeVisit.getClinic().getServiceType());
+                System.out.println("previousChargeDoctorItem.isPresent() " + previousChargeDoctorItem.isPresent());
+                if (previousChargeDoctorItem.isPresent()) {
+                  
+                    Optional<DoctorInvoice> previousDoctorInvoice = doctorInvoiceService.fetchDoctorInvoiceByVisitDoctorItemAndDoctor(activeVisit, previousChargeDoctorItem.get(), activeVisit.getHealthProvider());
+                    if (previousDoctorInvoice.isPresent()) {
+                        //update to the new one
+                        DoctorInvoice doctorInvoice = previousDoctorInvoice.get();
+                        doctorInvoiceService.removeDoctorInvoice(doctorInvoice);
+                        //create a new doctor invoice
+                        if (newChargeableDoctorItem.isPresent()) {
+                            createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
+                        }
+                    } else {
+                        //create new doctor invoice
+                        if (newChargeableDoctorItem.isPresent()) {
+                            createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
+                        }
+                    }
+                }
+//                else {
+//                    System.out.println("previousChargeDoctorItem is absent");
+//                }
+            }
+//            else {
+//                System.out.println("New Doctor equals to visit's pre-selected doctor");
+//            }
+        } else {
+            //create  new doctor invoice
+            if (newChargeableDoctorItem.isPresent()) {
+                createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
+            }
+        }
     }
 
 }
