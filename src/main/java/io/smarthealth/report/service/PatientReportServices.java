@@ -8,6 +8,7 @@ package io.smarthealth.report.service;
 import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
+import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
 import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
@@ -266,9 +267,9 @@ public class PatientReportServices {
                 .map((proc) -> proc.toData())
                 .collect(Collectors.toList());
 
-        List<LabRegisterTestData> labTests = labService.getTestsResultsByVisit(visit.getVisitNumber(), "")
+        List<LabResultData> labTests = labService.getResultByVisit(visit)
                 .stream()
-                .map((test) -> test.toData(Boolean.TRUE))
+                .map((test) -> test.toData())
                 .collect(Collectors.toList());
 
         Optional<PatientNotes> patientNotes = patientNotesService.fetchPatientNotesByVisit(visit);
