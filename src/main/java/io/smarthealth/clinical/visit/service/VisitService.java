@@ -8,7 +8,7 @@ package io.smarthealth.clinical.visit.service;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
-import io.smarthealth.clinical.visit.data.VisitData;
+import io.smarthealth.clinical.visit.data.VisitDatas;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
@@ -99,12 +99,12 @@ public class VisitService {
 //        }
     }
 
-    public String updateVisit(final String visitNumber, final VisitData visitDTO) {
+    public String updateVisit(final String visitNumber, final VisitDatas visitDTO) {
         findVisitEntityOrThrow(visitNumber);
         //validate and fetch patient
         Patient patient = findPatientOrThrow(visitDTO.getPatientNumber());
 
-        Visit visitEntity = VisitData.map(visitDTO);
+        Visit visitEntity = VisitDatas.map(visitDTO);
         visitEntity.setPatient(patient);
         visitRepository.save(visitEntity);
         return visitDTO.getVisitNumber();
@@ -136,8 +136,8 @@ public class VisitService {
         return this.visitRepository.findByPatientAndStatus(patient, status);
     }
 
-    public VisitData convertVisitEntityToData(Visit visit) {
-        return VisitData.map(visit);
+    public VisitDatas convertVisitEntityToData(Visit visit) {
+        return VisitDatas.map(visit);
     }
 
     public List<Employee> practionersByActiveVisits() {

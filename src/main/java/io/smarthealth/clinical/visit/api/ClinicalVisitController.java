@@ -25,7 +25,7 @@ import io.smarthealth.clinical.record.domain.VitalsRecord;
 import io.smarthealth.clinical.record.service.TriageNotesService;
 import io.smarthealth.clinical.record.service.TriageService;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
-import io.smarthealth.clinical.visit.data.VisitData;
+import io.smarthealth.clinical.visit.data.VisitDatas;
 //import io.smarthealth.clinical.visit.data.enums.TriageCategory;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
@@ -133,17 +133,17 @@ public class ClinicalVisitController {
 
     @PostMapping("/visits")
     @PreAuthorize("hasAuthority('create_visits')")
-    @ApiOperation(value = "Submit a new patient visit", response = VisitData.class)
+    @ApiOperation(value = "Submit a new patient visit", response = VisitDatas.class)
     @Transactional(rollbackFor = Exception.class)
     public @ResponseBody
-    ResponseEntity<?> addVisitRecord(@RequestBody @Valid final VisitData visitData) {
+    ResponseEntity<?> addVisitRecord(@RequestBody @Valid final VisitDatas visitData) {
 
         Patient patient = patientService.findPatientOrThrow(visitData.getPatientNumber());
         //check if patient has an active visit
         if (visitService.isPatientVisitActive(patient)) {
             throw APIException.conflict("Patient identified by {0} already has an active visit", patient.getPatientNumber());
         }
-        Visit visit = VisitData.map(visitData);
+        Visit visit = VisitDatas.map(visitData);
         Employee employee = null;
         if (visitData.getPractitionerCode() != null) {
             employee = employeeService.fetchEmployeeByNumberOrThrow(visitData.getPractitionerCode());
@@ -250,7 +250,7 @@ public class ClinicalVisitController {
         //update visit
         visit = visitService.createAVisit(visit);
         //Convert to data
-        VisitData visitDat = VisitData.map(visit);
+        VisitDatas visitDat = VisitDatas.map(visit);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/visits/{visitNumber}")
@@ -261,13 +261,13 @@ public class ClinicalVisitController {
 
     @PutMapping("/visits/{visitNumber}")
     @PreAuthorize("hasAuthority('edit_visits')")
-    @ApiOperation(value = "Update patient visit record", response = VisitData.class)
+    @ApiOperation(value = "Update patient visit record", response = VisitDatas.class)
     public @ResponseBody
     ResponseEntity<?> updateVisitRecord(@PathVariable("visitNumber")
             final String visitNumber,
             @RequestBody
             @Valid
-            final VisitData visitData
+            final VisitDatas visitData
     ) {
         Patient patient = patientService.findPatientOrThrow(visitData.getPatientNumber());
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
@@ -280,7 +280,7 @@ public class ClinicalVisitController {
         visit.setPatient(patient);
         visit = this.visitService.createAVisit(visit);
         //Convert to data
-        VisitData visitDat = VisitData.map(visit);
+        VisitDatas visitDat = VisitDatas.map(visit);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/visits/{visitNumber}")
@@ -291,7 +291,7 @@ public class ClinicalVisitController {
 
     @PutMapping("/visits/{visitNumber}/status/{status}")
     @PreAuthorize("hasAuthority('edit_visits')")
-    @ApiOperation(value = "Update patient visit status", response = VisitData.class)
+    @ApiOperation(value = "Update patient visit status", response = VisitDatas.class)
     public @ResponseBody
     ResponseEntity<?> updateVisitStatus(@PathVariable("visitNumber")
             final String visitNumber,
@@ -303,14 +303,14 @@ public class ClinicalVisitController {
         visit.setStatus(VisitEnum.Status.valueOf(status));
         visit = this.visitService.createAVisit(visit);
         //Convert to data
-        VisitData visitDat = VisitData.map(visit);
+        VisitDatas visitDat = VisitDatas.map(visit);
 
         return ResponseEntity.status(HttpStatus.OK).body(visitDat);
     }
 
     @PutMapping("/visits/{visitNumber}/consultation-status/{status}")
     @PreAuthorize("hasAuthority('edit_visits')")
-    @ApiOperation(value = "Update patient visit consultation status", response = VisitData.class)
+    @ApiOperation(value = "Update patient visit consultation status", response = VisitDatas.class)
     public @ResponseBody
     ResponseEntity<?> updateConsultationStatus(
             @PathVariable("visitNumber") final String visitNumber,
@@ -320,9 +320,36 @@ public class ClinicalVisitController {
         visit.setIsActiveOnConsultation(status);
         visit = this.visitService.createAVisit(visit);
         //Convert to data
-        VisitData visitDat = VisitData.map(visit);
+        VisitDatas visitDat = VisitDatas.map(visit);
 
-        Pager<VisitData> pagers = new Pager();
+        Pager<VisitDatas> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Update Successful");
+        pagers.setContent(visitDat);
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
+    @PutMapping("/visits/{visitNumber}/doctor/{staffNumber}")
+    @PreAuthorize("hasAuthority('edit_visits')")
+    @ApiOperation(value = "Update patient visit's doctor", response = VisitDatas.class)
+    public @ResponseBody
+    ResponseEntity<?> updateVisitPractitioner(
+            @PathVariable("visitNumber") final String visitNumber,
+            @PathVariable("staffNumber") final String staffNumber) {
+        Employee employee = employeeService.fetchEmployeeByNumberOrThrow(staffNumber);
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+
+        updateVisitDoctor(visit, employee);
+
+        visit.setHealthProvider(employee);
+
+        visit = visitService.createAVisit(visit);
+
+        //Convert to data
+        VisitDatas visitDat = VisitDatas.map(visit);
+
+        Pager<VisitDatas> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Update Successful");
         pagers.setContent(visitDat);
@@ -332,7 +359,7 @@ public class ClinicalVisitController {
 
     @GetMapping("/visits")
     @PreAuthorize("hasAuthority('view_visits')")
-    public ResponseEntity<List<VisitData>> fetchAllVisits(
+    public ResponseEntity<List<VisitDatas>> fetchAllVisits(
             @RequestParam(value = "visitNumber", required = false)
             final String visitNumber,
             @RequestParam(value = "staffNumber", required = false)
@@ -351,7 +378,7 @@ public class ClinicalVisitController {
             Pageable pageable
     ) {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, username, pageable).map(v -> convertToVisitData(v));
+        Page<VisitDatas> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, username, pageable).map(v -> convertToVisitData(v));
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 
@@ -376,7 +403,7 @@ public class ClinicalVisitController {
         Patient patient = visitService.findPatientOrThrow(patientNumber);
         Optional<Visit> visit = visitService.fetchVisitByPatientAndStatus(patient, VisitEnum.Status.CheckIn);
         if (visit.isPresent()) {
-            Pager<VisitData> pagers = new Pager();
+            Pager<VisitDatas> pagers = new Pager();
             pagers.setCode("0");
             pagers.setMessage("Visit Data");
             pagers.setContent(convertToVisitData(visit.get()));
@@ -389,13 +416,13 @@ public class ClinicalVisitController {
 
     @GetMapping("/patients/{id}/visits")
     @PreAuthorize("hasAuthority('view_visits')")
-    public ResponseEntity<List<VisitData>> fetchAllVisitsByPatient(@PathVariable("id")
+    public ResponseEntity<List<VisitDatas>> fetchAllVisitsByPatient(@PathVariable("id")
             final String patientNumber,
             @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,
             Pageable pageable
     ) {
         System.out.println("patientNumber " + patientNumber);
-        Page<VisitData> page = visitService.fetchVisitByPatientNumber(patientNumber, pageable).map(v -> convertToVisitData(v));
+        Page<VisitDatas> page = visitService.fetchVisitByPatientNumber(patientNumber, pageable).map(v -> convertToVisitData(v));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -511,37 +538,7 @@ public class ClinicalVisitController {
 
         if (vital.getSendTo().equals("specialist")) {
             Employee newDoctorSelected = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());
-            Optional<DoctorItem> newChargeableDoctorItem = doctorInvoiceService.getDoctorItem(newDoctorSelected, activeVisit.getClinic().getServiceType());
-            //check if visit already has a doctor
-            if (activeVisit.getHealthProvider() != null) {
-                //update bill with current doctor if there is a difference between the visit activated one and the new one
-                if (!newDoctorSelected.equals(activeVisit.getHealthProvider())) {
-                    //find doctor invoice with service item and visit
-                    Optional<DoctorItem> previousChargeDoctorItem = doctorInvoiceService.getDoctorItem(activeVisit.getHealthProvider(), activeVisit.getClinic().getServiceType());
-                    if (previousChargeDoctorItem.isPresent()) {
-                        Optional<DoctorInvoice> previousDoctorInvoice = doctorInvoiceService.fetchDoctorInvoiceByVisitDoctorItemAndDoctor(activeVisit, previousChargeDoctorItem.get(), activeVisit.getHealthProvider());
-                        if (previousDoctorInvoice.isPresent()) {
-                            //update to the new one
-                            DoctorInvoice doctorInvoice = previousDoctorInvoice.get();
-                            doctorInvoiceService.removeDoctorInvoice(doctorInvoice);
-                            //create a new doctor invoice
-                            if (newChargeableDoctorItem.isPresent()) {
-                                createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
-                            }
-                        } else {
-                            //create new doctor invoice
-                            if (newChargeableDoctorItem.isPresent()) {
-                                createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
-                            }
-                        }
-                    }
-                }
-            } else {
-                //create  new doctor invoice
-                if (newChargeableDoctorItem.isPresent()) {
-                    createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
-                }
-            }
+            updateVisitDoctor(activeVisit, newDoctorSelected);
 
             patientQueue.setSpecialNotes("Sent from triage");
 
@@ -625,8 +622,8 @@ public class ClinicalVisitController {
 
     }
 
-    private VisitData convertToVisitData(Visit visit) {
-        VisitData visitData = VisitData.map(visit);
+    private VisitDatas convertToVisitData(Visit visit) {
+        VisitDatas visitData = VisitDatas.map(visit);
         if (visit.getHealthProvider() != null) {
             visitData.setPractitionerCode(visit.getHealthProvider().getStaffNumber());
             visitData.setPractitionerName(visit.getHealthProvider().getTitle() + ". " + visit.getHealthProvider().getFullName());
@@ -656,7 +653,7 @@ public class ClinicalVisitController {
         return modelMapper.map(vitalsRecord, VitalRecordData.class);
     }
 
-    private void createDoctorInvoice(Visit activeVisit, Employee newDoctorSelected, DoctorItem doctorItem) {
+    private void createDoctorInvoice(Visit visit, Employee newDoctorSelected, DoctorItem doctorItem) {
         DoctorInvoiceData data = new DoctorInvoiceData();
         data.setAmount(doctorItem.getAmount());
         data.setBalance(doctorItem.getAmount());
@@ -664,12 +661,59 @@ public class ClinicalVisitController {
         data.setDoctorName(newDoctorSelected.getFullName());
         data.setInvoiceDate(LocalDate.now());
         data.setPaid(Boolean.FALSE);
-        data.setPatientName(activeVisit.getPatient().getFullName());
-        data.setPatientNumber(activeVisit.getPatient().getPatientNumber());
+        data.setPatientName(visit.getPatient().getFullName());
+        data.setPatientNumber(visit.getPatient().getPatientNumber());
         data.setStaffNumber(newDoctorSelected.getStaffNumber());
-        data.setVisitNumber(activeVisit.getVisitNumber());
+        data.setVisitNumber(visit.getVisitNumber());
         data.setServiceId(doctorItem.getId());
+        data.setPaymentMode(visit.getPaymentMethod().name());
         doctorInvoiceService.createDoctorInvoice(data);
+    }
+
+    private void updateVisitDoctor(Visit activeVisit, Employee newDoctorSelected) {
+        if (activeVisit.getClinic() == null) {
+            throw APIException.badRequest("The service type is not consultation. You cannot specify a specialist for this visit", "");
+        }
+        Optional<DoctorItem> newChargeableDoctorItem = doctorInvoiceService.getDoctorItem(newDoctorSelected, activeVisit.getClinic().getServiceType());
+
+        //check if visit already has a doctor
+        if (activeVisit.getHealthProvider() != null) {
+            //update bill with current doctor if there is a difference between the visit activated one and the new one
+            if (!newDoctorSelected.equals(activeVisit.getHealthProvider())) {
+                //find doctor invoice with service item and visit
+                Optional<DoctorItem> previousChargeDoctorItem = doctorInvoiceService.getDoctorItem(activeVisit.getHealthProvider(), activeVisit.getClinic().getServiceType());
+                System.out.println("previousChargeDoctorItem.isPresent() " + previousChargeDoctorItem.isPresent());
+                if (previousChargeDoctorItem.isPresent()) {
+
+                    Optional<DoctorInvoice> previousDoctorInvoice = doctorInvoiceService.fetchDoctorInvoiceByVisitDoctorItemAndDoctor(activeVisit, previousChargeDoctorItem.get(), activeVisit.getHealthProvider());
+                    if (previousDoctorInvoice.isPresent()) {
+                        //update to the new one
+                        DoctorInvoice doctorInvoice = previousDoctorInvoice.get();
+                        doctorInvoiceService.removeDoctorInvoice(doctorInvoice);
+                        //create a new doctor invoice
+                        if (newChargeableDoctorItem.isPresent()) {
+                            createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
+                        }
+                    } else {
+                        //create new doctor invoice
+                        if (newChargeableDoctorItem.isPresent()) {
+                            createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
+                        }
+                    }
+                }
+//                else {
+//                    System.out.println("previousChargeDoctorItem is absent");
+//                }
+            }
+//            else {
+//                System.out.println("New Doctor equals to visit's pre-selected doctor");
+//            }
+        } else {
+            //create  new doctor invoice
+            if (newChargeableDoctorItem.isPresent()) {
+                createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
+            }
+        }
     }
 
 }

@@ -30,7 +30,7 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-public class VisitData {
+public class VisitDatas {
 
     private String visitNumber;
     @NotBlank
@@ -76,7 +76,7 @@ public class VisitData {
     private Long itemToBill;
     private int triageCategory;
 
-    public static Visit map(VisitData visitDTO) {
+    public static Visit map(VisitDatas visitDTO) {
         Visit visitEntity = new Visit();
         visitEntity.setScheduled(visitDTO.getScheduled());
         visitEntity.setStartDatetime(visitDTO.getStartDatetime());
@@ -90,8 +90,8 @@ public class VisitData {
         return visitEntity;
     }
 
-    public static VisitData map(Visit visitEntity) {
-        VisitData visitDTO = new VisitData();
+    public static VisitDatas map(Visit visitEntity) {
+        VisitDatas visitDTO = new VisitDatas();
         visitDTO.setScheduled(visitEntity.getScheduled());
         visitDTO.setStartDatetime(visitEntity.getStartDatetime());
         visitDTO.setStatus(visitEntity.getStatus());
