@@ -271,8 +271,7 @@ public class AccountReportService {
         String receiptNo = reportParam.getFirst("receiptNo");
         String invoiceNo = reportParam.getFirst("invoiceNo");
         String remittanceNo = reportParam.getFirst("remittanceNo");
-        String dateRange = reportParam.getFirst("range");
-        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         
         List<AllocationData> remittanceData = allocationService.getAllocations(invoiceNo, receiptNo, remittanceNo, payerId, schemeId, range, Pageable.unpaged()).getContent()
                 .stream()

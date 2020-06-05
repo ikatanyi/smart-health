@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="request_form" pageWidth="420" pageHeight="595" columnWidth="380" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Key" uuid="9ef051fc-7a45-4737-84cd-a3c577095002">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="request_form" pageWidth="420" pageHeight="400" whenNoDataType="AllSectionsNoDetail" columnWidth="380" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Key" uuid="9ef051fc-7a45-4737-84cd-a3c577095002">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -40,14 +40,14 @@
 	</queryString>
 	<field name="itemName" class="java.lang.String"/>
 	<field name="quantity" class="java.lang.Double"/>
-	<field name="quantityUnits" class="java.lang.Double"/>
+	<field name="quantityUnits" class="java.lang.String"/>
 	<field name="dosingInstructions" class="java.lang.String"/>
 	<field name="route" class="java.lang.String"/>
 	<field name="numRefills" class="java.lang.Integer"/>
 	<field name="prescriptionNo" class="java.lang.String"/>
 	<field name="doseUnits" class="java.lang.String"/>
 	<field name="dose" class="java.lang.Double"/>
-	<field name="urgency" class="java.lang.String"/>
+	<field name="urgency" class="java.lang.Object"/>
 	<field name="notes" class="java.lang.String"/>
 	<field name="frequency" class="java.lang.String"/>
 	<field name="duration" class="java.lang.Integer"/>

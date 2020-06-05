@@ -3,26 +3,20 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<field name="prescriptionId" class="java.lang.String"/>
-	<field name="brandName" class="java.lang.String"/>
-	<field name="route" class="java.lang.String"/>
-	<field name="dose" class="java.lang.Double"/>
-	<field name="doseUnits" class="java.lang.String"/>
-	<field name="duration" class="java.lang.Integer"/>
-	<field name="durationUnits" class="java.lang.Integer"/>
-	<field name="frequency" class="java.lang.Double"/>
+	<field name="itemName" class="java.lang.String"/>
 	<field name="quantity" class="java.lang.Double"/>
+	<field name="quantityUnits" class="java.lang.String"/>
 	<field name="dosingInstructions" class="java.lang.String"/>
-	<field name="asNeeded" class="java.lang.String"/>
-	<field name="asNeededCondition" class="java.lang.String"/>
+	<field name="route" class="java.lang.String"/>
 	<field name="numRefills" class="java.lang.Integer"/>
-	<field name="issuedQuantity" class="java.lang.Double"/>
-	<variable name="variable1" class="java.lang.String">
-		<variableExpression><![CDATA["Take "+$F{dose}+" Times "+($F{durationUnits}*$F{duration})]]></variableExpression>
-	</variable>
-	<variable name="variable2" class="java.lang.String">
-		<initialValueExpression><![CDATA[]]></initialValueExpression>
-	</variable>
+	<field name="prescriptionNo" class="java.lang.String"/>
+	<field name="doseUnits" class="java.lang.String"/>
+	<field name="dose" class="java.lang.Double"/>
+	<field name="urgency" class="java.lang.Object"/>
+	<field name="notes" class="java.lang.String"/>
+	<field name="frequency" class="java.lang.String"/>
+	<field name="duration" class="java.lang.Integer"/>
+	<field name="durationUnits" class="java.lang.String"/>
 	<pageHeader>
 		<band height="25">
 			<staticText>
@@ -85,7 +79,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{brandName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="221" y="0" width="208" height="12" uuid="0db14a27-5ed5-49c1-a0c8-71013f44f56a"/>

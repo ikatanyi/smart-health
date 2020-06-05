@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="employee-banner" pageWidth="203" pageHeight="802" columnWidth="203" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f999e9d8-48c8-4d99-8793-0d8624a84a5f">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="employee-banner" pageWidth="203" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="203" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f999e9d8-48c8-4d99-8793-0d8624a84a5f">
 	<property name="ireport.zoom" value="3.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="payee" class="java.lang.String"/>
 	<field name="gender" class="java.lang.String"/>
 	<field name="employeeCategory" class="java.lang.String"/>
 	<field name="staffNumber" class="java.lang.String"/>
@@ -42,7 +43,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{fullName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{fullName}.equals( null )?$P{payee}:$F{fullName}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="0" y="20" width="62" height="9" uuid="565f9536-b1af-48d2-b7e1-20474881f891"/>

@@ -43,7 +43,7 @@ public class InvoiceSpecification {
                 predicates.add(cb.equal(root.get("status"), status));
             }
             if (patientNo != null) {
-                predicates.add(cb.equal(root.get("bill").get("patient").get("patientNumber"), patientNo));
+                predicates.add(cb.equal(root.get("patient").get("patientNumber"), patientNo));
             }
             if (range != null) {
                 predicates.add(

@@ -63,7 +63,7 @@ public class FileStorageService {
         }
         document.setServicePoint(servicePoint);
 
-        String fileName = uploadService.storeFile(documentData.getDocfile(), servicePoint.getName());
+        String fileName = uploadService.storeFile(documentData.getDocfile(), servicePoint.getPointType());
         document.setFileName(fileName);
         return fileStorageRepository.save(document);
     }
