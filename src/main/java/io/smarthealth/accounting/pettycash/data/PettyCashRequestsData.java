@@ -25,27 +25,29 @@ import lombok.Data;
  */
 @Data
 public class PettyCashRequestsData {
-
+    
+    private Long requestId;
     private double totalAmount;
     private String requestNo;
-
+    
     @ApiModelProperty(hidden = true)
     private String requestedBy;
     private String requesterDept;
-
+    
     private String narration;
     
     @ApiModelProperty(hidden = true)
     private LocalDate createdOn;
-
+    
     @Enumerated(EnumType.STRING)
     private PettyCashStatus status;
-
+    
     @ApiModelProperty(hidden = true)
     private List<PettyCashRequestItemsData> requestItemsData;
-
+    
     public static PettyCashRequestsData map(PettyCashRequests r) {
         PettyCashRequestsData data = new PettyCashRequestsData();
+        data.setRequestId(r.getId());
         data.setNarration(r.getNarration());
         data.setRequestNo(r.getRequestNo());
         data.setStatus(r.getStatus());
@@ -63,7 +65,7 @@ public class PettyCashRequestsData {
         }
         return data;
     }
-
+    
     public static PettyCashRequests map(PettyCashRequestsData data) {
         PettyCashRequests r = new PettyCashRequests();
         r.setNarration(data.getNarration());

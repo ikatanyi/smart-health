@@ -17,7 +17,8 @@ import lombok.Data;
  */
 @Data
 public class PettyCashRequestItemsData {
-
+    
+    private Long itemId;
     private String item;
     private double pricePerUnit;
     private int quantity;
@@ -28,9 +29,10 @@ public class PettyCashRequestItemsData {
     
     @ApiModelProperty(hidden = true)
     private String requestNo;
-
+    
     public static PettyCashRequestItemsData map(PettyCashRequestItems e) {
         PettyCashRequestItemsData data = new PettyCashRequestItemsData();
+        data.setItemId(e.getId());
         data.setAmount(e.getAmount());
         data.setItem(e.getItem());
         data.setNarration(e.getNarration());
@@ -39,7 +41,7 @@ public class PettyCashRequestItemsData {
         data.setRequestNo(e.getRequestNo().getRequestNo());
         return data;
     }
-
+    
     public static List<PettyCashRequestItemsData> map(List<PettyCashRequestItems> e) {
         List<PettyCashRequestItemsData> itemData = new ArrayList<>();
         for (PettyCashRequestItems entity : e) {
@@ -47,7 +49,7 @@ public class PettyCashRequestItemsData {
         }
         return itemData;
     }
-
+    
     public static PettyCashRequestItems map(PettyCashRequestItemsData data) {
         PettyCashRequestItems e = new PettyCashRequestItems();
         e.setAmount(data.getAmount());

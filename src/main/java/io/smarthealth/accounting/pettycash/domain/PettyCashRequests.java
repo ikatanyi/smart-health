@@ -35,6 +35,8 @@ public class PettyCashRequests extends Auditable {
     @Enumerated(EnumType.STRING)
     private PettyCashStatus status;
 
+    private boolean paid = false;
+
     private int approvalPendingLevel;
 
     @ManyToOne(optional = false)
