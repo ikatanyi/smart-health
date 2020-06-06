@@ -55,8 +55,7 @@ public class PettyCashPayment extends Auditable {
         data.setReferenceNumber(this.payment.getReferenceNumber());
         data.setVoucherNo(this.payment.getVoucherNo());
         if(this.pettyCashRequest!=null){
-//            data.setRequestDate(this.pettyCashRequest.getRequestNo().getCreatedOn());
-        data.setRequestedBy(this.pettyCashRequest.getRequestNo().getRequestedBy().getFullName());
+          data.setRequestedBy(this.pettyCashRequest.getRequestNo().getRequestedBy().getFullName());
         }
         return data;
     }

@@ -2,6 +2,7 @@ package io.smarthealth.debtor.claim.allocation.domain.specification;
 
 import io.smarthealth.debtor.claim.allocation.domain.Allocation;
 import io.smarthealth.infrastructure.lang.DateRange;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -37,8 +38,9 @@ public class AllocationSpecification {
             }
              if(range!=null){
                   predicates.add(
-                     cb.between(root.get("createdOn"), range.getStartDateTime(), range.getEndDateTime())
-                  );
+                     cb.between(root.get("transactionDate"), range.getStartDateTime(), range.getEndDateTime()))
+    
+                          ;
               }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };

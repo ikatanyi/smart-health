@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="421" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="224"/>
-	<property name="ireport.y" value="214"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="47"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
@@ -21,6 +21,7 @@
 	<parameter name="Supplier_Data" class="java.util.List"/>
 	<parameter name="amountInWords" class="java.lang.String"/>
 	<parameter name="category" class="java.lang.String"/>
+	<parameter name="PaymentData" class="java.util.List"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -45,7 +46,7 @@
 		<band height="381" splitType="Stretch">
 			<elementGroup>
 				<rectangle>
-					<reportElement x="0" y="180" width="555" height="155" uuid="63e193d5-7bbe-4c2a-a8d0-875e62be2939"/>
+					<reportElement positionType="Float" x="0" y="180" width="555" height="155" uuid="63e193d5-7bbe-4c2a-a8d0-875e62be2939"/>
 					<graphicElement>
 						<pen lineWidth="0.25"/>
 					</graphicElement>
@@ -104,7 +105,7 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="75">
+		<band height="70">
 			<subreport>
 				<reportElement x="1" y="2" width="307" height="48" uuid="9f408f77-6458-4591-935a-77d74f77e4d6">
 					<printWhenExpression><![CDATA[$P{category}.equals( "Supplier" )]]></printWhenExpression>
@@ -116,6 +117,9 @@
 				<reportElement x="2" y="2" width="306" height="48" uuid="5fe0f837-f4cd-4acc-b3d0-ebf331b3d270">
 					<printWhenExpression><![CDATA[$P{category}.equals( "Doctor" )||$P{category}.equals( "pettycash" )]]></printWhenExpression>
 				</reportElement>
+				<subreportParameter name="payee">
+					<subreportParameterExpression><![CDATA[$F{payee}]]></subreportParameterExpression>
+				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "employee-banner.jasper"]]></subreportExpression>
 			</subreport>
@@ -161,33 +165,6 @@
 				</textElement>
 				<text><![CDATA[Mode :]]></text>
 			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="0" y="63" width="185" height="12" uuid="b67b795a-0c2f-4a96-805d-51668b4e19d7"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Reference]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="185" y="63" width="185" height="12" uuid="c5b3c4c1-1a36-4b26-b7dc-9bfd43ede4f9"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Description]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="FixRelativeToBottom" x="370" y="63" width="185" height="12" uuid="b81f355c-80d5-4ebe-b721-af394f28be2f"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Amount]]></text>
-			</staticText>
-			<line>
-				<reportElement positionType="Float" x="1" y="74" width="554" height="1" uuid="dc15f410-7fa9-4af3-9559-4eba8800e4c0"/>
-				<graphicElement>
-					<pen lineWidth="0.15" lineStyle="Solid"/>
-				</graphicElement>
-			</line>
 			<textField isBlankWhenNull="true">
 				<reportElement x="433" y="25" width="120" height="10" uuid="6d9a8a2e-0912-453d-8191-2240e221a2bc"/>
 				<textElement verticalAlignment="Middle">
@@ -206,27 +183,20 @@
 	</columnHeader>
 	<detail>
 		<band height="13" splitType="Stretch">
-			<textField isBlankWhenNull="true">
-				<reportElement x="16" y="0" width="169" height="12" uuid="f80ce952-ba9e-42e1-babe-9dd92eb6c8fb"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{transactionNo}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="208" y="0" width="162" height="12" uuid="23490496-4483-4645-8a15-b664c16a6322"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="375" y="0" width="100" height="12" uuid="925b07dd-9471-40b1-9e2d-56870f441bf4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
-			</textField>
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="12" uuid="54e99b1e-9fa6-4102-80a1-2ada1552b1e9">
+					<printWhenExpression><![CDATA[$P{category}.equals( "Doctor" )||$P{category}.equals( "Supplier" )]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{PaymentData})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "payment_voucher_subreport.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="13" uuid="f9c90bad-1d6a-4b5d-ac83-0e773438bbbe">
+					<printWhenExpression><![CDATA[$P{category}.equals( "PettyCash" )]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{PaymentData})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "payment_voucher_subreport_2.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</detail>
 	<columnFooter>

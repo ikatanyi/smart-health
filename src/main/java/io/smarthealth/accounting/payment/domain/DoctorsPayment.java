@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
+import io.smarthealth.accounting.payment.data.SupplierPaymentData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -42,4 +43,15 @@ public class DoctorsPayment extends Identifiable {
         this.taxAmount = taxAmount;
     }
 
+    public SupplierPaymentData toData(){
+        SupplierPaymentData data = new SupplierPaymentData();
+        data.setAmountPaid(this.getAmountPaid());
+        if(this.getInvoice()!=null){
+            data.setInvoiceAmount(this.getInvoice().getAmount());
+            data.setInvoiceNumber(this.getInvoice().getInvoiceNumber());
+            data.setInvoiceDate(this.getInvoice().getInvoiceDate());
+        }
+        data.setTaxAmount(this.getTaxAmount());
+        return data;
+    }
 }

@@ -16,7 +16,9 @@ import io.smarthealth.accounting.payment.data.BillToPay;
 import io.smarthealth.accounting.payment.data.PayChannel;
 import io.smarthealth.accounting.payment.data.MakePayment;
 import io.smarthealth.accounting.payment.data.MakePettyCashPayment;
+import io.smarthealth.accounting.payment.data.PettyCashPaymentData;
 import io.smarthealth.accounting.payment.data.PettyCashRequestItem;
+import io.smarthealth.accounting.payment.data.SupplierPaymentData;
 import io.smarthealth.accounting.payment.domain.DoctorsPayment;
 import io.smarthealth.accounting.payment.domain.DoctorsPaymentRepository;
 import io.smarthealth.accounting.payment.domain.Payment;
@@ -146,7 +148,7 @@ public class PaymentService {
         Optional<PurchaseInvoice> invoice = purchaseInvoiceRepository.findByInvoiceForSupplier(bill.getInvoiceNo(), pay.getPayeeId());
         if (invoice.isPresent()) {
             PurchaseInvoice inv = invoice.get();
-            BigDecimal grosspaid=bill.getAmountPaid().add(bill.getTaxAmount());
+            BigDecimal grosspaid = bill.getAmountPaid().add(bill.getTaxAmount());
             BigDecimal newBal = inv.getInvoiceBalance().subtract(grosspaid);
             boolean paid = newBal.doubleValue() <= 0;
             inv.setInvoiceBalance(newBal);
@@ -162,7 +164,7 @@ public class PaymentService {
         Optional<DoctorInvoice> invoice = doctorInvoiceRepository.findByInvoiceForDoctor(bill.getInvoiceNo(), pay.getPayeeId());
         if (invoice.isPresent()) {
             DoctorInvoice inv = invoice.get();
-            BigDecimal grosspaid=bill.getAmountPaid().add(bill.getTaxAmount());
+            BigDecimal grosspaid = bill.getAmountPaid().add(bill.getTaxAmount());
             BigDecimal newBal = inv.getBalance().subtract(grosspaid);
             boolean paid = newBal.doubleValue() <= 0;
             inv.setBalance(newBal);
@@ -328,6 +330,37 @@ public class PaymentService {
         journalEntryService.save(toJournalPettyCash(payment, data.getRequests()));
 
         return savedPayment;
+    }
+
+    public List<PettyCashPaymentData> getPettyCashPayment(Long id) {
+        List<PettyCashPaymentData> pettyCashPayment = null;
+        Optional<Payment> payment = repository.findById(id);
+        if (payment.isPresent()) {
+            pettyCashPayment = pettyCashPaymentRepository.findByPayment(payment.get())
+                    .stream()
+                    .map((petty)->petty.toData())
+                    .collect(Collectors.toList());
+        }
+        return pettyCashPayment;
+    }
+
+    public List<SupplierPaymentData> getSupplierPayment(Long id, PayeeType type) {
+        List<SupplierPaymentData> supplierPayment = null;
+        Optional<Payment> payment = repository.findById(id);
+        if (payment.isPresent()) {
+            if (type == PayeeType.Supplier) {
+                supplierPayment = supplierPaymentRepository.findByPayment(payment.get())
+                        .stream()
+                        .map((supplier) -> supplier.toData())
+                        .collect(Collectors.toList());
+            } else {
+                supplierPayment = doctorsPaymentRepository.findByPayment(payment.get())
+                        .stream()
+                        .map((supplier) -> supplier.toData())
+                        .collect(Collectors.toList());
+            }
+        }
+        return supplierPayment;
     }
 
     private void taxJournaling(MakePayment data, List<JournalEntryItem> items) {

@@ -10,6 +10,8 @@ import io.smarthealth.accounting.accounts.service.LedgerService;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.PaymentData;
+import io.smarthealth.accounting.payment.data.PettyCashPaymentData;
+import io.smarthealth.accounting.payment.data.SupplierPaymentData;
 import io.smarthealth.accounting.payment.domain.enumeration.PayeeType;
 import io.smarthealth.accounting.payment.service.PaymentService;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
@@ -72,21 +74,21 @@ public class PaymentReportService {
     private final EmployeeService employeeService;
     private final PettyCashRequestsService pettyCashRequestService;
     private final PayerService payerService;
-    
-    
-    public void getPettyCashRequests(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+
+    public void getPettyCashRequests(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
         String requestNo = reportParam.getFirst("requestNo");
-        String staffNumber = reportParam.getFirst("staffNumber"); 
-        String dateRange = reportParam.getFirst("range"); 
-        PettyCashStatus status = PettyCashStatusToEnum(reportParam.getFirst("status"));       
-        Employee employee =null;
+        String staffNumber = reportParam.getFirst("staffNumber");
+        String dateRange = reportParam.getFirst("range");
+        PettyCashStatus status = PettyCashStatusToEnum(reportParam.getFirst("status"));
+        Employee employee = null;
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(staffNumber);
-        if(emp.isPresent())
-            employee=emp.get();
-        
+        if (emp.isPresent()) {
+            employee = emp.get();
+        }
+
         List<PettyCashRequestsData> pettyCashData = pettyCashRequestService.findPettyCashRequests(requestNo, employee, status, Pageable.unpaged())
                 .getContent()
                 .stream()
@@ -99,7 +101,7 @@ public class PaymentReportService {
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setData(pettyCashData);
         reportData.setFormat(format);
@@ -107,27 +109,26 @@ public class PaymentReportService {
         reportData.setReportName("pettycash_requests_statement");
         reportService.generateReport(reportData, response);
     }
-    
-    public void getPettyCash(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
-        String requestNo = reportParam.getFirst("requestNo");    
+
+    public void getPettyCash(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+        String requestNo = reportParam.getFirst("requestNo");
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
         PettyCashRequestsData pettyCashData = PettyCashRequestsData.map(pettyCashRequestService.fetchCashRequestByRequestNo(requestNo));
-        
+
         reportData.setData(Arrays.asList(pettyCashData));
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/petty_cash");
         reportData.setReportName("pettycash_request_form");
         reportService.generateReport(reportData, response);
     }
-    
 
-    public void getInvoice(MultiValueMap<String,String>reportParam,  ExportFormat format,  HttpServletResponse response) throws SQLException, JRException, IOException {
-        
-        String invoiceNo = reportParam.getFirst("invoiceNo"); 
+    public void getInvoice(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+        String invoiceNo = reportParam.getFirst("invoiceNo");
         ReportData reportData = new ReportData();
-       
-        InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();              
+
+        InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
         reportData.setData(Arrays.asList(invoiceData));
         reportData.setTemplate("/accounts/invoice");
         reportData.setReportName("invoice");
@@ -142,25 +143,34 @@ public class PaymentReportService {
         PaymentData paymentData = paymentService.getPaymentByVoucherNo(voucherNo).toData();
 
         reportData.getFilters().put("category", paymentData.getPayeeType().toString());
-        if(paymentData.getPayeeType()==PayeeType.Doctor ||paymentData.getPayeeType()==PayeeType.PettyCash ){
-            Employee emp = employeeService.findEmployeeByIdOrThrow(paymentData.getPayeeId());
-            reportData.setEmployeeId(emp.getStaffNumber());
+        if (paymentData.getPayeeType() == PayeeType.Doctor || paymentData.getPayeeType() == PayeeType.PettyCash) {
+            if (paymentData.getPayeeId() != null) {
+                Employee emp = employeeService.findEmployeeByIdOrThrow(paymentData.getPayeeId());
+                reportData.setEmployeeId(emp.getStaffNumber());
+            }
         }
-        if(paymentData.getPayeeType()==PayeeType.Supplier){
-           Optional<Supplier> supplier = supplierService.getSupplierById(paymentData.getPayeeId());
-           if(supplier.isPresent()){
-               reportData.getFilters().put("Supplier_Data", Arrays.asList(supplier.get().toData()));
-               
-           }
+        if (paymentData.getPayeeType() == PayeeType.Supplier) {
+            Optional<Supplier> supplier = supplierService.getSupplierById(paymentData.getPayeeId());
+            if (supplier.isPresent()) {
+                reportData.getFilters().put("Supplier_Data", Arrays.asList(supplier.get().toData()));
+            }
         }
-        reportData.getFilters().put("amountInWords", EnglishNumberToWords.convert(paymentData.getAmount()).toUpperCase());    
+        if (paymentData.getPayeeType() == PayeeType.Doctor || paymentData.getPayeeType() == PayeeType.Supplier) {
+            List<SupplierPaymentData> paymentDataItem = paymentService.getSupplierPayment(paymentData.getId(), paymentData.getPayeeType());
+            reportData.getFilters().put("PaymentData", paymentDataItem);
+        }
+        if (paymentData.getPayeeType() == PayeeType.PettyCash) {
+            List<PettyCashPaymentData> paymentDataItem = paymentService.getPettyCashPayment(paymentData.getId());
+            reportData.getFilters().put("PaymentData", paymentDataItem);
+        }
+        reportData.getFilters().put("amountInWords", EnglishNumberToWords.convert(paymentData.getAmount()).toUpperCase());
         reportData.setData(Arrays.asList(paymentData));
         reportData.setFormat(format);
         reportData.setTemplate("/payments/payment_voucher");
-        reportData.setReportName("Payment-voucher"+voucherNo);
+        reportData.setReportName("Payment-voucher" + voucherNo);
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getcreditNote(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String creditNoteNo = reportParam.getFirst("creditNoteNo");
@@ -170,16 +180,16 @@ public class PaymentReportService {
         reportData.getFilters().put("category", "Payer");
         PayerData payerData = PayerData.map(payerService.findPayerByIdWithNotFoundDetection(creditNoteData.getPayerId()));
         reportData.getFilters().put("Payer_Data", Arrays.asList(payerData));
-        
-        reportData.getFilters().put("amountInWords", EnglishNumberToWords.convert(BigDecimal.valueOf(creditNoteData.getAmount())).toUpperCase());    
+
+        reportData.getFilters().put("amountInWords", EnglishNumberToWords.convert(BigDecimal.valueOf(creditNoteData.getAmount())).toUpperCase());
         reportData.setData(Arrays.asList(creditNoteData));
         reportData.setFormat(format);
         reportData.setTemplate("/payments/credit_note");
-        reportData.setReportName("Credit-Note"+creditNoteNo);
+        reportData.setReportName("Credit-Note" + creditNoteNo);
         reportService.generateReport(reportData, response);
     }
-    
-    public void getPaymentStatement(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+    public void getPaymentStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         PayeeType creditorType = PayeeTypeToEnum(reportParam.getFirst("creditorType"));
         Long creditorId = NumberUtils.createLong(reportParam.getFirst("creditorId"));
@@ -187,8 +197,8 @@ public class PaymentReportService {
         String transactionNo = reportParam.getFirst("transactionNo");
         String dateRange = reportParam.getFirst("range");
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        
-         List<PaymentData> patientData = paymentService.getPayments(creditorType, creditorId, creditor, transactionNo, range, Pageable.unpaged())
+
+        List<PaymentData> patientData = paymentService.getPayments(creditorType, creditorId, creditor, transactionNo, range, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((register) -> register.toData())
@@ -196,7 +206,7 @@ public class PaymentReportService {
         reportData.setData(patientData);
         reportData.setFormat(format);
         reportData.setTemplate("/payment/payment_statement");
-        
+
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("transactionNo");
@@ -204,11 +214,11 @@ public class PaymentReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+
         reportData.setReportName("Payment-Statement");
         reportService.generateReport(reportData, response);
-    }    
-    
+    }
+
     private PettyCashStatus PettyCashStatusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;

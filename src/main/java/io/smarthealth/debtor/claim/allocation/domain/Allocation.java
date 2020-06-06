@@ -33,6 +33,7 @@ public class Allocation extends Auditable {
     private String remittanceNo;
     private String transactionId;
     private String receiptNo;
+    private LocalDate transactionDate;
     
     public AllocationData map() {
         AllocationData data = new AllocationData();

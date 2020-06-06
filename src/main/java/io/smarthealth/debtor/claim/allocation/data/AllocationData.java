@@ -37,7 +37,7 @@ public class AllocationData {
     @ApiModelProperty(hidden = true)
     private LocalDate invoiceDate;
     @ApiModelProperty(hidden = true)
-    private LocalDate transactionDate;
+    private LocalDate transactionDate=LocalDate.now();
     
 
     public static Allocation map(AllocationData data) {
@@ -47,6 +47,7 @@ public class AllocationData {
         allocation.setReceiptNo(data.getReceiptNo());
         allocation.setRemittanceNo(data.getRemittanceNo());
         allocation.setTransactionId(data.getTransactionId());
+        allocation.setTransactionDate(data.getTransactionDate());
         return allocation;
     }
 }
