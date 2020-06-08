@@ -36,6 +36,8 @@ public class PatientTestsData {
     @ValidIdentifier
     private String patientNumber;
     @ApiModelProperty(required = false, hidden = true)
+    private String patientName;
+    @ApiModelProperty(required = false, hidden = true)
     @Enumerated(EnumType.STRING)
     private Gender gender;
     @CheckValidVisit
@@ -58,6 +60,8 @@ public class PatientTestsData {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime recorded = LocalDateTime.now();
+    @ApiModelProperty(required = false, hidden = true)
+    private String doctor;
 
     public static PatientDiagnosis map(PatientTestsData diagnosis) {
         PatientDiagnosis entity = new PatientDiagnosis();
@@ -77,7 +81,13 @@ public class PatientTestsData {
         diagnos.setDescription(entity.getDiagnosis().getDescription());
         diagnos.setCertainty(Certainty.valueOf(entity.getCertainty()));
         diagnos.setDiagnosisOrder(Order.valueOf(entity.getDiagnosisOrder()));
-//        diagnos.setAge(entity.getAge());
+        diagnos.setRecorded(entity.getDateRecorded());
+        diagnos.setAge(entity.getPatient().getAge());
+        diagnos.setGender(entity.getPatient().getGender());
+        if(entity.getVisit().getPatient()!=null)
+            diagnos.setPatientName(entity.getVisit().getPatient().getFullName());
+        if(entity.getVisit().getHealthProvider()!=null)
+           diagnos.setDoctor(entity.getVisit().getHealthProvider().getFullName());
         return diagnos;
     }
 
