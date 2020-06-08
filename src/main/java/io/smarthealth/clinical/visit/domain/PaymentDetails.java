@@ -32,18 +32,18 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "patient_visit_payment_details")
 public class PaymentDetails extends Auditable {
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "visit_id", foreignKey = @ForeignKey(name = "fk_payment_details_visit_id"))
     private Visit visit;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToOne(fetch = FetchType.LAZY, optional = true)
+//    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "payer_id", foreignKey = @ForeignKey(name = "fk_payment_details_payer"))
     private Payer payer;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToOne(fetch = FetchType.LAZY, optional = true)
+//    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "scheme_id", foreignKey = @ForeignKey(name = "fk_payment_details_payee_id"))
     private Scheme scheme;
 

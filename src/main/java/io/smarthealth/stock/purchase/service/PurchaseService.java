@@ -1,6 +1,5 @@
 package io.smarthealth.stock.purchase.service;
 
-import io.smarthealth.ApplicationProperties;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.accounting.pricelist.service.PricebookService;
 import io.smarthealth.administration.app.domain.Address;
@@ -39,7 +38,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;

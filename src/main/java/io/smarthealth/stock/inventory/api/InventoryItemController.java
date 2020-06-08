@@ -53,7 +53,7 @@ public class InventoryItemController {
     @PreAuthorize("hasAuthority('view_inventoryItem')")
     public InventoryItemData getInventoryItem(@PathVariable(value = "id") Long code, @PathVariable(value = "storeId") Long storeId) {
         InventoryItem inventoryItem = service.getInventoryItem(code, storeId).orElse(null);
-        return inventoryItem.toData();
+        return inventoryItem!=null ? inventoryItem.toData() : null;
     }
     
 

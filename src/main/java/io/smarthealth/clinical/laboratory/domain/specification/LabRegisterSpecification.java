@@ -50,6 +50,7 @@ public class LabRegisterSpecification {
             }
             if (search != null) {
                 final String likeExpression = "%" + search + "%";
+                 
                 predicates.add(
                         cb.or(
                                 cb.like(root.get("visit").get("visitNumber"), likeExpression),

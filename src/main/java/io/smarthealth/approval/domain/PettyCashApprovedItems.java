@@ -16,6 +16,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import lombok.Data;
 
 /**
@@ -23,7 +24,7 @@ import lombok.Data;
  * @author Simon.waweru
  */
 @Data
-@Entity
+@Entity 
 public class PettyCashApprovedItems extends Identifiable {
 
     @ManyToOne(optional = false)

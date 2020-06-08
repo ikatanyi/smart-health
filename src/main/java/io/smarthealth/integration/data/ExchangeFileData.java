@@ -1,10 +1,7 @@
 package io.smarthealth.integration.data;
 
-import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.integration.domain.ExchangeFile;
 import java.time.LocalDate;
-import javax.persistence.Entity;
-import javax.persistence.Table; 
 import lombok.Data;
 
 /**

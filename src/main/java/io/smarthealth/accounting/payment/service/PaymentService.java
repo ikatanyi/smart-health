@@ -40,6 +40,8 @@ import io.smarthealth.accounting.payment.domain.SupplierPayment;
 import io.smarthealth.accounting.payment.domain.SupplierPaymentRepository;
 import io.smarthealth.accounting.payment.domain.enumeration.PayeeType;
 import io.smarthealth.accounting.payment.domain.specification.PaymentSpecification;
+import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
+import io.smarthealth.accounting.pettycash.domain.repository.PettyCashApprovedItemsRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.lang.SystemUtils;
@@ -74,6 +76,7 @@ public class PaymentService {
     private final JournalService journalEntryService;
     private final PettyCashPaymentRepository pettyCashPaymentRepository;
     private final AccountRepository accountRepository;
+    private final PettyCashApprovedItemsRepository pettyCashApprovedItemsRepository;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Payment makePayment(MakePayment data) {
@@ -289,7 +292,7 @@ public class PaymentService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Payment makePayment(MakePettyCashPayment data) {
         Payment payment = new Payment();
-//        payment.setCreditorId(data.getCreditorId());
+        payment.setPayeeId(data.getPayeeId());
         payment.setPayee(data.getPayee());
         payment.setPayeeType(PayeeType.PettyCash);
         payment.setAmount(data.getApprovedAmount());
@@ -321,7 +324,9 @@ public class PaymentService {
 //                   pay.setPettyCashRequest(pettyCashRequest);
                     pay.setTransactionNo(savedPayment.getTransactionNo());
                     pay.setVoucherNo(savedPayment.getVoucherNo());
-
+                    if (req.getRequestId() != null) {
+                        pettyCashApprovedItemsRepository.updateItemPaid(req.getRequestId());
+                    }
                     return pay;
                 })
                 .collect(Collectors.toList());
