@@ -83,10 +83,10 @@ public class FileUploadController {
             @RequestParam(value = "documentType", required = false) DocumentType documentType,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "servicePointId", required = false) Long servicePointId,
-            @RequestParam(value = "pag", required = false) Integer pag,
+            @RequestParam(value = "page", required = false) Integer pag,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
-        final DateRange range = DateRange.fromIsoString(dateRange);
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(pag, size);
         List<DocumentData> testData = fileService.findAllDocuments(patientNumber, documentType, status, servicePointId, range, pageable)
                 .stream()

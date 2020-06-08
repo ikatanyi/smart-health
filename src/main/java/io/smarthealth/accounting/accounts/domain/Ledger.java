@@ -16,9 +16,9 @@ import lombok.Data;
 /**
  *
  * @author Kelsas
- */  
-@Data
+ */   
 @Entity
+@Data
 @Table(name = "acc_ledgers")
 public class Ledger extends Auditable {
 

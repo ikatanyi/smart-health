@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="referral" pageWidth="612" pageHeight="795" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="7f5d1719-2150-4099-8058-82165eccb7fc">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="31"/>
+	<property name="ireport.y" value="32"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -238,12 +238,19 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="3" y="101" width="138" height="14" forecolor="#000000" backcolor="#9999FF" uuid="ad52767c-f4c9-40fb-ac7c-3c9f83527976"/>
+				<reportElement positionType="Float" mode="Transparent" x="3" y="101" width="151" height="14" forecolor="#000000" backcolor="#9999FF" uuid="ad52767c-f4c9-40fb-ac7c-3c9f83527976"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Institution/Doctor Transferred To :]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="139" y="103" width="255" height="12" uuid="e3f62d18-6e4a-4c6c-8454-f3fd5633cac4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{doctorName}.equals(null)?"":$F{doctorName})+" "+($F{doctorSpeciality}.equals(null)?"":$F{doctorSpeciality})]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -373,20 +380,6 @@
 				</textElement>
 				<text><![CDATA[Reason - Must be significantly medically necessary and cannot be managed or treated by a primary care provider ]]></text>
 			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="1" y="40" width="153" height="15" uuid="c9cad0f0-8197-44d2-93fb-21b5470bfd5f"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Institution/Doctor Transferred To :]]></text>
-			</staticText>
-			<textField>
-				<reportElement positionType="Float" x="152" y="40" width="228" height="15" uuid="51c7e2bc-bc0a-4f7f-9cc2-ddd3c74860bc"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[($F{doctorName}.equals( null )?"":$F{doctorName})+","+($F{doctorSpeciality}.equals( null )?"":$F{doctorSpeciality})]]></textFieldExpression>
-			</textField>
 			<line>
 				<reportElement positionType="Float" x="336" y="82" width="229" height="1" forecolor="#CC3300" uuid="38549910-acdc-4403-bfe2-f5692a9624e7"/>
 				<graphicElement>
@@ -398,15 +391,8 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[ Name of Referring Physician, ARNP or PA (Print)                                                                                               Signature of Referring Physician, ARNP or PA ]]></text>
+				<text><![CDATA[                                                                                                                                                                                    Signature of Referring Physician, ARNP or PA ]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="-1" y="69" width="255" height="12" uuid="e3f62d18-6e4a-4c6c-8454-f3fd5633cac4"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{doctorName}+" "+$F{doctorSpeciality}]]></textFieldExpression>
-			</textField>
 		</band>
 	</detail>
 	<pageFooter>

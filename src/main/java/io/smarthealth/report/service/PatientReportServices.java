@@ -196,7 +196,7 @@ public class PatientReportServices {
     public void getDiagnosis(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws JRException, SQLException, IOException {
         String visitNumber = reportParam.getFirst("visitNumber");
         String patientNumber = reportParam.getFirst("patientNumber");
-        Gender gender = Gender.fromValue(reportParam.getFirst("gender"));
+        Gender gender = genderToEnum(reportParam.getFirst("gender"));
         String dateRange = reportParam.getFirst("dateRange");
         Integer page = Integer.getInteger(reportParam.getFirst("page"));
         Integer size = Integer.getInteger(reportParam.getFirst("size"));
@@ -214,8 +214,8 @@ public class PatientReportServices {
                 .collect(Collectors.toList());
         reportData.setData(diagnosisData);
         reportData.setFormat(format);
-        reportData.setTemplate("/clinical/diagnosis_report");
-        reportData.setReportName("visit-report");
+        reportData.setTemplate("/patient/diagnosis_report");
+        reportData.setReportName("Diagnosis-Report");
         reportService.generateReport(reportData, response);
     }
 
@@ -251,7 +251,6 @@ public class PatientReportServices {
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         if (visit.getHealthProvider() != null) {
             reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
-
         }
 
         PatientVisitData pVisitData = new PatientVisitData();
@@ -467,4 +466,16 @@ public class PatientReportServices {
         }
         throw APIException.internalError("RequestType a Valid Bill Status");
     }
+    
+    private Gender genderToEnum(String gender) {
+        if (gender == null || gender.equals("null") || gender.equals("")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(Gender.class, gender)) {
+            return Gender.valueOf(gender);
+        }
+        throw APIException.internalError("RequestType a Valid Bill Status");
+    }
+    
+    
 }

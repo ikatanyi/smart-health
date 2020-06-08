@@ -22,7 +22,7 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
 
     @Transactional
     @Override
-    @CronTarget(jobName = JobName.AUTO_CHECK_OUT_PATIENT)
+//    @CronTarget(jobName = JobName.AUTO_CHECK_OUT_PATIENT)
     public void updateCheckout() {
         log.info("Patient checkout scheduling effected .... " + LocalDateTime.now().toString());
     }
