@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ReportMailingJobService {
     
-//    @CronTarget(jobName = JobName.EXECUTE_REPORT_MAILING_JOBS)
+    @CronTarget(jobName = JobName.EXECUTE_REPORT_MAILING_JOBS)
     public void executeReportMailingJobs() throws JobExecutionException {
         log.info("Mailing report triggered for now at: "+LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
     } 

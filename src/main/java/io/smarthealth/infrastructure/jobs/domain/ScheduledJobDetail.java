@@ -26,7 +26,7 @@ public class ScheduledJobDetail extends Identifiable {
     private LocalDateTime previousRunStartTime;
     private LocalDateTime nextRunTime;
     private String jobKey;
-    @Column(name = "initializing_errorlog")
+    @Column(name = "initializing_errorlog", columnDefinition = "TEXT")
     private String errorLog;
     @Column(name = "is_active")
     private boolean activeSchedular;
