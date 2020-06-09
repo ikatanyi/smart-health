@@ -5,7 +5,7 @@
  */
 package io.smarthealth.infrastructure.imports.api;
 
-import io.smarthealth.administration.templates.domain.enumeration.TemplateType;
+import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.infrastructure.imports.service.BatchImportService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;

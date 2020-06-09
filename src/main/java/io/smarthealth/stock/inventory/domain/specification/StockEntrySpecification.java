@@ -18,41 +18,63 @@ public class StockEntrySpecification {
     public StockEntrySpecification() {
         super();
     }
-  
-        public static Specification<StockEntry> createSpecification(Long storeId, Long itemId,String referenceNumber,String transactionId, String deliveryNumber, DateRange range, MovementPurpose purpose,MovementType moveType) {
+
+    public static Specification<StockEntry> createSpecification(Long storeId, Long itemId, String referenceNumber, String transactionId, String deliveryNumber, DateRange range, MovementPurpose purpose, MovementType moveType) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
-            
+
             if (storeId != null) {
                 predicates.add(cb.equal(root.get("store").get("id"), storeId));
             }
-            
-             if (itemId != null) {
+
+            if (itemId != null) {
                 predicates.add(cb.equal(root.get("item").get("id"), itemId));
             }
-             
+
             if (transactionId != null) {
                 predicates.add(cb.equal(root.get("transactionNumber"), transactionId));
             }
-             if (deliveryNumber != null) {
+            if (deliveryNumber != null) {
                 predicates.add(cb.equal(root.get("deliveryNumber"), deliveryNumber));
             }
-              if (referenceNumber != null) {
+            if (referenceNumber != null) {
                 predicates.add(cb.equal(root.get("referenceNumber"), referenceNumber));
             }
-              if (purpose != null) {
+            if (purpose != null) {
                 predicates.add(cb.equal(root.get("purpose"), purpose));
             }
-              if (moveType != null) {
+            if (moveType != null) {
                 predicates.add(cb.equal(root.get("moveType"), moveType));
             }
-              if(range!=null){
-                  predicates.add(
-                     cb.between(root.get("transactionDate"), range.getStartDate(), range.getEndDate())
-                  );
-              }
+            if (range != null) {
+                predicates.add(
+                        cb.between(root.get("transactionDate"), range.getStartDate(), range.getEndDate())
+                );
+            }
 
-              return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
-     }
+    }
+
+    public static Specification<StockEntry> getStockMovement(Long storeId, Long itemId, DateRange range) {
+        return (root, query, cb) -> {
+            final ArrayList<Predicate> predicates = new ArrayList<>();
+
+            if (storeId != null) {
+                predicates.add(cb.equal(root.get("store").get("id"), storeId));
+            }
+
+            if (itemId != null) {
+                predicates.add(cb.equal(root.get("item").get("id"), itemId));
+            }
+
+            if (range != null) {
+                predicates.add(
+                        cb.between(root.get("transactionDate"), range.getStartDate(), range.getEndDate())
+                );
+            }
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
 }

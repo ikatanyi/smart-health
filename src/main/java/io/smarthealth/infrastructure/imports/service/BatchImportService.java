@@ -5,16 +5,15 @@
  */
 package io.smarthealth.infrastructure.imports.service;
 
-import io.smarthealth.administration.templates.domain.enumeration.TemplateType;
-import io.smarthealth.debtor.claim.allocation.api.AllocationController;
+import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
-import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.stock.item.data.CreateItem;
+import io.smarthealth.stock.item.service.ItemService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +34,7 @@ public class BatchImportService {
 
     private final PatientRepository patientRepository;
     private final AllocationService allocationService;
+    private final ItemService itemService;
 
     private final ModelMapper modelMapper;
 
@@ -57,6 +56,11 @@ public class BatchImportService {
                     allocationService.importAllocation(allocationList);
                 case Payers:
                     // code block
+                    break;
+                case Products:
+                    List<CreateItem> items=toPojoUtil.toPojo(CreateItem.class, inputFilestream);
+                    
+                    itemService.importItem(items);
                     break;
                 default:
                     throw APIException.notFound("Coming Soon!!!", "");

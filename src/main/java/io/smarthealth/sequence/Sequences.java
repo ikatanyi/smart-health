@@ -20,6 +20,7 @@ public enum Sequences {
     Procedure,
     ShiftNumber,
     StockItem,
+    ServiceItem,
     RequistionNumber,
     PurchaseOrder,
     StockTransferNumber,

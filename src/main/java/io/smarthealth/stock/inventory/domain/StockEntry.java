@@ -21,11 +21,11 @@ import lombok.Data;
 @Data
 @Table(name = "stock_inventory_entries")
 public class StockEntry extends Auditable {
- 
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_entry_store_id"))
     private Store store;
- 
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_stock_stock_entry_item_id"))
     private Item item;
@@ -45,7 +45,7 @@ public class StockEntry extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private MovementPurpose purpose;
-    
+
     private LocalDate expiryDate;
     private String batchNo;
 
@@ -83,7 +83,7 @@ public class StockEntry extends Auditable {
         return data;
     }
 
-    public static StockEntry create(DispensedDrug drug) { 
+    public static StockEntry create(DispensedDrug drug) {
         Item item = drug.getDrug();
         Store store = drug.getStore();
 
@@ -97,11 +97,13 @@ public class StockEntry extends Auditable {
         stock.setMoveType(MovementType.Dispensed);
         stock.setPrice(price);
         stock.setPurpose(MovementPurpose.Issue);
-        if(drug.getWalkinFlag()){
+
+        if (drug.getWalkinFlag()) {
             stock.setReferenceNumber(drug.getOtherReference());
-        }else{
-        stock.setReferenceNumber(drug.getPatient().getPatientNumber());
+        } else {
+            stock.setReferenceNumber(drug.getPatient().getPatientNumber());
         }
+        stock.setIssuedTo(drug.getOtherReference());
         stock.setStore(store);
         stock.setTransactionDate(drug.getDispensedDate());
         stock.setTransactionNumber(drug.getTransactionId());
