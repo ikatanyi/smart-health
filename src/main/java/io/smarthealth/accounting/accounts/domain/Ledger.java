@@ -10,15 +10,15 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.Table; 
 import lombok.Data;
 
 /**
  *
  * @author Kelsas
- */
-@Data
+ */   
 @Entity
+@Data
 @Table(name = "acc_ledgers")
 public class Ledger extends Auditable {
 

@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.visit.data;
 
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import javax.persistence.EnumType;
@@ -34,6 +35,7 @@ public class PaymentDetailsData {
     @Enumerated(EnumType.STRING)
     private CoPayType coPayCalcMethod;
     private double coPayValue;
+    private VisitEnum.PaymentMethod paymentMethod;
 
     public static PaymentDetailsData map(PaymentDetails e) {
         PaymentDetailsData d = new PaymentDetailsData();
@@ -46,6 +48,7 @@ public class PaymentDetailsData {
         d.setVisitId(e.getVisit().getId());
         d.setLimitAmount(e.getLimitAmount());
         d.setPayerName(e.getPayer().getPayerName());
+        d.setPaymentMethod(VisitEnum.PaymentMethod.Insurance);
         d.setSchemeName(e.getScheme().getSchemeName());
         if (e.getCoPayCalcMethod() != null) {
             d.setCoPayCalcMethod(e.getCoPayCalcMethod());

@@ -7,12 +7,11 @@ package io.smarthealth.accounting.pettycash.domain.repository;
 
 import io.smarthealth.approval.domain.PettyCashApprovedItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
-import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
-import io.smarthealth.organization.facility.domain.Employee;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
@@ -25,4 +24,7 @@ public interface PettyCashApprovedItemsRepository extends JpaRepository<PettyCas
 
 //    @Query("SELECT a FROM PettyCashApprovals a WHERE a.itemNo.requestNo=:requestNo")
 //    List<PettyCashApprovedItems> fetchPettyCashApprovalsByRequestNo(final PettyCashRequests request);
+    @Modifying
+    @Query("UPDATE PettyCashRequestItems p SET p.paid=true where p.id=:id")
+    int updateItemPaid(@Param("id") Long id);
 }

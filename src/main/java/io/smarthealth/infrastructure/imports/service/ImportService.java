@@ -75,8 +75,7 @@ public class ImportService {
             response.setHeader("Content-Disposition", "attachment; filename=" + fileName + ".xls");
             workbook.write(response.getOutputStream());
             workbook.close();
-
-            System.out.println();
+ 
 
         } catch (Exception e) {
             e.printStackTrace();

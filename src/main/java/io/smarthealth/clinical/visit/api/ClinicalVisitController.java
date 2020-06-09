@@ -28,6 +28,8 @@ import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.VisitDatas;
 //import io.smarthealth.clinical.visit.data.enums.TriageCategory;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.PaymentDetailAudit;
+import io.smarthealth.clinical.visit.domain.PaymentDetailAuditRepository;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
@@ -56,6 +58,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -130,6 +133,9 @@ public class ClinicalVisitController {
 
     @Autowired
     DoctorInvoiceService doctorInvoiceService;
+
+    @Autowired
+    PaymentDetailAuditRepository paymentDetailAuditRepository;
 
     @PostMapping("/visits")
     @PreAuthorize("hasAuthority('create_visits')")
@@ -384,14 +390,83 @@ public class ClinicalVisitController {
 
     @GetMapping("/visits/{visitNo}/payment-mode")
     @PreAuthorize("hasAuthority('view_visits')")
-    public ResponseEntity<?> fetchpaymentModeByVisit(@PathVariable("visitNo") String visitNo
-    ) {
+    public ResponseEntity<?> fetchpaymentModeByVisit(@PathVariable("visitNo") String visitNo) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
         PaymentDetails pde = paymentDetailsService.fetchPaymentDetailsByVisit(visit);
         Pager<PaymentDetailsData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Payment Mode");
         pagers.setContent(PaymentDetailsData.map(pde));
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
+    @PutMapping("/visits/{visitNo}/payment-mode")
+    @PreAuthorize("hasAuthority('view_visits')")
+    public ResponseEntity<?> updatePaymentMode(@PathVariable("visitNo") String visitNo, @Valid @RequestBody PaymentDetailsData data) {
+        Visit visit = visitService.findVisitEntityOrThrow(visitNo);
+
+        if (visit.getStatus() != VisitEnum.Status.CheckIn) {
+            throw APIException.badRequest("Visit should be active to update the payment details");
+        }
+        //check the currnt
+        Optional<PaymentDetails> currentPaymentDetail = paymentDetailsService.getPaymentDetailsByVist(visit);
+
+        PaymentDetails paymentDetails = null;
+
+        if (currentPaymentDetail.isPresent()) {
+            PaymentDetails pd = currentPaymentDetail.get();
+
+            PaymentDetailAudit audit = new PaymentDetailAudit();
+            audit.setChangeDate(LocalDateTime.now());
+            audit.setMemberName(pd.getMemberName());
+            audit.setPayer(pd.getPayer());
+            audit.setPolicyNo(pd.getPolicyNo());
+            audit.setReason(data.getComments());
+            audit.setRelation(pd.getRelation());
+            audit.setScheme(pd.getScheme());
+            audit.setVisit(pd.getVisit());
+
+            paymentDetailAuditRepository.save(audit);
+
+            if (data.getPaymentMethod() == VisitEnum.PaymentMethod.Cash) {
+                paymentDetailsService.deletePaymentDetails(pd);
+            }
+
+        }
+
+        if (data.getPaymentMethod() == VisitEnum.PaymentMethod.Cash) {
+            visit.setPaymentMethod(VisitEnum.PaymentMethod.Cash);
+        } else {
+            visit.setPaymentMethod(VisitEnum.PaymentMethod.Insurance);
+            if (data.getSchemeId() == null) {
+                throw APIException.badRequest("Scheme Id is required");
+            }
+            Scheme scheme = schemeService.fetchSchemeById(data.getSchemeId());
+            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+            PaymentDetails pd = new PaymentDetails();
+            pd.setComments(data.getComments());
+            pd.setPolicyNo(data.getPolicyNo());
+            pd.setMemberName(data.getMemberName());
+            pd.setScheme(scheme);
+            pd.setPayer(scheme.getPayer());
+            pd.setVisit(visit);
+            pd.setRelation(data.getRelation());
+            if (config.isPresent()) {
+                pd.setCoPayCalcMethod(config.get().getCoPayType());
+                pd.setCoPayValue(config.get().getCoPayValue());
+            }
+            paymentDetails = paymentDetailsService.createPaymentDetails(pd);
+
+        }
+        visitService.save(visit);
+
+        PaymentDetailsData ppd = paymentDetails != null ? PaymentDetailsData.map(paymentDetails) : null;
+
+        Pager< PaymentDetailsData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Mode Changed Successful");
+        pagers.setContent(ppd);
 
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }

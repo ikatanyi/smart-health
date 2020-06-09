@@ -2,7 +2,6 @@ package io.smarthealth.infrastructure.reports.service;
 
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.ApplicationProperties;
-import io.smarthealth.organization.facility.data.FacilityData;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.EmployeeService;
@@ -50,7 +49,6 @@ import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ResourceLoader;
@@ -292,8 +290,9 @@ public class JasperReportsService {
 
         jasperParameter.put("facilityName", facility.getFacilityName());
         jasperParameter.put("facilityType", facility.getFacilityType());
-        if (facility.getCompanyLogo() != null) {
+        if (facility.getCompanyLogo() != null) { 
             jasperParameter.put("logo", facility.getCompanyLogo().getData());
+            
         }
         jasperParameter.put("orgLegalName", facility.getOrganization().getLegalName());
         jasperParameter.put("orgName", facility.getOrganization().getOrganizationName());

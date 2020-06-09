@@ -11,7 +11,6 @@ package io.smarthealth.debtor.claim.creditNote.domain;
 
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.item.domain.Item;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;

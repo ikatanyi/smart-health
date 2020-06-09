@@ -142,7 +142,7 @@ public class DispensingService {
     }
 
     public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, Boolean isReturn, Pageable page) {
-
+      
         Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo, isReturn);
 
         return repository.findAll(spec, page);

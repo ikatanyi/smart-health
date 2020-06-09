@@ -5,8 +5,6 @@ import io.smarthealth.accounting.payment.service.RemittanceService;
 import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.domain.Allocation;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
-import io.smarthealth.debtor.claim.remittance.domain.RemittanceOld;
-import io.smarthealth.debtor.claim.remittance.service.RemitanceService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;

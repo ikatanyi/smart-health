@@ -29,5 +29,6 @@ public class PettyCashRequestItems extends Identifiable {
     @ManyToOne(optional = false)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_request_items_request_no"))
     private PettyCashRequests requestNo;
+    private Boolean paid;
 
 }

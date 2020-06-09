@@ -25,7 +25,7 @@ public class DoctorRequestSpecification {
     }
 
     public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus/*, Date from , Date to*/, String groupBy, Boolean activeVisit) {
-        System.out.println("visitNumber to request " + visitNumber);
+//        System.out.println("visitNumber to request " + visitNumber);
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 

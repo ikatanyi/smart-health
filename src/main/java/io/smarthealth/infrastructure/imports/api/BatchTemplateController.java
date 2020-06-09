@@ -1,7 +1,7 @@
-package io.smarthealth.administration.templates.api;
+package io.smarthealth.infrastructure.imports.api;
 
-import io.smarthealth.administration.templates.domain.enumeration.TemplateType;
-import io.smarthealth.administration.templates.service.TemplateService;
+import io.smarthealth.infrastructure.imports.domain.TemplateType;
+import io.smarthealth.infrastructure.imports.service.BatchTemplateService;
 import io.swagger.annotations.Api;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class TemplateController {
-    private final TemplateService templateService;
+public class BatchTemplateController {
+    private final BatchTemplateService templateService;
 
     @GetMapping("/template")
     @PreAuthorize("hasAuthority('view_template')")

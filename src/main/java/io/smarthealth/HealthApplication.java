@@ -17,30 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Slf4j
 @EnableScheduling
 public class HealthApplication {
-
-//     @Autowired
-//    private SequenceNumberService sequenceNumberService;
-//    @Bean
-//    public Reactor reactor(final Environment env) {
-//        Reactor reactor = Reactors.reactor(env, Environment.RING_BUFFER);
-//
-//        reactor.on($("sequence"), new Consumer<Event<SequenceEvent>>() {
-//            @Override
-//            public void accept(Event<SequenceEvent> ev) {
-//                SequenceEvent data = ev.getData();
-//                DeferredResult<String> result = data.getResult();
-//                try {
-//                    String number = sequenceNumberService.next(data.getTenant(), data.getName());
-//                    result.setResult("{ \"number\": \"" + number + "\" }\n");
-//                } catch (Exception e) {
-//                    log.error("Exception in sequence event listener", e);
-//                    result.setErrorResult(e);
-//                }
-//            }
-//        });
-//
-//        return reactor;
-//    }
+ 
     public static void main(String[] args) {
         SpringApplication.run(HealthApplication.class, args);
     }
