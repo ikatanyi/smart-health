@@ -92,12 +92,9 @@ public class RadiologyReportService {
     
     public void getPatientRadiolgyReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         String accessNumber = reportParam.getFirst("scanNumber");
         PatientScanRegisterData procTests = scanService.findPatientRadiologyTestByAccessNoWithNotFoundDetection(accessNumber).todata();
-       
-        if(!procTests.getPatientScanTestData().isEmpty())
-            reportData.getFilters().put("entryDate", formatter.format(procTests.getPatientScanTestData().get(0).getEntryDateTime()));     
+          
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
         
