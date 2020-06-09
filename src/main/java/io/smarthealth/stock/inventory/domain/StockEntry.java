@@ -92,7 +92,7 @@ public class StockEntry extends Auditable {
 
         StockEntry stock = new StockEntry();
         stock.setAmount(amt);
-        stock.setQuantity(drug.getQtyIssued());
+        stock.setQuantity(drug.getQtyIssued()*-1);
         stock.setItem(item);
         stock.setMoveType(MovementType.Dispensed);
         stock.setPrice(price);

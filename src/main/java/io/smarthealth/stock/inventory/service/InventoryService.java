@@ -224,13 +224,20 @@ public class InventoryService {
     //create supplier invoice
     public void save(StockEntry entry) {
         stockEntryRepository.saveAndFlush(entry);
+        Double qty = entry.getQuantity();
+        if (entry.getPurpose() == MovementPurpose.Issue && entry.getMoveType() == MovementType.Dispensed) {
+            if (BigDecimal.valueOf(qty).signum() == -1) {
+                qty *= -1;
+            }
+        }
+        System.err.println("My values as dispensed "+qty);
 
         inventoryEventSender.process(
                 new InventoryEvent(
                         getEvent(entry.getMoveType()),
                         entry.getStore(),
                         entry.getItem(),
-                        entry.getQuantity())
+                        qty)
         );
     }
 
