@@ -110,9 +110,9 @@ public class InventoryController {
         return ResponseEntity.ok(pagers);
     }
 
-    @GetMapping("/inventory-entries/{item_id}/item-flow")
+    @GetMapping("/inventory-entries/{item_id}/drug-flow")
     @PreAuthorize("hasAuthority('view_inventory')")
-    public ResponseEntity<?> getItemMovements(
+    public ResponseEntity<?> getDrugflow(
             @PathVariable(value = "item_id") final Long itemId,
             @RequestParam(value = "store_id", required = false) final Long storeId,
             @RequestParam(value = "dateRange", required = false) String dateRange,
