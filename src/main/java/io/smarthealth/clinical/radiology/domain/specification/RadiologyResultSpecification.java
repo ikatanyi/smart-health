@@ -48,11 +48,8 @@ public class RadiologyResultSpecification {
 //                System.out.println("likeExpression "+likeExpression);
                 predicates.add(
                         cb.or(
-                                cb.like(root.get("patientScanTest").get("patientScanRegister").get("visit").get("visitNumber"), likeExpression),
                                 cb.like(root.get("patientScanTest").get("patientScanRegister").get("patientNo"), likeExpression),
                                 cb.like(root.get("patientScanTest").get("patientScanRegister").get("patientName"), likeExpression),
-                                //cb.like(root.get("patientScanTest").get("patientScanRegister").get("visit").get("patient").get("fullName"), likeExpression),
-                                cb.like(root.get("patientScanTest").get("patientScanRegister").get("visit").get("patient").get("patientNumber"), likeExpression), //
                                 cb.like(root.get("patientScanTest").get("patientScanRegister").get("accessNo"), likeExpression)
                         )
                 );

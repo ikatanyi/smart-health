@@ -18,18 +18,18 @@ public class RadiologyTestSpecification {
         super();
     }
 
-    public static Specification<PatientScanTest> createSpecification(String PatientNumber, String scanNo, String visitId, Boolean isWalkin, ScanTestState status, DateRange range, String search) {
+    public static Specification<PatientScanTest> createSpecification(String PatientNumber, String scanNo, String visitNumber, Boolean isWalkin, ScanTestState status, DateRange range, String search) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
             if (PatientNumber != null) {
-                predicates.add(cb.equal(root.get("patientScanRegister").get("patientNumber"), PatientNumber));
+                predicates.add(cb.equal(root.get("patientScanRegister").get("patientNo"), PatientNumber));
             }
             if (scanNo != null) {
                 predicates.add(cb.equal(root.get("patientScanRegister").get("accessNo"), scanNo));
             }
-            if (visitId != null) {
-                predicates.add(cb.equal(root.get("patientScanRegister").get("visit").get("visitId"), visitId));
+            if (visitNumber != null) {
+                predicates.add(cb.equal(root.get("patientScanRegister").get("visit").get("visitNumber"), visitNumber));
             }
             if (isWalkin != null) {
                 predicates.add(cb.equal(root.get("patientScanRegister").get("isWalkin"), isWalkin));
@@ -46,11 +46,8 @@ public class RadiologyTestSpecification {
                 final String likeExpression = "%" + search + "%";
                 predicates.add(
                         cb.or(
-                                cb.like(root.get("patientScanRegister").get("visit").get("visitNumber"), likeExpression),
                                 cb.like(root.get("patientScanRegister").get("patientNo"), likeExpression),
-                                cb.like(root.get("patientScanRegister").get("patientName"), likeExpression),
-                                //cb.like(root.get("patientScanRegister").get("visit").get("patient").get("fullName"), likeExpression),
-                                cb.like(root.get("patientScanRegister").get("visit").get("patient").get("patientNumber"), likeExpression), //
+                                cb.like(root.get("patientScanRegister").get("patientName"), likeExpression), //
                                 cb.like(root.get("patientScanRegister").get("accessNo"), likeExpression)
                         )
                 );

@@ -46,6 +46,8 @@ public class PatientScanRegisterData {
     @ApiModelProperty(hidden = true, required = false)
     private LocalDate createdOn;
     private LocalDate billingDate;
+    @ApiModelProperty(hidden = true, required = false)
+    private LocalDate receivedDate=LocalDate.now();
     private Boolean isWalkin;
     private Boolean voided;
     @Enumerated(EnumType.STRING)
@@ -83,6 +85,7 @@ public class PatientScanRegisterData {
         e.setBillingDate(this.getBillingDate());
         e.setGender(this.getGender());
         e.setVoided(this.getVoided());
+        e.setReceivedDate(this.getReceivedDate());
         return e;
     }
 }

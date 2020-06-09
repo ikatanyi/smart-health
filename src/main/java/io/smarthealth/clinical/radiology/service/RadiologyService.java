@@ -50,6 +50,7 @@ import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -144,7 +145,7 @@ public class RadiologyService {
                 pte.setRadiologyTest(labTestType);
                 pte.setStatus(ScanTestState.Scheduled);
                 pte.setPaid(patientScanReg.getPaymentMode().equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
-                Optional<Employee> medic = employeeService.findEmployeeByStaffNumber(id.getMedicId());
+                Optional<Employee> medic = employeeService.findEmployeeById(id.getMedicId());
                 if (medic.isPresent()) {
                     pte.setMedic(medic.get());
                 }
@@ -171,12 +172,10 @@ public class RadiologyService {
         //get the service point from store
         ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Radiology);
         PatientBill patientbill = new PatientBill();
-        patientbill.setVisit(data.getVisit());
-        patientbill.setVisit(data.getVisit());
-        if (data.getVisit() != null) {
-            patientbill.setPatient(data.getVisit().getPatient());
-        }
+        
         if (!data.getIsWalkin()) {
+            patientbill.setVisit(data.getVisit());
+            patientbill.setPatient(data.getVisit().getPatient());
             patientbill.setWalkinFlag(Boolean.FALSE);
         } else {
             patientbill.setReference(data.getPatientNo());
@@ -201,7 +200,7 @@ public class RadiologyService {
                     Item item = itemService.findByItemCodeOrThrow(lineData.getRadiologyTest().getItem().getItemCode());
 
                     billItem.setTransactionId(data.getTransactionId());
-                    billItem.setServicePoint(ServicePointType.Procedure.name());
+                    billItem.setServicePoint(ServicePointType.Radiology.name());
                     if (lineData.getMedic() != null) {
                         billItem.setMedicId(lineData.getMedic().getId());
                     }
@@ -217,6 +216,7 @@ public class RadiologyService {
                     billItem.setServicePoint(servicePoint.getName());
                     billItem.setServicePointId(servicePoint.getId());
                     billItem.setStatus(BillStatus.Draft);
+                    billItem.setPaid(Boolean.FALSE);
                     billItem.setBillingDate(data.getBillingDate());
 
                     return billItem;
@@ -227,7 +227,7 @@ public class RadiologyService {
     }
 
     @Transactional
-    public RadiologyResult saveRadiologyResult(MultipartFile file, RadiologyResultData data) {
+    public RadiologyResult saveRadiologyResult(RadiologyResultData data) {
         RadiologyResult radiologyResult = data.fromData();
         PatientScanTest patientScanTest = findPatientRadiologyTestByIdWithNotFoundDetection(data.getTestId());
 
@@ -236,6 +236,7 @@ public class RadiologyService {
         radiologyResult.setPatientScanTest(patientScanTest);
         radiologyResult.setStatus(ScanTestState.Completed);
         patientScanTest.setRadiologyResult(radiologyResult);
+        patientScanTest.setEntryDateTime(LocalDateTime.now());
         return pscanRepository.save(patientScanTest).getRadiologyResult();
 //        return radiologyResultRepo.save(radiologyResult);
     }

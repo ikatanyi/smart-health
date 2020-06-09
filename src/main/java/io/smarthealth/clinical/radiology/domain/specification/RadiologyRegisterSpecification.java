@@ -23,13 +23,13 @@ public class RadiologyRegisterSpecification {
             final ArrayList<Predicate> predicates = new ArrayList<>();
  
             if (PatientNumber != null) {
-                predicates.add(cb.equal(root.get("patient").get("patientNumber"), PatientNumber));
+                predicates.add(cb.equal(root.get("patientNo"), PatientNumber));
             }
             if (scanNo != null) {
                 predicates.add(cb.equal(root.get("accessNo"), scanNo));
             }
             if (visitId != null) {
-                predicates.add(cb.equal(root.get("visit").get("visitId"), visitId));
+                predicates.add(cb.equal(root.get("visit").get("visitNumber"), visitId));
             }
              if (status != null) {
                 predicates.add(cb.equal(root.get("status"), status));
@@ -39,7 +39,7 @@ public class RadiologyRegisterSpecification {
             } 
              if(range!=null){
                   predicates.add(
-                     cb.between(root.get("createdOn"), range.getStartDateTime(), range.getEndDateTime())
+                     cb.between(root.get("receivedDate"), range.getStartDateTime(), range.getEndDateTime())
                   );
               }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

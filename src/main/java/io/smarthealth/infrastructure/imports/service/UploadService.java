@@ -55,14 +55,14 @@ public class UploadService {
     }
 
 
-    public void init() {
-        try {
-            if(!Files.isDirectory(rootLocation, LinkOption.NOFOLLOW_LINKS))
-               Files.createDirectory(rootLocation);
-        } catch (IOException e) {
-            throw new StorageException("Could not initialize storage", e);
-        }
-    }
+//    public void init() {
+//        try {
+//            if(!Files.isDirectory(rootLocation, LinkOption.NOFOLLOW_LINKS))
+//               Files.createDirectory(rootLocation);
+//        } catch (IOException e) {
+//            throw new StorageException("Could not initialize storage", e);
+//        }
+//    }
 
     public void UploadService(String dir) {
         try {

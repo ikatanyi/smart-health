@@ -15,6 +15,7 @@
 	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="entryDate" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -63,13 +64,7 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="88" splitType="Stretch">
-			<line>
-				<reportElement positionType="Float" x="-1" y="87" width="556" height="1" uuid="35b07815-3281-42b8-90a5-8a64208932e3"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#9999FF"/>
-				</graphicElement>
-			</line>
+		<band height="81" splitType="Stretch">
 			<subreport>
 				<reportElement x="279" y="15" width="277" height="34" uuid="0de24d60-b41c-4a99-b595-b454833deec3"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
@@ -103,26 +98,12 @@
 				</textElement>
 				<text><![CDATA[VisitNo.]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="3" y="50" width="66" height="14" uuid="2b7bb4ee-8243-4840-8e9e-f668cfb9c844"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Walkin.]]></text>
-			</staticText>
 			<textField>
-				<reportElement x="69" y="65" width="200" height="14" uuid="266b3b6f-3700-4b88-83b9-db0da87f4317"/>
+				<reportElement x="69" y="50" width="200" height="14" uuid="266b3b6f-3700-4b88-83b9-db0da87f4317"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{orderedDate}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="68" y="50" width="201" height="14" uuid="21b4602d-418b-404b-9434-a70799327235"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{isWalkin}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="68" y="3" width="201" height="14" uuid="fc71da6d-13f2-4f25-b973-86d06fe2856d"/>
@@ -139,7 +120,7 @@
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="2" y="65" width="67" height="14" uuid="b58c9c89-3600-4d14-97cb-54294659940f"/>
+				<reportElement x="2" y="50" width="67" height="14" uuid="b58c9c89-3600-4d14-97cb-54294659940f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -152,22 +133,37 @@
 				</textElement>
 				<text><![CDATA[Requesting Physician.]]></text>
 			</staticText>
+			<line>
+				<reportElement positionType="Float" x="-1" y="67" width="556" height="1" uuid="94b943a9-772a-4445-af4a-3d7e02889984"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#9999FF"/>
+				</graphicElement>
+			</line>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="19" splitType="Stretch">
 			<subreport>
 				<reportElement x="-1" y="0" width="555" height="14" uuid="37d70e2f-325c-4ae8-bbf2-aa227506f19f"/>
+				<subreportParameter name="entryDate">
+					<subreportParameterExpression><![CDATA[$P{entryDate}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{patientScanTestData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_radiology_report_tests.jasper"]]></subreportExpression>
 			</subreport>
+			<line>
+				<reportElement positionType="Float" x="-1" y="18" width="556" height="1" uuid="35b07815-3281-42b8-90a5-8a64208932e3"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#9999FF"/>
+				</graphicElement>
+			</line>
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="26" splitType="Stretch">
+		<band height="29" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="0" width="556" height="26" uuid="073a1045-928f-4dd4-834b-f066b03dfab2"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
