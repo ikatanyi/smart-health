@@ -266,8 +266,18 @@ public class InventoryService {
     }
 
     public List<StockMovement> getStockMovement(Long storeId, Long itemId, DateRange range) {
-        List<StockMovement> lists = stockEntryRepository.getStockEntriesByItem(itemId);
-        return lists;
+
+        if (storeId != null) {
+            if (range != null) {
+                return stockEntryRepository.getEntriesByItemStoreAndDateRange(itemId, storeId, range.getStartDate(), range.getEndDate());
+            }
+            return stockEntryRepository.getStockEntriesByStoreIdAndItemId(itemId, storeId);
+        }
+        if (range != null) {
+            return stockEntryRepository.getEntriesByItemDateRange(itemId, range.getStartDate(), range.getEndDate());
+        }
+
+        return stockEntryRepository.getStockEntriesByItem(itemId);
     }
 
 //    Page<StockMovement> getStockMovement(Long storeId, Long itemId, DateRange range, Pageable pageable) {
