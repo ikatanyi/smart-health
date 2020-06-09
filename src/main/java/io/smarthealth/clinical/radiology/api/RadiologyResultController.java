@@ -45,8 +45,8 @@ public class RadiologyResultController {
     
     @PostMapping("/radiology/results")
     @PreAuthorize("hasAuthority('create_radiologyresults')")
-    public ResponseEntity<?> createRadiologyResult(MultipartFile file, @Valid @RequestBody RadiologyResultData data) {
-        RadiologyResult results = service.saveRadiologyResult(file, data);
+    public ResponseEntity<?> createRadiologyResult(@Valid @RequestBody RadiologyResultData data) {
+        RadiologyResult results = service.saveRadiologyResult( data);
         return ResponseEntity.status(HttpStatus.CREATED).body(results.toData());
     }
     

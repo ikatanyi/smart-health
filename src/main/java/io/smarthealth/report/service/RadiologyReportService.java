@@ -22,6 +22,7 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -57,7 +58,6 @@ public class RadiologyReportService {
         ReportData reportData = new ReportData();
         String visitId = reportParam.getFirst("visitNumber");
         String scanNo = reportParam.getFirst("scanNumber");
-        String orderNumber = reportParam.getFirst("orderNumber");
         String patientNumber = reportParam.getFirst("patientNumber");
         String dateRange = reportParam.getFirst("dateRange");
         String search = reportParam.getFirst("search");
@@ -92,11 +92,15 @@ public class RadiologyReportService {
     
     public void getPatientRadiolgyReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         String accessNumber = reportParam.getFirst("scanNumber");
-       PatientScanRegisterData procTests = scanService.findPatientRadiologyTestByAccessNoWithNotFoundDetection(accessNumber).todata();
-             
+        PatientScanRegisterData procTests = scanService.findPatientRadiologyTestByAccessNoWithNotFoundDetection(accessNumber).todata();
+       
+        if(!procTests.getPatientScanTestData().isEmpty())
+            reportData.getFilters().put("entryDate", formatter.format(procTests.getPatientScanTestData().get(0).getEntryDateTime()));     
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
+        
         sortField.setName("visitNumber");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);

@@ -40,7 +40,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "patient_scan_register")
-public class PatientScanRegister extends Identifiable {
+public class PatientScanRegister extends Auditable {
 
     @Column(nullable = false, unique = true)
     private String accessNo;
@@ -61,7 +61,6 @@ public class PatientScanRegister extends Identifiable {
     
     private Double balance;   
     
-    
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_visit_id"))    
     private Visit visit;
@@ -80,7 +79,7 @@ public class PatientScanRegister extends Identifiable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_employee_id")) 
     private Employee requestedBy;
 
-    private LocalDate receivedDate=LocalDate.now();
+    private LocalDate receivedDate;
     
     private LocalDate billingDate;
     
@@ -115,7 +114,7 @@ public class PatientScanRegister extends Identifiable {
         data.setGender(this.getGender());
         data.setOrderedDate(this.getReceivedDate());
         data.setBillingDate(this.getBillingDate());
-//        data.setOrderedDate(this.);
+        data.setReceivedDate(this.getReceivedDate());
         if(this.getPatientScanTest()!=null){
            data.setPatientScanTestData(
              this.getPatientScanTest()

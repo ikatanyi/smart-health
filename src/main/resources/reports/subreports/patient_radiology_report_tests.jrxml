@@ -7,12 +7,13 @@
 		<parameterDescription><![CDATA[]]></parameterDescription>
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="entryDate" class="java.lang.Object"/>
 	<field name="scanName" class="java.lang.String"/>
 	<field name="testCode" class="java.lang.String"/>
 	<field name="resultData" class="java.util.List"/>
 	<field name="entryDateTime" class="java.lang.Object"/>
 	<field name="comments" class="java.lang.String"/>
-	<field name="doneBy" class="java.lang.String"/>
+	<field name="reportedBy" class="java.lang.String"/>
 	<field name="reportResultData" class="java.util.List"/>
 	<columnHeader>
 		<band height="35" splitType="Stretch">
@@ -42,7 +43,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{entryDateTime}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{entryDateTime}.equals( null )?new SimpleDateFormat("dd-MM-yyyy").parse($F{entryDateTime}.toString()):new Date()]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="167" y="16" width="46" height="15" isRemoveLineWhenBlank="true" uuid="6a1af588-72d6-43a4-acf2-3218bd0987f1"/>
@@ -56,7 +57,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{doneBy}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{reportedBy}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement positionType="Float" x="1" y="34" width="555" height="1" forecolor="#CC0000" uuid="9c05c8dd-41ec-44ef-b45d-3567633bdd03"/>
