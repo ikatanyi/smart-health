@@ -119,6 +119,9 @@ public class ConsultationController {
             pns = patientNotesService.createPatientNote(patientNotes);
         }
         PatientNotesData savedData = patientNotesService.convertEntityToData(pns);
+        //update consultation queue
+        visit.setIsActiveOnConsultation(Boolean.FALSE);
+        visitService.createAVisit(visit);
         return ResponseEntity.ok().body(ApiResponse.successMessage("History and examination notes saved successfully", HttpStatus.CREATED, savedData));
     }
 
@@ -229,7 +232,7 @@ public class ConsultationController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Patient patient = patientService.findPatientOrThrow(patientNo);
         List<HistoricalDiagnosisData> list = new ArrayList<>();
-        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null,null, pageable);
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, pageable);
         for (Visit v : patientVisits) {
             HistoricalDiagnosisData dd = new HistoricalDiagnosisData();
             dd.setPatientName(patient.getFullName());
@@ -245,7 +248,7 @@ public class ConsultationController {
             Page<DiagnosisData> dlist = pdList.map(pd -> {
                 return DiagnosisData.map(pd);
             });
-            
+
             dd.setDiagnosisData(dlist.getContent());
             list.add(dd);
         }

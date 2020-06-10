@@ -11,6 +11,7 @@ import io.smarthealth.clinical.record.domain.specification.ReferralSpecification
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +39,10 @@ public class ReferralsService {
 
     public Referrals fetchReferalByVisitOrThrowIfNotFound(final Visit visit) {
         return referralsRepository.findByVisit(visit).orElseThrow(() -> APIException.notFound("Referral details identifed by visit number {0} was not found", visit.getVisitNumber()));
+    }
+
+    public Optional<Referrals> fetchReferalByVisit(final Visit visit) {
+        return referralsRepository.findByVisit(visit);
     }
 
     public Page<Referrals> fetchReferrals(final String visitNumber, final String patientNumber, final Pageable pgbl) {

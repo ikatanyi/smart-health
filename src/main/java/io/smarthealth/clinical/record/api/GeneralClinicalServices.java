@@ -37,6 +37,7 @@ import io.swagger.annotations.Api;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -96,6 +97,11 @@ public class GeneralClinicalServices {
     public @ResponseBody
     ResponseEntity<?> saveSickOffNote(@Valid @RequestBody SickOffNoteData sod) {
         Visit visit = visitService.findVisitEntityOrThrow(sod.getVisitNo());
+        //check if sick off note already exists
+        Optional<SickOffNote> so = sickOffNoteService.fetchSickNoteByVisit(visit);
+        if (so.isPresent()) {
+            throw APIException.conflict("Sick off note already exists", sod.getVisitNo());
+        }
         SickOffNote note = SickOffNoteData.map(sod);
         note.setVisit(visit);
         note.setPatient(visit.getPatient());
@@ -148,6 +154,11 @@ public class GeneralClinicalServices {
     public @ResponseBody
     ResponseEntity<?> saveReferral(@Valid @RequestBody ReferralData rd) {
         Visit visit = visitService.findVisitEntityOrThrow(rd.getVisitNo());
+        //find referral by visit
+        Optional<Referrals> ref = referralsService.fetchReferalByVisit(visit);
+        if (ref.isPresent()) {
+            throw APIException.conflict("Referral on this visit has already been created", rd.getVisitNo());
+        }
         Patient patient = visit.getPatient();
         Referrals rde = ReferralData.map(rd);
         rde.setVisit(visit);
