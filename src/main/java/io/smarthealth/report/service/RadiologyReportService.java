@@ -72,6 +72,11 @@ public class RadiologyReportService {
                 .map((register) -> register.toData())
                 .collect(Collectors.toList());
         reportData.setData(patientData);
+        if(!patientData.isEmpty()){
+            reportData.setPatientNumber(patientData.get(0).getPatientNumber());
+            reportData.setEmployeeId(patientData.get(0).getRequestedByStaffNumber());
+        }
+        
         reportData.setFormat(format);
         if(summary)
              reportData.setTemplate("/clinical/radiology/radiology_statement_summary");
@@ -97,7 +102,8 @@ public class RadiologyReportService {
           
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
-        
+        reportData.setPatientNumber(procTests.getPatientNumber());
+        reportData.setEmployeeId(procTests.getRequestedById());
         sortField.setName("visitNumber");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
