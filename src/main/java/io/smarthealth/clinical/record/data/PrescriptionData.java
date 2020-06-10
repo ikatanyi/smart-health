@@ -33,7 +33,7 @@ public class PrescriptionData extends DoctorRequestData {
     private String asNeededCondition;//notes additional info
     private Integer numRefills;//number of installments
     private Double issuedQuantity;//number of issued quantity
-    
+
     @ApiModelProperty(required = false, hidden = true)
     private String patientName;
     @ApiModelProperty(required = false, hidden = true)
@@ -60,11 +60,11 @@ public class PrescriptionData extends DoctorRequestData {
         pd.setFulfillerStatus(p.getFulfillerStatus());
         pd.setId(p.getId());
         pd.setIssuedQuantity(p.getIssuedQuantity());
-        if(p.getPatient()!=null){
+        if (p.getPatient() != null) {
             pd.setPatientName(p.getPatient().getGivenName());
             pd.setPatientNumber(p.getPatientNumber());
         }
-        if(p.getItem()!=null){
+        if (p.getItem() != null) {
             pd.setItemType(p.getItem().getDrugForm());
         }
         //pd.set
@@ -78,7 +78,7 @@ public class PrescriptionData extends DoctorRequestData {
         //pd.setItemData(DoctorRequestItemData.map(p.getDoctorRequestItem()));
         pd.setNotes(p.getNotes());
         pd.setNumRefills(p.getNumRefills());
-        pd.setOrderDatetime(p.getOrderDatetime());
+        pd.setOrderDate(p.getOrderDate());
         pd.setPatientNumber(p.getPatient().getPatientNumber());
         pd.setQuantity(p.getQuantity());
         pd.setQuantityUnits(p.getQuantityUnits());
@@ -114,7 +114,7 @@ public class PrescriptionData extends DoctorRequestData {
         pd.setIssuedQuantity(p.getIssuedQuantity());
         pd.setNotes(p.getNotes());
         pd.setNumRefills(p.getNumRefills());
-        pd.setOrderDatetime(p.getOrderDatetime());
+        pd.setOrderDate(p.getOrderDate());
         pd.setQuantity(p.getQuantity());
         pd.setQuantityUnits(p.getQuantityUnits());
         pd.setRequestType(pd.getRequestType());

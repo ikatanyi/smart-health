@@ -2,6 +2,8 @@ package io.smarthealth.accounting.cashier.domain;
 
 import io.smarthealth.accounting.cashier.data.ShiftData;
 import io.smarthealth.infrastructure.domain.Identifiable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -36,6 +38,11 @@ public class Shift extends Identifiable {
     @Enumerated(EnumType.STRING)
     private ShiftStatus status;
 
+    private Boolean reconcile;
+    private LocalDate dateReconcile;
+    private BigDecimal shiftAmount;
+    private BigDecimal collectedAmount;
+    
     public Shift() {
     }
 
@@ -72,7 +79,12 @@ public class Shift extends Identifiable {
         data.setShiftNo(this.getShiftNo());
         data.setStartDate(this.getStartDate());
         data.setStatus(this.getStatus());
-        data.setCashierId(this.cashier.getId());
+        data.setCashierId(this.cashier.getId()); 
+        data.setReconcile(this.reconcile);
+        data.setDateReconcile(this.dateReconcile);
+        data.setShiftAmount(this.shiftAmount);
+        data.setCollectedAmount(this.collectedAmount);
+        
         return data;
     }
 }

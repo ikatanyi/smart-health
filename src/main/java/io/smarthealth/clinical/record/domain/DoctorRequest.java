@@ -4,11 +4,10 @@ import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.stock.item.domain.Item;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -42,8 +41,8 @@ public class DoctorRequest extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_doc_request_empoyee_id"))
     private User requestedBy;
-    
-    private LocalDateTime orderDatetime;
+
+    private LocalDate orderDate;
     private String urgency;
     private String orderNumber;
     private String notes;
@@ -56,7 +55,7 @@ public class DoctorRequest extends Auditable {
     private String patientNumber;
     @Transient
     private String visitNumber;
-    
+
     private double itemCostRate;
     private double itemRate;
 

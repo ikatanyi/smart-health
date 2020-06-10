@@ -8,6 +8,8 @@ package io.smarthealth.accounting.cashier.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.cashier.domain.*;
 import io.smarthealth.infrastructure.lang.Constants;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -27,4 +29,8 @@ public class ShiftData {
     private LocalDateTime endDate;
     private String shiftNo;
     private ShiftStatus status;
+    private Boolean reconcile;
+    private LocalDate dateReconcile;
+    private BigDecimal shiftAmount;
+    private BigDecimal collectedAmount;
 }

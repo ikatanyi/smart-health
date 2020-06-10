@@ -63,6 +63,36 @@ public class StoreService {
         return storeRepository.save(toSave);
     }
 
+    public Store updateStore(Long storeId, StoreData data) {
+         
+        Store toSave = getStoreWithNoFoundDetection(storeId);
+        
+        toSave.setActive(data.isActive());
+        toSave.setStoreType(Store.Type.valueOf(data.getStoreType()));
+        toSave.setStoreName(data.getStoreName());
+        toSave.setPatientStore(data.isPatientStore());
+        if (data.getServicePointId() != null) {
+            ServicePoint srv = servicePointService.getServicePoint(data.getServicePointId());
+            toSave.setServicePoint(srv);
+        }
+
+        if (data.getInventoryAccountNumber() != null) {
+            Optional< Account> inventory = accountService.findByAccountNumber(data.getInventoryAccountNumber());
+            if (inventory.isPresent()) {
+                toSave.setInventoryAccount(inventory.get());
+            }
+        }
+
+        if (data.getExpenseAccountNumber() != null) {
+            Optional< Account> expense = accountService.findByAccountNumber(data.getExpenseAccountNumber());
+            if (expense.isPresent()) {
+                toSave.setExpenseAccount(expense.get());
+            }
+        }
+
+        return storeRepository.save(toSave);
+    }
+    
     public Page<Store> fetchAllStores(Boolean patientStore, Pageable page) {
         if (patientStore != null) {
             return storeRepository.findByPatientStore(patientStore, page);

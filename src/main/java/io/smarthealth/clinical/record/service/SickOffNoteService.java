@@ -10,6 +10,7 @@ import io.smarthealth.clinical.record.domain.SickOffNoteRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,10 @@ public class SickOffNoteService {
 
     public SickOffNote fetchSickNoteByVisitWithNotFoundThrow(final Visit visit) {
         return sickOffNoteRepository.findByVisit(visit).orElseThrow(() -> APIException.notFound("Sick off note identified by visit number {0} is not available ", visit.getVisitNumber()));
+    }
+
+    public Optional<SickOffNote> fetchSickNoteByVisit(final Visit visit) {
+        return sickOffNoteRepository.findByVisit(visit);
     }
 
     public Page<SickOffNote> fetchSickOffNoteByPatient(final Patient patient, final Pageable pageable) {

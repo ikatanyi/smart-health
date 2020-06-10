@@ -53,6 +53,14 @@ public class StoreRestController {
         return ResponseEntity.ok(StoreData.map(store));
         
     }
+    @PutMapping("/stores/{id}")
+    @PreAuthorize("hasAuthority('view_stores')")
+    public ResponseEntity<?> updateStore(@PathVariable(value = "id") Long id, @Valid @RequestBody StoreData data) {
+        Store store = service.updateStore(id, data);
+        return ResponseEntity.ok(StoreData.map(store));
+        
+    }
+    
     @GetMapping("/stores")
     @PreAuthorize("hasAuthority('view_stores')")
     public ResponseEntity<?> getAllStorees( 
