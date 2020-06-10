@@ -26,6 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,7 +51,7 @@ public class DoctorClinicSetupController {
     ItemService itemService;
 
     @PostMapping("/clinics")
-    @PreAuthorize("hasAuthority('create_doctorClinic')") 
+    @PreAuthorize("hasAuthority('create_doctorClinic')")
     public ResponseEntity<?> createDoctorClinic(@Valid @RequestBody DoctorClinicData data) {
 //find
         Item item = itemService.findItemEntityOrThrow(data.getServiceId());
@@ -70,7 +71,7 @@ public class DoctorClinicSetupController {
     }
 
     @GetMapping("/clinics")
-    @PreAuthorize("hasAuthority('view_doctorClinic')") 
+    @PreAuthorize("hasAuthority('view_doctorClinic')")
     public ResponseEntity<?> getDoctorInvoices(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
@@ -93,7 +94,7 @@ public class DoctorClinicSetupController {
     }
 
     @GetMapping("/clinics/{id}")
-    @PreAuthorize("hasAuthority('view_doctorClinic')") 
+    @PreAuthorize("hasAuthority('view_doctorClinic')")
     public ResponseEntity<?> fetchDoctorClinicById(@PathVariable("id") final Long clinicId) {
 
         DoctorClinicItems clinic = doctorClinicService.fetchClinicById(clinicId);
@@ -102,6 +103,28 @@ public class DoctorClinicSetupController {
         pagers.setCode("0");
         pagers.setMessage("Clinic Details");
         pagers.setContent(DoctorClinicData.map(clinic));
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
+    @PutMapping("/clinics/{id}")
+    @PreAuthorize("hasAuthority('view_doctorClinic')")
+    public ResponseEntity<?> updateDoctorClinicById(
+            @PathVariable("id") final Long clinicId,
+            @Valid @RequestBody DoctorClinicData data
+    ) {
+
+        DoctorClinicItems clinic = doctorClinicService.fetchClinicById(clinicId);
+        Item item = itemService.findItemEntityOrThrow(data.getServiceId());
+        clinic.setClinicName(data.getClinicName());
+        clinic.setServiceType(item);
+
+        DoctorClinicItems savedClinic = doctorClinicService.saveClinicItem(clinic);
+
+        Pager<DoctorClinicData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Clinic Updated.");
+        pagers.setContent(DoctorClinicData.map(savedClinic));
 
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }

@@ -9,6 +9,7 @@ import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.persistence.criteria.Predicate;
@@ -24,8 +25,7 @@ public class DoctorRequestSpecification {
         super();
     }
 
-    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus/*, Date from , Date to*/, String groupBy, Boolean activeVisit) {
-        System.out.println("visitNumber to request " + visitNumber);
+    public static Specification<DoctorRequest> createSpecification(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, String groupBy, Boolean activeVisit, final String term, final DateRange range) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
@@ -35,13 +35,6 @@ public class DoctorRequestSpecification {
                 } else {
                     predicates.add(root.get("visit").get("status").in(Arrays.asList(VisitEnum.Status.CheckOut, VisitEnum.Status.Discharged)));
                 }
-            }
-            if (visitNumber != null) {
-                predicates.add(cb.equal(root.get("visit").get("visitNumber"), visitNumber));
-            }
-
-            if (patientNumber != null) {
-                predicates.add(cb.equal(root.get("patient").get("patientNumber"), patientNumber));
             }
 
             if (fulfillerStatus != null) {
@@ -56,10 +49,31 @@ public class DoctorRequestSpecification {
                 query.groupBy(root.get("patient"));
             }
 
-//            if (from != null && to!=null) {
-//                predicates.add(
-//                        cb.between(root.get("createdOn"), from, to));
-//            }
+            if (visitNumber != null) {
+                predicates.add(cb.equal(root.get("visit").get("visitNumber"), visitNumber));
+            }
+
+            if (patientNumber != null) {
+                predicates.add(cb.equal(root.get("patient").get("patientNumber"), patientNumber));
+            }
+
+            if (term != null) {
+                final String likeExpression = "%" + term + "%";
+                predicates.add(
+                        cb.or(
+                                cb.like(root.get("visit").get("visitNumber"), likeExpression),
+                                cb.like(root.get("orderNumber"), likeExpression),
+                                cb.like(root.get("patient").get("patientNumber"), likeExpression)
+                        )
+                );
+            }
+
+            if (range != null) {
+                predicates.add(
+                        cb.between(root.get("orderDate"), range.getStartDate(), range.getEndDate())
+                );
+            }
+
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

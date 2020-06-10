@@ -24,10 +24,12 @@ import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecific
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.lang.DateConverter;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.stock.item.domain.Item;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -92,18 +94,13 @@ public class DoctorRequestService implements DateConverter {
 
     }
 
-//    public List<DoctorRequestData> findAll(final String visitNumber, final String status, final String requestType, String from, String to, Pageable page) {
-//        Date from1 = new Date();
-//        Date to1 = new Date();
-//        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, status, requestType, from1, to1);
-//        List<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, page).getContent();
-//        List<DoctorRequestData> docReqData = modelMapper.map(docReqs, new TypeToken<List<DoctorRequestData>>() {
-//        }.getType());
-//        return docReqData;
-//    }
     public Page<DoctorRequest> findAllRequestsByVisitAndRequestType(final Visit visit, final RequestType requestType, Pageable pageable) {
         Page<DoctorRequest> docReqs = doctorRequestRepository.findByVisitAndRequestType(visit, requestType, pageable);
         return docReqs;
+    }
+
+    public List<DoctorRequest> fetchRequestByVisitAndItem(final Visit visit, final Item item) {
+        return doctorRequestRepository.findByVisitAndItem(visit, item);
     }
 
     public Page<DoctorRequest> findAllRequestsByVisit(final Visit visit, Pageable pageable) {
@@ -117,14 +114,14 @@ public class DoctorRequestService implements DateConverter {
     }
 
     public Page<DoctorRequest> fetchAllPastDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, final String groupBy, Pageable pageable) {
-        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, null);
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, null, null, null);
 
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
         return docReqs;
     }
 
-    public Page<DoctorRequest> fetchAllDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, final String groupBy, Pageable pageable, Boolean activeVisit) {
-        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy,activeVisit);
+    public Page<DoctorRequest> fetchAllDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, final String groupBy, Pageable pageable, Boolean activeVisit, final String term, DateRange range) {
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, activeVisit, null, null);
 
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
         return docReqs;
@@ -136,7 +133,7 @@ public class DoctorRequestService implements DateConverter {
 //    }
 //    
     public List<DoctorRequest> fetchServiceRequests(final Patient patient, final FullFillerStatusType fullfillerStatus, final RequestType requestType, final Visit visit) {
-        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visit.getVisitNumber(), patient.getPatientNumber(), requestType, fullfillerStatus, null,null);
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visit.getVisitNumber(), patient.getPatientNumber(), requestType, fullfillerStatus, null, null, null, null);
         Pageable wholePage = Pageable.unpaged();
         return doctorRequestRepository.findAll(spec, wholePage).getContent();
     }

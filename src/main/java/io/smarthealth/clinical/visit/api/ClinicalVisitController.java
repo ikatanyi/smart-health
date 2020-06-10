@@ -131,7 +131,7 @@ public class ClinicalVisitController {
     @Autowired
     DoctorInvoiceService doctorInvoiceService;
 
-    @PostMapping("/visits")
+     @PostMapping("/visits")
     @PreAuthorize("hasAuthority('create_visits')")
     @ApiOperation(value = "Submit a new patient visit", response = VisitDatas.class)
     @Transactional(rollbackFor = Exception.class)

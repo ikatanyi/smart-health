@@ -9,6 +9,7 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDate;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -32,11 +33,12 @@ public class SickOffNote extends Auditable {
     @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_patient_sick_off_note"))
     private Patient patient;
 
+    @Column(unique = true)
     private String sickOffNumber;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDate reviewDate;
-    
+
     private String recommendation;
     private String reason;
 
