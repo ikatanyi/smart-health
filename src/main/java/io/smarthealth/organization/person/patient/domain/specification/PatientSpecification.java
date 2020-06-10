@@ -5,6 +5,7 @@
  */
 package io.smarthealth.organization.person.patient.domain.specification;
 
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
@@ -16,11 +17,16 @@ import org.springframework.data.jpa.domain.Specification;
  */
 public class PatientSpecification {
 
-    public static Specification<Patient> createSpecification(final String term) {
+    public static Specification<Patient> createSpecification(final DateRange range, final String term) {
         return (root, query, cb) -> {
             Patient patient = new Patient();
             patient.getGivenName();
             final ArrayList<Predicate> predicates = new ArrayList<>();
+            if(range!=null){
+                  predicates.add(
+                     cb.between(root.get("dateRegistered"), range.getStartDate(), range.getEndDate())
+                  );
+              }
             if (term != null) {
                 final String likeExpression = "%" + term + "%";
                 predicates.add(

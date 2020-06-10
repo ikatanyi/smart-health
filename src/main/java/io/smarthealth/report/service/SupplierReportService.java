@@ -104,10 +104,7 @@ public class SupplierReportService {
         String patientNo = reportParam.getFirst("patientNo"); 
         String invoiceNumber = reportParam.getFirst("invoiceNumber"); 
         String transactionId = reportParam.getFirst("transactionId"); 
-        String dateRange = reportParam.getFirst("range"); 
-        
-        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));        
         
          List<DoctorInvoiceData> doctorInvoiceData = doctorInvoiceService.getDoctorInvoices(doctorId, serviceItem, paid, paymentMode, patientNo, invoiceNumber, transactionId, range, Pageable.unpaged())
                 .getContent()
@@ -122,6 +119,7 @@ public class SupplierReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList); 
+        reportData.getFilters().put("range", reportParam.getFirst("dateRange"));
         reportData.setData(doctorInvoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/supplier/DoctorInvoiceStatement");
@@ -149,11 +147,9 @@ public class SupplierReportService {
         String invoiceNumber = reportParam.getFirst("supplierId");
         Boolean paid = reportParam.getFirst("paid")!=null?Boolean.getBoolean(reportParam.getFirst("paid")):null;
         PurchaseInvoiceStatus status = PurchaseInvoiceStatusToEnum(reportParam.getFirst("status"));
-        String dateRange = reportParam.getFirst("range"); 
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         
-        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        
-        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, status, Pageable.unpaged())
+        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((invoice) -> invoice.toData())
@@ -170,6 +166,7 @@ public class SupplierReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", reportParam.getFirst("dateRange"));
         reportData.setData(purchaseInvoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/supplier/SupplierInvoiceStatement");

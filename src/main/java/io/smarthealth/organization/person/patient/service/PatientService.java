@@ -16,6 +16,7 @@ import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.FacilityService;
 import io.smarthealth.organization.person.data.AddressData;
@@ -112,12 +113,14 @@ public class PatientService {
     private ResourceLoader resourceLoader;
 
     public Page<Patient> fetchAllPatients(MultiValueMap<String, String> queryParams, final Pageable pageable) {
-        Specification<Patient> spec = PatientSpecification.createSpecification(queryParams.getFirst("term"));
+        DateRange range = DateRange.fromIsoStringOrReturnNull(queryParams.getFirst("dateRange"));
+        Specification<Patient> spec = PatientSpecification.createSpecification(range, queryParams.getFirst("term"));
         return patientRepository.findAll(spec, pageable);
     }
 
     public Page<Patient> search(String keyword, Pageable page) {
-        Specification<Patient> spec = PatientSpecification.createSpecification(keyword);
+        DateRange range = null;
+        Specification<Patient> spec = PatientSpecification.createSpecification(null, keyword);
         return patientRepository.findAll(spec, page);
     }
 

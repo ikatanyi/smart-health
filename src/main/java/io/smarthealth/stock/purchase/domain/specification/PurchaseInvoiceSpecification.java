@@ -1,5 +1,6 @@
 package io.smarthealth.stock.purchase.domain.specification;
 
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.stock.inventory.domain.specification.*;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
@@ -19,7 +20,7 @@ public class PurchaseInvoiceSpecification {
         super();
     }
 
-    public static Specification<PurchaseInvoice> createSpecification(Long supplierId, String invoiceNumber, Boolean paid,PurchaseInvoiceStatus status) {
+    public static Specification<PurchaseInvoice> createSpecification(Long supplierId, String invoiceNumber, Boolean paid, DateRange range, PurchaseInvoiceStatus status) {
         
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
@@ -37,6 +38,11 @@ public class PurchaseInvoiceSpecification {
             
              if (supplierId != null) {
                 predicates.add(cb.equal(root.get("supplier").get("id"), supplierId));
+            }
+              if (range != null) {
+                predicates.add(
+                        cb.between(root.get("invoiceDate"), range.getStartDate(), range.getEndDate())
+                );
             }
              
 //             if (item != null) {

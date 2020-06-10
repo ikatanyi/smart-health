@@ -64,6 +64,7 @@ public class PurchaseInvoice extends Auditable {
         data.setStatus(this.status);
         data.setType(this.type);
         data.setCreatedBy(this.getCreatedBy());
+        data.setTransactionId(this.getTransactionNumber());
 
         return data;
     }
