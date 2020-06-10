@@ -4,6 +4,7 @@ import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.PaymentDetailsRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +27,16 @@ public class PaymentDetailsService {
     public PaymentDetails fetchPaymentDetailsByVisit(Long visitId) {
         return paymentDetailsRepository.findById(visitId).orElseThrow(() -> APIException.notFound("Visit payment details identified by {0} not available", visitId));
     }
-    
-     public PaymentDetails fetchPaymentDetailsByVisit(Visit visit) {
+
+    public PaymentDetails fetchPaymentDetailsByVisit(Visit visit) {
         return paymentDetailsRepository.findByVisit(visit).orElseThrow(() -> APIException.notFound("Visit payment details identified by visit number {0} not available", visit.getVisitNumber()));
+    }
+
+    public Optional<PaymentDetails> getPaymentDetailsByVist(Visit visit) {
+        return paymentDetailsRepository.findByVisit(visit);
+    }
+@Transactional
+    public void deletePaymentDetails(PaymentDetails pd) {
+        paymentDetailsRepository.delete(pd);
     }
 }

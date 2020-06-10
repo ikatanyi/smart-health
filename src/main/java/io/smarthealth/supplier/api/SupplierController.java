@@ -27,17 +27,18 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Api
 @RequestMapping("/api")
-public class SupplierApiController {
+public class SupplierController {
 
     private final SupplierService service;
 
-    public SupplierApiController(SupplierService supplierService) {
+    public SupplierController(SupplierService supplierService) {
         this.service = supplierService;
     }
 
     @PostMapping("/suppliers")
     @PreAuthorize("hasAuthority('create_suppliers')")
     public ResponseEntity<?> createSupplier(@Valid @RequestBody SupplierData supplierData) {
+        
         if (service.getSupplierByName(supplierData.getSupplierName(), supplierData.getLegalName()).isPresent()) {
             throw APIException.conflict("Supplier with name {0} already exists.", supplierData.getSupplierName());
         }

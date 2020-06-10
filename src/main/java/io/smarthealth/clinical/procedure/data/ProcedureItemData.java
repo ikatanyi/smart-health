@@ -15,7 +15,7 @@ import lombok.Data;
 public class ProcedureItemData {
 
     private Long requestItemId;
-    private String medicId;
+    private Long medicId;
     private String itemCode;
     private Double itemPrice;
     private Double quantity;

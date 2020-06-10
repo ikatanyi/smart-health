@@ -7,12 +7,13 @@
 		<parameterDescription><![CDATA[]]></parameterDescription>
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="entryDate" class="java.lang.Object"/>
 	<field name="scanName" class="java.lang.String"/>
 	<field name="testCode" class="java.lang.String"/>
 	<field name="resultData" class="java.util.List"/>
 	<field name="entryDateTime" class="java.lang.Object"/>
 	<field name="comments" class="java.lang.String"/>
-	<field name="doneBy" class="java.lang.String"/>
+	<field name="reportedBy" class="java.lang.String"/>
 	<field name="reportResultData" class="java.util.List"/>
 	<columnHeader>
 		<band height="35" splitType="Stretch">
@@ -23,7 +24,7 @@
 				</textElement>
 				<text><![CDATA[Date Reported :]]></text>
 			</staticText>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="60" y="0" width="101" height="15" isRemoveLineWhenBlank="true" uuid="135ebb32-b8d6-478b-8dab-f10d13c2b763"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
@@ -37,12 +38,12 @@
 				</textElement>
 				<text><![CDATA[Test Code :]]></text>
 			</staticText>
-			<textField pattern="dd-MM-yyyy">
+			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
 				<reportElement x="60" y="16" width="101" height="15" isRemoveLineWhenBlank="true" uuid="22f110f5-45be-4e34-bc1a-8635dcc6957f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{entryDateTime}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{entryDateTime}.equals( null )?new SimpleDateFormat("dd-MM-yyyy").parse($F{entryDateTime}.toString()):new Date()]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="167" y="16" width="46" height="15" isRemoveLineWhenBlank="true" uuid="6a1af588-72d6-43a4-acf2-3218bd0987f1"/>
@@ -51,12 +52,12 @@
 				</textElement>
 				<text><![CDATA[Reported By:]]></text>
 			</staticText>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="213" y="16" width="176" height="15" isRemoveLineWhenBlank="true" uuid="6c6a9d4f-f8ea-4710-98f1-ac6c622da9cc"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{doneBy}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{reportedBy}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement positionType="Float" x="1" y="34" width="555" height="1" forecolor="#CC0000" uuid="9c05c8dd-41ec-44ef-b45d-3567633bdd03"/>
@@ -64,7 +65,7 @@
 					<pen lineWidth="0.5" lineColor="#999999"/>
 				</graphicElement>
 			</line>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="213" y="0" width="176" height="15" uuid="eaa34ea4-a65c-4738-86dd-cb8c0ecd05d3"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>

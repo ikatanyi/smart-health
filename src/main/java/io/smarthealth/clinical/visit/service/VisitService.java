@@ -171,5 +171,8 @@ public class VisitService {
         Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
         return visits;
     }
+    public Visit save(Visit visit){
+        return visitRepository.save(visit);
+    }
 
 }

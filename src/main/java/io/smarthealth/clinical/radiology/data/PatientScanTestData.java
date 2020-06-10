@@ -1,8 +1,10 @@
 package io.smarthealth.clinical.radiology.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.documents.data.DocumentData;
+import io.smarthealth.infrastructure.lang.Constants;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +32,7 @@ public class PatientScanTestData {
     private Boolean done;
     private Boolean paid=Boolean.FALSE;
     private String doneBy;
+    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime entryDateTime=LocalDateTime.now();
     private Boolean voided;
     private String voidedBy;
@@ -56,6 +59,12 @@ public class PatientScanTestData {
     private String templateName;
     @ApiModelProperty(required=false, hidden=true)
     private Boolean supervisorConfirmation;
+    
+    @ApiModelProperty(required=false, hidden=true)
+    private LocalDate receivedDate;
+    
+    @ApiModelProperty(required=false, hidden=true)
+    private String reportedBy;
     
     @ApiModelProperty(required=false, hidden=true)
     private List<RadiologyResultData> reportResultData;

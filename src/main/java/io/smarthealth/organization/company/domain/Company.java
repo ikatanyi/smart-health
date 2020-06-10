@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,6 +53,7 @@ public class Company implements Serializable {
     private String taxId;
     private String companyId; //represents facility id
     private String fiscalYear;
+    @NotBlank
     private String defaultLanguage;
     private String timeZone;
     private String dateFormat;

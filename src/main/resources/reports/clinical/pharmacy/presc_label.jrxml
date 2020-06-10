@@ -70,7 +70,7 @@
 	<detail>
 		<band height="62" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="23" y="32" width="119" height="8" uuid="b4e15c13-4b0b-4816-850c-c80450affd4c"/>
+				<reportElement x="23" y="32" width="147" height="8" uuid="b4e15c13-4b0b-4816-850c-c80450affd4c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="5" isBold="false"/>
 				</textElement>
@@ -86,7 +86,7 @@
 			<staticText>
 				<reportElement x="4" y="4" width="18" height="8" uuid="34224f9b-6360-4f91-ad0e-afe04f548846"/>
 				<textElement verticalAlignment="Middle">
-					<font size="6"/>
+					<font size="5" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Expiry Date]]></text>
 			</staticText>
@@ -118,7 +118,7 @@
 			<staticText>
 				<reportElement x="4" y="14" width="14" height="8" uuid="007dccb6-8985-4b25-8c80-91c789bed4b7"/>
 				<textElement verticalAlignment="Middle">
-					<font size="6"/>
+					<font size="5" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Drug]]></text>
 			</staticText>
@@ -129,16 +129,16 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="4" y="24" width="20" height="8" uuid="81d01869-6aa1-43eb-8a57-4cd6dcf78119"/>
+				<reportElement x="4" y="24" width="30" height="8" uuid="81d01869-6aa1-43eb-8a57-4cd6dcf78119"/>
 				<textElement verticalAlignment="Middle">
-					<font size="6"/>
+					<font size="5" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="111" y="24" width="12" height="8" uuid="76648f59-083f-4620-94ee-2da2e6b4ae50"/>
 				<textElement verticalAlignment="Middle">
-					<font size="6"/>
+					<font size="5" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Age]]></text>
 			</staticText>
@@ -151,7 +151,7 @@
 			<staticText>
 				<reportElement x="4" y="34" width="14" height="8" uuid="d498ad60-43c9-4552-9c08-64c9c28cb834"/>
 				<textElement verticalAlignment="Middle">
-					<font size="6"/>
+					<font size="5" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Take]]></text>
 			</staticText>
@@ -162,9 +162,9 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="4" y="44" width="33" height="8" uuid="cff7d585-b315-4b1d-8c11-be29ef48be79"/>
+				<reportElement x="5" y="44" width="37" height="8" uuid="cff7d585-b315-4b1d-8c11-be29ef48be79"/>
 				<textElement verticalAlignment="Middle">
-					<font size="6"/>
+					<font size="5" isBold="true"/>
 				</textElement>
 				<text><![CDATA[times a day for]]></text>
 			</staticText>
@@ -182,9 +182,9 @@
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="4" y="54" width="32" height="8" uuid="1be9466c-b9d0-499d-aaf4-772323723ad2"/>
+				<reportElement x="4" y="54" width="37" height="8" uuid="1be9466c-b9d0-499d-aaf4-772323723ad2"/>
 				<textElement verticalAlignment="Middle">
-					<font size="6"/>
+					<font size="5" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Precaution]]></text>
 			</staticText>
@@ -195,16 +195,16 @@
 				</graphicElement>
 			</line>
 			<textField isBlankWhenNull="true">
-				<reportElement x="41" y="42" width="107" height="8" uuid="ff5b9e26-78cc-45be-a3f0-0dc5bcca8172"/>
+				<reportElement x="42" y="42" width="107" height="8" uuid="ff5b9e26-78cc-45be-a3f0-0dc5bcca8172"/>
 				<textElement verticalAlignment="Middle">
-					<font size="6"/>
+					<font size="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{duration}+" "+$F{durationUnits}+"(s) "+($F{dosingInstructions}.equals(null)?"":$F{dosingInstructions})]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="39" y="53" width="113" height="8" uuid="2e8f144b-6ffd-4046-a139-1eaca67e6171"/>
 				<textElement verticalAlignment="Middle">
-					<font size="6"/>
+					<font size="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{notes}]]></textFieldExpression>
 			</textField>
@@ -216,7 +216,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{patientName}+"-"+($F{patientNumber}.equals(null)?"":$F{patientNumber})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="123" y="23" width="18" height="7" uuid="1c06f475-78dd-491b-8457-17554d981397"/>

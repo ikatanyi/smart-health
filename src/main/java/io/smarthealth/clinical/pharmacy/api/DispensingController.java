@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -54,7 +55,7 @@ public class DispensingController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-    @PostMapping("/pharmacybilling/{}/return")
+    @PostMapping("/pharmacybilling/return")
     @PreAuthorize("hasAuthority('create_dispense')")
     public ResponseEntity<?> dispenseReturns(@Valid @RequestBody DrugRequest data) {
 
@@ -87,7 +88,7 @@ public class DispensingController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
+        Pageable pageable = PaginationUtil.createPage(page, size, Sort.by(Sort.Direction.DESC, "dispensedDate"));
         Page<DispensedDrugData> list = service.findDispensedDrugs(referenceNumber, visitNumber, patientNumber, prescription, billNumber, isReturn, pageable)
                 .map(drug -> drug.toData());
 

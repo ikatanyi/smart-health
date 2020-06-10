@@ -5,6 +5,10 @@
  */
 package io.smarthealth.infrastructure.utility;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 /**
  *
  * @author Kelsas
@@ -15,5 +19,8 @@ public class Tester {
         System.err.println(DateUtility.getStartOfCurrentMonth());
         
         System.err.println(DateUtility.getStartOfCurrentMonth().plusDays(-1));
+        
+        System.err.println(DateUtility.toLocalDateTime(new Date()));
+        System.err.println(DateUtility.toDateTime(LocalDateTime.now()));
     }
 }

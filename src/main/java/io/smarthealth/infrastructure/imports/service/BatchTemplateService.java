@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.administration.templates.service;
+package io.smarthealth.infrastructure.imports.service;
 
-import io.smarthealth.administration.templates.domain.enumeration.TemplateType;
+import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.scheme.data.SchemeData;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class TemplateService {
+public class BatchTemplateService {
 
     private final ImportService importService;
 
@@ -45,6 +45,11 @@ public class TemplateService {
             case Allocation:
                 fileName = "Allocation File";
                 componentClass = BatchAllocationData.class;
+                break;
+                
+                 case Products:
+                fileName = "products_services_import";
+                componentClass = CreateItem.class;
                 break;
 
             case ServiceMasterList:

@@ -73,8 +73,14 @@ public class ItemService {
     @CachePut
     public ItemData createItem(CreateItem createItem) {
 
-        String sku = StringUtils.isBlank(createItem.getSku()) ? sequenceNumberService.next(1L, Sequences.StockItem.name()) : createItem.getSku().trim();
- 
+        Sequences seq=createItem.getItemType()==ItemType.Inventory ? Sequences.StockItem : Sequences.ServiceItem;
+        
+        String sku = StringUtils.isBlank(createItem.getSku()) ? sequenceNumberService.next(1L, seq.name()) : createItem.getSku().trim();
+
+        if (findByItemCode(sku).isPresent()) {
+            throw APIException.badRequest("Stock Item with code {0} already exists", sku);
+        }
+
         Item item = new Item();
         item.setActive(Boolean.TRUE);
         item.setCategory(createItem.getStockCategory());
@@ -160,7 +166,8 @@ public class ItemService {
 
         return savedItem.toData();
     }
-  @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Item updateItem(Long id, CreateItem createItem) {
         Item item = findItemEntityOrThrow(id);
         item.setDrug(Boolean.FALSE);
@@ -324,6 +331,7 @@ public class ItemService {
     public Optional<Item> findFirstByCategory(ItemCategory category) {
         return itemRepository.findFirstByCategory(category);
     }
+
     public CreateItem toItemData(Item item) {
         CreateItem data = new CreateItem();
         data.setItemId(item.getId());
@@ -337,13 +345,17 @@ public class ItemService {
         data.setItemUnit(item.getUnit());
         data.setPurchaseRate(item.getCostRate());
         data.setRate(item.getRate());
-        if(!item.getReorderRules().isEmpty()){
-            ReorderRule rule=item.getReorderRules().get(0);
+        if (!item.getReorderRules().isEmpty()) {
+            ReorderRule rule = item.getReorderRules().get(0);
             data.setReorderLevel(rule.getReorderLevel());
             data.setReorderLevelId(rule.getId());
         }
         data.setSku(item.getItemCode());
-        data.setStockCategory(item.getCategory()); 
+        data.setStockCategory(item.getCategory());
         return data;
+    }
+
+    public void importItem(List<CreateItem> list) {
+        list.forEach(x -> createItem(x));
     }
 }

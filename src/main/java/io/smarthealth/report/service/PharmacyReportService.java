@@ -67,7 +67,7 @@ public class PharmacyReportService {
         ReportData reportData = new ReportData();
         PrescriptionData prescriptionData = null;
         Long prescriptionId = NumberUtils.createLong(reportParam.getFirst("prescriptionId"));
-        Optional<Prescription> prescription = prescriptionService.fetchPrescriptionById(4L);
+        Optional<Prescription> prescription = prescriptionService.fetchPrescriptionById(prescriptionId);
         if (prescription.isPresent()) {
             prescriptionData = PrescriptionData.map(prescription.get());
             reportData.setPatientNumber(prescriptionData.getPatientNumber());

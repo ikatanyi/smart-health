@@ -62,8 +62,8 @@ public class RadiologyResult extends Auditable{
             data.setScanNumber(this.getPatientScanTest().getPatientScanRegister().getAccessNo());
         }
         if (!this.patientScanTest.getPatientScanRegister().getIsWalkin()) {
-            data.setPatientName(this.patientScanTest.getPatientScanRegister().getVisit().getPatient().getFullName());
-            data.setPatientNo(this.patientScanTest.getPatientScanRegister().getVisit().getPatient().getPatientNumber());
+            data.setPatientName(this.patientScanTest.getPatientScanRegister().getPatientName());
+            data.setPatientNo(this.patientScanTest.getPatientScanRegister().getPatientNo());
             data.setGender(this.patientScanTest.getPatientScanRegister().getVisit().getPatient().getGender());
             data.setVisitNumber(this.patientScanTest.getPatientScanRegister().getVisit().getVisitNumber());
             data.setVisitDate(this.patientScanTest.getPatientScanRegister().getVisit().getStartDatetime().toLocalDate());
@@ -71,7 +71,7 @@ public class RadiologyResult extends Auditable{
             data.setPatientNo(this.patientScanTest.getPatientScanRegister().getPatientNo());
             data.setScanNumber(this.getPatientScanTest().getPatientScanRegister().getAccessNo());
             data.setGender(this.getPatientScanTest().getPatientScanRegister().getGender());
-            data.setPatientName("Walkin - " + this.patientScanTest.getPatientScanRegister().getPatientNo());
+            data.setPatientName(this.patientScanTest.getPatientScanRegister().getPatientName());
             data.setVisitNumber(this.patientScanTest.getPatientScanRegister().getPatientNo());
             data.setVisitDate(this.patientScanTest.getPatientScanRegister().getReceivedDate());
         }

@@ -10,15 +10,13 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import lombok.Data;
-
+import javax.persistence.Table; 
+ 
 /**
  *
  * @author Kelsas
- */
-@Data
-@Entity
+ */   
+@Entity 
 @Table(name = "acc_ledgers")
 public class Ledger extends Auditable {
 
@@ -53,6 +51,62 @@ public class Ledger extends Auditable {
     @Override
     public int hashCode() {
         return identifier.hashCode();
+    }
+
+    public AccountType getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(AccountType accountType) {
+        this.accountType = accountType;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Ledger getParentLedger() {
+        return parentLedger;
+    }
+
+    public void setParentLedger(Ledger parentLedger) {
+        this.parentLedger = parentLedger;
+    }
+
+    public BigDecimal getTotalValue() {
+        return totalValue;
+    }
+
+    public void setTotalValue(BigDecimal totalValue) {
+        this.totalValue = totalValue;
+    }
+
+    public Boolean getShowAccountsInChart() {
+        return showAccountsInChart;
+    }
+
+    public void setShowAccountsInChart(Boolean showAccountsInChart) {
+        this.showAccountsInChart = showAccountsInChart;
     }
 
     @Override

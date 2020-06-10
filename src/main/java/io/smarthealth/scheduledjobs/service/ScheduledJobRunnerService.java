@@ -3,15 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.notifications.api;
-
-import org.springframework.stereotype.Controller;
+package io.smarthealth.scheduledjobs.service;
 
 /**
  *
  * @author Kelsas
  */
-@Controller
-public class RequestsController {
-
+public interface ScheduledJobRunnerService {
+    void updateCheckout();
 }

@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MakePettyCashPayment {
 
+    private Long payeeId;
     private String payee;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate date;

@@ -166,7 +166,7 @@ public class ProcedureService {
                 pte.setTestPrice(id.getItemPrice());
                 pte.setQuantity(id.getQuantity());
                 pte.setProcedureTest(item);
-                Optional<Employee> employee = employeeService.findEmployeeByStaffNumber(id.getMedicId());
+                Optional<Employee> employee = employeeService.findEmployeeById(id.getMedicId());
                 if (employee.isPresent()) {
                     pte.setMedic(employee.get());
                 }
@@ -198,12 +198,11 @@ public class ProcedureService {
     private PatientBill toBill(PatientProcedureRegister data) {
         ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
         PatientBill patientbill = new PatientBill();
-        patientbill.setVisit(data.getVisit());
-        if (data.getVisit() != null) {
-            patientbill.setPatient(data.getVisit().getPatient());
-
-        }
+        
+        
         if (!data.getIsWalkin()) {
+            patientbill.setVisit(data.getVisit());
+            patientbill.setPatient(data.getVisit().getPatient());
             patientbill.setWalkinFlag(Boolean.FALSE);
             patientbill.setPaymentMode(data.getVisit().getPaymentMethod().name());
         } else {

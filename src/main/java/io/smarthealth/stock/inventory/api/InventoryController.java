@@ -6,6 +6,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.inventory.data.CreateStockEntry;
 import io.smarthealth.stock.inventory.data.StockEntryData;
+import io.smarthealth.stock.inventory.data.StockMovement;
 import io.smarthealth.stock.inventory.data.SupplierStockEntry;
 import io.smarthealth.stock.inventory.data.TransData;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
@@ -50,9 +51,9 @@ public class InventoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
-    
-     @PostMapping("/inventory-entries/supplier")
-     @PreAuthorize("hasAuthority('create_inventory')")
+
+    @PostMapping("/inventory-entries/supplier")
+    @PreAuthorize("hasAuthority('create_inventory')")
     public ResponseEntity<?> createStockEntrySupplier(@Valid @RequestBody SupplierStockEntry stocks) {
 
         String result = service.receiveSupplierStocks(stocks);
@@ -65,7 +66,7 @@ public class InventoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
-    
+
     //inventories/{id}
     @GetMapping("/inventory-entries/{id}")
     @PreAuthorize("hasAuthority('view_inventory')")
@@ -108,6 +109,22 @@ public class InventoryController {
 
         return ResponseEntity.ok(pagers);
     }
- 
-    
+
+    @GetMapping("/inventory-entries/{item_id}/drug-flow")
+    @PreAuthorize("hasAuthority('view_inventory')")
+    public ResponseEntity<?> getDrugflow(
+            @PathVariable(value = "item_id") final Long itemId,
+            @RequestParam(value = "store_id", required = false) final Long storeId,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        List<StockMovement> list = service.getStockMovement(storeId, itemId, range);
+
+        Pager<?> pagers = PaginationUtil.paginateList(list, "Item Flow Report", "", pageable);
+        return ResponseEntity.ok(pagers);
+    }
+
 }

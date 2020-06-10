@@ -51,7 +51,7 @@ public class Receipt extends Auditable {
     private String voidedBy;
     private LocalDateTime voidedDatetime;
 
-    @OneToMany(mappedBy = "receipt")
+    @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)
     private List<ReceiptTransaction> transactions = new ArrayList<>();
 
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)

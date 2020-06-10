@@ -45,6 +45,7 @@ public class AccountController {
     @ResponseBody
     @PreAuthorize("hasAuthority('create_account')")        
     ResponseEntity<Void> createAccount(@RequestBody @Valid final AccountData account) {
+        
         if (this.accountService.findAccount(account.getIdentifier()).isPresent()) {
             throw APIException.conflict("Account {0} already exists.", account.getIdentifier());
         }
@@ -126,7 +127,7 @@ public class AccountController {
         final DateRange range = DateRange.fromIsoString(dateRange);
 
         Pageable pageable = PaginationUtil.createPage(page, size, Sort.by("journalEntry_date").ascending());
-        System.err.println(pageable);
+         
         Page<JournalEntryItemData> lists = accountService.getAccountEntries(identifier, pageable)
                 .map(x -> x.toData());
 //        accountService.fetchAccountEntries( identifier,range, pageable)

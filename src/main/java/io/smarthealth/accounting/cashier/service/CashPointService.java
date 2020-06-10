@@ -41,12 +41,11 @@ public class CashPointService {
         return repository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Cash Drawer with id  {0} not found.", id));
     }
-    public CashPoint updateCashPoint(Long id, CashPoint data){
-        CashPoint cashPoint=getCashPoint(id);
-        if(!cashPoint.getName().equals(data.getName())){
-            cashPoint.setName(data.getName());
-        }
-        
+    public CashPoint updateCashPoint(Long id, CashPointData data){
+        CashPoint cashPoint=getCashPoint(id); 
+       cashPoint.setActive(true);
+       cashPoint.setName(data.getName());
+       cashPoint.setTenderTypes(StringUtils.join(data.getTenderTypes(), ','));
          return repository.save(cashPoint);
     }
 }
