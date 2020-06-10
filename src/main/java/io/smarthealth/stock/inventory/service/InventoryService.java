@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import io.smarthealth.stock.inventory.domain.StockEntryRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
+import io.smarthealth.stock.inventory.domain.enumeration.PurchaseType;
 import io.smarthealth.stock.inventory.domain.specification.StockEntrySpecification;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.item.domain.Item;
@@ -197,8 +198,9 @@ public class InventoryService {
 
         }
 
-        purchaseInvoiceService.createPurchaseInvoice(store, stockData);
-
+        if (stockData.getPurchaseType() == PurchaseType.Payable) {
+            purchaseInvoiceService.createPurchaseInvoice(store, stockData);
+        }
         if (stockData.getOrderNumber() != null) {
             PurchaseOrder order = purchaseOrderRepository.findByOrderNumber(stockData.getOrderNumber()).orElse(null);
             if (order != null) {
@@ -230,7 +232,7 @@ public class InventoryService {
                 qty *= -1;
             }
         }
-        System.err.println("My values as dispensed "+qty);
+        System.err.println("My values as dispensed " + qty);
 
         inventoryEventSender.process(
                 new InventoryEvent(
