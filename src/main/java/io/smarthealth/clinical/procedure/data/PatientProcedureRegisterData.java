@@ -44,7 +44,7 @@ public class PatientProcedureRegisterData {
     @ApiModelProperty(hidden = true, required = false)
     private String physicianName;
     @ApiModelProperty(required = false, hidden = true)
-    private LocalDate receivedDate;
+    private LocalDate receivedDate=LocalDate.now();
     @ApiModelProperty(required = false, hidden = true)
     private LocalDate createdOn;
     @ApiModelProperty(required = false, hidden = true)

@@ -29,13 +29,13 @@ public class RegisterTestSpecification {
                 predicates.add(cb.equal(root.get("patientProcedureRegister").get("accessNo"), scanNo));
             }
             if (visitId != null) {
-                predicates.add(cb.greaterThan(root.get("patientProcedureRegister").get("visit").get("visitId"), visitId));
+                predicates.add(cb.equal(root.get("patientProcedureRegister").get("visit").get("visitNumber"), visitId));
             }
             if(status!=null)
-                predicates.add(cb.greaterThan(root.get("status"), status));
+                predicates.add(cb.equal(root.get("status"), status));
              if(range!=null){
                   predicates.add(
-                     cb.between(root.get("procedureDate"), range.getStartDate(), range.getEndDate())
+                     cb.between(root.get("receivedDate"), range.getStartDate(), range.getEndDate())
                   );
               }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

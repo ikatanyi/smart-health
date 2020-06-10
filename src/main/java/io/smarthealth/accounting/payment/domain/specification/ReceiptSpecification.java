@@ -20,7 +20,7 @@ public class ReceiptSpecification {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
             if (payee != null) {
-                predicates.add(cb.equal(root.get("payee"), payee));
+                predicates.add(cb.equal(root.get("payer"), payee));
             }
             if (receiptNo != null) {
                 predicates.add(cb.equal(root.get("receiptNo"), receiptNo));

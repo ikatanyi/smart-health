@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import io.smarthealth.accounting.doctors.domain.DoctorItemRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,8 @@ public class DoctorItemService {
 
     @Transactional
     public DoctorItem createDoctorItem(DoctorItemData data) {
+        //check if the code already exists for the same patient
+
         DoctorItem items = toDoctorItem(data);
         return save(items);
     }
@@ -48,6 +51,11 @@ public class DoctorItemService {
     private DoctorItem toDoctorItem(DoctorItemData data) {
         Employee doctor = employeeService.findEmployeeByIdOrThrow(data.getDoctorId());
         Item serviceType = itemService.findByItemCodeOrThrow(data.getServiceCode());
+
+        Optional<DoctorItem> docItem = repository.findByDoctorAndServiceType(doctor, serviceType);
+        if (docItem.isPresent()) {
+            throw APIException.badRequest("Doctor Item " + serviceType.getItemName() + "  for the " + doctor.getFullName() + " Already Exist");
+        }
 
         DoctorItem items = new DoctorItem();
         items.setActive(Boolean.TRUE);

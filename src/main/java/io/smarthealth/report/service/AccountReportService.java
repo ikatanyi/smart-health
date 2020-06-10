@@ -227,19 +227,19 @@ public class AccountReportService {
         reportData.setReportName("income_statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getRemittanceReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long payerId = NumberUtils.createLong(reportParam.getFirst("payerId"));
-        Boolean hasBalance = reportParam.getFirst("hasBalance")!=null?Boolean.getBoolean(reportParam.getFirst("hasBalance")):null;
+        Boolean hasBalance = reportParam.getFirst("hasBalance") != null ? Boolean.getBoolean(reportParam.getFirst("hasBalance")) : null;
         String receipt = reportParam.getFirst("receipt");
         String remittanceNo = reportParam.getFirst("remittanceNo");
         String dateRange = reportParam.getFirst("range");
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        
+
         List<RemittanceData> remittanceData = remittanceService.getRemittances(payerId, receipt, remittanceNo, hasBalance, range, Pageable.unpaged()).getContent()
                 .stream()
-                .map(rem->(rem.toData()))
+                .map(rem -> (rem.toData()))
                 .collect(Collectors.toList());
 
         List<JRSortField> sortList = new ArrayList<>();
@@ -249,7 +249,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+
         sortField = new JRDesignSortField();
         sortField.setName("payer");
         sortField.setOrder(SortOrderEnum.DESCENDING);
@@ -263,7 +263,7 @@ public class AccountReportService {
         reportData.setReportName("Remittance_Statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getAllocationReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long payerId = NumberUtils.createLong(reportParam.getFirst("payerId"));
@@ -272,10 +272,10 @@ public class AccountReportService {
         String invoiceNo = reportParam.getFirst("invoiceNo");
         String remittanceNo = reportParam.getFirst("remittanceNo");
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
-        
+
         List<AllocationData> remittanceData = allocationService.getAllocations(invoiceNo, receiptNo, remittanceNo, payerId, schemeId, range, Pageable.unpaged()).getContent()
                 .stream()
-                .map(rem->(rem.map()))
+                .map(rem -> (rem.map()))
                 .collect(Collectors.toList());
 
         List<JRSortField> sortList = new ArrayList<>();
@@ -285,7 +285,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+
         sortField = new JRDesignSortField();
         sortField.setName("transactionDate");
         sortField.setOrder(SortOrderEnum.DESCENDING);
@@ -299,9 +299,6 @@ public class AccountReportService {
         reportData.setReportName("Allocation-Report");
         reportService.generateReport(reportData, response);
     }
-    
-    
-    
 
     public void getJournal(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -314,7 +311,7 @@ public class AccountReportService {
         reportData.setReportName("journal-statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getAccTransactions(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String identifier = reportParam.getFirst("identifier");
@@ -329,7 +326,7 @@ public class AccountReportService {
         reportData.getFilters().put("range", range);
         reportData.getFilters().put("ledger", data.getLedger());
         reportData.getFilters().put("balance", data.getBalance());
-        
+
         List<JournalEntryItemData> list = accountService.getAccountTransaction(identifier, range);
 
         reportData.setData(list);
@@ -362,38 +359,38 @@ public class AccountReportService {
             data.setPatientId(bill.getPatientNumber());
             data.setPatientName(bill.getPatientName());
             data.setPaymentMode(bill.getPaymentMethod());
-//            data.setAmount(bill.getAmount());
             data.setBalance(bill.getBalance());
-//            data.setPaid(bill.getAmount().subtract(bill.getBalance()));
             List<BillItem> items = billService.getAllBillDetails(bill.getVisitNumber());
             for (BillItem item : items) {
                 data.setAmount(data.getAmount().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
-                if(item.getStatus()==item.getStatus().Paid)
+                if (item.getStatus() == item.getStatus().Paid) {
                     data.setPaid(data.getPaid().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
-                switch (item.getServicePoint()) {
-                    case "Laboratory":
-                        data.setLab(data.getLab() + item.getAmount());
-                        break;
-                    case "Pharmacy":
-                        data.setPharmacy(data.getPharmacy() + item.getAmount());
-                        break;
-                    case "Procedure":
-                    case "Triage":
-                        data.setProcedure(data.getProcedure() + item.getAmount());
-                        break;
-                    case "Radiology":
-                        data.setRadiology(data.getRadiology() + item.getAmount());
-                        break;
-                    case "Consultation":
-                        data.setConsultation(data.getConsultation() + item.getAmount());
-                        break;
-                    case "Copayment":
-                         data.setCopay(data.getCopay()+item.getAmount());  
-                         break;
-                    default:
-                        data.setOther(data.getOther() + item.getAmount());
-                        break;
                 }
+                
+                    switch (item.getServicePoint()) {
+                        case "Laboratory":
+                            data.setLab(data.getLab() + item.getAmount());
+                            break;
+                        case "Pharmacy":
+                            data.setPharmacy(data.getPharmacy() + item.getAmount());
+                            break;
+                        case "Procedure":
+                        case "Triage":
+                            data.setProcedure(data.getProcedure() + item.getAmount());
+                            break;
+                        case "Radiology":
+                            data.setRadiology(data.getRadiology() + item.getAmount());
+                            break;
+                        case "Consultation":
+                            data.setConsultation(data.getConsultation() + item.getAmount());
+                            break;
+                        case "Copayment":
+                            data.setCopay(data.getCopay() + item.getAmount());
+                            break;
+                        default:
+                            data.setOther(data.getOther() + item.getAmount());
+                            break;
+                    }
             }
             billData.add(data);
         }
@@ -501,7 +498,7 @@ public class AccountReportService {
     }
 
     public void genInsuranceStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
-        
+
         Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
         Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
         String patientNo = reportParam.getFirst("patientNo");
@@ -574,8 +571,7 @@ public class AccountReportService {
         ReportData reportData = new ReportData();
         String identifier = reportParam.getFirst("identifier");
         LedgerData ledgerData = ledgerService.findLedgerData(identifier).orElseThrow(() -> APIException.notFound("Ledger with id  {0} not found"));;
-        
-        
+
         reportData.setData(Arrays.asList(ledgerData));
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/ledger_statement");
@@ -632,7 +628,7 @@ public class AccountReportService {
         }
         throw APIException.internalError("Provide a Valid Account Type");
     }
-    
+
     private PaymentMethod PaymentMethodToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;

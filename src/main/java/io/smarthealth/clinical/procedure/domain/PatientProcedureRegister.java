@@ -92,6 +92,7 @@ public class PatientProcedureRegister extends Auditable {
     public PatientProcedureRegisterData toData() {
         PatientProcedureRegisterData data = new PatientProcedureRegisterData();
         data.setBillingDate(this.getBillingDate());
+        data.setReceivedDate(receivedDate);
         if (this.getVisit() != null && !this.isWalkin) {
             data.setVisitNumber(this.getVisit().getVisitNumber());
             data.setPatientName(this.getVisit().getPatient().getFullName());

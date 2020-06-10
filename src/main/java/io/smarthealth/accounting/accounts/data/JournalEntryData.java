@@ -1,14 +1,12 @@
 package io.smarthealth.accounting.accounts.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.validation.constraints.NotNull;

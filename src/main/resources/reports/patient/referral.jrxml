@@ -245,7 +245,7 @@
 				<text><![CDATA[Institution/Doctor Transferred To :]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="139" y="103" width="255" height="12" uuid="e3f62d18-6e4a-4c6c-8454-f3fd5633cac4"/>
+				<reportElement x="147" y="101" width="255" height="14" uuid="e3f62d18-6e4a-4c6c-8454-f3fd5633cac4"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>

@@ -165,6 +165,7 @@ public class ProcedureService {
                 pte.setStatus(ProcedureTestState.Scheduled);
                 pte.setTestPrice(id.getItemPrice());
                 pte.setQuantity(id.getQuantity());
+                pte.setPaid(Boolean.FALSE);
                 pte.setProcedureTest(item);
                 Optional<Employee> employee = employeeService.findEmployeeById(id.getMedicId());
                 if (employee.isPresent()) {
@@ -232,10 +233,9 @@ public class ProcedureService {
                     if (lineData.getMedic() != null) {
                         billItem.setMedicId(lineData.getMedic().getId());
                     }
-                    if (!lineData.getPatientProcedureRegister().getIsWalkin() && lineData.getRequest() != null) {
-                        billItem.setRequestReference(lineData.getRequest().getId());
-                    }
+                    billItem.setRequestReference(lineData.getId());
                     billItem.setItem(item);
+                    billItem.setPaid(Boolean.FALSE);
                     billItem.setPrice(lineData.getTestPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getTestPrice() * lineData.getQuantity());
