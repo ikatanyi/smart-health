@@ -63,7 +63,7 @@
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement x="268" y="165" width="1" height="557" uuid="e10101d9-0a63-48b5-b329-e6c453d3c65d"/>
+					<reportElement x="185" y="165" width="1" height="557" uuid="e10101d9-0a63-48b5-b329-e6c453d3c65d"/>
 					<graphicElement>
 						<pen lineWidth="0.25"/>
 					</graphicElement>
@@ -105,7 +105,7 @@
 				<textElement verticalAlignment="Middle" markup="none">
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Purchase Order]]></text>
+				<text><![CDATA[Supplier GRN]]></text>
 			</staticText>
 			<line>
 				<reportElement positionType="Float" x="1" y="21" width="554" height="1" uuid="45eb46fc-921e-40d5-812f-93da09fab059"/>
@@ -209,21 +209,7 @@
 				<textFieldExpression><![CDATA[$F{paymentMethod}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="429" y="47" width="30" height="11" forecolor="#000000" uuid="11c3a51b-eb95-4a88-a362-38b17349aa8a"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Terms :]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="429" y="58" width="32" height="11" forecolor="#000000" uuid="f75243cb-0f97-40df-955f-fb5f8b95f004"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Job      :]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="16" y="91" width="252" height="12" uuid="a6a810ab-7849-4f5f-bc4a-d619355b1487"/>
+				<reportElement positionType="Float" x="16" y="91" width="169" height="12" uuid="a6a810ab-7849-4f5f-bc4a-d619355b1487"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
