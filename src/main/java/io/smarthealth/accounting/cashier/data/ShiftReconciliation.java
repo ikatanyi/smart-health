@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.cashier.data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,8 @@ public class ShiftReconciliation {
     private String cashPoint;
 
     private LocalDate dateReconciliation;
+    private BigDecimal amount;
+    private BigDecimal amountCollected;
 
     private Long depositAccountId;
     private String depositAccountNumber;
@@ -32,5 +35,4 @@ public class ShiftReconciliation {
     private String expenseAccountName;
     private String narration;
 
-    private List<ShiftPayment> shiftPayment = new ArrayList<>();
 }

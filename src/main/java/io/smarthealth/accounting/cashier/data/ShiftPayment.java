@@ -7,13 +7,20 @@ import lombok.Data;
  *
  * @author Kelsas
  */
-@Data
-public class ShiftPayment {
+public interface ShiftPayment {
 
-    private String shiftNo;
-    private Long paymentId;
-    private String paymentMethod;
-    private BigDecimal amount;
-    private BigDecimal amountCollected;
+    public Long getShiftId();
+
+    public String getShiftNo();
+
+    public Long getCashierId();
+
+    public String getCashier();
+
+    public String getCashierName();
+
+    public String getMethod();
+
+    public BigDecimal getTotal();
 
 }

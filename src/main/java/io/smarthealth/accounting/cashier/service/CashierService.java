@@ -1,7 +1,11 @@
 package io.smarthealth.accounting.cashier.service;
 
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.domain.AccountRepository;
 import io.smarthealth.accounting.cashier.data.CashierData;
 import io.smarthealth.accounting.cashier.data.CashierShift;
+import io.smarthealth.accounting.cashier.data.ShiftPayment;
+import io.smarthealth.accounting.cashier.data.ShiftReconciliation;
 import io.smarthealth.accounting.cashier.domain.Cashier;
 import io.smarthealth.accounting.cashier.domain.CashierRepository;
 import io.smarthealth.accounting.cashier.domain.Shift;
@@ -33,13 +37,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CashierService {
 
+    private final AccountRepository accountRepository;
     private final CashierRepository repository;
     private final CashPointRepository cashPointRepository;
     private final UserService userService;
     private final ShiftRepository shiftRepository;
     private final SequenceNumberService sequenceNumberService;
-    
-    public Optional<Cashier> findByUser(final User user){
+
+    public Optional<Cashier> findByUser(final User user) {
         return repository.findByUser(user);
     }
 
@@ -146,4 +151,22 @@ public class CashierService {
         }
         return repository.shiftBalanceByDateInterface(page);
     }
+
+    public List<ShiftPayment> getShiftByMethod(String shiftNo) {
+        return shiftRepository.findShiftSummaryInterface(shiftNo);
+    }
+    //we do the reconcillations
+    public void reconcile(ShiftReconciliation data){
+        //create the journal 
+        //get the shift
+        Shift shift= findByShiftNo(data.getShiftNo());
+       // Account bankLedger= accountRepository.findByIdentifier(data.)
+                
+                //debt the bank -> moving money
+                //credit > petty cash or cash at hand
+                
+        
+    }
+    
+    
 }
