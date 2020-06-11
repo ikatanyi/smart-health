@@ -2,7 +2,7 @@ package io.smarthealth.organization.org.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import io.smarthealth.administration.app.data.AddressData;
+import io.smarthealth.administration.app.data.AddressDat;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
@@ -43,10 +43,10 @@ public class OrganisationData {
     private String mobile;
 
     @ApiModelProperty(required = false, hidden = true)
-    private List<AddressData> addresses;
+    private List<AddressDat> addresses;
 
     @ApiModelProperty(required = false, hidden = true)
-    AddressData address;
+    AddressDat address;
     @ApiModelProperty(required = false, hidden = true)
     private List<ContactData> contacts;
 
@@ -63,7 +63,7 @@ public class OrganisationData {
         data.setWebsite(org.getWebsite());
         if (!org.getAddress().isEmpty()) {
             for (Address address : org.getAddress()) {
-                AddressData addressData = new AddressData();
+                AddressDat addressData = new AddressDat();
                 addressData.setCountry(address.getCountry());
                 addressData.setCounty(address.getCounty());
                 addressData.setLine1(address.getLine1());

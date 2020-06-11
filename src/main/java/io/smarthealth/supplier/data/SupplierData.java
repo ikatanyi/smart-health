@@ -1,6 +1,6 @@
 package io.smarthealth.supplier.data;
 
-import io.smarthealth.administration.app.data.AddressData;
+import io.smarthealth.administration.app.data.AddressDat;
 import io.smarthealth.administration.app.data.BankEmbeddedData;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.supplier.domain.enumeration.SupplierType;
@@ -34,7 +34,7 @@ public class SupplierData {
     private String creditAccount;
     private String creditAccountNo;
     private BankEmbeddedData bank;
-    private AddressData addresses;
+    private AddressDat addresses;
     private ContactData contact;
     private String status;
     //for reporting

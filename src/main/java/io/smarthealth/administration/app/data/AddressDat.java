@@ -8,7 +8,7 @@ import lombok.Data;
  * @author Kelsas
  */
 @Data
-public class AddressData {
+public class AddressDat {
 
     private Long id;
     private String type;
@@ -22,8 +22,8 @@ public class AddressData {
     private String phone;
     private String website;
 
-    public static AddressData map(Address address) {
-        AddressData data = new AddressData();
+    public static AddressDat map(Address address) {
+        AddressDat data = new AddressDat();
         data.setId(address.getId());
         if (address.getType() != null) {
             data.setType(address.getType().name());
@@ -41,7 +41,7 @@ public class AddressData {
 
     }
 
-    public static Address map(AddressData addressData) {
+    public static Address map(AddressDat addressData) {
         Address address = new Address();
         if(addressData.getId()!=null){
         address.setId(addressData.getId());

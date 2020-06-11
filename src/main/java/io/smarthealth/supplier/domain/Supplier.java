@@ -4,7 +4,7 @@ import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.payment.domain.Payment;
 import io.smarthealth.administration.finances.domain.PaymentTerms;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
-import io.smarthealth.administration.app.data.AddressData;
+import io.smarthealth.administration.app.data.AddressDat;
 import io.smarthealth.administration.app.data.BankEmbeddedData;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.*;
@@ -97,7 +97,7 @@ public class Supplier extends Auditable {
             data.setBank(BankEmbeddedData.map(this.getBankAccount()));
         }
         if (this.getAddress() != null) {
-            data.setAddresses(AddressData.map(this.getAddress()));
+            data.setAddresses(AddressDat.map(this.getAddress()));
             data.setAddress(this.getAddress().getLine1());
 
         }

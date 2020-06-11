@@ -38,6 +38,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -232,6 +233,12 @@ public class PatientService {
 
     @Transactional
     public Patient createPatient(final PatientData patient, MultipartFile file) {
+        try {
+            LocalDate dateOfBirth = LocalDate.now().minusYears(Long.valueOf(patient.getAge()));
+            patient.setDateOfBirth(dateOfBirth);
+        } catch (Exception e) {
+            patient.setDateOfBirth(LocalDate.now());
+        }
         String patientNo = sequenceNumberService.next(1L, Sequences.Patient.name());
         throwifDuplicatePatientNumber(patientNo);
 
@@ -467,7 +474,7 @@ public class PatientService {
 
                     data.setImage(bytes);
                 } catch (Exception e) {
-                    System.out.println("Error loading "+e.getMessage());
+                    System.out.println("Error loading " + e.getMessage());
                 }
             }
 
