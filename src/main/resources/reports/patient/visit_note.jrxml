@@ -160,17 +160,12 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="id" class="java.lang.Long">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
 	<field name="patientNumber" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="patientName" class="java.lang.String"/>
-	<field name="stopDateTime" class="java.lang.Object"/>
 	<field name="startDatetime" class="java.lang.Object"/>
-	<field name="startDate" class="java.lang.Object"/>
-	<field name="status" class="java.lang.String"/>
+	<field name="status" class="java.lang.Object"/>
 	<field name="visitType" class="java.lang.Object"/>
 	<field name="practitionerCode" class="java.lang.String"/>
 	<field name="practitionerName" class="java.lang.String"/>
@@ -184,7 +179,7 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="1" y="44" width="144" height="14" forecolor="#3300CC" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
+				<reportElement positionType="Float" mode="Transparent" x="1" y="44" width="144" height="14" forecolor="#000000" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
 				<textElement verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>

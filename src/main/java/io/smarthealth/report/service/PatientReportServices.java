@@ -303,14 +303,11 @@ public class PatientReportServices {
     public void getVisitNote(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
-        VisitDatas visit = VisitDatas.map(visitService.findVisitEntityOrThrow(visitNumber));
+        VisitDatas visitData = VisitDatas.map(visitService.findVisitEntityOrThrow(visitNumber));
 
-        reportData.setPatientNumber(visit.getPatientNumber());
-        if (visit.getPractitionerCode() != null) {
-            reportData.setEmployeeId(visit.getPractitionerCode());
-
-        }
-        reportData.setData(Arrays.asList(visit));
+        reportData.setPatientNumber(visitData.getPatientNumber());
+        reportData.setEmployeeId(visitData.getPractitionerCode());
+        reportData.setData(Arrays.asList(visitData));
         reportData.setFormat(format);
         reportData.setTemplate("/patient/visit_note");
         reportData.setReportName("Medical-Note");
