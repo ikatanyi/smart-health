@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="referral" pageWidth="612" pageHeight="795" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="7f5d1719-2150-4099-8058-82165eccb7fc">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="32"/>
+	<property name="ireport.y" value="0"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -189,14 +189,14 @@
 				<text><![CDATA[Referral Form]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="61" width="55" height="14" forecolor="#000000" backcolor="#9999FF" uuid="b0f4afea-1b92-4545-be36-354aaa2cec14"/>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="61" width="65" height="14" forecolor="#000000" backcolor="#9999FF" uuid="b0f4afea-1b92-4545-be36-354aaa2cec14"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[VisitDate :]]></text>
+				<text><![CDATA[Visit Date :]]></text>
 			</staticText>
 			<textField>
-				<reportElement positionType="Float" x="58" y="61" width="139" height="14" uuid="45f4fe00-03c3-4f12-ae3b-bed97f679481"/>
+				<reportElement positionType="Float" x="68" y="61" width="139" height="14" uuid="45f4fe00-03c3-4f12-ae3b-bed97f679481"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -218,14 +218,14 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="76" width="55" height="14" forecolor="#000000" backcolor="#9999FF" uuid="f8e4ca63-4897-444f-99d5-a5ae2308baac"/>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="76" width="65" height="14" forecolor="#000000" backcolor="#9999FF" uuid="f8e4ca63-4897-444f-99d5-a5ae2308baac"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[VisitNumber:]]></text>
+				<text><![CDATA[Visit Number:]]></text>
 			</staticText>
 			<textField>
-				<reportElement positionType="Float" x="58" y="75" width="139" height="15" uuid="1f7800dd-999d-423c-8105-5da00db0d4fb"/>
+				<reportElement positionType="Float" x="68" y="75" width="139" height="15" uuid="1f7800dd-999d-423c-8105-5da00db0d4fb"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -244,12 +244,12 @@
 				</textElement>
 				<text><![CDATA[Institution/Doctor Transferred To :]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="147" y="101" width="255" height="14" uuid="e3f62d18-6e4a-4c6c-8454-f3fd5633cac4"/>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="141" y="101" width="255" height="14" isRemoveLineWhenBlank="true" uuid="e3f62d18-6e4a-4c6c-8454-f3fd5633cac4"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[($F{doctorName}.equals(null)?"":$F{doctorName})+" "+($F{doctorSpeciality}.equals(null)?"":$F{doctorSpeciality})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{doctorName}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -378,7 +378,7 @@
 				<textElement>
 					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Reason - Must be significantly medically necessary and cannot be managed or treated by a primary care provider ]]></text>
+				<text><![CDATA[Reason :]]></text>
 			</staticText>
 			<line>
 				<reportElement positionType="Float" x="336" y="82" width="229" height="1" forecolor="#CC3300" uuid="38549910-acdc-4403-bfe2-f5692a9624e7"/>
@@ -391,7 +391,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[                                                                                                                                                                                    Signature of Referring Physician, ARNP or PA ]]></text>
+				<text><![CDATA[                                                                                                                                                                                    Signature of Referring Physician]]></text>
 			</staticText>
 		</band>
 	</detail>
