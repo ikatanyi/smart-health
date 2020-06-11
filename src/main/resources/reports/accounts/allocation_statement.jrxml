@@ -37,6 +37,7 @@
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="Footer_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="range" class="java.lang.String" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -88,7 +89,7 @@
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="15">
+			<band height="20">
 				<textField>
 					<reportElement x="467" y="0" width="48" height="15" uuid="cbe8338f-d766-4715-bd69-ac0908407c6d"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -225,6 +226,13 @@
 				</textElement>
 				<text><![CDATA[#]]></text>
 			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="50" y="52" width="100" height="13" isRemoveLineWhenBlank="true" uuid="48c7b769-2ba2-43f2-9736-cc636b92f2cf"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{range}]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnHeader>
 	<detail>
