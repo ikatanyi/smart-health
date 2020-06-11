@@ -17,7 +17,7 @@ import org.springframework.data.repository.query.Param;
 public interface CashierRepository extends JpaRepository<Cashier, Long> {
 
     Optional<Cashier> findByUser(User user);
-
+      
     @Query("SELECT R.shift.id AS id,R.shift.cashPoint.name AS cashPoint,R.shift.cashier.user.name as cashier, R.shift.startDate as startDate,  R.shift.endDate as endDate,  R.shift.shiftNo as shiftNo,  R.shift.status as status,  SUM(R.amount - R.refundedAmount) as balance,R.shift.cashier.id as cashierId  FROM Receipt as R GROUP BY R.shift.shiftNo ORDER BY R.transactionDate DESC")
     Page<CashierShift> shiftBalanceByDateInterface(Pageable page);
 
