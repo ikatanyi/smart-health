@@ -29,4 +29,5 @@ public class TrialBalanceController {
             @RequestParam(value = "includeEmptyEntries", required = false) final boolean includeZeroBalance) {
         return ResponseEntity.ok(this.trialBalanceService.getTrialBalance(includeZeroBalance));
     }
+   
 }

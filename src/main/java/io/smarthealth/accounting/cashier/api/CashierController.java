@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,6 +59,18 @@ public class CashierController {
     public ResponseEntity<?> getCashier(@PathVariable(value = "id") Long code) {
         Cashier result = service.getCashier(code);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(result.toData());
+    }
+
+    @PutMapping("/cashiers/{id}/change-status")
+    @PreAuthorize("hasAuthority('view_cashiers')")
+    public ResponseEntity<?> changeStatus(@PathVariable(value = "id") Long id, @RequestParam("status") Command command) {
+        
+        if (command == Command.Activate || command == Command.Deactivate) {
+            Cashier result = service.changeStatus(id, command.name());
+            //list all events 
+            return ResponseEntity.ok(result.toData());
+        }
+        throw APIException.badRequest("Unrecognized Command Issued");
     }
 
     @PostMapping("/cashiers/{id}/shift")
@@ -106,7 +119,7 @@ public class CashierController {
 
     @PutMapping("/cashiers/{id}")
     @PreAuthorize("hasAuthority('edit_cashiers')")
-    public ResponseEntity<?> updateCashier(@PathVariable(value = "id") Long id, @Valid @RequestBody Cashier data) {
+    public ResponseEntity<?> updateCashier(@PathVariable(value = "id") Long id, @Valid @RequestBody CashierData data) {
         Cashier cashDrawer = service.updateCashier(id, data);
         return ResponseEntity.ok(cashDrawer);
     }
@@ -211,4 +224,14 @@ public class CashierController {
         return ResponseEntity.ok(list);
     }
 
+    public enum Command {
+        Activate,
+        Deactivate
+    }
+
+    @Value
+    public class Status {
+
+        private String status;
+    }
 }

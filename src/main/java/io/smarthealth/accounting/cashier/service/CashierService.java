@@ -84,6 +84,12 @@ public class CashierService {
                 .orElseThrow(() -> APIException.notFound("Cashier with id  {0} not found.", id));
     }
 
+    public Cashier changeStatus(Long cashierId, String status) {
+        Cashier cashier = getCashier(cashierId);
+        cashier.setActive(!status.equals("Deactivate"));
+        return repository.save(cashier);
+    }
+
     public Shift startShift(Cashier cashier) {
         //check if this guy has a running shift
         Optional<Shift> currentShift = shiftRepository.findByStatusAndCashier(ShiftStatus.Running, cashier);
@@ -127,12 +133,26 @@ public class CashierService {
         return shiftRepository.save(shift);
     }
 
-    public Cashier updateCashier(Long id, Cashier data) {
-        Cashier cashDrawer = getCashier(id);
-        if (!cashDrawer.getCashPoint().equals(data.getCashPoint())) {
-            cashDrawer.setCashPoint(data.getCashPoint());
+    public Cashier updateCashier(Long id, CashierData data) {
+        Cashier cashier = getCashier(id);
+        User user = userService.getUser(data.getUserId())
+                .orElseThrow(() -> APIException.notFound("User with id {0} Not Found", data.getUserId()));
+
+        CashPoint cashPoint = cashPointRepository.findById(data.getCashPointId())
+                .orElseThrow(() -> APIException.notFound("Cash Point with Id {0} not Found", data.getCashPointId()));
+
+        if (repository.findByUser(user).isPresent()) {
+            throw APIException.conflict("Cashier {0} already exists.", user.getName());
         }
-        return repository.save(cashDrawer);
+
+        cashier.setActive(data.getActive());
+        cashier.setUser(user);
+        cashier.setCashPoint(cashPoint);
+        cashier.setStartDate(data.getStartDate());
+        cashier.setEndDate(data.getEndDate());
+
+        return repository.save(cashier);
+
     }
 
     public Shift findByCashierAndShiftNo(Cashier cashier, String shiftNo) {
@@ -155,18 +175,16 @@ public class CashierService {
     public List<ShiftPayment> getShiftByMethod(String shiftNo) {
         return shiftRepository.findShiftSummaryInterface(shiftNo);
     }
+
     //we do the reconcillations
-    public void reconcile(ShiftReconciliation data){
+    public void reconcile(ShiftReconciliation data) {
         //create the journal 
         //get the shift
-        Shift shift= findByShiftNo(data.getShiftNo());
-       // Account bankLedger= accountRepository.findByIdentifier(data.)
-                
-                //debt the bank -> moving money
-                //credit > petty cash or cash at hand
-                
-        
+        Shift shift = findByShiftNo(data.getShiftNo());
+        // Account bankLedger= accountRepository.findByIdentifier(data.)
+
+        //debt the bank -> moving money
+        //credit > petty cash or cash at hand
     }
-    
-    
+
 }
