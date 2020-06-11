@@ -7,7 +7,6 @@ import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
@@ -120,7 +119,6 @@ public class DoctorRequestData {
         if (doctorRequest.getPatient() != null) {
             doctorRequestData.setPatientData(new PatientData());
             doctorRequestData.getPatientData().setAge(doctorRequest.getPatient().getAge());
-            doctorRequestData.getPatientData().setIsAlive(doctorRequest.getPatient().getIsAlive());
             doctorRequestData.getPatientData().setDateOfBirth(doctorRequest.getPatient().getDateOfBirth());
             doctorRequestData.getPatientData().setPatientNumber(doctorRequest.getPatient().getPatientNumber());
             doctorRequestData.getPatientData().setFullName(doctorRequest.getPatient().getFullName());
