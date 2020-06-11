@@ -23,6 +23,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -159,12 +162,11 @@ public class JasperReportsService {
         JasperReport jasperReport = null;
         HashMap param = reportConfig(patientNumber, employeeId, supplierId);
         InputStream reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jasper").getInputStream();
-
-        System.out.println("######################### name:" + appProperties.getReportLoc() + template + ".jasper");
+        LocalDateTime startTime = LocalDateTime.now();
         // Check if a compiled report exists
         if (reportInputStream != null) {
             jasperReport = (JasperReport) JRLoader.loadObject(reportInputStream);
-            System.out.println("====================not null");
+            
         } // Compile report from source and save
         else {
             reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jrxml").getInputStream();
@@ -173,6 +175,7 @@ public class JasperReportsService {
         }
         // Get your data source
         JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(dataList, false);
+        
         // Add parameters
 //            param.putAll(param);
         param.putAll(reportData.getFilters());
@@ -188,7 +191,7 @@ public class JasperReportsService {
             jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
 
         }
-
+        System.out.println("Report generated in"+ChronoUnit.MILLIS.between(startTime, LocalDateTime.now())+"ms");
         export(jasperPrint, format, reportName, response);
 
     }

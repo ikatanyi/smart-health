@@ -103,6 +103,8 @@ public class Supplier extends Auditable {
         }
         if (this.getContact() != null) {
             data.setContact(ContactData.map(this.getContact()));
+            data.setEmail(this.getContact().getEmail());
+            data.setPhone(this.getContact().getTelephone());
         }
         if (this.getCreditAccount() != null) {
             data.setCreditAccountId(this.getCreditAccount().getId());

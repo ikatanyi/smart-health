@@ -22,7 +22,7 @@ public class LabTestData {
     private String gender;
     private Boolean requiresConsent;
     private Boolean hasReferenceValue;
-    private String turnAroundTime;
+    private String turnAroundTime; 
     private Boolean active;
     private List<AnalyteData> analytes = new ArrayList<>();
 

@@ -61,7 +61,7 @@
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement x="171" y="196" width="1" height="526" uuid="e10101d9-0a63-48b5-b329-e6c453d3c65d"/>
+					<reportElement x="139" y="196" width="1" height="526" uuid="e10101d9-0a63-48b5-b329-e6c453d3c65d"/>
 					<graphicElement>
 						<pen lineWidth="0.25"/>
 					</graphicElement>
@@ -74,12 +74,6 @@
 				</line>
 				<line>
 					<reportElement x="418" y="196" width="1" height="556" uuid="530a76d4-9b68-4c6c-8d17-5630a94192b6"/>
-					<graphicElement>
-						<pen lineWidth="0.25"/>
-					</graphicElement>
-				</line>
-				<line>
-					<reportElement x="100" y="196" width="1" height="526" uuid="e8365f01-7dbf-4d92-85bc-1842c51f6192"/>
 					<graphicElement>
 						<pen lineWidth="0.25"/>
 					</graphicElement>
@@ -167,14 +161,7 @@
 				<textFieldExpression><![CDATA[$F{transactionDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="429" y="25" width="30" height="11" forecolor="#000000" uuid="72fc694f-7538-4b1d-bbd9-9ca80420a3bc"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Ref      :]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="429" y="36" width="30" height="11" forecolor="#000000" uuid="38b1b31d-2ece-4308-8cbf-3bd76903ef9b"/>
+				<reportElement x="429" y="26" width="30" height="11" forecolor="#000000" uuid="38b1b31d-2ece-4308-8cbf-3bd76903ef9b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -202,21 +189,14 @@
 				<text><![CDATA[Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="429" y="47" width="30" height="11" forecolor="#000000" uuid="11c3a51b-eb95-4a88-a362-38b17349aa8a"/>
+				<reportElement x="429" y="37" width="30" height="11" forecolor="#000000" uuid="11c3a51b-eb95-4a88-a362-38b17349aa8a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Terms :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="429" y="58" width="32" height="11" forecolor="#000000" uuid="f75243cb-0f97-40df-955f-fb5f8b95f004"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Job      :]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="16" y="91" width="85" height="12" uuid="a6a810ab-7849-4f5f-bc4a-d619355b1487"/>
+				<reportElement positionType="Float" x="16" y="91" width="123" height="12" uuid="a6a810ab-7849-4f5f-bc4a-d619355b1487"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -230,14 +210,7 @@
 				<text><![CDATA[Unit Price]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="101" y="91" width="71" height="12" uuid="cb48a000-44dd-4a05-82cb-bd6f55e833cd"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Lot No.]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="172" y="91" width="185" height="12" uuid="0f4489a9-f1bc-43c2-bcaa-6437c3fd30ab"/>
+				<reportElement positionType="Float" x="140" y="91" width="217" height="12" uuid="0f4489a9-f1bc-43c2-bcaa-6437c3fd30ab"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -251,7 +224,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "payer-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="461" y="36" width="93" height="11" uuid="32e31834-d65d-4bc2-a1c9-20fa266e5f67"/>
+				<reportElement x="461" y="26" width="93" height="11" uuid="32e31834-d65d-4bc2-a1c9-20fa266e5f67"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>

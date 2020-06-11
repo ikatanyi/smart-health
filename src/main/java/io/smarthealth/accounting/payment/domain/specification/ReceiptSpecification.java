@@ -18,9 +18,10 @@ public class ReceiptSpecification {
         return (root, query, cb) -> {
 
             final ArrayList<Predicate> predicates = new ArrayList<>();
-
+                 
             if (payee != null) {
-                predicates.add(cb.equal(root.get("payer"), payee));
+                 String likeExpression = "%" + payee + "%";
+                predicates.add(cb.like(root.get("payer"), likeExpression));
             }
             if (receiptNo != null) {
                 predicates.add(cb.equal(root.get("receiptNo"), receiptNo));

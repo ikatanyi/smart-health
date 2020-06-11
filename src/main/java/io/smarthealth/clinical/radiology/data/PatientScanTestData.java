@@ -26,6 +26,8 @@ public class PatientScanTestData {
     private Double testPrice;
     private Double quantity;
     private String requestedBy;
+    @ApiModelProperty(required=false, hidden=true)
+    private String requestedByStaffNumber;
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
     private String imagePath;
