@@ -4,6 +4,7 @@ import io.smarthealth.accounting.cashier.data.CashierData;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.data.ShiftCommand;
 import io.smarthealth.accounting.cashier.data.ShiftData;
+import io.smarthealth.accounting.cashier.data.ShiftPayment;
 import io.smarthealth.accounting.cashier.domain.Cashier;
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.cashier.domain.ShiftStatus;
@@ -200,6 +201,14 @@ public class CashierController {
         pagers.setPageDetails(details);
 
         return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/cashiers/shifts/{shiftNo}/summary")
+    @PreAuthorize("hasAuthority('view_cashiersShift')")
+    public ResponseEntity<?> getShiftSummary(@PathVariable(value = "shiftNo") String shiftNo) {
+        List<ShiftPayment> list = service.getShiftByMethod(shiftNo);
+
+        return ResponseEntity.ok(list);
     }
 
 }
