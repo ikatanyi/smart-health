@@ -10,12 +10,15 @@ import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.person.patient.data.PatientData;
+import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
+import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.service.ItemService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,11 +35,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class BatchImportService {
 
-    private final PatientRepository patientRepository;
     private final AllocationService allocationService;
     private final ItemService itemService;
-
-    private final ModelMapper modelMapper;
+    private final PatientService patientService;
 
     public void importData(final TemplateType type, final MultipartFile file) {
 
@@ -58,8 +59,8 @@ public class BatchImportService {
                     // code block
                     break;
                 case Products:
-                    List<CreateItem> items=toPojoUtil.toPojo(CreateItem.class, inputFilestream);
-                    
+                    List<CreateItem> items = toPojoUtil.toPojo(CreateItem.class, inputFilestream);
+
                     itemService.importItem(items);
                     break;
                 default:
@@ -74,14 +75,23 @@ public class BatchImportService {
     private void importPatients(final List<PatientData> list) {
         List<Patient> patients = new ArrayList<>();
         for (PatientData d : list) {
-//            System.out.println("Gender "+d.getGender().name());
-            // use strict to prevent over eager matching (happens with ID fields)
-            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-            Patient patientEntity = modelMapper.map(d, Patient.class);
-            patients.add(patientEntity);
+            System.out.println("d.getAge() " + d.getAge());
+//            // use strict to prevent over eager matching (happens with ID fields)
+//            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+//            Patient p = modelMapper.map(d, Patient.class);
+//            LocalDate dateOfBirth = LocalDate.now().minusYears(Long.valueOf(d.getAge()));
+//            p.setDateOfBirth(dateOfBirth);
+//
+//            patientEntity.setPatient(true);
+//            patientEntity.setStatus(PatientStatus.Active);
+//            patientEntity.setPatientNumber(patientNo);
+//            
+//            patients.add(p);
+
+            patientService.createPatient(d, null);
 
         }
-        patientRepository.saveAll(patients);
+        //patientRepository.saveAll(patients);
 
     }
 }

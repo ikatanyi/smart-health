@@ -106,7 +106,7 @@ public class AuthController {
         }
         User result = userRepository.save(user);
 //send welcome message to the new system user
-        mailSender.send(EmailData.of(user.getEmail(), "User Account", "<b>Welcome</b> " + user.getName().concat(". Your login credentials is <br/> username : " + user.getEmail() + "<br/> password : " + password)));
+        mailSender.send(EmailData.of(user.getEmail(), "User Account", "<b>Welcome</b> " + user.getName().concat(". Your login credentials is <br/> username : " + user.getUsername() + "<br/> password : " + password)));
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/auth/users/{username}")
