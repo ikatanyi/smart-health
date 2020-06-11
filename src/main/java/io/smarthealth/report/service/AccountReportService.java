@@ -367,24 +367,24 @@ public class AccountReportService {
                     data.setPaid(data.getPaid().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
                 }
                 
-                    switch (item.getServicePoint()) {
-                        case "Laboratory":
+                    switch (item.getServicePoint().toUpperCase()) {
+                        case "LABORATORY":
                             data.setLab(data.getLab() + item.getAmount());
                             break;
-                        case "Pharmacy":
+                        case "PHARMACY":
                             data.setPharmacy(data.getPharmacy() + item.getAmount());
                             break;
-                        case "Procedure":
-                        case "Triage":
+                        case "PROCEDURE":
+                        case "TRIAGE":
                             data.setProcedure(data.getProcedure() + item.getAmount());
                             break;
-                        case "Radiology":
+                        case "RADIOLOGY":
                             data.setRadiology(data.getRadiology() + item.getAmount());
                             break;
-                        case "Consultation":
+                        case "CONSULTATION":
                             data.setConsultation(data.getConsultation() + item.getAmount());
                             break;
-                        case "Copayment":
+                        case "COPAYMENT":
                             data.setCopay(data.getCopay() + item.getAmount());
                             break;
                         default:
