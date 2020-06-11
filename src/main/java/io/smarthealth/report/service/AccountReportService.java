@@ -292,7 +292,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-
+        reportData.getFilters().put("range", reportParam.getFirst("range"));
         reportData.setData(remittanceData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/allocation_trans_report");
