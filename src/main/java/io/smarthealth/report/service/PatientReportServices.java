@@ -95,18 +95,12 @@ public class PatientReportServices {
 
     public void getPatients(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        String dateRange = reportParam.getFirst("dateRange");
-        Integer page = Integer.getInteger(reportParam.getFirst("page"));
-        Integer size = Integer.getInteger(reportParam.getFirst("size"));
-
-        Pageable pageable = PaginationUtil.createPage(page, size);
-        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-
-        List<PatientData> patientData = (List<PatientData>) patientService.fetchAllPatients(reportParam, pageable).getContent()
+        List<PatientData> patientData = (List<PatientData>) patientService.fetchAllPatients(reportParam, Pageable.unpaged()).getContent()
                 .stream()
                 .map((patient) -> patientService.convertToPatientData((Patient) patient))
                 .collect(Collectors.toList());
 
+        reportData.getFilters().put("range", reportParam.getFirst("dateRange"));
         reportData.setData(patientData);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/PatientList");

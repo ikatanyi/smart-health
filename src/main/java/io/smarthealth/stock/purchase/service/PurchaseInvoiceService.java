@@ -9,6 +9,7 @@ import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.lang.SystemUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
@@ -163,8 +164,8 @@ public class PurchaseInvoiceService {
                 .orElseThrow(() -> APIException.notFound("Purchase Invoice with creditNoteNumber {0} not found", creditNoteNumber));
     }
 
-    public Page<PurchaseInvoice> getSupplierInvoices(Long supplierId, String invoiceNumber, Boolean paid, PurchaseInvoiceStatus status, Pageable page) {
-        Specification<PurchaseInvoice> specs = PurchaseInvoiceSpecification.createSpecification(supplierId, invoiceNumber, paid, status);
+    public Page<PurchaseInvoice> getSupplierInvoices(Long supplierId, String invoiceNumber, Boolean paid, DateRange range,PurchaseInvoiceStatus status, Pageable page) {
+        Specification<PurchaseInvoice> specs = PurchaseInvoiceSpecification.createSpecification(supplierId, invoiceNumber, paid, range, status);
         return purchaseInvoiceRepository.findAll(specs, page);
 
     }

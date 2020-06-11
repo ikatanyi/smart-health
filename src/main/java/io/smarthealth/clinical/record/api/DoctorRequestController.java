@@ -12,6 +12,7 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.notifications.service.RequestEventPublisher;
@@ -50,29 +51,29 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "Doctor Request Controller", description = "Operations pertaining to Doctor Requests/Orders maintenance")
 @RequiredArgsConstructor
 public class DoctorRequestController {
-    
+
     private final DoctorRequestService requestService;
-    
+
     private final VisitService visitService;
-    
+
     private final ModelMapper modelMapper;
-    
+
     private final ItemService itemService;
-    
+
     private final PatientService patientService;
-    
+
     private final SequenceNumberService sequenceNumberService;
-    
+
     private final UserService userService;
-    
+
     private final RequestEventPublisher requestEventPublisher;
-    
+
     @PostMapping("/visit/{visitNo}/doctor-request")
     @PreAuthorize("hasAuthority('create_doctorrequest')")
     public @ResponseBody
     ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        
+
         Optional<User> user = userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().get());
         List<DoctorRequest> docRequests = new ArrayList<>();
         String orderNo = sequenceNumberService.next(1L, Sequences.DoctorRequest.name());
@@ -100,16 +101,16 @@ public class DoctorRequestController {
             if (!requestType.contains(data.getRequestType())) {
                 requestType.add(data.getRequestType());
             }
-            
+
         }
-        
+
         List<DoctorRequest> docReqs = requestService.createRequest(docRequests);
-        
+
         requestEventPublisher.publishCreateEvent(requestType);
-        
+
         List<DoctorRequestData> requestList = modelMapper.map(docReqs, new TypeToken<List<DoctorRequest>>() {
         }.getType());
-        
+
         if (requestList != null) {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(requestList);
@@ -117,7 +118,7 @@ public class DoctorRequestController {
             throw APIException.notFound("TestType Number {0} not found.", "");
         }
     }
-    
+
     @GetMapping("/doctor-request/{id}")
     @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> fetchRequestById(@PathVariable("id") final Long id) {
@@ -128,13 +129,13 @@ public class DoctorRequestController {
             throw APIException.notFound("Request Number {0} not found.", id);
         }
     }
-    
+
     @GetMapping("/visit/{visitNo}/doctor-request")
     @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> fetchAllRequestsByVisit(@PathVariable("visitNo") final String visitNo, Pageable pageable) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
         Page<DoctorRequest> page = requestService.findAllRequestsByVisit(visit, pageable);
-        
+
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);
             dd.setVisitNumber(visit.getVisitNumber());
@@ -151,10 +152,10 @@ public class DoctorRequestController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
-        
+
         return ResponseEntity.ok(pagers);
     }
-    
+
     @GetMapping("/doctor-request/{patientNo}/past")
     public ResponseEntity<?> pastDocRequests(
             @PathVariable(value = "patientNo", required = false) final String patientNo,
@@ -168,18 +169,18 @@ public class DoctorRequestController {
         //fetch all visits by patient
         Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, pageable);
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
-        
+
         for (Visit v : patientVisits.getContent()) {
             Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(v.getVisitNumber(), patientNo, requestType, fulfillerStatus, "patient", pageable, null, null, null);
-            
+
             for (DoctorRequest docReq : pageList.getContent()) {
                 HistoricalDoctorRequestsData waitingRequest = new HistoricalDoctorRequestsData();
                 waitingRequest.setPatientName(patient.getFullName());
                 waitingRequest.setPatientNumber(patient.getPatientNumber());
-                
+
                 waitingRequest.setStartDate(v.getStartDatetime());
                 waitingRequest.setStopDatetime(v.getStopDatetime());
-                
+
                 waitingRequest.setVisitNumber(v.getVisitNumber());
                 waitingRequest.setVisitNotes(v.getComments());
                 //find line items by request_id
@@ -191,13 +192,13 @@ public class DoctorRequestController {
                 waitingRequest.setItem(requestItems);
                 doctorRequestsData.add(waitingRequest);
             }
-            
+
         }
-        
+
         PagedListHolder waitingPage = new PagedListHolder(doctorRequestsData);
         waitingPage.setPageSize(pageable.getPageSize()); // number of items per page
         waitingPage.setPage(pageable.getPageNumber());
-        
+
         Pager<List<HistoricalDoctorRequestsData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -209,10 +210,10 @@ public class DoctorRequestController {
         details.setTotalPage(waitingPage.getPageCount());
         details.setReportName("History Doctor Requests");
         pagers.setPageDetails(details);
-        
+
         return ResponseEntity.ok(pagers);
     }
-    
+
     @GetMapping("/doctor-request")
     @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> waitingListByRequestType(
@@ -222,13 +223,17 @@ public class DoctorRequestController {
             @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final FullFillerStatusType fulfillerStatus,
             @RequestParam(value = "activeVisit", required = false) final Boolean activeVisit,
             @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "pageSize", required = false) Integer size
+            @RequestParam(value = "pageSize", required = false) Integer size,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "term", required = false) String term
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable, activeVisit, null, null);
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable, activeVisit, term, range);
         //Page<DoctorRequest> pageList = requestService.fetchDoctorRequestLine(fulfillerStatus, requestType, pageable);
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
-        
+
         for (DoctorRequest docReq : pageList.getContent()) {
             WaitingRequestsData waitingRequest = new WaitingRequestsData();
             waitingRequest.setPatientData(patientService.convertToPatientData(docReq.getPatient()));
@@ -245,11 +250,11 @@ public class DoctorRequestController {
             waitingRequest.setItem(requestItems);
             waitingRequests.add(waitingRequest);
         }
-        
+
         PagedListHolder waitingPage = new PagedListHolder(waitingRequests);
         waitingPage.setPageSize(pageable.getPageSize()); // number of items per page
         waitingPage.setPage(pageable.getPageNumber());
-        
+
         Pager<List<WaitingRequestsData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -261,10 +266,10 @@ public class DoctorRequestController {
         details.setTotalPage(waitingPage.getPageCount());
         details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
-        
+
         return ResponseEntity.ok(pagers);
     }
-    
+
     @GetMapping("/visit/{visitNo}/doctor-request/{requestType}")
     @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> fetchAllRequestsByVisitAndRequestType(
@@ -274,9 +279,9 @@ public class DoctorRequestController {
             @RequestParam(value = "fulfillerStatus", required = false) final FullFillerStatusType fulfillerStatus,
             Pageable pageable) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
-        
+
         Page<DoctorRequest> page = requestService.fetchAllDoctorRequests(visit.getVisitNumber(), patientNo, requestType, fulfillerStatus, null, pageable, null, null, null);
-        
+
         Page<DoctorRequestData> list = page.map(r -> {
             DoctorRequestData dd = DoctorRequestData.map(r);
             dd.setVisitNumber(visit.getVisitNumber());
@@ -293,14 +298,14 @@ public class DoctorRequestController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
-        
+
         return ResponseEntity.ok(pagers);
     }
-    
+
     @DeleteMapping("/doc-request/{id}")
     @PreAuthorize("hasAuthority('delete_doctorrequest')")
     public ResponseEntity<?> deleteRequest(@PathVariable("id") final Long id) {
         return requestService.deleteById(id);
     }
-    
+
 }

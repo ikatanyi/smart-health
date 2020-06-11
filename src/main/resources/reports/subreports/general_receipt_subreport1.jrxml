@@ -11,37 +11,37 @@
 	<field name="taxes" class="java.math.BigDecimal"/>
 	<field name="amountPaid" class="java.math.BigDecimal"/>
 	<columnHeader>
-		<band height="18" splitType="Stretch">
+		<band height="14" splitType="Stretch">
 			<staticText>
-				<reportElement x="154" y="2" width="47" height="15" uuid="18345010-68b6-4e61-a798-9146f0e47c6e"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="152" y="0" width="47" height="12" uuid="18345010-68b6-4e61-a798-9146f0e47c6e"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Unit Cost]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="202" y="2" width="70" height="16" uuid="80af7947-0e7c-4094-895a-7f6763408380"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="202" y="0" width="70" height="12" uuid="80af7947-0e7c-4094-895a-7f6763408380"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="122" y="2" width="31" height="15" uuid="a3839aa6-c68b-4699-b26a-cc979305fca5"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="113" y="0" width="31" height="12" uuid="a3839aa6-c68b-4699-b26a-cc979305fca5"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Qty]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="2" width="119" height="15" uuid="4241356f-771e-4e85-81c4-81be960b6dc8"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement x="1" y="0" width="105" height="12" uuid="4241356f-771e-4e85-81c4-81be960b6dc8"/>
+				<textElement verticalAlignment="Top">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<line>
-				<reportElement positionType="FixRelativeToBottom" x="3" y="17" width="269" height="1" uuid="85ab7cfc-736f-4014-91d3-bb5bbed8c659"/>
+				<reportElement positionType="FixRelativeToBottom" x="1" y="11" width="271" height="1" uuid="85ab7cfc-736f-4014-91d3-bb5bbed8c659"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineColor="#999999"/>
 				</graphicElement>
@@ -51,28 +51,28 @@
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="1" y="0" width="119" height="12" uuid="366d03f8-0b6b-4bc5-8e9b-14b8b124e9e5"/>
+				<reportElement x="1" y="0" width="105" height="12" uuid="366d03f8-0b6b-4bc5-8e9b-14b8b124e9e5"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="122" y="0" width="20" height="12" uuid="cca98489-cc58-4a83-b52f-27ae01241ece"/>
+				<reportElement x="113" y="0" width="20" height="12" uuid="cca98489-cc58-4a83-b52f-27ae01241ece"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="154" y="0" width="30" height="12" uuid="f7a667f1-10bd-4360-b3e9-a65515fa7771"/>
+				<reportElement x="152" y="0" width="30" height="12" uuid="f7a667f1-10bd-4360-b3e9-a65515fa7771"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="214" y="0" width="34" height="12" uuid="eeac2738-50c5-4902-956e-d604d05f863c"/>
+				<reportElement x="218" y="0" width="34" height="12" uuid="eeac2738-50c5-4902-956e-d604d05f863c"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>

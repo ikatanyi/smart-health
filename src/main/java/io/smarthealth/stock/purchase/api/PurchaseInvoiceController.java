@@ -1,6 +1,7 @@
 package io.smarthealth.stock.purchase.api;
 
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
@@ -64,12 +65,13 @@ public class PurchaseInvoiceController {
             @RequestParam(value = "paid", required = false) Boolean paid,
             @RequestParam(value = "invoice_no", required = false) String invoiceNumber,
             @RequestParam(value = "status", required = false) final PurchaseInvoiceStatus status,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-
-        Page<PurchaseInvoiceData> list = service.getSupplierInvoices(supplierId, invoiceNumber, paid, status, pageable) // service.getPurchaseInvoices(status, pageable)
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Page<PurchaseInvoiceData> list = service.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, pageable) // service.getPurchaseInvoices(status, pageable)
                 .map(u -> u.toData());
 
         Pager<List<PurchaseInvoiceData>> pagers = new Pager();

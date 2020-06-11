@@ -87,81 +87,81 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="17">
+		<band height="28">
 			<staticText>
-				<reportElement x="1" y="0" width="174" height="17" forecolor="#000000" uuid="f2d0c562-90e9-4939-b849-101fc09f16da"/>
+				<reportElement x="1" y="10" width="174" height="17" forecolor="#000000" uuid="f2d0c562-90e9-4939-b849-101fc09f16da"/>
 				<textElement verticalAlignment="Middle">
-					<font size="9" isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Inventory Statement]]></text>
 			</staticText>
+			<line>
+				<reportElement positionType="Float" x="0" y="27" width="555" height="1" uuid="f7b6d8ff-77a2-4bcc-9bec-9ecf07b21877"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="15">
+		<band height="29">
 			<staticText>
-				<reportElement x="13" y="0" width="23" height="15" uuid="243d86d0-f039-4d5d-b74c-1f947e8dd8c9"/>
+				<reportElement x="13" y="14" width="23" height="15" uuid="243d86d0-f039-4d5d-b74c-1f947e8dd8c9"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[S/N]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="46" y="0" width="60" height="15" uuid="c98df0e6-e4db-45dc-a260-28bfb050ccc1"/>
+				<reportElement x="46" y="14" width="60" height="15" uuid="c98df0e6-e4db-45dc-a260-28bfb050ccc1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Item Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="205" y="0" width="54" height="15" uuid="1a782066-8108-4631-93dd-12e9fd693df6"/>
+				<reportElement x="205" y="14" width="54" height="15" uuid="1a782066-8108-4631-93dd-12e9fd693df6"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[CostPrice]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="268" y="0" width="59" height="15" uuid="b14feb82-769e-4d19-a52f-4ff6f1060e14"/>
+				<reportElement x="268" y="14" width="59" height="15" uuid="b14feb82-769e-4d19-a52f-4ff6f1060e14"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Selling Price]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="334" y="0" width="75" height="15" uuid="39a56b9d-4c64-426d-bff4-302e706ebb28"/>
+				<reportElement x="334" y="14" width="75" height="15" uuid="39a56b9d-4c64-426d-bff4-302e706ebb28"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Available Stock]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="470" y="0" width="66" height="15" uuid="fd9a15ab-4661-4f49-befd-1ab88f92cb68"/>
+				<reportElement x="470" y="14" width="66" height="15" uuid="fd9a15ab-4661-4f49-befd-1ab88f92cb68"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total]]></text>
 			</staticText>
 			<line>
-				<reportElement positionType="Float" x="0" y="14" width="554" height="1" uuid="2a5fdac6-d0f1-47f2-8955-c1b83d1bb467"/>
-				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Solid"/>
-				</graphicElement>
-			</line>
-			<line>
-				<reportElement positionType="Float" x="0" y="0" width="175" height="1" uuid="f7b6d8ff-77a2-4bcc-9bec-9ecf07b21877"/>
+				<reportElement positionType="Float" x="0" y="28" width="554" height="1" uuid="2a5fdac6-d0f1-47f2-8955-c1b83d1bb467"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineStyle="Solid"/>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="106" y="1" width="84" height="13" uuid="29f991f3-ba06-4270-bdf5-d4bd6ec208b2"/>
+				<reportElement x="106" y="15" width="84" height="13" uuid="29f991f3-ba06-4270-bdf5-d4bd6ec208b2"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Item Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="405" y="0" width="75" height="15" uuid="f9551b5d-bd32-421c-b08c-50e694df258d"/>
+				<reportElement x="405" y="14" width="75" height="15" uuid="f9551b5d-bd32-421c-b08c-50e694df258d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -171,50 +171,50 @@
 	</columnHeader>
 	<detail>
 		<band height="13" splitType="Stretch">
-			<textField>
-				<reportElement x="13" y="0" width="23" height="12" uuid="ff6dfe07-064f-46e8-91cb-2a06b137dab2"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="13" y="0" width="23" height="12" isRemoveLineWhenBlank="true" uuid="ff6dfe07-064f-46e8-91cb-2a06b137dab2"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="46" y="0" width="60" height="12" uuid="cd5a298b-885b-4c89-9fa0-8b866cd0f4d9"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="46" y="0" width="60" height="12" isRemoveLineWhenBlank="true" uuid="cd5a298b-885b-4c89-9fa0-8b866cd0f4d9"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemCode}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="205" y="0" width="54" height="12" uuid="2498ce6b-e469-4c8a-8424-6e46a1aedf33"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="205" y="0" width="54" height="12" isRemoveLineWhenBlank="true" uuid="2498ce6b-e469-4c8a-8424-6e46a1aedf33"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{costPrice}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="268" y="0" width="35" height="12" uuid="4fa51bbb-2419-4490-834d-c6d20a5a7211"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="268" y="0" width="35" height="12" isRemoveLineWhenBlank="true" uuid="4fa51bbb-2419-4490-834d-c6d20a5a7211"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{sellingPrice}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="335" y="0" width="64" height="12" uuid="ea160521-7cdc-444d-8d71-33d966c33782"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="335" y="0" width="64" height="12" isRemoveLineWhenBlank="true" uuid="ea160521-7cdc-444d-8d71-33d966c33782"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{availableStock}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="479" y="0" width="39" height="12" uuid="7e38735b-08d9-442c-beef-682c147f7553"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="479" y="0" width="39" height="12" isRemoveLineWhenBlank="true" uuid="7e38735b-08d9-442c-beef-682c147f7553"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{total}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="106" y="0" width="84" height="13" uuid="e0ad7c0b-4560-4d9c-b762-eb9917ecf4d3"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="106" y="0" width="84" height="13" isRemoveLineWhenBlank="true" uuid="e0ad7c0b-4560-4d9c-b762-eb9917ecf4d3"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -226,8 +226,8 @@
 					<pen lineWidth="0.15" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
-			<textField>
-				<reportElement x="414" y="0" width="47" height="12" uuid="0f7abf5e-ead4-4bb5-be93-ff1925183b02"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="414" y="0" width="47" height="12" isRemoveLineWhenBlank="true" uuid="0f7abf5e-ead4-4bb5-be93-ff1925183b02"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
