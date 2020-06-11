@@ -22,11 +22,11 @@ public class PatientSpecification {
             Patient patient = new Patient();
             patient.getGivenName();
             final ArrayList<Predicate> predicates = new ArrayList<>();
-            if(range!=null){
-                  predicates.add(
-                     cb.between(root.get("dateRegistered"), range.getStartDate(), range.getEndDate())
-                  );
-              }
+            if (range != null) {
+                predicates.add(
+                        cb.between(root.get("dateRegistered"), range.getStartDate(), range.getEndDate())
+                );
+            }
             if (term != null) {
                 final String likeExpression = "%" + term + "%";
                 predicates.add(
@@ -34,7 +34,8 @@ public class PatientSpecification {
                                 cb.like(root.get("givenName"), likeExpression),
                                 cb.like(root.get("middleName"), likeExpression),
                                 cb.like(root.get("surname"), likeExpression),
-                                cb.like(root.get("patientNumber"), likeExpression)
+                                cb.like(root.get("patientNumber"), likeExpression),
+                                cb.like(root.get("primaryContact"), likeExpression)
                         )
                 );
             }

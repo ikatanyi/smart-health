@@ -58,7 +58,7 @@ public class VisitService {
         return visits;
     }
 
-    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Boolean isActiveOnConsultation, final String username, final Pageable pageable) {
+    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Boolean isActiveOnConsultation, final String username, final boolean orderByTriageCategory, final Pageable pageable) {
         Employee employee = null;
         ServicePoint servicePoint = null;
         Patient patient = null;
@@ -83,7 +83,7 @@ public class VisitService {
             }
         }
 
-        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visitNumber, employee, servicePoint, patient, patientName, runningStatus, range, isActiveOnConsultation);
+        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visitNumber, employee, servicePoint, patient, patientName, runningStatus, range, isActiveOnConsultation, orderByTriageCategory);
         Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
         return visits;
     }
@@ -171,7 +171,8 @@ public class VisitService {
         Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
         return visits;
     }
-    public Visit save(Visit visit){
+
+    public Visit save(Visit visit) {
         return visitRepository.save(visit);
     }
 

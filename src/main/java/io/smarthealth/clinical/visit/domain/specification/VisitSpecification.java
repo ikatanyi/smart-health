@@ -26,7 +26,7 @@ public class VisitSpecification {
         super();
     }
 
-    public static Specification<Visit> createSpecification(String visitNumber, Employee employee, ServicePoint servicePoint, Patient patient, String patientName, boolean visitIsRunning, DateRange dateRange, final Boolean isActiveOnConsultation) {
+    public static Specification<Visit> createSpecification(String visitNumber, Employee employee, ServicePoint servicePoint, Patient patient, String patientName, boolean visitIsRunning, DateRange dateRange, final Boolean isActiveOnConsultation, final boolean orderByTriageCategory) {
 
         return (root, query, cb) -> {
 
@@ -93,8 +93,12 @@ public class VisitSpecification {
             if (isActiveOnConsultation != null) {
                 predicates.add(cb.equal(root.get("isActiveOnConsultation"), isActiveOnConsultation));
             }
-
-            query.orderBy(cb.asc(root.get("triageCategory")), cb.asc(root.get("startDatetime")));
+            if (orderByTriageCategory) {
+                query.orderBy(cb.asc(root.get("triageCategory")), cb.asc(root.get("startDatetime")));
+            }
+            if (!orderByTriageCategory) {
+                query.orderBy(cb.asc(root.get("startDatetime")), cb.asc(root.get("triageCategory")));
+            }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };

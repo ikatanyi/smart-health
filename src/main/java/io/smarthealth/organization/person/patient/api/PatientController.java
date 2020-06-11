@@ -139,7 +139,7 @@ public class PatientController {
         if (this.patientService.patientExists(patientNumber)) {
             patient = patientService.findPatientOrThrow(patientNumber);
 
-            patient.setIsAlive(patientData.getIsAlive());
+            //patient.setIsAlive(patientData.getIsAlive()==null?false: true);
             patient.setAllergyStatus(patientData.getAllergyStatus());
             patient.setBloodType(patientData.getBloodType());
             patient.setGender(patientData.getGender());

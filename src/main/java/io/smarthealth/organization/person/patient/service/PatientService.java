@@ -246,7 +246,7 @@ public class PatientService {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         final Patient patientEntity = modelMapper.map(patient, Patient.class);
-        patientEntity.setIsAlive(true);
+        //patientEntity.setIsAlive(true);
         patientEntity.setPatient(true);
         patientEntity.setStatus(PatientStatus.Active);
         patientEntity.setPatientNumber(patientNo);

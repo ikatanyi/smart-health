@@ -28,9 +28,8 @@ public final class PatientData extends PersonData {
     private PatientStatus status;
     private String bloodType;
     private String allergyStatus;
-    private Boolean isAlive;
+//    private Boolean isAlive;
 
-    //Additional patient data
     private String criticalInformation;
     private String basicNotes;
     private Integer age;
