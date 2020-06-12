@@ -195,6 +195,9 @@ public class ReportController {
             case Appointment_Letter:
                 patientReportService.getAppointmentLetter(queryParams, format, response);
                 break;
+            case Departmental_Payment_Report:
+                reportService.getPatientPayments(queryParams, format, response);
+                break;
             default:
                 break;
 

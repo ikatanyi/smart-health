@@ -167,10 +167,11 @@ public class ProcedureService {
                 pte.setQuantity(id.getQuantity());
                 pte.setPaid(Boolean.FALSE);
                 pte.setProcedureTest(item);
-                Optional<Employee> employee = employeeService.findEmployeeById(id.getMedicId());
-                if (employee.isPresent()) {
-                    pte.setMedic(employee.get());
-                }
+                pte.setMedic(employeeService.findEmployeeById(id.getMedicId()));
+//                Optional<Employee> employee = employeeService.findEmployeeById(id.getMedicId());
+//                if (employee.isPresent()) {
+//                    pte.setMedic(employee.get());
+//                }
                 if (id.getRequestItemId() != null) {
                     Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
                     if (request.isPresent()) {

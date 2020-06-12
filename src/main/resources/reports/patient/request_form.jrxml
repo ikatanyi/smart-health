@@ -43,7 +43,7 @@
 	<field name="visitNumber" class="java.lang.String"/>
 	<field name="itemCode" class="java.lang.String"/>
 	<field name="itemName" class="java.lang.String"/>
-	<field name="orderDatetime" class="java.lang.Object"/>
+	<field name="orderDate" class="java.lang.Object"/>
 	<field name="urgency" class="java.lang.Object"/>
 	<field name="orderNumber" class="java.lang.String"/>
 	<field name="fulfillerComment" class="java.lang.String"/>
@@ -116,7 +116,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{orderDatetime}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{orderDate}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="59" y="26" width="81" height="11" uuid="8f9842db-24e0-4254-92a9-b306a0fc91ed"/>
