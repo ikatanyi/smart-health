@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.payment.data;
 
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +24,9 @@ public class ReceiptItemData {
     private BigDecimal discount;
     private BigDecimal taxes;
     private BigDecimal amountPaid;  
-    
+    @ApiModelProperty(required=false, hidden=true)
+    private String servicePoint;
+    @ApiModelProperty(required=false, hidden=true)
+    private String servicePointId;
     
 }

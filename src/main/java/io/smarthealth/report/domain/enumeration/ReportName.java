@@ -12,6 +12,7 @@ package io.smarthealth.report.domain.enumeration;
 public enum ReportName { 
         Trial_Balance,
         Daily_Income_Statement,
+        Departmental_Payment_Report,
         Insurance_Statement,
         Invoice_Statement,
         Invoice,

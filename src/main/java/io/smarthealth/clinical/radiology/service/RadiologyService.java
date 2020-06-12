@@ -145,10 +145,11 @@ public class RadiologyService {
                 pte.setRadiologyTest(labTestType);
                 pte.setStatus(ScanTestState.Scheduled);
                 pte.setPaid(patientScanReg.getPaymentMode().equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
-                Optional<Employee> medic = employeeService.findEmployeeById(id.getMedicId());
-                if (medic.isPresent()) {
-                    pte.setMedic(medic.get());
-                }
+                pte.setMedic(employeeService.findEmployeeById(id.getMedicId()));
+//                Employee medic = employeeService.findEmployeeById(id.getMedicId());
+//                if (medic.isPresent()) {
+//                    pte.setMedic(employeeService.findEmployeeById(id.getMedicId()));
+//                }
                 if (id.getRequestItemId() != null) {
                     Optional<DoctorRequest> request = doctorRequestRepository.findById(id.getRequestItemId());
                     if (request.isPresent()) {

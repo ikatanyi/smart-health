@@ -1,5 +1,6 @@
-package io.smarthealth.accounting.payment.data;
+package io.smarthealth.report.data.accounts;
 
+import io.smarthealth.accounting.payment.data.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.payment.domain.ReceiptItem;
 import io.smarthealth.infrastructure.lang.Constants;
@@ -19,12 +20,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReceiptData {
+public class ReportReceiptData {
   
     private Long id;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDateTime transactionDate;
     private String payer;
+    private String payerId;
     private String description; //Insurance payment | Cheque deposit
     private BigDecimal amount;
     private BigDecimal paid;
@@ -38,8 +40,21 @@ public class ReceiptData {
     private String shiftNo;
     private String currency;
     private String createdBy;
-    private List<ReceiptTransactionData> transactions = new ArrayList<>();
-    private List<ReceiptItemData> receiptItems = new ArrayList<>();
+    
+    private BigDecimal lab = BigDecimal.ZERO;
+    private BigDecimal pharmacy = BigDecimal.ZERO;
+    private BigDecimal radiology = BigDecimal.ZERO;
+    private BigDecimal consultation = BigDecimal.ZERO;
+    private BigDecimal procedure = BigDecimal.ZERO;
+    private BigDecimal copayment = BigDecimal.ZERO;
+    private BigDecimal other = BigDecimal.ZERO;
+    
+    private BigDecimal mobilemoney;
+    private BigDecimal cash = BigDecimal.ZERO;
+    private BigDecimal card = BigDecimal.ZERO;
+    private BigDecimal bank = BigDecimal.ZERO;
+    private BigDecimal discount = BigDecimal.ZERO;
+    private BigDecimal otherPayment = BigDecimal.ZERO;
     
     
 }
