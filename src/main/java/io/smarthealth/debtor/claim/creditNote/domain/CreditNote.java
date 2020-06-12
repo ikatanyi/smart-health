@@ -55,17 +55,18 @@ public class CreditNote extends Auditable {
         data.setCreditNoteNo(this.getCreditNoteNo());
 
         List items = this.getItems().stream().map((item) -> {
-            CreditNoteItemData billItem = new CreditNoteItemData();
-            billItem.setAmount(item.getAmount());
-            billItem.setBillItemId(item.getBillItem().getId());
-            billItem.setItemId(item.getItem().getId());
-            billItem.setQuantity(item.getBillItem().getQuantity());
-            billItem.setItemCode(item.getBillItem().getItem().getItemCode());
-            billItem.setUnitPrice(item.getBillItem().getItem().getCostRate());
-            return billItem;
+            CreditNoteItemData creditNoteItemData = new CreditNoteItemData();
+            creditNoteItemData.setId(item.getId());
+            creditNoteItemData.setAmount(item.getInvoiceItem().getBillItem().getAmount());
+            creditNoteItemData.setInvoiceItemId(item.getInvoiceItem().getId());
+            creditNoteItemData.setItemId(item.getInvoiceItem().getBillItem().getItem().getId());
+            creditNoteItemData.setQuantity(item.getInvoiceItem().getBillItem().getQuantity());
+            creditNoteItemData.setItemCode(item.getInvoiceItem().getBillItem().getItem().getItemCode());
+            creditNoteItemData.setUnitPrice(item.getInvoiceItem().getBillItem().getPrice());
+            return creditNoteItemData;
         }).collect(Collectors.toList());
 
-        data.setBillItems(items);
+        data.setCreditNoteItems(items);
         if (this.getInvoice() != null) {
             data.setInvoiceNo(this.getInvoice().getNumber());
             data.setInvoiceDate(this.getInvoice().getDate());

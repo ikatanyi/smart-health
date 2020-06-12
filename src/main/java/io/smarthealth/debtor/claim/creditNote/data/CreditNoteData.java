@@ -41,7 +41,7 @@ public class CreditNoteData {
     @ApiModelProperty(required=false, hidden=true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate date;
-    private List<CreditNoteItemData>billItems=new ArrayList();
+    private List<CreditNoteItemData>creditNoteItems=new ArrayList();
     
     public static CreditNote map(CreditNoteData data){
         CreditNote creditNote = new CreditNote();
