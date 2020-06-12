@@ -196,7 +196,7 @@
 				<text><![CDATA[Visit Date :]]></text>
 			</staticText>
 			<textField pattern="">
-				<reportElement positionType="Float" x="68" y="61" width="60" height="14" uuid="45f4fe00-03c3-4f12-ae3b-bed97f679481"/>
+				<reportElement positionType="Float" x="68" y="61" width="84" height="14" uuid="45f4fe00-03c3-4f12-ae3b-bed97f679481"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
