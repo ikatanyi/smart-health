@@ -136,9 +136,10 @@ public class EmployeeService {
     }
     
     public Employee findEmployeeById(Long id) {
-        return employeeRepository.findById(id).orElseThrow(()-> {
+        if(id!=null)
+           return employeeRepository.findById(id).orElseThrow(() -> APIException.notFound("Employee with ID not found", id));
+        else
             return null;
-        });
     }
 
     public Employee fetchEmployeeByAccountUsername(final String username) {
