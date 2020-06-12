@@ -263,6 +263,7 @@ public class LaboratoryService {
         results.setStatus(data.getStatus());
         results.setEnteredBy(data.getEnteredBy());
         results.setValidatedBy(data.getValidatedBy());
+        results.setResultRead(Boolean.FALSE);
         return results;
     }
 

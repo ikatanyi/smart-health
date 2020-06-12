@@ -8,6 +8,8 @@ package io.smarthealth.clinical.visit.service;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.record.data.DocResults;
+import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.visit.data.VisitDatas;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -174,6 +176,10 @@ public class VisitService {
 
     public Visit save(Visit visit) {
         return visitRepository.save(visit);
+    }
+
+    public List<DocResults> getPatientResultsAlerts(String visitNumber, String patientNumber, DocResults.Type type, DateRange range) {
+        return visitRepository.getPatientResults(visitNumber, patientNumber, type, range);
     }
 
 }

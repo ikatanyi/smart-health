@@ -9,6 +9,7 @@ package io.smarthealth.clinical.record.api;
 //import io.smarthealth.auth.service.UserService;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.record.data.DiagnosisData;
+import io.smarthealth.clinical.record.data.DocResults;
 import io.smarthealth.clinical.record.data.HistoricalDiagnosisData;
 import io.smarthealth.clinical.record.data.PatientNotesData;
 import io.smarthealth.clinical.record.domain.Disease;
@@ -25,9 +26,9 @@ import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -232,7 +233,7 @@ public class ConsultationController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Patient patient = patientService.findPatientOrThrow(patientNo);
         List<HistoricalDiagnosisData> list = new ArrayList<>();
-        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null,false, pageable);
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, false, pageable);
         for (Visit v : patientVisits) {
             HistoricalDiagnosisData dd = new HistoricalDiagnosisData();
             dd.setPatientName(patient.getFullName());
@@ -348,10 +349,21 @@ public class ConsultationController {
 
         return ResponseEntity.ok(pagers);
     }
-    //prepare sick-off note
-//    @PostMapping("/diagnosis")
-//    public @ResponseBody
-//    ResponseEntity<?>  saveSickOffNote(){
-//        
-//    }
+ 
+    @GetMapping("/results-alert")
+    public ResponseEntity<?> getResultsAlert(
+            @RequestParam(value = "visitNo", required = false) final String visitNo,
+            @RequestParam(value = "patientNo", required = false) final String patientNo,
+            @RequestParam(value = "resultType", required = false) DocResults.Type type,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        List<DocResults> list = visitService.getPatientResultsAlerts(visitNo, patientNo, type, range);
+
+        Pager<?> pagers = PaginationUtil.paginateList(list, "Patient Doctor Results alert Queue", "", pageable);
+        return ResponseEntity.ok(pagers);
+    }
 }

@@ -22,7 +22,7 @@ import org.springframework.data.repository.query.Param;
  *
  * @author Simon.waweru
  */
-public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecificationExecutor<Visit> {
+public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecificationExecutor<Visit>, ResultsRepository {
 
     Page<Visit> findByPatient(final Patient patient, Pageable page);
 
