@@ -58,6 +58,7 @@ public class CreditNote extends Auditable {
             CreditNoteItemData creditNoteItemData = new CreditNoteItemData();
             creditNoteItemData.setId(item.getId());
             creditNoteItemData.setAmount(item.getInvoiceItem().getBillItem().getAmount());
+            creditNoteItemData.setItemName(item.getInvoiceItem().getBillItem().getItem().getItemName());
             creditNoteItemData.setInvoiceItemId(item.getInvoiceItem().getId());
             creditNoteItemData.setItemId(item.getInvoiceItem().getBillItem().getItem().getId());
             creditNoteItemData.setQuantity(item.getInvoiceItem().getBillItem().getQuantity());
