@@ -1,9 +1,9 @@
 package io.smarthealth.debtor.payer.api;
- 
+
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.administration.banks.domain.BankBranch;
-import io.smarthealth.administration.finances.domain.PaymentTerms; 
+import io.smarthealth.administration.finances.domain.PaymentTerms;
 import io.smarthealth.administration.finances.service.PaymentTermsService;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.accounting.pricelist.service.PricebookService;
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -104,8 +105,10 @@ public class PayerController {
 
     @GetMapping("/payer")
     @PreAuthorize("hasAuthority('view_payer')")
-    public ResponseEntity<?> fetchAllPayers(Pageable pageable) {
-        Page<PayerData> payers = payerService.fetchPayers(pageable).map(p -> PayerData.map(p));
+    public ResponseEntity<?> fetchAllPayers(
+            @RequestParam(required = false) final String term,
+            Pageable pageable) {
+        Page<PayerData> payers = payerService.fetchPayers(term, pageable).map(p -> PayerData.map(p));
 
         Pager<List<PayerData>> pagers = new Pager();
         pagers.setCode("0");

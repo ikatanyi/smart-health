@@ -10,12 +10,14 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.domain.SchemeRepository;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurationsRepository;
+import io.smarthealth.debtor.scheme.domain.specification.SchemeSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 /**
@@ -41,12 +43,14 @@ public class SchemeService {
         return configurationsRepository.save(configurations);
     }
 
-    public Page<Scheme> fetchSchemes(Pageable p) {
-        return schemeRepository.findAll(p);
+    public Page<Scheme> fetchSchemes(final String term, Pageable p) {
+        Specification<Scheme> spec = SchemeSpecification.createSchemeSpecification(null, term);
+        return schemeRepository.findAll(spec, p);
     }
 
-    public Page<Scheme> fetchSchemesByPayer(Payer payer, Pageable page) {
-        return schemeRepository.findByPayer(payer, page);
+    public Page<Scheme> fetchSchemesByPayer(final Payer payer, final String term, Pageable page) {
+        Specification<Scheme> spec = SchemeSpecification.createSchemeSpecification(payer, term);
+        return schemeRepository.findAll(spec, page);
     }
 
     public Optional<SchemeConfigurations> fetchSchemeConfigByScheme(Scheme scheme) {
@@ -64,7 +68,7 @@ public class SchemeService {
     public SchemeConfigurations fetchSchemeConfigBySchemeWithNotAvailableDetection(Scheme scheme) {
         return configurationsRepository.findByScheme(scheme).orElseThrow(() -> APIException.notFound("Scheme configuration identified by scheme no {0} not available ", scheme.getSchemeName()));
     }
-    
+
     public boolean SchemeConfigBySchemeExists(Scheme scheme) {
         return configurationsRepository.findByScheme(scheme).isPresent();
     }

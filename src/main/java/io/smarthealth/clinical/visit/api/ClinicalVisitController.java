@@ -36,7 +36,6 @@ import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
-import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -52,7 +51,6 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
-import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.service.ItemService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -66,7 +64,6 @@ import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -376,15 +373,15 @@ public class ClinicalVisitController {
             final String patientNumber,
             @RequestParam(value = "patientName", required = false)
             final String patientName,
-            @RequestParam(value = "runningStatus", required = false, defaultValue = "true")
-            final boolean runningStatus,
+            @RequestParam(value = "runningStatus", required = false, defaultValue = "true") final boolean runningStatus,
             @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "isActiveOnConsultation", required = false) final Boolean isActiveOnConsultation,
+            @RequestParam(value = "orderByTriageCategory", required = false, defaultValue = "false") final Boolean orderByTriageCategory,
             @RequestParam(value = "username", required = false) final String username,
             Pageable pageable
     ) {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<VisitDatas> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, username, pageable).map(v -> convertToVisitData(v));
+        Page<VisitDatas> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, username, orderByTriageCategory, pageable).map(v -> convertToVisitData(v));
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 
@@ -605,8 +602,17 @@ public class ClinicalVisitController {
         patientQueue.setVisit(activeVisit);
 
         if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
+            ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Consultation);
+            patientQueue.setServicePoint(servicePoint);
+            activeVisit.setServicePoint(servicePoint);
+        }
+
+        if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
             activeVisit.setIsActiveOnConsultation(Boolean.TRUE);
             if (activeVisit.getHealthProvider() == null && vital.getSendTo().equals("Service Point")) {
+                throw APIException.badRequest("Please specify the doctor", "");
+            }
+            if (activeVisit.getHealthProvider() == null && vital.getSendTo().equals("")) {
                 throw APIException.badRequest("Please specify the doctor", "");
             }
         }

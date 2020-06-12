@@ -7,11 +7,13 @@ package io.smarthealth.debtor.payer.service;
 
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.PayerRepository;
+import io.smarthealth.debtor.payer.domain.specification.PayerSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +30,7 @@ public class PayerService {
     2. Fetch all payers
     3. Update payers details
     4. Remove/Delete payer
-     */ 
+     */
     private final PayerRepository payerRepository;
 
     @Transactional
@@ -36,8 +38,9 @@ public class PayerService {
         return payerRepository.save(payer);
     }
 
-    public Page<Payer> fetchPayers(final Pageable pageable) {
-        return payerRepository.findAll(pageable);
+    public Page<Payer> fetchPayers(final String term, final Pageable pageable) {
+        Specification<Payer> spec = PayerSpecification.createPayerSpecification(term);
+        return payerRepository.findAll(spec,pageable);
     }
 
     public Payer updatePayer(Payer payer) {

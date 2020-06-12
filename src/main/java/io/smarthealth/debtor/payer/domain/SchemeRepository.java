@@ -8,6 +8,7 @@ package io.smarthealth.debtor.payer.domain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Repository;
  * @author Simon.waweru
  */
 @Repository
-public interface SchemeRepository extends JpaRepository<Scheme, Long> {
-
+public interface SchemeRepository extends JpaRepository<Scheme, Long>, JpaSpecificationExecutor<Scheme> {
+    
     Page<Scheme> findByPayer(Payer payer, Pageable pageable);
 }

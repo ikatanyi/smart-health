@@ -20,29 +20,32 @@ public class TrialBalanceService {
 
     public TrialBalance getTrialBalance(final boolean includeEmptyEntries) {
         final TrialBalance trialBalance = new TrialBalance();
-        this.ledgerRepository.findByParentLedgerIsNull().forEach(ledgerEntity
-                -> this.ledgerRepository.findByParentLedgerOrderByIdentifier(ledgerEntity).forEach(subLedger -> {
-                    final BigDecimal totalValue = subLedger.getTotalValue() != null ? subLedger.getTotalValue() : BigDecimal.ZERO;
-                    if (!includeEmptyEntries && totalValue.compareTo(BigDecimal.ZERO) == 0) {
-                        return;
-                    }
-                    final TrialBalanceEntry trialBalanceEntry = new TrialBalanceEntry();
-                    trialBalanceEntry.setLedger(LedgerData.map(subLedger));
-                    switch (subLedger.getAccountType()) {
-                        case ASSET:
-                        case EXPENSE:
-                            trialBalanceEntry.setType(TrialBalanceEntry.Type.DEBIT.name());
-                            break;
-                        case LIABILITY:
-                        case EQUITY:
-                        case REVENUE:
-                            trialBalanceEntry.setType(TrialBalanceEntry.Type.CREDIT.name());
-                            break;
-                    }
-                    trialBalanceEntry.setAmount(totalValue);
-                    trialBalance.getTrialBalanceEntries().add(trialBalanceEntry);
-                })
-        );
+
+        this.ledgerRepository.findByParentLedgerIsNull()
+                .forEach(ledgerEntity
+                        -> this.ledgerRepository.findByParentLedgerOrderByIdentifier(ledgerEntity)
+                        .forEach(subLedger -> {
+                            final BigDecimal totalValue = subLedger.getTotalValue() != null ? subLedger.getTotalValue() : BigDecimal.ZERO;
+                            if (!includeEmptyEntries && totalValue.compareTo(BigDecimal.ZERO) == 0) {
+                                return;
+                            }
+                            final TrialBalanceEntry trialBalanceEntry = new TrialBalanceEntry();
+                            trialBalanceEntry.setLedger(LedgerData.map(subLedger));
+                            switch (subLedger.getAccountType()) {
+                                case ASSET:
+                                case EXPENSE:
+                                    trialBalanceEntry.setType(TrialBalanceEntry.Type.DEBIT.name());
+                                    break;
+                                case LIABILITY:
+                                case EQUITY:
+                                case REVENUE:
+                                    trialBalanceEntry.setType(TrialBalanceEntry.Type.CREDIT.name());
+                                    break;
+                            }
+                            trialBalanceEntry.setAmount(totalValue);
+                            trialBalance.getTrialBalanceEntries().add(trialBalanceEntry);
+                        })
+                );
 
         trialBalance.setDebitTotal(
                 trialBalance.getTrialBalanceEntries()

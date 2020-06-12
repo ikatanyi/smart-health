@@ -1,6 +1,5 @@
 package io.smarthealth.debtor.scheme.api;
 
-import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -70,8 +70,10 @@ public class SchemeController {
 
     @GetMapping("/scheme")
     @PreAuthorize("hasAuthority('view_scheme')")
-    public ResponseEntity<?> fetchAllSchemes(Pageable pageable) {
-        Page<SchemeData> scheme = schemeService.fetchSchemes(pageable).map(p
+    public ResponseEntity<?> fetchAllSchemes(
+            @RequestParam(required = false) final String term,
+            Pageable pageable) {
+        Page<SchemeData> scheme = schemeService.fetchSchemes(term, pageable).map(p
                 -> {
             SchemeData data = SchemeData.map(p);
             Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(p);
@@ -98,9 +100,12 @@ public class SchemeController {
 
     @GetMapping("/payer/{id}/scheme")
     @PreAuthorize("hasAuthority('view_scheme')")
-    public ResponseEntity<?> fetchAllSchemesByPayer(@PathVariable("id") Long id, Pageable pageable) {
+    public ResponseEntity<?> fetchAllSchemesByPayer(
+            @PathVariable("id") Long id,
+            @RequestParam(required = false) final String term,
+            Pageable pageable) {
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(id);
-        Page<SchemeData> scheme = schemeService.fetchSchemesByPayer(payer, pageable).map(p -> {
+        Page<SchemeData> scheme = schemeService.fetchSchemesByPayer(payer, term, pageable).map(p -> {
             SchemeData data = SchemeData.map(p);
             Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(p);
             if (config.isPresent()) {
