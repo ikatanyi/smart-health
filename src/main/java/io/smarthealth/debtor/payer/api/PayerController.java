@@ -24,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -58,6 +59,49 @@ public class PayerController {
     public ResponseEntity<?> createPayer(@Valid @RequestBody PayerData payerData) {
 
         Payer payer = PayerData.map(payerData);
+
+        if (payerData.getBranchId() != null) {
+            BankBranch bankBranch = bankService.fetchBankBranchById(payerData.getBranchId());
+            payer.setBankBranch(bankBranch);
+        }
+        if (payerData.getDebitAccountNo() != null) {
+            Account debitAccount = accountService.findByAccountNumberOrThrow(payerData.getDebitAccountNo());
+            payer.setDebitAccount(debitAccount);
+        }
+        if (payerData.getPaymentTermId() != null) {
+            PaymentTerms paymentTerms = paymentTermsService.getPaymentTermByIdWithFailDetection(payerData.getPaymentTermId());
+            payer.setPaymentTerms(paymentTerms);
+        }
+        if (payerData.getPriceBookId() != null) {
+            PriceBook priceBook = pricebookService.getPricebookWithNotFoundExeption(payerData.getPriceBookId());
+            payer.setPriceBook(priceBook);
+        }
+
+        Payer result = payerService.createPayer(payer);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/api/payer/{id}")
+                .buildAndExpand(result.getId()).toUri();
+
+        PayerData data = PayerData.map(result);
+
+        return ResponseEntity.created(location).body(data);
+    }
+
+    @PutMapping("/payer/{id}")
+    @PreAuthorize("hasAuthority('create_payer')")
+    public ResponseEntity<?> updatePayer(
+            @PathVariable("id") final Long payerId,
+            @Valid @RequestBody PayerData payerData) {
+
+        Payer payer = payerService.findPayerByIdWithNotFoundDetection(payerId);
+
+        payer.setInsurance(payerData.isInsurance());
+        payer.setLegalName(payerData.getLegalName());
+        payer.setPayerName(payerData.getPayerName());
+        payer.setPayerType(payerData.getPayerType());
+        payer.setTaxNumber(payerData.getTaxNumber());
+        payer.setWebsite(payerData.getWebsite());
 
         if (payerData.getBranchId() != null) {
             BankBranch bankBranch = bankService.fetchBankBranchById(payerData.getBranchId());

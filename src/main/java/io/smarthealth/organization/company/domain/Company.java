@@ -1,6 +1,6 @@
 package io.smarthealth.organization.company.domain;
 
-import io.smarthealth.administration.app.data.AddressDat;
+import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.app.domain.Contact;
@@ -101,7 +101,7 @@ public class Company implements Serializable {
         data.setCurrency(this.getCurrency());
 
         if (this.getAddress() != null) {
-            data.setAddress(AddressDat.map(this.getAddress()));
+            data.setAddress(AddressData.map(this.getAddress()));
         }
         
         return data;

@@ -23,6 +23,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -58,6 +59,40 @@ public class SchemeController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/scheme/{id}")
                 .buildAndExpand(s.getId()).toUri();
+
+        SchemeData data = SchemeData.map(savedScheme);
+        Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(savedScheme);
+        if (config.isPresent()) {
+            data.setConfigData(SchemConfigData.map(config.get()));
+        }
+
+        return ResponseEntity.created(location).body(data);
+    }
+
+    @PutMapping("/scheme/{id}")
+    @PreAuthorize("hasAuthority('create_scheme')")
+    public ResponseEntity<?> updateScheme(
+            @PathVariable("id") final Long schemeId,
+            @Valid @RequestBody SchemeData d) {
+        Scheme scheme = schemeService.fetchSchemeById(schemeId);
+        Payer payer = payerService.findPayerByIdWithNotFoundDetection(d.getPayerId());
+
+        scheme.setSchemeCode(d.getSchemeCode());
+        scheme.setCover(d.getCover());
+        scheme.setEmailAddress(d.getEmailAddress());
+        scheme.setLine1(d.getLine1());
+        scheme.setLine2(d.getLine2());
+        scheme.setMobileNo(d.getMobileNo());
+        scheme.setSchemeName(d.getSchemeName());
+        scheme.setTelNo(d.getTelNo());
+        scheme.setSchemeCode(d.getSchemeCode());
+
+        scheme.setPayer(payer);
+        Scheme savedScheme = schemeService.createScheme(scheme);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/api/scheme/{id}")
+                .buildAndExpand(scheme.getId()).toUri();
 
         SchemeData data = SchemeData.map(savedScheme);
         Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(savedScheme);

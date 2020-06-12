@@ -5,7 +5,7 @@
  */
 package io.smarthealth.organization.company.data;
 
-import io.smarthealth.administration.app.data.AddressDat;
+import io.smarthealth.administration.app.data.AddressData;
 import java.io.Serializable;
 import java.util.UUID;
 import javax.persistence.PrePersist;
@@ -36,7 +36,7 @@ public class CompanyData implements Serializable {
     private String currency;
     private String contactName;
     private String contactEmail;
-    private AddressDat address; 
+    private AddressData address; 
 
     @PrePersist
     public void autofill() {

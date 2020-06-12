@@ -5,7 +5,7 @@
  */
 package io.smarthealth.debtor.payer.data;
 
-import io.smarthealth.administration.app.data.AddressDat;
+import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.debtor.payer.domain.Payer;
@@ -35,7 +35,7 @@ public class PayerData {
     private String priceBookName;
 
     private String debitAccountNo;
-    private List<AddressDat> address;
+    private List<AddressData> address;
     private List<ContactData> contact;
     
     //for reporting
@@ -71,8 +71,8 @@ public class PayerData {
         payerData.setWebsite(payer.getWebsite());
 
         if (!payer.getAddress().isEmpty()) {
-            List<AddressDat> addressDataList = new ArrayList<>();
-            payer.getAddress().stream().map((address) -> AddressDat.map(address)).forEachOrdered((addressData) -> {
+            List<AddressData> addressDataList = new ArrayList<>();
+            payer.getAddress().stream().map((address) -> AddressData.map(address)).forEachOrdered((addressData) -> {
                 addressDataList.add(addressData);
             });
             payerData.setAddress(addressDataList);
