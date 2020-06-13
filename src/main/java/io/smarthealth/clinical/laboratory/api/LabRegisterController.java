@@ -12,7 +12,6 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiParam;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -49,6 +48,7 @@ public class LabRegisterController {
     @PostMapping("/labs/register")
     @PreAuthorize("hasAuthority('create_labregister')")
     public ResponseEntity<?> createLabRequest(@Valid @RequestBody LabRegisterData data) {
+       
         LabRegister item = service.createLabRegister(data);
 
         Pager<LabRegisterData> pagers = new Pager();

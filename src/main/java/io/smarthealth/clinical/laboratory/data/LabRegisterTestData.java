@@ -73,5 +73,6 @@ public class LabRegisterTestData {
     private Gender gender;
     @ApiModelProperty(required = false, hidden = true)
     private Boolean withRef;
+    private Boolean isPanel;
 
 }

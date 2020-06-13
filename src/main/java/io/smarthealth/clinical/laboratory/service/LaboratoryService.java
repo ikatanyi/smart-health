@@ -55,6 +55,7 @@ import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.web.multipart.MultipartFile;
@@ -285,18 +286,29 @@ public class LaboratoryService {
         }
         request.setRequestDatetime(data.getRequestDatetime());
         request.setStatus(LabTestStatus.AwaitingSpecimen);
-
+        ArrayList<LabRegisterTestData> panels = new ArrayList<>();
         request.addPatientTest(data.getTests()
                 .stream()
-                .map(x -> toLabRegisterTest(x, data.getPaymentMode()))
+                .map(x -> toLabRegisterTest(x, data.getPaymentMode(), panels))
+                .filter(x -> x != null)
                 .collect(Collectors.toList())
         );
+        if (!panels.isEmpty()) {
+            panels.forEach(x -> {
+                request.addPatientTest(registerPanelTests(x, data.getPaymentMode()));
+            });
+        }
 
         return request;
     }
 
-    private LabRegisterTest toLabRegisterTest(LabRegisterTestData data, String paymentMode) {
+    private LabRegisterTest toLabRegisterTest(LabRegisterTestData data, String paymentMode, ArrayList<LabRegisterTestData> panels) {
         LabTest labTest = getLabTest(data.getTestId());
+        if (labTest.getIsPanel()) {
+            panels.add(data);
+            return null;
+        }
+
         LabRegisterTest test = new LabRegisterTest();
         test.setCollected(Boolean.FALSE);
         test.setEntered(Boolean.FALSE);
@@ -309,11 +321,43 @@ public class LaboratoryService {
         test.setRequestId(data.getRequestId());
         test.setPrice(data.getTestPrice());
         test.setStatus(data.getStatus());
-
+        test.setIsPanel(labTest.getIsPanel());
         test.setReferenceNo(data.getReferenceNo());
 
         test.setStatus(LabTestStatus.AwaitingSpecimen);
         return test;
+    }
+
+    private List<LabRegisterTest> registerPanelTests(LabRegisterTestData data, String paymentMode) {
+        LabTest labTest = getLabTest(data.getTestId());
+
+        if (labTest.getIsPanel()) {
+            return labTest.getPanelTests()
+                    .stream()
+                    .map(x -> {
+                        System.err.println("registering panel "+x.getCode()+" "+x.getId()+" "+x.getTestName()); 
+                        LabRegisterTest test = new LabRegisterTest();
+                        test.setCollected(Boolean.FALSE);
+                        test.setEntered(Boolean.FALSE);
+                        test.setLabTest(x);
+
+//                        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
+                       test.setPaid(Boolean.TRUE);
+
+                        test.setVoided(Boolean.FALSE);
+                        test.setValidated(Boolean.FALSE);
+                        test.setRequestId(data.getRequestId());
+                        test.setPrice(data.getTestPrice());
+                        test.setStatus(data.getStatus());
+                        test.setIsPanel(Boolean.TRUE);
+                        test.setReferenceNo(data.getReferenceNo());
+
+                        test.setStatus(LabTestStatus.AwaitingSpecimen);
+                        return test;
+                    })
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 
     private LabTest getLabTest(Long id) {
@@ -434,6 +478,7 @@ public class LaboratoryService {
         }
         throw APIException.internalError("Provide a Valid Invoice Status");
     }
+
     @Transactional
     public DocResponse uploadDocument(Long testId, String name, MultipartFile file) {
 //        LabRegisterTest labRequestTest = getLabRegisterTest(testId);
@@ -452,6 +497,5 @@ public class LaboratoryService {
         return doc;
     }
     //date, lab number, document name, download
- 
-    
+
 }
