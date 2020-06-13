@@ -9,9 +9,9 @@ package io.smarthealth.debtor.claim.creditNote.domain;
  */
 
 
-import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.invoice.domain.InvoiceItem;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.stock.item.domain.Item;
+import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
@@ -29,10 +29,7 @@ import lombok.Data;
 public class CreditNoteItem extends Auditable {  
     
     @OneToOne
-    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_noteitem_id_bill_item_id"))
-    private PatientBillItem billItem;
-    @OneToOne
-    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_noteitem_id_item_id"))
-    private Item item;
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_credit_noteitem_invoice_item"))
+    private InvoiceItem invoiceItem;
     private Double amount;
 }

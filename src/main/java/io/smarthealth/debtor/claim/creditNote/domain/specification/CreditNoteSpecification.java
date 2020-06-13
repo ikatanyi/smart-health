@@ -21,11 +21,11 @@ public class CreditNoteSpecification {
             final ArrayList<Predicate> predicates = new ArrayList<>();
  
             if (payerId != null) {
-                predicates.add(cb.equal(root.get("Invoice").get("PayerId"), payerId));
+                predicates.add(cb.equal(root.get("invoice").get("payer").get("id"), payerId));
             }
           
             if (invoiceNo != null) {
-                predicates.add(cb.greaterThan(root.get("invoice").get("invoiceNumber"), invoiceNo));
+                predicates.add(cb.equal(root.get("invoice").get("number"), invoiceNo));
             }
              if(range!=null){
                   predicates.add(

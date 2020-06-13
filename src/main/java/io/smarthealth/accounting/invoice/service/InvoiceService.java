@@ -18,6 +18,7 @@ import io.smarthealth.accounting.invoice.data.InvoiceMergeData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceItem;
+import io.smarthealth.accounting.invoice.domain.InvoiceItemRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceMerge;
 import io.smarthealth.accounting.invoice.domain.InvoiceMergeRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
@@ -55,6 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
+    private final InvoiceItemRepository invoiceItemRepository;
     private final InvoiceMergeRepository invoiceMergeRepository;
     private final BillingService billingService;
     private final JournalService journalService;
@@ -190,6 +192,12 @@ public class InvoiceService {
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
         return invoices;
     }
+    
+    public InvoiceItem getInvoiceItemByIdOrThrow(Long id) {
+        return invoiceItemRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("InvoiceItem with ID {0} not found.", id));
+    }
+
 
 //    public Invoice updateInvoice(Long id, InvoiceData data) {
 //        Invoice invoice = findInvoiceOrThrowException(id);
