@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.record.domain;
 
+import io.smarthealth.clinical.visit.domain.ResultsRepository;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.visit.domain.Visit;

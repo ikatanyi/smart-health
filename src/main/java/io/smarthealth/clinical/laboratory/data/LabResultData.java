@@ -39,4 +39,5 @@ public class LabResultData {
     private Boolean voided = Boolean.FALSE;
     private String enteredBy;
     private String validatedBy;
+    private Boolean resultRead;
 }

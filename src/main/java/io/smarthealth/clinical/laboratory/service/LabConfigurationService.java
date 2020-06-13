@@ -69,15 +69,15 @@ public class LabConfigurationService {
     }
 
     @Transactional
-    private void clearAnalyte(Long testId) { 
+    private void clearAnalyte(Long testId) {
         analyteRepository.deleteByTestId(testId);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public LabTest updateTest(Long id, LabTestData data) {
         LabTest toUpdateTest = getTestById(id);
-        clearAnalyte(toUpdateTest.getId()); 
-        
+        clearAnalyte(toUpdateTest.getId());
+
         Item item = findByItemCodeOrThrow(data.getItemCode());
         LabDiscipline displine = displineRepository.findById(data.getCategoryId()).orElse(null);
 //        toUpdateTest.setActive(data.getActive()!=null ? data.getActive() : true);
@@ -97,7 +97,12 @@ public class LabConfigurationService {
                         .map(x -> updateAnalyte(x))
                         .collect(Collectors.toList())
         );
- 
+         data.getPanelTests()
+                .stream()
+                .forEach(x -> {
+                    toUpdateTest.getPanelTests().add(getTestById(x.getTestId()));
+                });
+
         return repository.save(toUpdateTest);
     }
 
@@ -145,6 +150,7 @@ public class LabConfigurationService {
         labTest.setDispline(displine);
         labTest.setTestName(data.getTestName());
         labTest.setService(item);
+        labTest.setIsPanel(data.getIsPanel());
 
         labTest.addAnalytes(
                 data.getAnalytes()
@@ -152,6 +158,13 @@ public class LabConfigurationService {
                         .map(x -> createAnalyte(x))
                         .collect(Collectors.toList())
         );
+        //this should 
+        data.getPanelTests()
+                .stream()
+                .forEach(x -> {
+                    labTest.getPanelTests().add(getTestById(x.getTestId()));
+                });
+
         return labTest;
     }
 

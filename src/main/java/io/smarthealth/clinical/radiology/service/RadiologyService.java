@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.radiology.service;
 
 import io.smarthealth.accounting.billing.domain.PatientBill;
@@ -12,8 +7,6 @@ import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
-import io.smarthealth.clinical.laboratory.data.LabResultData;
-import io.smarthealth.clinical.laboratory.domain.LabResult;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.data.RadiologyResultData;
@@ -22,7 +15,6 @@ import io.smarthealth.clinical.radiology.domain.PatientRadiologyTestRepository;
 import io.smarthealth.clinical.radiology.domain.PatientScanRegister;
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
 import io.smarthealth.clinical.radiology.domain.PatientScanTestRepository;
-import io.smarthealth.clinical.radiology.domain.RadiologyRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyResult;
 import io.smarthealth.clinical.radiology.domain.RadiologyResultRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyTest;
@@ -45,7 +37,6 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.notifications.service.RequestEventPublisher;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
-import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
