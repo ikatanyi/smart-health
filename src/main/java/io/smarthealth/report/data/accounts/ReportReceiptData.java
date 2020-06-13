@@ -49,7 +49,7 @@ public class ReportReceiptData {
     private BigDecimal copayment = BigDecimal.ZERO;
     private BigDecimal other = BigDecimal.ZERO;
     
-    private BigDecimal mobilemoney;
+    private BigDecimal mobilemoney= BigDecimal.ZERO;
     private BigDecimal cash = BigDecimal.ZERO;
     private BigDecimal card = BigDecimal.ZERO;
     private BigDecimal bank = BigDecimal.ZERO;

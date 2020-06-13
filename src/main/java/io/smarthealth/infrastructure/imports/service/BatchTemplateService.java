@@ -5,6 +5,7 @@
  */
 package io.smarthealth.infrastructure.imports.service;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.payer.data.PayerData;
@@ -33,56 +34,62 @@ public class BatchTemplateService {
     private final ImportService importService;
 
     public void generateTemplate(TemplateType type, HttpServletResponse response) throws IOException {
-        List list = new ArrayList();
+        List<Class<?>> list = new ArrayList();
         HashMap<Integer, List> map = new HashMap();
         String fileName = "";
-        Class componentClass = null;
         switch (type) {
             case Patients:
                 fileName = "PatientImportFile";
-                componentClass = PatientData.class;
+                list.add(PatientData.class);
                 break;
+
             case Allocation:
                 fileName = "Allocation File";
-                componentClass = BatchAllocationData.class;
+                list.add(BatchAllocationData.class);
                 break;
-                
-                 case Products:
+
+            case Products:
                 fileName = "products_services_import";
-                componentClass = CreateItem.class;
+                list.add(CreateItem.class);
                 break;
 
             case ServiceMasterList:
                 fileName = "Service Master List";
-                componentClass = CreateItem.class;
+                list.add(CreateItem.class);
                 break;
+
             case Payers:
                 fileName = "Insurances";
-                componentClass = PayerData.class;
+                list.add(PayerData.class);
+                list.add(SchemeData.class);
                 break;
+
             case Schemes:
                 fileName = "Schemes";
-                componentClass = SchemeData.class;
+                list.add(SchemeData.class);
                 break;
             default:
                 break;
 
         }
-        map.put(1, getFieldDescriptions(componentClass));
+        map.put(1, getFieldDescriptions(list));
         importService.exportExcel(type.name(), fileName, map, response);
     }
 
-    private List<String> getFieldDescriptions(Class<?> componentClass) {
-//        Field[] fields = componentClass.getDeclaredFields();
-        Field[] fields = getAllFields(componentClass);
-        List<String> lines = new ArrayList<>(fields.length);
-
-        for (Field field : fields) {
-            field.setAccessible(true);
-            String str = field.getName();
-            lines.add(str.substring(0, 1).toUpperCase() + str.substring(1));
+    private List<String> getFieldDescriptions(List<Class<?>> componentClassArray) {
+        List fieldArray = new ArrayList();
+        for (Class<?> componentClass : componentClassArray) {
+            Field[] fields = getAllFields(componentClass);
+            List<String> lines = new ArrayList<>(fields.length);
+            for (Field field : fields) {
+                field.setAccessible(true);
+                String str = getSerializedKey(field);
+                if(!str.equals(""))
+                    lines.add(str.substring(0, 1).toUpperCase() + str.substring(1));
+            }
+            fieldArray.addAll(lines);
         }
-        return lines;//.toArray(new String[lines.size()]);
+        return fieldArray;
     }
 
     public Field[] getAllFields(Class<?> type) {
@@ -90,5 +97,13 @@ public class BatchTemplateService {
             return (Field[]) ArrayUtils.addAll(getAllFields(type.getSuperclass()), type.getDeclaredFields());
         }
         return type.getDeclaredFields();
+    }
+
+    private static String getSerializedKey(Field field) {
+        String annotationValue = field.getAnnotation(JsonProperty.class).value();
+        if (!annotationValue.isEmpty()) 
+              return field.getName();
+        else
+            return "";
     }
 }

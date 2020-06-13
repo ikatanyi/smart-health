@@ -1,5 +1,6 @@
 package io.smarthealth.debtor.scheme.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.domain.Scheme.SchemeType;
 import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
@@ -19,6 +20,7 @@ public class SchemeData {
     private Long payerId;
 
     private String schemeCode;
+    @JsonProperty(value = "legalName")
     @ApiModelProperty(required = true)
     private String schemeName;
     @Enumerated(EnumType.STRING)
@@ -28,9 +30,10 @@ public class SchemeData {
     private LocalDate startDate;
     private LocalDate endDate;
 
+    @JsonProperty(value = "legalName")
     @Enumerated(EnumType.STRING)
     private SchemeType type;
-
+    
     private Boolean active;
 
     private String telNo;

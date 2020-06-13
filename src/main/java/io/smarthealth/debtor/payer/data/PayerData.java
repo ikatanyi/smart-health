@@ -5,6 +5,7 @@
  */
 package io.smarthealth.debtor.payer.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.administration.app.data.AddressDat;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.Contact;
@@ -21,9 +22,12 @@ import lombok.Data;
 @Data
 public class PayerData {
 
+    @JsonProperty(value = "payerType")
     private Payer.Type payerType;
     private Long payerId;
+    @JsonProperty(value = "payerName")
     private String payerName;
+    @JsonProperty(value = "legalName")
     private String legalName;
     private String taxNumber;
     private String website;

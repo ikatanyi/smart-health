@@ -565,7 +565,7 @@ public class AccountReportService {
         String transactionNo = reportParam.getFirst("transactionNo");
         String shiftNo = reportParam.getFirst("shiftNo");
         Long cashierId = NumberUtils.createLong(reportParam.getFirst("cashierId"));
-        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("receiptNo"));
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
         List<ReportReceiptData>receiptDataArray = new ArrayList();
@@ -598,7 +598,7 @@ public class AccountReportService {
                     case "CARD":
                         data.setCard(data.getCard().add(trx.getAmount()));
                         break;
-                    case "MOBILEMONEY":
+                    case "MOBILE MONEY":
                         data.setMobilemoney(data.getMobilemoney().add(trx.getAmount()));
                         break;
                     case "CASH":
@@ -616,34 +616,42 @@ public class AccountReportService {
             for (ReceiptItemData item : receipt.getReceiptItems()) {
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
-                        data.setLab(data.getLab().add(item.getPrice()));
+                        data.setLab(data.getLab().add(item.getAmountPaid()));
                         break;
                     case "PHARMACY":
-                        data.setPharmacy(data.getPharmacy().add(item.getPrice()));
+                        data.setPharmacy(data.getPharmacy().add(item.getAmountPaid()));
                         break;
                     case "PROCEDURE":
                     case "TRIAGE":
-                        data.setProcedure(data.getProcedure().add(item.getPrice()));
+                        data.setProcedure(data.getProcedure().add(item.getAmountPaid()));
                         break;
                     case "RADIOLOGY":
-                        data.setRadiology(data.getRadiology().add(item.getPrice()));
+                        data.setRadiology(data.getRadiology().add(item.getAmountPaid()));
                         break;
                     case "CONSULTATION":
-                        data.setConsultation(data.getConsultation().add(item.getPrice()));
+//                    case "COPAYMENT":
+                        data.setConsultation(data.getConsultation().add(item.getAmountPaid()));
                         break;
-                    case "COPAYMENT":
-                        data.setCopayment(data.getCopayment().add(item.getPrice()));
                     default:
-                        data.setOther(data.getOther() != null ? data.getOther().add(item.getPrice()) : item.getPrice());
+                        data.setOther(data.getOther() != null ? data.getOther().add(item.getAmountPaid()) : item.getAmountPaid());
                         break;
                 }
             }
             receiptDataArray.add(data);
         }
+        
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("transactionDate");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", reportParam.getFirst("range"));
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/departmental_mode_report");
-        reportData.setReportName("Receipt" + receiptNo);
+        reportData.setReportName("Departmental-Payment-Stetment");
         reportService.generateReport(reportData, response);
     }
     
