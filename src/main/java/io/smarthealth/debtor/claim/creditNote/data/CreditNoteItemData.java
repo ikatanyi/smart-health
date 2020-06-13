@@ -19,7 +19,9 @@ import lombok.Data;
  */
 @Data
 public class CreditNoteItemData { 
-    private Long billItemId;//bill_item_id
+    private Long invoiceItemId;//bill_item_id
+    @ApiModelProperty(required=false, hidden=true)
+    private Long id;
     @ApiModelProperty(required=false, hidden=true)
     private Long itemId;
     @ApiModelProperty(required=false, hidden=true)
@@ -29,7 +31,7 @@ public class CreditNoteItemData {
     @ApiModelProperty(required=false, hidden=true)
     private Double quantity;
     @ApiModelProperty(required=false, hidden=true)
-    private BigDecimal unitPrice;
+    private Double unitPrice;
     @ApiModelProperty(required=false, hidden=true)
     private Double amount;
 }

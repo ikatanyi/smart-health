@@ -25,7 +25,7 @@ public class CreditNoteSpecification {
             }
           
             if (invoiceNo != null) {
-                predicates.add(cb.greaterThan(root.get("invoice").get("number"), invoiceNo));
+                predicates.add(cb.equal(root.get("invoice").get("number"), invoiceNo));
             }
              if(range!=null){
                   predicates.add(

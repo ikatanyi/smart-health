@@ -11,6 +11,7 @@ import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.domain.Invoice;
+import io.smarthealth.accounting.invoice.domain.InvoiceItem;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
@@ -73,25 +74,20 @@ public class CreditNoteService {
         creditNote.setTransactionId(transactionId);
         creditNote.setInvoice(invoice);
         creditNote.setPayer(payer);
-        double totalAmount = 0;
+        Double totalAmount = 0.0;
 //        creditNote.setAmount(data.getAmount());
         List<CreditNoteItem> creditNoteItemArr = new ArrayList();
 //        data.getBillItems().stream().map((item) -> {
-        for (CreditNoteItemData item : data.getBillItems()) {
+        for (CreditNoteItemData item : data.getCreditNoteItems()) {
             CreditNoteItem creditNoteItem = new CreditNoteItem();
-            PatientBillItem billItem = billService.findBillItemById(item.getBillItemId());
+            InvoiceItem invoiceItem = invoiceService.getInvoiceItemByIdOrThrow(item.getInvoiceItemId());
 
-            creditNoteItem.setAmount(billItem.getAmount());
-            creditNoteItem.setBillItem(billItem);
-            creditNoteItem.setItem(billItem.getItem());
+           creditNoteItem.setAmount(invoiceItem.getBillItem().getAmount());
+            creditNoteItem.setInvoiceItem(invoiceItem);
 
             creditNoteItemArr.add(creditNoteItem);
 
-            totalAmount = totalAmount + billItem.getAmount();
-
-            billItem.setStatus(BillStatus.Returned);
-            billService.updateBillItem(billItem);
-
+            totalAmount = totalAmount+invoiceItem.getBillItem().getAmount();
         }
 //        }).forEachOrdered((creditNoteItem) -> {
 //            creditNoteItemArr.add(creditNoteItem);
@@ -114,12 +110,14 @@ public class CreditNoteService {
         Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(data.getInvoiceNo());
         creditNote.setInvoice(invoice);
         List<CreditNoteItem> creditNoteItemArr = new ArrayList();
-        data.getBillItems().stream().map((item) -> {
+        data.getCreditNoteItems().stream().map((item) -> {
             CreditNoteItem creditNoteItem = new CreditNoteItem();
-            PatientBillItem billItem = billService.findBillItemById(item.getBillItemId());
-            creditNoteItem.setAmount(billItem.getAmount());
-            creditNoteItem.setBillItem(billItem);
-            creditNoteItem.setItem(billItem.getItem());
+            InvoiceItem invoiceItem = invoiceService.getInvoiceItemByIdOrThrow(item.getInvoiceItemId());
+
+            creditNoteItem.setAmount(invoiceItem.getBillItem().getAmount());
+            creditNoteItem.setInvoiceItem(invoiceItem);
+
+            creditNoteItemArr.add(creditNoteItem);
             return creditNoteItem;
         }).forEachOrdered((creditNoteItem) -> {
             creditNoteItemArr.add(creditNoteItem);
@@ -165,9 +163,9 @@ public class CreditNoteService {
         String debitAcc = debitAccount.getIdentifier();
         Double amountToDebit = 0.00;
         for (CreditNoteItem item : creditNote.getItems()) {
-            ServicePoint servicepoint = servicePointService.getServicePoint(item.getBillItem().getServicePointId());
-            BigDecimal amount = BigDecimal.valueOf(item.getBillItem().getAmount());
-            amountToDebit = amountToDebit + item.getBillItem().getAmount();
+            ServicePoint servicepoint = servicePointService.getServicePoint(item.getInvoiceItem().getBillItem().getServicePointId());
+            BigDecimal amount = BigDecimal.valueOf(item.getInvoiceItem().getBillItem().getAmount());
+            amountToDebit = amountToDebit + item.getInvoiceItem().getBillItem().getAmount();
             journalEntries.add(new JournalEntryItem(servicepoint.getIncomeAccount(), narration, BigDecimal.ZERO, amount));
         }
         //BigDecimal amount = BigDecimal.valueOf(creditNote.getAmount());
