@@ -97,6 +97,11 @@ public class LabConfigurationService {
                         .map(x -> updateAnalyte(x))
                         .collect(Collectors.toList())
         );
+         data.getPanelTests()
+                .stream()
+                .forEach(x -> {
+                    toUpdateTest.getPanelTests().add(getTestById(x.getTestId()));
+                });
 
         return repository.save(toUpdateTest);
     }
@@ -145,6 +150,7 @@ public class LabConfigurationService {
         labTest.setDispline(displine);
         labTest.setTestName(data.getTestName());
         labTest.setService(item);
+        labTest.setIsPanel(data.getIsPanel());
 
         labTest.addAnalytes(
                 data.getAnalytes()
@@ -152,6 +158,13 @@ public class LabConfigurationService {
                         .map(x -> createAnalyte(x))
                         .collect(Collectors.toList())
         );
+        //this should 
+        data.getPanelTests()
+                .stream()
+                .forEach(x -> {
+                    labTest.getPanelTests().add(getTestById(x.getTestId()));
+                });
+
         return labTest;
     }
 

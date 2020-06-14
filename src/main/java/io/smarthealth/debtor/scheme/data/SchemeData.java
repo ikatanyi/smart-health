@@ -1,5 +1,6 @@
 package io.smarthealth.debtor.scheme.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.domain.Scheme.SchemeType;
 import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
@@ -30,7 +31,7 @@ public class SchemeData {
 
     @Enumerated(EnumType.STRING)
     private SchemeType type;
-
+    
     private Boolean active;
 
     private String telNo;

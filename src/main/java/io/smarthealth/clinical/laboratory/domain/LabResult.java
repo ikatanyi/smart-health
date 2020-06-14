@@ -42,7 +42,8 @@ public class LabResult extends Auditable {
     private Boolean voided = Boolean.FALSE; 
     private String enteredBy;
     private String validatedBy;
-
+    private Boolean resultRead;
+   
     public LabResultData toData() {
         LabResultData data = new LabResultData();
         data.setAnalyte(this.analyte);
@@ -59,6 +60,7 @@ public class LabResult extends Auditable {
         data.setVoided(this.voided); 
         data.setEnteredBy(this.enteredBy);
         data.setValidatedBy(this.validatedBy);
+        data.setResultRead(this.resultRead);
 
         if (this.labRegisterTest.getLabTest() != null) {
             data.setTestId(this.labRegisterTest.getLabTest().getId());

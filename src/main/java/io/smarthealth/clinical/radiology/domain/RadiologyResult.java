@@ -1,18 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.radiology.domain;
 
 import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
-import io.smarthealth.documents.domain.Document;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.organization.person.domain.enumeration.Gender;
 import java.time.LocalDate;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -43,11 +34,13 @@ public class RadiologyResult extends Auditable{
     @Enumerated(EnumType.STRING)
     private ScanTestState status;
     private LocalDate resultsDate;    
-    private Boolean voided = Boolean.FALSE;     
+    private Boolean voided = Boolean.FALSE;  
+    private Boolean resultRead;
 
     public RadiologyResultData toData() {
         RadiologyResultData data = new RadiologyResultData();
         data.setId(this.getId());
+        data.setResultRead(this.resultRead);
         data.setTemplateNotes(this.notes);
         data.setResultsDate(this.resultsDate);
         data.setStatus(this.status);
