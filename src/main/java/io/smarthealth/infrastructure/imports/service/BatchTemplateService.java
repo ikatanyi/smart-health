@@ -8,12 +8,13 @@ package io.smarthealth.infrastructure.imports.service;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
+import io.smarthealth.debtor.payer.data.BatchPayerData;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.scheme.data.SchemeData;
-import io.smarthealth.infrastructure.imports.service.ImportService;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.stock.item.data.CreateItem;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,8 +61,7 @@ public class BatchTemplateService {
 
             case Payers:
                 fileName = "Insurances";
-                list.add(PayerData.class);
-                list.add(SchemeData.class);
+                list.add(BatchPayerData.class);
                 break;
 
             case Schemes:
@@ -83,7 +83,7 @@ public class BatchTemplateService {
             List<String> lines = new ArrayList<>(fields.length);
             for (Field field : fields) {
                 field.setAccessible(true);
-                String str = getSerializedKey(field);
+                String str = field.getName();
                 if(!str.equals(""))
                     lines.add(str.substring(0, 1).toUpperCase() + str.substring(1));
             }
@@ -99,11 +99,11 @@ public class BatchTemplateService {
         return type.getDeclaredFields();
     }
 
-    private static String getSerializedKey(Field field) {
-        String annotationValue = field.getAnnotation(JsonProperty.class).value();
-        if (!annotationValue.isEmpty()) 
-              return field.getName();
-        else
-            return "";
-    }
+//    private static String getSerializedKey(Field field) {
+//        Annotation annotationValue = field.getAnnotation(JsonProperty.class);
+//        if (annotationValue!=null) 
+//              return field.getName();
+//        else
+//            return "";
+//    }
 }
