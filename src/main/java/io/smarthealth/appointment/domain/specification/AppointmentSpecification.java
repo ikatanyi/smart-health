@@ -38,7 +38,7 @@ public class AppointmentSpecification {
             }
              if(range!=null){
                   predicates.add(
-                     cb.between(root.get("appointmentDate"), range.getStartDateTime(), range.getEndDateTime())
+                     cb.between(root.get("appointmentDate"), range.getStartDate(), range.getEndDate())
                   );
               }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
