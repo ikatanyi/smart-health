@@ -69,15 +69,15 @@ public class LabConfigurationService {
     }
 
     @Transactional
-    private void clearAnalyte(Long testId) { 
+    private void clearAnalyte(Long testId) {
         analyteRepository.deleteByTestId(testId);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public LabTest updateTest(Long id, LabTestData data) {
         LabTest toUpdateTest = getTestById(id);
-        clearAnalyte(toUpdateTest.getId()); 
-        
+        clearAnalyte(toUpdateTest.getId());
+
         Item item = findByItemCodeOrThrow(data.getItemCode());
         LabDiscipline displine = displineRepository.findById(data.getCategoryId()).orElse(null);
 //        toUpdateTest.setActive(data.getActive()!=null ? data.getActive() : true);
@@ -97,7 +97,7 @@ public class LabConfigurationService {
                         .map(x -> updateAnalyte(x))
                         .collect(Collectors.toList())
         );
- 
+
         return repository.save(toUpdateTest);
     }
 

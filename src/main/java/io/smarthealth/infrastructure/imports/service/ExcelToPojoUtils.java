@@ -63,7 +63,7 @@ public class ExcelToPojoUtils {
 
                 for (int k = 0; k < row.getPhysicalNumberOfCells(); k++) {
                     if (colNames.get(k) != null) {
-                        Cell cell = row.getCell(k, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+                        Cell cell = row.getCell(k);
                         if (cell != null) {
                             DataFormatter formatter = new DataFormatter();
                             String strValue = formatter.formatCellValue(cell);
@@ -73,7 +73,7 @@ public class ExcelToPojoUtils {
                                 throw APIException.notFound("Error fething column field {0} ", colNames.get(k));
                             }
 
-//                            System.out.println("Field " + field.getName() + " Value " + strValue + " Type " + field.getType());
+                            System.out.println("Field " + field.getName() + " Value " + strValue + " Type " + field.getType());
                             field.setAccessible(true);
                             if (field != null) {
                                 Object value = null;
@@ -89,6 +89,8 @@ public class ExcelToPojoUtils {
 
                                 } else if (field.getType().equals(Integer.class)) {
                                     value = Integer.valueOf(strValue);
+                                } else if (field.getType().equals(Double.class)) {
+                                    value = Double.valueOf(strValue);
                                 } else if (field.getType().equals(LocalDate.class)) {
                                     value = LocalDate.parse(strValue);
                                 } else if (field.getType().equals(LocalDateTime.class)) {

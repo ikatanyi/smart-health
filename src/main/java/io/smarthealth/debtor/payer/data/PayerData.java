@@ -33,30 +33,42 @@ public class PayerData {
     private boolean insurance;
     @ApiModelProperty(hidden = true)
     private String priceBookName;
+    @ApiModelProperty(hidden = true)
+    private Long bankId;
+    @ApiModelProperty(hidden = true)
+    private String branchName;
 
     private String debitAccountNo;
+    private String accountNumber;
     private List<AddressData> address;
     private List<ContactData> contact;
-    
-    //for reporting
-    @ApiModelProperty(required=false, hidden=true)
-    private String county;
-    @ApiModelProperty(required=false, hidden=true)
-    private String country;
-    @ApiModelProperty(required=false, hidden=true)
-    private String postalCode;
-    @ApiModelProperty(required=false, hidden=true)
-    private String addressLine1;
-    @ApiModelProperty(required=false, hidden=true)
+
+    //contact data
+    private String salutation;
+    private String firstName;
+    private String lastName;
+    private String contactRole;
     private String email;
-    @ApiModelProperty(required=false, hidden=true)
-    private String phone;    
-    @ApiModelProperty(required=false, hidden=true)
+    private String telephone;
     private String mobile;
+
+    //for reporting
+    @ApiModelProperty(required = false, hidden = true)
+    private String county;
+    @ApiModelProperty(required = false, hidden = true)
+    private String country;
+    @ApiModelProperty(required = false, hidden = true)
+    private String postalCode;
+    @ApiModelProperty(required = false, hidden = true)
+    private String addressLine1;
+    @ApiModelProperty(required = false, hidden = true)
+    private String phone;
 
     public static PayerData map(final Payer payer) {
         PayerData payerData = new PayerData();
         payerData.setBranchId(payer.getBankBranch().getId());
+        payerData.setBranchName(payer.getBankBranch().getBranchName());
+        payerData.setBankId(payer.getBankBranch().getId());
         if (payer.getDebitAccount() != null) {
             payerData.setDebitAccountNo(payer.getDebitAccount().getIdentifier());
         }
@@ -64,6 +76,7 @@ public class PayerData {
         payerData.setLegalName(payer.getLegalName());
         payerData.setPayerName(payer.getPayerName());
         payerData.setPayerType(payer.getPayerType());
+        payerData.setAccountNumber(payer.getAccountNumber());
         if (payer.getPaymentTerms() != null) {
             payerData.setPaymentTermId(payer.getPaymentTerms().getId());
         }
@@ -76,7 +89,7 @@ public class PayerData {
                 addressDataList.add(addressData);
             });
             payerData.setAddress(addressDataList);
-            
+
             payerData.setAddressLine1(payer.getAddress().get(0).getLine1());
             payerData.setEmail(payer.getAddress().get(0).getEmail());
             payerData.setPostalCode(payer.getAddress().get(0).getPostalCode());
@@ -93,7 +106,7 @@ public class PayerData {
                 contactDataList.add(contactData);
             }
             payerData.setContact(contactDataList);
-            
+
         }
         payerData.setPayerId(payer.getId());
         if (payer.getPriceBook() != null) {
@@ -112,6 +125,7 @@ public class PayerData {
         payer.setPayerType(payerData.getPayerType());
         payer.setTaxNumber(payerData.getTaxNumber());
         payer.setWebsite(payerData.getWebsite());
+        payer.setAccountNumber(payerData.getAccountNumber());
         return payer;
     }
 

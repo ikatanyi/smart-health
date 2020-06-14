@@ -5,25 +5,23 @@
  */
 package io.smarthealth.infrastructure.imports.service;
 
+import io.smarthealth.clinical.laboratory.data.AnalyteData;
+import io.smarthealth.clinical.laboratory.service.AnnalyteService;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
 import io.smarthealth.organization.person.patient.data.PatientData;
-import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
 import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.service.ItemService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +36,7 @@ public class BatchImportService {
     private final AllocationService allocationService;
     private final ItemService itemService;
     private final PatientService patientService;
+    private final AnnalyteService annalyteService;
 
     public void importData(final TemplateType type, final MultipartFile file) {
 
@@ -62,6 +61,24 @@ public class BatchImportService {
                     List<CreateItem> items = toPojoUtil.toPojo(CreateItem.class, inputFilestream);
 
                     itemService.importItem(items);
+                    break;
+                case LabAnnalytes:
+                    List<LabAnnalytesData> labAnnalytesDatas = toPojoUtil.toPojo(LabAnnalytesData.class, inputFilestream);
+                    System.out.println("END: Lab analytes to pojo  " + labAnnalytesDatas.size());
+                    List<AnalyteData> data = new ArrayList<>();
+                    for (LabAnnalytesData la : labAnnalytesDatas) {
+                        AnalyteData d = new AnalyteData();
+                        d.setAnalyte(la.getAnnalyte());
+                        d.setDescription(la.getDescription());
+                        d.setLowerLimit(la.getLowerLimit());
+                        d.setUpperLimit(la.getUpperLimit());
+                        d.setReferenceValue(la.getReferenceValue());
+                        d.setUnits(la.getUnits());
+                        d.setTestCode(la.getLabTestCode());
+                        data.add(d);
+                    }
+
+                     annalyteService.createAnalyte(data);
                     break;
                 default:
                     throw APIException.notFound("Coming Soon!!!", "");

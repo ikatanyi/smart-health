@@ -9,6 +9,7 @@ import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.scheme.data.SchemeData;
+import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
 import io.smarthealth.infrastructure.imports.service.ImportService;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.stock.item.data.CreateItem;
@@ -46,8 +47,8 @@ public class BatchTemplateService {
                 fileName = "Allocation File";
                 componentClass = BatchAllocationData.class;
                 break;
-                
-                 case Products:
+
+            case Products:
                 fileName = "products_services_import";
                 componentClass = CreateItem.class;
                 break;
@@ -63,6 +64,10 @@ public class BatchTemplateService {
             case Schemes:
                 fileName = "Schemes";
                 componentClass = SchemeData.class;
+                break;
+            case LabAnnalytes:
+                fileName = "Lab Annalytes";
+                componentClass = LabAnnalytesData.class;
                 break;
             default:
                 break;

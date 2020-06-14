@@ -23,4 +23,6 @@ public interface LabTestRepository extends JpaRepository<LabTest, Long>, JpaSpec
     Optional<LabTest> findByItemId(@Param("itemId") Long itemId);
 
     Optional<LabTest> findByService(Item item);
+
+    Optional<LabTest> findByCode(final String code);
 }
