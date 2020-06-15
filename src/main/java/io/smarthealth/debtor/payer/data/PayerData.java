@@ -9,6 +9,7 @@ import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.debtor.payer.domain.Payer;
+import io.smarthealth.debtor.payer.domain.enumeration.Type;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ import lombok.Data;
 @Data
 public class PayerData {
 
-    private Payer.Type payerType;
+    private Type payerType;
     private Long payerId;
     private String payerName;
     private String legalName;

@@ -629,7 +629,6 @@ public class AccountReportService {
                         data.setRadiology(data.getRadiology().add(item.getAmountPaid()));
                         break;
                     case "CONSULTATION":
-//                    case "COPAYMENT":
                         data.setConsultation(data.getConsultation().add(item.getAmountPaid()));
                         break;
                     default:

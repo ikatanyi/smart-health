@@ -10,6 +10,8 @@ import io.smarthealth.clinical.laboratory.service.AnnalyteService;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
+import io.smarthealth.debtor.payer.data.BatchPayerData;
+import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
 import io.smarthealth.organization.person.patient.data.PatientData;
@@ -37,6 +39,7 @@ public class BatchImportService {
     private final ItemService itemService;
     private final PatientService patientService;
     private final AnnalyteService annalyteService;
+    private final PayerService payerService;
 
     public void importData(final TemplateType type, final MultipartFile file) {
 
@@ -55,11 +58,11 @@ public class BatchImportService {
                     List<BatchAllocationData> allocationList = toPojoUtil.toPojo(BatchAllocationData.class, inputFilestream);
                     allocationService.importAllocation(allocationList);
                 case Payers:
-                    // code block
+                    List<BatchPayerData> payerList = toPojoUtil.toPojo(BatchPayerData.class, inputFilestream);
+                    payerService.BatchUpload(payerList);
                     break;
                 case Products:
                     List<CreateItem> items = toPojoUtil.toPojo(CreateItem.class, inputFilestream);
-
                     itemService.importItem(items);
                     break;
                 case LabAnnalytes:

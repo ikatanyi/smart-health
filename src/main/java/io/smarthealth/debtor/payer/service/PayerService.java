@@ -5,11 +5,23 @@
  */
 package io.smarthealth.debtor.payer.service;
 
+import io.smarthealth.accounting.accounts.domain.AccountType;
+import io.smarthealth.debtor.payer.data.BatchPayerData;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.PayerRepository;
+import io.smarthealth.debtor.payer.domain.Scheme;
+import io.smarthealth.debtor.payer.domain.enumeration.Type;
 import io.smarthealth.debtor.payer.domain.specification.PayerSpecification;
+import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
+import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
+import io.smarthealth.debtor.scheme.domain.enumeration.DiscountType;
+import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
+import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +44,7 @@ public class PayerService {
     4. Remove/Delete payer
      */
     private final PayerRepository payerRepository;
+    private final SchemeService schemeService;
 
     @Transactional
     public Payer createPayer(Payer payer) {
@@ -55,5 +68,87 @@ public class PayerService {
     public Payer findPayerByIdWithNotFoundDetection(final Long payerId) {
         return payerRepository.findById(payerId).orElseThrow(() -> APIException.notFound("Payer identified by id {0} no available", payerId));
     }
+    
+    public void BatchUpload(List<BatchPayerData>batchPayerData){
+        int i=0;
+        for(BatchPayerData data:batchPayerData){
+            Payer payer = payerRepository.findByPayerName(data.getPayerName());
+            if(payer==null){
+                payer.setInsurance(data.isInsurance());
+                payer.setLegalName(data.getLegalName());
+                payer.setPayerName(data.getPayerName());
+                payer.setPayerType(PayerTypeToEnum(data.getPayerType()));
+                payer.setWebsite(data.getWebsite());
+                
+                payer = this.createPayer(payer);
+            }
+            Scheme scheme = new Scheme();
+            Optional<Scheme> savedScheme = schemeService.fetchSchemeBySchemeName(data.getSchemeName());
+            if(!savedScheme.isPresent()){
+                scheme.setActive(Boolean.TRUE);
+                scheme.setCover(PolicyCoverToEnum(data.getCover()));
+                scheme.setSchemeCode(data.getSchemeCode());
+                scheme.setSchemeName(data.getSchemeName());
+                scheme.setType(Scheme.SchemeType.Corporate);
+                scheme = schemeService.createScheme(scheme);
+                
+               SchemeConfigurations sconfig = new SchemeConfigurations();
+               sconfig.setCoPayType(CopayTypeToEnum(data.getCoPayType()));
+               sconfig.setCoPayValue(data.getCoPayValue());
+               sconfig.setDiscountMethod(DiscountTypeToEnum(data.getDiscountMethod()));
+               sconfig.setDiscountValue(data.getDiscountValue());
+               sconfig.setScheme(scheme);
+               sconfig.setSmartEnabled(data.getSmartEnabled());
+               sconfig.setStatus(true);
+               schemeService.updateSchemeConfigurations(sconfig);
+            }
+            System.out.println(++i+" "+ data.getSchemeName()+"uploaded successfully");
+            
+        }
+        
+        System.out.println(i+" :insurances uploaded successfully"); 
+    }
 
+    
+    private Type PayerTypeToEnum(String status) {
+        if (status == null || status.equals("null") || status.equals("")) {
+            return Type.Business;
+        }
+        if (EnumUtils.isValidEnum(Type.class, status)) {
+            return Type.valueOf(status);
+        }
+        throw APIException.internalError("Provide a Valid Account Type");
+    }
+    
+    private CoPayType CopayTypeToEnum(String copayType) {
+        if (copayType == null || copayType.equals("null") || copayType.equals("")) {
+            return CoPayType.Percentage;
+        }
+        if (EnumUtils.isValidEnum(CoPayType.class, copayType)) {
+            return CoPayType.valueOf(copayType);
+        }
+        throw APIException.internalError("Provide a Valid Copay Type");
+    }
+    
+    private DiscountType DiscountTypeToEnum(String discountType) {
+        if (discountType == null || discountType.equals("null") || discountType.equals("")) {
+            return DiscountType.Percentage;
+        }
+        if (EnumUtils.isValidEnum(DiscountType.class, discountType)) {
+            return DiscountType.valueOf(discountType);
+        }
+        throw APIException.internalError("Provide a Valid Dicount Type");
+    }
+    
+    private PolicyCover PolicyCoverToEnum(String policyCover) {
+        if (policyCover == null || policyCover.equals("null") || policyCover.equals("")) {
+            return PolicyCover.Both;
+        }
+        if (EnumUtils.isValidEnum(PolicyCover.class, policyCover)) {
+            return PolicyCover.valueOf(policyCover);
+        }
+        throw APIException.internalError("Provide a Valid PolicyCover Type");
+    }
+    
+    
 }
