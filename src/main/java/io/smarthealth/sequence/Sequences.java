@@ -28,5 +28,7 @@ public enum Sequences {
     CreditNoteNumber,
     VoucherNumber,
     Admission,
-    DocumentNumber;
+    DocumentNumber,
+    PayerCode,
+    SchemeCode;
 }

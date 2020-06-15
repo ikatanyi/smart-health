@@ -18,9 +18,12 @@ import io.smarthealth.debtor.scheme.domain.enumeration.DiscountType;
 import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -45,6 +48,7 @@ public class PayerService {
      */
     private final PayerRepository payerRepository;
     private final SchemeService schemeService;
+    private final SequenceNumberService sequenceNumberService;
 
     @Transactional
     public Payer createPayer(Payer payer) {
@@ -74,12 +78,12 @@ public class PayerService {
         for(BatchPayerData data:batchPayerData){
             Payer payer = payerRepository.findByPayerName(data.getPayerName());
             if(payer==null){
+                payer = new Payer();
                 payer.setInsurance(data.isInsurance());
                 payer.setLegalName(data.getLegalName());
                 payer.setPayerName(data.getPayerName());
                 payer.setPayerType(PayerTypeToEnum(data.getPayerType()));
-                payer.setWebsite(data.getWebsite());
-                
+                payer.setWebsite(data.getWebsite());                
                 payer = this.createPayer(payer);
             }
             Scheme scheme = new Scheme();
@@ -87,9 +91,13 @@ public class PayerService {
             if(!savedScheme.isPresent()){
                 scheme.setActive(Boolean.TRUE);
                 scheme.setCover(PolicyCoverToEnum(data.getCover()));
-                scheme.setSchemeCode(data.getSchemeCode());
+                if(data.getSchemeCode()==null)
+                    scheme.setSchemeCode(sequenceNumberService.next(1L, Sequences.SchemeCode.name()));
+                else
+                    scheme.setSchemeCode(data.getSchemeCode());
                 scheme.setSchemeName(data.getSchemeName());
                 scheme.setType(Scheme.SchemeType.Corporate);
+                scheme.setPayer(payer);
                 scheme = schemeService.createScheme(scheme);
                 
                SchemeConfigurations sconfig = new SchemeConfigurations();

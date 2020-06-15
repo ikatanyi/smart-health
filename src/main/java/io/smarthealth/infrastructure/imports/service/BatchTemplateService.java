@@ -74,8 +74,8 @@ public class BatchTemplateService {
                 break;
 
         }
-        map.put(1, getFieldDescriptions(componentClass));
-        importService.exportExcel(type.name(), fileName, map, response);
+//        map.put(1, getFieldDescriptions(componentClass));
+        importService.exportExcel(type.name(), fileName, map, componentClass, response);
     }
 
     private List<String> getFieldDescriptions(Class<?> componentClass) {

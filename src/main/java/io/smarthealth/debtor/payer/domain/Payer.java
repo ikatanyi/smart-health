@@ -44,7 +44,7 @@ public class Payer extends Auditable {
     private List<Dispatch> dispatches;
 
     @JoinColumn(name = "bank_branch", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_payer_bank_branch_id")/*, insertable = false, updatable = false*/)
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = true)
     private BankBranch bankBranch;
 
     @OneToOne
