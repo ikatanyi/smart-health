@@ -81,7 +81,7 @@ public class BatchImportService {
                         data.add(d);
                     }
 
-                     annalyteService.createAnalyte(data);
+                    annalyteService.createAnalyte(data);
                     break;
                 default:
                     throw APIException.notFound("Coming Soon!!!", "");
