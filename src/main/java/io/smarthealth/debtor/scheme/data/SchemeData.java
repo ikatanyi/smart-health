@@ -3,6 +3,8 @@ package io.smarthealth.debtor.scheme.data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.domain.Scheme.SchemeType;
+import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
+import io.smarthealth.debtor.scheme.domain.enumeration.DiscountType;
 import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
@@ -28,12 +30,9 @@ public class SchemeData {
 
     private LocalDate startDate;
     private LocalDate endDate;
-
     @Enumerated(EnumType.STRING)
     private SchemeType type;
-    
     private Boolean active;
-
     private String telNo;
     private String mobileNo;
     private String emailAddress;
@@ -44,7 +43,8 @@ public class SchemeData {
     @ApiModelProperty(hidden = true, required = false)
     private Long schemeId;
     @ApiModelProperty(hidden = true, required = false)
-    private String payerName;
+    private String payerName;    
+    
 
     public static SchemeData map(Scheme i) {
         SchemeData d = new SchemeData();

@@ -7,13 +7,14 @@ package io.smarthealth.infrastructure.imports.service;
 
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
+import io.smarthealth.debtor.payer.data.BatchPayerData;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.scheme.data.SchemeData;
 import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
-import io.smarthealth.infrastructure.imports.service.ImportService;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.stock.item.data.CreateItem;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +60,7 @@ public class BatchTemplateService {
                 break;
             case Payers:
                 fileName = "Insurances";
-                componentClass = PayerData.class;
+                componentClass = BatchPayerData.class;
                 break;
             case Schemes:
                 fileName = "Schemes";
@@ -73,8 +74,8 @@ public class BatchTemplateService {
                 break;
 
         }
-        map.put(1, getFieldDescriptions(componentClass));
-        importService.exportExcel(type.name(), fileName, map, response);
+//        map.put(1, getFieldDescriptions(componentClass));
+        importService.exportExcel(type.name(), fileName, map, componentClass, response);
     }
 
     private List<String> getFieldDescriptions(Class<?> componentClass) {

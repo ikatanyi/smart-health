@@ -8,6 +8,7 @@ import io.smarthealth.administration.app.domain.Address;
 import io.smarthealth.administration.banks.domain.BankBranch;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.debtor.claim.dispatch.domain.Dispatch;
+import io.smarthealth.debtor.payer.domain.enumeration.Type;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.org.domain.Organisation;
 import java.util.ArrayList;
@@ -25,10 +26,7 @@ import lombok.Data;
 @Table(name = "payers")
 public class Payer extends Auditable {
 
-    public enum Type {
-        Business,
-        Individual
-    }
+    
 
     @Enumerated(EnumType.STRING)
     private Type payerType;
@@ -46,7 +44,7 @@ public class Payer extends Auditable {
     private List<Dispatch> dispatches;
 
     @JoinColumn(name = "bank_branch", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_payer_bank_branch_id")/*, insertable = false, updatable = false*/)
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = true)
     private BankBranch bankBranch;
 
     @OneToOne

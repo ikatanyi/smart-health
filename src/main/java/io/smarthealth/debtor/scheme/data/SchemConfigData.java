@@ -21,6 +21,7 @@ import lombok.Data;
 public class SchemConfigData {
 
 //    private Long schemeId;
+    
     @Enumerated(EnumType.STRING)
     private DiscountType discountMethod;
     private double discountValue;

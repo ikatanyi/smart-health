@@ -60,6 +60,7 @@ public class ExcelToPojoUtils {
                 T result = type.newInstance();
                 Class clazz = type.newInstance().getClass();
                 Field[] fields = getAllFields(clazz);
+                System.out.println("row.getPhysicalNumberOfCells() "+row.getPhysicalNumberOfCells());
 
                 for (int k = 0; k < row.getPhysicalNumberOfCells(); k++) {
                     if (colNames.get(k) != null) {
