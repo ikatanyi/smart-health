@@ -38,6 +38,7 @@ public class AllocationData {
     private LocalDate invoiceDate;
     @ApiModelProperty(hidden = true)
     private LocalDate transactionDate=LocalDate.now();
+    private String comments;
     
 
     public static Allocation map(AllocationData data) {
@@ -48,6 +49,7 @@ public class AllocationData {
         allocation.setRemittanceNo(data.getRemittanceNo());
         allocation.setTransactionId(data.getTransactionId());
         allocation.setTransactionDate(data.getTransactionDate());
+        allocation.setComments(data.getComments( ));
         return allocation;
     }
 }

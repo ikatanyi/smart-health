@@ -60,10 +60,12 @@ public class ExcelToPojoUtils {
                 T result = type.newInstance();
                 Class clazz = type.newInstance().getClass();
                 Field[] fields = getAllFields(clazz);
+                System.out.println("row.getPhysicalNumberOfCells() "+row.getPhysicalNumberOfCells());
 
                 for (int k = 0; k < row.getPhysicalNumberOfCells(); k++) {
                     if (colNames.get(k) != null) {
-                        Cell cell = row.getCell(k);
+                        //RETURN_BLANK_AS_NULL
+                        Cell cell = row.getCell(k,Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
                         if (cell != null) {
                             DataFormatter formatter = new DataFormatter();
                             String strValue = formatter.formatCellValue(cell);

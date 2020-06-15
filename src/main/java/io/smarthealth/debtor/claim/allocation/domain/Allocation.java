@@ -33,6 +33,7 @@ public class Allocation extends Auditable {
     private String remittanceNo;
     private String transactionId;
     private String receiptNo;
+    private String comments;
     private LocalDate transactionDate;
     
     public AllocationData map() {
@@ -52,6 +53,7 @@ public class Allocation extends Auditable {
         data.setTransactionId(this.getTransactionId());
         data.setRemitanceId(this.getId());
         data.setBalance(this.getBalance());
+        data.setComments(this.getComments());
         return data;
     }
 }

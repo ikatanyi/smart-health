@@ -24,8 +24,6 @@ public class BatchPayerData {
     private String taxNumber;
     private String website;    
     private boolean insurance;
-    
-    //scheme
     private String schemeCode;
     private String schemeName;
     private String cover;

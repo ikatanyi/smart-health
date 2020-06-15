@@ -9,6 +9,8 @@ import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.List;
@@ -44,6 +46,9 @@ public class SchemeController {
 
     @Autowired
     SchemeService schemeService;
+    
+    @Autowired
+    SequenceNumberService sequenceNumberService;
 
     @PostMapping("/scheme")
     @PreAuthorize("hasAuthority('create_scheme')")
@@ -52,7 +57,8 @@ public class SchemeController {
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(scheme.getPayerId());
 
         Scheme s = SchemeData.map(scheme);
-
+         if(s.getSchemeCode()==null)
+             s.setSchemeCode(sequenceNumberService.next(1L, Sequences.SchemeCode.name()));
         s.setPayer(payer);
         Scheme savedScheme = schemeService.createScheme(s);
 
