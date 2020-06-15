@@ -86,7 +86,7 @@ public class PayerService {
             Optional<Scheme> savedScheme = schemeService.fetchSchemeBySchemeName(data.getSchemeName());
             if(!savedScheme.isPresent()){
                 scheme.setActive(Boolean.TRUE);
-                scheme.setCover(data.getCover());
+                scheme.setCover(PolicyCoverToEnum(data.getCover()));
                 scheme.setSchemeCode(data.getSchemeCode());
                 scheme.setSchemeName(data.getSchemeName());
                 scheme.setType(Scheme.SchemeType.Corporate);
@@ -138,6 +138,16 @@ public class PayerService {
             return DiscountType.valueOf(discountType);
         }
         throw APIException.internalError("Provide a Valid Dicount Type");
+    }
+    
+    private PolicyCover PolicyCoverToEnum(String policyCover) {
+        if (policyCover == null || policyCover.equals("null") || policyCover.equals("")) {
+            return PolicyCover.Both;
+        }
+        if (EnumUtils.isValidEnum(PolicyCover.class, policyCover)) {
+            return PolicyCover.valueOf(policyCover);
+        }
+        throw APIException.internalError("Provide a Valid PolicyCover Type");
     }
     
     

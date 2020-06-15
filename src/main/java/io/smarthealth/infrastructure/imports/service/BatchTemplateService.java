@@ -5,12 +5,12 @@
  */
 package io.smarthealth.infrastructure.imports.service;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.scheme.data.SchemeData;
+import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.stock.item.data.CreateItem;
 import java.io.IOException;
@@ -35,61 +35,60 @@ public class BatchTemplateService {
     private final ImportService importService;
 
     public void generateTemplate(TemplateType type, HttpServletResponse response) throws IOException {
-        List<Class<?>> list = new ArrayList();
+        List list = new ArrayList();
         HashMap<Integer, List> map = new HashMap();
         String fileName = "";
+        Class componentClass = null;
         switch (type) {
             case Patients:
                 fileName = "PatientImportFile";
-                list.add(PatientData.class);
+                componentClass = PatientData.class;
                 break;
-
             case Allocation:
                 fileName = "Allocation File";
-                list.add(BatchAllocationData.class);
+                componentClass = BatchAllocationData.class;
                 break;
 
             case Products:
                 fileName = "products_services_import";
-                list.add(CreateItem.class);
+                componentClass = CreateItem.class;
                 break;
 
             case ServiceMasterList:
                 fileName = "Service Master List";
-                list.add(CreateItem.class);
+                componentClass = CreateItem.class;
                 break;
-
             case Payers:
                 fileName = "Insurances";
-                list.add(BatchPayerData.class);
+                componentClass = BatchPayerData.class;
                 break;
-
             case Schemes:
                 fileName = "Schemes";
-                list.add(SchemeData.class);
+                componentClass = SchemeData.class;
+                break;
+            case LabAnnalytes:
+                fileName = "Lab Annalytes";
+                componentClass = LabAnnalytesData.class;
                 break;
             default:
                 break;
 
         }
-        map.put(1, getFieldDescriptions(list));
+        map.put(1, getFieldDescriptions(componentClass));
         importService.exportExcel(type.name(), fileName, map, response);
     }
 
-    private List<String> getFieldDescriptions(List<Class<?>> componentClassArray) {
-        List fieldArray = new ArrayList();
-        for (Class<?> componentClass : componentClassArray) {
-            Field[] fields = getAllFields(componentClass);
-            List<String> lines = new ArrayList<>(fields.length);
-            for (Field field : fields) {
-                field.setAccessible(true);
-                String str = field.getName();
-                if(!str.equals(""))
-                    lines.add(str.substring(0, 1).toUpperCase() + str.substring(1));
-            }
-            fieldArray.addAll(lines);
+    private List<String> getFieldDescriptions(Class<?> componentClass) {
+//        Field[] fields = componentClass.getDeclaredFields();
+        Field[] fields = getAllFields(componentClass);
+        List<String> lines = new ArrayList<>(fields.length);
+
+        for (Field field : fields) {
+            field.setAccessible(true);
+            String str = field.getName();
+            lines.add(str.substring(0, 1).toUpperCase() + str.substring(1));
         }
-        return fieldArray;
+        return lines;//.toArray(new String[lines.size()]);
     }
 
     public Field[] getAllFields(Class<?> type) {
@@ -98,12 +97,4 @@ public class BatchTemplateService {
         }
         return type.getDeclaredFields();
     }
-
-//    private static String getSerializedKey(Field field) {
-//        Annotation annotationValue = field.getAnnotation(JsonProperty.class);
-//        if (annotationValue!=null) 
-//              return field.getName();
-//        else
-//            return "";
-//    }
 }

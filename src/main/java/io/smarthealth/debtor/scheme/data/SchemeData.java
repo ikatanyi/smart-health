@@ -21,29 +21,20 @@ public class SchemeData {
 
     private Long payerId;
 
-    @JsonProperty(value = "schemeCode")
     private String schemeCode;
-    @JsonProperty(value = "schemeName")
     @ApiModelProperty(required = true)
     private String schemeName;
-    @JsonProperty(value = "cover")
     @Enumerated(EnumType.STRING)
     private PolicyCover cover;
     //private String category;
 
     private LocalDate startDate;
     private LocalDate endDate;
-
-    @JsonProperty(value = "type")
     @Enumerated(EnumType.STRING)
     private SchemeType type;
-    @JsonProperty(value = "active")
     private Boolean active;
-    @JsonProperty(value = "telNo")
     private String telNo;
-    @JsonProperty(value = "mobileNo")
     private String mobileNo;
-    @JsonProperty(value = "emailAddress")
     private String emailAddress;
     private String line1;
     private String line2;

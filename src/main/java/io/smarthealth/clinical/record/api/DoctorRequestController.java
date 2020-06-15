@@ -231,7 +231,6 @@ public class DoctorRequestController {
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
         Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable, activeVisit, term, range);
-        //Page<DoctorRequest> pageList = requestService.fetchDoctorRequestLine(fulfillerStatus, requestType, pageable);
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
 
         for (DoctorRequest docReq : pageList.getContent()) {

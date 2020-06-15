@@ -35,6 +35,7 @@ public class Payer extends Auditable {
     private String legalName;
     private String taxNumber;
     private String website;
+    private String accountNumber;
 
     @OneToMany(mappedBy = "payer")
     private List<Remittance> remittances;

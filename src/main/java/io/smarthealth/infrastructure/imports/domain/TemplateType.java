@@ -20,7 +20,7 @@ public enum TemplateType {
     //PriceList,
     Suppliers,
     Products,
-    //LabTests,
+    LabAnnalytes,
     //RadiologyTests,
     //ProcedureTests,
     //Specimens

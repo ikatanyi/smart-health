@@ -23,6 +23,9 @@ public class AnalyteData {
     private Double lowerLimit;
     private Double upperLimit;
     private String referenceValue;
-    private Integer sortKey; 
+    private Integer sortKey;
+    private String description;
+    
+    private String testCode;
 
 }

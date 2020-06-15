@@ -4,7 +4,7 @@ import io.smarthealth.administration.banks.domain.BankBranchRepository;
 import io.smarthealth.administration.banks.domain.BankRepository;
 import io.smarthealth.administration.banks.domain.BankBranch;
 import io.smarthealth.administration.banks.domain.Bank;
-import io.smarthealth.administration.app.data.AddressDat;
+import io.smarthealth.administration.app.data.AddressData;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.*;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -49,13 +49,13 @@ public class AdminService {
         return contactRepository.save(contact);
     }
 
-    public Address createAddress(AddressDat address) {
-        Address addresses = AddressDat.map(address);
+    public Address createAddress(AddressData address) {
+        Address addresses = AddressData.map(address);
 
         return addressRepository.save(addresses);
     }
 
-    public Address updateAddress(Long id, AddressDat addressData) {
+    public Address updateAddress(Long id, AddressData addressData) {
         Address address = getAddressWithNoFoundDetection(id);
         if (addressData.getId() != null) {
             address.setId(addressData.getId());
@@ -85,10 +85,10 @@ public class AdminService {
         return contactRepository.save(contacts);
     }
 
-    public List<Address> createAddresses(List<AddressDat> addressList) {
+    public List<Address> createAddresses(List<AddressData> addressList) {
         List<Address> addresses = addressList
                 .stream()
-                .map(adds -> AddressDat.map(adds))
+                .map(adds -> AddressData.map(adds))
                 .collect(Collectors.toList());
 
         return addressRepository.saveAll(addresses);

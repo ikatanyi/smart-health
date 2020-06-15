@@ -58,6 +58,7 @@ public class LabRegisterTest extends Identifiable {
     private Boolean voided = Boolean.FALSE;
     private String voidedBy;
     private LocalDateTime voidDatetime;
+    private Boolean isPanel;
 
     @OneToMany(mappedBy = "labRegisterTest")
     private List<LabResult> labResults;
@@ -102,6 +103,8 @@ public class LabRegisterTest extends Identifiable {
 
         data.setSpecimen(this.specimen);
         data.setStatus(this.status);
+        data.setIsPanel(this.isPanel);
+        
         if (this.labTest != null) {
             data.setTestId(this.labTest.getId());
             data.setTestCode(this.labTest.getCode());
