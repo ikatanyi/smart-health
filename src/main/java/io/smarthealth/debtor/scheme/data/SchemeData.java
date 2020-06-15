@@ -3,6 +3,8 @@ package io.smarthealth.debtor.scheme.data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.domain.Scheme.SchemeType;
+import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
+import io.smarthealth.debtor.scheme.domain.enumeration.DiscountType;
 import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
@@ -19,10 +21,12 @@ public class SchemeData {
 
     private Long payerId;
 
+    @JsonProperty(value = "schemeCode")
     private String schemeCode;
-    @JsonProperty(value = "legalName")
+    @JsonProperty(value = "schemeName")
     @ApiModelProperty(required = true)
     private String schemeName;
+    @JsonProperty(value = "cover")
     @Enumerated(EnumType.STRING)
     private PolicyCover cover;
     //private String category;
@@ -30,14 +34,16 @@ public class SchemeData {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    @JsonProperty(value = "legalName")
+    @JsonProperty(value = "type")
     @Enumerated(EnumType.STRING)
     private SchemeType type;
-    
+    @JsonProperty(value = "active")
     private Boolean active;
-
+    @JsonProperty(value = "telNo")
     private String telNo;
+    @JsonProperty(value = "mobileNo")
     private String mobileNo;
+    @JsonProperty(value = "emailAddress")
     private String emailAddress;
     private String line1;
     private String line2;
@@ -46,7 +52,8 @@ public class SchemeData {
     @ApiModelProperty(hidden = true, required = false)
     private Long schemeId;
     @ApiModelProperty(hidden = true, required = false)
-    private String payerName;
+    private String payerName;    
+    
 
     public static SchemeData map(Scheme i) {
         SchemeData d = new SchemeData();

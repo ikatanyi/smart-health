@@ -10,6 +10,7 @@ import io.smarthealth.administration.app.data.AddressDat;
 import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.debtor.payer.domain.Payer;
+import io.smarthealth.debtor.payer.domain.enumeration.Type;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,19 +22,21 @@ import lombok.Data;
  */
 @Data
 public class PayerData {
-
     @JsonProperty(value = "payerType")
-    private Payer.Type payerType;
+    private Type payerType;
     private Long payerId;
     @JsonProperty(value = "payerName")
     private String payerName;
     @JsonProperty(value = "legalName")
     private String legalName;
+    @JsonProperty(value = "taxNumber")
     private String taxNumber;
+    @JsonProperty(value = "website")
     private String website;
     private Long branchId;
     private Long paymentTermId;
     private Long priceBookId;
+    @JsonProperty(value = "insurance")
     private boolean insurance;
     @ApiModelProperty(hidden = true)
     private String priceBookName;
