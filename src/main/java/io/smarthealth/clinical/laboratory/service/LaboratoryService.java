@@ -304,7 +304,7 @@ public class LaboratoryService {
 
     private LabRegisterTest toLabRegisterTest(LabRegisterTestData data, String paymentMode, ArrayList<LabRegisterTestData> panels) {
         LabTest labTest = getLabTest(data.getTestId());
-        if (labTest.getIsPanel()) {
+        if (labTest.getIsPanel()!=null && labTest.getIsPanel()) {
             panels.add(data);
             return null;
         }
