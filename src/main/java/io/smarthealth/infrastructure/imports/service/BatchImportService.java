@@ -59,7 +59,6 @@ public class BatchImportService {
                     break;
                 case Products:
                     List<CreateItem> items = toPojoUtil.toPojo(CreateItem.class, inputFilestream);
-
                     itemService.importItem(items);
                     break;
                 case LabAnnalytes:
@@ -78,7 +77,7 @@ public class BatchImportService {
                         data.add(d);
                     }
 
-                     annalyteService.createAnalyte(data);
+                    annalyteService.createAnalyte(data);
                     break;
                 default:
                     throw APIException.notFound("Coming Soon!!!", "");

@@ -1,7 +1,5 @@
 package io.smarthealth.stock.item.data;
 
-import io.smarthealth.administration.servicepoint.data.SimpleServicePoint;
-import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import java.math.BigDecimal;
@@ -38,6 +36,6 @@ public class CreateItem {
     private Double reorderLevel;
     private Double orderQuantity;
     private List<Long> expenseTo = new ArrayList<>();
-
+    private String uom;
     
 }

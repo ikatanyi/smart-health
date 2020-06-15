@@ -63,7 +63,8 @@ public class ExcelToPojoUtils {
 
                 for (int k = 0; k < row.getPhysicalNumberOfCells(); k++) {
                     if (colNames.get(k) != null) {
-                        Cell cell = row.getCell(k);
+                        //RETURN_BLANK_AS_NULL
+                        Cell cell = row.getCell(k,Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
                         if (cell != null) {
                             DataFormatter formatter = new DataFormatter();
                             String strValue = formatter.formatCellValue(cell);
