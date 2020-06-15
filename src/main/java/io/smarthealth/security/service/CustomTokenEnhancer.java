@@ -1,5 +1,6 @@
 package io.smarthealth.security.service;
 
+import io.smarthealth.security.domain.User;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,11 +15,16 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CustomTokenEnhancer implements TokenEnhancer {
+
     @Override
     public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
 
+        User user = (User) authentication.getPrincipal();
         Map<String, Object> info = new HashMap<>();
         info.put("iat", Instant.now().getEpochSecond());
+        if (user != null) {
+            info.put("first_time_login", user.isFirstTimeLogin());
+        }
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(info);
         return accessToken;
     }
