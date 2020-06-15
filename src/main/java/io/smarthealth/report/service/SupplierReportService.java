@@ -144,7 +144,7 @@ public class SupplierReportService {
     public void SupplierInvoiceStatement(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long supplierId = NumberUtils.createLong(reportParam.getFirst("supplierId"));  
-        String invoiceNumber = reportParam.getFirst("supplierId");
+        String invoiceNumber = reportParam.getFirst("invoiceNumber");
         Boolean paid = reportParam.getFirst("paid")!=null?Boolean.getBoolean(reportParam.getFirst("paid")):null;
         PurchaseInvoiceStatus status = PurchaseInvoiceStatusToEnum(reportParam.getFirst("status"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));

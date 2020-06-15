@@ -5,6 +5,10 @@
 	<property name="ireport.y" value="0"/>
 	<field name="method" class="java.lang.String"/>
 	<field name="amount" class="java.math.BigDecimal"/>
+	<variable name="discount" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{method}.equals( "DISCOUNT" )?$F{amount}:new BigDecimal(0)]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
 	<columnHeader>
 		<band height="1" splitType="Stretch"/>
 	</columnHeader>
