@@ -10,7 +10,6 @@ package io.smarthealth.infrastructure.imports.service;
  * @author Simon.waweru
  */
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.person.domain.enumeration.Gender;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -18,7 +17,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.ArrayUtils;
@@ -53,6 +51,7 @@ public class ExcelToPojoUtils {
             Cell headerCell = headerRow.getCell(i, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
             colNames.add(headerCell != null ? strToFieldName(headerCell.getStringCellValue()) : null);
         }
+        System.out.println("headerRow.getPhysicalNumberOfCells() " + headerRow.getPhysicalNumberOfCells());
 
         for (int j = 1; j < sheet.getPhysicalNumberOfRows(); j++) {
             Row row = sheet.getRow(j);
@@ -60,12 +59,15 @@ public class ExcelToPojoUtils {
                 T result = type.newInstance();
                 Class clazz = type.newInstance().getClass();
                 Field[] fields = getAllFields(clazz);
-                System.out.println("row.getPhysicalNumberOfCells() "+row.getPhysicalNumberOfCells());
-
+                System.out.println("row.getPhysicalNumberOfCells() " + row.getPhysicalNumberOfCells());
+                if (headerRow.getPhysicalNumberOfCells() > row.getPhysicalNumberOfCells()) {
+                    throw APIException.badRequest("Found {0} colums at row " + j + 1, row.getPhysicalNumberOfCells());
+                }
+                
                 for (int k = 0; k < row.getPhysicalNumberOfCells(); k++) {
                     if (colNames.get(k) != null) {
                         //RETURN_BLANK_AS_NULL
-                        Cell cell = row.getCell(k,Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+                        Cell cell = row.getCell(k, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
                         if (cell != null) {
                             DataFormatter formatter = new DataFormatter();
                             String strValue = formatter.formatCellValue(cell);

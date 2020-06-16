@@ -233,14 +233,20 @@ public class PatientService {
 
     @Transactional
     public Patient createPatient(final PatientData patient, MultipartFile file) {
-        try {
-            LocalDate dateOfBirth = LocalDate.now().minusYears(Long.valueOf(patient.getAge()));
-            patient.setDateOfBirth(dateOfBirth);
-        } catch (Exception e) {
-            patient.setDateOfBirth(LocalDate.now());
+        if (patient.getDateOfBirth() == null) {
+            try {
+                LocalDate dateOfBirth = LocalDate.now().minusYears(Long.valueOf(patient.getAge()));
+                patient.setDateOfBirth(dateOfBirth);
+            } catch (Exception e) {
+                patient.setDateOfBirth(LocalDate.now());
+            }
         }
-        String patientNo = sequenceNumberService.next(1L, Sequences.Patient.name());
-        throwifDuplicatePatientNumber(patientNo);
+
+        String patientNo = patient.getPatientNumber();
+        if (patient.getPatientNumber() == null) {
+            patientNo = sequenceNumberService.next(1L, Sequences.Patient.name());
+            throwifDuplicatePatientNumber(patientNo);
+        }
 
         // use strict to prevent over eager matching (happens with ID fields)
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);

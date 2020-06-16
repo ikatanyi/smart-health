@@ -95,21 +95,10 @@ public class BatchImportService {
     private void importPatients(final List<PatientData> list) {
         List<Patient> patients = new ArrayList<>();
         for (PatientData d : list) {
-            System.out.println("d.getAge() " + d.getAge());
-//            // use strict to prevent over eager matching (happens with ID fields)
-//            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-//            Patient p = modelMapper.map(d, Patient.class);
-//            LocalDate dateOfBirth = LocalDate.now().minusYears(Long.valueOf(d.getAge()));
-//            p.setDateOfBirth(dateOfBirth);
-//
-//            patientEntity.setPatient(true);
-//            patientEntity.setStatus(PatientStatus.Active);
-//            patientEntity.setPatientNumber(patientNo);
-//            
-//            patients.add(p);
-
+            if (patientService.fetchPatientByPatientNumber(d.getPatientNumber()).isPresent()) {
+                continue;
+            }
             patientService.createPatient(d, null);
-
         }
         //patientRepository.saveAll(patients);
 
