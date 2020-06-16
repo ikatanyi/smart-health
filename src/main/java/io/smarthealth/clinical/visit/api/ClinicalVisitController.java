@@ -399,7 +399,7 @@ public class ClinicalVisitController {
     }
 
     @PutMapping("/visits/{visitNo}/payment-mode")
-    @PreAuthorize("hasAuthority('view_visits')")
+    @PreAuthorize("hasAuthority('edit_visits')")
     public ResponseEntity<?> updatePaymentMode(@PathVariable("visitNo") String visitNo, @Valid @RequestBody PaymentDetailsData data) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
 

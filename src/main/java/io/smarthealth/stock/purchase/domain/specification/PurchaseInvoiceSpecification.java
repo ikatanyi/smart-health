@@ -41,7 +41,7 @@ public class PurchaseInvoiceSpecification {
             }
               if (range != null) {
                 predicates.add(
-                        cb.between(root.get("invoiceDate"), range.getStartDate(), range.getEndDate())
+                        cb.between(root.get("transactionDate"), range.getStartDate(), range.getEndDate())
                 );
             }
              

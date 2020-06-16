@@ -1,7 +1,9 @@
 package io.smarthealth.security.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.smarthealth.infrastructure.lang.Constants;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -40,9 +42,10 @@ public class UserData implements Serializable {
     @ApiModelProperty(hidden = true)
     private boolean credentials_expired;
     @ApiModelProperty(hidden = true)
-    private boolean verified;
-    @ApiModelProperty(hidden = true)
+    private boolean verified; 
+    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime lastLogin;
+    private boolean firstTimeLogin;
     private List<String> roles = new ArrayList<>();
 
 }
