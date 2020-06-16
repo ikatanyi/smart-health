@@ -220,7 +220,7 @@ public class AuthController {
 //        final String message = "Reset Password" + " \r\n" + url;
 //        mailSender.send(EmailData.of(user.getEmail(), "Reset Password", message));
         
-          mailSender.send(EmailData.of(user.getEmail(), "User Account", "<b>Dear</b> " + user.getName().concat(". Your password reset : " + password +" . Login and change the password.")));
+          mailSender.send(EmailData.of(user.getEmail(), "Account Password Reset", "<b>Dear</b> " + user.getName().concat(". Your password reset : " + password +" . Login and change the password.")));
 
           user.setPassword(passwordEncoder.encode(password));
           user.setFirstTimeLogin(true);
