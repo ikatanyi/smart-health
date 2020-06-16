@@ -125,12 +125,13 @@ public class AuthController {
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('view_users')")
     public ResponseEntity<?> getAllUsers(
+            @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<UserData> list = userService.findAllUsers(pageable)
+        Page<UserData> list = userService.searchAllUsers(search, pageable)
                 .map(u -> u.toData());
 //        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
 
@@ -206,29 +207,28 @@ public class AuthController {
 
     // Reset password 
     @ResponseBody
-    @PostMapping("/user/resetPassword") 
+    @PostMapping("/user/resetPassword")
     public ResponseEntity<?> resetPassword(@RequestParam("email") final String userEmail) {
         final User user = userService.findUserByEmail(userEmail)
                 .orElseThrow(() -> APIException.notFound("No user with email {0} Found", userEmail));
 
 //        final String token = UUID.randomUUID().toString();
-          String password = PassayPassword.generatePassayPassword();
+        String password = PassayPassword.generatePassayPassword();
         userService.createPasswordResetTokenForUser(user, password);
 
 //        final String url = getAppUrl(request) + "/api/auth/users/changePassword?id=" + user.getId() + "&token=" + token;
 //        final String message = "Reset Password" + " \r\n" + url;
 //        mailSender.send(EmailData.of(user.getEmail(), "Reset Password", message));
-        
-          mailSender.send(EmailData.of(user.getEmail(), "Account Password Reset", "<b>Dear</b> " + user.getName().concat(". Your password reset : " + password +" . Login and change the password.")));
+        mailSender.send(EmailData.of(user.getEmail(), "Account Password Reset", "<b>Dear</b> " + user.getName().concat(". Your password reset : " + password + " . Login and change the password.")));
 
-          user.setPassword(passwordEncoder.encode(password));
-          user.setFirstTimeLogin(true);
-          userRepository.save(user);
-          
+        user.setPassword(passwordEncoder.encode(password));
+        user.setFirstTimeLogin(true);
+        userRepository.save(user);
+
         return ResponseEntity.ok(new ApiResponse(true, "You should receive an Password Reset Email shortly"));
     }
 
-    @GetMapping(value = "/users/changePassword") 
+    @GetMapping(value = "/users/changePassword")
     public ResponseEntity<?> showChangePasswordPage(@RequestParam("id") final long id, @RequestParam("token") final String token) {
         final String result = userService.validatePasswordResetToken(id, token);
         if (result != null) {
@@ -259,17 +259,18 @@ public class AuthController {
             throw APIException.badRequest("Invalid Currrent Password");
         }
         user.setFirstTimeLogin(false);
-        
+
         userService.changeUserPassword(user, passwordDto.getNewPassword());
 
         return ResponseEntity.ok(new ApiResponse(true, "Password updated successfully"));
     }
 
-    @GetMapping("/users/loggedUsers") 
+    @GetMapping("/users/loggedUsers")
     public ResponseEntity<?> getLoggedUsers() {
- 
+
         return ResponseEntity.ok(activeUserStore.getUsers());
     }
+
     private String getAppUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
