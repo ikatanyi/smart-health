@@ -206,9 +206,8 @@ public class AuthController {
 
     // Reset password 
     @ResponseBody
-    @PostMapping("/user/resetPassword")
-//    @PreAuthorize("hasAuthority('create_users')")
-    public ResponseEntity<?> resetPassword(final HttpServletRequest request, @RequestParam("email") final String userEmail) {
+    @PostMapping("/user/resetPassword") 
+    public ResponseEntity<?> resetPassword(@RequestParam("email") final String userEmail) {
         final User user = userService.findUserByEmail(userEmail)
                 .orElseThrow(() -> APIException.notFound("No user with email {0} Found", userEmail));
 
@@ -229,8 +228,7 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse(true, "You should receive an Password Reset Email shortly"));
     }
 
-    @GetMapping(value = "/users/changePassword")
-//    @PreAuthorize("hasAuthority('view_users')")
+    @GetMapping(value = "/users/changePassword") 
     public ResponseEntity<?> showChangePasswordPage(@RequestParam("id") final long id, @RequestParam("token") final String token) {
         final String result = userService.validatePasswordResetToken(id, token);
         if (result != null) {
@@ -260,6 +258,8 @@ public class AuthController {
         if (!userService.checkIfValidOldPassword(user, passwordDto.getCurrentPassword())) {
             throw APIException.badRequest("Invalid Currrent Password");
         }
+        user.setFirstTimeLogin(false);
+        
         userService.changeUserPassword(user, passwordDto.getNewPassword());
 
         return ResponseEntity.ok(new ApiResponse(true, "Password updated successfully"));
