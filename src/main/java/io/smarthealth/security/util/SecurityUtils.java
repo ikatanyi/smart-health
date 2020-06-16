@@ -32,6 +32,7 @@ public final class SecurityUtils {
                 return null;
             });
     } 
+    
     /**
      * Check if a user is authenticated.
      *
@@ -72,6 +73,7 @@ public final class SecurityUtils {
                 return 1L;
             });
     } 
+      
   
     /**
      * Get the JWT of the current user.

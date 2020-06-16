@@ -678,7 +678,7 @@ public class BillingService {
         details.setBills(bills);
         return bills;
     }
-
+ //when changing billing I should only show those
     private Specification<PatientBillItem> withVisitNumber(String visitNo) {
         return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
@@ -701,6 +701,13 @@ public class BillingService {
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
+    }
+    
+    //changing 
+    public void updateBillsPaymentMode(String visitNumber, VisitEnum.PaymentMethod method){
+        //get the bills that 
+        //get the bills that have draft status
+        
     }
 
 }

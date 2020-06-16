@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.mail.MailService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.infrastructure.utility.PassayPassword;
+import io.smarthealth.security.data.ActiveUserStore;
 import io.smarthealth.security.data.ApiResponse;
 import io.smarthealth.security.data.PasswordData;
 import io.smarthealth.security.data.PermissionData;
@@ -31,6 +32,7 @@ import static java.util.stream.Collectors.groupingBy;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -65,10 +67,15 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final MailService mailSender;
+    @Autowired
+    ActiveUserStore activeUserStore;
 
     @PostMapping("/users")
     @PreAuthorize("hasAuthority('create_users')")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserData data) {
+        if (containsWhitespace(data.getUsername())) {
+            throw APIException.badRequest("Username should not have spaces!");
+        }
         if (userRepository.existsByUsername(data.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
@@ -79,7 +86,7 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
 //String email, String username, String password, String name
-//generate password 
+//generate password
         String password = PassayPassword.generatePassayPassword();
 
         // Creating user's account
@@ -118,12 +125,13 @@ public class AuthController {
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('view_users')")
     public ResponseEntity<?> getAllUsers(
+            @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<UserData> list = userService.findAllUsers(pageable)
+        Page<UserData> list = userService.searchAllUsers(search, pageable)
                 .map(u -> u.toData());
 //        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
 
@@ -200,23 +208,27 @@ public class AuthController {
     // Reset password 
     @ResponseBody
     @PostMapping("/user/resetPassword")
-    @PreAuthorize("hasAuthority('create_users')")
-    public ResponseEntity<?> resetPassword(final HttpServletRequest request, @RequestParam("email") final String userEmail) {
+    public ResponseEntity<?> resetPassword(@RequestParam("email") final String userEmail) {
         final User user = userService.findUserByEmail(userEmail)
                 .orElseThrow(() -> APIException.notFound("No user with email {0} Found", userEmail));
 
-        final String token = UUID.randomUUID().toString();
-        userService.createPasswordResetTokenForUser(user, token);
+//        final String token = UUID.randomUUID().toString();
+        String password = PassayPassword.generatePassayPassword();
+        userService.createPasswordResetTokenForUser(user, password);
 
-        final String url = getAppUrl(request) + "/api/auth/users/changePassword?id=" + user.getId() + "&token=" + token;
-        final String message = "Reset Password" + " \r\n" + url;
-        mailSender.send(EmailData.of(user.getEmail(), "Reset Password", message));
+//        final String url = getAppUrl(request) + "/api/auth/users/changePassword?id=" + user.getId() + "&token=" + token;
+//        final String message = "Reset Password" + " \r\n" + url;
+//        mailSender.send(EmailData.of(user.getEmail(), "Reset Password", message));
+        mailSender.send(EmailData.of(user.getEmail(), "Account Password Reset", "<b>Dear</b> " + user.getName().concat(". Your password reset : " + password + " . Login and change the password.")));
+
+        user.setPassword(passwordEncoder.encode(password));
+        user.setFirstTimeLogin(true);
+        userRepository.save(user);
 
         return ResponseEntity.ok(new ApiResponse(true, "You should receive an Password Reset Email shortly"));
     }
 
     @GetMapping(value = "/users/changePassword")
-    @PreAuthorize("hasAuthority('view_users')")
     public ResponseEntity<?> showChangePasswordPage(@RequestParam("id") final long id, @RequestParam("token") final String token) {
         final String result = userService.validatePasswordResetToken(id, token);
         if (result != null) {
@@ -246,13 +258,24 @@ public class AuthController {
         if (!userService.checkIfValidOldPassword(user, passwordDto.getCurrentPassword())) {
             throw APIException.badRequest("Invalid Currrent Password");
         }
+        user.setFirstTimeLogin(false);
+
         userService.changeUserPassword(user, passwordDto.getNewPassword());
 
         return ResponseEntity.ok(new ApiResponse(true, "Password updated successfully"));
     }
 
+    @GetMapping("/users/loggedUsers")
+    public ResponseEntity<?> getLoggedUsers() {
+
+        return ResponseEntity.ok(activeUserStore.getUsers());
+    }
+
     private String getAppUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
-     
+
+    boolean containsWhitespace(String str) {
+        return str.matches(".*\\s.*");
+    }
 }

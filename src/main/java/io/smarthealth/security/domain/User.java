@@ -20,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @author Kelsas
  */
 @Entity
-@Table(name = "auth_user")
+@Table(name = "auth_user") 
 public class User extends Identifiable implements UserDetails {
 
     private String email;
@@ -42,6 +42,7 @@ public class User extends Identifiable implements UserDetails {
     private boolean verified;
 
     private LocalDateTime lastLogin;
+    private boolean firstTimeLogin;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "auth_role_user",
@@ -53,6 +54,7 @@ public class User extends Identifiable implements UserDetails {
 
     public User() {
         this.enabled = true;
+        this.firstTimeLogin=true;
     }
 
     public User(String email, String username, String password, String name, Set<Role> roles) {
@@ -62,6 +64,7 @@ public class User extends Identifiable implements UserDetails {
         this.name = name;
         this.roles = roles;
         this.enabled = true;
+         this.firstTimeLogin=true;
     }
 
     public User(String email, String username, String name) {
@@ -69,6 +72,7 @@ public class User extends Identifiable implements UserDetails {
         this.username = username;
         this.name = name;
         this.enabled = true;
+        this.firstTimeLogin=true;
     }
 
     public User(String email, String username, String password, String name) {
@@ -78,6 +82,7 @@ public class User extends Identifiable implements UserDetails {
         this.name = name;
         
         this.enabled = true;
+        this.firstTimeLogin=true;
     }
 
     @Override
@@ -168,6 +173,14 @@ public class User extends Identifiable implements UserDetails {
         this.lastLogin = lastLogin;
     }
 
+    public boolean isFirstTimeLogin() {
+        return firstTimeLogin;
+    }
+
+    public void setFirstTimeLogin(boolean firstTimeLogin) {
+        this.firstTimeLogin = firstTimeLogin;
+    }
+
     public Set<Role> getRoles() {
         return roles;
     }
@@ -186,6 +199,7 @@ public class User extends Identifiable implements UserDetails {
         data.setEnabled(this.enabled);
         data.setLastLogin(this.lastLogin);
         data.setName(this.name);
+        data.setFirstTimeLogin(this.firstTimeLogin);
 //        data.setPassword(this.password);
         List<String> rolelist = new ArrayList<>();
         this.roles

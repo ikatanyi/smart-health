@@ -6,12 +6,14 @@ import io.smarthealth.security.domain.Role;
 import io.smarthealth.security.domain.RoleRepository;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.domain.UserRepository;
+import io.smarthealth.security.domain.specification.UserSpecification;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,7 +32,6 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordTokenRepository passwordTokenRepository;
-   
 
     public UserService(UserRepository repository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, PasswordTokenRepository passwordTokenRepository) {
         this.userRepository = repository;
@@ -50,10 +51,7 @@ public class UserService {
     public Optional<User> getUser(Long id) {
         return userRepository.findById(id);
     }
-   
 
-    
-    
     public User saveUser(User user) {
         //{bcrypt}
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -101,9 +99,15 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(auth);
         return null;
     }
-   public Page<Role> getAuthorities(Pageable pgbl){
-       return roleRepository.findAll(pgbl);
-   }
+
+    public Page<Role> getAuthorities(Pageable pgbl) {
+        return roleRepository.findAll(pgbl);
+    }
+
+    public Page<User> searchAllUsers(String search, Pageable page) {
+        Specification<User> spec = UserSpecification.createSpecification(search);
+        return userRepository.findAll(spec, page);
+    }
     //sign up { email | password | name | username | captchaResponse }
     //Resend Verification mail
     //verify user
