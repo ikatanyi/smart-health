@@ -2,6 +2,9 @@ package io.smarthealth.security.domain;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -22,4 +25,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByUsername(String username);
 
     Boolean existsByEmail(String email);
+    
+    @Modifying
+    @Query("UPDATE User u SET u.lastLogin=CURRENT_TIMESTAMP where u.username=:username OR u.email =:username")
+    int updateLastLogin(@Param("username") String username);
+    
 }

@@ -9,5 +9,6 @@ public class PasswordData {
     private String currentPassword;
     @ValidPassword
     private String newPassword;
+    private String confirmPassword;
 
 }

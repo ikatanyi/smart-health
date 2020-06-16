@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.mail.MailService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.infrastructure.utility.PassayPassword;
+import io.smarthealth.security.data.ActiveUserStore;
 import io.smarthealth.security.data.ApiResponse;
 import io.smarthealth.security.data.PasswordData;
 import io.smarthealth.security.data.PermissionData;
@@ -31,6 +32,7 @@ import static java.util.stream.Collectors.groupingBy;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -65,6 +67,8 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final MailService mailSender;
+    @Autowired
+    ActiveUserStore activeUserStore;
 
     @PostMapping("/users")
     @PreAuthorize("hasAuthority('create_users')")
@@ -219,6 +223,7 @@ public class AuthController {
           mailSender.send(EmailData.of(user.getEmail(), "User Account", "<b>Dear</b> " + user.getName().concat(". Your password reset : " + password +" . Login and change the password.")));
 
           user.setPassword(passwordEncoder.encode(password));
+          user.setFirstTimeLogin(true);
           userRepository.save(user);
           
         return ResponseEntity.ok(new ApiResponse(true, "You should receive an Password Reset Email shortly"));
@@ -260,6 +265,11 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse(true, "Password updated successfully"));
     }
 
+    @GetMapping("/users/loggedUsers") 
+    public ResponseEntity<?> getLoggedUsers() {
+ 
+        return ResponseEntity.ok(activeUserStore.getUsers());
+    }
     private String getAppUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
