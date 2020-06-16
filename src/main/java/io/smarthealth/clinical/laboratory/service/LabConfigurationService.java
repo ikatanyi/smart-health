@@ -135,11 +135,7 @@ public class LabConfigurationService {
     }
 
     private LabTest toLabTest(LabTestData data) {
-        Item item = null;
-        if(data.getItemCode()!=null)
-            item = findByItemCodeOrThrow(data.getItemCode());
-        else
-            item = itemService.findByItemName(data.getItemName()).orElseThrow(() -> APIException.notFound("Item with ItemName {0} not found.", data.getItemName()));
+        Item item = findByItemCodeOrThrow(data.getItemCode());
         if (repository.findByService(item).isPresent()) {
             throw APIException.badRequest("Lab Test with service {0} already exists", item.getItemName());
         }
