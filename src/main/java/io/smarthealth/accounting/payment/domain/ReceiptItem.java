@@ -66,6 +66,10 @@ public class ReceiptItem extends Identifiable {
     public ReceiptItemData toData(){
         ReceiptItemData data = new ReceiptItemData();
         data.setReceiptNumber(this.getReceipt().getReferenceNumber());
+        if(this.getReceipt()!=null){
+            data.setPatientName(this.getReceipt().getPayer());
+            data.setReferenceNumber(this.getReceipt().getReferenceNumber());
+        }
         if(item!=null){
             data.setItemName(this.getItem().getItem().getItemName());
             data.setItemCode(this.getItem().getItem().getItemCode());
@@ -73,6 +77,7 @@ public class ReceiptItem extends Identifiable {
             data.setPrice(toBigDecimal(this.getItem().getPrice()));
             data.setQuantity(this.getItem().getQuantity());
             data.setTaxes(toBigDecimal(this.getItem().getTaxes()));
+            data.setTransactionDate(this.getItem().getBillingDate());
             if(this.getItem().getServicePoint()!=null)
                 data.setServicePoint(this.getItem().getServicePoint());
             else

@@ -5,8 +5,12 @@
  */
 package io.smarthealth.infrastructure.utility;
 
+import io.smarthealth.infrastructure.lang.Constants;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Date;
 
 /**
@@ -20,4 +24,10 @@ public class DateFormatUtil {
 	//System.out.println(dateFormat.format(date));
         return dateFormat.format(date);
     }
+    
+    public static String getFormattedRequestDateTime(LocalDateTime date){
+        
+        return date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.valueOf(Constants.DATE_TIME_PATTERN)));
+    }
+
 }

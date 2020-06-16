@@ -41,14 +41,14 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{testCode}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{labNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="360" y="1" width="91" height="16" uuid="67303c2a-87ee-41db-9b69-acb699ac149e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Lab Transaction.No.]]></text>
+				<text><![CDATA[Lab No.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" x="1" y="0" width="66" height="17" isRemoveLineWhenBlank="true" forecolor="#000000" uuid="1a8461b2-fa61-41cb-b26e-fee39503e7bc"/>

@@ -13,7 +13,7 @@ public class ReceiptSpecification {
         super();
     }
 
-    public static Specification<Receipt> createSpecification(String payee, String receiptNo, String transactionNo, String shiftNo, Long cashierId, DateRange range) {
+    public static Specification<Receipt> createSpecification(String payee, String receiptNo, String transactionNo, String shiftNo, Long servicePoint,  Long cashierId, DateRange range) {
 
         return (root, query, cb) -> {
 
@@ -34,6 +34,9 @@ public class ReceiptSpecification {
             }
             if (cashierId != null) {
                 predicates.add(cb.equal(root.get("shift").get("cashier").get("id"), cashierId));
+            }
+            if (servicePoint != null) {
+                predicates.add(cb.equal(root.get("receiptItems").get("item").get("servicePointId"), servicePoint));
             }
             if (range != null) {
                 predicates.add(

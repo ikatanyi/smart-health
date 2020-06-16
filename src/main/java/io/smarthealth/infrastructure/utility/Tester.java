@@ -22,5 +22,8 @@ public class Tester {
         
         System.err.println(DateUtility.toLocalDateTime(new Date()));
         System.err.println(DateUtility.toDateTime(LocalDateTime.now()));
+        
+        
+        System.err.println(DateFormatUtil.getFormattedRequestDateTime(LocalDateTime.now()));
     }
 }

@@ -265,6 +265,10 @@ public class ItemService {
     public Optional<Item> findByItemCode(final String itemCode) {
         return itemRepository.findByItemCode(itemCode);
     }
+    
+    public Optional<Item> findByItemName(final String itemName) {
+        return itemRepository.findByItemName(itemName);
+    }
 
     public Item findByItemCodeOrThrow(final String itemCode) {
         return findByItemCode(itemCode)

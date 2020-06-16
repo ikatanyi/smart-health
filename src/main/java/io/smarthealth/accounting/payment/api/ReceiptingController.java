@@ -76,6 +76,7 @@ public class ReceiptingController {
             @RequestParam(value = "transaction_no", required = false) final String transactionNo,
             @RequestParam(value = "shift_no", required = false) final String shiftNo,
             @RequestParam(value = "cashier_id", required = false) final Long cashier,
+            @RequestParam(value = "service_point_id", required = false) final Long servicePointId,
             @RequestParam(value = "date_range", required = false) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
@@ -83,7 +84,7 @@ public class ReceiptingController {
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<ReceiptData> list = service.getPayments(payer, receiptNo, transactionNo, shiftNo, cashier, range, pageable)
+        Page<ReceiptData> list = service.getPayments(payer, receiptNo, transactionNo, shiftNo, cashier, servicePointId, range, pageable)
                 .map(x -> x.toData());
 
         Pager<List<ReceiptData>> pagers = new Pager();

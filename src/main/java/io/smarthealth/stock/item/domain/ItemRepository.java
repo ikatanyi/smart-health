@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface ItemRepository extends JpaRepository<Item, Long>, JpaSpecificationExecutor<Item> {
 
     Optional<Item> findByItemCode(final String itemCode);
+    Optional<Item> findByItemName(final String itemName);
 
     Page<Item> findByCategory(final ItemCategory itemCode, final Pageable pageable);
 

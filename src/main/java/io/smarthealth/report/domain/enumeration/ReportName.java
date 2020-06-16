@@ -13,6 +13,7 @@ public enum ReportName {
         Trial_Balance,
         Daily_Income_Statement,
         Departmental_Payment_Report,
+        Departmental_Income_Statement,
         Insurance_Statement,
         Invoice_Statement,
         Invoice,

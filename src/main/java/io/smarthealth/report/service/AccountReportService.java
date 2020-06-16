@@ -563,13 +563,14 @@ public class AccountReportService {
         String receiptNo = reportParam.getFirst("receiptNo");
         String payee = reportParam.getFirst("payee");
         String transactionNo = reportParam.getFirst("transactionNo");
+        Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
         String shiftNo = reportParam.getFirst("shiftNo");
         Long cashierId = NumberUtils.createLong(reportParam.getFirst("cashierId"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
         List<ReportReceiptData>receiptDataArray = new ArrayList();
-        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, cashierId, range, Pageable.unpaged())
+        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
@@ -651,6 +652,52 @@ public class AccountReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/departmental_mode_report");
         reportData.setReportName("Departmental-Payment-Stetment");
+        reportService.generateReport(reportData, response);
+    }
+    
+    
+    public void getDepartmentalPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String receiptNo = reportParam.getFirst("receiptNo");
+        String payee = reportParam.getFirst("payee");
+        String transactionNo = reportParam.getFirst("transactionNo");
+        Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
+        String shiftNo = reportParam.getFirst("shiftNo");
+        Long cashierId = NumberUtils.createLong(reportParam.getFirst("cashierId"));
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
+        ReportReceiptData data = null;//new ReportReceiptData();
+        //"RCT-00009"
+        List<ReceiptItemData>receiptDataArray = new ArrayList();
+        receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, Pageable.unpaged())
+                .stream()
+                .map((receipt) -> receipt.toData())
+                .collect(Collectors.toList())
+                .forEach(x -> {
+                     receiptDataArray.addAll(x.getReceiptItems());
+                }); 
+        
+//        receiptData.forEach((receipt) -> {
+//            receiptDataArray.addAll(receipt.getReceiptItems());
+//        });
+        
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("servicePoint");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        
+        sortField = new JRDesignSortField();
+        sortField.setName("transactionDate");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", reportParam.getFirst("range"));
+        reportData.setData(receiptDataArray);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/Department_payment_statement");
+        reportData.setReportName("Department-Income-Stetment");
         reportService.generateReport(reportData, response);
     }
     

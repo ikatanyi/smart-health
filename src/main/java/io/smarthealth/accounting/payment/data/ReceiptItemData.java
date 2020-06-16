@@ -2,6 +2,7 @@ package io.smarthealth.accounting.payment.data;
 
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,5 +29,10 @@ public class ReceiptItemData {
     private String servicePoint;
     @ApiModelProperty(required=false, hidden=true)
     private String servicePointId;
-    
+    @ApiModelProperty(required=false, hidden=true)
+    private String patientName;
+    @ApiModelProperty(required=false, hidden=true)
+    private String referenceNumber;
+    @ApiModelProperty(required=false, hidden=true)
+    private LocalDate transactionDate;
 }

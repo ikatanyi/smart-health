@@ -198,6 +198,9 @@ public class ReportController {
             case Departmental_Payment_Report:
                 reportService.getPatientPayments(queryParams, format, response);
                 break;
+            case Departmental_Income_Statement:
+                reportService.getDepartmentalPayments(queryParams, format, response);
+                break;
             default:
                 break;
 

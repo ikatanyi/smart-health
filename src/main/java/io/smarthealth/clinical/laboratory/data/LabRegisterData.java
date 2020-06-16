@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotNull;
@@ -46,5 +48,10 @@ public class LabRegisterData {
     
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<LabRegisterTestData> tests = new ArrayList<>();
+    
+    public String getFormattedRequestDateTime(){
+        
+        return this.requestDatetime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.valueOf(Constants.DATE_TIME_PATTERN)));
+    }
 
 }

@@ -6,7 +6,9 @@
 package io.smarthealth.infrastructure.imports.service;
 
 import io.smarthealth.clinical.laboratory.data.AnalyteData;
+import io.smarthealth.clinical.laboratory.data.LabTestData;
 import io.smarthealth.clinical.laboratory.service.AnnalyteService;
+import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
@@ -40,6 +42,7 @@ public class BatchImportService {
     private final PatientService patientService;
     private final AnnalyteService annalyteService;
     private final PayerService payerService;
+    private final LabConfigurationService labConfigService;
 
     public void importData(final TemplateType type, final MultipartFile file) {
 
@@ -82,6 +85,10 @@ public class BatchImportService {
                     }
 
                     annalyteService.createAnalyte(data);
+                    break;
+                case LabTests:
+                    List<LabTestData>labTestData = toPojoUtil.toPojo(LabTestData.class, inputFilestream);
+                    labConfigService.createTest(labTestData);
                     break;
                 default:
                     throw APIException.notFound("Coming Soon!!!", "");

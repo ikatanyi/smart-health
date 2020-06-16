@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import io.smarthealth.clinical.laboratory.domain.LabDisciplineRepository;
+import io.smarthealth.stock.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,7 @@ public class LabConfigurationService {
     private final LabDisciplineRepository displineRepository;
     private final ItemRepository itemRepository;
     private final LabTestRepository repository;
+    private final ItemService  itemService;
 
     public LabTest createTest(LabTestData data) {
         LabTest toSave = toLabTest(data);
@@ -133,8 +135,11 @@ public class LabConfigurationService {
     }
 
     private LabTest toLabTest(LabTestData data) {
-
-        Item item = findByItemCodeOrThrow(data.getItemCode());
+        Item item = null;
+        if(data.getItemCode()!=null)
+            item = findByItemCodeOrThrow(data.getItemCode());
+        else
+            item = itemService.findByItemName(data.getItemName()).orElseThrow(() -> APIException.notFound("Item with ItemName {0} not found.", data.getItemName()));
         if (repository.findByService(item).isPresent()) {
             throw APIException.badRequest("Lab Test with service {0} already exists", item.getItemName());
         }
