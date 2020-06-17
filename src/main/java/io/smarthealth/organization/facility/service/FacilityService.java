@@ -48,13 +48,13 @@ public class FacilityService {
                 facility.setParentFacility(pf.get());
             }
         }
-           
+
         facility.setFacilityType(facilityData.getFacilityType());
         facility.setTaxNumber(facilityData.getTaxNumber());
         facility.setFacilityClass(facilityData.getFacilityClass());
         facility.setFacilityName(facilityData.getFacilityName());
         facility.setEnabled(facilityData.isEnabled());
-        
+
         facility.setOrganization(org);
         facility.setRegistrationNumber(facilityData.getRegistrationNumber());
         return facilityRepository.save(facility);
@@ -108,8 +108,8 @@ public class FacilityService {
         return getFacility(Long.valueOf("1"))
                 .orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", Long.valueOf("1")));
     }
-    
-     public CompanyLogo storeLogo(Long facilityId, MultipartFile file) {
+
+    public CompanyLogo storeLogo(Long facilityId, MultipartFile file) {
         // Normalize file name
         Facility facility = findFacility(facilityId);
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -119,23 +119,14 @@ public class FacilityService {
             if (fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
-            facility.getCompanyLogo().setFileName(fileName);
-            facility.getCompanyLogo().setData(file.getBytes());
-            facility.getCompanyLogo().setFileType(file.getContentType());
-            facility.getCompanyLogo().setFacility(facility);
-//            CompanyLogo logo = new CompanyLogo(fileName, ,);
-            
-//            logo = facility.getCompanyLogo();
-//            
-//            if(logo!=null){
-//                logo.setData(file.getBytes());
-//                logo.setFileName(fileName);
-//                logo.setFileType(file.getContentType());
-//            }
-//            else
-//                logo = new CompanyLogo(fileName, file.getContentType(), file.getBytes());
-//            logo.setFacility(facility);
-//            facility.addLogo(logo);
+            if (facility.getCompanyLogo() == null) {
+                facility.addLogo(new CompanyLogo(fileName, file.getContentType(), file.getBytes()));
+            } else {
+                facility.getCompanyLogo().setFileName(fileName);
+                facility.getCompanyLogo().setData(file.getBytes());
+                facility.getCompanyLogo().setFileType(file.getContentType());
+                facility.getCompanyLogo().setFacility(facility);
+            }
             return facilityRepository.save(facility).getCompanyLogo();
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
