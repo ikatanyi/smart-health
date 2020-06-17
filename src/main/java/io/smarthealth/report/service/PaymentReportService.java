@@ -175,7 +175,7 @@ public class PaymentReportService {
         ReportData reportData = new ReportData();
         String creditNoteNo = reportParam.getFirst("creditNoteNo");
 
-        CreditNoteData creditNoteData = creditNoteService.getCreditNoteByNumberWithFailDetection("CR00001").toData();
+        CreditNoteData creditNoteData = creditNoteService.getCreditNoteByNumberWithFailDetection(creditNoteNo).toData();
 
         reportData.getFilters().put("category", "Payer");
         PayerData payerData = PayerData.map(payerService.findPayerByIdWithNotFoundDetection(creditNoteData.getPayerId()));
