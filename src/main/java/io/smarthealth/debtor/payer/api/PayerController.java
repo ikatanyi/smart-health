@@ -79,17 +79,19 @@ public class PayerController {
             payer.setPriceBook(priceBook);
         }
 
-        List<Contact> contact = new ArrayList<>();
-        Contact c = new Contact();
-        c.setEmail(payerData.getEmail());
-        c.setFullName(payerData.getFirstName().concat(" ").concat(payerData.getLastName()));
-        c.setMobile(payerData.getMobile());
-        c.setSalutation(payerData.getSalutation());
-        c.setTelephone(payerData.getTelephone());
-
-        contact.add(c);
-
-        payer.setContacts(contact);
+//        List<Contact> contact = new ArrayList<>();
+//        Contact c = new Contact();
+//        c.setEmail(payerData.getEmail());
+//        if (payerData.getFirstName() != null && payerData.getLastName() != null) {
+//            c.setFullName(payerData.getFirstName().concat(" ").concat(payerData.getLastName()));
+//        }
+//        c.setMobile(payerData.getMobile());
+//        c.setSalutation(payerData.getSalutation());
+//        c.setTelephone(payerData.getTelephone());
+//
+//        contact.add(c);
+//
+//        payer.setContacts(contact);
 
         Payer result = payerService.createPayer(payer);
 

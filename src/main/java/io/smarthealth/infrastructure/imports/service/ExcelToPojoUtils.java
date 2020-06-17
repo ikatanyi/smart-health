@@ -62,7 +62,7 @@ public class ExcelToPojoUtils {
                 Field[] fields = getAllFields(clazz);
                 System.out.println("row.getPhysicalNumberOfCells() " + row.getPhysicalNumberOfCells());
                 if (headerRow.getPhysicalNumberOfCells() > row.getPhysicalNumberOfCells()) {
-                    throw APIException.badRequest("Found {0} colums at row " + j + 1, row.getPhysicalNumberOfCells());
+                    throw APIException.badRequest("Found {0} colums at row " + j , row.getPhysicalNumberOfCells());
                 }
 
                 for (int k = 0; k < row.getPhysicalNumberOfCells(); k++) {

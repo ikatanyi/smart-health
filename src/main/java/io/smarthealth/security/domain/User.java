@@ -20,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @author Kelsas
  */
 @Entity
-@Table(name = "auth_user")
+@Table(name = "auth_user") 
 public class User extends Identifiable implements UserDetails {
 
     private String email;

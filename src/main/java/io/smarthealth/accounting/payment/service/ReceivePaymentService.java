@@ -212,8 +212,8 @@ public class ReceivePaymentService {
         repository.voidPayment(SecurityUtils.getCurrentUserLogin().orElse("system"), payment.getId());
     }
 
-    public Page<Receipt> getPayments(String payee, String receiptNo, String transactionNo, String shiftNo, Long cashierId, DateRange range, Pageable page) {
-        Specification<Receipt> spec = ReceiptSpecification.createSpecification(payee, receiptNo, transactionNo, shiftNo, cashierId, range);
+    public Page<Receipt> getPayments(String payee, String receiptNo, String transactionNo, String shiftNo, Long cashierId, Long servicePointId, DateRange range, Pageable page) {
+        Specification<Receipt> spec = ReceiptSpecification.createSpecification(payee, receiptNo, transactionNo, shiftNo,servicePointId, cashierId, range);
         return repository.findAll(spec, page);
     }
 

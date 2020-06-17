@@ -35,7 +35,18 @@ public class AnnalyteService {
         for (AnalyteData a : data) {
             Analyte analyte = new Analyte();
             //validate lab test
-            LabTest labTest = repository.findByCode(a.getTestCode()).orElseThrow(() -> APIException.notFound("Test identified by code {0} not found ", a.getTestCode()));
+            LabTest labTest = null;
+
+            if (a.getTestCode() != null) {
+                repository.findByCode(a.getTestCode()).orElseThrow(() -> APIException.notFound("Test identified by code {0} not found ", a.getTestCode()));
+            } else {
+               // try {
+                    repository.findByTestName(a.getTestName()).orElseThrow(() -> APIException.notFound("Test identified by name {0} not found ", a.getTestName()));
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    throw APIException.notFound("Test name {0} not available ", a.getTestName());
+//                }
+            }
 
             analyte.setAnalyte(a.getAnalyte());
             analyte.setUnits(a.getUnits());

@@ -457,6 +457,9 @@ public class ClinicalVisitController {
 
         }
         visitService.save(visit);
+        
+        //update those bills that have not been paid
+        
 
         PaymentDetailsData ppd = paymentDetails != null ? PaymentDetailsData.map(paymentDetails) : null;
 

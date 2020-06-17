@@ -5,6 +5,7 @@
  */
 package io.smarthealth.infrastructure.imports.service;
 
+import io.smarthealth.clinical.laboratory.data.LabTestData;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
@@ -62,13 +63,17 @@ public class BatchTemplateService {
                 fileName = "Insurances";
                 componentClass = BatchPayerData.class;
                 break;
-            case Schemes:
-                fileName = "Schemes";
-                componentClass = SchemeData.class;
-                break;
+//            case Schemes:
+//                fileName = "Schemes";
+//                componentClass = SchemeData.class;
+//                break;
             case LabAnnalytes:
                 fileName = "Lab Annalytes";
                 componentClass = LabAnnalytesData.class;
+                break;
+            case LabTests:
+                fileName = "Lab Tests";
+                componentClass = LabTestData.class;
                 break;
             default:
                 break;

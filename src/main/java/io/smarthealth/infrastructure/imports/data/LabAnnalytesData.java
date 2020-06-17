@@ -15,6 +15,7 @@ import lombok.Data;
 public class LabAnnalytesData {
 
     private String labTestCode;
+    private String labTestName;
     private String annalyte;
     private Double lowerLimit;
     private Double upperLimit;

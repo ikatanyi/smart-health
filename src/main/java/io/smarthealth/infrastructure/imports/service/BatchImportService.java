@@ -7,7 +7,9 @@ package io.smarthealth.infrastructure.imports.service;
 
 import io.smarthealth.accounting.pricelist.service.PricebookService;
 import io.smarthealth.clinical.laboratory.data.AnalyteData;
+import io.smarthealth.clinical.laboratory.data.LabTestData;
 import io.smarthealth.clinical.laboratory.service.AnnalyteService;
+import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
@@ -36,27 +38,28 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class BatchImportService {
-
+    
     private final AllocationService allocationService;
     private final ItemService itemService;
     private final PatientService patientService;
     private final AnnalyteService annalyteService;
     private final PayerService payerService;
     private final PricebookService pricebookService;
-
+    private final LabConfigurationService labConfigService;
+    
     public void importData(final TemplateType type, final MultipartFile file) {
-
+        
         try {
             byte[] bytes = file.getBytes();
             InputStream inputFilestream = new ByteArrayInputStream(bytes);
             ExcelToPojoUtils toPojoUtil = new ExcelToPojoUtils();
-
+            
             switch (type) {
                 case Patients:
                     List<PatientData> list = toPojoUtil.toPojo(PatientData.class, inputFilestream);
                     importPatients(list);
                     break;
-
+                
                 case Allocation:
                     List<BatchAllocationData> allocationList = toPojoUtil.toPojo(BatchAllocationData.class, inputFilestream);
                     allocationService.importAllocation(allocationList);
@@ -85,10 +88,18 @@ public class BatchImportService {
                         d.setReferenceValue(la.getReferenceValue());
                         d.setUnits(la.getUnits());
                         d.setTestCode(la.getLabTestCode());
+                        d.setTestName(la.getLabTestName());
                         data.add(d);
                     }
-
+                    
                     annalyteService.createAnalyte(data);
+                    break;
+                case LabTests:
+                    List<LabTestData> labTestData = toPojoUtil.toPojo(LabTestData.class, inputFilestream);
+                    for (LabTestData d : labTestData) {
+                        System.out.println("DDDDDDD " + d.toString());
+                    }
+                    labConfigService.createTest(labTestData);
                     break;
                 default:
                     throw APIException.notFound("Coming Soon!!!", "");
@@ -98,9 +109,7 @@ public class BatchImportService {
             throw APIException.badRequest("Error! {0} ", e.getMessage());
         }
     }
-
     
-
     private void importPatients(final List<PatientData> list) {
         List<Patient> patients = new ArrayList<>();
         for (PatientData d : list) {

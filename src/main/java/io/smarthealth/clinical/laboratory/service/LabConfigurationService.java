@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import io.smarthealth.clinical.laboratory.domain.LabDisciplineRepository;
+import io.smarthealth.stock.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,7 @@ public class LabConfigurationService {
     private final LabDisciplineRepository displineRepository;
     private final ItemRepository itemRepository;
     private final LabTestRepository repository;
+    private final ItemService itemService;
 
     public LabTest createTest(LabTestData data) {
         LabTest toSave = toLabTest(data);
@@ -97,7 +99,7 @@ public class LabConfigurationService {
                         .map(x -> updateAnalyte(x))
                         .collect(Collectors.toList())
         );
-         data.getPanelTests()
+        data.getPanelTests()
                 .stream()
                 .forEach(x -> {
                     toUpdateTest.getPanelTests().add(getTestById(x.getTestId()));
@@ -133,13 +135,21 @@ public class LabConfigurationService {
     }
 
     private LabTest toLabTest(LabTestData data) {
-
         Item item = findByItemCodeOrThrow(data.getItemCode());
         if (repository.findByService(item).isPresent()) {
             throw APIException.badRequest("Lab Test with service {0} already exists", item.getItemName());
         }
+        LabDiscipline displine = null;
+        if (data.getCategoryId() != null) {
+            displine = displineRepository.findById(data.getCategoryId()).orElse(null);
+        } else {
+            try {
+                displine = displineRepository.findByDisplineName(data.getDiscplineName()).orElseThrow(() -> APIException.notFound("Discpline name identified by {0} not found ", data.getDiscplineName()));
+            } catch (Exception e) {
+                System.out.println("Displine not found ");
+            }
+        }
 
-        LabDiscipline displine = displineRepository.findById(data.getCategoryId()).orElse(null);
         LabTest labTest = new LabTest();
         labTest.setActive(Boolean.TRUE);
         labTest.setRequiresConsent(data.getRequiresConsent());

@@ -15,12 +15,12 @@ public enum TemplateType {
     //DoctorNotes,
     Patients,
     Payers,
-    Schemes,
     ServiceMasterList,
     //PriceList,
     Suppliers,
     Products,
     LabAnnalytes,
+    LabTests,
     //RadiologyTests,
     //ProcedureTests,
     //Specimens
