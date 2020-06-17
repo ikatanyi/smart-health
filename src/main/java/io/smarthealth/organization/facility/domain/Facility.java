@@ -16,8 +16,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import lombok.Data;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 /**
  *
@@ -25,23 +23,21 @@ import org.hibernate.annotations.OnDeleteAction;
  */
 @Entity
 @Data
-@Table(name = "facility",uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"facilityName"}, name="unique_facility_name")})
+@Table(name = "facility", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"facilityName"}, name = "unique_facility_name")})
 public class Facility extends Auditable {
 
-    
-    
-    @OneToOne(cascade=CascadeType.ALL)    
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_facility_company_logo_id"))
-    private CompanyLogo companyLogo;
+    @OneToOne(cascade = CascadeType.ALL)
+    private CompanyLogo companyLogo=new CompanyLogo();
 
     public enum Type {
         Hospital, Clinic, Speciality
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_facility_org_id"))
-    private Organisation organization; 
+    private Organisation organization;
     private String registrationNumber;
     private String facilityType;
     private String taxNumber;
@@ -50,7 +46,7 @@ public class Facility extends Auditable {
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_facility_facility_parent_id"))
     private Facility parentFacility;
-   
+
     private boolean enabled;
 
     @OneToMany(mappedBy = "facility")
@@ -62,5 +58,10 @@ public class Facility extends Auditable {
     public void addBank(FacilityBank bank) {
         bank.setFacility(this);
         facilityBanks.add(bank);
+    }
+
+    public void addLogo(CompanyLogo logo) {
+        logo.setFacility(this);
+       this.companyLogo=logo;
     }
 }

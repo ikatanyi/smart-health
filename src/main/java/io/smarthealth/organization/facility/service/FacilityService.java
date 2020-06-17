@@ -112,7 +112,6 @@ public class FacilityService {
      public CompanyLogo storeLogo(Long facilityId, MultipartFile file) {
         // Normalize file name
         Facility facility = findFacility(facilityId);
-         CompanyLogo logo=null;
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         try {
@@ -120,18 +119,23 @@ public class FacilityService {
             if (fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
+            facility.getCompanyLogo().setFileName(fileName);
+            facility.getCompanyLogo().setData(file.getBytes());
+            facility.getCompanyLogo().setFileType(file.getContentType());
+            facility.getCompanyLogo().setFacility(facility);
+//            CompanyLogo logo = new CompanyLogo(fileName, ,);
             
-            CompanyLogo savedLogo = facility.getCompanyLogo();
-            
-            if(savedLogo!=null){
-                savedLogo.setData(file.getBytes());
-                savedLogo.setFileName(fileName);
-                savedLogo.setFileType(file.getContentType());
-            }
-            else
-                logo = new CompanyLogo(fileName, file.getContentType(), file.getBytes());
+//            logo = facility.getCompanyLogo();
+//            
+//            if(logo!=null){
+//                logo.setData(file.getBytes());
+//                logo.setFileName(fileName);
+//                logo.setFileType(file.getContentType());
+//            }
+//            else
+//                logo = new CompanyLogo(fileName, file.getContentType(), file.getBytes());
 //            logo.setFacility(facility);
-            facility.setCompanyLogo(logo);
+//            facility.addLogo(logo);
             return facilityRepository.save(facility).getCompanyLogo();
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);

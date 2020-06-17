@@ -8,14 +8,18 @@ package io.smarthealth.organization.facility.data;
 import io.smarthealth.organization.facility.domain.Facility;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.persistence.Lob;
 import lombok.Data;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -36,7 +40,6 @@ public class FacilityData {
     private Long parentFacilityId;
     private String parentFacility;
     private MultipartFile file;
-    @Lob
     private String logo;
     private boolean enabled;
     
@@ -56,6 +59,7 @@ public class FacilityData {
         facilityData.setFacilityName(facility.getFacilityName());
         facilityData.setEnabled(facility.isEnabled());
         if(facility.getCompanyLogo()!=null){
+//            new ByteArrayResource(dbFile.getData())
             facilityData.setLogo(encodeImage(facility.getCompanyLogo().getData()));
         }
         
@@ -73,7 +77,7 @@ public class FacilityData {
      * @return String a {@link java.lang.String}
      */
     public static String encodeImage(byte[] imageByteArray) {
-        return Base64.encodeBase64URLSafeString(imageByteArray);
+        return Base64.encodeBase64String(imageByteArray);
     }
 
     /**
@@ -85,5 +89,16 @@ public class FacilityData {
     public static byte[] decodeImage(String imageDataString) {
         return Base64.decodeBase64(imageDataString);
     }
+    
+    public static BufferedImage  byteArrayToImage(byte[] bytes){  
+        BufferedImage bufferedImage=null;
+        try {
+            InputStream inputStream = new ByteArrayInputStream(bytes);
+            bufferedImage = ImageIO.read(inputStream);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return bufferedImage;
+}
     
 }

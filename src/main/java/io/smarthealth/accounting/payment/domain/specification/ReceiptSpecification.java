@@ -2,6 +2,7 @@ package io.smarthealth.accounting.payment.domain.specification;
 
 import io.smarthealth.accounting.payment.domain.Copayment;
 import io.smarthealth.accounting.payment.domain.Receipt;
+import io.smarthealth.accounting.payment.domain.ReceiptItem;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
@@ -47,6 +48,26 @@ public class ReceiptSpecification {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
+    
+    public static Specification<ReceiptItem> createReceiptItemSpecification(Long servicePoint, DateRange range) {
+
+        return (root, query, cb) -> {
+
+            final ArrayList<Predicate> predicates = new ArrayList<>();                 
+            
+            if (servicePoint != null) {
+                predicates.add(cb.equal(root.get("item").get("servicePointId"), servicePoint));
+            }
+            if (range != null) {
+                predicates.add(
+                        cb.between(root.get("receipt").get("transactionDate"), range.getStartDateTime(), range.getEndDateTime())
+                );
+            }
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
+    
 
     public static Specification<Copayment> getCopayment(String visitNumber, String patientNumber, String invoiceNumber, String receiptNo, Boolean paid, DateRange range) {
 
