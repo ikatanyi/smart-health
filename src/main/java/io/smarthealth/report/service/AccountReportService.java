@@ -658,23 +658,14 @@ public class AccountReportService {
     
     public void getDepartmentalPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        String receiptNo = reportParam.getFirst("receiptNo");
-        String payee = reportParam.getFirst("payee");
-        String transactionNo = reportParam.getFirst("transactionNo");
         Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
-        String shiftNo = reportParam.getFirst("shiftNo");
-        Long cashierId = NumberUtils.createLong(reportParam.getFirst("cashierId"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
-        ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
-        List<ReceiptItemData>receiptDataArray = new ArrayList();
-        receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, Pageable.unpaged())
+        List<ReceiptItemData> receiptDataArray = receivePaymentService.getPaymentItems( servicePointId, range, Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
-                .collect(Collectors.toList())
-                .forEach(x -> {
-                     receiptDataArray.addAll(x.getReceiptItems());
-                }); 
+                .collect(Collectors.toList());
+                
         
 //        receiptData.forEach((receipt) -> {
 //            receiptDataArray.addAll(receipt.getReceiptItems());

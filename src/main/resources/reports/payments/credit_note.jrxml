@@ -33,7 +33,7 @@
 	<field name="comments" class="java.lang.String"/>
 	<field name="invoiceNo" class="java.lang.String"/>
 	<field name="invoiceDate" class="java.lang.Object"/>
-	<field name="billItems" class="java.util.List"/>
+	<field name="creditNoteItems" class="java.util.List"/>
 	<field name="date" class="java.lang.Object"/>
 	<variable name="PatientCount" class="java.lang.Integer" calculation="Count">
 		<variableExpression><![CDATA[]]></variableExpression>
@@ -268,7 +268,7 @@
 		<band height="13" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="0" width="555" height="13" uuid="129efd39-48ad-4197-bab0-e0b93e9f4b45"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{billItems})]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{creditNoteItems})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "credit_note_subreport1.jasper"]]></subreportExpression>
 			</subreport>
 		</band>

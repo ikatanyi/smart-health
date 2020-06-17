@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="payment_statement" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="149"/>
+	<property name="ireport.x" value="151"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="range" class="java.lang.String"/>
 	<parameter name="to" class="java.util.Date"/>
@@ -62,7 +62,7 @@
 				<line>
 					<reportElement x="1" y="22" width="552" height="1" forecolor="#000000" uuid="87cc91ed-4b8a-4753-8032-ba465b82169b"/>
 					<graphicElement>
-						<pen lineWidth="0.75"/>
+						<pen lineWidth="0.15"/>
 					</graphicElement>
 				</line>
 			</band>
@@ -126,7 +126,7 @@
 			<line>
 				<reportElement x="1" y="76" width="552" height="1" forecolor="#000000" uuid="14761926-4c06-4d35-ba7c-e283b165fa1a"/>
 				<graphicElement>
-					<pen lineWidth="0.75"/>
+					<pen lineWidth="0.15"/>
 				</graphicElement>
 			</line>
 			<staticText>
@@ -270,84 +270,84 @@
 	<summary>
 		<band height="50">
 			<textField isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="344" y="6" width="35" height="12" uuid="9075e9d1-72d1-4966-9e19-93784e2dd9c6"/>
+				<reportElement isPrintRepeatedValues="false" x="397" y="10" width="35" height="12" uuid="9075e9d1-72d1-4966-9e19-93784e2dd9c6"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{consultation_2}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement isPrintRepeatedValues="false" x="289" y="19" width="55" height="12" uuid="db5e6329-302a-4e2d-8b3f-13584e2c035c"/>
+				<reportElement x="342" y="23" width="55" height="12" uuid="db5e6329-302a-4e2d-8b3f-13584e2c035c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Laboratory :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement isPrintRepeatedValues="false" x="390" y="19" width="54" height="12" uuid="8db7d2f2-a36c-4e78-841c-1d53bd5f756e"/>
+				<reportElement x="443" y="23" width="54" height="12" uuid="8db7d2f2-a36c-4e78-841c-1d53bd5f756e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Other :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="344" y="32" width="35" height="12" uuid="ff4a830f-aece-4d06-9185-f14841b80fe9"/>
+				<reportElement isPrintRepeatedValues="false" x="397" y="36" width="35" height="12" uuid="ff4a830f-aece-4d06-9185-f14841b80fe9"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{pharmacy_2}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement isPrintRepeatedValues="false" x="289" y="32" width="55" height="12" uuid="b39018fb-0f82-4372-b9b0-2147d67a1d3d"/>
+				<reportElement x="342" y="36" width="55" height="12" uuid="b39018fb-0f82-4372-b9b0-2147d67a1d3d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Pharmacy :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement isPrintRepeatedValues="false" x="289" y="6" width="55" height="12" uuid="0c29d413-787a-4957-be66-d225f39a4f67"/>
+				<reportElement x="342" y="10" width="55" height="12" uuid="0c29d413-787a-4957-be66-d225f39a4f67"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Consultation]]></text>
 			</staticText>
 			<staticText>
-				<reportElement isPrintRepeatedValues="false" x="390" y="32" width="54" height="12" uuid="9127ebaa-0df2-4442-9394-4f8748d308f0"/>
+				<reportElement x="443" y="36" width="54" height="12" uuid="9127ebaa-0df2-4442-9394-4f8748d308f0"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Procedure :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="344" y="19" width="35" height="12" uuid="3d68d40d-e14a-441f-a9b2-8f95b4fb172e"/>
+				<reportElement isPrintRepeatedValues="false" x="397" y="23" width="35" height="12" uuid="3d68d40d-e14a-441f-a9b2-8f95b4fb172e"/>
 				<textElement textAlignment="Right">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{lab_2}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement isPrintRepeatedValues="false" x="390" y="6" width="54" height="12" uuid="d3072167-10a4-45d1-9aea-cd895c368ee8"/>
+				<reportElement x="443" y="10" width="54" height="12" uuid="d3072167-10a4-45d1-9aea-cd895c368ee8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Radiology :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="444" y="32" width="50" height="12" uuid="c1a1e67b-5a5d-4cfc-8574-7cfe0abdb992"/>
+				<reportElement isPrintRepeatedValues="false" x="497" y="36" width="50" height="12" uuid="c1a1e67b-5a5d-4cfc-8574-7cfe0abdb992"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{procedure_2}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="444" y="6" width="50" height="12" uuid="d479a0fc-2f5a-4b38-8adc-a8be0c56633b"/>
+				<reportElement isPrintRepeatedValues="false" x="497" y="10" width="50" height="12" uuid="d479a0fc-2f5a-4b38-8adc-a8be0c56633b"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{radiology_2}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="444" y="19" width="50" height="12" uuid="3aa772fd-4c5d-4cbd-9501-072b5f82349b"/>
+				<reportElement isPrintRepeatedValues="false" x="497" y="23" width="50" height="12" uuid="3aa772fd-4c5d-4cbd-9501-072b5f82349b"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>

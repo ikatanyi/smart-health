@@ -5,6 +5,7 @@ import io.smarthealth.organization.facility.domain.Facility;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -22,6 +23,8 @@ public class CompanyLogo extends Identifiable {
 
     @Lob
     private byte[] data;
+    @OneToOne(mappedBy = "companyLogo")
+    private Facility facility;
 
     public CompanyLogo() {
     }
@@ -92,6 +95,14 @@ public class CompanyLogo extends Identifiable {
 
     public void setData(byte[] data) {
         this.data = data;
+    }
+
+    public Facility getFacility() {
+        return facility;
+    }
+
+    public void setFacility(Facility facility) {
+        this.facility = facility;
     }
     
 }
