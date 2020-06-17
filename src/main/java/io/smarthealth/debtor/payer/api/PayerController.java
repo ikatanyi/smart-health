@@ -7,8 +7,6 @@ import io.smarthealth.administration.finances.domain.PaymentTerms;
 import io.smarthealth.administration.finances.service.PaymentTermsService;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.accounting.pricelist.service.PricebookService;
-import io.smarthealth.administration.app.data.AddressData;
-import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.banks.service.BankService;
 import io.smarthealth.debtor.payer.data.PayerData;

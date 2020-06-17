@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.pricelist.service;
 
+import com.google.common.collect.Sets;
 import io.smarthealth.accounting.pricelist.data.PriceBookData;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.accounting.pricelist.domain.PriceBookItem;
@@ -24,6 +25,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.pricelist.domain.PriceListDTO;
+import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -127,6 +131,10 @@ public class PricebookService {
         return priceBookRepository.findByName(name);
     }
 
+    public PriceBook getPricebookByNameOrThrowError(String name) {
+        return priceBookRepository.findByName(name).orElseThrow(() -> APIException.notFound("Price book with name {0} not found ", name));
+    }
+
     public Page<PriceBook> getPricebooks(PriceCategory category, PriceType type, Pageable page, boolean includeClosed) {
 //        PriceType priceType = null;
 //        PriceCategory priceCategory = null;
@@ -146,12 +154,14 @@ public class PricebookService {
                 .map(price -> PriceBookData.map(price))
                 .collect(Collectors.toList());
     }
-public List<PriceBookData> getPricebooks(PriceCategory category) {
+
+    public List<PriceBookData> getPricebooks(PriceCategory category) {
         return priceBookRepository.findByPriceCategory(category)
                 .stream()
                 .map(price -> PriceBookData.map(price))
                 .collect(Collectors.toList());
     }
+
     //
     public List<PriceListDTO> getPricelist() {
         return priceBookRepository.getPriceLists();
@@ -160,5 +170,25 @@ public List<PriceBookData> getPricebooks(PriceCategory category) {
     public List<PriceListDTO> searchPricelistByItem(String item) {
         final String likeExpression = "%" + item + "%";
         return priceBookRepository.searchPriceListByItem(likeExpression);
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void createPriceBookItem(List<PriceBookItemData> d) {
+
+        for (PriceBookItemData data : d) {
+
+            Item item = itemService.findByItemCodeOrThrow(data.getItemCode());
+            PriceBook priceBook = getPricebookByNameOrThrowError(data.getPriceBookName());
+
+            PriceBookItem priceBookItem = new PriceBookItem();
+            priceBookItem.setAmount(data.getAmount());
+            priceBookItem.setItem(item);
+            priceBookItem.setPriceBook(priceBook);
+
+//            priceBook.addPriceItems(Sets.newHashSet(priceBookItem));
+//            priceBookRepository.save(priceBook);
+            priceBookRepository.addPriceBookItem(data.getAmount(), priceBook.getId(), item.getId());
+        }
+
     }
 }

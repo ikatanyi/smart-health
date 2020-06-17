@@ -24,4 +24,5 @@ public enum TemplateType {
     //RadiologyTests,
     //ProcedureTests,
     //Specimens
+    PriceBookItems
 }

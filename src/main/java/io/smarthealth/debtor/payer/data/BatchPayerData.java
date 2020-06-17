@@ -5,11 +5,6 @@
  */
 package io.smarthealth.debtor.payer.data;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
-import io.swagger.annotations.ApiModelProperty;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -18,11 +13,13 @@ import lombok.Data;
  */
 @Data
 public class BatchPayerData {
+
     private String payerType;
     private String payerName;
     private String legalName;
     private String taxNumber;
-    private String website;    
+    private String payerCode;
+    private String website;
     private boolean insurance;
     private String schemeCode;
     private String schemeName;
@@ -33,4 +30,11 @@ public class BatchPayerData {
     private Double coPayValue;
     private Boolean status;
     private Boolean smartEnabled;
+    private String ledgerAccountCode;
+    private String bankBranchCode;
+    private String bankAccountNumber;
+    private String paymentTermName;
+    private String priceBookName;
+    private String primaryContact;
+    
 }

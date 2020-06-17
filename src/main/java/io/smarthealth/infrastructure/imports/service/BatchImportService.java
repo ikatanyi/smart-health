@@ -5,6 +5,7 @@
  */
 package io.smarthealth.infrastructure.imports.service;
 
+import io.smarthealth.accounting.pricelist.service.PricebookService;
 import io.smarthealth.clinical.laboratory.data.AnalyteData;
 import io.smarthealth.clinical.laboratory.service.AnnalyteService;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
@@ -14,6 +15,7 @@ import io.smarthealth.debtor.payer.data.BatchPayerData;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
+import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
@@ -40,6 +42,7 @@ public class BatchImportService {
     private final PatientService patientService;
     private final AnnalyteService annalyteService;
     private final PayerService payerService;
+    private final PricebookService pricebookService;
 
     public void importData(final TemplateType type, final MultipartFile file) {
 
@@ -60,6 +63,10 @@ public class BatchImportService {
                 case Payers:
                     List<BatchPayerData> payerList = toPojoUtil.toPojo(BatchPayerData.class, inputFilestream);
                     payerService.BatchUpload(payerList);
+                    break;
+                case PriceBookItems:
+                    List<PriceBookItemData> priceBookItems = toPojoUtil.toPojo(PriceBookItemData.class, inputFilestream);
+                    pricebookService.createPriceBookItem(priceBookItems);
                     break;
                 case Products:
                     List<CreateItem> items = toPojoUtil.toPojo(CreateItem.class, inputFilestream);
@@ -91,6 +98,8 @@ public class BatchImportService {
             throw APIException.badRequest("Error! {0} ", e.getMessage());
         }
     }
+
+    
 
     private void importPatients(final List<PatientData> list) {
         List<Patient> patients = new ArrayList<>();

@@ -26,8 +26,6 @@ import lombok.Data;
 @Table(name = "payers")
 public class Payer extends Auditable {
 
-    
-
     @Enumerated(EnumType.STRING)
     private Type payerType;
 
@@ -61,6 +59,8 @@ public class Payer extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_price_book_id"))
     @ManyToOne
     private PriceBook priceBook;
+
+    private String payerCode;
 
     @ManyToMany
     @JoinTable(name = "payer_address", joinColumns = {

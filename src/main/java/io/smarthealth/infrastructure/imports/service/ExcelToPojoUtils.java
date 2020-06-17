@@ -55,6 +55,7 @@ public class ExcelToPojoUtils {
 
         for (int j = 1; j < sheet.getPhysicalNumberOfRows(); j++) {
             Row row = sheet.getRow(j);
+            System.out.println("Row Number "+j);
             try {
                 T result = type.newInstance();
                 Class clazz = type.newInstance().getClass();
@@ -63,7 +64,7 @@ public class ExcelToPojoUtils {
                 if (headerRow.getPhysicalNumberOfCells() > row.getPhysicalNumberOfCells()) {
                     throw APIException.badRequest("Found {0} colums at row " + j + 1, row.getPhysicalNumberOfCells());
                 }
-                
+
                 for (int k = 0; k < row.getPhysicalNumberOfCells(); k++) {
                     if (colNames.get(k) != null) {
                         //RETURN_BLANK_AS_NULL
@@ -74,7 +75,7 @@ public class ExcelToPojoUtils {
                             //Field field = type.getDeclaredField(colNames.get(k));
                             Field field = filterField(fields, colNames.get(k));
                             if (field == null) {
-                                throw APIException.notFound("Error fething column field {0} ", colNames.get(k));
+                                throw APIException.notFound("Error fetching column field {0} ", colNames.get(k));
                             }
 
                             System.out.println("Field " + field.getName() + " Value " + strValue + " Type " + field.getType());
