@@ -38,7 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class BatchImportService {
-    
+
     private final AllocationService allocationService;
     private final ItemService itemService;
     private final PatientService patientService;
@@ -46,20 +46,20 @@ public class BatchImportService {
     private final PayerService payerService;
     private final PricebookService pricebookService;
     private final LabConfigurationService labConfigService;
-    
+
     public void importData(final TemplateType type, final MultipartFile file) {
-        
+
         try {
             byte[] bytes = file.getBytes();
             InputStream inputFilestream = new ByteArrayInputStream(bytes);
             ExcelToPojoUtils toPojoUtil = new ExcelToPojoUtils();
-            
+
             switch (type) {
                 case Patients:
                     List<PatientData> list = toPojoUtil.toPojo(PatientData.class, inputFilestream);
                     importPatients(list);
                     break;
-                
+
                 case Allocation:
                     List<BatchAllocationData> allocationList = toPojoUtil.toPojo(BatchAllocationData.class, inputFilestream);
                     allocationService.importAllocation(allocationList);
@@ -91,7 +91,7 @@ public class BatchImportService {
                         d.setTestName(la.getLabTestName());
                         data.add(d);
                     }
-                    
+
                     annalyteService.createAnalyte(data);
                     break;
                 case LabTests:
@@ -101,6 +101,11 @@ public class BatchImportService {
                     }
                     labConfigService.createTest(labTestData);
                     break;
+                case LabTestsFixer:
+                    List<LabTestData> labTests = toPojoUtil.toPojo(LabTestData.class, inputFilestream);
+
+                    labConfigService.fixTestsImportedForIvory(labTests);
+                    break;
                 default:
                     throw APIException.notFound("Coming Soon!!!", "");
             }
@@ -109,7 +114,7 @@ public class BatchImportService {
             throw APIException.badRequest("Error! {0} ", e.getMessage());
         }
     }
-    
+
     private void importPatients(final List<PatientData> list) {
         List<Patient> patients = new ArrayList<>();
         for (PatientData d : list) {

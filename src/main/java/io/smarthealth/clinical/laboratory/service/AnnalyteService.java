@@ -38,10 +38,10 @@ public class AnnalyteService {
             LabTest labTest = null;
 
             if (a.getTestCode() != null) {
-                repository.findByCode(a.getTestCode()).orElseThrow(() -> APIException.notFound("Test identified by code {0} not found ", a.getTestCode()));
+               labTest= repository.findByCode(a.getTestCode()).orElseThrow(() -> APIException.notFound("Test identified by code {0} not found ", a.getTestCode()));
             } else {
                // try {
-                    repository.findByTestName(a.getTestName()).orElseThrow(() -> APIException.notFound("Test identified by name {0} not found ", a.getTestName()));
+                  labTest=  repository.findByTestName(a.getTestName()).orElseThrow(() -> APIException.notFound("Test identified by name {0} not found ", a.getTestName()));
 //                } catch (Exception e) {
 //                    e.printStackTrace();
 //                    throw APIException.notFound("Test name {0} not available ", a.getTestName());
