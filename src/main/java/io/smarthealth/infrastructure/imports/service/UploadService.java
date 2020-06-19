@@ -91,7 +91,6 @@ public class UploadService {
             
             Path targetLocation = this.rootLocation.resolve(documentNo);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
             return documentNo;
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + documentNo + ". Please try again!", ex);
