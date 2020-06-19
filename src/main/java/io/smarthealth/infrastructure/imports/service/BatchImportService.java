@@ -13,8 +13,14 @@ import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
+import io.smarthealth.debtor.member.data.PayerMemberData;
+import io.smarthealth.debtor.member.domain.PayerMember;
+import io.smarthealth.debtor.member.domain.PayerMemberRepository;
+import io.smarthealth.debtor.member.service.PayerMemberService;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
+import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
+import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
 import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
@@ -46,6 +52,9 @@ public class BatchImportService {
     private final PayerService payerService;
     private final PricebookService pricebookService;
     private final LabConfigurationService labConfigService;
+    private final SchemeService schemeService;
+
+    private final PayerMemberRepository payerMemberRepository;
 
     public void importData(final TemplateType type, final MultipartFile file) {
 
@@ -105,6 +114,17 @@ public class BatchImportService {
                     List<LabTestData> labTests = toPojoUtil.toPojo(LabTestData.class, inputFilestream);
 
                     labConfigService.fixTestsImportedForIvory(labTests);
+                    break;
+                case SchemeMembers:
+                    List<PayerMemberData> memberData = toPojoUtil.toPojo(PayerMemberData.class, inputFilestream);
+                    List<PayerMember> members = new ArrayList<>();
+                    for (PayerMemberData d : memberData) {
+                        Scheme scheme = schemeService.fetchSchemeByCode(d.getSchemeCode());
+                        PayerMember member = PayerMemberData.map(d);
+                        member.setScheme(scheme);
+                        members.add(member);
+                    }
+                    payerMemberRepository.saveAll(members);
                     break;
                 default:
                     throw APIException.notFound("Coming Soon!!!", "");

@@ -18,7 +18,10 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SchemeRepository extends JpaRepository<Scheme, Long>, JpaSpecificationExecutor<Scheme> {
-    
+
     Page<Scheme> findByPayer(Payer payer, Pageable pageable);
-    Optional<Scheme>findBySchemeName(String schemeName);
+
+    Optional<Scheme> findBySchemeName(String schemeName);
+
+    Optional<Scheme> findBySchemeCode(String schemeCode);
 }

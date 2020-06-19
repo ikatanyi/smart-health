@@ -27,6 +27,7 @@ public class PayerMemberData {
     private LocalDate dob;
     private boolean status;
     private double limitAmount;
+    private String schemeCode;
     
     public static PayerMemberData map(PayerMember member) {
         PayerMemberData data = new PayerMemberData();

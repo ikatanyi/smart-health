@@ -8,6 +8,8 @@ package io.smarthealth.infrastructure.imports.service;
 import io.smarthealth.clinical.laboratory.data.LabTestData;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
+import io.smarthealth.debtor.member.data.PayerMemberData;
+import io.smarthealth.debtor.member.domain.PayerMember;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.scheme.data.SchemeData;
@@ -74,6 +76,10 @@ public class BatchTemplateService {
             case LabTests:
                 fileName = "Lab Tests";
                 componentClass = LabTestData.class;
+                break;
+            case SchemeMembers:
+                fileName = "Scheme Members";
+                componentClass = PayerMemberData.class;
                 break;
             default:
                 break;

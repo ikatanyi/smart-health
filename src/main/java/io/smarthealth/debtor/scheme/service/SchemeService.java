@@ -56,13 +56,17 @@ public class SchemeService {
     public Optional<SchemeConfigurations> fetchSchemeConfigByScheme(Scheme scheme) {
         return configurationsRepository.findByScheme(scheme);
     }
-    
+
     public Optional<Scheme> fetchSchemeBySchemeName(String schemeName) {
         return schemeRepository.findBySchemeName(schemeName);
     }
 
     public Scheme fetchSchemeById(Long id) {
         return schemeRepository.findById(id).orElseThrow(() -> APIException.notFound("Scheme identified by id {0} not available ", id));
+    }
+
+    public Scheme fetchSchemeByCode(String code) {
+        return schemeRepository.findBySchemeCode(code).orElseThrow(() -> APIException.notFound("Scheme identified by code {0} not available ", code));
     }
 
     public SchemeConfigurations fetchSchemeConfigById(Long id) {
