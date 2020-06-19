@@ -67,7 +67,7 @@ public class UploadService {
     public void UploadService(String dir) {
         try {
             this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath().concat("/").concat(dir));
-            if(!Files.isDirectory(rootLocation, LinkOption.NOFOLLOW_LINKS))
+            if(!Files.exists(rootLocation, LinkOption.NOFOLLOW_LINKS))
                 Files.createDirectories(rootLocation);
         } catch (IOException ex) {
             throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
