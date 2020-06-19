@@ -173,13 +173,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="145" y="0" width="235" height="14" uuid="5b45f281-3039-49d6-a8a0-d8ee70e88675"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{fulfillerComment}]]></textFieldExpression>
-			</textField>
 			<line>
 				<reportElement x="0" y="13" width="380" height="1" uuid="b73efa33-1508-49f4-bdb7-325472d01891"/>
 				<graphicElement>

@@ -13,7 +13,7 @@
 	<detail>
 		<band height="21" splitType="Stretch">
 			<textField>
-				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="111" height="20" uuid="c03f057a-dad3-486f-bc76-0692ef26937c"/>
+				<reportElement x="0" y="0" width="111" height="20" uuid="c03f057a-dad3-486f-bc76-0692ef26937c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 					<paragraph leftIndent="10"/>

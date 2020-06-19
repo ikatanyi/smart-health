@@ -20,16 +20,16 @@
 	<field name="validatedBy" class="java.lang.String"/>
 	<field name="withRef" class="java.lang.Boolean"/>
 	<columnHeader>
-		<band height="48" splitType="Stretch">
+		<band height="59" splitType="Stretch">
 			<staticText>
-				<reportElement x="360" y="17" width="91" height="14" uuid="e83091c0-858a-4e8a-a1fe-5bd1c97300d8"/>
+				<reportElement x="358" y="27" width="91" height="14" uuid="e83091c0-858a-4e8a-a1fe-5bd1c97300d8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Date Reported :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="16" width="66" height="15" isRemoveLineWhenBlank="true" uuid="d367d4ed-94f0-4b99-9918-e1ce57b6cdc4"/>
+				<reportElement x="1" y="26" width="66" height="15" isRemoveLineWhenBlank="true" uuid="d367d4ed-94f0-4b99-9918-e1ce57b6cdc4"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 					<paragraph leftIndent="5"/>
@@ -37,21 +37,21 @@
 				<text><![CDATA[Specimen :]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="451" y="1" width="104" height="15" isRemoveLineWhenBlank="true" uuid="135ebb32-b8d6-478b-8dab-f10d13c2b763"/>
+				<reportElement x="449" y="11" width="104" height="16" isRemoveLineWhenBlank="true" uuid="135ebb32-b8d6-478b-8dab-f10d13c2b763"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{labNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="360" y="1" width="91" height="16" uuid="67303c2a-87ee-41db-9b69-acb699ac149e"/>
+				<reportElement x="358" y="11" width="91" height="16" uuid="67303c2a-87ee-41db-9b69-acb699ac149e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Lab No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="1" y="0" width="66" height="17" isRemoveLineWhenBlank="true" forecolor="#000000" uuid="1a8461b2-fa61-41cb-b26e-fee39503e7bc"/>
+				<reportElement positionType="Float" x="1" y="10" width="66" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" uuid="1a8461b2-fa61-41cb-b26e-fee39503e7bc"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 					<paragraph leftIndent="5"/>
@@ -59,28 +59,28 @@
 				<text><![CDATA[TestName :]]></text>
 			</staticText>
 			<textField pattern="dd-MM-yyyy">
-				<reportElement x="451" y="17" width="104" height="14" isRemoveLineWhenBlank="true" uuid="22f110f5-45be-4e34-bc1a-8635dcc6957f"/>
+				<reportElement x="449" y="27" width="104" height="14" isRemoveLineWhenBlank="true" uuid="22f110f5-45be-4e34-bc1a-8635dcc6957f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{entryDateTime}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="67" y="1" width="156" height="15" isRemoveLineWhenBlank="true" uuid="788c4112-84a4-41d8-9826-37c9db2fc205"/>
+				<reportElement x="67" y="11" width="156" height="15" isRemoveLineWhenBlank="true" uuid="788c4112-84a4-41d8-9826-37c9db2fc205"/>
 				<textElement>
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{testName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="67" y="17" width="156" height="15" isRemoveLineWhenBlank="true" uuid="7938b1ef-f429-40f4-b9ec-8ec5a854d8ce"/>
+				<reportElement x="67" y="26" width="156" height="15" isRemoveLineWhenBlank="true" uuid="7938b1ef-f429-40f4-b9ec-8ec5a854d8ce"/>
 				<textElement>
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{specimen}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="32" width="66" height="15" isRemoveLineWhenBlank="true" uuid="6a1af588-72d6-43a4-acf2-3218bd0987f1"/>
+				<reportElement x="1" y="41" width="66" height="15" isRemoveLineWhenBlank="true" uuid="6a1af588-72d6-43a4-acf2-3218bd0987f1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 					<paragraph leftIndent="5"/>
@@ -88,28 +88,28 @@
 				<text><![CDATA[Reported By:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="67" y="32" width="156" height="16" isRemoveLineWhenBlank="true" uuid="6c6a9d4f-f8ea-4710-98f1-ac6c622da9cc"/>
+				<reportElement x="67" y="41" width="156" height="16" isRemoveLineWhenBlank="true" uuid="6c6a9d4f-f8ea-4710-98f1-ac6c622da9cc"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{enteredBy}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="360" y="31" width="91" height="15" uuid="5f173801-00c0-4e94-b3e0-3ad4714b843b"/>
+				<reportElement x="358" y="41" width="91" height="15" uuid="5f173801-00c0-4e94-b3e0-3ad4714b843b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Status :]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="451" y="31" width="104" height="15" isRemoveLineWhenBlank="true" forecolor="#FF3300" uuid="1d282bd5-188f-434f-a792-b069b76410bc"/>
+				<reportElement x="449" y="41" width="104" height="15" isRemoveLineWhenBlank="true" forecolor="#FF3300" uuid="1d282bd5-188f-434f-a792-b069b76410bc"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement positionType="Float" x="1" y="47" width="555" height="1" forecolor="#CC0000" uuid="9c05c8dd-41ec-44ef-b45d-3567633bdd03"/>
+				<reportElement positionType="Float" x="1" y="58" width="555" height="1" forecolor="#CC0000" uuid="9c05c8dd-41ec-44ef-b45d-3567633bdd03"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineColor="#999999"/>
 				</graphicElement>
@@ -117,16 +117,16 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
+		<band height="28" splitType="Stretch">
 			<subreport isUsingCache="false">
-				<reportElement x="-1" y="0" width="555" height="19" uuid="8c9b1bca-d151-4bd0-bb56-9338ebcbde18">
+				<reportElement x="-1" y="1" width="555" height="19" uuid="8c9b1bca-d151-4bd0-bb56-9338ebcbde18">
 					<printWhenExpression><![CDATA[$F{withRef}.equals(true)]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labResults})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results_with_ref.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement x="1" y="0" width="553" height="20" uuid="fba2b4a8-80aa-4b96-aeaa-185b2175505f">
+				<reportElement x="1" y="1" width="554" height="20" uuid="fba2b4a8-80aa-4b96-aeaa-185b2175505f">
 					<printWhenExpression><![CDATA[$F{withRef}.equals( false )]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{labResults})]]></dataSourceExpression>
