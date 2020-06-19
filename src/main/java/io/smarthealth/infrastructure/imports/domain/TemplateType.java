@@ -25,5 +25,6 @@ public enum TemplateType {
     //ProcedureTests,
     //Specimens
     PriceBookItems,
-    LabTestsFixer
+    LabTestsFixer, 
+    SchemeMembers
 }
