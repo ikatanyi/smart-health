@@ -42,13 +42,6 @@
 	</title>
 	<pageHeader>
 		<band height="18" splitType="Stretch">
-			<textField pattern="dd-MM-yyyy">
-				<reportElement x="477" y="1" width="78" height="16" uuid="70e6d0b1-f36d-44f3-8fb7-d8e848c1b7ef"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
 			<line>
 				<reportElement x="1" y="17" width="553" height="1" uuid="51220d0c-28bd-4499-b2db-49b38453630b"/>
 				<graphicElement>
@@ -56,8 +49,8 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="1" y="0" width="252" height="18" uuid="48ee5463-c19a-4f34-8b19-898a3142d7ab"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement x="1" y="0" width="553" height="18" uuid="48ee5463-c19a-4f34-8b19-898a3142d7ab"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Lab Patient Report]]></text>
