@@ -49,9 +49,9 @@ public class LabRegisterData {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<LabRegisterTestData> tests = new ArrayList<>();
     
-    public String getFormattedRequestDateTime(){
-        
-        return this.requestDatetime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.valueOf(Constants.DATE_TIME_PATTERN)));
-    }
+//    public String getFormattedRequestDateTime(){
+//        
+//        return this.requestDatetime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.valueOf(Constants.DATE_TIME_PATTERN)));
+//    }
 
 }

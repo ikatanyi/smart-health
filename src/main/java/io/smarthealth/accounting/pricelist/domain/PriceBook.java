@@ -73,6 +73,12 @@ public class PriceBook extends Auditable {
         this.priceBookItems.forEach(x -> x.setPriceBook(this));
     }
 
+    public void addPriceItem(PriceBookItem bookItem) {
+        System.err.println("my id "+this.getId());
+        bookItem.setPriceBook(this);
+        this.priceBookItems.add(bookItem);
+    }
+
     public Boolean isGlobalRate() {
         return this.priceType == PriceType.fixed_percentage;
     }
@@ -82,17 +88,18 @@ public class PriceBook extends Auditable {
         System.err.println("Calculating special prices: " + adjstRate);
         BigDecimal newPrice = priceList.getSpecialRate();
         if (this.increase) {
-            newPrice =newPrice.add(adjstRate);
+            newPrice = newPrice.add(adjstRate);
             priceList.setHasPriceBook(Boolean.TRUE);
         } else {
             newPrice = newPrice.subtract(adjstRate);
             priceList.setHasPriceBook(Boolean.TRUE);
         }
-        System.err.println("My new price as now "+newPrice);
+        System.err.println("My new price as now " + newPrice);
         priceList.setPriceBookAmount(newPrice);
         return priceList;
     }
-     @Override
+
+    @Override
     public String toString() {
         return "Price Book [id=" + getId() + ", name=" + name + "]";
     }

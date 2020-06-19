@@ -46,7 +46,7 @@ public class SchemeController {
 
     @Autowired
     SchemeService schemeService;
-    
+
     @Autowired
     SequenceNumberService sequenceNumberService;
 
@@ -57,8 +57,9 @@ public class SchemeController {
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(scheme.getPayerId());
 
         Scheme s = SchemeData.map(scheme);
-         if(s.getSchemeCode()==null)
-             s.setSchemeCode(sequenceNumberService.next(1L, Sequences.SchemeCode.name()));
+        if (s.getSchemeCode() == null) {
+            s.setSchemeCode(sequenceNumberService.next(1L, Sequences.SchemeCode.name()));
+        }
         s.setPayer(payer);
         Scheme savedScheme = schemeService.createScheme(s);
 
@@ -91,9 +92,11 @@ public class SchemeController {
         scheme.setMobileNo(d.getMobileNo());
         scheme.setSchemeName(d.getSchemeName());
         scheme.setTelNo(d.getTelNo());
-        scheme.setSchemeCode(d.getSchemeCode());
 
         scheme.setPayer(payer);
+        if (scheme.getSchemeCode() == null) {
+            scheme.setSchemeCode(sequenceNumberService.next(1L, Sequences.SchemeCode.name()));
+        }
         Scheme savedScheme = schemeService.createScheme(scheme);
 
         URI location = ServletUriComponentsBuilder

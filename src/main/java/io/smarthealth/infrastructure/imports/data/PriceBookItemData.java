@@ -5,6 +5,7 @@
  */
 package io.smarthealth.infrastructure.imports.data;
 
+import java.math.BigDecimal;
 import lombok.Data;
 
 /**
@@ -12,15 +13,9 @@ import lombok.Data;
  * @author Simon.waweru
  */
 @Data
-public class LabAnnalytesData {
+public class PriceBookItemData {
 
-    private String labTestCode;
-    private String labTestName;
-    private String annalyte;
-    private Double lowerLimit;
-    private Double upperLimit;
-    private String referenceValue;
-    private String units;
-    private String description;
-
+    private String itemCode;
+    private String priceBookName;
+    private BigDecimal amount;
 }

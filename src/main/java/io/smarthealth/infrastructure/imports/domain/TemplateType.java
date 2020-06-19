@@ -20,8 +20,10 @@ public enum TemplateType {
     Suppliers,
     Products,
     LabAnnalytes,
-    LabTests
+    LabTests,
     //RadiologyTests,
     //ProcedureTests,
     //Specimens
+    PriceBookItems,
+    LabTestsFixer
 }

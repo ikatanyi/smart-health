@@ -24,6 +24,7 @@ public class LabTestData {
     private String testName;
     private Long categoryId;
     private String category;
+    private String discplineName;
     private String gender;
     private Boolean requiresConsent;
     private Boolean hasReferenceValue;

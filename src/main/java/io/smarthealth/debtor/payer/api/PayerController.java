@@ -7,8 +7,6 @@ import io.smarthealth.administration.finances.domain.PaymentTerms;
 import io.smarthealth.administration.finances.service.PaymentTermsService;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.accounting.pricelist.service.PricebookService;
-import io.smarthealth.administration.app.data.AddressData;
-import io.smarthealth.administration.app.data.ContactData;
 import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.banks.service.BankService;
 import io.smarthealth.debtor.payer.data.PayerData;
@@ -22,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -94,7 +93,6 @@ public class PayerController {
 //        contact.add(c);
 //
 //        payer.setContacts(contact);
-
         Payer result = payerService.createPayer(payer);
 
         URI location = ServletUriComponentsBuilder
@@ -169,8 +167,13 @@ public class PayerController {
     @GetMapping("/payer")
     @PreAuthorize("hasAuthority('view_payer')")
     public ResponseEntity<?> fetchAllPayers(
-            @RequestParam(required = false) final String term,
-            Pageable pageable) {
+            @RequestParam(required = false, name = "term") final String term,
+            @RequestParam(required = false, name = "pageNo") final Integer pageNo,
+            @RequestParam(required = false, name = "pageSize") final Integer pageSize) {
+        Pageable pageable = Pageable.unpaged();
+        if (pageNo != null && pageSize != null) {
+            pageable = PageRequest.of(pageNo, pageSize);
+        }
         Page<PayerData> payers = payerService.fetchPayers(term, pageable).map(p -> PayerData.map(p));
 
         Pager<List<PayerData>> pagers = new Pager();

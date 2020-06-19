@@ -32,6 +32,10 @@ public class PaymentTermsService {
         return paymentTermsRepository.findById(id).orElseThrow(() -> APIException.notFound("Payment terms identified by id {0} not found ", id));
     }
 
+    public PaymentTerms getPaymentTermByNameWithFailDetection(String id) {
+        return paymentTermsRepository.findByTermsName(id).orElseThrow(() -> APIException.notFound("Payment terms identified by name {0} not found ", id));
+    }
+
     public Optional<PaymentTerms> getPaymentTerm(Long id) {
         return paymentTermsRepository.findById(id);
     }

@@ -57,4 +57,8 @@ public class BankService {
     public BankBranch fetchBankBranchById(Long id) {
         return bankBranchRepository.findById(id).orElseThrow(() -> APIException.notFound("Bank branch identified by {0} was not found", id));
     }
+
+    public BankBranch fetchBankBranchByCode(String code) {
+        return bankBranchRepository.findByBranchCode(code).orElseThrow(() -> APIException.notFound("Bank branch identified by code {0} was not found", code));
+    }
 }

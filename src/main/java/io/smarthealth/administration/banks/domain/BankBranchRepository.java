@@ -12,6 +12,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface BankBranchRepository extends JpaRepository<BankBranch, Long> {
 
     Optional<BankBranch> findByBranchNameAndBank(final String branchName, final Bank mainBank);
-    
+
     Page<BankBranch> findByBank(final Bank mainBank, final Pageable pageable);
+
+    Optional<BankBranch> findByBranchCode(final String code);
 }

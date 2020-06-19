@@ -41,7 +41,7 @@ public class LabConfigurationService {
     private final LabDisciplineRepository displineRepository;
     private final ItemRepository itemRepository;
     private final LabTestRepository repository;
-    private final ItemService  itemService;
+    private final ItemService itemService;
 
     public LabTest createTest(LabTestData data) {
         LabTest toSave = toLabTest(data);
@@ -54,6 +54,21 @@ public class LabConfigurationService {
                 .map(x -> toLabTest(x))
                 .collect(Collectors.toList());
         return repository.saveAll(toSave);
+    }
+
+    public void fixTestsImportedForIvory(List<LabTestData> lists) {
+
+        for (LabTestData data : lists) {
+            System.out.println("data.getTestName() "+data.getTestName());
+            System.out.println("data.getHasReferenceValue() "+data.getHasReferenceValue());
+            LabTest labTest = getTestByName(data.getTestName());
+            if (data.getItemCode() != null) {
+                labTest.setCode(data.getItemCode());
+            }
+            labTest.setHasReferenceValue(data.getHasReferenceValue());
+            repository.save(labTest);
+        }
+
     }
 
     public List<LabTest> searchLabTest(String keyword) {
@@ -99,7 +114,7 @@ public class LabConfigurationService {
                         .map(x -> updateAnalyte(x))
                         .collect(Collectors.toList())
         );
-         data.getPanelTests()
+        data.getPanelTests()
                 .stream()
                 .forEach(x -> {
                     toUpdateTest.getPanelTests().add(getTestById(x.getTestId()));
@@ -139,8 +154,17 @@ public class LabConfigurationService {
         if (repository.findByService(item).isPresent()) {
             throw APIException.badRequest("Lab Test with service {0} already exists", item.getItemName());
         }
+        LabDiscipline displine = null;
+        if (data.getCategoryId() != null) {
+            displine = displineRepository.findById(data.getCategoryId()).orElse(null);
+        } else {
+            try {
+                displine = displineRepository.findByDisplineName(data.getDiscplineName()).orElseThrow(() -> APIException.notFound("Discpline name identified by {0} not found ", data.getDiscplineName()));
+            } catch (Exception e) {
+                System.out.println("Displine not found ");
+            }
+        }
 
-        LabDiscipline displine = displineRepository.findById(data.getCategoryId()).orElse(null);
         LabTest labTest = new LabTest();
         labTest.setActive(Boolean.TRUE);
         labTest.setRequiresConsent(data.getRequiresConsent());

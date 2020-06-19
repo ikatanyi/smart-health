@@ -30,7 +30,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 public class ExcelToPojoUtils {
 
-    public static final String BOOLEAN_TRUE = "1";
+    public static final String BOOLEAN_TRUE = "TRUE";
     public static final String LIST_SEPARATOR = ",";
     private final static Logger LOGGER = Logger.getLogger(ExcelToPojoUtils.class.getName());
 
@@ -55,15 +55,16 @@ public class ExcelToPojoUtils {
 
         for (int j = 1; j < sheet.getPhysicalNumberOfRows(); j++) {
             Row row = sheet.getRow(j);
+            System.out.println("Row Number "+j);
             try {
                 T result = type.newInstance();
                 Class clazz = type.newInstance().getClass();
                 Field[] fields = getAllFields(clazz);
                 System.out.println("row.getPhysicalNumberOfCells() " + row.getPhysicalNumberOfCells());
                 if (headerRow.getPhysicalNumberOfCells() > row.getPhysicalNumberOfCells()) {
-                    throw APIException.badRequest("Found {0} colums at row " + j + 1, row.getPhysicalNumberOfCells());
+                    throw APIException.badRequest("Found {0} colums at row " + j , row.getPhysicalNumberOfCells());
                 }
-                
+
                 for (int k = 0; k < row.getPhysicalNumberOfCells(); k++) {
                     if (colNames.get(k) != null) {
                         //RETURN_BLANK_AS_NULL
@@ -74,10 +75,10 @@ public class ExcelToPojoUtils {
                             //Field field = type.getDeclaredField(colNames.get(k));
                             Field field = filterField(fields, colNames.get(k));
                             if (field == null) {
-                                throw APIException.notFound("Error fething column field {0} ", colNames.get(k));
+                                throw APIException.notFound("Error fetching column field {0} ", colNames.get(k));
                             }
 
-                            System.out.println("Field " + field.getName() + " Value " + strValue + " Type " + field.getType());
+                           // System.out.println("Field " + field.getName() + " Value " + strValue + " Type " + field.getType());
                             field.setAccessible(true);
                             if (field != null) {
                                 Object value = null;
@@ -100,7 +101,13 @@ public class ExcelToPojoUtils {
                                 } else if (field.getType().equals(LocalDateTime.class)) {
                                     value = LocalDateTime.parse(strValue);
                                 } else if (field.getType().equals(Boolean.class)) {
-                                    value = BOOLEAN_TRUE.equals(strValue);
+                                    if(strValue.equals("TRUE")){
+                                        value= true;
+                                    }else{
+                                        value= false;
+                                    }
+                                    //value = BOOLEAN_TRUE.equals(strValue);
+                                    System.out.println("strValue "+strValue+" Boolean "+value);
                                 } else if (field.getType().equals(boolean.class)) {
                                     value = BOOLEAN_TRUE.equals(strValue);
                                 } else if (field.getType().equals(BigDecimal.class)) {
