@@ -32,6 +32,7 @@ public class LabRegisterTestData {
     private Long testId;
     private String testName;
     private String testCode;
+    private String discipline;
 
     private BigDecimal testPrice;
 

@@ -83,13 +83,17 @@ public class PatientScanTest extends Auditable {
         entity.setStatus(this.getStatus());
 
         if (patientScanRegister != null) {
+            
             entity.setReceivedDate(this.getPatientScanRegister().getReceivedDate());
             entity.setAccessNo(this.getPatientScanRegister().getAccessNo());
             entity.setPatientName(this.getPatientScanRegister().getPatientName());
             entity.setPatientNumber(this.getPatientScanRegister().getPatientNo());
-            entity.setIsWalkin(this.getPatientScanRegister().getIsWalkin());
-            if(this.getPatientScanRegister().getVisit()!=null && this.getPatientScanRegister().getVisit().getHealthProvider()!=null) 
+            entity.setIsWalkin(this.getPatientScanRegister().getIsWalkin());           
+            entity.setOrderedDate(this.getPatientScanRegister().getReceivedDate());
+            if(this.getPatientScanRegister().getVisit()!=null && this.getPatientScanRegister().getVisit().getHealthProvider()!=null) {
                entity.setRequestedByStaffNumber(this.getPatientScanRegister().getVisit().getHealthProvider().getStaffNumber()); 
+               entity.setVisitNumber(this.getPatientScanRegister().getVisit().getVisitNumber());
+            }
         }
 
         if (this.getRadiologyTest() != null) {
@@ -119,8 +123,7 @@ public class PatientScanTest extends Auditable {
         if (this.getRequest() != null) {
             entity.setRequestId(this.getRequest().getId());
             if (this.getRequest().getRequestedBy() != null) {
-                entity.setRequestedBy(this.getRequest().getRequestedBy().getName());
-                
+                entity.setRequestedBy(this.getRequest().getRequestedBy().getName());                
             }
         }
         return entity;

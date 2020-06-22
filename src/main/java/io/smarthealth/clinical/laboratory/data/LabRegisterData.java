@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.lang.Constants;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -34,6 +35,8 @@ public class LabRegisterData {
     private String labNumber;
 
     private String requestedBy;
+    @ApiModelProperty(hidden=true, required=false)
+    private String requestedByStaffNumber;
     
      private String transactionId; 
     /**

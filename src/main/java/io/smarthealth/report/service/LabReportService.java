@@ -44,15 +44,15 @@ import org.springframework.util.MultiValueMap;
 @Service
 @RequiredArgsConstructor
 public class LabReportService {
+
     private final JasperReportsService reportService;
     private final PatientService patientService;
     private final LaboratoryService labService;
-    
+
     private final VisitService visitService;
     private final LabConfigurationService labSetUpService;
-    
-    
-    public void getLabStatement(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+    public void getLabStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
         String labNumber = reportParam.getFirst("labNumber");
@@ -63,23 +63,24 @@ public class LabReportService {
         List<LabTestStatus> status = Arrays.asList(statusToEnum(reportParam.getFirst("status")));
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));
-        
-         List<LabRegisterData> patientData = labService.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status,range, search,Pageable.unpaged())
+
+        List<LabRegisterData> patientData = labService.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status, range, search, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((register) -> register.toData(expand))
                 .collect(Collectors.toList());
         reportData.setData(patientData);
         reportData.setFormat(format);
-        if(!expand)
+        if (!expand) {
             reportData.setTemplate("/clinical/laboratory/LabStatement");
-        else
+        } else {
             reportData.setTemplate("/clinical/laboratory/LabStatement_summary");
+        }
         reportData.setReportName("Lab-Statement");
         reportService.generateReport(reportData, response);
-    }    
-    
-    public void getLabTestStatement(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    }
+
+    public void getLabTestStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
         String labNumber = reportParam.getFirst("labNumber");
@@ -90,18 +91,19 @@ public class LabReportService {
         LabTestStatus status = labService.LabTestStatusToEnum(reportParam.getFirst("status"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));
-        
-         List<LabRegisterTestData> patientData = labService.getLabRegisterTest(labNumber, orderNumber, visitNumber, patientNumber, status, range, search, Pageable.unpaged())
+
+        List<LabRegisterTestData> patientData = labService.getLabRegisterTest(labNumber, orderNumber, visitNumber, patientNumber, status, range, search, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((register) -> register.toData(expand))
                 .collect(Collectors.toList());
         reportData.setData(patientData);
         reportData.setFormat(format);
-        if(!expand)
+        if (!expand) {
             reportData.setTemplate("/clinical/laboratory/LabStatement");
-        else
+        } else {
             reportData.setTemplate("/clinical/laboratory/LabStatement_summary");
+        }
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("status");
@@ -111,10 +113,10 @@ public class LabReportService {
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setReportName("Lab-Statement");
         reportService.generateReport(reportData, response);
-    }    
-    
-    public void getPatientLabReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
-        String labNumber= reportParam.getFirst("labNumber"); 
+    }
+
+    public void getPatientLabReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        String labNumber = reportParam.getFirst("labNumber");
 //        Visit visit = visitService.findVisitEntityOrThrow("O000005");
         LabRegisterData labTests = labService.getLabRegisterByNumber(labNumber).toData(Boolean.TRUE);//tLabResultDataByVisit(visit);
         ReportData reportData = new ReportData();
@@ -127,28 +129,25 @@ public class LabReportService {
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setPatientNumber(labTests.getPatientNo());
         reportData.setData(Arrays.asList(labTests));
-//        if (visit.getHealthProvider() != null) {
-//            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
-//        }
+        reportData.setEmployeeId(labTests.getRequestedByStaffNumber());
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/laboratory/patientLab_report");
         reportData.setReportName("Lab-report");
         reportService.generateReport(reportData, response);
     }
-    
-    public void genSpecimenLabel(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+
+    public void genSpecimenLabel(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long testId = NumberUtils.createLong(reportParam.getFirst("labRegisterTestId"));
         LabRegisterTestData testData = labService.getLabRegisterTest(testId).toData(false);
-        
+
         reportData.setData(Arrays.asList(testData));
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/laboratory/specimen_label");
         reportData.setReportName("specimen-label");
         reportService.generateReport(reportData, response);
     }
-    
-    
+
     private LabTestStatus statusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;

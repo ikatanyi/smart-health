@@ -109,6 +109,7 @@ public class LabRegisterTest extends Identifiable {
             data.setTestId(this.labTest.getId());
             data.setTestCode(this.labTest.getCode());
             data.setTestName(this.labTest.getTestName());
+            data.setDiscipline(this.labTest.getDispline().getDisplineName());
             data.setWithRef(this.labTest.getHasReferenceValue() != null ? this.labTest.getHasReferenceValue() : true);
         }
         data.setAttachment(this.attachment);
