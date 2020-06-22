@@ -21,6 +21,7 @@ import lombok.Data;
  */
 @Data
 public class PayerData {
+    
 
     private Type payerType;
     private Long payerId;

@@ -5,7 +5,6 @@
  */
 package io.smarthealth.accounting.accounts.domain;
 
-import io.smarthealth.accounting.accounts.data.financial.statement.TransactionList;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.math.BigDecimal;
 import java.time.LocalDate;

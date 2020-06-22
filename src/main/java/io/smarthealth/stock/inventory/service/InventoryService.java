@@ -205,7 +205,8 @@ public class InventoryService {
             PurchaseOrder order = purchaseOrderRepository.findByOrderNumber(stockData.getOrderNumber()).orElse(null);
             if (order != null) {
                 Double balance = 0D;
-                balance = stockData.getItems().stream().map((x) -> (x.getQtyOrdered() - x.getQuantity())).reduce(balance, (x, y) -> x + y);
+
+                balance = stockData.getItems().stream().map((x) -> (x.getQtyOrdered() - x.getReceivedQuantity() - x.getQuantity())).reduce(balance, (x, y) -> x + y);
                 PurchaseOrderStatus status = PurchaseOrderStatus.Received;
                 if (balance > 0) {
                     status = PurchaseOrderStatus.PartialReceived;

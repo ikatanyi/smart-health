@@ -4,7 +4,7 @@ import io.smarthealth.administration.employeespecialization.data.enums.EmployeeC
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.mail.EmailData;
 import io.smarthealth.infrastructure.utility.PassayPassword;
-import io.smarthealth.messaging.NotificationService;
+import io.smarthealth.messaging.MessageNotificationService;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
@@ -62,7 +62,7 @@ public class EmployeeService {
     PersonContactService personContactService;
 
     @Autowired
-    NotificationService notificationService;
+    MessageNotificationService notificationService;
 
     @Transactional
     public Employee createFacilityEmployee(Employee employee, PersonContact personContact, boolean createUserAccount, String[] roles) {

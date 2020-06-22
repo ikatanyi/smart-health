@@ -60,6 +60,7 @@ public class BillRepositoryImpl implements BillRepository {
         );
 
         List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), false));
 
         if (patientNumber != null) {
             predicates.add(cb.equal(root.get("patientBill").get("patient").get("patientNumber"), patientNumber));
@@ -147,6 +148,7 @@ public class BillRepositoryImpl implements BillRepository {
         );
 
         List<Predicate> predicates = new ArrayList<>();
+         predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), true));
 
         if (patientNumber != null) {
             predicates.add(cb.equal(root.get("patientBill").get("reference"), patientNumber));

@@ -12,6 +12,7 @@ public class SupplierStockItem extends StockItem {
 
     private Long purchaseOrderId;
     private Double qtyOrdered;
+    private Double receivedQuantity;
     private String batchNumber;
     private LocalDate expiryDate;
 }
