@@ -2,9 +2,12 @@ package io.smarthealth.supplier.api;
 
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.jobs.data.JobDetailHistoryData;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.supplier.data.SupplierData;
+import io.smarthealth.supplier.data.SupplierStatement;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.domain.SupplierMetadata;
 import io.smarthealth.supplier.service.SupplierService;
@@ -38,7 +41,7 @@ public class SupplierController {
     @PostMapping("/suppliers")
     @PreAuthorize("hasAuthority('create_suppliers')")
     public ResponseEntity<?> createSupplier(@Valid @RequestBody SupplierData supplierData) {
-        
+
         if (service.getSupplierByName(supplierData.getSupplierName(), supplierData.getLegalName()).isPresent()) {
             throw APIException.conflict("Supplier with name {0} already exists.", supplierData.getSupplierName());
         }
@@ -98,4 +101,18 @@ public class SupplierController {
         return ResponseEntity.ok(metadata);
     }
 
+    @GetMapping("/suppliers/{supplierId}/statement")
+    public ResponseEntity<?> getStatement(
+            @PathVariable(value = "supplierId") Long supplierId,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        List<SupplierStatement> list = service.getStatement(supplierId, range);
+
+        return ResponseEntity.ok(PaginationUtil.paginateList(list, "Supplier Statement", "", pageable));
+    }
 }

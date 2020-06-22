@@ -71,8 +71,11 @@ public class AccountlBalanceRepositoryImpl implements AccountlBalanceRepository 
         query.select(
                 cb.sum(
                         cb.diff(journalItem.get("debit"), journalItem.get("credit"))
-                )
+                )// TODO check account type
         );
+        
+        //Revenue/liabilities
+        
         List<Predicate> predicates = new ArrayList<>();
         if (accountNumber != null) {
             predicates.add(cb.equal(journalItem.get("account").get("identifier"), accountNumber));

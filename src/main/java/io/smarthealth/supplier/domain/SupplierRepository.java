@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
  * @author Kelsas
  */
 @Repository
-public interface SupplierRepository extends JpaRepository<Supplier, Long>, JpaSpecificationExecutor<Supplier> {
+public interface SupplierRepository extends JpaRepository<Supplier, Long>, JpaSpecificationExecutor<Supplier>, StatementRepository {
    Optional<Supplier> findBySupplierNameOrLegalName(String supplierName, String legalName);
 }

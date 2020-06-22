@@ -67,6 +67,7 @@ public class UploadService {
     public void UploadService(String dir) {
         try {
             this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath().concat("/").concat(dir));
+             
             if(!Files.isDirectory(rootLocation, LinkOption.NOFOLLOW_LINKS))
                 Files.createDirectories(rootLocation);
         } catch (IOException ex) {

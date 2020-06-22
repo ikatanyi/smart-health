@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.mail.MailService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.infrastructure.utility.PassayPassword;
+import io.smarthealth.notifications.domain.Notification;
 import io.smarthealth.security.data.ActiveUserStore;
 import io.smarthealth.security.data.ApiResponse;
 import io.smarthealth.security.data.PasswordData;
@@ -20,22 +21,25 @@ import io.smarthealth.security.domain.User;
 import io.smarthealth.security.domain.UserRepository;
 import io.smarthealth.security.service.UserService;
 import io.swagger.annotations.Api;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -50,6 +54,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
@@ -61,6 +66,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+    private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -271,11 +278,38 @@ public class AuthController {
         return ResponseEntity.ok(activeUserStore.getUsers());
     }
 
+    @GetMapping(path = "/get-notifications", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter getNewNotification() {
+        SseEmitter emitter = new SseEmitter();
+        this.emitters.add(emitter);
+
+        emitter.onCompletion(() -> this.emitters.remove(emitter));
+        emitter.onTimeout(() -> {
+            emitter.complete();
+            this.emitters.remove(emitter);
+        });
+
+        return emitter;
+    }
+
     private String getAppUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
 
     boolean containsWhitespace(String str) {
         return str.matches(".*\\s.*");
+    }
+
+    @EventListener
+    public void onNotification(Notification notification) {
+        List<SseEmitter> deadEmitters = new ArrayList<>();
+        this.emitters.forEach(emitter -> {
+            try {
+                emitter.send(notification);
+            } catch (IOException e) {
+                deadEmitters.add(emitter);
+            }
+        });
+        this.emitters.remove(deadEmitters);
     }
 }

@@ -16,7 +16,9 @@ import io.smarthealth.administration.app.service.AdminService;
 import io.smarthealth.administration.app.service.CurrencyService;
 import io.smarthealth.administration.finances.service.PaymentTermsService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.supplier.data.SupplierData;
+import io.smarthealth.supplier.data.SupplierStatement;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.domain.SupplierMetadata;
 import io.smarthealth.supplier.domain.SupplierRepository;
@@ -154,5 +156,9 @@ public class SupplierService {
         metadata.setPricelists(pricebooks);
 
         return metadata;
+    }
+    public List<SupplierStatement> getStatement(Long supplierId, DateRange range){
+        List<SupplierStatement> lists= supplierRepository.getSupplierStatement(supplierId);
+        return lists;
     }
 }
