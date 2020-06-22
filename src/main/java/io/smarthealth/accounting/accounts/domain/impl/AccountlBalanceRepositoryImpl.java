@@ -6,6 +6,7 @@
 package io.smarthealth.accounting.accounts.domain.impl;
 
 import io.smarthealth.accounting.accounts.data.financial.statement.TransactionList;
+import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.math.BigDecimal;
@@ -21,6 +22,8 @@ import javax.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.accounts.domain.AccountlBalanceRepository;
+import java.util.Arrays;
+import javax.persistence.criteria.Expression;
 
 /**
  *
@@ -41,11 +44,23 @@ public class AccountlBalanceRepositoryImpl implements AccountlBalanceRepository 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<BigDecimal> query = cb.createQuery(BigDecimal.class);
         Root<JournalEntryItem> journalItem = query.from(JournalEntryItem.class);
-        query.select(
-                cb.sum(
+//        query.select(
+//                cb.sum(
+//                        cb.diff(journalItem.get("debit"), journalItem.get("credit"))
+//                )
+//        );
+        Expression<BigDecimal> caseExpr = cb.selectCase()
+                .when(
+                        cb.or(
+                                cb.equal(journalItem.get("account").get("type"), AccountType.REVENUE),
+                                cb.equal(journalItem.get("account").get("type"), AccountType.LIABILITY)
+                        ), cb.diff(journalItem.get("credit"), journalItem.get("debit"))
+                ).otherwise(
                         cb.diff(journalItem.get("debit"), journalItem.get("credit"))
-                )
-        );
+                ).as(BigDecimal.class);
+        
+        query.select( cb.sum(caseExpr));
+        
         List<Predicate> predicates = new ArrayList<>();
         if (accountNumber != null) {
             predicates.add(cb.equal(journalItem.get("account").get("identifier"), accountNumber));
@@ -68,14 +83,24 @@ public class AccountlBalanceRepositoryImpl implements AccountlBalanceRepository 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<BigDecimal> query = cb.createQuery(BigDecimal.class);
         Root<JournalEntryItem> journalItem = query.from(JournalEntryItem.class);
-        query.select(
-                cb.sum(
+        
+        Expression<BigDecimal> caseExpr = cb.selectCase()
+                .when(
+                        cb.or(
+                                cb.equal(journalItem.get("account").get("type"), AccountType.REVENUE),
+                                cb.equal(journalItem.get("account").get("type"), AccountType.LIABILITY)
+                        ), cb.diff(journalItem.get("credit"), journalItem.get("debit"))
+                ).otherwise(
                         cb.diff(journalItem.get("debit"), journalItem.get("credit"))
-                )// TODO check account type
-        );
+                ).as(BigDecimal.class);
         
+        query.select( cb.sum(caseExpr));
+//                cb.sum(
+//                        cb.diff(journalItem.get("debit"), journalItem.get("credit"))
+//                )// TODO check account type
+//        );
+
         //Revenue/liabilities
-        
         List<Predicate> predicates = new ArrayList<>();
         if (accountNumber != null) {
             predicates.add(cb.equal(journalItem.get("account").get("identifier"), accountNumber));
@@ -89,6 +114,9 @@ public class AccountlBalanceRepositoryImpl implements AccountlBalanceRepository 
         BigDecimal sum = typedQuery.getSingleResult();
         return sum;
     }
- 
+
+    public List<AccountType> getAccountType() {
+        return Arrays.asList(AccountType.REVENUE, AccountType.LIABILITY);
+    }
 
 }

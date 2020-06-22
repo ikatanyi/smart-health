@@ -23,6 +23,10 @@ public class PriceListSpecification {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
+             if (servicePointId != null) {
+                predicates.add(cb.equal(root.get("servicePoint").get("id"), servicePointId));
+            }
+             
             if (queryItem != null) {
                 final String likeExpression = "%" + queryItem + "%";
                 predicates.add(
