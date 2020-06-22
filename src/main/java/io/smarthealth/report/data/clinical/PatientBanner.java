@@ -41,9 +41,10 @@ public class PatientBanner {
         patient.setAllergyStatus(data.getAllergyStatus());
         patient.setBloodType(data.getBloodType());
         patient.setDateOfBirth(String.valueOf(data.getDateOfBirth()));
+        patient.setPhoneNumber(data.getPrimaryContact());
         if (data.getContact() != null && !data.getContact().isEmpty()) {
             patient.setEmail(data.getContact().get(0).getEmail());
-            patient.setPhoneNumber(data.getContact().get(0).getMobile());
+           
         }
 
         patient.setFullName(data.getFullName());

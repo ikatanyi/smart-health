@@ -53,13 +53,17 @@ public class TriageService {
 
         VitalsRecord vr = VitalRecordData.map(triage);
 
-        float bmi = (float) BMI.calculateBMI(triage.getHeight(), triage.getWeight());
-        String category = BMI.getCategory(bmi);
+        try {
+            float bmi = (float) BMI.calculateBMI(triage.getHeight(), triage.getWeight());
+            String category = BMI.getCategory(bmi);
+            vr.setCategory(category);
+            vr.setBmi(bmi);
+        } catch (Exception e) {
+            System.out.println("Unable to calculate BMI " + e.getMessage());
+        }
 
         vr.setPatient(visit.getPatient());
         vr.setVisit(visit);
-        vr.setBmi(bmi);
-        vr.setCategory(category);
 
         return triageRepository.save(vr);
     }

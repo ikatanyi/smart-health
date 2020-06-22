@@ -56,6 +56,21 @@ public class LabConfigurationService {
         return repository.saveAll(toSave);
     }
 
+    public void fixTestsImportedForIvory(List<LabTestData> lists) {
+
+        for (LabTestData data : lists) {
+            System.out.println("data.getTestName() "+data.getTestName());
+            System.out.println("data.getHasReferenceValue() "+data.getHasReferenceValue());
+            LabTest labTest = getTestByName(data.getTestName());
+            if (data.getItemCode() != null) {
+                labTest.setCode(data.getItemCode());
+            }
+            labTest.setHasReferenceValue(data.getHasReferenceValue());
+            repository.save(labTest);
+        }
+
+    }
+
     public List<LabTest> searchLabTest(String keyword) {
         return repository.searchLabTest(keyword);
     }

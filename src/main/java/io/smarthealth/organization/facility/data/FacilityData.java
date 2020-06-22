@@ -90,15 +90,4 @@ public class FacilityData {
         return Base64.decodeBase64(imageDataString);
     }
     
-    public static BufferedImage  byteArrayToImage(byte[] bytes){  
-        BufferedImage bufferedImage=null;
-        try {
-            InputStream inputStream = new ByteArrayInputStream(bytes);
-            bufferedImage = ImageIO.read(inputStream);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-        return bufferedImage;
-}
-    
 }

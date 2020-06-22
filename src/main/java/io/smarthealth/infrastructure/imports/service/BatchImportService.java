@@ -13,8 +13,14 @@ import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
+import io.smarthealth.debtor.member.data.PayerMemberData;
+import io.smarthealth.debtor.member.domain.PayerMember;
+import io.smarthealth.debtor.member.domain.PayerMemberRepository;
+import io.smarthealth.debtor.member.service.PayerMemberService;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
+import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
+import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
 import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
@@ -26,6 +32,7 @@ import io.smarthealth.stock.item.service.ItemService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,7 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class BatchImportService {
-    
+
     private final AllocationService allocationService;
     private final ItemService itemService;
     private final PatientService patientService;
@@ -46,20 +53,23 @@ public class BatchImportService {
     private final PayerService payerService;
     private final PricebookService pricebookService;
     private final LabConfigurationService labConfigService;
-    
+    private final SchemeService schemeService;
+
+    private final PayerMemberRepository payerMemberRepository;
+
     public void importData(final TemplateType type, final MultipartFile file) {
-        
+
         try {
             byte[] bytes = file.getBytes();
             InputStream inputFilestream = new ByteArrayInputStream(bytes);
             ExcelToPojoUtils toPojoUtil = new ExcelToPojoUtils();
-            
+
             switch (type) {
                 case Patients:
                     List<PatientData> list = toPojoUtil.toPojo(PatientData.class, inputFilestream);
                     importPatients(list);
                     break;
-                
+
                 case Allocation:
                     List<BatchAllocationData> allocationList = toPojoUtil.toPojo(BatchAllocationData.class, inputFilestream);
                     allocationService.importAllocation(allocationList);
@@ -91,7 +101,7 @@ public class BatchImportService {
                         d.setTestName(la.getLabTestName());
                         data.add(d);
                     }
-                    
+
                     annalyteService.createAnalyte(data);
                     break;
                 case LabTests:
@@ -101,6 +111,22 @@ public class BatchImportService {
                     }
                     labConfigService.createTest(labTestData);
                     break;
+                case LabTestsFixer:
+                    List<LabTestData> labTests = toPojoUtil.toPojo(LabTestData.class, inputFilestream);
+
+                    labConfigService.fixTestsImportedForIvory(labTests);
+                    break;
+                case SchemeMembers:
+                    List<PayerMemberData> memberData = toPojoUtil.toPojo(PayerMemberData.class, inputFilestream);
+                    List<PayerMember> members = new ArrayList<>();
+                    for (PayerMemberData d : memberData) {
+                        Scheme scheme = schemeService.fetchSchemeByCode(d.getSchemeCode());
+                        PayerMember member = PayerMemberData.map(d);
+                        member.setScheme(scheme);
+                        members.add(member);
+                    }
+                    payerMemberRepository.saveAll(members);
+                    break;
                 default:
                     throw APIException.notFound("Coming Soon!!!", "");
             }
@@ -109,7 +135,7 @@ public class BatchImportService {
             throw APIException.badRequest("Error! {0} ", e.getMessage());
         }
     }
-    
+
     private void importPatients(final List<PatientData> list) {
         List<Patient> patients = new ArrayList<>();
         for (PatientData d : list) {

@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="4aae1193-a82d-4555-b88f-e537201ac06a">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="460"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
@@ -337,14 +337,14 @@
 				<text><![CDATA[Make all cheques payable to the Company stated above]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="295" y="51" width="101" height="27" uuid="d34f5209-ff0b-4051-b8a3-ac76fb5a184c"/>
+				<reportElement x="295" y="46" width="101" height="20" uuid="d34f5209-ff0b-4051-b8a3-ac76fb5a184c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient Signature :]]></text>
 			</staticText>
 			<line>
-				<reportElement x="380" y="65" width="169" height="1" uuid="14b67ca0-0ce6-424f-992d-eb9256d71c98"/>
+				<reportElement x="383" y="60" width="169" height="1" uuid="14b67ca0-0ce6-424f-992d-eb9256d71c98"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineColor="#999999"/>
 				</graphicElement>
@@ -371,19 +371,25 @@
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="4" y="72" width="111" height="14" uuid="d33176b1-58bd-49dd-a29d-3b1d095aa717"/>
+				<reportElement x="4" y="72" width="72" height="14" uuid="d33176b1-58bd-49dd-a29d-3b1d095aa717"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="61" y="46" width="219" height="20" uuid="31462754-0376-4c15-aac1-fe59ab0c155a"/>
+				<reportElement x="84" y="59" width="151" height="16" uuid="31462754-0376-4c15-aac1-fe59ab0c155a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="63" y="60" width="169" height="1" uuid="b59060fc-3e70-4618-a6aa-662d22642c37"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineColor="#999999"/>
+				</graphicElement>
+			</line>
 		</band>
 	</pageFooter>
 </jasperReport>
