@@ -99,7 +99,7 @@ public class UploadService {
     }
 
     public Resource loadFileAsResource(String fileName, String directory) {
-//        UploadService(directory);
+        UploadService(directory);
         Resource resource = null;
         try {
             Path filePath = this.rootLocation.resolve(fileName).normalize();
