@@ -43,7 +43,7 @@ public class AccountController {
 
     @PostMapping("/accounts")
     @ResponseBody
-    @PreAuthorize("hasAuthority('create_account')")        
+//    @PreAuthorize("hasAuthority('create_account')")        
     ResponseEntity<Void> createAccount(@RequestBody @Valid final AccountData account) {
         
         if (this.accountService.findAccount(account.getIdentifier()).isPresent()) {
@@ -65,7 +65,7 @@ public class AccountController {
 
     @GetMapping("/accounts")
     @ResponseBody
-    @PreAuthorize("hasAuthority('view_account')")    
+//    @PreAuthorize("hasAuthority('view_account')")    
     ResponseEntity<AccountPage> fetchAccounts(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "term", required = false) final String term,
@@ -80,7 +80,7 @@ public class AccountController {
 
     @GetMapping("/accounts/{identifier}")
     @ResponseBody
-    @PreAuthorize("hasAuthority('view_account')")    
+//    @PreAuthorize("hasAuthority('view_account')")    
     ResponseEntity<AccountData> findAccount(@PathVariable("identifier") final String identifier) {
         final Optional<AccountData> optionalAccount = this.accountService.findAccount(identifier);
         if (optionalAccount.isPresent()) {
@@ -92,7 +92,7 @@ public class AccountController {
 
     @PutMapping("/accounts/{identifier}")
     @ResponseBody
-    @PreAuthorize("hasAuthority('edit_account')")    
+//    @PreAuthorize("hasAuthority('edit_account')")    
     ResponseEntity<Void> modifyAccount(@PathVariable("identifier") final String identifier,
             @RequestBody @Valid final AccountData account) {
         if (!identifier.equals(account.getIdentifier())) {
@@ -117,7 +117,7 @@ public class AccountController {
 
     @GetMapping("/accounts/{identifier}/entries")
     @ResponseBody
-    @PreAuthorize("hasAuthority('view_account')")            
+//    @PreAuthorize("hasAuthority('view_account')")            
     ResponseEntity<?> fetchAccountEntries(
             @PathVariable("identifier") final String identifier,
             @RequestParam(value = "dateRange", required = false) final String dateRange,
@@ -184,7 +184,7 @@ public class AccountController {
 
     @GetMapping("/accounts/{identifier}/balance")
     @ResponseBody
-    @PreAuthorize("hasAuthority('view_account')")            
+//    @PreAuthorize("hasAuthority('view_account')")            
     ResponseEntity<?> getAccountBalance(@PathVariable("identifier") final String identifier,
             @RequestParam(value = "balanceDate", required = false) final LocalDate date,
             @RequestParam(value = "dateRange", required = false) final String dateRange) {
@@ -197,7 +197,7 @@ public class AccountController {
 
     @GetMapping("/accounts/{identifier}/transactions")
     @ResponseBody
-    @PreAuthorize("hasAuthority('view_account')")            
+//    @PreAuthorize("hasAuthority('view_account')")            
     ResponseEntity<?> getTransactions(
             @PathVariable("identifier") final String identifier,
             @RequestParam(value = "dateRange", required = false) final String dateRange,

@@ -6,6 +6,7 @@
 package io.smarthealth.notifications.domain;
 
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.notifications.data.NotificationData;
 import io.smarthealth.security.domain.User;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,4 +37,7 @@ public class Notification extends Auditable {
 
     @NotNull
     private NotificationType type;
+
+    private String reference;
+
 }

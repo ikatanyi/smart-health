@@ -82,12 +82,12 @@ public class CreditNoteService {
             CreditNoteItem creditNoteItem = new CreditNoteItem();
             InvoiceItem invoiceItem = invoiceService.getInvoiceItemByIdOrThrow(item.getInvoiceItemId());
 
-           creditNoteItem.setAmount(invoiceItem.getBillItem().getAmount());
+            creditNoteItem.setAmount(invoiceItem.getBillItem().getAmount());
             creditNoteItem.setInvoiceItem(invoiceItem);
 
             creditNoteItemArr.add(creditNoteItem);
 
-            totalAmount = totalAmount+invoiceItem.getBillItem().getAmount();
+            totalAmount = totalAmount + invoiceItem.getBillItem().getAmount();
         }
 //        }).forEachOrdered((creditNoteItem) -> {
 //            creditNoteItemArr.add(creditNoteItem);
@@ -100,7 +100,7 @@ public class CreditNoteService {
         invoiceRepository.save(invoice);
 
         //TODO: create journal for credit note
-        //journalService.save(toJournal(savedcreditNote));
+        journalService.save(toJournal(savedcreditNote));
         return savedcreditNote;
     }
 
@@ -135,8 +135,8 @@ public class CreditNoteService {
     public CreditNote getCreditNoteByIdWithFailDetection(Long id) {
         return creditNoteRepository.findById(id).orElseThrow(() -> APIException.notFound("CreditNote identified by id {0} not found ", id));
     }
-    
-     public CreditNote getCreditNoteByNumberWithFailDetection(String creditNoteNumber) {
+
+    public CreditNote getCreditNoteByNumberWithFailDetection(String creditNoteNumber) {
         return creditNoteRepository.findByCreditNoteNo(creditNoteNumber).orElseThrow(() -> APIException.notFound("CreditNote identified by creditNoteNumber {0} not found ", creditNoteNumber));
     }
 
@@ -155,25 +155,24 @@ public class CreditNoteService {
 
     private JournalEntry toJournal(CreditNote creditNote) {
         List<JournalEntryItem> journalEntries = new ArrayList();
-        Account debitAccount = creditNote.getPayer().getDebitAccount();
-        String narration = "Credit Note " + creditNote.getCreditNoteNo() + "for invoice " + creditNote.getInvoice().getNumber();
-        if (debitAccount == null) {
+        Account creditAccount = creditNote.getPayer().getDebitAccount();
+        String narration = "Credit Note " + creditNote.getCreditNoteNo() + " for invoice " + creditNote.getInvoice().getNumber();
+        if (creditAccount == null) {
             throw APIException.badRequest("Payer account is Not Mapped");
         }
-        String debitAcc = debitAccount.getIdentifier();
-        Double amountToDebit = 0.00;
+        BigDecimal amountToDebit = BigDecimal.ZERO;
         for (CreditNoteItem item : creditNote.getItems()) {
             ServicePoint servicepoint = servicePointService.getServicePoint(item.getInvoiceItem().getBillItem().getServicePointId());
             BigDecimal amount = BigDecimal.valueOf(item.getInvoiceItem().getBillItem().getAmount());
-            amountToDebit = amountToDebit + item.getInvoiceItem().getBillItem().getAmount();
-            journalEntries.add(new JournalEntryItem(servicepoint.getIncomeAccount(), narration, BigDecimal.ZERO, amount));
+            amountToDebit = amountToDebit.add(amount);
+            journalEntries.add(new JournalEntryItem(servicepoint.getIncomeAccount(), narration, amountToDebit, BigDecimal.ZERO));
         }
         //BigDecimal amount = BigDecimal.valueOf(creditNote.getAmount());
-        journalEntries.add(new JournalEntryItem(debitAccount, narration, BigDecimal.ZERO, BigDecimal.valueOf(amountToDebit)));
+        journalEntries.add(new JournalEntryItem(creditAccount, narration,BigDecimal.ZERO, amountToDebit));
 
-        JournalEntry toSave = new JournalEntry(LocalDate.from(creditNote.getCreatedOn().atZone(ZoneId.systemDefault())), narration, journalEntries);
+        JournalEntry toSave = new JournalEntry(LocalDate.now(), narration, journalEntries);
         toSave.setTransactionNo(creditNote.getTransactionId());
-        toSave.setTransactionType(TransactionType.Invoicing);
+        toSave.setTransactionType(TransactionType.CreditNote);
         toSave.setStatus(JournalState.PENDING);
         return toSave;
     }

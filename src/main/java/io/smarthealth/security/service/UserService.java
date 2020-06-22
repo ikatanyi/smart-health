@@ -1,5 +1,6 @@
 package io.smarthealth.security.service;
 
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.security.domain.PasswordResetToken;
 import io.smarthealth.security.domain.PasswordTokenRepository;
 import io.smarthealth.security.domain.Role;
@@ -20,6 +21,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -107,6 +109,11 @@ public class UserService {
     public Page<User> searchAllUsers(String search, Pageable page) {
         Specification<User> spec = UserSpecification.createSpecification(search);
         return userRepository.findAll(spec, page);
+    }
+
+    @Transactional
+    public User findUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> APIException.notFound("User with id {0} Not Found", id));
     }
     //sign up { email | password | name | username | captchaResponse }
     //Resend Verification mail

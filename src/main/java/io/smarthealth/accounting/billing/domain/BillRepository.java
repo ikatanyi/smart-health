@@ -6,7 +6,6 @@
 package io.smarthealth.accounting.billing.domain;
 
 import io.smarthealth.accounting.billing.data.SummaryBill;
-import io.smarthealth.accounting.billing.data.nue.Bills;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.math.BigDecimal;
