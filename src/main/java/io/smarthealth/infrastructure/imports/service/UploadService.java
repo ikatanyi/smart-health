@@ -7,6 +7,7 @@ package io.smarthealth.infrastructure.imports.service;
 
 import io.smarthealth.ApplicationProperties;
 import io.smarthealth.infrastructure.exception.FileStorageException;
+import io.smarthealth.infrastructure.exception.MyFileNotFoundException;
 import io.smarthealth.report.storage.StorageException;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
@@ -101,12 +102,12 @@ public class UploadService {
 //        UploadService(directory);
         Resource resource = null;
         try {
-            Path filePath = this.rootLocation.resolve(fileName).normalize();
+            Path filePath = this.rootLocation.resolve(directory+"/"+fileName).normalize();
             resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;
             } else {
-//                throw new MyFileNotFoundException("File not found " + fileName);
+                throw new MyFileNotFoundException("File not found " + filePath);
             }
         } catch (MalformedURLException ex) {
 //            throw new MyFileNotFoundException("File not found " + fileName, ex);
