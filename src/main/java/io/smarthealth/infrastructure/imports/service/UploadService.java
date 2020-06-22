@@ -25,6 +25,8 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.ResourceLoader;
@@ -99,18 +101,19 @@ public class UploadService {
     }
 
     public Resource loadFileAsResource(String fileName, String directory) {
-        UploadService(directory);
+        Path filePath=null;
         Resource resource = null;
         try {
-            Path filePath = this.rootLocation.resolve(fileName).normalize();
+            this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath().concat("/").concat(directory));
+            filePath = this.rootLocation.resolve(fileName).normalize();
             resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;
-            } else {
-                throw new MyFileNotFoundException("File not found " + filePath);
-            }
+            } 
         } catch (MalformedURLException ex) {
-//            throw new MyFileNotFoundException("File not found " + fileName, ex);
+            throw new MyFileNotFoundException("File not found " + filePath, ex);
+        } catch (IOException ex) {
+             throw new MyFileNotFoundException("File not found " + filePath, ex);
         }
         return resource;
     }

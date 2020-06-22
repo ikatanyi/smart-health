@@ -60,10 +60,14 @@ public class PatientScanTestData {
     @ApiModelProperty(required=false, hidden=true)
     private String templateName;
     @ApiModelProperty(required=false, hidden=true)
+    private String visitNumber;
+    @ApiModelProperty(required=false, hidden=true)
     private Boolean supervisorConfirmation;
-    
     @ApiModelProperty(required=false, hidden=true)
     private LocalDate receivedDate;
+    
+    @ApiModelProperty(required=false, hidden=true)
+    private LocalDate orderedDate;
     
     @ApiModelProperty(required=false, hidden=true)
     private String reportedBy;

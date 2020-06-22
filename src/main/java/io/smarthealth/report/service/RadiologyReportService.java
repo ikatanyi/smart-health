@@ -36,6 +36,7 @@ import net.sf.jasperreports.engine.design.JRDesignSortField;
 import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -97,13 +98,13 @@ public class RadiologyReportService {
     
     public void getPatientRadiolgyReport(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        String accessNumber = reportParam.getFirst("scanNumber");
-        PatientScanRegisterData procTests = scanService.findPatientRadiologyTestByAccessNoWithNotFoundDetection(accessNumber).todata();
+        Long scanTestId = NumberUtils.createLong(reportParam.getFirst("scanTestId"));
+        PatientScanTestData procTests = scanService.findPatientRadiologyTestByIdWithNotFoundDetection(scanTestId).toData();//
           
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
         reportData.setPatientNumber(procTests.getPatientNumber());
-        reportData.setEmployeeId(procTests.getRequestedById());
+        reportData.setEmployeeId(procTests.getRequestedByStaffNumber());
         sortField.setName("visitNumber");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
@@ -111,7 +112,6 @@ public class RadiologyReportService {
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setPatientNumber(procTests.getPatientNumber());
         reportData.setData(Arrays.asList(procTests));
-        reportData.setEmployeeId(procTests.getRequestedById());
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/radiology/patient_radiology_report");
         reportData.setReportName("Patient-scan-report");
