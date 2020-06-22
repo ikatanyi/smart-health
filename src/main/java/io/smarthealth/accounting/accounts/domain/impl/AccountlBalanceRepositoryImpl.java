@@ -94,13 +94,7 @@ public class AccountlBalanceRepositoryImpl implements AccountlBalanceRepository 
                         cb.diff(journalItem.get("debit"), journalItem.get("credit"))
                 ).as(BigDecimal.class);
         
-        query.select( cb.sum(caseExpr));
-//                cb.sum(
-//                        cb.diff(journalItem.get("debit"), journalItem.get("credit"))
-//                )// TODO check account type
-//        );
-
-        //Revenue/liabilities
+        query.select( cb.sum(caseExpr)); 
         List<Predicate> predicates = new ArrayList<>();
         if (accountNumber != null) {
             predicates.add(cb.equal(journalItem.get("account").get("identifier"), accountNumber));

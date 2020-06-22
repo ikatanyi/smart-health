@@ -68,7 +68,10 @@ public class CashierService {
         return repository.save(cashier);
     }
 
-    public Page<Cashier> fetchAllCashiers(Pageable page) {
+    public Page<Cashier> fetchAllCashiers(Boolean active, Pageable page) {
+        if(active!=null){
+            return repository.findByActive(active, page);
+        }
         return repository.findAll(page);
     }
 

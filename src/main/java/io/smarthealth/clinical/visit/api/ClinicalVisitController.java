@@ -3,6 +3,8 @@ package io.smarthealth.clinical.visit.api;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.CopayData;
+import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.billing.domain.PatientBillRepository;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.data.DoctorInvoiceData;
 import io.smarthealth.accounting.doctors.domain.DoctorClinicItems;
@@ -60,6 +62,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,6 +136,9 @@ public class ClinicalVisitController {
 
     @Autowired
     PaymentDetailAuditRepository paymentDetailAuditRepository;
+
+    @Autowired
+    private PatientBillRepository patientBillRepository;
 
     @PostMapping("/visits")
     @PreAuthorize("hasAuthority('create_visits')")
@@ -456,10 +462,19 @@ public class ClinicalVisitController {
             paymentDetails = paymentDetailsService.createPaymentDetails(pd);
 
         }
-        visitService.save(visit);
-        
+        Visit updatedVisit = visitService.save(visit);
+
         //update those bills that have not been paid
-        
+        //
+        List<PatientBill> bills = patientBillRepository.findByVisit(visit);
+        List<PatientBill> updatedBills = bills.stream()
+                .map(x -> {
+                    x.setPaymentMode(updatedVisit.getPaymentMethod().name());
+                    return x;
+                })
+                .collect(Collectors.toList());;
+
+        patientBillRepository.saveAll(updatedBills);
 
         PaymentDetailsData ppd = paymentDetails != null ? PaymentDetailsData.map(paymentDetails) : null;
 

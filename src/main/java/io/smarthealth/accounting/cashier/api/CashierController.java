@@ -127,12 +127,13 @@ public class CashierController {
     @GetMapping("/cashiers")
     @PreAuthorize("hasAuthority('view_cashiers')")
     public ResponseEntity<?> getAllCashiers(
+            @RequestParam(value = "active", required = false) Boolean active,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<CashierData> list = service.fetchAllCashiers(pageable)
+        Page<CashierData> list = service.fetchAllCashiers(active,pageable)
                 .map(x -> x.toData());
 
         Pager<List<CashierData>> pagers = new Pager();

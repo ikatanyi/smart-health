@@ -20,7 +20,7 @@ import lombok.ToString;
  */
 @Entity
 @Data
-@Table(name = "patient_billing_item")
+@Table(name = "patient_billing_item") 
 public class PatientBillItem extends Auditable {
 
     @JsonIgnore

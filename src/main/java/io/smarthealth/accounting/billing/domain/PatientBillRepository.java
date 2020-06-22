@@ -2,6 +2,7 @@ package io.smarthealth.accounting.billing.domain;
 
 import io.smarthealth.accounting.billing.data.PatientBillGroup;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.clinical.visit.domain.Visit;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,9 +14,11 @@ import org.springframework.data.jpa.repository.Query;
  * @author Kennedy.Imbenzi
  */
 public interface PatientBillRepository extends JpaRepository<PatientBill, Long>, JpaSpecificationExecutor<PatientBill> {
-    
+
     Optional<PatientBill> findByBillNumber(final String identifier);
-      
+
+    List<PatientBill> findByVisit(Visit visit);
+
     @Query(value = "SELECT new  io.smarthealth.accounting.billing.data.PatientBillGroup("
             + "b.patient.patientNumber as patientNumber,"
             + "b.patient.fullName as patientName,"
@@ -27,6 +30,5 @@ public interface PatientBillRepository extends JpaRepository<PatientBill, Long>,
             + "b.billNumber,"
             + "b.transactionId) from PatientBill b where b.status=?1 group by b.visit.visitNumber")
     public List<PatientBillGroup> groupBy(BillStatus status);
-     
-    
+
 }

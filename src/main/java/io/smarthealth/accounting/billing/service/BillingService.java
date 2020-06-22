@@ -659,7 +659,7 @@ public class BillingService {
 //                     payments.add(new BillPayment(k, visitNumber, v));
 //                });
     }
-    
+
     public List<BillItem> getAllBillDetails(String visitNumber) {
         List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber));
         List<PatientBillItem> walkinItems = billItemRepository.findAll(withWalkinNumber(visitNumber));
@@ -672,13 +672,14 @@ public class BillingService {
 
         patientItems.stream()
                 .forEach(x -> {
-                        bills.add(x.toBillItem());
+                    bills.add(x.toBillItem());
                 });
 
         details.setBills(bills);
         return bills;
     }
- //when changing billing I should only show those
+    //when changing billing I should only show those
+
     private Specification<PatientBillItem> withVisitNumber(String visitNo) {
         return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
@@ -702,12 +703,5 @@ public class BillingService {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
-    
-    //changing 
-    public void updateBillsPaymentMode(String visitNumber, VisitEnum.PaymentMethod method){
-        //get the bills that 
-        //get the bills that have draft status
-        
-    }
-
+ 
 }
