@@ -102,7 +102,7 @@ public class UploadService {
 //        UploadService(directory);
         Resource resource = null;
         try {
-            Path filePath = this.rootLocation.resolve(directory+"/"+fileName).normalize();
+            Path filePath = this.rootLocation.resolve(fileName).normalize();
             resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;
