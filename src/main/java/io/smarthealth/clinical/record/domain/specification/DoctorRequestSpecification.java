@@ -63,14 +63,17 @@ public class DoctorRequestSpecification {
                         cb.or(
                                 cb.like(root.get("visit").get("visitNumber"), likeExpression),
                                 cb.like(root.get("orderNumber"), likeExpression),
-                                cb.like(root.get("patient").get("patientNumber"), likeExpression)
+                                cb.like(root.get("patient").get("patientNumber"), likeExpression),
+                                cb.like(root.get("patient").get("fullName"), likeExpression)
                         )
                 );
             }
 
             if (range != null) {
+                System.out.println("range " + range.toString());
                 predicates.add(
                         cb.between(root.get("orderDate"), range.getStartDate(), range.getEndDate())
+                // cb.between(root.get("visit").get("startDatetime"), range.getStartDate(), range.getEndDate())
                 );
             }
 
