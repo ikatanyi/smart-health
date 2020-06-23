@@ -51,6 +51,8 @@ public class RadiologyResultData {
     @ApiModelProperty(required = false, hidden = true)
     private DocumentData documentData;
     private Boolean resultRead;
+    @ApiModelProperty(required = false, hidden = true)
+    private Long scanTestId;
     
 //     private MultipartFile docfile;
 //     @Enumerated(EnumType.STRING)

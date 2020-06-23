@@ -44,6 +44,11 @@ public class Analyte extends Identifiable {
             data.setTestId(this.labTest.getId());
             data.setTestName(this.labTest.getTestName());
         }
+        if(referenceValue.equals("") && this.labTest.getHasReferenceValue()){
+            if(this.getLowerLimit()!=null && this.getUpperLimit()!=null){
+                data.setReferenceValue(this.getLowerLimit()+" - "+this.getUpperLimit());
+            }
+        }
         return data;
     }
 }
