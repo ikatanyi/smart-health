@@ -35,7 +35,7 @@ public class LabRegister extends Auditable {
     private String orderNumber; //reference doctor's request
 
     private String patientNo;
-  
+
     private LocalDateTime requestDatetime;
 
     private String labNumber;
@@ -47,9 +47,9 @@ public class LabRegister extends Auditable {
     private String paymentMode;
 
     private String transactionId;
-    
+
     @Enumerated(EnumType.STRING)
-    private LabTestStatus status; 
+    private LabTestStatus status;
 
     private Boolean voided = Boolean.FALSE;
 
@@ -75,9 +75,11 @@ public class LabRegister extends Auditable {
         if (this.visit != null && !this.isWalkin) {
             data.setPatientName(this.visit.getPatient().getFullName());
             data.setVisitNumber(this.visit.getVisitNumber());
-            data.setRequestedByStaffNumber(this.visit.getHealthProvider().getStaffNumber());
+            if (this.visit.getHealthProvider() != null) {
+                data.setRequestedByStaffNumber(this.visit.getHealthProvider().getStaffNumber());
+            }
         } else {
-            
+
             data.setPatientName(this.requestedBy);
             data.setVisitNumber(this.patientNo);
         }
@@ -103,7 +105,7 @@ public class LabRegister extends Auditable {
                 .stream()
                 .filter(x -> x.getStatus() == LabTestStatus.PendingResult || x.getStatus() == LabTestStatus.AwaitingSpecimen)
                 .count();
-        System.err.println("Pending tests to report results... "+pending);
+        System.err.println("Pending tests to report results... " + pending);
         return pending == 1;
     }
 }

@@ -136,6 +136,7 @@
 				<reportElement x="3" y="0" width="174" height="14" uuid="b9c4940d-f649-428e-9e32-8d7c0b599193"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
+					<paragraph leftIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{discipline}]]></textFieldExpression>
 			</textField>

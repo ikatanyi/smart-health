@@ -47,6 +47,7 @@ public class RadiologyResult extends Auditable{
         data.setComments(this.comments);
         data.setVoided(this.voided);
         data.setCreatedBy(this.getCreatedBy());
+        data.setScanTestId(this.patientScanTest.getId());
 
         if (this.getPatientScanTest().getRadiologyTest() != null) {
             data.setTestId(this.patientScanTest.getRadiologyTest().getId());

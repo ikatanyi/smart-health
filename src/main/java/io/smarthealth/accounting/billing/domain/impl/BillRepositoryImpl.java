@@ -1,13 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package io.smarthealth.accounting.billing.domain.impl;
+ package io.smarthealth.accounting.billing.domain.impl;
 
 import io.smarthealth.accounting.billing.data.SummaryBill;
-import io.smarthealth.accounting.billing.data.nue.BillItem;
-import io.smarthealth.accounting.billing.data.nue.Bills;
 import io.smarthealth.accounting.billing.domain.BillRepository;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
