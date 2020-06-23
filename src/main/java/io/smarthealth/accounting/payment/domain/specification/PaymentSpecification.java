@@ -20,16 +20,20 @@ public class PaymentSpecification {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
             if (creditorType != null) {
-                predicates.add(cb.equal(root.get("creditorType"), creditorType));
+                predicates.add(cb.equal(root.get("payeeType"), creditorType));
             }
-            if (creditor != null) {
-                predicates.add(cb.equal(root.get("creditor"), creditor));
+//            if (creditor != null) {
+//                predicates.add(cb.equal(root.get("payee"), creditor));
+//            }
+               if (creditor != null) {
+                final String likeExpression = "%" + creditor + "%";
+                predicates.add(  cb.like(root.get("payee"), likeExpression)  );
             }
             if (transactionNo != null) {
                 predicates.add(cb.equal(root.get("transactionNo"), transactionNo));
             }
             if (creditorId != null) {
-                predicates.add(cb.equal(root.get("creditorId"), creditorId));
+                predicates.add(cb.equal(root.get("payeeId"), creditorId));
             }
 
             if (range != null) {
