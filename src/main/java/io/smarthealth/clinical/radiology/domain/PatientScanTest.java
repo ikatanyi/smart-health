@@ -82,8 +82,7 @@ public class PatientScanTest extends Auditable {
         entity.setEntryDateTime(this.getEntryDateTime());
         entity.setStatus(this.getStatus());
 
-        if (patientScanRegister != null) {
-            
+        if (patientScanRegister != null) {            
             entity.setReceivedDate(this.getPatientScanRegister().getReceivedDate());
             entity.setAccessNo(this.getPatientScanRegister().getAccessNo());
             entity.setPatientName(this.getPatientScanRegister().getPatientName());
