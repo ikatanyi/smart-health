@@ -167,6 +167,12 @@ public class LaboratoryService {
         }
     }
 
+    @Transactional
+    public void markResultRegisterStatusAsRead(LabRegisterTest registerTest) {
+        registerTest.setResultRead(Boolean.TRUE);
+        testRepository.save(registerTest);
+    }
+
     public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, List<LabTestStatus> status, DateRange range, String search, Pageable page) {
         Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status, range, search);
         return repository.findAll(spec, page);
@@ -304,7 +310,7 @@ public class LaboratoryService {
 
     private LabRegisterTest toLabRegisterTest(LabRegisterTestData data, String paymentMode, ArrayList<LabRegisterTestData> panels) {
         LabTest labTest = getLabTest(data.getTestId());
-        if (labTest.getIsPanel()!=null && labTest.getIsPanel()) {
+        if (labTest.getIsPanel() != null && labTest.getIsPanel()) {
             panels.add(data);
             return null;
         }
@@ -335,14 +341,14 @@ public class LaboratoryService {
             return labTest.getPanelTests()
                     .stream()
                     .map(x -> {
-                        System.err.println("registering panel "+x.getCode()+" "+x.getId()+" "+x.getTestName()); 
+                        System.err.println("registering panel " + x.getCode() + " " + x.getId() + " " + x.getTestName());
                         LabRegisterTest test = new LabRegisterTest();
                         test.setCollected(Boolean.FALSE);
                         test.setEntered(Boolean.FALSE);
                         test.setLabTest(x);
 
 //                        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
-                       test.setPaid(Boolean.TRUE);
+                        test.setPaid(Boolean.TRUE);
 
                         test.setVoided(Boolean.FALSE);
                         test.setValidated(Boolean.FALSE);

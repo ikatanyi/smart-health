@@ -17,6 +17,7 @@ import org.springframework.data.repository.query.Param;
 public interface CashierRepository extends JpaRepository<Cashier, Long> {
 
     Optional<Cashier> findByUser(User user);
+    Optional<Cashier> findByUserAndActive(User user, final Boolean active);
 
     Page<Cashier> findByActive(Boolean active, Pageable page);
 

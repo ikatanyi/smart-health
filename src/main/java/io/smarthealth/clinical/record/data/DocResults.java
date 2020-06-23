@@ -32,6 +32,7 @@ public class DocResults {
     private String patientNo;
     private String patientName;
     private Type requestType;
+    private Long resultID;
 
     //here I need to select results from lab and those from radiology
 }

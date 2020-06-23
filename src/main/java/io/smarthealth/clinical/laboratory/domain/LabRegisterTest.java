@@ -59,7 +59,7 @@ public class LabRegisterTest extends Identifiable {
     private String voidedBy;
     private LocalDateTime voidDatetime;
     private Boolean isPanel;
-    private Boolean resultRead;
+    private Boolean resultRead = Boolean.FALSE;
 
     @OneToMany(mappedBy = "labRegisterTest")
     private List<LabResult> labResults;
@@ -110,7 +110,11 @@ public class LabRegisterTest extends Identifiable {
             data.setTestId(this.labTest.getId());
             data.setTestCode(this.labTest.getCode());
             data.setTestName(this.labTest.getTestName());
-            data.setDiscipline(this.labTest.getDispline().getDisplineName());
+            
+            if (this.labTest.getDispline() != null) {
+                data.setDiscipline(this.labTest.getDispline().getDisplineName());
+            }
+
             data.setWithRef(this.labTest.getHasReferenceValue() != null ? this.labTest.getHasReferenceValue() : true);
         }
         data.setAttachment(this.attachment);

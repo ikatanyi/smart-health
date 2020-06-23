@@ -7,7 +7,10 @@ package io.smarthealth.clinical.record.api;
 
 //import io.smarthealth.auth.domain.User;
 //import io.smarthealth.auth.service.UserService;
+import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
+import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
+import io.smarthealth.clinical.radiology.service.RadiologyService;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.DocResults;
 import io.smarthealth.clinical.record.data.HistoricalDiagnosisData;
@@ -41,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -58,6 +62,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/consultation")
 @Api(value = "Doctor Request Controller", description = "Operations pertaining to general practitioner consultation")
+@RequiredArgsConstructor
 public class ConsultationController {
 
     private final PatientNotesService patientNotesService;
@@ -74,18 +79,20 @@ public class ConsultationController {
     private final DiagnosisService diagnosisService;
     private final DepartmentService departmentService;
     private final SickOffNoteService sickOffNoteService;
+    private final LaboratoryService laboratoryService;
+    private final RadiologyService radiologyService;
 
-    public ConsultationController(PatientNotesService patientNotesService, PatientService patientService, VisitService visitService, EmployeeService employeeService, DiseaseService diseaseService, DiagnosisService diagnosisService, DepartmentService departmentService, SickOffNoteService sickOffNoteService, UserService userService) {
-        this.patientNotesService = patientNotesService;
-        this.patientService = patientService;
-        this.visitService = visitService;
-        this.employeeService = employeeService;
-        this.diseaseService = diseaseService;
-        this.diagnosisService = diagnosisService;
-        this.departmentService = departmentService;
-        this.sickOffNoteService = sickOffNoteService;
-        this.userService = userService;
-    }
+//    public ConsultationController(PatientNotesService patientNotesService, PatientService patientService, VisitService visitService, EmployeeService employeeService, DiseaseService diseaseService, DiagnosisService diagnosisService, DepartmentService departmentService, SickOffNoteService sickOffNoteService, UserService userService) {
+//        this.patientNotesService = patientNotesService;
+//        this.patientService = patientService;
+//        this.visitService = visitService;
+//        this.employeeService = employeeService;
+//        this.diseaseService = diseaseService;
+//        this.diagnosisService = diagnosisService;
+//        this.departmentService = departmentService;
+//        this.sickOffNoteService = sickOffNoteService;
+//        this.userService = userService;
+//    }
 
     /* Patient Notes */
     @PostMapping("/patient-notes")
@@ -349,19 +356,38 @@ public class ConsultationController {
 
         return ResponseEntity.ok(pagers);
     }
- 
+
+    @PutMapping("/results-read/{resultType}/{resultID}")
+    public ResponseEntity.BodyBuilder markResultRead(
+            @PathVariable(value = "resultID") final Long resultID,
+            @PathVariable(value = "resultType") final DocResults.Type type
+    ) {
+        if (type.equals(DocResults.Type.Laboratory)) {
+            LabRegisterTest test = laboratoryService.getLabRegisterTest(resultID);
+            laboratoryService.markResultRegisterStatusAsRead(test);
+        }
+        if (type.equals(DocResults.Type.Radiology)) {
+            
+        }
+
+        return ResponseEntity.ok();
+    }
+
     @GetMapping("/results-alert")
     public ResponseEntity<?> getResultsAlert(
             @RequestParam(value = "visitNo", required = false) final String visitNo,
             @RequestParam(value = "patientNo", required = false) final String patientNo,
+            @RequestParam(value = "patientName", required = false) final String patientName,
+            @RequestParam(value = "practitionerUsername", required = false) final String practitionerUsername,
             @RequestParam(value = "resultType", required = false) DocResults.Type type,
             @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "showResultsRead", required = false, defaultValue = "false") Boolean showResultsRead,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        List<DocResults> list = visitService.getPatientResultsAlerts(visitNo, patientNo, type, range);
+        List<DocResults> list = visitService.getPatientResultsAlerts(visitNo, patientNo, type, range, patientName, practitionerUsername, showResultsRead);
 
         Pager<?> pagers = PaginationUtil.paginateList(list, "Patient Doctor Results alert Queue", "", pageable);
         return ResponseEntity.ok(pagers);

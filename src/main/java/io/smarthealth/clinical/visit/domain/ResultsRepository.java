@@ -2,6 +2,7 @@ package io.smarthealth.clinical.visit.domain;
 
 import io.smarthealth.clinical.record.data.DocResults;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.organization.facility.domain.Employee;
 import java.util.List;
 
 /**
@@ -10,6 +11,6 @@ import java.util.List;
  */
 public interface ResultsRepository {
 
-    public List<DocResults> getPatientResults(String visitNumber, String patientNumber, DocResults.Type type, DateRange range);
+    public List<DocResults> getPatientResults(String visitNumber, String patientNumber, DocResults.Type type, DateRange range, String patientName, Employee employee, Boolean showResultsRead);
 
 }
