@@ -232,7 +232,7 @@ public class AuthController {
         user.setFirstTimeLogin(true);
         userRepository.save(user);
 
-        return ResponseEntity.ok(new ApiResponse(true, "You should receive an Password Reset Email shortly"));
+        return ResponseEntity.ok(new ApiResponse(true, "You should receive a temporarly password on your registered email shortly"));
     }
 
     @GetMapping(value = "/users/changePassword")
