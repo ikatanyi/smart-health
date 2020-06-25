@@ -75,5 +75,5 @@ public class LabRegisterTestData {
     @ApiModelProperty(required = false, hidden = true)
     private Boolean withRef;
     private Boolean isPanel;
-
+    private String parentTest;
 }

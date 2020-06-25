@@ -72,6 +72,7 @@ public class LabRegister extends Auditable {
         data.setLabNumber(this.labNumber);
         data.setOrderNumber(this.orderNumber);
         data.setIsWalkin(this.isWalkin);
+        
         if (this.visit != null && !this.isWalkin) {
             data.setPatientName(this.visit.getPatient().getFullName());
             data.setVisitNumber(this.visit.getVisitNumber());
