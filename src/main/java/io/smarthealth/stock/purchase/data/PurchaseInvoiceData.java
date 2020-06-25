@@ -2,10 +2,14 @@ package io.smarthealth.stock.purchase.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
+import io.smarthealth.stock.inventory.data.InventoryItemData;
+import io.smarthealth.stock.inventory.data.StockEntryData;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 
 /**
@@ -36,5 +40,6 @@ public class PurchaseInvoiceData {
     private BigDecimal netAmount;
     private PurchaseInvoiceStatus status;
     private String createdBy;
+    private List<StockEntryData>stockEntryData = new ArrayList();
 
 }

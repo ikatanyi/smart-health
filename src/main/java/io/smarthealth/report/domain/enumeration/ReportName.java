@@ -51,6 +51,7 @@ public enum ReportName {
         Journal_Report,
         Payer_Credit_Note,
         Supplier_Credit_Note,
+        Goods_Receive_Note,
         Purchase_Order,
         Account_Transactions,
         Remittance_Report,
@@ -59,5 +60,6 @@ public enum ReportName {
         Stock_Adjustment,
         Referral_Form,
         Medical_Report,
-        Appointment_Letter
+        Appointment_Letter,
+        Shift_Report
 }

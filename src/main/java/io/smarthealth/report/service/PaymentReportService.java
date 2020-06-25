@@ -7,6 +7,10 @@ package io.smarthealth.report.service;
 
 import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.service.LedgerService;
+import io.smarthealth.accounting.cashier.data.CashierData;
+import io.smarthealth.accounting.cashier.data.CashierShift;
+import io.smarthealth.accounting.cashier.data.ShiftPayment;
+import io.smarthealth.accounting.cashier.service.CashierService;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.PaymentData;
@@ -14,6 +18,7 @@ import io.smarthealth.accounting.payment.data.PettyCashPaymentData;
 import io.smarthealth.accounting.payment.data.SupplierPaymentData;
 import io.smarthealth.accounting.payment.domain.enumeration.PayeeType;
 import io.smarthealth.accounting.payment.service.PaymentService;
+import io.smarthealth.accounting.payment.service.ReceivePaymentService;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
@@ -35,6 +40,7 @@ import io.smarthealth.supplier.service.SupplierService;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -74,6 +80,8 @@ public class PaymentReportService {
     private final EmployeeService employeeService;
     private final PettyCashRequestsService pettyCashRequestService;
     private final PayerService payerService;
+    private final ReceivePaymentService receivePaymentService;
+    private final CashierService cashierService;
 
     public void getPettyCashRequests(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
         String requestNo = reportParam.getFirst("requestNo");
@@ -216,6 +224,28 @@ public class PaymentReportService {
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
 
         reportData.setReportName("Payment-Statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    
+    public void shiftPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        Long cashierId = NumberUtils.createLong(reportParam.getFirst("cashierId"));
+        String shiftNo = reportParam.getFirst("shiftNo");
+        
+        List<CashierShift> paymentshiftData = receivePaymentService.getCashierShift(shiftNo, cashierId);
+        List<ShiftPayment> shiftPayment = cashierService.getShiftByMethod(shiftNo);
+        
+        reportData.getFilters().put("PaymentData", shiftPayment);
+        reportData.getFilters().put("CashierShiftData", paymentshiftData);
+        if(!paymentshiftData.isEmpty())
+           reportData.getFilters().put("Cashier_Data", Arrays.asList(cashierService.getCashier(paymentshiftData.get(0).getCashierId()).toData()));
+      
+//        reportData.setData(paymentshiftData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/payments/shift_report");
+        reportData.setReportName("Shift-Report"+shiftNo);
         reportService.generateReport(reportData, response);
     }
 

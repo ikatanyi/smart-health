@@ -15,7 +15,9 @@ import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.StockAdjustmentData;
 import io.smarthealth.stock.inventory.service.InventoryAdjustmentService;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
+import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
+import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.stock.purchase.service.PurchaseInvoiceService;
@@ -53,6 +55,7 @@ public class StockReportService {
     private final InventoryAdjustmentService inventoryAdjustmentService;
     private final PurchaseInvoiceService purchaseInvoiceService;
     private final PurchaseService purchaseService;
+    private final InventoryService inventoryService;
 
     public void getSuppliers(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -113,6 +116,29 @@ public class StockReportService {
         reportData.setReportName("Purchase-Order" + orderNo);
         reportService.generateReport(reportData, response);
     }
+    
+    public void SupplierGRN(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String invoiceNumber = reportParam.getFirst("invoiceNumber");
+        
+        PurchaseInvoiceData purchaseInvoiceData = purchaseInvoiceService.findByInvoiceNumber(invoiceNumber)
+                .orElseThrow(() -> APIException.notFound("PurchaseInvoice identified by  {0} not found", invoiceNumber))
+                .toData();
+        reportData.getFilters().put("amountInWords", EnglishNumberToWords.convert(purchaseInvoiceData.getInvoiceAmount()).toUpperCase());
+        purchaseInvoiceData.getStockEntryData().addAll(inventoryService.findByReferenceNumber(purchaseInvoiceData.getInvoiceNo()));
+       
+        Optional<Supplier> supplier = supplierService.getSupplierById(purchaseInvoiceData.getSupplierId());
+        if (supplier.isPresent()) {
+            reportData.getFilters().put("Supplier_Data", Arrays.asList(supplier.get().toData()));
+
+        }
+        
+        reportData.setData(Arrays.asList(purchaseInvoiceData));
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/receive_order");
+        reportData.setReportName("Supplier-GRN");
+        reportService.generateReport(reportData, response);
+    } 
 
     public void getInventoryItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
