@@ -61,7 +61,7 @@ public class LabRegisterTest extends Identifiable {
     private String voidedBy;
     private LocalDateTime voidDatetime;
     private Boolean isPanel;
-    private Boolean resultRead;
+    private Boolean resultRead = Boolean.FALSE;
     @ManyToOne
     @ToStringExclude
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_register_parent_test_id"))
@@ -111,20 +111,23 @@ public class LabRegisterTest extends Identifiable {
         data.setSpecimen(this.specimen);
         data.setStatus(this.status);
         data.setIsPanel(this.isPanel);
-        
 
         if (this.labTest != null) {
             data.setTestId(this.labTest.getId());
             data.setTestCode(this.labTest.getCode());
             data.setTestName(this.labTest.getTestName());
-            data.setDiscipline(this.labTest.getDispline().getDisplineName());
+
+            if (this.labTest.getDispline() != null) {
+                data.setDiscipline(this.labTest.getDispline().getDisplineName());
+            }
+
             data.setWithRef(this.labTest.getHasReferenceValue() != null ? this.labTest.getHasReferenceValue() : true);
         }
-       
-         if(this.parentLabTest!=null){ 
-             data.setParentTest(this.parentLabTest.getTestName());
-         }
-         
+
+        if (this.parentLabTest != null) {
+            data.setParentTest(this.parentLabTest.getTestName());
+        }
+
         data.setAttachment(this.attachment);
         //include the results 
         if (expand) {

@@ -64,7 +64,7 @@ public class CashierController {
     @PutMapping("/cashiers/{id}/change-status")
     @PreAuthorize("hasAuthority('view_cashiers')")
     public ResponseEntity<?> changeStatus(@PathVariable(value = "id") Long id, @RequestParam("status") Command command) {
-        
+
         if (command == Command.Activate || command == Command.Deactivate) {
             Cashier result = service.changeStatus(id, command.name());
             //list all events 
@@ -133,7 +133,7 @@ public class CashierController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<CashierData> list = service.fetchAllCashiers(active,pageable)
+        Page<CashierData> list = service.fetchAllCashiers(active, pageable)
                 .map(x -> x.toData());
 
         Pager<List<CashierData>> pagers = new Pager();
@@ -154,10 +154,11 @@ public class CashierController {
     @GetMapping("/cashiers/{username}/users")
     @PreAuthorize("hasAuthority('view_cashiers')")
     public ResponseEntity<?> getCashierByUsername(
-            @PathVariable(value = "username", required = true) final String username) {
-
+            @PathVariable(value = "username", required = true) final String username,
+            @RequestParam(value = "active", required = false, defaultValue = "true") final Boolean active
+    ) {
         User user = userService.findUserByUsernameOrEmail(username).orElseThrow(() -> APIException.notFound("User identified by {0} not found ", username));
-        Optional<Cashier> cashier = service.findByUser(user);
+        Optional<Cashier> cashier = service.findByUserAndStatus(user, active);
 
         Pager<CashierData> pagers = new Pager();
         if (cashier.isPresent()) {
