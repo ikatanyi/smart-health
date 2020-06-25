@@ -167,6 +167,12 @@ public class LaboratoryService {
         }
     }
 
+    @Transactional
+    public void markResultRegisterStatusAsRead(LabRegisterTest registerTest) {
+        registerTest.setResultRead(Boolean.TRUE);
+        testRepository.save(registerTest);
+    }
+
     public Page<LabRegister> getLabRegister(String labNumber, String orderNumber, String visitNumber, String patientNumber, List<LabTestStatus> status, DateRange range, String search, Pageable page) {
         Specification<LabRegister> spec = LabRegisterSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status, range, search);
         return repository.findAll(spec, page);
@@ -284,27 +290,30 @@ public class LaboratoryService {
             request.setPatientNo(w.getWalkingIdentitificationNo());
             request.setPaymentMode("Cash");
         }
+        String method = request.getPaymentMode();
+
         request.setRequestDatetime(data.getRequestDatetime());
         request.setStatus(LabTestStatus.AwaitingSpecimen);
         ArrayList<LabRegisterTestData> panels = new ArrayList<>();
-        request.addPatientTest(data.getTests()
+
+        List<LabRegisterTest> registeredlist = data.getTests()
                 .stream()
-                .map(x -> toLabRegisterTest(x, data.getPaymentMode(), panels))
+                .map(x -> toLabRegisterTest(x, method, panels))
                 .filter(x -> x != null)
-                .collect(Collectors.toList())
-        );
+                .collect(Collectors.toList());
         if (!panels.isEmpty()) {
             panels.forEach(x -> {
-                request.addPatientTest(registerPanelTests(x, data.getPaymentMode()));
+                registeredlist.addAll(registerPanelTests(x, method));
             });
         }
+        request.addPatientTest(registeredlist);
 
         return request;
     }
 
     private LabRegisterTest toLabRegisterTest(LabRegisterTestData data, String paymentMode, ArrayList<LabRegisterTestData> panels) {
         LabTest labTest = getLabTest(data.getTestId());
-        if (labTest.getIsPanel()!=null && labTest.getIsPanel()) {
+        if (labTest.getIsPanel() != null && labTest.getIsPanel()) {
             panels.add(data);
             return null;
         }
@@ -335,15 +344,12 @@ public class LaboratoryService {
             return labTest.getPanelTests()
                     .stream()
                     .map(x -> {
-                        System.err.println("registering panel "+x.getCode()+" "+x.getId()+" "+x.getTestName()); 
                         LabRegisterTest test = new LabRegisterTest();
                         test.setCollected(Boolean.FALSE);
                         test.setEntered(Boolean.FALSE);
                         test.setLabTest(x);
-
 //                        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
-                       test.setPaid(Boolean.TRUE);
-
+                        test.setPaid(Boolean.TRUE);
                         test.setVoided(Boolean.FALSE);
                         test.setValidated(Boolean.FALSE);
                         test.setRequestId(data.getRequestId());
@@ -351,6 +357,7 @@ public class LaboratoryService {
                         test.setStatus(data.getStatus());
                         test.setIsPanel(Boolean.TRUE);
                         test.setReferenceNo(data.getReferenceNo());
+                        test.setParentLabTest(labTest);
 
                         test.setStatus(LabTestStatus.AwaitingSpecimen);
                         return test;
@@ -416,46 +423,107 @@ public class LaboratoryService {
             patientbill.setOtherDetails(data.getRequestedBy());
             patientbill.setWalkinFlag(Boolean.TRUE);
         }
-
+        String method = data.getPaymentMode() != null ? data.getPaymentMode() : "Cash";
         patientbill.setBillingDate(LocalDate.now());
 //        patientbill.setReferenceNo(data.getReferenceNo());
-        patientbill.setPaymentMode(data.getPaymentMode() != null ? data.getPaymentMode() : "Cash");
+        patientbill.setPaymentMode(method);
         patientbill.setTransactionId(data.getTransactionId());
         patientbill.setStatus(BillStatus.Draft);
+        ArrayList<LabTest> parentLabTest = new ArrayList<>();
         List<PatientBillItem> lineItems = data.getTests()
                 .stream()
-                .map(lineData -> {
-                    PatientBillItem billItem = new PatientBillItem();
-//                    Item item = billingService.getItemByBy(lineData.getTestId());
-                    Item item = lineData.getLabTest().getService();
-
-                    billItem.setBillingDate(LocalDate.now());
-                    billItem.setTransactionId(data.getTransactionId());
-                    billItem.setServicePointId(srvpoint.getId());
-                    billItem.setServicePoint(srvpoint.getName());
-                    billItem.setItem(item);
-//                    billItem.setPrice(lineData.getTestPrice().doubleValue());
-                    billItem.setPrice(lineData.getPrice().doubleValue());
-                    billItem.setQuantity(1d);
-//                    billItem.setAmount(lineData.getTestPrice().doubleValue());
-                    billItem.setAmount(lineData.getPrice().doubleValue());
-                    billItem.setDiscount(0.00);
-                    billItem.setPaid(data.getPaymentMode() != null ? data.getPaymentMode().equals("Insurance") : false);
-//                    billItem.setBalance(lineData.getTestPrice().doubleValue());
-                    billItem.setBalance(lineData.getPrice().doubleValue());
-                    billItem.setServicePoint(srvpoint.getName());
-                    billItem.setServicePointId(srvpoint.getId());
-                    billItem.setStatus(BillStatus.Draft);
-                    billItem.setRequestReference(lineData.getId());
-                    return billItem;
-                })
+                .map(lineData -> toPatientBill(lineData, srvpoint, data.getTransactionId(), method, parentLabTest)
+                //                {
+                //                    PatientBillItem billItem = new PatientBillItem();
+                ////                    Item item = billingService.getItemByBy(lineData.getTestId());
+                //                    Item item = lineData.getLabTest().getService();
+                //
+                //                    billItem.setBillingDate(LocalDate.now());
+                //                    billItem.setTransactionId(data.getTransactionId());
+                //                    billItem.setServicePointId(srvpoint.getId());
+                //                    billItem.setServicePoint(srvpoint.getName());
+                //                    billItem.setItem(item);
+                ////                    billItem.setPrice(lineData.getTestPrice().doubleValue());
+                //                    billItem.setPrice(lineData.getPrice().doubleValue());
+                //                    billItem.setQuantity(1d);
+                ////                    billItem.setAmount(lineData.getTestPrice().doubleValue());
+                //                    billItem.setAmount(lineData.getPrice().doubleValue());
+                //                    billItem.setDiscount(0.00);
+                //                    billItem.setPaid(data.getPaymentMode() != null ? data.getPaymentMode().equals("Insurance") : false);
+                ////                    billItem.setBalance(lineData.getTestPrice().doubleValue());
+                //                    billItem.setBalance(lineData.getPrice().doubleValue());
+                //                    billItem.setServicePoint(srvpoint.getName());
+                //                    billItem.setServicePointId(srvpoint.getId());
+                //                    billItem.setStatus(BillStatus.Draft);
+                //                    billItem.setRequestReference(lineData.getId());
+                //                    return billItem;
+                //                }
+                )
+                .filter(z -> z != null)
                 .collect(Collectors.toList());
+        // now that we have the panel, we find out there services
+        parentLabTest.forEach(x -> {
+            PatientBillItem billItem = new PatientBillItem();
+            Item item = x.getService();
+
+            billItem.setBillingDate(LocalDate.now());
+            billItem.setTransactionId(data.getTransactionId());
+            billItem.setServicePointId(srvpoint.getId());
+            billItem.setServicePoint(srvpoint.getName());
+            billItem.setItem(item);
+            Double price = x.getPanelPrice().doubleValue();
+            billItem.setPrice(price);
+            billItem.setQuantity(1d);
+            billItem.setAmount(price);
+            billItem.setDiscount(0.00);
+            billItem.setPaid(data.getPaymentMode() != null ? data.getPaymentMode().equals("Insurance") : false);
+            billItem.setBalance(price);
+            billItem.setServicePoint(srvpoint.getName());
+            billItem.setServicePointId(srvpoint.getId());
+            billItem.setStatus(BillStatus.Draft);
+            //TODO enter the bills as array 
+//            billItem.setRequestReference(); //this is the one I need to know how to handle ot
+            lineItems.add(billItem);
+
+        });
         Double amount = patientbill.getBillTotals();
         patientbill.setAmount(amount);
         patientbill.setDiscount(0D);
         patientbill.setBalance(amount);
         patientbill.addBillItems(lineItems);
         return patientbill;
+    }
+
+    private PatientBillItem toPatientBill(LabRegisterTest registeredTest, ServicePoint srvpoint, String transId, String paymentMethod, List<LabTest> panels) {
+        if (registeredTest.getIsPanel() != null && registeredTest.getIsPanel()) {
+            if (registeredTest.getParentLabTest() != null && !panels.contains(registeredTest.getParentLabTest())) {
+                LabTest panelTest = registeredTest.getParentLabTest();
+                panelTest.setPanelPrice(registeredTest.getPrice());
+                panels.add(panelTest);
+            }
+
+            return null;
+        }
+
+        PatientBillItem billItem = new PatientBillItem();
+        Item item = registeredTest.getLabTest().getService();
+
+        billItem.setBillingDate(LocalDate.now());
+        billItem.setTransactionId(transId);
+        billItem.setServicePointId(srvpoint.getId());
+        billItem.setServicePoint(srvpoint.getName());
+        billItem.setItem(item);
+        billItem.setPrice(registeredTest.getPrice().doubleValue());
+        billItem.setQuantity(1d);
+        billItem.setAmount(registeredTest.getPrice().doubleValue());
+        billItem.setDiscount(0.00);
+        billItem.setPaid(paymentMethod != null ? paymentMethod.equals("Insurance") : false);
+        billItem.setBalance(registeredTest.getPrice().doubleValue());
+        billItem.setServicePoint(srvpoint.getName());
+        billItem.setServicePointId(srvpoint.getId());
+        billItem.setStatus(BillStatus.Draft);
+        billItem.setRequestReference(registeredTest.getId());
+        return billItem;
     }
 
     private void fulfillDocRequest(Long id) {
@@ -496,6 +564,5 @@ public class LaboratoryService {
 
         return doc;
     }
-    //date, lab number, document name, download
 
 }

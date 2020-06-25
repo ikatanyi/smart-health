@@ -1,6 +1,5 @@
 package io.smarthealth.accounting.cashier.service;
 
-import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.AccountRepository;
 import io.smarthealth.accounting.cashier.data.CashierData;
 import io.smarthealth.accounting.cashier.data.CashierShift;
@@ -48,6 +47,10 @@ public class CashierService {
         return repository.findByUser(user);
     }
 
+    public Optional<Cashier> findByUserAndStatus(final User user, final Boolean active) {
+        return repository.findByUserAndActive(user, active);
+    }
+
     public Cashier createCashier(CashierData data) {
         User user = userService.getUser(data.getUserId())
                 .orElseThrow(() -> APIException.notFound("User with id {0} Not Found", data.getUserId()));
@@ -69,7 +72,7 @@ public class CashierService {
     }
 
     public Page<Cashier> fetchAllCashiers(Boolean active, Pageable page) {
-        if(active!=null){
+        if (active != null) {
             return repository.findByActive(active, page);
         }
         return repository.findAll(page);

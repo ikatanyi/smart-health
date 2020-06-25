@@ -4,6 +4,7 @@ import io.smarthealth.clinical.laboratory.data.LabTestData;
 import io.smarthealth.clinical.laboratory.data.Labs;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +19,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Data;
 
 /**
@@ -43,7 +45,9 @@ public class LabTest extends Auditable {
     private Boolean hasReferenceValue;
     private Boolean active;
     private Boolean isPanel;
-
+    @Transient
+    private BigDecimal panelPrice;
+    
     @OneToMany(mappedBy = "labTest", cascade = CascadeType.ALL)
     private List<Analyte> analytes = new ArrayList<>();
 

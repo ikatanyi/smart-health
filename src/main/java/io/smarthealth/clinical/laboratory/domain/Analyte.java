@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -44,7 +45,7 @@ public class Analyte extends Identifiable {
             data.setTestId(this.labTest.getId());
             data.setTestName(this.labTest.getTestName());
         }
-        if(referenceValue.equals("") && this.labTest.getHasReferenceValue()){
+        if(StringUtils.isBlank(referenceValue) && this.labTest.getHasReferenceValue()){
             if(this.getLowerLimit()!=null && this.getUpperLimit()!=null){
                 data.setReferenceValue(this.getLowerLimit()+" - "+this.getUpperLimit());
             }

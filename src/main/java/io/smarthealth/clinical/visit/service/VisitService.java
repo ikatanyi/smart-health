@@ -178,8 +178,15 @@ public class VisitService {
         return visitRepository.save(visit);
     }
 
-    public List<DocResults> getPatientResultsAlerts(String visitNumber, String patientNumber, DocResults.Type type, DateRange range) {
-        return visitRepository.getPatientResults(visitNumber, patientNumber, type, range);
+    public List<DocResults> getPatientResultsAlerts(String visitNumber, String patientNumber, DocResults.Type type, DateRange range, String patientName, String username, Boolean showResultsRead) {
+        Employee employee = null;
+        if (username != null) {
+            Optional<Employee> em = employeeService.findEmployeeByUsername(username);
+            if (em.isPresent()) {
+                employee = em.get();
+            }
+        }
+        return visitRepository.getPatientResults(visitNumber, patientNumber, type, range, patientName, employee, showResultsRead);
     }
 
 }

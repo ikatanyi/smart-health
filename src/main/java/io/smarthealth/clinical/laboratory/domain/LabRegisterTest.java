@@ -3,6 +3,7 @@ package io.smarthealth.clinical.laboratory.domain;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
+import org.apache.commons.lang3.builder.ToStringExclude;
 
 /**
  *
@@ -59,7 +61,11 @@ public class LabRegisterTest extends Identifiable {
     private String voidedBy;
     private LocalDateTime voidDatetime;
     private Boolean isPanel;
-    private Boolean resultRead;
+    private Boolean resultRead = Boolean.FALSE;
+    @ManyToOne
+    @ToStringExclude
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_register_parent_test_id"))
+    private LabTest parentLabTest;
 
     @OneToMany(mappedBy = "labRegisterTest")
     private List<LabResult> labResults;
@@ -110,9 +116,18 @@ public class LabRegisterTest extends Identifiable {
             data.setTestId(this.labTest.getId());
             data.setTestCode(this.labTest.getCode());
             data.setTestName(this.labTest.getTestName());
-            data.setDiscipline(this.labTest.getDispline().getDisplineName());
+
+            if (this.labTest.getDispline() != null) {
+                data.setDiscipline(this.labTest.getDispline().getDisplineName());
+            }
+
             data.setWithRef(this.labTest.getHasReferenceValue() != null ? this.labTest.getHasReferenceValue() : true);
         }
+
+        if (this.parentLabTest != null) {
+            data.setParentTest(this.parentLabTest.getTestName());
+        }
+
         data.setAttachment(this.attachment);
         //include the results 
         if (expand) {
