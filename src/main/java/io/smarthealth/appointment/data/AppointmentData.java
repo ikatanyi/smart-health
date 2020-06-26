@@ -82,8 +82,8 @@ public class AppointmentData implements Serializable {
         if (appointment.getPatient() != null) {
             data.setPatientNumber(appointment.getPatient().getPatientNumber());
             data.setPatientName(appointment.getPatient().getFullName());
-            data.setFirstName(appointment.getPatient().getGivenName());
-            data.setLastName(appointment.getPatient().getSurname());
+            data.setFirstName(appointment.getFirstName());
+            data.setLastName(appointment.getLastName());
             data.setGender(String.valueOf(appointment.getPatient().getGender()));
             data.setPhoneNumber(appointment.getPhoneNumber());
            
