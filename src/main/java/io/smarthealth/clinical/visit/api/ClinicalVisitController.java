@@ -67,6 +67,7 @@ import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -369,25 +370,27 @@ public class ClinicalVisitController {
     @GetMapping("/visits")
     @PreAuthorize("hasAuthority('view_visits')")
     public ResponseEntity<List<VisitDatas>> fetchAllVisits(
-            @RequestParam(value = "visitNumber", required = false)
-            final String visitNumber,
-            @RequestParam(value = "staffNumber", required = false)
-            final String staffNumber,
-            @RequestParam(value = "servicePointType", required = false)
-            final String servicePointType,
-            @RequestParam(value = "patientNumber", required = false)
-            final String patientNumber,
-            @RequestParam(value = "patientName", required = false)
-            final String patientName,
+            @RequestParam(value = "visitNumber", required = false) final String visitNumber,
+            @RequestParam(value = "staffNumber", required = false) final String staffNumber,
+            @RequestParam(value = "servicePointType", required = false) final String servicePointType,
+            @RequestParam(value = "patientNumber", required = false) final String patientNumber,
+            @RequestParam(value = "patientName", required = false) final String patientName,
             @RequestParam(value = "runningStatus", required = false, defaultValue = "true") final boolean runningStatus,
             @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "isActiveOnConsultation", required = false) final Boolean isActiveOnConsultation,
             @RequestParam(value = "orderByTriageCategory", required = false, defaultValue = "false") final Boolean orderByTriageCategory,
             @RequestParam(value = "username", required = false) final String username,
-            Pageable pageable
+            @RequestParam(value = "term", required = false) final String queryTerm,
+            @RequestParam(value = "pageNo", required = false) final Integer pageNo,
+            @RequestParam(value = "pageSize", required = false) final Integer pageSize
     ) {
+        Pageable pageable = Pageable.unpaged();
+
+        if (pageNo != null && pageSize != null) {
+            pageable = PageRequest.of(pageNo, pageSize);
+        }
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<VisitDatas> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, username, orderByTriageCategory, pageable).map(v -> convertToVisitData(v));
+        Page<VisitDatas> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, username, orderByTriageCategory, queryTerm, pageable).map(v -> convertToVisitData(v));
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 

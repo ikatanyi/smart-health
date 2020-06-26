@@ -240,7 +240,7 @@ public class ConsultationController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Patient patient = patientService.findPatientOrThrow(patientNo);
         List<HistoricalDiagnosisData> list = new ArrayList<>();
-        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, false, pageable);
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, false,null, pageable);
         for (Visit v : patientVisits) {
             HistoricalDiagnosisData dd = new HistoricalDiagnosisData();
             dd.setPatientName(patient.getFullName());

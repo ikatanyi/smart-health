@@ -26,7 +26,7 @@ public class VisitSpecification {
         super();
     }
 
-    public static Specification<Visit> createSpecification(String visitNumber, Employee employee, ServicePoint servicePoint, Patient patient, String patientName, boolean visitIsRunning, DateRange dateRange, final Boolean isActiveOnConsultation, final boolean orderByTriageCategory) {
+    public static Specification<Visit> createSpecification(String visitNumber, Employee employee, ServicePoint servicePoint, Patient patient, String patientName, boolean visitIsRunning, DateRange dateRange, final Boolean isActiveOnConsultation, final boolean orderByTriageCategory, final String queryTerm) {
 
         return (root, query, cb) -> {
 
@@ -86,6 +86,20 @@ public class VisitSpecification {
                                 cb.like(root.get("patient").get("givenName"), patientNameExpression),
                                 cb.like(root.get("patient").get("middleName"), patientNameExpression),
                                 cb.like(root.get("patient").get("surname"), patientNameExpression)
+                        )
+                );
+            }
+
+            if (queryTerm != null) {
+
+                final String term = "%" + queryTerm + "%";
+                predicates.add(
+                        cb.or(
+                                cb.like(root.get("visitNumber"), term),
+                                cb.like(root.get("patient").get("patientNumber"), term),
+                                cb.like(root.get("patient").get("givenName"), term),
+                                cb.like(root.get("patient").get("middleName"), term),
+                                cb.like(root.get("patient").get("surname"), term)
                         )
                 );
             }

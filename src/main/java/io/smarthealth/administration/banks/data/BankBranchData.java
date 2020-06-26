@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class BankBranchData {
 
+    private String mainBankName;
     private String branchName;
     private String branchAddress;
     private String branchCode;

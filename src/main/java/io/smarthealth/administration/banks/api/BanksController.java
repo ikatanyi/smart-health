@@ -47,7 +47,6 @@ public class BanksController {
         this.modelMapper = modelMapper;
     }
 
-     
     @PostMapping("/bank")
     @PreAuthorize("hasAuthority('create_bank')")
     public ResponseEntity<?> createBank(@Valid @RequestBody BankData bankData) {
@@ -142,6 +141,36 @@ public class BanksController {
         pagers.setContent(new BankBranchData());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+
+    }
+
+    @GetMapping("/bank-branch")
+    @PreAuthorize("hasAuthority('view_bank')")
+    public ResponseEntity<?> fetchBranchesByBank(
+            ) {
+        Pageable pageable = Pageable.unpaged();
+        Page<BankBranch> result = bankService.fetchAllBranchsInBank(pageable);
+        List<BankBranchData> branchesData = new ArrayList<>();
+        for (BankBranch bb : result) {
+            BankBranchData bbd = modelMapper.map(bb, BankBranchData.class);
+            bbd.setBranchId(bb.getId());
+            bbd.setMainBankName(bb.getBank().getBankName());
+            branchesData.add(bbd);
+        }
+
+        Pager<List<BankBranchData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(branchesData);
+        PageDetails details = new PageDetails();
+        details.setPage(result.getNumber() + 1);
+        details.setPerPage(result.getSize());
+        details.setTotalElements(result.getTotalElements());
+        details.setTotalPage(result.getTotalPages());
+        details.setReportName("Bank branch List");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
 
     }
 
