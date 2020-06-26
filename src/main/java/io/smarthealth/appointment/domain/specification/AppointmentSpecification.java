@@ -40,8 +40,8 @@ public class AppointmentSpecification {
                 final String likeExpression = "%" + patientName + "%";
                 predicates.add(
                         cb.or(
-                                cb.like(root.get("firstName").get("fullName"), likeExpression),
-                                cb.like(root.get("lastName").get("fullName"), likeExpression)
+                                cb.like(root.get("firstName"), likeExpression),
+                                cb.like(root.get("lastName"), likeExpression)
                         )
                 );
             }
