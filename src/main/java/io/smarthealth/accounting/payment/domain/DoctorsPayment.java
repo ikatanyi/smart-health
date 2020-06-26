@@ -50,6 +50,7 @@ public class DoctorsPayment extends Identifiable {
             data.setInvoiceAmount(this.getInvoice().getAmount());
             data.setInvoiceNumber(this.getInvoice().getInvoiceNumber());
             data.setInvoiceDate(this.getInvoice().getInvoiceDate());
+            data.setDescription(this.getInvoice().getInvoiceNumber()+" - Consultancy");
         }
         data.setTaxAmount(this.getTaxAmount());
         return data;

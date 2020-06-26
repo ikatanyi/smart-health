@@ -17,7 +17,7 @@ public class AppointmentSpecification {
         super();
     }
 
-    public static Specification<Appointment> createSpecification(String staffNumber, String patientId, StatusType status, String deptCode, String urgency, DateRange range) {
+    public static Specification<Appointment> createSpecification(String staffNumber, String patientId, StatusType status, String deptCode, String urgency, String patientName, DateRange range) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
  
@@ -35,6 +35,15 @@ public class AppointmentSpecification {
             }
             if (status != null) {
                 predicates.add(cb.equal(root.get("status"), status));
+            }
+            if (patientName != null) {
+                final String likeExpression = "%" + patientName + "%";
+                predicates.add(
+                        cb.or(
+                                cb.like(root.get("firstName").get("fullName"), likeExpression),
+                                cb.like(root.get("lastName").get("fullName"), likeExpression)
+                        )
+                );
             }
              if(range!=null){
                   predicates.add(

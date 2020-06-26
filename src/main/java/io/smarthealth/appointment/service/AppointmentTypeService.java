@@ -47,8 +47,11 @@ public class AppointmentTypeService {
 
     @Transactional
     public AppointmentType updateAppointmentType(Long id, AppointmentTypeData data) {
-        this.fetchAppointmentTypeById(id);
-        AppointmentType appointmentType = AppointmentTypeData.map(data);
+        AppointmentType appointmentType = fetchAppointmentTypeById(id).orElseThrow(() -> APIException.notFound("Appointment type identified by " + id + " not found ", id));;
+        appointmentType.setAppointmentTypeNumber(data.getAppointmentTypeNumber());
+        appointmentType.setColor(data.getColor());
+        appointmentType.setDuration(data.getDuration());
+        appointmentType.setName(data.getName());
         return appointmentTypeRepository.save(appointmentType);
     }
 
