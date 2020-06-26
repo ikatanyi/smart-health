@@ -432,10 +432,10 @@ public class ClinicalVisitController {
 
             paymentDetailAuditRepository.save(audit);
 
-            if (data.getPaymentMethod() == VisitEnum.PaymentMethod.Cash) {
-                paymentDetailsService.deletePaymentDetails(pd);
-            }
-
+//            if (data.getPaymentMethod() == VisitEnum.PaymentMethod.Cash) {
+//                paymentDetailsService.deletePaymentDetails(pd);
+//            }
+            paymentDetailsService.deletePaymentDetails(pd);
         }
 
         if (data.getPaymentMethod() == VisitEnum.PaymentMethod.Cash) {
