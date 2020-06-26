@@ -1,5 +1,8 @@
 package io.smarthealth.accounting.payment.api;
 
+import io.smarthealth.accounting.cashier.data.CashierShift;
+import io.smarthealth.accounting.cashier.data.ShiftPayment;
+import io.smarthealth.accounting.cashier.domain.ShiftStatus;
 import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
 import io.smarthealth.accounting.payment.domain.Receipt;
@@ -9,6 +12,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
+import java.time.LocalDate;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -96,6 +100,32 @@ public class ReceiptingController {
         details.setPerPage(list.getSize());
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
+        details.setReportName("Payments");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+    }
+    
+    @GetMapping("/receipting/shifts")
+    @ResponseBody
+    @PreAuthorize("hasAuthority('view_receipt')")
+    public ResponseEntity<?> getPaymentShifts(
+            @RequestParam(value = "status", required = false) ShiftStatus status,
+            @RequestParam(value = "shift_no", required = false) final String shiftNo,
+            @RequestParam(value = "cashier_id", required = false) final Long cashier,
+            @RequestParam(value = "service_point_id", required = false) final Long servicePointId,
+//            @RequestParam(value = "date_range", required = true) final String dateRange,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+//        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        List<CashierShift> list = service.getCashierShift(shiftNo, cashier);
+
+        Pager<List<CashierShift>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list);
+        PageDetails details = new PageDetails();
         details.setReportName("Payments");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);

@@ -15,16 +15,19 @@ import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
+import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.stock.purchase.service.PurchaseInvoiceService;
 import io.smarthealth.supplier.data.SupplierData;
+import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +53,7 @@ public class SupplierReportService {
     private final JasperReportsService reportService;
     private final PatientService patientService;
     private final RadiologyService scanService;
+    private final InventoryService inventoryService;
     
     private final SupplierService supplierService;
     private final DoctorInvoiceService doctorInvoiceService;
@@ -174,20 +178,8 @@ public class SupplierReportService {
         reportService.generateReport(reportData, response);
     } 
     
-    public void SupplierInvoice(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
-        ReportData reportData = new ReportData();
-        Long id = Long.valueOf(reportParam.getFirst("id"));  
-        
-        PurchaseInvoiceData purchaseInvoiceData = purchaseInvoiceService.findOneWithNoFoundDetection(id).toData();
-        if (purchaseInvoiceData.getSupplier()!= null) {
-            reportData.setSupplierId(purchaseInvoiceData.getSupplierId());
-        }       
-        reportData.setData(Arrays.asList(purchaseInvoiceData));
-        reportData.setFormat(format);
-        reportData.setTemplate("/supplier/supplierInvoice");
-        reportData.setReportName("Supplier-invoice");
-        reportService.generateReport(reportData, response);
-    }    
+    
+    
     
     private PurchaseInvoiceStatus PurchaseInvoiceStatusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {

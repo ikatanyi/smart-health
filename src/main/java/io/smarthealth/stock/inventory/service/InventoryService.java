@@ -10,6 +10,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.data.CreateStockEntry;
+import io.smarthealth.stock.inventory.data.StockEntryData;
 import io.smarthealth.stock.inventory.data.StockMovement;
 import io.smarthealth.stock.inventory.data.SupplierStockEntry;
 import io.smarthealth.stock.inventory.domain.StockEntry;
@@ -33,6 +34,7 @@ import io.smarthealth.stock.stores.service.StoreService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -288,6 +290,13 @@ public class InventoryService {
         }
 
         return stockEntryRepository.getStockEntriesByItem(itemId);
+    }
+    
+    public List<StockEntryData>findByReferenceNumber(String referenceNumber){
+        return stockEntryRepository.findByReferenceNumber(referenceNumber)
+                .stream()
+                .map((entry)->entry.toData())
+                .collect(Collectors.toList());
     }
 
 //    Page<StockMovement> getStockMovement(Long storeId, Long itemId, DateRange range, Pageable pageable) {

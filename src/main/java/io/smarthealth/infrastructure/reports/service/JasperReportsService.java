@@ -184,13 +184,13 @@ public class JasperReportsService {
         jasperReportsContext.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
         jasperReportsContext.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
 
-        if (dataList.isEmpty()) {
-            Connection conn = jdbcTemplate.getDataSource().getConnection();
-            jasperPrint = JasperFillManager.fillReport(jasperReport, param, conn);
-        } else {
+//        if (dataList.isEmpty()) {
+//            Connection conn = jdbcTemplate.getDataSource().getConnection();
+//            jasperPrint = JasperFillManager.fillReport(jasperReport, param, conn);
+//        } else {
             jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
 
-        }
+//        }
         System.out.println("Report generated in"+ChronoUnit.MILLIS.between(startTime, LocalDateTime.now())+"ms");
         export(jasperPrint, format, reportName, response);
 

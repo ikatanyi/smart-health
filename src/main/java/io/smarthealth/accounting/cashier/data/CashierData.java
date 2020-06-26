@@ -7,6 +7,7 @@ package io.smarthealth.accounting.cashier.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
@@ -31,4 +32,6 @@ public class CashierData implements Serializable {
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate endDate;
     private Boolean active = Boolean.TRUE;
+    @ApiModelProperty(hidden=true, required=false)
+    private String email;
 }

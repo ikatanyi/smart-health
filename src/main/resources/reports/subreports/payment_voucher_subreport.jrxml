@@ -3,23 +3,27 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="category" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
 	<field name="invoiceDate" class="java.lang.Object"/>
 	<field name="invoiceNumber" class="java.lang.String"/>
 	<field name="invoiceAmount" class="java.math.BigDecimal"/>
 	<field name="amountPaid" class="java.math.BigDecimal"/>
 	<field name="taxAmount" class="java.math.BigDecimal"/>
+	<variable name="description" class="java.lang.String"/>
 	<columnHeader>
 		<band height="16" splitType="Stretch">
 			<staticText>
-				<reportElement positionType="Float" x="0" y="3" width="185" height="12" uuid="b67b795a-0c2f-4a96-805d-51668b4e19d7"/>
+				<reportElement positionType="Float" x="6" y="3" width="85" height="12" uuid="b67b795a-0c2f-4a96-805d-51668b4e19d7"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[TRX Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="185" y="3" width="185" height="12" uuid="c5b3c4c1-1a36-4b26-b7dc-9bfd43ede4f9"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement positionType="Float" x="177" y="3" width="193" height="12" uuid="c5b3c4c1-1a36-4b26-b7dc-9bfd43ede4f9"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Description]]></text>
@@ -42,14 +46,14 @@
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="208" y="0" width="162" height="12" uuid="23490496-4483-4645-8a15-b664c16a6322"/>
+				<reportElement x="177" y="0" width="193" height="12" uuid="23490496-4483-4645-8a15-b664c16a6322"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{invoiceNumber}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{invoiceNumber}+" - "+($P{category}.equals( "Supplier" )?"Medical Supplies":"Medical Services")]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="16" y="0" width="169" height="12" uuid="f80ce952-ba9e-42e1-babe-9dd92eb6c8fb"/>
+				<reportElement x="6" y="0" width="85" height="12" uuid="f80ce952-ba9e-42e1-babe-9dd92eb6c8fb"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>

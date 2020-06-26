@@ -201,6 +201,12 @@ public class ReportController {
             case Departmental_Income_Statement:
                 reportService.getDepartmentalPayments(queryParams, format, response);
                 break;
+            case Goods_Receive_Note:
+                stockReportService.SupplierGRN(queryParams, format, response);
+                break;    
+            case Shift_Report:
+                paymentReportService.shiftPayments(queryParams, format, response);
+                break;
             default:
                 break;
 

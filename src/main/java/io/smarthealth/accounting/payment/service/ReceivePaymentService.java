@@ -11,6 +11,8 @@ import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.cashier.data.CashierShift;
+import io.smarthealth.accounting.cashier.data.ShiftPayment;
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.cashier.domain.ShiftRepository;
 import io.smarthealth.accounting.payment.data.ReceiptMethod;
@@ -52,6 +54,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.ReceiptRepository;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+import java.time.LocalDate;
 
 /**
  *
@@ -208,6 +211,14 @@ public class ReceivePaymentService {
         return repository.findByReceiptNo(receiptNo)
                 .orElseThrow(() -> APIException.notFound("Payment with Receipt Number {0} Not Found", receiptNo));
     }
+    
+    public List<CashierShift> getCashierShift(String shiftNo, Long cashierId){
+        return receiptItemRepository.findTotalByCashierShift(shiftNo, cashierId);
+    }
+    
+//    public List<ShiftPayment> getShiftPayment(LocalDateTime from, LocalDateTime to, String shiftNo, Long cashierId){
+//        return transactionrepository.findTotalShiftPayment(from, to, shiftNo, cashierId);
+//    }
 
     public void voidPayment(String receiptNo) {
         Receipt payment = getPaymentByReceiptNumber(receiptNo);
