@@ -197,8 +197,8 @@ public class AppointmentService {
         return appointmentRepository.findByAppointmentNo(appointmentNo).orElseThrow(() -> APIException.notFound("Appointment identified by {0} not found", appointmentNo));
     }
 
-    public Page<Appointment> fetchAllAppointments(String practitionerNumber, String patientId, String status, String deptCode, String urgency, DateRange range, final Pageable pageable) {
-        Specification<Appointment> spec = AppointmentSpecification.createSpecification(practitionerNumber, patientId, statusToEnum(status), deptCode, urgency, range);
+    public Page<Appointment> fetchAllAppointments(String practitionerNumber, String patientId, String status, String deptCode, String urgency, String patientName, DateRange range, final Pageable pageable) {
+        Specification<Appointment> spec = AppointmentSpecification.createSpecification(practitionerNumber, patientId, statusToEnum(status), deptCode, urgency, patientName, range);
         return appointmentRepository.findAll(spec, pageable);
     }
 

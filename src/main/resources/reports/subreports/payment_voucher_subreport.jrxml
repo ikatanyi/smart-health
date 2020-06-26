@@ -11,6 +11,7 @@
 	<field name="invoiceAmount" class="java.math.BigDecimal"/>
 	<field name="amountPaid" class="java.math.BigDecimal"/>
 	<field name="taxAmount" class="java.math.BigDecimal"/>
+	<field name="description" class="java.lang.String"/>
 	<variable name="description" class="java.lang.String"/>
 	<columnHeader>
 		<band height="16" splitType="Stretch">
@@ -22,7 +23,7 @@
 				<text><![CDATA[TRX Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="177" y="3" width="193" height="12" uuid="c5b3c4c1-1a36-4b26-b7dc-9bfd43ede4f9"/>
+				<reportElement positionType="Float" x="210" y="3" width="160" height="12" uuid="c5b3c4c1-1a36-4b26-b7dc-9bfd43ede4f9"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -46,11 +47,11 @@
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="177" y="0" width="193" height="12" uuid="23490496-4483-4645-8a15-b664c16a6322"/>
+				<reportElement x="210" y="0" width="160" height="12" uuid="23490496-4483-4645-8a15-b664c16a6322"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{invoiceNumber}+" - "+($P{category}.equals( "Supplier" )?"Medical Supplies":"Medical Services")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="6" y="0" width="85" height="12" uuid="f80ce952-ba9e-42e1-babe-9dd92eb6c8fb"/>

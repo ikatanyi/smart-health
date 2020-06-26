@@ -253,7 +253,7 @@ public class PaymentReportService {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;
         }
-        if (EnumUtils.isValidEnum(AccountType.class, status)) {
+        if (EnumUtils.isValidEnum(PettyCashStatus.class, status)) {
             return PettyCashStatus.valueOf(status);
         }
         throw APIException.internalError("Provide a Valid PettyCash Status");

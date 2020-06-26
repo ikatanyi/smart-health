@@ -140,6 +140,7 @@ public class AppointmentController {
         @RequestParam(value = "patientId", required = false) final String patientId,
         @RequestParam(value = "status", required = false) final String status,
         @RequestParam(value = "urgency", required = false) final String urgency,
+        @RequestParam(value = "name", required = false) final String name,
         @RequestParam(value = "deptCode", required = false) final String deptCode,
         @RequestParam(value = "dateRange", required = false) String dateRange,  
         
@@ -149,7 +150,7 @@ public class AppointmentController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         System.err.println("my current statys "+status);
-        Page<AppointmentData> results = appointmentService.fetchAllAppointments(practitionerNumber, patientId, status, deptCode, urgency, range, pageable).map(a->AppointmentData.map(a));
+        Page<AppointmentData> results = appointmentService.fetchAllAppointments(practitionerNumber, patientId, status, deptCode, urgency, name, range, pageable).map(a->AppointmentData.map(a));
         
         Pager pager = new Pager();
         pager.setCode("200");

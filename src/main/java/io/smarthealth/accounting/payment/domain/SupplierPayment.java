@@ -51,6 +51,7 @@ public class SupplierPayment extends Identifiable {
             data.setInvoiceAmount(this.getInvoice().getInvoiceAmount());
             data.setInvoiceNumber(this.getInvoice().getInvoiceNumber());
             data.setInvoiceDate(this.getInvoice().getInvoiceDate());
+            data.setDescription(this.getInvoice().getInvoiceNumber()+" - Provision of Medical Supplies");
         }        
         data.setTaxAmount(this.getTaxAmount());
         return data;
