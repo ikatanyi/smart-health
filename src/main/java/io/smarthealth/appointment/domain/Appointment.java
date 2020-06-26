@@ -60,7 +60,7 @@ public class Appointment extends Auditable {
     private StatusType status; //new followup 
     
     private String firstName;
-    private String LastName;
+    private String lastName;
     private String gender;
     private String phoneNumber;
     @OneToOne
