@@ -139,8 +139,11 @@ public class DoctorRequestService implements DateConverter {
         return doctorRequestRepository.findAll(spec, wholePage).getContent();
     }
 
-    public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final FullFillerStatusType fullfillerStatus, final RequestType requestType) {
-        return doctorRequestRepository.findServiceRequestsByPatient(patient, fullfillerStatus, requestType);
+//    public List<DoctorRequest> fetchServiceRequestsByPatient(final Patient patient, final FullFillerStatusType fullfillerStatus, final RequestType requestType) {
+//        return doctorRequestRepository.findServiceRequestsByPatient(patient, fullfillerStatus, requestType);
+//    }
+    public List<DoctorRequest> fetchServiceRequestsByVisit(final Visit visit, final FullFillerStatusType fullfillerStatus, final RequestType requestType) {
+        return doctorRequestRepository.findServiceRequestsByVisit(visit, fullfillerStatus, requestType);
     }
 
     public Optional<DoctorRequestData> getDocRequestById(Long id) {

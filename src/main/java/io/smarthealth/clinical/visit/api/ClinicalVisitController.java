@@ -507,14 +507,13 @@ public class ClinicalVisitController {
         }
     }
 
-    @GetMapping("/patients/{id}/visits")
+    @GetMapping("/patients/{patientNumber}/visits")
     @PreAuthorize("hasAuthority('view_visits')")
-    public ResponseEntity<List<VisitDatas>> fetchAllVisitsByPatient(@PathVariable("id")
-            final String patientNumber,
+    public ResponseEntity<List<VisitDatas>> fetchAllVisitsByPatient(@PathVariable("patientNumber") final String patientNumber,
             @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,
             Pageable pageable
     ) {
-        System.out.println("patientNumber " + patientNumber);
+        //System.out.println("patientNumber " + patientNumber);
         Page<VisitDatas> page = visitService.fetchVisitByPatientNumber(patientNumber, pageable).map(v -> convertToVisitData(v));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);

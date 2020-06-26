@@ -50,7 +50,7 @@ public class VisitService {
 
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
         Patient patient = findPatientOrThrow(patientNumber);
-        Page<Visit> visits = visitRepository.findByPatient(patient, pageable);
+        Page<Visit> visits = visitRepository.findByPatientOrderByStartDatetimeDesc(patient, pageable);
         return visits;
     }
 
