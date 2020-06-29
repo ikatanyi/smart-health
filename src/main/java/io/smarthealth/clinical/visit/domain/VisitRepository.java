@@ -24,7 +24,7 @@ import org.springframework.data.repository.query.Param;
  */
 public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecificationExecutor<Visit>, ResultsRepository {
 
-    Page<Visit> findByPatient(final Patient patient, Pageable page);
+    Page<Visit> findByPatientOrderByStartDatetimeDesc(final Patient patient, Pageable page);
 
     Page<Visit> findByPatientAndVisitNumber(final Patient patient, final String visitNumber, Pageable page);
 

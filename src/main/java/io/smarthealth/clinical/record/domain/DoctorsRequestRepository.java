@@ -28,7 +28,9 @@ public interface DoctorsRequestRepository extends JpaRepository<DoctorRequest, L
 
     Page<DoctorRequest> findByVisit(final Visit visit, final Pageable pageable);
 
-    @Query("select d FROM DoctorRequest d WHERE d.patient=:patient AND  d.fulfillerStatus=:fulfillerStatus AND requestType=:requestType")
-    List<DoctorRequest> findServiceRequestsByPatient(@Param("patient") final Patient patient, @Param("fulfillerStatus") final FullFillerStatusType fulfillerStatus, @Param("requestType") final RequestType requestType);
+//    @Query("select d FROM DoctorRequest d WHERE d.patient=:patient AND  d.fulfillerStatus=:fulfillerStatus AND requestType=:requestType")
+//    List<DoctorRequest> findServiceRequestsByPatient(@Param("patient") final Patient patient, @Param("fulfillerStatus") final FullFillerStatusType fulfillerStatus, @Param("requestType") final RequestType requestType);
+    @Query("select d FROM DoctorRequest d WHERE d.visit=:visit AND  d.fulfillerStatus=:fulfillerStatus AND requestType=:requestType")
+    List<DoctorRequest> findServiceRequestsByVisit(@Param("visit") final Visit visit, @Param("fulfillerStatus") final FullFillerStatusType fulfillerStatus, @Param("requestType") final RequestType requestType);
 
 }
