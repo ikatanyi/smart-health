@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import lombok.EqualsAndHashCode;
 
 /**
  * Base Entity using {@link  GeneratedValue } Identity Strategy to generate a
@@ -14,6 +15,7 @@ import javax.persistence.MappedSuperclass;
  * @author Kelsas
  */
 @MappedSuperclass
+@EqualsAndHashCode(of = "id", callSuper = false)
 public abstract class Identifiable implements Serializable {
 
     @Id

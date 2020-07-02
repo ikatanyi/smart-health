@@ -6,6 +6,7 @@ import io.smarthealth.administration.app.domain.Currency;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,8 +53,9 @@ public class PriceBook extends Auditable {
 
     private Double decimalPlace;
 
-    @OneToMany(mappedBy = "priceBook", cascade = CascadeType.ALL)
-    private Set<PriceBookItem> priceBookItems = new HashSet<>();
+    @OneToMany(mappedBy = "priceBook", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<PriceBookItem> priceBookItems = new HashSet<>();
+    private List<PriceBookItem> priceBookItems= new ArrayList<>();
 
     private boolean active;
 
@@ -65,10 +67,10 @@ public class PriceBook extends Auditable {
         for (PriceBookItem priceBookItem : priceBookItems) {
             priceBookItem.setPriceBook(this);
         }
-        this.priceBookItems = Stream.of(priceBookItems).collect(Collectors.toSet());
+        this.priceBookItems = Stream.of(priceBookItems).collect(Collectors.toList());
     }
 
-    public void addPriceItems(Set<PriceBookItem> bookItems) {
+    public void addPriceItems(List<PriceBookItem> bookItems) {
         this.priceBookItems = bookItems;
         this.priceBookItems.forEach(x -> x.setPriceBook(this));
     }
