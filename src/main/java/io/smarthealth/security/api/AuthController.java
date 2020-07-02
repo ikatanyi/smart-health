@@ -279,7 +279,6 @@ public class AuthController {
 //        if (userID == null || userID.isEmpty()) {
 //            emitter.send("Invalid user ID", MediaType.APPLICATION_JSON);
 //        }
-
         notificationService.addEmitter(emitter);
         notificationService.doNotify();//trigger the initial call
         emitter.onCompletion(() -> notificationService.removeEmitter(emitter));

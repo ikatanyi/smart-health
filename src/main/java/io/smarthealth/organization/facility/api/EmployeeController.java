@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.organization.facility.api;
 
 import io.smarthealth.infrastructure.common.ApiResponse;
@@ -14,6 +9,7 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.domain.PersonContact;
+import io.smarthealth.security.domain.UserRepository;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.ArrayList;
@@ -46,11 +42,27 @@ public class EmployeeController {
     @Autowired
     EmployeeService employeeService;
 
+    @Autowired
+    UserRepository userRepository;
+
     @PostMapping("/employee")
     @PreAuthorize("hasAuthority('create_employee')")
     public @ResponseBody
     ResponseEntity<?> createEmployee(@RequestBody @Valid final EmployeeData employeeData) {
         if (employeeData.isCreateUserAccount()) {
+
+//              if (containsWhitespace(employeeData.getUsername())) {
+//            throw APIException.badRequest("Username should not have spaces!");
+//        }
+            if (userRepository.existsByUsername(employeeData.getUsername())) {
+                return new ResponseEntity(new io.smarthealth.security.data.ApiResponse(false, "Username is already taken!"),
+                        HttpStatus.BAD_REQUEST);
+            }
+
+            if (userRepository.existsByEmail(employeeData.getEmail())) {
+                return new ResponseEntity(new io.smarthealth.security.data.ApiResponse(false, "Email Address already in use!"),
+                        HttpStatus.BAD_REQUEST);
+            }
             if (employeeData.getRoles().length < 1) {
                 throw APIException.badRequest("Please assign a role to the user to be created", "");
             }
@@ -113,4 +125,5 @@ public class EmployeeController {
 
         return new ResponseEntity<>(employeeDataList, HttpStatus.OK);
     }
+
 }

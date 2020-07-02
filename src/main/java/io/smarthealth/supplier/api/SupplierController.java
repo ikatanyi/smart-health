@@ -2,7 +2,6 @@ package io.smarthealth.supplier.api;
 
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.jobs.data.JobDetailHistoryData;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
