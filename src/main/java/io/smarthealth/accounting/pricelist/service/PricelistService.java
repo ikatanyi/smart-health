@@ -16,6 +16,7 @@ import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -130,6 +131,8 @@ public class PricelistService {
             Optional<PriceBook> priceBook = priceBookRepository.findById(priceBookId);
             if (priceBook.isPresent()) {
                 PriceBook book = priceBook.get();
+                
+               
                 if (book.isGlobalRate()) {
                     return prices.map(pb -> book.toPriceBookRate(pb));
                 } else {
@@ -195,11 +198,15 @@ public class PricelistService {
     }
 
     private PriceBookItem findPriceItem(PriceBook book, Item item) {
-        return book.getPriceBookItems().stream().filter(x -> x.getItem().getId().equals(item.getId())).findAny().orElse(null);
+         return book.getPriceBookItems()
+                .stream()
+                .filter(x -> Objects.equals(x.getItem().getId(), item.getId()))
+                .findAny()
+                .orElse(null);
     }
 
     /**
-     * Search Item PriceList
+     * Search Item PriceList (item, servicePointId, priceBookId, pageable
      */
     public Page<PriceList> searchPriceList(String searchItem, Long servicePointId, Long priceBookId, Pageable page) {
 
@@ -210,11 +217,11 @@ public class PricelistService {
         if (priceBookId != null) {
             Optional<PriceBook> priceBook = priceBookRepository.findById(priceBookId);
             if (priceBook.isPresent()) {
-                PriceBook book = priceBook.get();
+                PriceBook book = priceBook.get(); 
                 if (book.isGlobalRate()) {
                     return prices.map(pb -> book.toPriceBookRate(pb));
                 } else {
-                    prices.map(pbi -> {
+                    prices.map(pbi -> { 
                         PriceBookItem i = findPriceItem(book, pbi.getItem());
                         System.err.println("finding i " + i);
                         if (i != null) {
