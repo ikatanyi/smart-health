@@ -13,28 +13,28 @@
 			<staticText>
 				<reportElement x="0" y="1" width="98" height="13" uuid="040f1ddd-8ead-4542-bd87-a998dc9de8c8"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Analyte]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="98" y="1" width="221" height="13" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Result]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="319" y="1" width="155" height="13" uuid="0cba2f73-babc-42a6-9ebc-072229ea1b81"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Comments]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="474" y="1" width="71" height="13" uuid="5810cdd9-948c-4832-bbca-a7c4d93b8da1"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[status]]></text>
 			</staticText>
@@ -51,21 +51,21 @@
 			<textField>
 				<reportElement x="0" y="0" width="98" height="16" uuid="0a442664-0b75-4eeb-9498-a8cff730778b"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{analyte}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="319" y="0" width="155" height="16" uuid="cd9db49d-c9dc-4960-a0a5-7e5d0236328b"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{comments}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="474" y="0" width="71" height="16" uuid="2bd68c43-d46e-46fd-acf2-42c0f058cb81"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
 			</textField>
@@ -75,10 +75,10 @@
 					<pen lineWidth="0.25" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="98" y="0" width="221" height="16" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{resultValue}]]></textFieldExpression>
 			</textField>
