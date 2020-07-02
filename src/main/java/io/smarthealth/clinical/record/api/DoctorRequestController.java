@@ -167,7 +167,7 @@ public class DoctorRequestController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Patient patient = patientService.findPatientOrThrow(patientNo);
         //fetch all visits by patient
-        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, false, pageable);
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, false, null, pageable);
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
 
         for (Visit v : patientVisits.getContent()) {
@@ -229,7 +229,7 @@ public class DoctorRequestController {
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-           final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 //        final DateRange range = DateRange.fromIsoString(dateRange);
         Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable, activeVisit, term, range);
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
@@ -242,7 +242,7 @@ public class DoctorRequestController {
             waitingRequest.setVisitNumber(docReq.getVisit().getVisitNumber());
             waitingRequest.setRequestId(docReq.getId());
             //find line items by request_id
-            List<DoctorRequest> serviceItems = requestService.fetchServiceRequestsByPatient(docReq.getPatient(), fulfillerStatus, requestType);
+            List<DoctorRequest> serviceItems = requestService.fetchServiceRequestsByVisit(docReq.getVisit(), fulfillerStatus, requestType);
             List<DoctorRequestItem> requestItems = new ArrayList<>();
             for (DoctorRequest r : serviceItems) {
                 requestItems.add(requestService.toData(r));

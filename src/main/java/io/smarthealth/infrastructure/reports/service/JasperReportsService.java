@@ -2,10 +2,13 @@ package io.smarthealth.infrastructure.reports.service;
 
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.ApplicationProperties;
+import io.smarthealth.administration.app.domain.Address;
+import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.facility.service.FacilityService;
+import io.smarthealth.organization.org.domain.Organisation.Type;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
@@ -301,22 +304,23 @@ public class JasperReportsService {
         jasperParameter.put("orgName", facility.getOrganization().getOrganizationName());
         jasperParameter.put("TaxNumber", facility.getOrganization().getTaxNumber());
         jasperParameter.put("orgWebsite", facility.getOrganization().getWebsite());
-        if (!facility.getOrganization().getAddress().isEmpty()) {
-            jasperParameter.put("orgAddressCountry", facility.getOrganization().getAddress().get(0).getCountry());
-            jasperParameter.put("orgAddressCounty", facility.getOrganization().getAddress().get(0).getCounty());
-            jasperParameter.put("orgAddressLine1", facility.getOrganization().getAddress().get(0).getLine1());
-            jasperParameter.put("orgAddressLine2", facility.getOrganization().getAddress().get(0).getLine2());
-            jasperParameter.put("orgPostalCode", facility.getOrganization().getAddress().get(0).getPostalCode());
-            jasperParameter.put("orgTown", facility.getOrganization().getAddress().get(0).getTown());
-            jasperParameter.put("orgType", facility.getOrganization().getAddress().get(0).getType());
+        String country="", county="", addressLine1="", addressLine2="", postalcode="", town="";
+        for(Address address:facility.getOrganization().getAddress()){
+            jasperParameter.put("orgAddressCountry", country.concat(" ").concat(address.getCountry()));
+            jasperParameter.put("orgAddressCounty", county.concat(" ").concat(address.getCounty()));
+            jasperParameter.put("orgAddressLine1", addressLine1.concat(" ").concat(address.getLine1()));
+            jasperParameter.put("orgAddressLine2", addressLine2.concat(" ").concat(address.getLine2()));
+            jasperParameter.put("orgPostalCode", postalcode.concat(" ").concat(address.getPostalCode()));
+            jasperParameter.put("orgTown", town.concat(" ").concat(address.getTown()));
+            jasperParameter.put("orgType", address.getType());
         }
-
-        if (!facility.getOrganization().getContact().isEmpty()) {
-            jasperParameter.put("contactEmail", facility.getOrganization().getContact().get(0).getEmail());
-            jasperParameter.put("contactFullName", facility.getOrganization().getContact().get(0).getFullName());
-            jasperParameter.put("contactMobile", facility.getOrganization().getContact().get(0).getMobile());
-            jasperParameter.put("salutation", facility.getOrganization().getContact().get(0).getSalutation());
-            jasperParameter.put("telephone", facility.getOrganization().getContact().get(0).getTelephone());
+       String email="", fullname="", mobile="", salutation="", telephone="";
+        for (Contact contact :facility.getOrganization().getContact()) {
+            jasperParameter.put("contactEmail", email.concat(" ").concat(contact.getEmail()));
+            jasperParameter.put("contactFullName", fullname.concat(" ").concat(contact.getFullName()));
+            jasperParameter.put("contactMobile", mobile.concat(" ").concat(contact.getMobile()));
+            jasperParameter.put("salutation", salutation.concat(" ").concat(contact.getSalutation()));
+            jasperParameter.put("telephone", telephone.concat(" ").concat(contact.getTelephone()));
         }
 
         if (patientNumber != null) {

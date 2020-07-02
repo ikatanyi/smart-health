@@ -50,7 +50,7 @@ public class VisitService {
 
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
         Patient patient = findPatientOrThrow(patientNumber);
-        Page<Visit> visits = visitRepository.findByPatient(patient, pageable);
+        Page<Visit> visits = visitRepository.findByPatientOrderByStartDatetimeDesc(patient, pageable);
         return visits;
     }
 
@@ -60,7 +60,7 @@ public class VisitService {
         return visits;
     }
 
-    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Boolean isActiveOnConsultation, final String username, final boolean orderByTriageCategory, final Pageable pageable) {
+    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Boolean isActiveOnConsultation, final String username, final boolean orderByTriageCategory, final String queryTerm, final Pageable pageable) {
         Employee employee = null;
         ServicePoint servicePoint = null;
         Patient patient = null;
@@ -85,7 +85,7 @@ public class VisitService {
             }
         }
 
-        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visitNumber, employee, servicePoint, patient, patientName, runningStatus, range, isActiveOnConsultation, orderByTriageCategory);
+        Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visitNumber, employee, servicePoint, patient, patientName, runningStatus, range, isActiveOnConsultation, orderByTriageCategory, queryTerm);
         Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
         return visits;
     }

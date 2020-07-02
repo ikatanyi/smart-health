@@ -50,6 +50,10 @@ public class BankService {
         return bankBranchRepository.findByBank(mb, pageable);
     }
 
+    public Page<BankBranch> fetchAllBranchsInBank(Pageable pageable) {
+        return bankBranchRepository.findAll(pageable);
+    }
+
     public Bank fetchBankById(Long id) {
         return bankRepository.findById(id).orElseThrow(() -> APIException.notFound("Bank identified by {0} was not found", id));
     }

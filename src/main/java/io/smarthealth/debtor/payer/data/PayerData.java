@@ -40,6 +40,7 @@ public class PayerData {
     @ApiModelProperty(hidden = true)
     private String branchName;
     private String payerCode;
+    private String bankName;
 
     private String debitAccountNo;
     private String accountNumber;
@@ -73,6 +74,7 @@ public class PayerData {
             payerData.setBranchId(payer.getBankBranch().getId());
             payerData.setBranchName(payer.getBankBranch().getBranchName());
             payerData.setBankId(payer.getBankBranch().getId());
+            payerData.setBankName(payer.getBankBranch().getBank().getBankName());
         }
 
         if (payer.getDebitAccount() != null) {

@@ -29,44 +29,44 @@
 		<variableExpression><![CDATA[$F{orgAddressLine1}+","+$F{orgAddressLine2}+"\n"+$F{orgAddressCountry}+", "+$F{orgAddressCounty}]]></variableExpression>
 	</variable>
 	<detail>
-		<band height="82" splitType="Stretch">
+		<band height="71" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="1" y="28" width="255" height="9" isRemoveLineWhenBlank="true" uuid="e9865714-00b3-4db4-8af1-82492bcbde9f"/>
+				<reportElement positionType="Float" x="78" y="4" width="255" height="12" isRemoveLineWhenBlank="true" uuid="e9865714-00b3-4db4-8af1-82492bcbde9f"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{facilityName}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="1" y="39" width="255" height="9" isRemoveLineWhenBlank="true" uuid="511806e2-2cb1-496a-8a82-cacf24ac7b87"/>
+				<reportElement positionType="Float" x="78" y="16" width="255" height="12" isRemoveLineWhenBlank="true" uuid="511806e2-2cb1-496a-8a82-cacf24ac7b87"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{telephone}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="1" y="50" width="255" height="9" isRemoveLineWhenBlank="true" uuid="cc7cea67-13d9-4bf7-8722-8b2929716fb8"/>
+				<reportElement positionType="Float" x="78" y="28" width="255" height="12" isRemoveLineWhenBlank="true" uuid="cc7cea67-13d9-4bf7-8722-8b2929716fb8"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{locale}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="1" y="61" width="255" height="9" isRemoveLineWhenBlank="true" uuid="a99a1f49-aba5-4697-b3a9-955ed87a1fe7"/>
+				<reportElement positionType="Float" x="78" y="40" width="255" height="12" isRemoveLineWhenBlank="true" uuid="a99a1f49-aba5-4697-b3a9-955ed87a1fe7"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{contactEmail}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="1" y="72" width="255" height="9" isRemoveLineWhenBlank="true" uuid="62fb63a8-b796-4d59-9661-52d7659f3091"/>
+				<reportElement positionType="Float" x="78" y="52" width="255" height="12" isRemoveLineWhenBlank="true" uuid="62fb63a8-b796-4d59-9661-52d7659f3091"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{orgWebsite}]]></textFieldExpression>
 			</textField>
 			<image isUsingCache="true" isLazy="true" onErrorType="Blank">
-				<reportElement x="0" y="0" width="136" height="28" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
+				<reportElement x="1" y="4" width="125" height="61" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
 				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
 			</image>
 		</band>

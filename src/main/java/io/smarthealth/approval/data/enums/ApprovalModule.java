@@ -12,5 +12,7 @@ package io.smarthealth.approval.data.enums;
 public enum ApprovalModule {
     PettyCash,
     StockTransfer,
-    LPO
+    LPO, 
+    Discounts
+    
 }
