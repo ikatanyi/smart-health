@@ -7,6 +7,8 @@ import io.smarthealth.administration.finances.domain.PaymentTerms;
 import io.smarthealth.administration.finances.service.PaymentTermsService;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.accounting.pricelist.service.PricebookService;
+import io.smarthealth.administration.app.domain.Contact;
+import io.smarthealth.administration.app.service.ContactService;
 import io.smarthealth.administration.banks.service.BankService;
 import io.smarthealth.debtor.payer.data.PayerData;
 import io.smarthealth.debtor.payer.domain.Payer;
@@ -15,8 +17,10 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +43,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Api
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class PayerController {
 
     private final PayerService payerService;
@@ -46,14 +51,7 @@ public class PayerController {
     private final AccountService accountService;
     private final PaymentTermsService paymentTermsService;
     private final PricebookService pricebookService;
-
-    public PayerController(PayerService payerService, BankService bankService, AccountService accountService, PaymentTermsService paymentTermsService, PricebookService pricebookService) {
-        this.payerService = payerService;
-        this.bankService = bankService;
-        this.accountService = accountService;
-        this.paymentTermsService = paymentTermsService;
-        this.pricebookService = pricebookService;
-    }
+    private final ContactService contactService;
 
     @PostMapping("/payer")
     @PreAuthorize("hasAuthority('create_payer')")
@@ -78,19 +76,19 @@ public class PayerController {
             payer.setPriceBook(priceBook);
         }
 
-//        List<Contact> contact = new ArrayList<>();
-//        Contact c = new Contact();
-//        c.setEmail(payerData.getEmail());
-//        if (payerData.getFirstName() != null && payerData.getLastName() != null) {
-//            c.setFullName(payerData.getFirstName().concat(" ").concat(payerData.getLastName()));
-//        }
-//        c.setMobile(payerData.getMobile());
-//        c.setSalutation(payerData.getSalutation());
-//        c.setTelephone(payerData.getTelephone());
-//
-//        contact.add(c);
-//
-//        payer.setContacts(contact);
+        List<Contact> contact = new ArrayList<>();
+        Contact c = new Contact();
+        c.setEmail(payerData.getEmail());
+        if (payerData.getFirstName() != null && payerData.getLastName() != null) {
+            c.setFullName(payerData.getFirstName().concat(" ").concat(payerData.getLastName()));
+        }
+        c.setMobile(payerData.getMobile());
+        c.setSalutation(payerData.getSalutation());
+        c.setTelephone(payerData.getTelephone());
+
+        contact.add(contactService.createContact(c));
+
+        payer.setContacts(contact);
         Payer result = payerService.createPayer(payer);
 
         URI location = ServletUriComponentsBuilder
@@ -133,6 +131,33 @@ public class PayerController {
         if (payerData.getPriceBookId() != null) {
             PriceBook priceBook = pricebookService.getPricebookWithNotFoundExeption(payerData.getPriceBookId());
             payer.setPriceBook(priceBook);
+        }
+
+        if (payer.getContacts().size() > 0) {
+            Contact c = payer.getContacts().get(0);
+            c.setEmail(payerData.getEmail());
+            if (payerData.getFirstName() != null && payerData.getLastName() != null) {
+                c.setFullName(payerData.getFirstName().concat(" ").concat(payerData.getLastName()));
+            }
+            c.setMobile(payerData.getMobile());
+            c.setSalutation(payerData.getSalutation());
+            c.setTelephone(payerData.getTelephone());
+
+            contactService.createContact(c);
+        } else {
+            List<Contact> contact = new ArrayList<>();
+            Contact c = new Contact();
+            c.setEmail(payerData.getEmail());
+            if (payerData.getFirstName() != null && payerData.getLastName() != null) {
+                c.setFullName(payerData.getFirstName().concat(" ").concat(payerData.getLastName()));
+            }
+            c.setMobile(payerData.getMobile());
+            c.setSalutation(payerData.getSalutation());
+            c.setTelephone(payerData.getTelephone());
+
+            contact.add(contactService.createContact(c));
+
+            payer.setContacts(contact);
         }
 
         Payer result = payerService.createPayer(payer);
