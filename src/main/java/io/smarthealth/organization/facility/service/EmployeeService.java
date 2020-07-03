@@ -30,6 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  *
@@ -67,6 +69,7 @@ public class EmployeeService {
     @Transactional
     public Employee createFacilityEmployee(Employee employee, PersonContact personContact, boolean createUserAccount, String[] roles) {
         //verify if exists
+           
         if (employeeRepository.existsByStaffNumber(employee.getStaffNumber())) {
             throw APIException.conflict("Staff identified by number {0} already exists ", employee.getStaffNumber());
         }
@@ -179,5 +182,7 @@ public class EmployeeService {
         }
         return employeeData;
     }
-
+  boolean containsWhitespace(String str) {
+        return str.matches(".*\\s.*");
+    }
 }

@@ -1,5 +1,6 @@
 package io.smarthealth.notifications.service;
 
+import io.smarthealth.events.data.PatientResultEvent;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.notifications.data.NotificationBlock;
 import io.smarthealth.notifications.data.NotificationData;
@@ -8,12 +9,11 @@ import io.smarthealth.notifications.domain.NotificationRepository;
 import io.smarthealth.notifications.domain.NotificationType;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
-import java.io.IOException;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 /**
  *
@@ -29,7 +29,6 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
         this.userService = userService;
     }
-    
 
     @Transactional
     public void saveNotification(Notification notification) {
@@ -63,16 +62,19 @@ public class NotificationService {
         return data;
     }
 
-    public void notifyUser(NotificationBlock notificationBlock) {
-        User recipient = userService.findUserById(notificationBlock.getRecipient());
-        User sender = userService.findUserById(notificationBlock.getSender());
-        Notification notification = new Notification();
-        notification.setReference(notificationBlock.getMessage());
-        notification.setRecipient(recipient);
-        notification.setSender(sender);
-        notification.setType(NotificationType.DoctorResults);
-        saveNotification(notification);
-        
+    public void notifyUser(PatientResultEvent event) {
+        String username = event.getUserID();
+        Optional<User> user = userService.findUserByUsernameOrEmail(username);
+
+        if (user.isPresent()) {
+            Notification notification = new Notification();
+            notification.setType(NotificationType.DoctorResults);
+            notification.setRead(false);
+            notification.setRecipient(user.get());
+            notification.setReference(event.getPatientNo() + " - " + event.getPatientName() + " Results Have been Entered");
+            saveNotification(notification);
+        }
+
     }
- 
+
 }

@@ -21,7 +21,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{method}+" :"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="200" y="0" width="55" height="13" uuid="eeac2738-50c5-4902-956e-d604d05f863c"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="true"/>

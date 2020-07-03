@@ -9,37 +9,37 @@
 	<field name="status" class="java.lang.String"/>
 	<field name="comments" class="java.lang.String"/>
 	<columnHeader>
-		<band height="15" splitType="Stretch">
+		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="1" width="98" height="13" uuid="040f1ddd-8ead-4542-bd87-a998dc9de8c8"/>
+				<reportElement x="0" y="6" width="98" height="13" uuid="040f1ddd-8ead-4542-bd87-a998dc9de8c8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Analyte]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="98" y="1" width="221" height="13" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
+				<reportElement x="98" y="6" width="221" height="13" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Result]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="319" y="1" width="155" height="13" uuid="0cba2f73-babc-42a6-9ebc-072229ea1b81"/>
+				<reportElement x="319" y="6" width="155" height="13" uuid="0cba2f73-babc-42a6-9ebc-072229ea1b81"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Comments]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="474" y="1" width="71" height="13" uuid="5810cdd9-948c-4832-bbca-a7c4d93b8da1"/>
+				<reportElement x="474" y="6" width="71" height="13" uuid="5810cdd9-948c-4832-bbca-a7c4d93b8da1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[status]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="14" width="545" height="1" uuid="0198b9e1-ee13-46b3-bd8e-7c46ed849157"/>
+				<reportElement x="0" y="19" width="545" height="1" uuid="0198b9e1-ee13-46b3-bd8e-7c46ed849157"/>
 				<graphicElement>
 					<pen lineWidth="0.25"/>
 				</graphicElement>
@@ -72,7 +72,7 @@
 			<line>
 				<reportElement x="3" y="17" width="542" height="1" uuid="27347eec-4b56-4f0a-8c0e-012f2149ef5b"/>
 				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Dashed"/>
+					<pen lineWidth="0.15" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">

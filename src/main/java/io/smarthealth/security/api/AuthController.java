@@ -7,7 +7,8 @@ import io.smarthealth.infrastructure.mail.MailService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.infrastructure.utility.PassayPassword;
-import io.smarthealth.security.data.ActiveUserStore;
+import io.smarthealth.notify.service.SsePushNotificationService;
+import io.smarthealth.security.config.CurrentUser;
 import io.smarthealth.security.data.ApiResponse;
 import io.smarthealth.security.data.PasswordData;
 import io.smarthealth.security.data.PermissionData;
@@ -20,21 +21,22 @@ import io.smarthealth.security.domain.User;
 import io.smarthealth.security.domain.UserRepository;
 import io.smarthealth.security.service.UserService;
 import io.swagger.annotations.Api;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -49,6 +51,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
@@ -66,8 +69,9 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final MailService mailSender;
-    @Autowired
-    ActiveUserStore activeUserStore;
+    private final SsePushNotificationService notificationService;
+
+    final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
     @PostMapping("/users")
     @PreAuthorize("hasAuthority('create_users')")
@@ -264,31 +268,21 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse(true, "Password updated successfully"));
     }
 
-    @GetMapping("/users/loggedUsers")
-    public ResponseEntity<?> getLoggedUsers() {
-
-        return ResponseEntity.ok(activeUserStore.getUsers());
-    }
-
-    private String getAppUrl(HttpServletRequest request) {
-        return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-    }
-
     boolean containsWhitespace(String str) {
         return str.matches(".*\\s.*");
     }
 
-//    @EventListener
-//    public void onNotification(Notification notification) {
-//        List<SseEmitter> deadEmitters = new ArrayList<>();
-//        this.emitters.forEach(emitter -> {
-//            try {
-//                
-//                emitter.send(notification);
-//            } catch (IOException e) {
-//                deadEmitters.add(emitter);
-//            }
-//        });
-//        this.emitters.remove(deadEmitters);
-//    }
+    @GetMapping("/get-notifications")
+    public ResponseEntity<SseEmitter> streamUserNotifications(@RequestParam("userid") String userID, @CurrentUser User currentUser) throws IOException {
+        final SseEmitter emitter = new SseEmitter();
+        System.err.println("Current User: " + currentUser);
+//        if (userID == null || userID.isEmpty()) {
+//            emitter.send("Invalid user ID", MediaType.APPLICATION_JSON);
+//        }
+        notificationService.addEmitter(emitter);
+        notificationService.doNotify();//trigger the initial call
+        emitter.onCompletion(() -> notificationService.removeEmitter(emitter));
+        emitter.onTimeout(() -> notificationService.removeEmitter(emitter));
+        return new ResponseEntity<>(emitter, HttpStatus.OK);
+    }
 }

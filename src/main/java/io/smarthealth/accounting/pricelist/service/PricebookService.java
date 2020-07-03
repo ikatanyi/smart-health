@@ -28,6 +28,7 @@ import io.smarthealth.accounting.pricelist.domain.PriceListDTO;
 import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 /**
  *
@@ -67,7 +68,9 @@ public class PricebookService {
 //        book.setStatus(priceBook.isStatus() ? "active" : "inactive");
 
         if (priceBook.getPricebookItems() != null) {
-            Set<PriceBookItem> itemlist = new HashSet<>();
+//            Set<PriceBookItem> itemlist = new HashSet<>();
+            List<PriceBookItem> itemlist = new ArrayList<>();
+            
             priceBook.getPricebookItems()
                     .stream()
                     .forEach(x -> {
@@ -103,7 +106,8 @@ public class PricebookService {
 //        book.setStatus(priceBook.isStatus() ? "active" : "inactive");
 
         if (priceBook.getPricebookItems() != null) {
-            Set<PriceBookItem> itemlist = new HashSet<>();
+//            Set<PriceBookItem> itemlist = new HashSet<>();
+            List<PriceBookItem> itemlist = new ArrayList<>();
             priceBook.getPricebookItems()
                     .stream()
                     .forEach(x -> {

@@ -64,7 +64,7 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="70" splitType="Stretch">
+		<band height="65" splitType="Stretch">
 			<subreport>
 				<reportElement x="279" y="0" width="277" height="34" uuid="0de24d60-b41c-4a99-b595-b454833deec3"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
@@ -146,6 +146,23 @@
 			</line>
 		</band>
 	</detail>
+	<columnFooter>
+		<band height="28">
+			<line>
+				<reportElement positionType="Float" x="368" y="11" width="186" height="1" uuid="10b96d39-2590-41e5-83b8-886bcafe3003"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="420" y="13" width="100" height="10" uuid="f98eeea0-e219-41d2-8d3d-128f2510ddd7"/>
+				<textElement>
+					<font fontName="SansSerif" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Authorised Signature]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
 	<pageFooter>
 		<band height="28" splitType="Stretch">
 			<subreport>

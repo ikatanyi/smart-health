@@ -63,6 +63,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
             "/ws/**", 
             "/notifications/**",
             "/api/auth/user/resetPassword/**",
+             "/api/auth/get-notifications/**",
             "/v2/api-docs/**", "/configuration/ui/**", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html/**", "/webjars/**"
     };
      
@@ -74,6 +75,6 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         "/v2/api-docs/**",
         "/swagger-ui.html/**",
         "/api/v2/notification/**",
-        "/api/notify/**"
+        "/api/auth/get-notifications/**"
     };
 }

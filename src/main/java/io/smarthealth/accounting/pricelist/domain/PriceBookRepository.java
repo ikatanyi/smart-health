@@ -29,4 +29,7 @@ public interface PriceBookRepository extends JpaRepository<PriceBook, Long>, Jpa
     @Modifying
     @Query(value = "INSERT  into price_book_item (amount, price_book_id, item_id) select :amount, :price, :item ", nativeQuery = true)
     int addPriceBookItem(@Param("amount") BigDecimal amount, @Param("price") Long priceId, @Param("item") Long itemId);
+    
+    
+    
 }
