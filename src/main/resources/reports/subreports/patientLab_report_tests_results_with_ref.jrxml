@@ -70,12 +70,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{comments}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="0" y="17" width="545" height="1" uuid="27347eec-4b56-4f0a-8c0e-012f2149ef5b"/>
-				<graphicElement>
-					<pen lineWidth="0.15" lineStyle="Dotted"/>
-				</graphicElement>
-			</line>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="98" y="0" width="178" height="16" isRemoveLineWhenBlank="true" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
 				<textElement verticalAlignment="Middle">
@@ -97,6 +91,12 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{units}]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement positionType="Float" x="0" y="17" width="545" height="1" uuid="27347eec-4b56-4f0a-8c0e-012f2149ef5b"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
 		</band>
 	</detail>
 </jasperReport>
