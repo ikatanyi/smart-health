@@ -65,6 +65,12 @@ public class BillingController {
         PatientBill bill = service.findOneWithNoFoundDetection(id);
         return bill.toData();
     }
+//    @PostMapping("/billing/{visitId}/cancel")
+//    @PreAuthorize("hasAuthority('create_patientBill')") 
+//    public BillData addPatientBillItem(@PathVariable(value = "visitId") Long id, List<BillItemData> billLines) {
+//        PatientBill bill = service.findOneWithNoFoundDetection(id);
+//        return bill.toData();
+//    }
 //  String patientNo, String visitNo, Boolean hasBalance, DateRange range
 //String visitNumber, String patientNumber, Boolean hasBalance, DateRange range
 
@@ -254,4 +260,7 @@ public class BillingController {
 //        pagers.setPageDetails(details);
 //        return ResponseEntity.ok(pagers);
 //    } 
+    //TODO bill cancellations
+    //Changes status of the bills 
+  
 }
