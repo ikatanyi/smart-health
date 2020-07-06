@@ -10,11 +10,14 @@ package io.smarthealth.clinical.record.api;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
+import io.smarthealth.clinical.radiology.domain.RadiologyResult;
+import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.DocResults;
 import io.smarthealth.clinical.record.data.HistoricalDiagnosisData;
 import io.smarthealth.clinical.record.data.PatientNotesData;
+import io.smarthealth.clinical.record.data.ResultsData;
 import io.smarthealth.clinical.record.domain.Disease;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.record.domain.PatientNotes;
@@ -240,7 +243,7 @@ public class ConsultationController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Patient patient = patientService.findPatientOrThrow(patientNo);
         List<HistoricalDiagnosisData> list = new ArrayList<>();
-        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, false,null, pageable);
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, false, null, pageable);
         for (Visit v : patientVisits) {
             HistoricalDiagnosisData dd = new HistoricalDiagnosisData();
             dd.setPatientName(patient.getFullName());
@@ -357,17 +360,21 @@ public class ConsultationController {
         return ResponseEntity.ok(pagers);
     }
 
-    @PutMapping("/results-read/{resultType}/{resultID}")
+    @PutMapping("/results-read/{resultType}")
     public ResponseEntity.BodyBuilder markResultRead(
-            @PathVariable(value = "resultID") final Long resultID,
-            @PathVariable(value = "resultType") final DocResults.Type type
+            @PathVariable("resultType") final String resultType,
+            @Valid @RequestBody ResultsData resultsData
     ) {
-        if (type.equals(DocResults.Type.Laboratory)) {
-            LabRegisterTest test = laboratoryService.getLabRegisterTest(resultID);
+        if (resultsData.getResultType().equals(DocResults.Type.Laboratory)) {
+            LabRegisterTest test = laboratoryService.getLabRegisterTest(resultsData.getResultId());
             laboratoryService.markResultRegisterStatusAsRead(test);
         }
-        if (type.equals(DocResults.Type.Radiology)) {
-            
+
+        if (resultsData.getResultType().equals(DocResults.Type.Radiology)) {
+            Page<RadiologyResult> radiologyResults = radiologyService.findAllRadiologyResults(resultsData.getVisitNo(), null, null, null, ScanTestState.Completed, null, null, null, Pageable.unpaged());
+            for (RadiologyResult result : radiologyResults) {
+                radiologyService.markRadiologyResultStatusAsRead(result);
+            }
         }
 
         return ResponseEntity.ok();

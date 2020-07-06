@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "pricelist") 
+@Table(name = "pricelist")
 public class PriceList extends Auditable {
 
     @ManyToOne
@@ -61,6 +61,7 @@ public class PriceList extends Auditable {
         data.setActive(this.active);
         data.setDefaultPrice(this.defaultPrice);
         data.setSellingRate(this.sellingRate);
+
         if (this.item != null) {
             data.setItemId(this.item.getId());
             data.setItemCode(this.item.getItemCode());
@@ -71,8 +72,15 @@ public class PriceList extends Auditable {
             if (this.defaultPrice != null && this.defaultPrice) {
                 data.setSellingRate(this.item.getRate());
             }
+             if (this.item.getItemName().equals("FULL HAEMOGRAM/CBC -Male")) {
+                    System.out.println("setting price book price " + this.hasPriceBook);
+                }
+
             if (this.hasPriceBook) {
-                System.err.println("setting price book price "+this.priceBookAmount);
+//                System.out.println("Has Price book " + this.getItem().getId());
+                if (this.item.getItemName().equals("FULL HAEMOGRAM/CBC -Male")) {
+                    System.out.println("setting price book price " + this.priceBookAmount);
+                }
                 data.setSellingRate(this.priceBookAmount);
             }
         }
@@ -80,6 +88,10 @@ public class PriceList extends Auditable {
             data.setServicePoint(this.servicePoint.getName());
             data.setServicePointId(this.servicePoint.getId());
         }
+        if (this.item.getId().equals(3326)) {
+            System.err.println("About to return price book price " + data.getSellingRate());
+        }
+
         return data;
     }
 

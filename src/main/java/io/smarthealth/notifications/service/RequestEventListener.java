@@ -26,12 +26,16 @@ public class RequestEventListener {//implements ApplicationListener<RequestCreat
 //    @EventListener
     @TransactionalEventListener(phase=TransactionPhase.AFTER_COMPLETION)
     public void handleRequestedUpdatedEvent(RequestUpdatedEvent e) {
-        messagingTemplate.convertAndSend("/topic/requests." + e.getRequestType().name(), requestService.getUnfilledDoctorRequests(e.getRequestType()));        
+        System.out.println("handleRequestedUpdatedEvent");
+//        messagingTemplate.convertAndSend("/topic/requests." + e.getRequestType().name(), requestService.getUnfilledDoctorRequests(e.getRequestType()));    
+messagingTemplate.convertAndSend("/topic/request");    
+        System.out.println("Handling request ");
     }
     
     @Async
     @EventListener
     public void handleCreatedUpdatedEvent(RequestCreatedEvent e) {
+        System.out.println("Handle created event");
         e.getRequestType().forEach((type) -> {
             messagingTemplate.convertAndSend("/topic/requests." + type.name(), requestService.getUnfilledDoctorRequests(type));
         }); 

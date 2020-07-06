@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,6 @@ public class VisitService {
     private final ServicePointService servicePointService;
     private final PatientRepository patientRepository;
     private final EmployeeService employeeService;
-    private final UserService userService;
 
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
         Patient patient = findPatientOrThrow(patientNumber);
@@ -136,6 +136,10 @@ public class VisitService {
 
     public Optional<Visit> fetchVisitByPatientAndStatus(final Patient patient, final VisitEnum.Status status) {
         return this.visitRepository.findByPatientAndStatus(patient, status);
+    }
+
+    public Page<Visit> lastVisit(final Patient patient, final String currentVisitNumber) {
+        return this.visitRepository.lastVisit(patient, currentVisitNumber,PageRequest.of(0, 1));
     }
 
     public VisitDatas convertVisitEntityToData(Visit visit) {

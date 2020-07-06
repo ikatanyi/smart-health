@@ -21,7 +21,6 @@ import lombok.Data;
  */
 @Data
 public class PayerData {
-    
 
     private Type payerType;
     private Long payerId;
@@ -111,6 +110,10 @@ public class PayerData {
             for (Contact contact : payer.getContacts()) {
                 ContactData contactData = ContactData.map(contact);
                 payerData.setMobile(contact.getMobile());
+                payerData.setTelephone(contact.getTelephone());
+                payerData.setSalutation(contact.getSalutation());
+                payerData.setEmail(contact.getEmail());
+                //payerData.setContactRole(contact.get);
                 contactDataList.add(contactData);
             }
             payerData.setContact(contactDataList);

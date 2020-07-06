@@ -89,7 +89,7 @@ public class RadiologyService {
     private final FileStorageService fileStoerageService;
 
     private final ServicePointService servicePoint;
-    
+
     private final RequestEventPublisher requestEventPublisher;
 
     @Transactional
@@ -164,7 +164,7 @@ public class RadiologyService {
         //get the service point from store
         ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Radiology);
         PatientBill patientbill = new PatientBill();
-        
+
         if (!data.getIsWalkin()) {
             patientbill.setVisit(data.getVisit());
             patientbill.setPatient(data.getVisit().getPatient());
@@ -223,7 +223,6 @@ public class RadiologyService {
         RadiologyResult radiologyResult = data.fromData();
         PatientScanTest patientScanTest = findPatientRadiologyTestByIdWithNotFoundDetection(data.getTestId());
 
-        
         patientScanTest.setStatus(data.getStatus());
         radiologyResult.setPatientScanTest(patientScanTest);
         radiologyResult.setStatus(ScanTestState.Completed);
@@ -270,7 +269,7 @@ public class RadiologyService {
     @Transactional
     public PatientScanTest uploadScanImage(Long id, MultipartFile file) {
         PatientScanTest radiologyTest = findPatientRadiologyTestByIdWithNotFoundDetection(id);
-        
+
         if (file != null) {
             ServicePoint servPoint = servicePoint.getServicePointByType(ServicePointType.Radiology);
             DocumentData documentData = new DocumentData();
@@ -284,9 +283,7 @@ public class RadiologyService {
         }
         return pscanRepository.save(radiologyTest);
     }
-    
-    
-    
+
     public Page<RadiologyResult> findAllRadiologyResults(String visitNumber, String patientNumber, String scanNumber, Boolean walkin, ScanTestState status, String orderNo, DateRange range, String search, Pageable pgbl) {
         Specification spec = RadiologyResultSpecification.createSpecification(patientNumber, orderNo, visitNumber, walkin, status, range, search);
         return radiologyResultRepo.findAll(spec, pgbl);
@@ -351,5 +348,11 @@ public class RadiologyService {
         PatientScanRegister requests = findPatientScanRegisterByIdWithNotFoundDetection(id);
         requests.setVoided(Boolean.TRUE);
         patientradiologyRepository.save(requests);
+    }
+
+    @Transactional
+    public void markRadiologyResultStatusAsRead(RadiologyResult radiologyResult) {
+        radiologyResult.setResultRead(Boolean.TRUE);
+        radiologyResultRepo.save(radiologyResult);
     }
 }

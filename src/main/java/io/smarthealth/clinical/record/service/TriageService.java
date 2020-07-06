@@ -76,8 +76,12 @@ public class TriageService {
         if (visit.isPresent()) {
             vr.setVisit(visit.get());
         }
-
-        float bmi = (float) BMI.calculateBMI(triage.getHeight(), triage.getWeight());
+        float bmi = 0;
+        try {
+            bmi = (float) BMI.calculateBMI(triage.getHeight(), triage.getWeight());
+        } catch (Exception e) {
+            System.out.println("Weight/Height Unavailable");
+        }
         String category = BMI.getCategory(bmi);
         vr.setPatient(patient);
         vr.setBmi(bmi);

@@ -137,6 +137,10 @@ public class PricelistService {
                     return prices.map(pb -> book.toPriceBookRate(pb));
                 } else {
                     prices.map(pbi -> {
+//                        ghh;
+                        System.out.println("URimmmmmmmmmmmuuuu ");
+                        System.out.println("book " + book.getName());
+                        System.out.println("book " + pbi.getItem().getItemName());
                         PriceBookItem i = findPriceItem(book, pbi.getItem());
                         System.err.println("finding i " + i);
                         if (i != null) {
@@ -213,7 +217,7 @@ public class PricelistService {
         Specification<PriceList> searchSpec = PriceListSpecification.searchSpecification(searchItem, servicePointId);
 
         Page<PriceList> prices = repository.findAll(searchSpec, page);
-
+        System.out.println("Line 209 ");
         if (priceBookId != null) {
             Optional<PriceBook> priceBook = priceBookRepository.findById(priceBookId);
             if (priceBook.isPresent()) {
