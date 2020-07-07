@@ -155,10 +155,10 @@ public class GeneralClinicalServices {
     ResponseEntity<?> saveReferral(@Valid @RequestBody ReferralData rd) {
         Visit visit = visitService.findVisitEntityOrThrow(rd.getVisitNo());
         //find referral by visit
-        Optional<Referrals> ref = referralsService.fetchReferalByVisit(visit);
-        if (ref.isPresent()) {
-            throw APIException.conflict("Referral on this visit has already been created", rd.getVisitNo());
-        }
+//        Optional<Referrals> ref = referralsService.fetchReferalByVisit(visit);
+//        if (ref.isPresent()) {
+//            throw APIException.conflict("Referral on this visit has already been created", rd.getVisitNo());
+//        }
         Patient patient = visit.getPatient();
         Referrals rde = ReferralData.map(rd);
         rde.setVisit(visit);

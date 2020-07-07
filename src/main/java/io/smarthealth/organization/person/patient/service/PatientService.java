@@ -404,6 +404,15 @@ public class PatientService {
         }
     }
 
+    @Transactional
+    public PersonNextOfKin createNextOfKin(PersonNextOfKin nok) {
+        return personNextOfKinRepository.save(nok);
+    }
+
+    public PersonNextOfKin findOrThrowNextOfKinById(Long id) {
+        return personNextOfKinRepository.findById(id).orElseThrow(() -> APIException.notFound("Next of kin identified by {0} not found ", id));
+    }
+
     private File patientFileOnFolder(MultipartFile f) {
         return new File(this.patientImageDirRoot, f.getOriginalFilename());
     }

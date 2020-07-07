@@ -36,6 +36,7 @@ public class ReferralData {
     private Long doctorServiceId;
     private String patientName;
     private String patientNumber;
+    private Long referralId;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDateTime referralDate;
@@ -57,6 +58,7 @@ public class ReferralData {
         data.setPatientNumber(r.getPatient().getPatientNumber());
         LocalDateTime ldt = LocalDateTime.ofInstant(r.getCreatedOn(), ZoneOffset.systemDefault());
         data.setReferralDate(ldt);
+        data.setReferralId(r.getId());
         return data;
     }
 
