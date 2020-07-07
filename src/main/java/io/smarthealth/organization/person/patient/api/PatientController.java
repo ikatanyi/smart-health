@@ -78,7 +78,6 @@ public class PatientController {
     @PreAuthorize("hasAuthority('create_patients')")
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestPart PatientData patientData, @RequestPart(name = "file", required = false) MultipartFile file) {
-        
 
         Patient patient = this.patientService.createPatient(patientData, file);
 
@@ -103,27 +102,35 @@ public class PatientController {
 
     @GetMapping("/patients")
     @PreAuthorize("hasAuthority('view_patients')")
-    public ResponseEntity<?> fetchAllPatients(@RequestParam(required = false) MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-        int pageNo = 1;
-        int size = 10;
-        if (queryParams.getFirst("page") != null) {
-            pageNo = Integer.valueOf(queryParams.getFirst("page"));
+    public ResponseEntity<?> fetchAllPatients(
+            //@RequestParam(required = false) MultiValueMap<String, String> queryParams,
+            @RequestParam(value = "page", required = false) final Integer page,
+            @RequestParam(value = "results", required = false) final Integer size,
+            @RequestParam(value = "term", required = false) final String term,
+            @RequestParam(value = "dateRange", required = false) final String dateRange,
+            UriComponentsBuilder uriBuilder) {
+        //Pageable pageable = Pageable.unpaged();
+        Pageable pageable = null;
+//        System.out.println("Page " + page);
+//        System.out.println("Results " + size);
+
+        if (page == null && size == null) {
+            pageable = PageRequest.of(0, 200, Sort.by("id").descending());
         }
-        if (queryParams.getFirst("results") != null) {
-            size = Integer.valueOf(queryParams.getFirst("results"));
+
+        if (page != null && size != null) {
+            pageable = PageRequest.of(page, size, Sort.by("id").descending());
         }
-        pageNo = pageNo - 1;
-        pageable = PageRequest.of(pageNo, size, Sort.by("id").descending());
-        Page<PatientData> page = patientService.fetchAllPatients(queryParams, pageable).map(p -> patientService.convertToPatientData(p));
+        Page<PatientData> pageResult = patientService.fetchAllPatients(term, dateRange, pageable).map(p -> patientService.convertToPatientData(p));
         Pager<List<PatientData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
-        pagers.setContent(page.getContent());
+        pagers.setContent(pageResult.getContent());
         PageDetails details = new PageDetails();
-        details.setPage(page.getNumber());
-        details.setPerPage(page.getSize());
-        details.setTotalElements(page.getTotalElements());
-        details.setTotalPage(page.getTotalPages());
+        details.setPage(pageResult.getNumber());
+        details.setPerPage(pageResult.getSize());
+        details.setTotalElements(pageResult.getTotalElements());
+        details.setTotalPage(pageResult.getTotalPages());
         details.setReportName("Patient Register");
         pagers.setPageDetails(details);
         return ResponseEntity.status(HttpStatus.OK)

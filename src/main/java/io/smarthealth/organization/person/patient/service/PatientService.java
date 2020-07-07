@@ -113,9 +113,9 @@ public class PatientService {
     @Autowired
     private ResourceLoader resourceLoader;
 
-    public Page<Patient> fetchAllPatients(MultiValueMap<String, String> queryParams, final Pageable pageable) {
-        DateRange range = DateRange.fromIsoStringOrReturnNull(queryParams.getFirst("dateRange"));
-        Specification<Patient> spec = PatientSpecification.createSpecification(range, queryParams.getFirst("term"));
+    public Page<Patient> fetchAllPatients(final String term, final String dateRange, final Pageable pageable) {
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Specification<Patient> spec = PatientSpecification.createSpecification(range, term);
         return patientRepository.findAll(spec, pageable);
     }
 
