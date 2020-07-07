@@ -7,6 +7,7 @@ package io.smarthealth.clinical.record.data;
 
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
 import lombok.Data;
 
 /**
@@ -33,6 +34,7 @@ public class PrescriptionData extends DoctorRequestData {
     private String asNeededCondition;//notes additional info
     private Integer numRefills;//number of installments
     private Double issuedQuantity;//number of issued quantity
+    private LocalDate prescriptionDate;
 
     @ApiModelProperty(required = false, hidden = true)
     private String patientName;
@@ -40,6 +42,7 @@ public class PrescriptionData extends DoctorRequestData {
     private String patientNumber;
     @ApiModelProperty(required = false, hidden = true)
     private String itemType;
+    
 
     @ApiModelProperty(required = false, hidden = true)
     private Long id;
@@ -60,6 +63,7 @@ public class PrescriptionData extends DoctorRequestData {
         pd.setFulfillerStatus(p.getFulfillerStatus());
         pd.setId(p.getId());
         pd.setIssuedQuantity(p.getIssuedQuantity());
+        pd.setPrescriptionDate(p.getOrderDate());
         if (p.getPatient() != null) {
             pd.setPatientName(p.getPatient().getGivenName());
             pd.setPatientNumber(p.getPatientNumber());

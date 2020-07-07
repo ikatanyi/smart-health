@@ -64,7 +64,7 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="70" splitType="Stretch">
+		<band height="65" splitType="Stretch">
 			<subreport>
 				<reportElement x="279" y="0" width="277" height="34" uuid="0de24d60-b41c-4a99-b595-b454833deec3"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
@@ -73,56 +73,56 @@
 			<textField isBlankWhenNull="true">
 				<reportElement x="67" y="1" width="201" height="14" uuid="90f469db-bc16-4fdd-9dd3-f0c42dfe8ae0"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNo}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="67" y="17" width="201" height="14" uuid="62c77634-e5be-4c91-ba40-fbea8e910b82"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="67" y="33" width="201" height="14" uuid="24d6fbc4-87e1-4d2b-b4fc-b27864bcf49e"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{visitNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="2" y="1" width="66" height="14" uuid="438bdaa1-656b-4c2f-ae43-f8cdfd67ef2c"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[PatientNo.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="2" y="17" width="66" height="14" uuid="8cbd1cd3-f4ef-4e36-a596-261a6a8008b8"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[PatientName :]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="2" y="33" width="66" height="14" uuid="ebc5046a-f621-478a-9b60-a1614ba7b4b0"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[VisitNo.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="49" width="67" height="14" uuid="8f026a7a-6c4e-4cb7-9385-30b52a4fc368"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Request Date:]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="68" y="49" width="200" height="14" uuid="a49f4560-802c-4230-942c-e1a24737cec9"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""+$F{requestDatetime}]]></textFieldExpression>
 			</textField>
@@ -146,6 +146,23 @@
 			</line>
 		</band>
 	</detail>
+	<columnFooter>
+		<band height="28">
+			<line>
+				<reportElement positionType="Float" x="368" y="11" width="186" height="1" uuid="10b96d39-2590-41e5-83b8-886bcafe3003"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="420" y="13" width="100" height="10" uuid="f98eeea0-e219-41d2-8d3d-128f2510ddd7"/>
+				<textElement>
+					<font fontName="SansSerif" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Authorised Signature]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
 	<pageFooter>
 		<band height="28" splitType="Stretch">
 			<subreport>

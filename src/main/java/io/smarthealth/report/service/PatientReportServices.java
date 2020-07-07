@@ -7,6 +7,7 @@ package io.smarthealth.report.service;
 
 import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.appointment.service.AppointmentService;
+import io.smarthealth.clinical.inpatient.referral.domain.Referral;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
@@ -23,6 +24,7 @@ import io.smarthealth.clinical.record.data.PrescriptionData;
 import io.smarthealth.clinical.record.data.ReferralData;
 import io.smarthealth.clinical.record.data.SickOffNoteData;
 import io.smarthealth.clinical.record.domain.PatientNotes;
+import io.smarthealth.clinical.record.domain.Referrals;
 import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.DoctorRequestService;
 import io.smarthealth.clinical.record.service.PatientNotesService;
@@ -63,6 +65,7 @@ import net.sf.jasperreports.engine.JRSortField;
 import net.sf.jasperreports.engine.design.JRDesignSortField;
 import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 import net.sf.jasperreports.engine.type.SortOrderEnum;
+import org.apache.commons.lang.NumberUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -238,17 +241,18 @@ public class PatientReportServices {
 
     public void getReferralForm(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        String visitNumber = reportParam.getFirst("visitNumber");
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        ReferralData referralData = ReferralData.map(referralService.fetchReferalByVisitOrThrowIfNotFound(visit));
+        Long id = NumberUtils.createLong(reportParam.getFirst("id"));
+        Referrals referral = referralService.fetchReferalByIdOrThrowIfNotFound(id);
+        ReferralData referralData = ReferralData.map(referral);
 
-        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        Visit visit = referral.getVisit();
+        reportData.setPatientNumber(referral.getVisit().getPatient().getPatientNumber());
         if (visit.getHealthProvider() != null) {
             reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
         }
 
         PatientVisitData pVisitData = new PatientVisitData();
-        pVisitData.setVisitNumber(visit.getVisitNumber());
+        pVisitData.setVisitNumber(referral.getVisit().getVisitNumber());
 
         List<PatientScanTestData> scanData = radiologyService.getPatientScansTestByVisit(visit.getVisitNumber())
                 .stream()

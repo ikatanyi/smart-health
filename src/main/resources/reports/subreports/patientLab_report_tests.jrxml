@@ -21,10 +21,10 @@
 	<field name="withRef" class="java.lang.Boolean"/>
 	<field name="discipline" class="java.lang.String"/>
 	<columnHeader>
-		<band height="5" splitType="Stretch"/>
+		<band height="6" splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band height="93" splitType="Stretch">
+		<band height="100" splitType="Stretch">
 			<subreport isUsingCache="false">
 				<reportElement x="3" y="65" width="550" height="19" uuid="8c9b1bca-d151-4bd0-bb56-9338ebcbde18">
 					<printWhenExpression><![CDATA[$F{withRef}.equals(true)]]></printWhenExpression>
@@ -40,106 +40,106 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results_without_ref.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" x="358" y="30" width="91" height="14" uuid="e83091c0-858a-4e8a-a1fe-5bd1c97300d8"/>
+				<reportElement positionType="Float" x="380" y="30" width="72" height="14" uuid="e83091c0-858a-4e8a-a1fe-5bd1c97300d8"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Date Reported :]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" x="3" y="29" width="66" height="15" isRemoveLineWhenBlank="true" uuid="d367d4ed-94f0-4b99-9918-e1ce57b6cdc4"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
+					<font size="9" isBold="true"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Specimen :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="449" y="14" width="104" height="16" isRemoveLineWhenBlank="true" uuid="135ebb32-b8d6-478b-8dab-f10d13c2b763"/>
+				<reportElement positionType="Float" x="452" y="14" width="101" height="16" isRemoveLineWhenBlank="true" uuid="135ebb32-b8d6-478b-8dab-f10d13c2b763"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{labNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="358" y="14" width="91" height="16" uuid="67303c2a-87ee-41db-9b69-acb699ac149e"/>
+				<reportElement positionType="Float" x="380" y="14" width="72" height="16" uuid="67303c2a-87ee-41db-9b69-acb699ac149e"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Lab No.]]></text>
 			</staticText>
 			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="449" y="30" width="104" height="14" isRemoveLineWhenBlank="true" uuid="22f110f5-45be-4e34-bc1a-8635dcc6957f"/>
+				<reportElement positionType="Float" x="452" y="30" width="101" height="14" isRemoveLineWhenBlank="true" uuid="22f110f5-45be-4e34-bc1a-8635dcc6957f"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{entryDateTime}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement positionType="Float" x="69" y="14" width="108" height="15" isRemoveLineWhenBlank="true" uuid="788c4112-84a4-41d8-9826-37c9db2fc205"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{testName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement positionType="Float" x="69" y="29" width="108" height="15" isRemoveLineWhenBlank="true" uuid="7938b1ef-f429-40f4-b9ec-8ec5a854d8ce"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{specimen}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement positionType="Float" x="3" y="44" width="66" height="15" isRemoveLineWhenBlank="true" uuid="6a1af588-72d6-43a4-acf2-3218bd0987f1"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
+					<font size="9" isBold="true"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Reported By:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="69" y="44" width="108" height="16" isRemoveLineWhenBlank="true" uuid="6c6a9d4f-f8ea-4710-98f1-ac6c622da9cc"/>
+				<reportElement positionType="Float" x="69" y="44" width="108" height="15" isRemoveLineWhenBlank="true" uuid="6c6a9d4f-f8ea-4710-98f1-ac6c622da9cc"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{enteredBy}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="358" y="44" width="91" height="15" uuid="5f173801-00c0-4e94-b3e0-3ad4714b843b"/>
+				<reportElement positionType="Float" x="380" y="44" width="72" height="15" uuid="5f173801-00c0-4e94-b3e0-3ad4714b843b"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Status :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="449" y="44" width="104" height="15" isRemoveLineWhenBlank="true" forecolor="#FF3300" uuid="1d282bd5-188f-434f-a792-b069b76410bc"/>
+				<reportElement positionType="Float" x="452" y="44" width="101" height="15" isRemoveLineWhenBlank="true" forecolor="#000000" uuid="1d282bd5-188f-434f-a792-b069b76410bc"/>
 				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement positionType="Float" x="3" y="61" width="551" height="1" forecolor="#000000" uuid="9c05c8dd-41ec-44ef-b45d-3567633bdd03"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#999999"/>
-				</graphicElement>
-			</line>
 			<staticText>
 				<reportElement positionType="Float" x="3" y="14" width="66" height="15" isRemoveLineWhenBlank="true" forecolor="#000000" uuid="1a8461b2-fa61-41cb-b26e-fee39503e7bc"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
-					<paragraph leftIndent="5"/>
-				</textElement>
-				<text><![CDATA[TestName :]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="3" y="0" width="174" height="14" uuid="b9c4940d-f649-428e-9e32-8d7c0b599193"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
+				<text><![CDATA[TestName :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="3" y="0" width="174" height="14" isRemoveLineWhenBlank="true" uuid="b9c4940d-f649-428e-9e32-8d7c0b599193"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="10" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{discipline}]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="3" y="60" width="550" height="1" uuid="1500034b-0d7a-4462-ac23-ff5726d34036"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineColor="#6666FF"/>
+				</graphicElement>
+			</line>
 		</band>
 	</detail>
 </jasperReport>

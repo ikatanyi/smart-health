@@ -125,6 +125,7 @@ public class StockReportService {
                 .orElseThrow(() -> APIException.notFound("PurchaseInvoice identified by  {0} not found", invoiceNumber))
                 .toData();
         reportData.getFilters().put("amountInWords", EnglishNumberToWords.convert(purchaseInvoiceData.getInvoiceAmount()).toUpperCase());
+        
         purchaseInvoiceData.getStockEntryData().addAll(inventoryService.findByReferenceNumber(purchaseInvoiceData.getInvoiceNo()));
        
         Optional<Supplier> supplier = supplierService.getSupplierById(purchaseInvoiceData.getSupplierId());

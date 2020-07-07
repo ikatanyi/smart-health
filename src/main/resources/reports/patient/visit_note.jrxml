@@ -227,19 +227,12 @@
 	</columnHeader>
 	<detail>
 		<band height="34" splitType="Stretch">
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="11" width="306" height="14" forecolor="#000000" backcolor="#9999FF" uuid="23ad1106-8065-430e-98de-da2f964c1d65"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="false"/>
-				</textElement>
-				<text><![CDATA[The above named Patient visited our facility and was seen by the stated physician at ]]></text>
-			</staticText>
 			<textField>
-				<reportElement x="308" y="13" width="100" height="11" uuid="8ce185a3-47e6-47d9-9860-a81d8d65468d"/>
+				<reportElement x="1" y="11" width="493" height="13" uuid="8ce185a3-47e6-47d9-9860-a81d8d65468d"/>
 				<textElement>
-					<font size="8"/>
+					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""+$F{startDatetime}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["The above named Patient visited our facility and was seen by the stated physician at "+$F{startDatetime}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

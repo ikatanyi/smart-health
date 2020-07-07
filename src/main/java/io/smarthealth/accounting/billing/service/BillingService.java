@@ -203,6 +203,17 @@ public class BillingService {
                 .orElseThrow(() -> APIException.notFound("Bill Item with Id {0} not found", id));
     }
 
+    @Transactional
+    public void cancelBillItem(List<PatientBillItem> billItems) {
+        billItems.stream()
+                .map(x -> {
+                    x.setStatus(BillStatus.Canceled);
+                    return x;
+                })
+                .forEach(bill -> billItemRepository.save(bill));
+
+    }
+
     public PatientBillItem updateBillItem(PatientBillItem item) {
         //determine the request origin and update ti
         cashPaidUpdater.updateRequestStatus(item);
@@ -703,5 +714,5 @@ public class BillingService {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
- 
+
 }

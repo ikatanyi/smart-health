@@ -6,6 +6,7 @@ import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.payment.data.CopaymentData;
 import io.smarthealth.accounting.payment.domain.Copayment;
 import io.smarthealth.infrastructure.lang.Constants;
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -50,5 +51,7 @@ public class InvoiceData {
     private String notes;
     private List<InvoiceItemData> invoiceItems = new ArrayList<>();
     private List<InvoiceReceipt> invoicePayments=new ArrayList<>();
+    @ApiModelProperty(hidden=true, required=false)
+    private String state;
    
 }
