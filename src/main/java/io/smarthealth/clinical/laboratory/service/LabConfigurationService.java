@@ -58,9 +58,7 @@ public class LabConfigurationService {
 
     public void fixTestsImportedForIvory(List<LabTestData> lists) {
 
-        for (LabTestData data : lists) {
-            System.out.println("data.getTestName() "+data.getTestName());
-            System.out.println("data.getHasReferenceValue() "+data.getHasReferenceValue());
+        for (LabTestData data : lists) { 
             LabTest labTest = getTestByName(data.getTestName());
             if (data.getItemCode() != null) {
                 labTest.setCode(data.getItemCode());
