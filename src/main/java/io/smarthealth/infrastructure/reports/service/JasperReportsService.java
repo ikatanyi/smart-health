@@ -247,7 +247,7 @@ public class JasperReportsService {
                 config.setWrapText(Boolean.TRUE);
                 config.setColumnWidthRatio(2.0F);
                 config.setShowGridLines(Boolean.FALSE);
-                config.setRemoveEmptySpaceBetweenColumns(Boolean.TRUE);
+//                config.setRemoveEmptySpaceBetweenColumns(Boolean.TRUE);
                 config.setFontSizeFixEnabled(false);
                 config.setSheetNames(new String[]{"Sheet1"});
                 exporter.setConfiguration(config);

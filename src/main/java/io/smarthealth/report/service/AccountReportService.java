@@ -21,6 +21,7 @@ import io.smarthealth.accounting.accounts.service.IncomesStatementService;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.accounts.service.LedgerService;
 import io.smarthealth.accounting.accounts.service.TrialBalanceService;
+import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.domain.PatientBill;
@@ -39,6 +40,7 @@ import io.smarthealth.accounting.payment.service.ReceivePaymentService;
 import io.smarthealth.accounting.payment.service.RemittanceService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.PaymentMethod;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
@@ -717,6 +719,23 @@ public class AccountReportService {
         reportData.setTemplate("/accounts/ledger_statement");
         
         reportData.setReportName("Ledger-Report");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getPatientStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String visitNumber = reportParam.getFirst("visitNumber");
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        List<BillItemData> data = billService.getReceiptedBillItems(visitNumber, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map((bill)->bill.toData())
+                .collect(Collectors.toList());    
+        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        reportData.setData(data);
+        reportData.setFormat(format);
+        reportData.setTemplate("/payments/patient_statement");
+        reportData.setReportName("Patient_Statement");
         reportService.generateReport(reportData, response);
     }
 

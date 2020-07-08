@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patient_statement" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="90ecad10-fc2b-4040-b42e-4b22eb343167">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="clinic_web"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TEST_DIR" class="java.lang.String"/>
+	<parameter name="HEADER_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="orgLegalName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="TaxNumber" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressCountry" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressCounty" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressLine1" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgPostalCode" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgAddressLine2" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgTown" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="orgType" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactEmail" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactFullName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="contactMobile" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="salutation" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="telephone" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Patient_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Employee_Data" class="java.util.List" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="patientNumber" class="java.lang.String"/>
+	<field name="patientName" class="java.lang.String"/>
+	<field name="visitNumber" class="java.lang.String"/>
+	<field name="billNumber" class="java.lang.String"/>
+	<field name="itemId" class="java.lang.Long"/>
+	<field name="item" class="java.lang.String"/>
+	<field name="itemCode" class="java.lang.String"/>
+	<field name="itemCategory" class="java.lang.Object"/>
+	<field name="billingDate" class="java.lang.Object"/>
+	<field name="transactionId" class="java.lang.String"/>
+	<field name="receipt" class="java.lang.String"/>
+	<field name="quantity" class="java.lang.Double"/>
+	<field name="price" class="java.lang.Double"/>
+	<field name="discount" class="java.lang.Double"/>
+	<field name="taxes" class="java.lang.Double"/>
+	<field name="amount" class="java.lang.Double"/>
+	<field name="balance" class="java.lang.Double"/>
+	<field name="servicePoint" class="java.lang.String"/>
+	<field name="servicePointId" class="java.lang.String"/>
+	<field name="medicId" class="java.lang.Long"/>
+	<field name="medicName" class="java.lang.String"/>
+	<field name="status" class="java.lang.Object"/>
+	<field name="paid" class="java.lang.Boolean"/>
+	<field name="requestReference" class="java.lang.Long"/>
+	<field name="paymentReference" class="java.lang.String"/>
+	<field name="walkinFlag" class="java.lang.Boolean"/>
+	<field name="createdBy" class="java.lang.String"/>
+	<variable name="runningAmt" class="java.lang.Double" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
+	</variable>
+	<variable name="balance_1" class="java.lang.Double" resetType="Group" resetGroup="visit" calculation="Sum">
+		<variableExpression><![CDATA[$F{balance}]]></variableExpression>
+	</variable>
+	<variable name="price_1" class="java.lang.Double" resetType="Group" resetGroup="visit" calculation="Sum">
+		<variableExpression><![CDATA[$F{price}]]></variableExpression>
+	</variable>
+	<variable name="amount_1" class="java.lang.Double" resetType="Group" resetGroup="visit" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
+	</variable>
+	<group name="visit">
+		<groupExpression><![CDATA[$F{visitNumber}]]></groupExpression>
+		<groupFooter>
+			<band height="16">
+				<textField>
+					<reportElement x="488" y="0" width="66" height="16" uuid="b7c94109-3627-4e12-a3f5-51e4dc4a0718"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+						<paragraph rightIndent="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{balance_1}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="405" y="0" width="69" height="16" uuid="6b2a76ca-4934-4f9e-ad90-13d33b008779"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+						<paragraph rightIndent="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{price_1}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="233" y="0" width="57" height="16" uuid="262201e1-b3d2-4cb2-b29a-97e7d9828137"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+						<paragraph rightIndent="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{amount_1}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement positionType="Float" x="-2" y="0" width="556" height="1" uuid="bcb8fc51-aa0a-429f-b31e-74ec7c7ea43d"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineColor="#9999FF"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="160" y="1" width="56" height="15" uuid="df0e9522-aa63-4340-a179-67512062870c"/>
+					<textElement>
+						<font isBold="true"/>
+						<paragraph leftIndent="10" rightIndent="10"/>
+					</textElement>
+					<text><![CDATA[Total :]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band height="159" splitType="Stretch">
+			<staticText>
+				<reportElement x="87" y="49" width="376" height="64" forecolor="#FF3333" uuid="6aeee70c-2e6a-447a-a105-a8261caa2c11">
+					<printWhenExpression><![CDATA[]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" rotation="None">
+					<font size="48" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Incomplete]]></text>
+			</staticText>
+		</band>
+	</background>
+	<title>
+		<band height="43" splitType="Stretch">
+			<subreport>
+				<reportElement x="1" y="0" width="554" height="42" uuid="e89e1818-4d89-4b2a-b6b3-78ffd1f66ae4"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="18" splitType="Stretch">
+			<textField pattern="dd-MM-yyyy">
+				<reportElement x="477" y="1" width="78" height="16" uuid="70e6d0b1-f36d-44f3-8fb7-d8e848c1b7ef"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="17" width="553" height="1" uuid="51220d0c-28bd-4499-b2db-49b38453630b"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#9999FF"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="1" y="0" width="252" height="18" uuid="48ee5463-c19a-4f34-8b19-898a3142d7ab"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Patient Statement]]></text>
+			</staticText>
+			<line>
+				<reportElement x="2" y="0" width="553" height="1" uuid="8d1004cc-e11a-40f1-8eba-53611f04a6c7"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#9999FF"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="73" splitType="Stretch">
+			<line>
+				<reportElement positionType="Float" x="-1" y="36" width="556" height="1" uuid="35b07815-3281-42b8-90a5-8a64208932e3"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#9999FF"/>
+				</graphicElement>
+			</line>
+			<subreport>
+				<reportElement x="1" y="0" width="303" height="36" uuid="1e86a1f4-ea41-4273-b237-bcfcc4bdc3ea"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="3" y="59" width="66" height="14" uuid="1a00218e-ee18-47e7-9145-6bdd048f041e"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Service Point]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="76" y="59" width="147" height="14" uuid="2566fda8-beee-468d-829c-ad5299c5d77f"/>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph leftIndent="10" rightIndent="10"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="233" y="59" width="57" height="14" uuid="b956b4f7-ce3c-4411-be11-848e1546904f"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="488" y="59" width="66" height="14" uuid="77dc0733-032d-4ae6-8a77-7bdcb8436ff6"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Running Amt.]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="0" y="72" width="556" height="1" uuid="2bfa96f9-aaec-4bd9-b34d-e3fadd079a05"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#9999FF"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="302" y="58" width="93" height="14" uuid="64b94a65-29aa-4aac-9345-077c0a7573fb"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payment Ref.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="405" y="58" width="69" height="14" uuid="f41ca1db-cb44-42c1-9593-0a2744d6921d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Paid Amount]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<textField>
+				<reportElement x="3" y="0" width="66" height="13" uuid="69b12e45-a2d1-489e-b507-2638892d47ee"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{servicePoint}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="76" y="0" width="147" height="13" uuid="11eebd3e-6ad8-47c9-8145-d9de25d6acf3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="233" y="0" width="57" height="13" uuid="1dd46f68-2f8d-474b-95c0-dc5d56bcaed4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="302" y="0" width="93" height="13" uuid="9b3d4a8b-0316-4ff1-95ad-e2fec2c2526f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paymentReference}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="405" y="0" width="69" height="13" uuid="8147eadf-5290-47b2-936f-d7a542b14d9d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="488" y="0" width="66" height="13" uuid="15e9f589-f520-4ad4-80db-2c1b8bf3bc0a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{balance}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="18" splitType="Stretch">
+			<line>
+				<reportElement positionType="Float" x="1" y="0" width="556" height="1" uuid="b206a578-09d6-4877-8308-e811f262e5e2"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#9999FF"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageFooter>
+</jasperReport>

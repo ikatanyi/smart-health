@@ -1,6 +1,9 @@
 package io.smarthealth.stock.inventory.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.imports.data.InventoryStockData;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.data.CreateInventoryItem;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.ItemDTO;
@@ -17,7 +20,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import java.util.Optional;
 import io.smarthealth.stock.inventory.domain.InventoryItemRepository;
+import io.smarthealth.stock.inventory.domain.StockEntry;
+import io.smarthealth.stock.inventory.domain.StockEntryRepository;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +46,9 @@ public class InventoryItemService {
     private final StoreService storeService;
 //    private final ServicePointService servicePointService;
     private final InventoryItemRepository inventoryItemRepository;
+    private final StockEntryRepository stockEntryRepository;
+    private final SequenceNumberService sequenceNumberService;
+    private final InventoryService inventoryService;
 
     private void decrease(Item item, Store store, double qty) {
         InventoryItem balance = inventoryItemRepository
@@ -160,5 +172,43 @@ public class InventoryItemService {
             default:
                 log.info("Nothing to calculate balance");
         }
+    }
+    
+    
+    public void uploadInventoryItems(List<InventoryStockData> itemData) {
+        List<InventoryItem> items = new ArrayList<>();
+        List<StockEntry> stockEntry = new ArrayList<>();
+        itemData.stream()
+                .forEach(x -> {
+                    Item item = itemService.findByItemCodeOrThrow(x.getItemCode());
+                    Store store = storeService.getStoreWithNoFoundDetection(x.getStoreId());
+                    InventoryItem inventory = inventoryItemRepository
+                            .findByItemAndStore(item, store)
+                            .orElse(InventoryItem.create(store, item));
+                    if (x.getStockCount() > 0) {
+                        inventory.setAvailableStock(x.getStockCount());
+                    }
+                    String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+                    final String referenceNo = sequenceNumberService.next(1L, Sequences.StockTransferNumber.name());
+
+                    items.add(inventory);
+                    StockEntry entry = new StockEntry();
+                    entry.setAmount(BigDecimal.valueOf(x.getStockCount()).multiply(item.getRate()));
+                    entry.setItem(item);
+                    entry.setMoveType(MovementType.Opening_Balance);
+                    entry.setPrice(item.getRate());
+                    entry.setPurpose(MovementPurpose.Receipt);
+                    entry.setQuantity(x.getStockCount());
+                    entry.setReferenceNumber(referenceNo);
+                    entry.setStore(store);
+                    entry.setTransactionDate(LocalDate.now());
+                    entry.setTransactionNumber(trdId);
+                    entry.setUnit(item.getUnit());
+                    stockEntry.add(entry);
+                    
+                });
+//        return save(inventory);
+        inventoryItemRepository.saveAll(items);
+        stockEntryRepository.saveAll(stockEntry);
     }
 }

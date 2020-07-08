@@ -22,11 +22,13 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.imports.data.InventoryStockData;
 import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
 import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.service.ItemService;
 import java.io.ByteArrayInputStream;
@@ -56,6 +58,7 @@ public class BatchImportService {
     private final SchemeService schemeService;
 
     private final PayerMemberRepository payerMemberRepository;
+    private final InventoryItemService inventoryItemService;
 
     public void importData(final TemplateType type, final MultipartFile file) {
 
@@ -126,6 +129,10 @@ public class BatchImportService {
                         members.add(member);
                     }
                     payerMemberRepository.saveAll(members);
+                    break;
+                case InventoryStock:
+                    List<InventoryStockData>stockData = toPojoUtil.toPojo(InventoryStockData.class, inputFilestream);
+                    inventoryItemService.uploadInventoryItems(stockData);
                     break;
                 default:
                     throw APIException.notFound("Coming Soon!!!", "");
