@@ -14,12 +14,13 @@ import lombok.Data;
  */
 @Data
 public class PersonNextOfKinData {
-
+    
     private String name;
     private String relationship;
     private String specialNote;
     private String primaryContact;
-
+    private Long id;
+    
     public static PersonNextOfKin map(final PersonNextOfKinData data) {
         PersonNextOfKin nok = new PersonNextOfKin();
         nok.setName(data.getName());
@@ -28,13 +29,14 @@ public class PersonNextOfKinData {
         nok.setSpecialNote(data.getSpecialNote());
         return nok;
     }
-
+    
     public static PersonNextOfKinData map(final PersonNextOfKin e) {
         PersonNextOfKinData nok = new PersonNextOfKinData();
         nok.setName(e.getName());
         nok.setPrimaryContact(e.getPrimaryContact());
         nok.setRelationship(e.getRelationship());
         nok.setSpecialNote(e.getSpecialNote());
+        nok.setId(e.getId());
         return nok;
     }
 }

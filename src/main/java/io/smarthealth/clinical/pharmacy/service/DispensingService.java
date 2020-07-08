@@ -28,7 +28,7 @@ import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.notifications.service.RequestEventPublisher;
+import io.smarthealth.notify.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -62,7 +62,7 @@ public class DispensingService {
     private final VisitService visitService;
     private final DoctorsRequestRepository doctorRequestRepository;
     private final WalkingService walkingService;
-    private final RequestEventPublisher requestEventPublisher;
+    private final NotificationEventPublisher notificationEventPublisher;
 
     private void dispenseItem(Store store, DrugRequest drugRequest) {
 
@@ -120,10 +120,7 @@ public class DispensingService {
 
         billingService.save(toBill(drugRequest, store));
 
-        dispenseItem(store, drugRequest);
-
-        requestEventPublisher.publishUpdateEvent(DoctorRequestData.RequestType.Pharmacy);
-
+        dispenseItem(store, drugRequest); 
         return trdId;
     }
 

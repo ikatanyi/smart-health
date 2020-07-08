@@ -1,4 +1,4 @@
-package io.smarthealth.notifications.config;
+package io.smarthealth.notify.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

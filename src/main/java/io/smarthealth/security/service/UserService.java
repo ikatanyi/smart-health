@@ -1,7 +1,8 @@
 package io.smarthealth.security.service;
 
-import io.smarthealth.events.data.PatientResultEvent;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.notify.domain.Notification;
+import io.smarthealth.notify.domain.NotificationRepository;
 import io.smarthealth.security.domain.PasswordResetToken;
 import io.smarthealth.security.domain.PasswordTokenRepository;
 import io.smarthealth.security.domain.Role;
@@ -9,23 +10,15 @@ import io.smarthealth.security.domain.RoleRepository;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.domain.UserRepository;
 import io.smarthealth.security.domain.specification.UserSpecification;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -33,7 +26,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 /**
  *
@@ -42,19 +34,18 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @Service
 public class UserService {
 
-//    final DateFormat DATE_FORMATTER = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a");
-//    final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
-
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordTokenRepository passwordTokenRepository;
+    private final NotificationRepository notificationRepository;
 
-    public UserService(UserRepository repository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, PasswordTokenRepository passwordTokenRepository) {
-        this.userRepository = repository;
-        this.passwordEncoder = passwordEncoder;
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, PasswordTokenRepository passwordTokenRepository, NotificationRepository notificationRepository) {
+        this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
         this.passwordTokenRepository = passwordTokenRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     public Optional<Role> findRoleByName(String roleName) {
@@ -131,6 +122,14 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> APIException.notFound("User with id {0} Not Found", id));
     }
 
+    public List<Notification> getUserNotification(User user) {
+        if (user == null) {
+            return new ArrayList<>();
+        }
+
+        return notificationRepository.findByRecipientAndIsRead(user, false);
+    }
+
 //    public void addEmitter(final SseEmitter emitter) {
 //        emitters.add(emitter);
 //    }
@@ -155,9 +154,6 @@ public class UserService {
 //        });
 //        emitters.removeAll(deadEmitters);
 //    }
-    
-    
-
     //sign up { email | password | name | username | captchaResponse }
     //Resend Verification mail
     //verify user

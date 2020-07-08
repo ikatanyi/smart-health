@@ -113,9 +113,9 @@ public class PatientService {
     @Autowired
     private ResourceLoader resourceLoader;
 
-    public Page<Patient> fetchAllPatients(MultiValueMap<String, String> queryParams, final Pageable pageable) {
-        DateRange range = DateRange.fromIsoStringOrReturnNull(queryParams.getFirst("dateRange"));
-        Specification<Patient> spec = PatientSpecification.createSpecification(range, queryParams.getFirst("term"));
+    public Page<Patient> fetchAllPatients(final String term, final String dateRange, final Pageable pageable) {
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Specification<Patient> spec = PatientSpecification.createSpecification(range, term);
         return patientRepository.findAll(spec, pageable);
     }
 
@@ -402,6 +402,15 @@ public class PatientService {
             e.printStackTrace();
             throw new RestClientException("Error updating patient number" + patientNumber);
         }
+    }
+
+    @Transactional
+    public PersonNextOfKin createNextOfKin(PersonNextOfKin nok) {
+        return personNextOfKinRepository.save(nok);
+    }
+
+    public PersonNextOfKin findOrThrowNextOfKinById(Long id) {
+        return personNextOfKinRepository.findById(id).orElseThrow(() -> APIException.notFound("Next of kin identified by {0} not found ", id));
     }
 
     private File patientFileOnFolder(MultipartFile f) {

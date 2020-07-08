@@ -98,7 +98,7 @@ public class PatientReportServices {
 
     public void getPatients(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        List<PatientData> patientData = (List<PatientData>) patientService.fetchAllPatients(reportParam, Pageable.unpaged()).getContent()
+        List<PatientData> patientData = (List<PatientData>) patientService.fetchAllPatients(reportParam.getFirst("term"), reportParam.getFirst("dateRange"), Pageable.unpaged()).getContent()
                 .stream()
                 .map((patient) -> patientService.convertToPatientData((Patient) patient))
                 .collect(Collectors.toList());
@@ -293,7 +293,7 @@ public class PatientReportServices {
             pVisitData.setPractitionerName(visit.getHealthProvider().getFullName());
         }
 
-        reportData.getFilters().put("drugsData",pharmacyData );
+        reportData.getFilters().put("drugsData", pharmacyData);
         reportData.getFilters().put("labTests", labTests);
         reportData.getFilters().put("diagnosis", diagnosisData);
         reportData.getFilters().put("scanData", scanData);
@@ -461,7 +461,7 @@ public class PatientReportServices {
         }
         throw APIException.internalError("RequestType a Valid Bill Status");
     }
-    
+
     private Gender genderToEnum(String gender) {
         if (gender == null || gender.equals("null") || gender.equals("")) {
             return null;
@@ -471,6 +471,5 @@ public class PatientReportServices {
         }
         throw APIException.internalError("RequestType a Valid Bill Status");
     }
-    
-    
+
 }

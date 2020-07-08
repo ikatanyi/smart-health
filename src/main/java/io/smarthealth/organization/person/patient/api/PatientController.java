@@ -6,10 +6,14 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.data.AddressData;
 import io.smarthealth.organization.person.data.ContactData;
+import io.smarthealth.organization.person.data.PersonNextOfKinData;
 import io.smarthealth.organization.person.data.PortraitData;
+import io.smarthealth.organization.person.data.WalkInData;
 import io.smarthealth.organization.person.domain.PersonAddress;
 import io.smarthealth.organization.person.domain.PersonContact;
+import io.smarthealth.organization.person.domain.PersonNextOfKin;
 import io.smarthealth.organization.person.domain.Portrait;
+import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.patient.data.AllergyTypeData;
 import io.smarthealth.organization.person.patient.data.PatientAllergiesData;
 import io.smarthealth.organization.person.patient.data.PatientData;
@@ -26,7 +30,6 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,13 +38,11 @@ import javax.validation.Valid;
 import net.sf.jasperreports.engine.JRException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -78,7 +79,6 @@ public class PatientController {
     @PreAuthorize("hasAuthority('create_patients')")
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestPart PatientData patientData, @RequestPart(name = "file", required = false) MultipartFile file) {
-        
 
         Patient patient = this.patientService.createPatient(patientData, file);
 
@@ -103,27 +103,32 @@ public class PatientController {
 
     @GetMapping("/patients")
     @PreAuthorize("hasAuthority('view_patients')")
-    public ResponseEntity<?> fetchAllPatients(@RequestParam(required = false) MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-        int pageNo = 1;
-        int size = 10;
-        if (queryParams.getFirst("page") != null) {
-            pageNo = Integer.valueOf(queryParams.getFirst("page"));
+    public ResponseEntity<?> fetchAllPatients(
+            //@RequestParam(required = false) MultiValueMap<String, String> queryParams,
+            @RequestParam(value = "page", required = false) final Integer page,
+            @RequestParam(value = "results", required = false) final Integer size,
+            @RequestParam(value = "term", required = false) final String term,
+            @RequestParam(value = "dateRange", required = false) final String dateRange,
+            UriComponentsBuilder uriBuilder) {
+        //Pageable pageable = Pageable.unpaged();
+        Pageable pageable = null;
+        if (page == null && size == null) {
+            pageable = PageRequest.of(0, 200, Sort.by("id").descending());
         }
-        if (queryParams.getFirst("results") != null) {
-            size = Integer.valueOf(queryParams.getFirst("results"));
+
+        if (page != null && size != null) {
+            pageable = PageRequest.of(page, size, Sort.by("id").descending());
         }
-        pageNo = pageNo - 1;
-        pageable = PageRequest.of(pageNo, size, Sort.by("id").descending());
-        Page<PatientData> page = patientService.fetchAllPatients(queryParams, pageable).map(p -> patientService.convertToPatientData(p));
+        Page<PatientData> pageResult = patientService.fetchAllPatients(term, dateRange, pageable).map(p -> patientService.convertToPatientData(p));
         Pager<List<PatientData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
-        pagers.setContent(page.getContent());
+        pagers.setContent(pageResult.getContent());
         PageDetails details = new PageDetails();
-        details.setPage(page.getNumber());
-        details.setPerPage(page.getSize());
-        details.setTotalElements(page.getTotalElements());
-        details.setTotalPage(page.getTotalPages());
+        details.setPage(pageResult.getNumber());
+        details.setPerPage(pageResult.getSize());
+        details.setTotalElements(pageResult.getTotalElements());
+        details.setTotalPage(pageResult.getTotalPages());
         details.setReportName("Patient Register");
         pagers.setPageDetails(details);
         return ResponseEntity.status(HttpStatus.OK)
@@ -227,6 +232,46 @@ public class PatientController {
                 .buildAndExpand(patient.getPatientNumber()).toUri();
 
         return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
+    }
+
+    @PostMapping("/patients/{patientNumber}/next-of-kin")
+    @PreAuthorize("hasAuthority('edit_patients')")
+    public ResponseEntity<?> createPatientNextOfKin(
+            @Valid @RequestBody PersonNextOfKinData data,
+            @PathVariable("patientNumber") final String patientNumber) {
+        Patient patient = patientService.findPatientOrThrow(patientNumber);
+        PersonNextOfKin nextOfKin = new PersonNextOfKin();
+        nextOfKin.setName(data.getName());
+        nextOfKin.setPerson(patient);
+        nextOfKin.setPrimaryContact(data.getPrimaryContact());
+        nextOfKin.setRelationship(data.getRelationship());
+        nextOfKin.setSpecialNote(data.getSpecialNote());
+        nextOfKin = patientService.createNextOfKin(nextOfKin);
+        Pager<PersonNextOfKinData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Next of kin created");
+        pagers.setContent(PersonNextOfKinData.map(nextOfKin));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+
+    @PutMapping("/patients/{nextOfKinId}/next-of-kin")
+    @PreAuthorize("hasAuthority('edit_patients')")
+    public ResponseEntity<?> editPatientNextOfKin(
+            @Valid @RequestBody PersonNextOfKinData data,
+            @PathVariable("nextOfKinId") final Long nextOfKinId) {
+        PersonNextOfKin nextOfKin = patientService.findOrThrowNextOfKinById(nextOfKinId);
+        nextOfKin.setName(data.getName());
+        nextOfKin.setPrimaryContact(data.getPrimaryContact());
+        nextOfKin.setRelationship(data.getRelationship());
+        nextOfKin.setSpecialNote(data.getSpecialNote());
+        nextOfKin = patientService.createNextOfKin(nextOfKin);
+        Pager<PersonNextOfKinData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Next of kin updated");
+        pagers.setContent(PersonNextOfKinData.map(nextOfKin));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
     @PostMapping("/patients/{id}/image")

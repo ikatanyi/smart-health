@@ -48,14 +48,14 @@ import io.smarthealth.documents.data.DocResponse;
 import io.smarthealth.documents.data.DocumentData;
 import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.service.FileStorageService;
-import io.smarthealth.infrastructure.lang.SystemUtils;
-import io.smarthealth.notifications.service.RequestEventPublisher;
+import io.smarthealth.notify.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.web.multipart.MultipartFile;
@@ -78,7 +78,7 @@ public class LaboratoryService {
     private final ServicePointService servicePointService;
     private final BillingService billingService;
     private final DoctorsRequestRepository doctorRequestRepository;
-    private final RequestEventPublisher requestEventPublisher;
+    private final NotificationEventPublisher notificationEventPublisher;
     private final FileStorageService fileService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -101,8 +101,10 @@ public class LaboratoryService {
                 .stream()
                 .forEach(x -> {
                     fulfillDocRequest(x.getRequestId());
-                });
-        requestEventPublisher.publishUpdateEvent(DoctorRequestData.RequestType.Laboratory);
+                }); 
+        //notify registration has occured
+        notificationEventPublisher.publishDocRequestEvent(Arrays.asList(DoctorRequestData.RequestType.Laboratory));
+        
         return savedRegister;
     }
 
@@ -138,6 +140,7 @@ public class LaboratoryService {
                 return testRepository.updateTestCollected(SecurityUtils.getCurrentUserLogin().orElse(""), status.getSpecimen(), testId, LabTestStatus.PendingResult);
             case Entered:
                 repository.updateLabRegisterStatus(LabTestStatus.ResultsEntered, requests.getId());
+                //results entered 
                 updateRegisterStatus(requests);
                 return testRepository.updateTestEntry(status.getDoneBy(), testId, LabTestStatus.ResultsEntered);
             case Validated:
