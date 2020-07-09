@@ -11,8 +11,8 @@
 	<field name="memberNumber" class="java.lang.String"/>
 	<field name="memberName" class="java.lang.String"/>
 	<field name="visitDate" class="java.lang.Object"/>
-	<variable name="balance_1" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{balance}]]></variableExpression>
+	<variable name="balance_1" class="java.math.BigDecimal" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
 	</variable>
 	<variable name="amount_1" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
@@ -28,14 +28,14 @@
 					<text><![CDATA[Total :]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="416" y="0" width="54" height="15" uuid="a464799d-7406-44e9-9ad7-2407dcbd20f4"/>
+					<reportElement x="406" y="0" width="54" height="15" uuid="a464799d-7406-44e9-9ad7-2407dcbd20f4"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{amount_1}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="470" y="0" width="39" height="15" uuid="cbe8338f-d766-4715-bd69-ac0908407c6d"/>
+					<reportElement x="460" y="0" width="53" height="15" uuid="cbe8338f-d766-4715-bd69-ac0908407c6d"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
@@ -75,14 +75,14 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement mode="Transparent" x="416" y="4" width="54" height="11" uuid="7a6ccbe6-8b7a-4202-af22-fa23858ce030"/>
+				<reportElement mode="Transparent" x="406" y="4" width="54" height="11" uuid="7a6ccbe6-8b7a-4202-af22-fa23858ce030"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Invoice Amt.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="298" y="4" width="118" height="11" uuid="45378037-4a5e-4a8f-83bf-08e4726571f1"/>
+				<reportElement x="298" y="4" width="108" height="11" uuid="45378037-4a5e-4a8f-83bf-08e4726571f1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 					<paragraph leftIndent="5"/>
@@ -90,11 +90,11 @@
 				<text><![CDATA[Scheme]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="470" y="4" width="43" height="11" uuid="34cbca87-f125-4a92-8a34-6b9c190fe78b"/>
+				<reportElement x="460" y="4" width="54" height="11" uuid="34cbca87-f125-4a92-8a34-6b9c190fe78b"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Due Amt.]]></text>
+				<text><![CDATA[Running Amt.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="143" y="4" width="47" height="11" uuid="46d751bb-1a89-425f-8acc-de69bd7a8fe8"/>
@@ -143,7 +143,7 @@
 				<textFieldExpression><![CDATA[$F{number}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement mode="Transparent" x="416" y="0" width="54" height="12" uuid="b887a395-f535-4f7a-a732-2876f318982c"/>
+				<reportElement mode="Transparent" x="406" y="0" width="54" height="12" uuid="b887a395-f535-4f7a-a732-2876f318982c"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 					<paragraph rightIndent="2"/>
@@ -158,14 +158,14 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="470" y="0" width="39" height="12" uuid="f303dd24-3e1c-4f78-9075-371e9a7e4728"/>
+				<reportElement x="460" y="0" width="53" height="12" uuid="f303dd24-3e1c-4f78-9075-371e9a7e4728"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{balance}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{balance_1}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="296" y="0" width="118" height="12" uuid="ba34e96a-5356-4fa7-afa2-9dfe7fd7a67b"/>
+				<reportElement x="298" y="0" width="108" height="12" uuid="ba34e96a-5356-4fa7-afa2-9dfe7fd7a67b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 					<paragraph leftIndent="5"/>
