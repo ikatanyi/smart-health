@@ -7,6 +7,7 @@ package io.smarthealth.debtor.claim.dispatch.domain;
 
 import io.smarthealth.debtor.claim.creditNote.domain.*;
 import io.smarthealth.debtor.claim.allocation.domain.*;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -15,5 +16,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @author Kennedy.Imbenzi
  */
 public interface DispatchRepository extends JpaRepository<Dispatch, Long>, JpaSpecificationExecutor<Dispatch>{
-    
+    Optional<Dispatch>findByDispatchNo(String dispatchNo);
 }

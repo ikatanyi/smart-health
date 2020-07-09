@@ -62,5 +62,6 @@ public enum ReportName {
         Medical_Report,
         Appointment_Letter,
         Shift_Report,
-        Patient_Statement
+        Patient_Statement,
+        Dispatch_Note
 }

@@ -44,6 +44,8 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
+import io.smarthealth.debtor.claim.dispatch.data.DispatchData;
+import io.smarthealth.debtor.claim.dispatch.service.DispatchService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -102,6 +104,7 @@ public class AccountReportService {
     private final RemittanceService remittanceService;
     private final AllocationService allocationService;
     private final ReceivePaymentService receivePaymentService;
+    private final DispatchService dispatchService;
     
     public void getTrialBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         
@@ -736,6 +739,21 @@ public class AccountReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/payments/patient_statement");
         reportData.setReportName("Patient_Statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getDispatchStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+        
+        String dispatchNo = reportParam.getFirst("dispatchNo");
+        
+        ReportData reportData = new ReportData();
+        Map<String, Object> map = reportData.getFilters();
+        DispatchData dispatchData = DispatchData.map(dispatchService.getDispatchByNumberWithFailDetection(dispatchNo));
+                
+        reportData.setData(Arrays.asList(dispatchData));
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/dispatch_note");
+        reportData.setReportName("Dispatch-Note");
         reportService.generateReport(reportData, response);
     }
 

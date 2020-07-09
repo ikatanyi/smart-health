@@ -1,6 +1,7 @@
 package io.smarthealth.debtor.claim.dispatch.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.debtor.claim.dispatch.domain.Dispatch;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
@@ -8,6 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Data;
 
 /**
@@ -25,8 +27,8 @@ public class DispatchData {
     private String payer;
     private String comments;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
-    private LocalDate dispatchDate;
-    private List<DispatchedInvoiceData>dispatchInvoiceData = new ArrayList();
+    private LocalDate dispatchDate=LocalDate.now();
+    private List<InvoiceData>dispatchInvoiceData;
     
     public static DispatchData map(Dispatch dispatch){
         DispatchData data = new DispatchData();
@@ -37,15 +39,12 @@ public class DispatchData {
             data.setPayer(dispatch.getPayer().getPayerName());
             data.setPayerId(dispatch.getPayer().getId());
         }
-        for(Invoice dispInvoice:dispatch.getDispatchedInvoice()){
-            DispatchedInvoiceData invoiceData=new DispatchedInvoiceData();
-            invoiceData.setInvoiceNumber(dispInvoice.getNumber());
-            invoiceData.setDueDate(dispInvoice.getDueDate());
-            invoiceData.setInvoiceAmount(dispInvoice.getAmount().doubleValue());
-            invoiceData.setPayerName(dispInvoice.getPayer().getPayerName());
-            invoiceData.setSchemeName(dispInvoice.getScheme().getSchemeName());
-            data.getDispatchInvoiceData().add(invoiceData);
-        }
+        data.setDispatchInvoiceData(dispatch.getDispatchedInvoice()
+                .stream()
+                .map((invoice)->invoice.toData())
+                .collect(Collectors.toList())
+        );
+        
         return data;
     }
     
