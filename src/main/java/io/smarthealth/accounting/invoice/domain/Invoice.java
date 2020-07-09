@@ -126,7 +126,7 @@ public class Invoice extends Auditable {
         data.setBalance(this.balance);
         data.setCreatedBy(this.getCreatedBy());
         data.setTransactionNo(this.transactionNo);
-        data.setState(this.status.name().equals("Draft")?"Interim Invoice":"Invoice");
+        data.setState(this.status.name());
         data.setInvoiceItems(
                 this.items.stream()
                         .filter(x -> x.getBillItem().getAmount() > 0)

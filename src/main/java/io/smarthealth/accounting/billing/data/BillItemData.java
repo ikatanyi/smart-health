@@ -30,6 +30,7 @@ public class BillItemData {
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate billingDate;
     private String transactionId;
+    private String receipt;
     private Double quantity = 1.0;
     private Double price;
     private Double discount = 0.0;

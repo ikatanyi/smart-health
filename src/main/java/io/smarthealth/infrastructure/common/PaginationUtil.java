@@ -169,4 +169,19 @@ public final class PaginationUtil {
         pagers.setPageDetails(details);
         return pagers;
     }
+
+    public static Pager<?> toPager(Page<?> list, String reportName) {
+        Pager<List<?>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName(reportName);
+        pagers.setPageDetails(details);
+        return pagers;
+    }
 }

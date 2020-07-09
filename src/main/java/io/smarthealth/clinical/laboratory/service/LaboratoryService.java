@@ -4,6 +4,9 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.administration.config.domain.GlobalConfigNum;
+import io.smarthealth.administration.config.domain.GlobalConfiguration;
+import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -48,14 +51,18 @@ import io.smarthealth.documents.data.DocResponse;
 import io.smarthealth.documents.data.DocumentData;
 import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.service.FileStorageService;
-import io.smarthealth.infrastructure.lang.SystemUtils;
-import io.smarthealth.notifications.service.RequestEventPublisher;
+import io.smarthealth.notify.data.NoticeType;
+import io.smarthealth.notify.data.NotificationData;
+import io.smarthealth.notify.domain.Notification;
+import io.smarthealth.notify.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Optional;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.web.multipart.MultipartFile;
@@ -78,8 +85,9 @@ public class LaboratoryService {
     private final ServicePointService servicePointService;
     private final BillingService billingService;
     private final DoctorsRequestRepository doctorRequestRepository;
-    private final RequestEventPublisher requestEventPublisher;
+    private final NotificationEventPublisher notificationEventPublisher;
     private final FileStorageService fileService;
+    private final ConfigService configurationService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public LabRegister createLabRegister(LabRegisterData data) {
@@ -102,7 +110,9 @@ public class LaboratoryService {
                 .forEach(x -> {
                     fulfillDocRequest(x.getRequestId());
                 });
-        requestEventPublisher.publishUpdateEvent(DoctorRequestData.RequestType.Laboratory);
+        //notify registration has occured
+        notificationEventPublisher.publishDocRequestEvent(Arrays.asList(DoctorRequestData.RequestType.Laboratory));
+
         return savedRegister;
     }
 
@@ -138,6 +148,7 @@ public class LaboratoryService {
                 return testRepository.updateTestCollected(SecurityUtils.getCurrentUserLogin().orElse(""), status.getSpecimen(), testId, LabTestStatus.PendingResult);
             case Entered:
                 repository.updateLabRegisterStatus(LabTestStatus.ResultsEntered, requests.getId());
+                //results entered 
                 updateRegisterStatus(requests);
                 return testRepository.updateTestEntry(status.getDoneBy(), testId, LabTestStatus.ResultsEntered);
             case Validated:
@@ -188,7 +199,10 @@ public class LaboratoryService {
     public LabResult createLabResult(LabResultData data) {
         LabResult result = toLabResult(data);
         LabResult savedResult = labResultRepository.save(result);
-        updateResultsEntry(savedResult);
+        updateResultsEntry(savedResult, null);
+        //send notifications
+        doNotifyUser(Arrays.asList(savedResult.getLabRegisterTest()));
+
         return savedResult;
     }
 
@@ -201,8 +215,12 @@ public class LaboratoryService {
                 .collect(Collectors.toList());
 
         List<LabResult> savedResults = labResultRepository.saveAll(toSave);
+        ArrayList<LabRegisterTest> testToNotify = new ArrayList<>();
 
-        savedResults.forEach(x -> updateResultsEntry(x));
+        savedResults.forEach(x -> updateResultsEntry(x, testToNotify));
+
+        //if notification is set on
+        doNotifyUser(testToNotify);
 
         return savedResults;
     }
@@ -244,12 +262,18 @@ public class LaboratoryService {
     }
 
     @Transactional
-    private void updateResultsEntry(LabResult savedResult) {
+    private void updateResultsEntry(LabResult savedResult, ArrayList<LabRegisterTest> testToNotify) {
 
         LabRegisterTest test = savedResult.getLabRegisterTest();
+
+        if (testToNotify != null && !testToNotify.contains(test)) {
+            testToNotify.add(test);
+        }
+
         testRepository.updateTestEntry(SecurityUtils.getCurrentUserLogin().orElse("system"), test.getId(), LabTestStatus.ResultsEntered);
 
         updateRegisterStatus(test.getLabRegister());
+
     }
 
     private LabResult toLabResult(LabResultData data) {
@@ -565,4 +589,33 @@ public class LaboratoryService {
         return doc;
     }
 
+    private void doNotifyUser(List<LabRegisterTest> testToNotify) {
+       
+        //TODO
+        testToNotify.stream()
+                .forEach(x -> {
+                    if (x.getLabRegister().getVisit() != null && x.getRequestId() != null) {
+                        Visit visit = x.getLabRegister().getVisit();
+                        String description = String.format("Patient %s %s - %s Results are Ready", visit.getPatient().getPatientNumber(), visit.getPatient().getFullName(), x.getLabTest().getTestName());
+                        String reference = String.valueOf(x.getId());
+
+                        DoctorRequest req = doctorRequestRepository.findById(x.getRequestId()).orElse(null);
+                        if (req != null) {
+                            //
+                            if (req.getRequestedBy() != null) {
+                                notificationEventPublisher.publishUserNotificationEvent(
+                                        NotificationData.builder()
+                                                .datetime(LocalDateTime.now())
+                                                .description(description)
+                                                .isRead(false)
+                                                .noticeType(NoticeType.LaboratoryResults)
+                                                .username(req.getRequestedBy().getUsername())
+                                                .reference(reference)
+                                                .build()
+                                );
+                            }
+                        }
+                    }
+                });
+    }
 }

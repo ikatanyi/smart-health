@@ -207,6 +207,12 @@ public class ReportController {
             case Shift_Report:
                 paymentReportService.shiftPayments(queryParams, format, response);
                 break;
+            case Patient_Statement:
+                reportService.getPatientStatement(queryParams, format, response);
+                break;
+           case Dispatch_Note:
+                reportService.getDispatchStatement(queryParams, format, response);
+                break;
             default:
                 break;
 

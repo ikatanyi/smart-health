@@ -1,5 +1,6 @@
 package io.smarthealth.debtor.claim.dispatch.service;
 
+import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
@@ -51,7 +52,7 @@ public class DispatchService {
         dispatch.setPayer(payer);
         List<Invoice> dispatchInvoiceArr = new ArrayList();
         dispatchData.getDispatchInvoiceData().stream().map((item) -> {
-            Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(item.getInvoiceNumber());
+            Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(item.getNumber());
             invoice.setStatus(InvoiceStatus.Sent);
             if (payer.getPaymentTerms() != null) {
                 invoice.setDueDate(LocalDate.now().plusDays(payer.getPaymentTerms().getCreditDays()));
@@ -73,7 +74,7 @@ public class DispatchService {
         dispatch.setPayer(payer);
         List<Invoice> dispatchInvoiceArr = new ArrayList();
         dispatchData.getDispatchInvoiceData().stream().map((item) -> {
-            Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(item.getInvoiceNumber());
+            Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(item.getNumber());
             invoiceRepository.save(invoice);
             return invoice;
         }).forEachOrdered((invoice) -> {
@@ -85,6 +86,10 @@ public class DispatchService {
 
     public Dispatch getDispatchByIdWithFailDetection(Long id) {
         return dispatchRepository.findById(id).orElseThrow(() -> APIException.notFound("Dispatch identified by id {0} not found ", id));
+    }
+    
+    public Dispatch getDispatchByNumberWithFailDetection(String dispatchNo) {
+        return dispatchRepository.findByDispatchNo(dispatchNo).orElseThrow(() -> APIException.notFound("Dispatch identified by dispatchNo {0} not found ", dispatchNo));
     }
 
     public Optional<Dispatch> getDispatch(Long id) {
@@ -105,9 +110,7 @@ public class DispatchService {
         data.setDispatchNo(dispatch.getDispatchNo());
         data.setComments(dispatch.getComments());
         dispatch.getDispatchedInvoice().stream().map((invoice) -> {
-            DispatchedInvoiceData dispInvoice = new DispatchedInvoiceData();
-            dispInvoice.setInvoiceNumber(invoice.getNumber());
-            return dispInvoice;
+            return invoice.toData();
         }).forEachOrdered((dispInvoice) -> {
             data.getDispatchInvoiceData().add(dispInvoice);
         });

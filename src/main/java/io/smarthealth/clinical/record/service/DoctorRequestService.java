@@ -10,7 +10,6 @@ import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
-import io.smarthealth.clinical.record.data.DocResults;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.DoctorRequestItem;
@@ -19,7 +18,6 @@ import io.smarthealth.clinical.record.data.WaitingRequestsData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
-import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.domain.PrescriptionRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -34,7 +32,6 @@ import io.smarthealth.stock.item.domain.Item;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.support.PagedListHolder;
@@ -44,6 +41,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -197,15 +195,16 @@ public class DoctorRequestService implements DateConverter {
         return requestItem;
     }
 
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public Page<DoctorRequestItem> fetchUnfilledRequests(RequestType requestType) {
         return doctorRequestRepository.findAll(DoctorRequestSpecification.unfullfilledRequests(requestType), PageRequest.of(0, 50)).map(x -> toData(x));
     }
 
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public Pager<?> getUnfilledDoctorRequests(RequestType requestType) {
         Pageable pageable = PageRequest.of(0, 50);
         Page<DoctorRequest> pageList = doctorRequestRepository.findAll(DoctorRequestSpecification.unfullfilledRequests(requestType), pageable);
+       
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
 
         pageList.getContent().stream().map((docReq) -> {

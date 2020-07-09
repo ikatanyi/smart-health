@@ -15,7 +15,7 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.notifications.service.RequestEventPublisher;
+import io.smarthealth.notify.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;
@@ -40,6 +40,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -66,8 +67,9 @@ public class DoctorRequestController {
 
     private final UserService userService;
 
-    private final RequestEventPublisher requestEventPublisher;
+    private final NotificationEventPublisher notificationEventPublisher;
 
+    @Transactional
     @PostMapping("/visit/{visitNo}/doctor-request")
     @PreAuthorize("hasAuthority('create_doctorrequest')")
     public @ResponseBody
@@ -106,7 +108,7 @@ public class DoctorRequestController {
 
         List<DoctorRequest> docReqs = requestService.createRequest(docRequests);
 
-        requestEventPublisher.publishCreateEvent(requestType);
+        notificationEventPublisher.publishDocRequestEvent(requestType);
 
         List<DoctorRequestData> requestList = modelMapper.map(docReqs, new TypeToken<List<DoctorRequest>>() {
         }.getType());

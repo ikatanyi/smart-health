@@ -2,7 +2,6 @@ package io.smarthealth.organization.facility.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.exception.FileStorageException;
-import io.smarthealth.organization.company.domain.Company;
 import io.smarthealth.organization.company.domain.CompanyLogo;
 import io.smarthealth.organization.company.domain.CompanyLogoRepository;
 import io.smarthealth.organization.facility.data.FacilityData;

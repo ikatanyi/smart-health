@@ -261,7 +261,7 @@ public class InventoryService {
                     });
         }
     }
-
+    
     private InventoryEvent.Type getEvent(MovementType type) {
         return type == MovementType.Dispensed ? InventoryEvent.Type.Decrease : InventoryEvent.Type.Increase;
     }

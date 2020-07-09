@@ -9,15 +9,12 @@ import io.smarthealth.clinical.laboratory.data.LabTestData;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.member.data.PayerMemberData;
-import io.smarthealth.debtor.member.domain.PayerMember;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
-import io.smarthealth.debtor.payer.data.PayerData;
-import io.smarthealth.debtor.scheme.data.SchemeData;
+import io.smarthealth.infrastructure.imports.data.InventoryStockData;
 import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.stock.item.data.CreateItem;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,6 +77,10 @@ public class BatchTemplateService {
             case SchemeMembers:
                 fileName = "Scheme Members";
                 componentClass = PayerMemberData.class;
+                break;
+            case InventoryStock:
+                fileName="Inventory Stock";
+                componentClass = InventoryStockData.class;
                 break;
             default:
                 break;

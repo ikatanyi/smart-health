@@ -21,6 +21,7 @@ import io.smarthealth.accounting.accounts.service.IncomesStatementService;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.accounts.service.LedgerService;
 import io.smarthealth.accounting.accounts.service.TrialBalanceService;
+import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.domain.PatientBill;
@@ -39,9 +40,12 @@ import io.smarthealth.accounting.payment.service.ReceivePaymentService;
 import io.smarthealth.accounting.payment.service.RemittanceService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.PaymentMethod;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
+import io.smarthealth.debtor.claim.dispatch.data.DispatchData;
+import io.smarthealth.debtor.claim.dispatch.service.DispatchService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -100,6 +104,7 @@ public class AccountReportService {
     private final RemittanceService remittanceService;
     private final AllocationService allocationService;
     private final ReceivePaymentService receivePaymentService;
+    private final DispatchService dispatchService;
     
     public void getTrialBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         
@@ -717,6 +722,38 @@ public class AccountReportService {
         reportData.setTemplate("/accounts/ledger_statement");
         
         reportData.setReportName("Ledger-Report");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getPatientStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String visitNumber = reportParam.getFirst("visitNumber");
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        List<BillItemData> data = billService.getReceiptedBillItems(visitNumber, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map((bill)->bill.toData())
+                .collect(Collectors.toList());    
+        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        reportData.setData(data);
+        reportData.setFormat(format);
+        reportData.setTemplate("/payments/patient_statement");
+        reportData.setReportName("Patient_Statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getDispatchStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+        
+        String dispatchNo = reportParam.getFirst("dispatchNo");
+        
+        ReportData reportData = new ReportData();
+        Map<String, Object> map = reportData.getFilters();
+        DispatchData dispatchData = DispatchData.map(dispatchService.getDispatchByNumberWithFailDetection(dispatchNo));
+                
+        reportData.setData(Arrays.asList(dispatchData));
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/dispatch_note");
+        reportData.setReportName("Dispatch-Note");
         reportService.generateReport(reportData, response);
     }
 
