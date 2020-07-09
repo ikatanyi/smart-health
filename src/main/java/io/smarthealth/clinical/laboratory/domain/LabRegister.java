@@ -52,7 +52,7 @@ public class LabRegister extends Auditable {
     private LabTestStatus status;
 
     private Boolean voided = Boolean.FALSE;
-
+ 
     @OneToMany(mappedBy = "labRegister", cascade = CascadeType.ALL)
     private List<LabRegisterTest> tests = new ArrayList<>();
 

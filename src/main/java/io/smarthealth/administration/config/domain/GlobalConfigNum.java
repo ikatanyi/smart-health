@@ -23,5 +23,8 @@ public enum GlobalConfigNum {
     DateFormat,
     AutoGenerateSequence,
     DateTimeFormat,
-    EnablePasswordPolicy
+    EnablePasswordPolicy,
+    PatientPortrait,
+    CashierShiftDuration,
+    Notifications
 }

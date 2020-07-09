@@ -20,8 +20,7 @@ public class NotificationEventPublisher {
     private ApplicationEventPublisher applicationEventPublisher;
 
     public void publishUserNotificationEvent(NotificationData notification) {
-        String username = notification.getUsername() != null ? notification.getUsername() : null;
-        UserNotificationEvent event = new UserNotificationEvent(this, username, notification);
+        UserNotificationEvent event = new UserNotificationEvent(this, notification);
         applicationEventPublisher.publishEvent(event);
     }
 

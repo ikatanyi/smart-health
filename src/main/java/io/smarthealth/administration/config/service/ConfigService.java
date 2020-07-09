@@ -42,10 +42,16 @@ public class ConfigService {
         return getConfigs(id)
                 .orElseThrow(() -> APIException.notFound("Configuration with id  {0} not found.", id));
     }
-     public GlobalConfiguration getByNameOrThrow(String config) {
-        return configRepository.findByName(config)
+
+    public GlobalConfiguration getByNameOrThrow(String config) {
+        return findByName(config)
                 .orElseThrow(() -> APIException.notFound("Configuration with name  {0} not found.", config));
     }
+
+    public Optional<GlobalConfiguration> findByName(String config) {
+        return configRepository.findByName(config);
+    }
+
     public GlobalConfiguration updateConfig(Long id, GlobalConfiguration newConfig) {
         GlobalConfiguration existingConfig = getWithNonFoundDetection(id);
 

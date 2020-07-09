@@ -12,15 +12,15 @@ import io.smarthealth.notify.domain.specification.NotificationSpecification;
 import io.smarthealth.notify.events.UserNotificationEvent;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -51,8 +51,6 @@ public class NotificationService {
 //            }
 //        }
         Notification notify = new Notification(user, request.getDescription(), request.getNoticeType(), request.getReference());
-
-        notificationEventPublisher.publishUserNotificationEvent(notify.toData());
 
         return notificationRepository.save(notify);
     }
@@ -117,23 +115,53 @@ public class NotificationService {
         });
     }
 
-    @TransactionalEventListener
-    public void handleUserNotificationEvent(UserNotificationEvent e) {
-        log.info("Sending user notification .... " + e.getUsername());
-        System.err.println("Sending notification to user " + e.getNotification().getUsername());
-        List<Notification> notices = notificationRepository.findByRecipientAndIsRead(e.getNotification().getUser(), false);
-        System.err.println("Total unread messages : " + notices.size());
+//    @TransactionalEventListener
+//    public void handleUserNotificationEvent(UserNotificationEvent e) {
+//        log.info("Sending user notification .... " + e.getUsername());
+//        System.err.println("Sending notification to user " + e.getNotification().getUsername());
+//        List<Notification> notices = notificationRepository.findByRecipientAndIsRead(e.getNotification().getUser(), false);
+//        System.err.println("Total unread messages : " + notices.size());
+//
+//        if (e.getUsername() != null) {
+//            System.err.println("<<<sending notifications to ... >>>>");
+//            this.messagingTemplate.convertAndSendToUser(
+//                    e.getNotification().getUsername(),
+//                    "/queue/notifys",
+//                    notices.stream()
+//                            .map(x -> x.toData())
+//                            .collect(Collectors.toList())
+//            );
+//        }
+//    }
+    @Async
+    @EventListener
+//    @TransactionalEventListener
+    public void notifyUser(UserNotificationEvent e) {
 
-        if (e.getUsername() != null) {
-            System.err.println("<<<sending notifications to ... >>>>");
-            messagingTemplate.convertAndSendToUser(
-                    e.getNotification().getUsername(),
-                    "/queue/notify",
-                    notices.stream()
-                            .map(x -> x.toData())
-                            .collect(Collectors.toList())
-            );
+        if (e.getNotification() == null) {
+            return;
         }
+
+        NotificationData data = e.getNotification();
+
+        Optional<User> user = userService.findUserByUsernameOrEmail(data.getUsername());
+        if (user.isPresent()) {
+            User toNotify = user.get();
+            Notification notice = new Notification(toNotify, data.getDescription(), data.getNoticeType(), data.getReference());
+            notice.setRead(false);
+            //save
+            Notification saveNotice = notificationRepository.save(notice);
+            System.err.println("Notice saved status ... " + saveNotice.toString());
+            this.messagingTemplate.convertAndSendToUser(toNotify.getUsername(), "/queue/notify", saveNotice.toData());
+
+            System.err.println("Notifying user ... " + toNotify.getUsername() + " Message: " + saveNotice.getMessage());
+        }
+
     }
 
+    public void notifyUser(NotificationData data) {
+        notificationEventPublisher.publishUserNotificationEvent(data);
+    }
+
+    //need a job to be able to
 }

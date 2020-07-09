@@ -7,10 +7,7 @@ import io.smarthealth.notify.data.NoticeType;
 import io.smarthealth.notify.data.NotificationData;
 import io.smarthealth.notify.data.NotificationResponse;
 import io.smarthealth.notify.domain.Notification;
-import io.smarthealth.notify.service.NotificationEventPublisher;
 import io.smarthealth.notify.service.NotificationService;
-import io.smarthealth.security.config.CurrentUser;
-import io.smarthealth.security.domain.User;
 import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -46,11 +43,11 @@ public class NotificationController {
     }
 
     @Transactional
-    @PostMapping("/send")
+    @PostMapping("/notify-user")
     @ResponseBody
     public ResponseEntity<?> doNotify(@RequestBody @Valid NotificationData data) {
-        Notification notify = notificationService.createNotification(data);
-        return ResponseEntity.ok(notify.toData());
+        notificationService.notifyUser(data);
+        return ResponseEntity.ok(new NotificationResponse(Boolean.TRUE, "Notification Created Successful"));
     }
 
     @GetMapping("/current-user")
