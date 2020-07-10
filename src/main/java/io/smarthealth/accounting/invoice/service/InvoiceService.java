@@ -14,6 +14,7 @@ import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.CreateInvoice;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.data.InvoiceMergeData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
@@ -249,6 +250,16 @@ public class InvoiceService {
         invoiceRepository.save(toInvoice);
         invoiceRepository.deleteById(fromInvoice.getId());
         return invoiceMergeRepository.save(invoiceMerge);
+    }
+    public Invoice cancelInvoice(String invoiceNo, List<InvoiceItemData> items){
+        //TODO check if invoice exists
+        
+        //if items provided cancel the said items
+        
+        //otherwise cancel the entire
+        
+        // post the journal
+        return new Invoice();
     }
 
 //    public Invoice findInvoiceOrThrowException(Long id) {
