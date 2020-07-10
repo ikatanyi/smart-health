@@ -219,8 +219,9 @@ public class ReceivePaymentService {
 //    public List<ShiftPayment> getShiftPayment(LocalDateTime from, LocalDateTime to, String shiftNo, Long cashierId){
 //        return transactionrepository.findTotalShiftPayment(from, to, shiftNo, cashierId);
 //    }
-
+//TODO cancelling or adjustment of the receipt
     public void voidPayment(String receiptNo) {
+        
         Receipt payment = getPaymentByReceiptNumber(receiptNo);
         repository.voidPayment(SecurityUtils.getCurrentUserLogin().orElse("system"), payment.getId());
     }

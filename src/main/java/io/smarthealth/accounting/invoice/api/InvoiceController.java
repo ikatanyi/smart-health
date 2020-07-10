@@ -2,6 +2,7 @@ package io.smarthealth.accounting.invoice.api;
 
 import io.smarthealth.accounting.invoice.data.CreateInvoice;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
@@ -36,7 +37,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/invoices")
-    @PreAuthorize("hasAuthority('create_invoices')") 
+    @PreAuthorize("hasAuthority('create_invoices')")
     public ResponseEntity<?> createInvoice(@Valid @RequestBody CreateInvoice invoiceData) {
 
         List<InvoiceData> trans = service.createInvoice(invoiceData).stream().map(x -> x.toData()).collect(Collectors.toList());
@@ -50,7 +51,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/invoices/{id}")
-    @PreAuthorize("hasAuthority('view_invoices')") 
+    @PreAuthorize("hasAuthority('view_invoices')")
     public ResponseEntity<?> getInvoice(@PathVariable(value = "id") Long id) {
         Invoice trans = service.getInvoiceByIdOrThrow(id);
         return ResponseEntity.ok(trans.toData());
@@ -67,7 +68,7 @@ public class InvoiceController {
 //        return trans;
 //    }
     @GetMapping("/invoices")
-    @PreAuthorize("hasAuthority('view_invoices')") 
+    @PreAuthorize("hasAuthority('view_invoices')")
     public ResponseEntity<?> getInvoices(
             @RequestParam(value = "payer", required = false) Long payer,
             @RequestParam(value = "scheme", required = false) Long scheme,
@@ -75,7 +76,7 @@ public class InvoiceController {
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "patientNo", required = false) String patientNo,
             @RequestParam(value = "status", required = false) InvoiceStatus status,
-            @RequestParam(value = "filterPastDue", required = false) Boolean filterPastDue,        
+            @RequestParam(value = "filterPastDue", required = false) Boolean filterPastDue,
             @RequestParam(value = "amountGreaterThan", required = false) Double amountGreaterThan,
             @RequestParam(value = "amountLessThanOrEqualTo", required = false) Double amountLessThanOrEqualTo,
             @RequestParam(value = "page", required = false) Integer page,
@@ -102,16 +103,23 @@ public class InvoiceController {
     }
 
     @PostMapping("/invoices/{id}/emails")
-    @PreAuthorize("hasAuthority('send_invoices')") 
+    @PreAuthorize("hasAuthority('send_invoices')")
     public String sendReceipt(@PathVariable(value = "id") Long id) {
         return service.emailInvoice(id);
     }
 
     @PostMapping("/invoices/{id}/edi")
-    @PreAuthorize("hasAuthority('create_invoices')") 
+    @PreAuthorize("hasAuthority('create_invoices')")
     public ResponseEntity<?> sendInvoiceToEDI(@PathVariable(value = "id") Long id) {
         InvoiceData trans = service.invoiceToEDI(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(trans);
+    }
+
+    @PostMapping("/invoices/{invoiceNo}/void")
+    public ResponseEntity<?> cancelInvoice(@PathVariable(value = "invoiceNo") String invoiceNo, @Valid @RequestBody List<InvoiceItemData> invoiceItems) {
+        Invoice invoice = service.cancelInvoice(invoiceNo, invoiceItems);
+
+        return ResponseEntity.ok(invoice != null ? invoice.toData() : new InvoiceData());
     }
     //TODO
     /*

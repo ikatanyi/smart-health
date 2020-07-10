@@ -714,5 +714,10 @@ public class BillingService {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
+    
+    //TODO - cancelling of a bill item
+    public void voidBillItem(String visitNumber, List<BillItemData> items){
+        
+    }
 
 }
