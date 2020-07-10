@@ -6,6 +6,7 @@
 package io.smarthealth.accounting.billing.api;
 
 import io.smarthealth.accounting.billing.data.BillData;
+import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.data.nue.BillDetail;
@@ -148,6 +149,14 @@ public class BillingV2Controller {
         return ResponseEntity.ok(details);
     }
 
+     @PostMapping("/billing/{visitNumber}/void") 
+    public ResponseEntity<?> createCopay(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody List<BillItemData> billItems) {
+         service.voidBillItem(visitNumber, billItems);
+         
+        return ResponseEntity.status(HttpStatus.CREATED).body("");
+    }
+
+    
     Page<SummaryBill> toPage(List<SummaryBill> list, int pagesize, int pageNo) {
 
         int totalpages = list.size() / pagesize;

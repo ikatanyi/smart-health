@@ -251,9 +251,10 @@ public class InvoiceService {
         invoiceRepository.deleteById(fromInvoice.getId());
         return invoiceMergeRepository.save(invoiceMerge);
     }
+    
+    //TODO cancelling of the invoice
     public Invoice cancelInvoice(String invoiceNo, List<InvoiceItemData> items){
-        //TODO check if invoice exists
-        
+  
         //if items provided cancel the said items
         
         //otherwise cancel the entire
