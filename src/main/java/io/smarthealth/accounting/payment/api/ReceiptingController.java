@@ -1,9 +1,9 @@
 package io.smarthealth.accounting.payment.api;
 
 import io.smarthealth.accounting.cashier.data.CashierShift;
-import io.smarthealth.accounting.cashier.data.ShiftPayment;
 import io.smarthealth.accounting.cashier.domain.ShiftStatus;
 import io.smarthealth.accounting.payment.data.ReceiptData;
+import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.service.ReceivePaymentService;
@@ -12,7 +12,6 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
-import java.time.LocalDate;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -71,6 +70,15 @@ public class ReceiptingController {
         service.voidPayment(receiptNo);
         return ResponseEntity.accepted().build();
     }
+
+    @PutMapping("/receipting/{receiptNo}/adjustment")
+    @PreAuthorize("hasAuthority('edit_receipt')")
+    public ResponseEntity<?> receiptAdjustment(@PathVariable(value = "receiptNo") String receiptNo, List<ReceiptItemData> toAdjustItems) {
+        Receipt receipt = service.receiptAdjustment(receiptNo, toAdjustItems);
+        return ResponseEntity.ok(receipt.toData());
+
+    }
+
     @GetMapping("/receipting")
     @ResponseBody
     @PreAuthorize("hasAuthority('view_receipt')")
@@ -104,7 +112,7 @@ public class ReceiptingController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-    
+
     @GetMapping("/receipting/shifts")
     @ResponseBody
     @PreAuthorize("hasAuthority('view_receipt')")
@@ -113,7 +121,7 @@ public class ReceiptingController {
             @RequestParam(value = "shift_no", required = false) final String shiftNo,
             @RequestParam(value = "cashier_id", required = false) final Long cashier,
             @RequestParam(value = "service_point_id", required = false) final Long servicePointId,
-//            @RequestParam(value = "date_range", required = true) final String dateRange,
+            //            @RequestParam(value = "date_range", required = true) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
@@ -130,16 +138,12 @@ public class ReceiptingController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-    
-   //receipting other payments
+
+    //receipting other payments
 //    @PostMapping("/receipting/other")
 //    public ResponseEntity<?> otherReceipts(@Valid @RequestBody ReceivePayment paymentData) {
 //        
 //        
 //    }
-    
     //provision to change payment mode
-    
-    
-
 }

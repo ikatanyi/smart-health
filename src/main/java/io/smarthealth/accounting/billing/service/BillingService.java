@@ -15,6 +15,7 @@ import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.data.PatientBillGroup;
 import io.smarthealth.accounting.billing.data.SummaryBill;
+import io.smarthealth.accounting.billing.data.VoidBillItem;
 import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.data.nue.BillPayment;
@@ -719,8 +720,20 @@ public class BillingService {
     }
 
     //TODO - cancelling of a bill item
-    public void voidBillItem(String visitNumber, List<BillItemData> items) {
+    public List<PatientBillItem> voidBillItem(String visitNumber, List<VoidBillItem> items) {
+        List<PatientBillItem> toVoidList = items
+                .stream()
+                .map(x -> billItemRepository.findById(x.getBillItemId()).orElse(null))
+                .filter(bill -> bill != null)
+                .map(patientBill -> {
+                    patientBill.setStatus(BillStatus.Draft);
+                    patientBill.setPaid(Boolean.FALSE);
+                    return patientBill;
+                })
+                .collect(Collectors.toList());
 
+        List<PatientBillItem> bills = billItemRepository.saveAll(toVoidList);
+        return bills;
     }
 
 }

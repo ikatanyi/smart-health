@@ -33,7 +33,7 @@ public class DrugRequest {
     private Double taxes;
     private Double discount; 
      private Boolean isWalkin; 
-    
+      
     @Enumerated(EnumType.STRING)
     private BillStatus status;
 

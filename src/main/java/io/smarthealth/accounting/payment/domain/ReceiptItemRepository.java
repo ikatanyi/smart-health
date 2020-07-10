@@ -1,7 +1,9 @@
 package io.smarthealth.accounting.payment.domain;
 
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +27,6 @@ public interface ReceiptItemRepository extends JpaRepository<ReceiptItem, Long>,
             + "FROM ReceiptItem AS c WHERE (:ShiftNo=null OR c.receipt.shift.shiftNo=:ShiftNo) AND c.receipt.paymentMethod!='Insurance' AND (:cashierId=null OR c.receipt.shift.cashier.id=:cashierId) GROUP BY c.item.servicePoint ORDER BY DATE(c.receipt.transactionDate) DESC")
     List<CashierShift> findTotalByCashierShift(@Param("ShiftNo") String ShiftNo, @Param("cashierId") Long cashierId);
 
-    }
+    Optional<ReceiptItem> findByReceiptAndItem(Receipt receipt, PatientBillItem item);
+
+}

@@ -48,6 +48,7 @@ public class DispensedDrugData implements Serializable {
     private Boolean isReturn=false;
       private String otherReference;
     private Boolean walkinFlag=Boolean.FALSE;
+    private String batchNumber;
    
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
