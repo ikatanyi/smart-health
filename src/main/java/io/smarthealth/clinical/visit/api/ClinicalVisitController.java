@@ -186,7 +186,7 @@ public class ClinicalVisitController {
             paymentDetailsService.createPaymentDetails(pd);
             //create bill for copay
             //Modification - reusing copayment billing (kelsas)
-            if (config.isPresent()) {
+            if (config.isPresent() && config.get().getCoPayValue() > 0) {
                 billingService.createCopay(new CopayData(visit.getVisitNumber(), visitData.getPayment().getSchemeId()));
             }
             

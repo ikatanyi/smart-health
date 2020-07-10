@@ -572,6 +572,9 @@ public class BillingService {
             if (copayAmount != null && copayAmount != BigDecimal.ZERO) {
                 //create the bill
                 Double copay = copayAmount.doubleValue();
+                if (copay <= 0) {
+                    return null;
+                }
                 Optional<Item> copayItem = itemService.findFirstByCategory(ItemCategory.CoPay);
                 if (copayItem.isPresent()) {
                     Item item = copayItem.get();
@@ -714,10 +717,10 @@ public class BillingService {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
-    
+
     //TODO - cancelling of a bill item
-    public void voidBillItem(String visitNumber, List<BillItemData> items){
-        
+    public void voidBillItem(String visitNumber, List<BillItemData> items) {
+
     }
 
 }

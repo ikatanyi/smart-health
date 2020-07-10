@@ -305,7 +305,7 @@ public class JasperReportsService {
         jasperParameter.put("TaxNumber", facility.getOrganization().getTaxNumber());
         jasperParameter.put("orgWebsite", facility.getOrganization().getWebsite());
         String country="", county="", addressLine1="", addressLine2="", postalcode="", town="";
-        for(Address address:facility.getOrganization().getAddress()){
+        for(Address address :  facility.getOrganization().getAddress()){
             jasperParameter.put("orgAddressCountry", country.concat(" ").concat(address.getCountry()));
             jasperParameter.put("orgAddressCounty", county.concat(" ").concat(address.getCounty()));
             jasperParameter.put("orgAddressLine1", addressLine1.concat(" ").concat(address.getLine1()));
