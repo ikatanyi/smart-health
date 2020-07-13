@@ -1,5 +1,6 @@
 package io.smarthealth.administration.finances.domain;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,6 @@ public interface PaymentTermsRepository extends JpaRepository<PaymentTerms, Long
     Page<PaymentTerms> findByActiveTrue(Pageable page);
 
     Optional<PaymentTerms> findByTermsName(String name);
+    
+    List<PaymentTerms> findByTermsNameContainingIgnoreCase(String name);
 }

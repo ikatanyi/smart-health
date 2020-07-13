@@ -5,6 +5,7 @@
  */
 package io.smarthealth.administration.app.domain;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +18,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CurrencyRepository extends JpaRepository<Currency, Long>{
       Page<Currency> findByActiveTrue(Pageable page);
 
-    Optional<Currency> findByName(String name);
+      Optional<Currency> findByName(String name);
     
-     Optional<Currency> findByCode(String code);
+      Optional<Currency> findByCode(String code);
+      
+      List<Currency> findByNameContainingIgnoreCaseOrSymbolContainingIgnoreCase(String name, String symbol);
      
 }

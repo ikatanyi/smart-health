@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.taxes.domain.TaxRepository;
+import java.util.List;
 
 /**
  *
@@ -28,6 +29,11 @@ public class TaxServices {
     public Page<Tax> fetchAllTaxes(Pageable page){
         return taxRepository.findAll(page);
     }
+    
+    public List<Tax> fetchTaxesByName(String name){
+        return taxRepository.findByTaxNameContainingIgnoreCase(name);
+    }
+    
     public Tax getTax(Long id){
         return taxRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Tax with id  {0} not found.", id));

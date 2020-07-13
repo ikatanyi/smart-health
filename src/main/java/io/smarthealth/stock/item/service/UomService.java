@@ -7,6 +7,7 @@ import io.smarthealth.stock.item.domain.Uom;
 import io.smarthealth.stock.item.domain.UomRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -56,6 +57,12 @@ public class UomService {
     public Page<Uom> fetchAllUom(final Pageable pgbl) {
         return uomRepository.findAll(pgbl);
     }
+    
+   public List<Uom> getUnitofMeasureByName(String name){
+         List<Uom> list=uomRepository.findByNameContainingIgnoreCase(name);
+        return list;
+   }
+   
    public List<Uoms> getAllUnitofMeasure(){
         Page<Uoms> list=uomRepository.findAll(Pageable.unpaged()).map(um -> Uoms.map(um));
         return list.getContent();

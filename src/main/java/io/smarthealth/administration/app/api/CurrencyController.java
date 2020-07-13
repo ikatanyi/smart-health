@@ -50,6 +50,21 @@ public class CurrencyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
+    
+    @PutMapping("/currencies/{id}")
+    @PreAuthorize("hasAuthority('create_currencies')")
+    public ResponseEntity<?> updateCurrency(@PathVariable(value = "id") Long id, @Valid @RequestBody Currency currency) {
+        
+        Currency result = service.updateCurrency(id, currency);
+
+        Pager<Currency> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Currency created successful");
+        pagers.setContent(result);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+
+    }
 
     @GetMapping("/currencies/{id}")
     @PreAuthorize("hasAuthority('view_currencies')")
@@ -57,6 +72,21 @@ public class CurrencyController {
         Currency currencyService = service.getCurrency(code)
                 .orElseThrow(() -> APIException.notFound("Payment Terms with id {0} not found.", code));
         return currencyService;
+    }
+    
+    @GetMapping("/currencies/{term}/search")
+    @PreAuthorize("hasAuthority('view_currencies')")
+    public ResponseEntity<?> serachCurrency(@PathVariable(value = "term") String term) {
+        List<Currency>currencies =  service.getCurrencyByNameOrCode(term);
+        Pager<List<Currency>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(currencies);
+        PageDetails details = new PageDetails();
+        details.setReportName("Currencies");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+
     }
 
     @GetMapping("/currencies")

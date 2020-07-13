@@ -8,6 +8,7 @@ import io.smarthealth.stock.item.domain.Uom;
 import io.smarthealth.stock.item.service.UomService;
 import io.swagger.annotations.Api;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -68,6 +69,28 @@ public class UomRestController {
         return ResponseEntity.ok(pagers);
     }
     
+    
+    @GetMapping("/uom/{name}/search")
+    @PreAuthorize("hasAuthority('view_uom')")
+    public ResponseEntity<?> getAllItemsByName(@PathVariable("name") String name) {
+
+        List<UomData> list = service.getUnitofMeasureByName(name)
+                .stream()
+                .map(u -> UomData.map(u))
+                .collect(Collectors.toList());
+        
+        
+        Pager<List<UomData>> pagers=new Pager();
+        pagers.setCode("0");
+        pagers.setContent(list);
+        pagers.setMessage("Success");
+        PageDetails details=new PageDetails();
+        details.setReportName("Unit of Measure");
+        pagers.setPageDetails(details);
+         
+        return ResponseEntity.ok(pagers);
+    }
+    
      @PostMapping("/uom")
      @PreAuthorize("hasAuthority('create_uom')")
     public ResponseEntity<?> createUom(@Valid @RequestBody UomData uomData) {
@@ -82,5 +105,22 @@ public class UomRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
+    
+    @PutMapping("/uom/{id}")
+    @PreAuthorize("hasAuthority('create_uom')")
+    public ResponseEntity<?> updateUom(@PathVariable("id") Long id, @Valid @RequestBody UomData uomData) {
+        
+        UomData result = UomData.map(service.updateUom(id,uomData));
+        
+        Pager<UomData> pagers=new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Uom created successful");
+        pagers.setContent(result); 
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+
+    }
+    
+    
     
 }

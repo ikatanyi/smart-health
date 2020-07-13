@@ -26,6 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -75,6 +76,31 @@ public class BanksController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
+    
+    @PutMapping("/bank/{id}")
+    @PreAuthorize("hasAuthority('create_bank')")
+    public ResponseEntity<?> updateBank(@PathVariable("id") Long id, @Valid @RequestBody BankData bankData) {
+        Bank mainBank = modelMapper.map(bankData, Bank.class);
+
+        List<BankBranch> branch = new ArrayList<>();
+        if (!bankData.getBranch().isEmpty()) {
+            for (BankBranchData bbd : bankData.getBranch()) {
+                BankBranch b = modelMapper.map(bbd, BankBranch.class);
+                b.setBank(mainBank);
+                branch.add(b);
+            }
+            mainBank.setBankBranch(branch);
+        }
+
+        Bank result = bankService.updateBank(id, mainBank);
+        BankData bankData1 = modelMapper.map(result, BankData.class);
+        Pager<BankData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Bank details updated successful");
+        pagers.setContent(bankData1);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
 
     @GetMapping("/bank")
     @PreAuthorize("hasAuthority('view_bank')")
@@ -113,6 +139,45 @@ public class BanksController {
         details.setPerPage(result.getSize());
         details.setTotalElements(result.getTotalElements());
         details.setTotalPage(result.getTotalPages());
+        details.setReportName("Banks List");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
+    
+    @GetMapping("/bank/{term}/search")
+    @PreAuthorize("hasAuthority('view_bank')")
+    public ResponseEntity<?> searchAllBanksBy(@PathVariable("term") String term) {
+
+        List<Bank> result = bankService.searchBankByNameOrShortName(term);
+        List<BankData> bd = new ArrayList<>();
+
+        for (Bank bank : result) {
+            BankData b = modelMapper.map(bank, BankData.class);
+            b.setBankId(bank.getId());
+
+            if (bank.getBankBranch().size() > 0) {
+//                Type listType = new TypeToken<List<BankBranch>>() {
+//                }.getType();
+//                List<BankBranchData> bankBranchList = modelMapper.map(bank.getBankBranch(), listType);
+                List<BankBranchData> branchesData = new ArrayList<>();
+                bank.getBankBranch().stream().map((branch) -> {
+                    BankBranchData bbd = modelMapper.map(branch, BankBranchData.class);
+                    bbd.setBranchId(branch.getId());
+                    return bbd;
+                }).forEachOrdered((branchData) -> {
+                    branchesData.add(branchData);
+                });
+                b.setBranch(branchesData);
+            }
+            bd.add(b);
+        }
+
+        Pager<List<BankData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(bd);
+        PageDetails details = new PageDetails();
         details.setReportName("Banks List");
         pagers.setPageDetails(details);
 

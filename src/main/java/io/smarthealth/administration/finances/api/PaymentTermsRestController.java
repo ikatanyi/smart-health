@@ -50,6 +50,20 @@ public class PaymentTermsRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
+    
+    @PutMapping("/payment-terms/{id}")
+    @PreAuthorize("hasAuthority('create_paymentTerms')")
+    public ResponseEntity<?> upatePaymentTerms(@PathVariable("id") Long id, @Valid @RequestBody PaymentTerms paymentTerms) {
+        PaymentTerms result = service.updatePaymentTerm(id, paymentTerms);
+
+        Pager<PaymentTerms> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Payment Terms updated successful");
+        pagers.setContent(result);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+
+    }
 
     @GetMapping("/payment-terms/{id}")
     @PreAuthorize("hasAuthority('view_paymentTerms')")
@@ -79,6 +93,22 @@ public class PaymentTermsRestController {
         details.setTotalElements(list.getTotalElements());
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Payment Terms");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
+    
+    @GetMapping("/payment-terms/{name}/search")
+    @PreAuthorize("hasAuthority('view_paymentTerms')")
+    public ResponseEntity<?> getPaymentTermsByName(@PathVariable("name") String name) {
+        List<PaymentTerms> list = service.getPaymentTermsByName(name);
+
+        Pager<List<PaymentTerms>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        PageDetails details = new PageDetails();
+        details.setReportName("Payment Terms");
+        pagers.setContent(list);
         pagers.setPageDetails(details);
 
         return ResponseEntity.ok(pagers);
