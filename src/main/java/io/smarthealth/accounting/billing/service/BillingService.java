@@ -15,6 +15,7 @@ import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.data.PatientBillGroup;
 import io.smarthealth.accounting.billing.data.SummaryBill;
+import io.smarthealth.accounting.billing.data.VoidBillItem;
 import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.data.nue.BillPayment;
@@ -572,6 +573,9 @@ public class BillingService {
             if (copayAmount != null && copayAmount != BigDecimal.ZERO) {
                 //create the bill
                 Double copay = copayAmount.doubleValue();
+                if (copay <= 0) {
+                    return null;
+                }
                 Optional<Item> copayItem = itemService.findFirstByCategory(ItemCategory.CoPay);
                 if (copayItem.isPresent()) {
                     Item item = copayItem.get();
@@ -713,6 +717,23 @@ public class BillingService {
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
+    }
+
+    //TODO - cancelling of a bill item
+    public List<PatientBillItem> voidBillItem(String visitNumber, List<VoidBillItem> items) {
+        List<PatientBillItem> toVoidList = items
+                .stream()
+                .map(x -> billItemRepository.findById(x.getBillItemId()).orElse(null))
+                .filter(bill -> bill != null)
+                .map(patientBill -> {
+                    patientBill.setStatus(BillStatus.Draft);
+                    patientBill.setPaid(Boolean.FALSE);
+                    return patientBill;
+                })
+                .collect(Collectors.toList());
+
+        List<PatientBillItem> bills = billItemRepository.saveAll(toVoidList);
+        return bills;
     }
 
 }

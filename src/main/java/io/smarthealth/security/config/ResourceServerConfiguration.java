@@ -1,4 +1,4 @@
-package io.smarthealth.config.oauth;
+package io.smarthealth.security.config;
 
 import io.kelsas.accounting.security.service.CustomAccessDeniedHandler;
 import io.smarthealth.security.service.CustomAuthenticationEntryPoint;
@@ -34,15 +34,9 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-//                .authorizeRequests()
-//                .antMatchers("/app/**", "/ws/**", "/notifications/**").permitAll()
-//                .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**").permitAll()
-                //               .antMatchers("/api/users/**").hasAuthority("ADMIN")
-                //                .antMatchers(HttpMethod.GET, "/v2/api-docs/**", "/swagger-ui.html*", "/company/logo*").permitAll()
                 .authorizeRequests().antMatchers(Public_Matchers).permitAll()
                 .antMatchers(HttpMethod.GET, GET_Public_Matchers).permitAll()
                 .anyRequest().authenticated()
-//                .antMatchers("/api/**").authenticated()
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
@@ -58,12 +52,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
             "/**/*.jpg",
             "/**/*.html",
             "/**/*.css",
-            "/**/*.js",
-            "/app/**",
-            "/ws/**", 
-            "/notifications/**",
+            "/**/*.js", 
             "/api/auth/user/resetPassword/**",
-             "/api/auth/get-notifications/**",
             "/v2/api-docs/**", "/configuration/ui/**", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html/**", "/webjars/**"
     };
      
@@ -73,8 +63,6 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         "/api/downloadFile/**",
         "/api/report/**",
         "/v2/api-docs/**",
-        "/swagger-ui.html/**",
-        "/api/v2/notification/**",
-        "/api/auth/get-notifications/**"
+        "/swagger-ui.html/**"
     };
 }

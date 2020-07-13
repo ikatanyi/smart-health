@@ -163,13 +163,15 @@ public class DoctorRequestController {
             @PathVariable(value = "patientNo", required = false) final String patientNo,
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
             @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final FullFillerStatusType fulfillerStatus,
+            @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Patient patient = patientService.findPatientOrThrow(patientNo);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         //fetch all visits by patient
-        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, false, null, pageable);
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, range, null, null, false, null, pageable);
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
 
         for (Visit v : patientVisits.getContent()) {

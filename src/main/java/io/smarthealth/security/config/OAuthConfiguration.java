@@ -1,4 +1,4 @@
-package io.smarthealth.config.oauth;
+package io.smarthealth.security.config;
  
 import io.smarthealth.security.service.CustomTokenEnhancer;
 import io.smarthealth.security.service.CustomUserDetailsService;

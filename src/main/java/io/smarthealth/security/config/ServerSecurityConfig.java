@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.config.oauth;
+package io.smarthealth.security.config;
 
 import io.smarthealth.security.service.CustomAuthenticationEntryPoint;
 import io.smarthealth.security.service.CustomUserDetailsService;

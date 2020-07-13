@@ -6,8 +6,10 @@
 package io.smarthealth.accounting.billing.api;
 
 import io.smarthealth.accounting.billing.data.BillData;
+import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.data.SummaryBill;
+import io.smarthealth.accounting.billing.data.VoidBillItem;
 import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.service.BillingService;
@@ -19,6 +21,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,6 +34,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,7 +57,7 @@ public class BillingV2Controller {
     }
 
     @PostMapping("/billing")
-    @PreAuthorize("hasAuthority('create_billV2')") 
+    @PreAuthorize("hasAuthority('create_billV2')")
     public ResponseEntity<?> createBill(@Valid @RequestBody BillData billData) {
 
         PatientBill patientbill = service.createPatientBill(billData);
@@ -67,14 +71,14 @@ public class BillingV2Controller {
     }
 
     @GetMapping("/billing/{id}")
-    @PreAuthorize("hasAuthority('view_billV2')") 
+    @PreAuthorize("hasAuthority('view_billV2')")
     public BillData getBill(@PathVariable(value = "id") Long code) {
         PatientBill bill = service.findOneWithNoFoundDetection(code);
         return bill.toData();
     }
 
     @PostMapping("/billing/{visitNumber}/copay")
-    @PreAuthorize("hasAuthority('create_billV2')") 
+    @PreAuthorize("hasAuthority('create_billV2')")
     public ResponseEntity<?> createCopay(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody CopayData data) {
         if (!visitNumber.equals(data.getVisitNumber())) {
             throw APIException.badRequest("Visit Number on path variable and body do not match");
@@ -89,7 +93,7 @@ public class BillingV2Controller {
     }
 
     @GetMapping("/billing")
-    @PreAuthorize("hasAuthority('view_billV2')") 
+    @PreAuthorize("hasAuthority('view_billV2')")
     public ResponseEntity<?> getBills(
             @RequestParam(value = "visitNumber", required = false) String visitNumber,
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
@@ -125,7 +129,7 @@ public class BillingV2Controller {
 
     //get based on visit
     @GetMapping("/billing/{visitNumber}/items")
-    @PreAuthorize("hasAuthority('view_billV2')") 
+    @PreAuthorize("hasAuthority('view_billV2')")
     public ResponseEntity<?> getBillDetails(
             @PathVariable(value = "visitNumber") String visitNumber,
             @RequestParam(value = "page", required = false) Integer page,
@@ -146,6 +150,13 @@ public class BillingV2Controller {
 //        details.setReportName("Patient Bills");
 //        pagers.setPageDetails(details);
         return ResponseEntity.ok(details);
+    }
+
+    @PutMapping("/billing/{visitNumber}/void")
+    public ResponseEntity<?> cancelBills(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody List<VoidBillItem> billItems) {
+        List<BillItemData> bills = service.voidBillItem(visitNumber, billItems).stream().map(x -> x.toData()).collect(Collectors.toList());
+
+        return ResponseEntity.ok(bills);
     }
 
     Page<SummaryBill> toPage(List<SummaryBill> list, int pagesize, int pageNo) {

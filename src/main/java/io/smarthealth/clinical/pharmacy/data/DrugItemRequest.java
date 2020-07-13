@@ -35,6 +35,8 @@ public class DrugItemRequest {
     private String unit;
     private String createdBy;
     
+    private String batchNumber;
+    
     private String servicePoint;
     private Long servicePointId;
      private Long requestId;

@@ -10,6 +10,7 @@ import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
@@ -43,6 +44,9 @@ public class ReceiptItem extends Identifiable {
     private BigDecimal discount;
     private BigDecimal taxes;
     private BigDecimal amountPaid;
+    private Boolean voided;
+    private String voidedBy;
+    private LocalDateTime voidedDate;
 
     public ReceiptItem(PatientBillItem item, BigDecimal amountPaid) {
         this.item = item;
@@ -58,8 +62,8 @@ public class ReceiptItem extends Identifiable {
         this.amountPaid = amountPaid;
     }
     public static ReceiptItem createReceipt(PatientBillItem bill){
-        System.err.println("creating a receipti details "+ bill.getId()+" namr "+bill.getPatientBill().getPatient().getFullName());
-        System.err.println(bill.toData());
+//        System.err.println("creating a receipti details "+ bill.getId()+" namr "+bill.getPatientBill().getPatient().getFullName());
+//        System.err.println(bill.toData());
         return new ReceiptItem(bill, bill.getQuantity(), BigDecimal.valueOf(bill.getPrice()), BigDecimal.valueOf(bill.getDiscount()), BigDecimal.valueOf(bill.getTaxes()), BigDecimal.valueOf(bill.getAmount()));
     }
     

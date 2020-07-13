@@ -15,6 +15,8 @@ import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.data.ShiftPayment;
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.cashier.domain.ShiftRepository;
+import io.smarthealth.accounting.payment.data.ReceiptData;
+import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.accounting.payment.data.ReceiptMethod;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
 import io.smarthealth.accounting.payment.domain.Banking;
@@ -87,7 +89,7 @@ public class ReceivePaymentService {
         receipt.setPayer(data.getPayer());
         receipt.setPaid(data.getTenderedAmount());
         receipt.setPaymentMethod(data.getPaymentMethod());
-        receipt.setTenderedAmount(data.getTenderedAmount()!=null ? data.getTenderedAmount() : BigDecimal.ZERO);
+        receipt.setTenderedAmount(data.getTenderedAmount() != null ? data.getTenderedAmount() : BigDecimal.ZERO);
         receipt.setReferenceNumber(data.getReferenceNumber());
         receipt.setRefundedAmount(BigDecimal.ZERO);
         if (data.getShiftNo() != null) {
@@ -140,14 +142,14 @@ public class ReceivePaymentService {
                     if (item.getItem().getCategory() == ItemCategory.CoPay) {
                         copaymentService.createCopayment(data.getVisitNumber(), data.getPatientNumber(), data.getAmount(), receiptNo);
                     }
-                     receipt.addReceiptItem(
-                             new ReceiptItem(
-                                     item, item.getQuantity(), 
-                                     toBigDecimal(item.getPrice()),
-                                     toBigDecimal(item.getDiscount()), 
-                                     toBigDecimal(item.getTaxes()), 
-                                     toBigDecimal(item.getAmount())
-                             ));
+                    receipt.addReceiptItem(
+                            new ReceiptItem(
+                                    item, item.getQuantity(),
+                                    toBigDecimal(item.getPrice()),
+                                    toBigDecimal(item.getDiscount()),
+                                    toBigDecimal(item.getTaxes()),
+                                    toBigDecimal(item.getAmount())
+                            ));
 //                    receipt.addReceiptItem(ReceiptItem.createReceipt+" "+ill));
                 });
 
@@ -211,25 +213,48 @@ public class ReceivePaymentService {
         return repository.findByReceiptNo(receiptNo)
                 .orElseThrow(() -> APIException.notFound("Payment with Receipt Number {0} Not Found", receiptNo));
     }
-    
-    public List<CashierShift> getCashierShift(String shiftNo, Long cashierId){
+
+    public List<CashierShift> getCashierShift(String shiftNo, Long cashierId) {
         return receiptItemRepository.findTotalByCashierShift(shiftNo, cashierId);
     }
-    
+
 //    public List<ShiftPayment> getShiftPayment(LocalDateTime from, LocalDateTime to, String shiftNo, Long cashierId){
 //        return transactionrepository.findTotalShiftPayment(from, to, shiftNo, cashierId);
 //    }
-
+//TODO cancelling or adjustment of the receipt
     public void voidPayment(String receiptNo) {
+
         Receipt payment = getPaymentByReceiptNumber(receiptNo);
         repository.voidPayment(SecurityUtils.getCurrentUserLogin().orElse("system"), payment.getId());
     }
 
+    @Transactional
+    public Receipt receiptAdjustment(String receiptNo, List<ReceiptItemData> receiptItems) {
+        Receipt receipt = getPaymentByReceiptNumber(receiptNo);
+
+        List<ReceiptItem> lists = receiptItems
+                .stream()
+                .map(x -> {
+                    ReceiptItem p = receiptItemRepository.findById(x.getId()).orElseThrow(() -> APIException.notFound("No Receipt Item Found with the Id {0}", x.getId()));
+                    p.setVoided(Boolean.TRUE);
+                    p.setVoidedBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
+                    p.setVoidedDate(LocalDateTime.now());
+                    receipt.setRefundedAmount(receipt.getRefundedAmount().add(p.getAmountPaid()));
+                    return p;
+                })
+                .collect(Collectors.toList());
+
+        //then cancel the receipts and adjust the 
+        repository.save(receipt);
+        receiptItemRepository.saveAll(lists);
+        return receipt;
+    }
+
     public Page<Receipt> getPayments(String payee, String receiptNo, String transactionNo, String shiftNo, Long servicePointId, Long cashierId, DateRange range, Pageable page) {
-        Specification<Receipt> spec = ReceiptSpecification.createSpecification(payee, receiptNo, transactionNo, shiftNo,servicePointId, cashierId, range);
+        Specification<Receipt> spec = ReceiptSpecification.createSpecification(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range);
         return repository.findAll(spec, page);
     }
-    
+
     public Page<ReceiptItem> getPaymentItems(Long servicePointId, DateRange range, Pageable page) {
         Specification<ReceiptItem> spec = ReceiptSpecification.createReceiptItemSpecification(servicePointId, range);
         return receiptItemRepository.findAll(spec, page);
@@ -303,7 +328,7 @@ public class ReceivePaymentService {
                                     Collectors.summingDouble(x -> (x.getItem().getCostRate().doubleValue() * x.getQuantity())))
                     );
             if (!inventory.isEmpty()) {
-            inventory.forEach((k, v) -> {
+                inventory.forEach((k, v) -> {
                     //revenue
                     ServicePoint srv = servicePointService.getServicePoint(k);
                     String narration = "Expensing Inventory for " + srv.getName();
@@ -382,8 +407,11 @@ public class ReceivePaymentService {
         toSave.setStatus(JournalState.PENDING);
         return toSave;
     }
-    private BigDecimal toBigDecimal(Double val){
-        if(val==null) return BigDecimal.ZERO;
+
+    private BigDecimal toBigDecimal(Double val) {
+        if (val == null) {
+            return BigDecimal.ZERO;
+        }
         return BigDecimal.valueOf(val);
     }
 }
