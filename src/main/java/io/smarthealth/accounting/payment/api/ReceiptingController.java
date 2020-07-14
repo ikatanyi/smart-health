@@ -73,7 +73,7 @@ public class ReceiptingController {
 
     @PutMapping("/receipting/{receiptNo}/adjustment")
     @PreAuthorize("hasAuthority('edit_receipt')")
-    public ResponseEntity<?> receiptAdjustment(@PathVariable(value = "receiptNo") String receiptNo, List<ReceiptItemData> toAdjustItems) {
+    public ResponseEntity<?> receiptAdjustment(@PathVariable(value = "receiptNo") String receiptNo, @Valid @RequestBody List<ReceiptItemData> toAdjustItems) {
         Receipt receipt = service.receiptAdjustment(receiptNo, toAdjustItems);
         return ResponseEntity.ok(receipt.toData());
 
