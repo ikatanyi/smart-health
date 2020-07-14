@@ -156,6 +156,22 @@ public class StockReportService {
         reportData.setReportName("Inventory-Statement");
         reportService.generateReport(reportData, response);
     }
+    
+    public void InventoryStock(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        Long storeId = NumberUtils.createLong(reportParam.getFirst("storeId"));
+        Long itemId = NumberUtils.createLong(reportParam.getFirst("item_id"));
+        String search = reportParam.getFirst("search");
+        Boolean includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
+
+        List<InventoryItemData> inventoryItemData = inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged()).getContent();
+
+        reportData.setData(inventoryItemData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/inventory_stock");
+        reportData.setReportName("Inventory--Stock-Statement");
+        reportService.generateReport(reportData, response);
+    }
 
     public void getInventoryAdjustedItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
