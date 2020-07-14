@@ -69,6 +69,7 @@ public class ReceiptItem extends Identifiable {
     
     public ReceiptItemData toData(){
         ReceiptItemData data = new ReceiptItemData();
+        data.setId(this.getId());
         data.setReceiptNumber(this.getReceipt().getReferenceNumber());
         if(this.getReceipt()!=null){
             data.setPatientName(this.getReceipt().getPayer());
