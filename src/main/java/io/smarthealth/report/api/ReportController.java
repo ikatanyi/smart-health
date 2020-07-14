@@ -203,7 +203,10 @@ public class ReportController {
                 break;
             case Goods_Receive_Note:
                 stockReportService.SupplierGRN(queryParams, format, response);
-                break;    
+                break;   
+            case Inventory_Stock:
+                stockReportService.InventoryStock(queryParams, format, response);
+                break;       
             case Shift_Report:
                 paymentReportService.shiftPayments(queryParams, format, response);
                 break;
