@@ -19,6 +19,7 @@ import io.smarthealth.report.storage.StorageService;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,12 +40,15 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.export.AbstractXlsReportConfiguration;
@@ -169,7 +173,7 @@ public class JasperReportsService {
         // Check if a compiled report exists
         if (reportInputStream != null) {
             jasperReport = (JasperReport) JRLoader.loadObject(reportInputStream);
-            
+
         } // Compile report from source and save
         else {
             reportInputStream = resourceLoader.getResource(appProperties.getReportLoc() + template + ".jrxml").getInputStream();
@@ -178,7 +182,7 @@ public class JasperReportsService {
         }
         // Get your data source
         JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(dataList, false);
-        
+
         // Add parameters
 //            param.putAll(param);
         param.putAll(reportData.getFilters());
@@ -191,10 +195,10 @@ public class JasperReportsService {
 //            Connection conn = jdbcTemplate.getDataSource().getConnection();
 //            jasperPrint = JasperFillManager.fillReport(jasperReport, param, conn);
 //        } else {
-            jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
+        jasperPrint = JasperFillManager.fillReport(jasperReport, param, jrBeanCollectionDataSource);
 
 //        }
-        System.out.println("Report generated in"+ChronoUnit.MILLIS.between(startTime, LocalDateTime.now())+"ms");
+        System.out.println("Report generated in" + ChronoUnit.MILLIS.between(startTime, LocalDateTime.now()) + "ms");
         export(jasperPrint, format, reportName, response);
 
     }
@@ -279,7 +283,7 @@ public class JasperReportsService {
     /**
      *
      */
-    private HashMap reportConfig(String patientNumber, String staffNumber, Long supplierId) {
+    private HashMap reportConfig(String patientNumber, String staffNumber, Long supplierId) throws JRException {
         List<PatientBanner> patientDataArray = new ArrayList();
         List<EmployeeBanner> employeeDataArray = new ArrayList();
         List<Header> header = new ArrayList();
@@ -296,31 +300,35 @@ public class JasperReportsService {
 
         jasperParameter.put("facilityName", facility.getFacilityName());
         jasperParameter.put("facilityType", facility.getFacilityType());
-        if (facility.getCompanyLogo() != null) { 
+        if (facility.getCompanyLogo() != null) {
             jasperParameter.put("logo", facility.getCompanyLogo().getData());
-            
+
         }
         jasperParameter.put("orgLegalName", facility.getOrganization().getLegalName());
         jasperParameter.put("orgName", facility.getOrganization().getOrganizationName());
         jasperParameter.put("TaxNumber", facility.getOrganization().getTaxNumber());
         jasperParameter.put("orgWebsite", facility.getOrganization().getWebsite());
-        String country="", county="", addressLine1="", addressLine2="", postalcode="", town="";
-        for(Address address :  facility.getOrganization().getAddress()){
-            jasperParameter.put("orgAddressCountry", country.concat(" ").concat(address.getCountry()));
-            jasperParameter.put("orgAddressCounty", county.concat(" ").concat(address.getCounty()));
-            jasperParameter.put("orgAddressLine1", addressLine1.concat(" ").concat(address.getLine1()));
-            jasperParameter.put("orgAddressLine2", addressLine2.concat(" ").concat(address.getLine2()));
-            jasperParameter.put("orgPostalCode", postalcode.concat(" ").concat(address.getPostalCode()));
-            jasperParameter.put("orgTown", town.concat(" ").concat(address.getTown()));
-            jasperParameter.put("orgType", address.getType());
+        String country = "", county = "", addressLine1 = "", addressLine2 = "", postalcode = "", town = "";
+        if (facility.getOrganization().getAddress() != null) {
+            for (Address address : facility.getOrganization().getAddress()) {
+                jasperParameter.put("orgAddressCountry", country.concat(" ").concat(address.getCountry()));
+                jasperParameter.put("orgAddressCounty", county.concat(" ").concat(address.getCounty()));
+                jasperParameter.put("orgAddressLine1", addressLine1.concat(" ").concat(address.getLine1()));
+                jasperParameter.put("orgAddressLine2", addressLine2.concat(" ").concat(address.getLine2()));
+                jasperParameter.put("orgPostalCode", postalcode.concat(" ").concat(address.getPostalCode()));
+                jasperParameter.put("orgTown", town.concat(" ").concat(address.getTown()));
+                jasperParameter.put("orgType", address.getType());
+            }
         }
-       String email="", fullname="", mobile="", salutation="", telephone="";
-        for (Contact contact :facility.getOrganization().getContact()) {
-            jasperParameter.put("contactEmail", email.concat(" ").concat(contact.getEmail()));
-            jasperParameter.put("contactFullName", fullname.concat(" ").concat(contact.getFullName()));
-            jasperParameter.put("contactMobile", mobile.concat(" ").concat(contact.getMobile()));
-            jasperParameter.put("salutation", salutation.concat(" ").concat(contact.getSalutation()));
-            jasperParameter.put("telephone", telephone.concat(" ").concat(contact.getTelephone()));
+        String email = "", fullname = "", mobile = "", salutation = "", telephone = "";
+        if (facility.getOrganization().getContact() != null) {
+            for (Contact contact : facility.getOrganization().getContact()) {
+                jasperParameter.put("contactEmail", email.concat(" ").concat(contact.getEmail()));
+                jasperParameter.put("contactFullName", fullname.concat(" ").concat(contact.getFullName()));
+                jasperParameter.put("contactMobile", mobile.concat(" ").concat(contact.getMobile()));
+                jasperParameter.put("salutation", salutation.concat(" ").concat(contact.getSalutation()));
+                jasperParameter.put("telephone", telephone.concat(" ").concat(contact.getTelephone()));
+            }
         }
 
         if (patientNumber != null) {
@@ -346,6 +354,21 @@ public class JasperReportsService {
             }
         }
 
+        JRSimpleTemplate template = new JRSimpleTemplate();
+        JRStyle s = new JRBaseStyle("bannerStyle");
+        s.setHorizontalImageAlign(HorizontalImageAlignEnum.RIGHT);
+        template.addStyle(s);
+        
+        s = new JRBaseStyle("headerStyle");
+        s.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
+        s.setFontSize(18.0F);
+        s.setBackcolor(Color.RED);
+        template.addStyle(s);
+        
+        ArrayList templateList = new ArrayList();
+        templateList.add(template);
+
+        jasperParameter.put(JRParameter.REPORT_TEMPLATES, templateList);
         jasperParameter.put("Patient_Data", patientDataArray);
         jasperParameter.put("Employee_Data", employeeDataArray);
         jasperParameter.put("Supplier_Data", Arrays.asList(supplierData));
