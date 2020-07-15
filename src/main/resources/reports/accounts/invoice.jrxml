@@ -209,7 +209,7 @@
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="337" y="63" width="91" height="13" uuid="28719ca1-77c9-4692-8cce-8b12e53f5e11"/>
+				<reportElement x="336" y="63" width="92" height="13" uuid="28719ca1-77c9-4692-8cce-8b12e53f5e11"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
