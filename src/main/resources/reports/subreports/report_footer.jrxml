@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_footer" pageWidth="515" pageHeight="50" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f999e9d8-48c8-4d99-8793-0d8624a84a5f">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_footer" pageWidth="475" pageHeight="50" whenNoDataType="AllSectionsNoDetail" columnWidth="475" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f999e9d8-48c8-4d99-8793-0d8624a84a5f">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -17,34 +17,34 @@
 	<pageFooter>
 		<band height="15">
 			<line>
-				<reportElement x="1" y="0" width="514" height="1" uuid="0272ffd5-bcce-4f62-adda-2c1045ba7f82"/>
+				<reportElement x="1" y="0" width="474" height="1" uuid="0272ffd5-bcce-4f62-adda-2c1045ba7f82"/>
 				<graphicElement>
 					<pen lineWidth="0.15"/>
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement x="172" y="3" width="85" height="10" uuid="43ecd035-5a9e-4063-b881-34c8ae8940d4"/>
+				<reportElement x="127" y="3" width="85" height="10" uuid="43ecd035-5a9e-4063-b881-34c8ae8940d4"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="257" y="3" width="85" height="10" uuid="93d35073-b523-4662-acc1-8c0b2decf3e5"/>
+				<reportElement x="212" y="3" width="85" height="10" uuid="93d35073-b523-4662-acc1-8c0b2decf3e5"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="404" y="3" width="36" height="10" uuid="82aafc75-51f1-417b-b08d-cc266a5e734e"/>
+				<reportElement x="341" y="3" width="54" height="10" uuid="82aafc75-51f1-417b-b08d-cc266a5e734e"/>
 				<textElement>
 					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Print Date:]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="444" y="3" width="68" height="10" uuid="7555f5ad-4c25-46b1-9e41-583102067f3a"/>
+				<reportElement x="399" y="3" width="68" height="10" uuid="7555f5ad-4c25-46b1-9e41-583102067f3a"/>
 				<textElement>
 					<font size="7"/>
 				</textElement>
