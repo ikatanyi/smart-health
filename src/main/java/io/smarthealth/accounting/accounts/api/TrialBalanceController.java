@@ -1,8 +1,11 @@
 package io.smarthealth.accounting.accounts.api;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.accounts.data.financial.statement.TrialBalance;
 import io.smarthealth.accounting.accounts.service.TrialBalanceService;
+import io.smarthealth.infrastructure.lang.Constants;
 import io.swagger.annotations.Api;
+import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,10 +27,11 @@ public class TrialBalanceController {
 
     @GetMapping
     @ResponseBody
-    @PreAuthorize("hasAuthority('view_trialBalance')") 
+    @PreAuthorize("hasAuthority('view_trialBalance')")
     public ResponseEntity<TrialBalance> getTrialBalance(
+            @RequestParam(value = "asAt", required = false) final @JsonFormat(pattern = Constants.DATE_PATTERN) LocalDate date,
             @RequestParam(value = "includeEmptyEntries", required = false) final boolean includeZeroBalance) {
         return ResponseEntity.ok(this.trialBalanceService.getTrialBalance(includeZeroBalance));
     }
-   
+
 }
