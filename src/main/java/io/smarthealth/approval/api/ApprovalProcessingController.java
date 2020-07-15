@@ -7,7 +7,6 @@ package io.smarthealth.approval.api;
 
 import io.smarthealth.accounting.pettycash.data.PettyCashApprovalsData;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
-import io.smarthealth.approval.domain.PettyCashApprovedItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
 import io.smarthealth.accounting.pettycash.service.PettyCashApprovalsService;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;

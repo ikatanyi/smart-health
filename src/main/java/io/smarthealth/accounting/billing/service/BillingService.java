@@ -720,13 +720,15 @@ public class BillingService {
     }
 
     //TODO - cancelling of a bill item
+    @Transactional
     public List<PatientBillItem> voidBillItem(String visitNumber, List<VoidBillItem> items) {
         List<PatientBillItem> toVoidList = items
                 .stream()
                 .map(x -> billItemRepository.findById(x.getBillItemId()).orElse(null))
                 .filter(bill -> bill != null)
                 .map(patientBill -> {
-                    patientBill.setStatus(BillStatus.Draft);
+                    patientBill.setStatus(BillStatus.Canceled);
+                    patientBill.setBalance(0D);
                     patientBill.setPaid(Boolean.FALSE);
                     return patientBill;
                 })
