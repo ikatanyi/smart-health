@@ -644,7 +644,7 @@ public class BillingService {
                 .forEach(x -> {
                     if (x.getBalance() > 0) {
                         bills.add(x.toBillItem());
-                    } else if (x.getBalance() > 0 && x.getStatus() == BillStatus.Paid) {
+                    } else if (x.getBalance() < 0 && x.getStatus() == BillStatus.Paid) {
                         paidBills.add(x.toBillItem());
                         BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
                         BigDecimal amount = BigDecimal.valueOf(x.getAmount());
