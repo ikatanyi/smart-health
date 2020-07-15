@@ -257,9 +257,13 @@ public class InvoiceService {
     }
 
     //TODO cancelling of the invoice
+     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Invoice cancelInvoice(String invoiceNo, List<InvoiceItemData> items) {
         Invoice invoice = invoiceRepository.findByNumber(invoiceNo).orElseThrow(() -> APIException.notFound("Invoice Number {0} not found", invoiceNo));
-
+   
+        BigDecimal oldAmount=invoice.getBalance();
+        
+       
         List<InvoiceItem> lists
                 = items.stream()
                         .map(x -> {
@@ -273,8 +277,7 @@ public class InvoiceService {
                                 BigDecimal newAmt=invoice.getAmount().subtract(iv.getBalance());
                                 BigDecimal bal=invoice.getBalance().subtract(iv.getBalance());
                                 invoice.setBalance(bal);
-                                invoice.setAmount(newAmt);
-                                
+                                invoice.setAmount(newAmt); 
                                 return iv;
                             }
                             return null;
@@ -285,6 +288,12 @@ public class InvoiceService {
         invoiceItemRepository.saveAll(lists);
         //if items provided cancel the said items
         //otherwise cancel the entire
+        BigDecimal amount=lists.stream().map(x -> x.getBalance()).reduce(BigDecimal.ZERO, (x,y) -> x.add(y));
+         BigDecimal adjustedAmount=oldAmount.subtract(amount);
+         System.err.println("Main amount: "+amount);
+         System.err.println("Adjusted Amount: "+adjustedAmount);
+        reverseInvoiceItem(invoice, adjustedAmount);
+        
         // post the journal
         return new Invoice();
     }
@@ -334,35 +343,30 @@ public class InvoiceService {
         return toSave;
     }
     
-     private JournalEntry reverseInvoiceItem(Invoice invoice) {
+     private JournalEntry reverseInvoiceItem(Invoice invoice, BigDecimal amount) {
 
-        Account debitAccount;
+        Account reverseCredit;
         if (invoice.getPayer().getDebitAccount() != null) {
-            debitAccount = invoice.getPayer().getDebitAccount();
+            reverseCredit = invoice.getPayer().getDebitAccount();
         } else {
             FinancialActivityAccount debit = activityAccountRepository
                     .findByFinancialActivity(FinancialActivity.Accounts_Receivable)
                     .orElseThrow(() -> APIException.notFound("Account Receivable Account is Not Mapped"));
-            debitAccount = debit.getAccount();
+            reverseCredit = debit.getAccount();
         }
-        FinancialActivityAccount creditAccount = activityAccountRepository
+        FinancialActivityAccount reverseDebit = activityAccountRepository
                 .findByFinancialActivity(FinancialActivity.Patient_Control)
                 .orElseThrow(() -> APIException.notFound("Patient Control Account is Not Mapped"));
-
-//        String creditAcc = creditAccount.getAccount().getIdentifier();
-//        String debitAcc = debitAccount.getIdentifier();
-        BigDecimal amount = invoice.getAmount();
-        String narration = "Raise Invoice - " + invoice.getNumber();
+ 
+        String narration = "Invoice Bill Reversal - " + invoice.getNumber();
         JournalEntry toSave = new JournalEntry(invoice.getDate(), narration,
                 new JournalEntryItem[]{
-                    new JournalEntryItem(debitAccount, narration, amount, BigDecimal.ZERO),
-                    new JournalEntryItem(creditAccount.getAccount(), narration, BigDecimal.ZERO, amount)
-//                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
-//                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                    new JournalEntryItem(reverseDebit.getAccount(), narration, amount, BigDecimal.ZERO),
+                    new JournalEntryItem(reverseCredit, narration, BigDecimal.ZERO, amount) 
                 }
         );
         toSave.setTransactionNo(invoice.getTransactionNo());
-        toSave.setTransactionType(TransactionType.Invoicing);
+        toSave.setTransactionType(TransactionType.Bill_Reversal);
         toSave.setStatus(JournalState.PENDING);
         return toSave;
     }
