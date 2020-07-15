@@ -56,31 +56,31 @@
 	<background>
 		<band height="802" splitType="Stretch">
 			<rectangle>
-				<reportElement positionType="Float" x="336" y="200" width="38" height="399" uuid="2b2ba01b-2092-43cb-bf71-1ee54687c6de"/>
+				<reportElement positionType="Float" x="336" y="248" width="38" height="351" uuid="2b2ba01b-2092-43cb-bf71-1ee54687c6de"/>
 				<graphicElement>
 					<pen lineWidth="0.25"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement positionType="Float" x="0" y="200" width="555" height="399" uuid="b9b5dded-29a4-4d35-a875-33a71d3dccf7"/>
+				<reportElement positionType="Float" x="0" y="248" width="555" height="351" uuid="b9b5dded-29a4-4d35-a875-33a71d3dccf7"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement positionType="Float" x="374" y="200" width="112" height="399" uuid="af8d1e24-1fa8-47db-a1d2-92df869657f6"/>
+				<reportElement positionType="Float" x="374" y="248" width="112" height="351" uuid="af8d1e24-1fa8-47db-a1d2-92df869657f6"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement positionType="Float" x="96" y="200" width="213" height="399" uuid="f6019854-c37a-42ad-b153-6d62aeb4b492"/>
+				<reportElement positionType="Float" x="96" y="248" width="213" height="351" uuid="f6019854-c37a-42ad-b153-6d62aeb4b492"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineColor="#000000"/>
 				</graphicElement>
 			</rectangle>
 			<image onErrorType="Blank">
-				<reportElement mode="Transparent" x="48" y="59" width="306" height="151" uuid="378db843-ff47-44bf-bcf4-e4377c5e5ca8">
+				<reportElement mode="Transparent" x="48" y="125" width="306" height="151" uuid="378db843-ff47-44bf-bcf4-e4377c5e5ca8">
 					<printWhenExpression><![CDATA[$F{state}.equals( "Paid" )]]></printWhenExpression>
 				</reportElement>
 				<imageExpression><![CDATA[$P{PIC_DIR}+"paid-image.png"]]></imageExpression>
@@ -89,25 +89,25 @@
 	</background>
 	<title>
 		<band height="41">
-			<staticText>
-				<reportElement style="headerStyles" mode="Transparent" x="336" y="20" width="219" height="18" forecolor="#000000" backcolor="#FFFFFF" uuid="457fa80a-857c-40c8-9e5e-861c5b73f8c6"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
-					<font fontName="SansSerif" size="14" isBold="true"/>
-				</textElement>
-				<text><![CDATA[INVOICE]]></text>
-			</staticText>
 			<line>
 				<reportElement positionType="Float" x="2" y="40" width="552" height="1" uuid="b384c05c-cf32-45c7-b4b4-32132cee5059"/>
 				<graphicElement>
 					<pen lineWidth="0.15" lineColor="#333333"/>
 				</graphicElement>
 			</line>
+			<staticText>
+				<reportElement style="headerStyles" mode="Transparent" x="337" y="22" width="219" height="18" forecolor="#000000" backcolor="#FFFFFF" uuid="457fa80a-857c-40c8-9e5e-861c5b73f8c6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INVOICE]]></text>
+			</staticText>
 		</band>
 	</title>
 	<pageHeader>
-		<band height="116">
+		<band height="152">
 			<subreport>
-				<reportElement x="2" y="-20" width="268" height="107" isRemoveLineWhenBlank="true" uuid="78f24680-cb31-4708-88df-0e755a338bb6"/>
+				<reportElement x="2" y="0" width="268" height="87" isRemoveLineWhenBlank="true" uuid="78f24680-cb31-4708-88df-0e755a338bb6"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -118,115 +118,115 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="336" y="81" width="92" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
+				<reportElement positionType="Float" mode="Transparent" x="336" y="112" width="92" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Insurance :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="336" y="98" width="92" height="16" forecolor="#000000" backcolor="#9966FF" uuid="e480ec8a-e6de-414a-8827-42d638720712"/>
+				<reportElement positionType="Float" mode="Transparent" x="336" y="129" width="92" height="16" forecolor="#000000" backcolor="#9966FF" uuid="e480ec8a-e6de-414a-8827-42d638720712"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Scheme :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="428" y="81" width="126" height="16" uuid="1eafd5cb-179e-4783-9fb9-933e46d441d7"/>
+				<reportElement positionType="Float" x="428" y="112" width="126" height="16" uuid="1eafd5cb-179e-4783-9fb9-933e46d441d7"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10"/>
+					<font fontName="SansSerif" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{payer}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="428" y="98" width="126" height="16" uuid="35b60930-d90e-4906-8708-e0d617ece117"/>
+				<reportElement positionType="Float" x="428" y="129" width="126" height="16" uuid="35b60930-d90e-4906-8708-e0d617ece117"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10"/>
+					<font fontName="SansSerif" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{scheme}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="336" y="46" width="92" height="13" uuid="fe562e29-aad3-45dd-b0c4-fa8ba349ed98"/>
+				<reportElement x="336" y="77" width="92" height="13" uuid="fe562e29-aad3-45dd-b0c4-fa8ba349ed98"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Member Name:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="336" y="18" width="92" height="13" uuid="dd747499-49e1-47a0-a0b4-e243aaeacf1d"/>
+				<reportElement x="336" y="49" width="92" height="13" uuid="dd747499-49e1-47a0-a0b4-e243aaeacf1d"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Invoice Date :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="336" y="60" width="92" height="13" uuid="3ca0e4ed-78c6-4055-b598-3535412fe202"/>
+				<reportElement x="336" y="91" width="92" height="13" uuid="3ca0e4ed-78c6-4055-b598-3535412fe202"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Member No :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" pattern="dd-MM-yyyy" isBlankWhenNull="true">
-				<reportElement x="428" y="18" width="126" height="13" isRemoveLineWhenBlank="true" uuid="6e8ee49e-9160-41cb-a7bb-1e225794004c"/>
+				<reportElement x="428" y="49" width="126" height="13" isRemoveLineWhenBlank="true" uuid="6e8ee49e-9160-41cb-a7bb-1e225794004c"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10" isBold="false"/>
+					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="428" y="4" width="126" height="13" forecolor="#000000" uuid="66ddc2a0-8061-4fa8-8c7d-b5a0c6704846"/>
+				<reportElement x="428" y="35" width="126" height="13" forecolor="#000000" uuid="66ddc2a0-8061-4fa8-8c7d-b5a0c6704846"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10" isBold="false"/>
+					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{number}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="428" y="46" width="126" height="13" uuid="6c43b589-8dbc-4cfd-8621-63c6e3c5eb39"/>
+				<reportElement x="428" y="77" width="126" height="13" uuid="6c43b589-8dbc-4cfd-8621-63c6e3c5eb39"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10" isBold="false"/>
+					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{memberName}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="428" y="60" width="126" height="13" uuid="357516ad-e8d0-4046-9359-0e36ab26475a"/>
+				<reportElement x="428" y="91" width="126" height="13" uuid="357516ad-e8d0-4046-9359-0e36ab26475a"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10" isBold="false"/>
+					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{memberNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="336" y="4" width="92" height="13" forecolor="#000000" uuid="f65afb30-85e4-4d6b-b5f7-c1786359a0fb"/>
+				<reportElement x="336" y="35" width="92" height="13" forecolor="#000000" uuid="f65afb30-85e4-4d6b-b5f7-c1786359a0fb"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Invoice No :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="428" y="32" width="126" height="13" uuid="65012583-6d90-42d6-9715-e8781619b3ed"/>
+				<reportElement x="428" y="63" width="126" height="13" uuid="65012583-6d90-42d6-9715-e8781619b3ed"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10" isBold="false"/>
+					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="337" y="32" width="91" height="13" uuid="28719ca1-77c9-4692-8cce-8b12e53f5e11"/>
+				<reportElement x="337" y="63" width="91" height="13" uuid="28719ca1-77c9-4692-8cce-8b12e53f5e11"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="10" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[File No :]]></text>
 			</staticText>
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="35" splitType="Stretch">
+		<band height="22" splitType="Stretch">
 			<line>
-				<reportElement positionType="Float" x="2" y="34" width="552" height="1" uuid="a8d391fc-b056-4f7b-bfe1-83fc2135609e"/>
+				<reportElement positionType="Float" x="2" y="21" width="552" height="1" uuid="a8d391fc-b056-4f7b-bfe1-83fc2135609e"/>
 				<graphicElement>
 					<pen lineWidth="0.15" lineColor="#333333"/>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="0" y="18" width="96" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="3f38c91f-561d-49c1-87ac-925b89902337"/>
+				<reportElement positionType="Float" mode="Transparent" x="0" y="4" width="96" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="3f38c91f-561d-49c1-87ac-925b89902337"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Trebuchet MS" size="10" isBold="true"/>
 					<paragraph leftIndent="10"/>
@@ -234,28 +234,28 @@
 				<text><![CDATA[Service Type]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="96" y="18" width="213" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="c0123b24-8d07-40a4-9c35-d5e3faf2a1aa"/>
+				<reportElement positionType="Float" mode="Transparent" x="96" y="4" width="213" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="c0123b24-8d07-40a4-9c35-d5e3faf2a1aa"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Trebuchet MS" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="374" y="18" width="112" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="774359b5-0b9a-4338-9438-918141ba8b74"/>
+				<reportElement positionType="Float" mode="Transparent" x="374" y="4" width="112" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="774359b5-0b9a-4338-9438-918141ba8b74"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Trebuchet MS" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Unit Price]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="486" y="18" width="69" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="77f0eb94-54c5-4385-ad66-12174acf28e7"/>
+				<reportElement positionType="Float" mode="Transparent" x="486" y="4" width="69" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="77f0eb94-54c5-4385-ad66-12174acf28e7"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Trebuchet MS" size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="309" y="18" width="65" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="5537c53d-a554-4204-93fe-9d6a2ce62ea4"/>
+				<reportElement positionType="Float" mode="Transparent" x="309" y="4" width="65" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="5537c53d-a554-4204-93fe-9d6a2ce62ea4"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Trebuchet MS" size="10" isBold="true"/>
 				</textElement>

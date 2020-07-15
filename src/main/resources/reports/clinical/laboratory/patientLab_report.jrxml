@@ -91,7 +91,7 @@
 		</groupFooter>
 	</group>
 	<title>
-		<band height="87" splitType="Stretch">
+		<band height="125" splitType="Stretch">
 			<subreport>
 				<reportElement x="1" y="0" width="267" height="67" uuid="e89e1818-4d89-4b2a-b6b3-78ffd1f66ae4"/>
 				<subreportParameter name="IMAGE_DIR">
@@ -101,70 +101,70 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="3" width="120" height="14" uuid="90f469db-bc16-4fdd-9dd3-f0c42dfe8ae0"/>
+				<reportElement x="434" y="47" width="120" height="14" uuid="90f469db-bc16-4fdd-9dd3-f0c42dfe8ae0"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNo}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="18" width="120" height="14" uuid="62c77634-e5be-4c91-ba40-fbea8e910b82"/>
+				<reportElement x="434" y="62" width="120" height="14" uuid="62c77634-e5be-4c91-ba40-fbea8e910b82"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="33" width="120" height="14" uuid="24d6fbc4-87e1-4d2b-b4fc-b27864bcf49e"/>
+				<reportElement x="434" y="77" width="120" height="14" uuid="24d6fbc4-87e1-4d2b-b4fc-b27864bcf49e"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{visitNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="353" y="3" width="80" height="14" uuid="438bdaa1-656b-4c2f-ae43-f8cdfd67ef2c"/>
+				<reportElement x="353" y="47" width="80" height="14" uuid="438bdaa1-656b-4c2f-ae43-f8cdfd67ef2c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="353" y="18" width="80" height="14" uuid="8cbd1cd3-f4ef-4e36-a596-261a6a8008b8"/>
+				<reportElement x="353" y="62" width="80" height="14" uuid="8cbd1cd3-f4ef-4e36-a596-261a6a8008b8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient Name :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="353" y="33" width="80" height="14" uuid="ebc5046a-f621-478a-9b60-a1614ba7b4b0"/>
+				<reportElement x="353" y="77" width="80" height="14" uuid="ebc5046a-f621-478a-9b60-a1614ba7b4b0"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Visit No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="352" y="48" width="81" height="14" uuid="8f026a7a-6c4e-4cb7-9385-30b52a4fc368"/>
+				<reportElement x="352" y="92" width="81" height="14" uuid="8f026a7a-6c4e-4cb7-9385-30b52a4fc368"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Request Date:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="435" y="48" width="119" height="14" uuid="a49f4560-802c-4230-942c-e1a24737cec9"/>
+				<reportElement x="435" y="92" width="119" height="14" uuid="a49f4560-802c-4230-942c-e1a24737cec9"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""+$F{requestDatetime}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="352" y="63" width="81" height="14" uuid="cef0bb5d-b2f1-4393-b8b9-237f0c45b2a1"/>
+				<reportElement x="352" y="107" width="81" height="14" uuid="cef0bb5d-b2f1-4393-b8b9-237f0c45b2a1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Requested By:]]></text>
 			</staticText>
 			<subreport>
-				<reportElement x="435" y="63" width="119" height="14" uuid="0de24d60-b41c-4a99-b595-b454833deec3"/>
+				<reportElement x="435" y="107" width="119" height="14" uuid="0de24d60-b41c-4a99-b595-b454833deec3"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "physician.jasper"]]></subreportExpression>
 			</subreport>
