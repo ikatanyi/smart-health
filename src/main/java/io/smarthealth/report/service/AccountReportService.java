@@ -222,7 +222,7 @@ public class AccountReportService {
     
     public void getIncomeStatement(ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        List<IncomeStatementSection> incomeStatement = incomesStatementService.getIncomeStatement().getIncomeStatementSections();
+        List<IncomeStatementSection> incomeStatement = incomesStatementService.getIncomeStatement(null).getIncomeStatementSections();
         
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();

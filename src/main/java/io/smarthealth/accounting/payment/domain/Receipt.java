@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 /**
  *
@@ -54,6 +55,7 @@ public class Receipt extends Auditable {
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)
     private List<ReceiptTransaction> transactions = new ArrayList<>();
 
+    @Where(clause = "voided = false")
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)
     private List<ReceiptItem> receiptItems = new ArrayList<>();
 

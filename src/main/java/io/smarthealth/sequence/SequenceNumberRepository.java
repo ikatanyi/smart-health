@@ -1,9 +1,7 @@
 package io.smarthealth.sequence;
 
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import javax.persistence.LockModeType;
 
 /**
  * Sequence Number Repository.

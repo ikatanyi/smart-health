@@ -32,12 +32,15 @@ import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -188,17 +191,18 @@ public class InvoiceService {
     }
 
     public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, Boolean filterPastDue, Double amountLessThanOrEqualTo, Pageable pageable) {
-      
+
         Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
+//        Page<Invoice> invoices = invoiceRepository.findByItemsVoidedFalse(spec, pageable);
+        
         return invoices;
     }
-    
+
     public InvoiceItem getInvoiceItemByIdOrThrow(Long id) {
         return invoiceItemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("InvoiceItem with ID {0} not found.", id));
     }
-
 
 //    public Invoice updateInvoice(Long id, InvoiceData data) {
 //        Invoice invoice = findInvoiceOrThrowException(id);
@@ -251,14 +255,36 @@ public class InvoiceService {
         invoiceRepository.deleteById(fromInvoice.getId());
         return invoiceMergeRepository.save(invoiceMerge);
     }
-    
+
     //TODO cancelling of the invoice
-    public Invoice cancelInvoice(String invoiceNo, List<InvoiceItemData> items){
-  
+    public Invoice cancelInvoice(String invoiceNo, List<InvoiceItemData> items) {
+        Invoice invoice = invoiceRepository.findByNumber(invoiceNo).orElseThrow(() -> APIException.notFound("Invoice Number {0} not found", invoiceNo));
+
+        List<InvoiceItem> lists
+                = items.stream()
+                        .map(x -> {
+//                            PatientBillItem item = billingService.findBillItemById(x.getItemId());
+                            Optional<InvoiceItem> invoiceItem = invoiceItemRepository.findById(x.getId());
+                            if (invoiceItem.isPresent()) {
+                                InvoiceItem iv = invoiceItem.get();
+                                iv.setVoided(Boolean.TRUE);
+                                iv.setVoidedBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
+                                iv.setVoidedDatetime(LocalDateTime.now());
+                                BigDecimal newAmt=invoice.getAmount().subtract(iv.getBalance());
+                                BigDecimal bal=invoice.getBalance().subtract(iv.getBalance());
+                                invoice.setBalance(bal);
+                                invoice.setAmount(newAmt);
+                                
+                                return iv;
+                            }
+                            return null;
+                        })
+                        .filter(bill -> bill != null)
+                        .collect(Collectors.toList());
+
+        invoiceItemRepository.saveAll(lists);
         //if items provided cancel the said items
-        
         //otherwise cancel the entire
-        
         // post the journal
         return new Invoice();
     }
@@ -276,6 +302,39 @@ public class InvoiceService {
     }
 
     private JournalEntry toJournal(Invoice invoice) {
+
+        Account debitAccount;
+        if (invoice.getPayer().getDebitAccount() != null) {
+            debitAccount = invoice.getPayer().getDebitAccount();
+        } else {
+            FinancialActivityAccount debit = activityAccountRepository
+                    .findByFinancialActivity(FinancialActivity.Accounts_Receivable)
+                    .orElseThrow(() -> APIException.notFound("Account Receivable Account is Not Mapped"));
+            debitAccount = debit.getAccount();
+        }
+        FinancialActivityAccount creditAccount = activityAccountRepository
+                .findByFinancialActivity(FinancialActivity.Patient_Control)
+                .orElseThrow(() -> APIException.notFound("Patient Control Account is Not Mapped"));
+
+//        String creditAcc = creditAccount.getAccount().getIdentifier();
+//        String debitAcc = debitAccount.getIdentifier();
+        BigDecimal amount = invoice.getAmount();
+        String narration = "Raise Invoice - " + invoice.getNumber();
+        JournalEntry toSave = new JournalEntry(invoice.getDate(), narration,
+                new JournalEntryItem[]{
+                    new JournalEntryItem(debitAccount, narration, amount, BigDecimal.ZERO),
+                    new JournalEntryItem(creditAccount.getAccount(), narration, BigDecimal.ZERO, amount)
+//                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
+//                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                }
+        );
+        toSave.setTransactionNo(invoice.getTransactionNo());
+        toSave.setTransactionType(TransactionType.Invoicing);
+        toSave.setStatus(JournalState.PENDING);
+        return toSave;
+    }
+    
+     private JournalEntry reverseInvoiceItem(Invoice invoice) {
 
         Account debitAccount;
         if (invoice.getPayer().getDebitAccount() != null) {
