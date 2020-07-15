@@ -16,11 +16,11 @@
 	<field name="phoneNumber" class="java.lang.String"/>
 	<field name="fullName" class="java.lang.String"/>
 	<detail>
-		<band height="11" splitType="Stretch">
+		<band height="12" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="203" height="11" isRemoveLineWhenBlank="true" uuid="511806e2-2cb1-496a-8a82-cacf24ac7b87"/>
+				<reportElement x="0" y="0" width="203" height="12" isRemoveLineWhenBlank="true" uuid="511806e2-2cb1-496a-8a82-cacf24ac7b87"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{employeeCategory}+", "+($F{fullName}.equals( null )?$P{payee}:$F{fullName})]]></textFieldExpression>
 			</textField>

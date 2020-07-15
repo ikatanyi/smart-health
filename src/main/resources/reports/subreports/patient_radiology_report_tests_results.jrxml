@@ -7,6 +7,14 @@
 	<field name="templateNotes" class="java.lang.String"/>
 	<field name="comments" class="java.lang.String"/>
 	<field name="status" class="java.lang.Object"/>
+	<field name="resultsDate" class="java.lang.Object"/>
+	<field name="createdBy" class="java.lang.String"/>
+	<variable name="resultsDate" class="java.lang.Object">
+		<variableExpression><![CDATA[$F{resultsDate}]]></variableExpression>
+	</variable>
+	<variable name="createdBy" class="java.lang.String">
+		<variableExpression><![CDATA[$F{createdBy}]]></variableExpression>
+	</variable>
 	<detail>
 		<band height="74" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
@@ -16,12 +24,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{comments}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement positionType="Float" x="2" y="42" width="539" height="1" uuid="27347eec-4b56-4f0a-8c0e-012f2149ef5b"/>
-				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Dashed"/>
-				</graphicElement>
-			</line>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="2" y="22" width="539" height="12" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
 				<textElement verticalAlignment="Middle" markup="html">
