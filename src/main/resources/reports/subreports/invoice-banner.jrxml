@@ -3,9 +3,7 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<style name="bannerStyle" mode="Transparent">
-		<paragraph leftIndent="5"/>
-	</style>
+	<style name="bannerStyle" mode="Transparent" hAlign="Left"/>
 	<style name="headerStyle" mode="Transparent" backcolor="#FFFFFF" hAlign="Left" rotation="None" fontName="SansSerif" fontSize="10">
 		<paragraph leftIndent="5"/>
 	</style>
@@ -37,47 +35,47 @@
 	<detail>
 		<band height="148" splitType="Stretch">
 			<frame>
-				<reportElement style="headerStyle" x="1" y="0" width="514" height="146" uuid="288e7b4d-03b5-484a-81d7-dadfed865991"/>
+				<reportElement style="headerStyle" x="0" y="0" width="512" height="146" uuid="288e7b4d-03b5-484a-81d7-dadfed865991"/>
 				<image hAlign="Left" isUsingCache="true" isLazy="true" onErrorType="Blank">
-					<reportElement style="bannerStyle" x="7" y="5" width="495" height="69" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
+					<reportElement style="bannerStyle" x="310" y="6" width="201" height="69" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
 					<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
 				</image>
+				<textField isBlankWhenNull="true">
+					<reportElement style="headerStyle" positionType="Float" x="310" y="131" width="201" height="12" isRemoveLineWhenBlank="true" uuid="62fb63a8-b796-4d59-9661-52d7659f3091"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{orgWebsite}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="headerStyle" positionType="Float" x="310" y="118" width="201" height="12" isRemoveLineWhenBlank="true" uuid="a99a1f49-aba5-4697-b3a9-955ed87a1fe7"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{contactEmail}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="headerStyle" positionType="Float" x="310" y="92" width="201" height="12" isRemoveLineWhenBlank="true" uuid="cc7cea67-13d9-4bf7-8722-8b2929716fb8"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{locale}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="headerStyle" positionType="Float" x="310" y="105" width="201" height="12" isRemoveLineWhenBlank="true" uuid="511806e2-2cb1-496a-8a82-cacf24ac7b87"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{telephone}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement key="" style="headerStyle" positionType="Float" mode="Transparent" x="310" y="79" width="201" height="12" isRemoveLineWhenBlank="true" uuid="e9865714-00b3-4db4-8af1-82492bcbde9f"/>
+					<textElement textAlignment="Left">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{facilityName}]]></textFieldExpression>
+				</textField>
 			</frame>
-			<textField isBlankWhenNull="true">
-				<reportElement key="" style="headerStyle" positionType="Float" mode="Transparent" x="0" y="78" width="503" height="12" isRemoveLineWhenBlank="true" uuid="e9865714-00b3-4db4-8af1-82492bcbde9f"/>
-				<textElement textAlignment="Left">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{facilityName}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement style="headerStyle" positionType="Float" x="0" y="102" width="503" height="12" isRemoveLineWhenBlank="true" uuid="511806e2-2cb1-496a-8a82-cacf24ac7b87"/>
-				<textElement textAlignment="Left">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{telephone}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement style="headerStyle" positionType="Float" x="0" y="90" width="503" height="12" isRemoveLineWhenBlank="true" uuid="cc7cea67-13d9-4bf7-8722-8b2929716fb8"/>
-				<textElement textAlignment="Left">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{locale}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement style="headerStyle" positionType="Float" x="0" y="116" width="503" height="12" isRemoveLineWhenBlank="true" uuid="a99a1f49-aba5-4697-b3a9-955ed87a1fe7"/>
-				<textElement textAlignment="Left">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{contactEmail}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement style="headerStyle" positionType="Float" x="0" y="130" width="503" height="12" isRemoveLineWhenBlank="true" uuid="62fb63a8-b796-4d59-9661-52d7659f3091"/>
-				<textElement textAlignment="Left">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{orgWebsite}]]></textFieldExpression>
-			</textField>
 		</band>
 	</detail>
 </jasperReport>

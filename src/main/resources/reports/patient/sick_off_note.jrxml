@@ -56,7 +56,7 @@
 				</graphicElement>
 			</line>
 			<subreport>
-				<reportElement x="0" y="3" width="279" height="34" uuid="1915c257-be86-4506-882c-0ecb5e1a2f18"/>
+				<reportElement x="0" y="3" width="218" height="34" uuid="1915c257-be86-4506-882c-0ecb5e1a2f18"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
 			</subreport>
@@ -67,8 +67,8 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement positionType="Float" x="452" y="23" width="103" height="15" uuid="ff875595-9667-43bd-accc-22f2310b62fa"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
+				<reportElement positionType="Float" x="1" y="23" width="554" height="15" uuid="ff875595-9667-43bd-accc-22f2310b62fa"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Sick-Off-Note]]></text>
