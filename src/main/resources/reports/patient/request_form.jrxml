@@ -82,9 +82,9 @@
 		</groupFooter>
 	</group>
 	<title>
-		<band height="34">
+		<band height="49">
 			<subreport>
-				<reportElement x="0" y="1" width="196" height="32" isRemoveLineWhenBlank="true" uuid="adfc9a30-3824-4d61-94f1-3e899ffa0ccc"/>
+				<reportElement x="0" y="1" width="196" height="46" isRemoveLineWhenBlank="true" uuid="adfc9a30-3824-4d61-94f1-3e899ffa0ccc"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -92,13 +92,13 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<line>
-				<reportElement positionType="Float" x="2" y="33" width="380" height="1" uuid="c7ed67e7-b231-4316-b7a0-4d26d13c7758"/>
+				<reportElement positionType="Float" x="1" y="48" width="380" height="1" uuid="c7ed67e7-b231-4316-b7a0-4d26d13c7758"/>
 				<graphicElement>
 					<pen lineWidth="0.15" lineColor="#666666"/>
 				</graphicElement>
 			</line>
 			<subreport>
-				<reportElement stretchType="RelativeToBandHeight" x="275" y="1" width="107" height="32" isRemoveLineWhenBlank="true" uuid="5a3d7add-cd31-463f-8ede-5b40a21393c7"/>
+				<reportElement stretchType="RelativeToBandHeight" x="273" y="15" width="107" height="32" isRemoveLineWhenBlank="true" uuid="5a3d7add-cd31-463f-8ede-5b40a21393c7"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
 			</subreport>
@@ -138,7 +138,7 @@
 				<text><![CDATA[Comments]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="228" y="1" width="61" height="12" forecolor="#000000" uuid="1d76b575-d4d5-4416-ba96-a1387e0be9e9"/>
+				<reportElement x="229" y="1" width="75" height="12" forecolor="#000000" uuid="1d76b575-d4d5-4416-ba96-a1387e0be9e9"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 					<paragraph leftIndent="5"/>
@@ -146,8 +146,8 @@
 				<text><![CDATA[Order Date :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="289" y="1" width="90" height="12" uuid="502ddc78-d224-4f46-8571-3761b542748a"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement x="305" y="1" width="74" height="12" uuid="502ddc78-d224-4f46-8571-3761b542748a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{orderDate}]]></textFieldExpression>

@@ -33,9 +33,9 @@
 	<group name="visit">
 		<groupExpression><![CDATA[$F{visitNumber}]]></groupExpression>
 		<groupFooter>
-			<band height="70">
+			<band height="93">
 				<textField isBlankWhenNull="true">
-					<reportElement x="84" y="49" width="120" height="14" uuid="2108bf8b-7732-482c-a591-5dcbe668b749"/>
+					<reportElement x="98" y="49" width="120" height="14" uuid="2108bf8b-7732-482c-a591-5dcbe668b749"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
@@ -49,7 +49,7 @@
 					<text><![CDATA[Reported By :]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement x="84" y="17" width="120" height="14" uuid="bd18fdbf-247b-4eb9-a683-1176e53f4586"/>
+					<reportElement x="98" y="17" width="120" height="14" uuid="bd18fdbf-247b-4eb9-a683-1176e53f4586"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
@@ -70,6 +70,19 @@
 				</line>
 				<line>
 					<reportElement positionType="Float" x="73" y="16" width="186" height="1" uuid="15a697a8-ae0b-4aa2-9ff7-0389e414e54e"/>
+					<graphicElement>
+						<pen lineWidth="0.15"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="2" y="67" width="115" height="14" uuid="c6196f77-e2c9-4f4e-8bdc-899f622b6886"/>
+					<textElement verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Authorised Signature :]]></text>
+				</staticText>
+				<line>
+					<reportElement positionType="Float" x="109" y="77" width="186" height="1" uuid="aa09b3fe-d66f-4925-87c1-f43bc024e972"/>
 					<graphicElement>
 						<pen lineWidth="0.15"/>
 					</graphicElement>
