@@ -18,12 +18,15 @@ public class InvoiceSpecification {
 
         return (root, query, cb) -> {
 
-            final ArrayList<Predicate> predicates = new ArrayList<>();
-
+            final ArrayList<Predicate> predicates = new ArrayList<>(); 
             if (payer != null) {
                 predicates.add(cb.equal(root.get("payer").get("id"), payer));
             }
             if (scheme != null) {
+                predicates.add(cb.equal(root.get("scheme").get("id"), scheme));
+            }
+            
+               if (scheme != null) {
                 predicates.add(cb.equal(root.get("scheme").get("id"), scheme));
             }
 

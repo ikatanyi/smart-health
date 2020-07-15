@@ -194,6 +194,8 @@ public class InvoiceService {
 
         Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
+//        Page<Invoice> invoices = invoiceRepository.findByItemsVoidedFalse(spec, pageable);
+        
         return invoices;
     }
 
@@ -261,13 +263,18 @@ public class InvoiceService {
         List<InvoiceItem> lists
                 = items.stream()
                         .map(x -> {
-                            PatientBillItem item = billingService.findBillItemById(x.getItemId());
-                            Optional<InvoiceItem> invoiceItem = invoiceItemRepository.findByInvoiceAndBillItem(invoice, item);
+//                            PatientBillItem item = billingService.findBillItemById(x.getItemId());
+                            Optional<InvoiceItem> invoiceItem = invoiceItemRepository.findById(x.getId());
                             if (invoiceItem.isPresent()) {
                                 InvoiceItem iv = invoiceItem.get();
                                 iv.setVoided(Boolean.TRUE);
                                 iv.setVoidedBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
                                 iv.setVoidedDatetime(LocalDateTime.now());
+                                BigDecimal newAmt=invoice.getAmount().subtract(iv.getBalance());
+                                BigDecimal bal=invoice.getBalance().subtract(iv.getBalance());
+                                invoice.setBalance(bal);
+                                invoice.setAmount(newAmt);
+                                
                                 return iv;
                             }
                             return null;
@@ -295,6 +302,39 @@ public class InvoiceService {
     }
 
     private JournalEntry toJournal(Invoice invoice) {
+
+        Account debitAccount;
+        if (invoice.getPayer().getDebitAccount() != null) {
+            debitAccount = invoice.getPayer().getDebitAccount();
+        } else {
+            FinancialActivityAccount debit = activityAccountRepository
+                    .findByFinancialActivity(FinancialActivity.Accounts_Receivable)
+                    .orElseThrow(() -> APIException.notFound("Account Receivable Account is Not Mapped"));
+            debitAccount = debit.getAccount();
+        }
+        FinancialActivityAccount creditAccount = activityAccountRepository
+                .findByFinancialActivity(FinancialActivity.Patient_Control)
+                .orElseThrow(() -> APIException.notFound("Patient Control Account is Not Mapped"));
+
+//        String creditAcc = creditAccount.getAccount().getIdentifier();
+//        String debitAcc = debitAccount.getIdentifier();
+        BigDecimal amount = invoice.getAmount();
+        String narration = "Raise Invoice - " + invoice.getNumber();
+        JournalEntry toSave = new JournalEntry(invoice.getDate(), narration,
+                new JournalEntryItem[]{
+                    new JournalEntryItem(debitAccount, narration, amount, BigDecimal.ZERO),
+                    new JournalEntryItem(creditAccount.getAccount(), narration, BigDecimal.ZERO, amount)
+//                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
+//                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
+                }
+        );
+        toSave.setTransactionNo(invoice.getTransactionNo());
+        toSave.setTransactionType(TransactionType.Invoicing);
+        toSave.setStatus(JournalState.PENDING);
+        return toSave;
+    }
+    
+     private JournalEntry reverseInvoiceItem(Invoice invoice) {
 
         Account debitAccount;
         if (invoice.getPayer().getDebitAccount() != null) {
