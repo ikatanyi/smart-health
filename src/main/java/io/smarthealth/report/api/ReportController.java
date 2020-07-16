@@ -216,6 +216,9 @@ public class ReportController {
             case Dispatch_Note:
                 reportService.getDispatchStatement(queryParams, format, response);
                 break;
+          case Interim_Bill:
+                reportService.getInterimBill(queryParams, format, response);
+                break;
             default:
                 break;
 
