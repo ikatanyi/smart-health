@@ -203,14 +203,14 @@ public class ReportController {
                 break;
             case Goods_Receive_Note:
                 stockReportService.SupplierGRN(queryParams, format, response);
-                break;    
+                break;
             case Shift_Report:
                 paymentReportService.shiftPayments(queryParams, format, response);
                 break;
             case Patient_Statement:
                 reportService.getPatientStatement(queryParams, format, response);
                 break;
-           case Dispatch_Note:
+            case Dispatch_Note:
                 reportService.getDispatchStatement(queryParams, format, response);
                 break;
             default:
