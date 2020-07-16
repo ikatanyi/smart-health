@@ -44,7 +44,7 @@ public class ReceiptItem extends Identifiable {
     private BigDecimal discount;
     private BigDecimal taxes;
     private BigDecimal amountPaid;
-    private Boolean voided;
+    private Boolean voided=Boolean.FALSE;
     private String voidedBy;
     private LocalDateTime voidedDate;
 
