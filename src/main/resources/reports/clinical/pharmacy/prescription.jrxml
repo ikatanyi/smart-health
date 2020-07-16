@@ -167,7 +167,7 @@
 				<reportElement positionType="Float" x="2" y="17" width="83" height="26" uuid="f2cc8d71-3ef5-46bf-bdd9-d98861714846"/>
 				<imageExpression><![CDATA[$P{PIC_DIR}+"art-rx.jpg"]]></imageExpression>
 			</image>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="296" y="9" width="84" height="12" uuid="5a40b3db-0dae-4dab-87df-dcc054b15348"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
@@ -205,12 +205,16 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{route}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="false">
 				<reportElement x="165" y="0" width="136" height="12" uuid="69773cae-cd6a-40c0-876b-eef49682deba"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Take "+$F{dose}+" "+$F{doseUnits}+" "+$F{frequency}+" for "+$F{duration}+""+$F{durationUnits}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Take "+$F{dose}
++" "+($F{doseUnits}.equals(null)?"":$F{doseUnits})
++" "+($F{frequency}.equals(null)?"":$F{frequency})
++" for "+($F{duration})
++" "+($F{durationUnits}.equals(null)?"":$F{durationUnits})]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="301" y="0" width="79" height="11" isRemoveLineWhenBlank="true" uuid="e84b4f6d-f2b7-4e79-9e59-0168f33afffc"/>

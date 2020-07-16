@@ -300,7 +300,11 @@ public class AccountService {
         List<JournalEntryItem> transactions = journalEntryItemRepository.findAll(JournalSpecification.getTransactions(identifier, startDate, endDate));
 
         for (JournalEntryItem x : transactions) {
+            if(x.getAccount().getType() == AccountType.REVENUE || x.getAccount().getType() == AccountType.LIABILITY ){
+               bal = bal.add((toDefault(x.getCredit()).subtract(toDefault(x.getDebit())))); 
+            }else{
             bal = bal.add((toDefault(x.getDebit()).subtract(toDefault(x.getCredit()))));
+            }
             JournalEntryItemData data = x.toData();
             data.setAmount(bal);
             list.add(data);

@@ -57,6 +57,17 @@ public class TaxRestController {
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
     }
+    
+    @GetMapping("/taxes/{name}/search")
+    @PreAuthorize("hasAuthority('view_tax')")
+    public ResponseEntity<?> getTaxesByName(@PathVariable(value = "name") String name) {
+        List<Tax> result = service.fetchTaxesByName(name);
+        Pager<List<Tax>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(result);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
+    }
 
     @PutMapping("/taxes/{id}")
     @PreAuthorize("hasAuthority('edit_tax')")

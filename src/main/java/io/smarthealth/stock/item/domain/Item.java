@@ -26,7 +26,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
-import lombok.ToString;
 
 /**
  * Product or Service representation
@@ -130,3 +129,5 @@ public class Item extends Identifiable {
         return "Item [id=" + getId() + ", name=" + itemName + ", code=" + itemCode + ", type=" + itemType + "]";
     }
 }
+
+

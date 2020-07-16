@@ -98,6 +98,7 @@ public class DispensingService {
                         drugs.setInstructions(drugData.getInstructions());
                         drugs.setOtherReference(drugRequest.getPatientNumber() + " " + drugRequest.getPatientName());
                         drugs.setWalkinFlag(drugRequest.getIsWalkin());
+                        drugs.setBatchNumber(drugData.getBatchNumber());
 
                         DispensedDrug savedDrug = repository.saveAndFlush(drugs);
                         doStockEntries(savedDrug.getId());
@@ -111,6 +112,7 @@ public class DispensingService {
         Store store = storeService.getStoreWithNoFoundDetection(drugRequest.getStoreId());
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         drugRequest.setTransactionId(trdId);
+        
         //
         if (drugRequest.getIsWalkin() && drugRequest.getPatientNumber() == null) {
             WalkIn w = createWalking(drugRequest.getPatientName());
@@ -214,8 +216,7 @@ public class DispensingService {
                     billItem.setPaid(data.getPaymentMode() != null ? data.getPaymentMode().equals("Insurance") : false);
 //                    billItem.setServicePoint(lineData.getServicePoint());
 //                    billItem.setServicePointId(lineData.getServicePointId());
-                    billItem.setStatus(BillStatus.Draft);
-                    System.err.println(billItem);
+                    billItem.setStatus(BillStatus.Draft); 
                     return billItem;
                 })
                 .collect(Collectors.toList());

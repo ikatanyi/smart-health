@@ -4,8 +4,10 @@ import io.smarthealth.administration.finances.data.PaymentMethodData;
 import io.smarthealth.administration.finances.domain.PaymentMethod;
 import io.smarthealth.administration.finances.domain.PaymentMethodRepository;
 import io.smarthealth.infrastructure.exception.APIException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,7 @@ public class PaymentMethodService {
         PaymentMethod result = repository.save(paymode);
         return result.toData();
     }
-
+ 
     public PaymentMethod getPaymentMethod(Long id) {
         return repository
                 .findById(id)
@@ -48,6 +50,14 @@ public class PaymentMethodService {
         return repository
                 .findAll(page)
                 .map(sd -> sd.toData());
+    }
+    
+    public List<PaymentMethodData> getPaymentMethodsByName(String name) {
+        return repository
+                .findByNameContainingIgnoreCase(name)
+                .stream()
+                .map((sd) -> sd.toData())
+                .collect(Collectors.toList());
     }
 
     public PaymentMethodData updatePaymentMethod(Long id, PaymentMethodData data) {

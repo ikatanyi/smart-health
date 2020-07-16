@@ -28,6 +28,7 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 /**
  *
@@ -75,6 +76,7 @@ public class Invoice extends Auditable {
     private InvoiceStatus status;
     private String notes;
 
+    @Where(clause = "voided = false")
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     private List<InvoiceItem> items = new ArrayList<>();
 
@@ -86,6 +88,7 @@ public class Invoice extends Auditable {
 
     public void addItem(InvoiceItem item) {
         item.setInvoice(this);
+        item.setVoided(false);
         items.add(item);
     }
 
@@ -126,7 +129,7 @@ public class Invoice extends Auditable {
         data.setBalance(this.balance);
         data.setCreatedBy(this.getCreatedBy());
         data.setTransactionNo(this.transactionNo);
-        data.setState(this.status.name());
+        data.setState(this.status!=null ? this.status.name(): null);
         data.setInvoiceItems(
                 this.items.stream()
                         .filter(x -> x.getBillItem().getAmount() > 0)

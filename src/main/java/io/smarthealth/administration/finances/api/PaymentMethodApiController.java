@@ -89,4 +89,20 @@ public class PaymentMethodApiController {
 
         return ResponseEntity.ok(pagers);
     }
+    
+    @GetMapping("/payment-method/{name}/search")
+    @PreAuthorize("hasAuthority('view_paymentMethod')")
+    public ResponseEntity<?> getPaymentMethodByName(@PathVariable("name") String name) {
+
+        List<PaymentMethodData> list = service.getPaymentMethodsByName(name);
+        Pager<List<PaymentMethodData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list);
+        PageDetails details = new PageDetails();
+        details.setReportName("Payment Methods");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
 }

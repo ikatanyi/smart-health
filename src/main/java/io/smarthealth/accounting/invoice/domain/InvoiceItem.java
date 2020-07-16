@@ -6,6 +6,7 @@ import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
@@ -35,6 +36,10 @@ public class InvoiceItem extends Auditable {
     private PatientBillItem billItem;
 
     private BigDecimal balance;
+    
+    private Boolean voided;
+    private String voidedBy;
+    private LocalDateTime voidedDatetime;
 
     public InvoiceItemData toData() {
         InvoiceItemData data = new InvoiceItemData();

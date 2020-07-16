@@ -28,7 +28,7 @@ public class DispatchData {
     private String comments;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate dispatchDate=LocalDate.now();
-    private List<InvoiceData>dispatchInvoiceData;
+    private List<InvoiceData>dispatchInvoiceData=new ArrayList();
     
     public static DispatchData map(Dispatch dispatch){
         DispatchData data = new DispatchData();

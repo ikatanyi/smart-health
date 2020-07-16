@@ -49,7 +49,6 @@ public class Cashier extends Identifiable {
             data.setUserId(this.user.getId());
             data.setUsername(this.user.getUsername());
             data.setEmail(this.user.getEmail());
-
         }
         if (this.cashPoint != null) {
             data.setCashPoint(this.cashPoint.getName());
@@ -57,8 +56,8 @@ public class Cashier extends Identifiable {
         }
         data.setStartDate(this.startDate);
         data.setEndDate(this.endDate);
-        
-        
+         
         return data;
     }
+    
 }

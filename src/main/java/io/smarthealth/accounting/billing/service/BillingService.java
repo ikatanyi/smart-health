@@ -149,11 +149,9 @@ public class BillingService {
         System.out.println("End of bill items");
 
         PatientBill savedBill = save(patientbill);
-        log.info("START save to journal");
         if (savedBill.getPaymentMode().equals("Insurance")) {
             journalService.save(toJournal(savedBill, null));
         }
-        log.info("END create patient bill");
         return savedBill;
     }
 
@@ -646,7 +644,7 @@ public class BillingService {
                 .forEach(x -> {
                     if (x.getBalance() > 0) {
                         bills.add(x.toBillItem());
-                    } else {
+                    } else if (x.getBalance() < 0 && x.getStatus() == BillStatus.Paid) {
                         paidBills.add(x.toBillItem());
                         BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
                         BigDecimal amount = BigDecimal.valueOf(x.getAmount());
@@ -654,6 +652,8 @@ public class BillingService {
                             amount = amount.negate();
                         }
                         payments.add(new BillPayment(type, x.getPaymentReference(), amount));
+                    } else {
+                        //System.err.println("Canceled Billed");
                     }
                 });
 
@@ -719,20 +719,98 @@ public class BillingService {
         };
     }
 
+    private JournalEntry toReverseJournal(List<PatientBillItem> bills, Store store) {
+
+        System.err.println("Reversing the journal for the patient bills");
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        String description = "Patient Billing Reversing";
+        Optional<FinancialActivityAccount> reverseCredit = activityAccountRepository.findByFinancialActivity(FinancialActivity.Patient_Control);
+        if (!reverseCredit.isPresent()) {
+            throw APIException.badRequest("Patient Control Account is Not Mapped");
+        }
+//        String debitAcc = debitAccount.get().getAccount().getIdentifier();
+        List<JournalEntryItem> items = new ArrayList<>();
+
+        if (!bills.isEmpty()) {
+            Map<Long, Double> map = bills
+                    .stream()
+                    .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
+                            Collectors.summingDouble(PatientBillItem::getAmount)
+                    )
+                    );
+            //then here since we making a revenue
+            map.forEach((k, v) -> {
+
+                ServicePoint srv = servicePointService.getServicePoint(k);
+                String desc = srv.getName() + " Patient Billing Reversal";
+                Account reverseDebit = srv.getIncomeAccount();
+                BigDecimal amount = BigDecimal.valueOf(v);
+
+                items.add(new JournalEntryItem(reverseDebit, desc, amount, BigDecimal.ZERO));
+                items.add(new JournalEntryItem(reverseCredit.get().getAccount(), desc, BigDecimal.ZERO, amount));
+
+            });
+            //if inventory expenses this shit!
+            if (store != null) {
+                Map<Long, Double> inventory = bills
+                        .stream()
+                        .filter(x -> x.getItem().isInventoryItem())
+                        .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
+                                Collectors.summingDouble(x -> (x.getItem().getCostRate().doubleValue() * x.getQuantity()))
+                        )
+                        );
+                if (!inventory.isEmpty()) {
+                    inventory.forEach((k, v) -> {
+
+                        String desc = "Stock Returns ";
+                        ServicePoint srv = servicePointService.getServicePoint(k);
+                        Account creditExpense = srv.getExpenseAccount(); // cost of sales
+                        Account debitInventory = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
+                        BigDecimal amount = BigDecimal.valueOf(v);
+
+                        items.add(new JournalEntryItem(debitInventory, desc, amount, BigDecimal.ZERO));
+                        items.add(new JournalEntryItem(creditExpense, desc, BigDecimal.ZERO, amount));
+
+                        //this should return the stocks 
+                    });
+                }
+
+            }
+
+        }
+
+        JournalEntry toSave = new JournalEntry(LocalDate.now(), description, items);
+        toSave.setTransactionNo(trdId);
+        toSave.setTransactionType(TransactionType.Bill_Reversal);
+        toSave.setStatus(JournalState.PENDING);
+        return toSave;
+    }
+
     //TODO - cancelling of a bill item
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<PatientBillItem> voidBillItem(String visitNumber, List<VoidBillItem> items) {
+
         List<PatientBillItem> toVoidList = items
                 .stream()
                 .map(x -> billItemRepository.findById(x.getBillItemId()).orElse(null))
                 .filter(bill -> bill != null)
                 .map(patientBill -> {
-                    patientBill.setStatus(BillStatus.Draft);
+                    patientBill.setStatus(BillStatus.Canceled);
+                    patientBill.setBalance(0D);
                     patientBill.setPaid(Boolean.FALSE);
                     return patientBill;
                 })
                 .collect(Collectors.toList());
 
         List<PatientBillItem> bills = billItemRepository.saveAll(toVoidList);
+
+        if (!bills.isEmpty()) {
+            PatientBill pb = bills.get(0).getPatientBill();
+
+            if (pb.getPaymentMode().equals("Insurance")) {
+                journalService.save(toReverseJournal(bills, null));
+            }
+        }
         return bills;
     }
 

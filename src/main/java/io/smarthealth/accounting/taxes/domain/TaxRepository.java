@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.taxes.domain;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,4 +12,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TaxRepository extends JpaRepository<Tax, Long> {
     Optional<Tax> findByTaxName(String name);
+    List<Tax> findByTaxNameContainingIgnoreCase(String name);
 }

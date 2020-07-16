@@ -6,17 +6,19 @@
 	<style name="style1">
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$F{level}==0]]></conditionExpression>
-			<style mode="Transparent" forecolor="#0000CC" fontSize="11" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+			<style mode="Transparent" forecolor="#0000CC" fontSize="14" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false">
+				<pen lineWidth="0.75"/>
+			</style>
 		</conditionalStyle>
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$F{level}==1]]></conditionExpression>
-			<style fontSize="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+			<style forecolor="#0099FF" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
 				<paragraph leftIndent="20"/>
 			</style>
 		</conditionalStyle>
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$F{level}==2]]></conditionExpression>
-			<style fontSize="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+			<style forecolor="#009900" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
 				<paragraph leftIndent="40"/>
 			</style>
 		</conditionalStyle>
@@ -83,7 +85,7 @@
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField>
-				<reportElement style="style1" x="2" y="3" width="186" height="16" forecolor="#000000" uuid="710cfd82-31ec-42af-8ddc-42d755385bfa"/>
+				<reportElement style="style1" x="1" y="4" width="259" height="16" forecolor="#000000" uuid="710cfd82-31ec-42af-8ddc-42d755385bfa"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>

@@ -27,6 +27,16 @@ public class PaymentTermsService {
     public PaymentTerms createPaymentTerm(PaymentTerms terms) {
         return paymentTermsRepository.save(terms);
     }
+    
+     @Transactional
+    public PaymentTerms updatePaymentTerm(Long id, PaymentTerms terms) {
+        PaymentTerms paymentTerms = getPaymentTermByIdWithFailDetection(id);
+        paymentTerms.setActive(terms.getActive());
+        paymentTerms.setCreditDays(terms.getCreditDays());
+        paymentTerms.setDescription(terms.getDescription());
+        paymentTerms.setTermsName(terms.getTermsName());
+        return paymentTermsRepository.save(paymentTerms);
+    }
 
     public PaymentTerms getPaymentTermByIdWithFailDetection(Long id) {
         return paymentTermsRepository.findById(id).orElseThrow(() -> APIException.notFound("Payment terms identified by id {0} not found ", id));
@@ -54,5 +64,9 @@ public class PaymentTermsService {
 
     public List<PaymentTerms> getPaymentTerms() {
         return paymentTermsRepository.findAll();
+    }
+    
+    public List<PaymentTerms> getPaymentTermsByName(String name) {
+        return paymentTermsRepository.findByTermsNameContainingIgnoreCase(name);
     }
 }

@@ -7,6 +7,7 @@ import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.domain.LedgerRepository;
 import io.smarthealth.infrastructure.lang.DateConverter;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,13 @@ public class IncomesStatementService {
 
     private final LedgerRepository ledgerRepository;
 
-    public IncomeStatement getIncomeStatement() {
+    public IncomeStatement getIncomeStatement(LocalDate asAt) {
         final IncomeStatement incomeStatement = new IncomeStatement();
-        incomeStatement.setDate(DateConverter.toIsoString(LocalDateTime.now()));
-
+        if (asAt != null) {
+            incomeStatement.setDate(DateConverter.toIsoString(asAt));
+        } else {
+            incomeStatement.setDate(DateConverter.toIsoString(LocalDateTime.now()));
+        }
         this.createIncomeStatementSection(incomeStatement, AccountType.REVENUE, IncomeStatementSection.Type.INCOME);
         this.createIncomeStatementSection(incomeStatement, AccountType.EXPENSE, IncomeStatementSection.Type.EXPENSES);
 

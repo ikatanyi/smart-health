@@ -28,6 +28,15 @@ public class BankService {
     public Bank createBank(Bank mainBank) {
         return bankRepository.save(mainBank);
     }
+    
+    public Bank updateBank(Long id, Bank mainBank) {
+        Bank bank = fetchBankById(id);
+        bank.setBankBranch(mainBank.getBankBranch());
+        bank.setBankCode(mainBank.getBankCode());
+        bank.setBankName(mainBank.getBankName());
+        bank.setBankShortName(mainBank.getBankShortName());
+        return bankRepository.save(bank);
+    }
 
     public Page<Bank> fetchAllMainBanks(Pageable pgbl) {
         return bankRepository.findAll(pgbl);
@@ -44,6 +53,10 @@ public class BankService {
 
     public Optional<BankBranch> findByBranchNameAndBank(final String branchName, final Bank mainBank) {
         return bankBranchRepository.findByBranchNameAndBank(branchName, mainBank);
+    }
+    
+     public List<Bank> searchBankByNameOrShortName(final String name) {
+        return bankRepository.findByBankNameContainingIgnoreCaseOrBankShortNameContainingIgnoreCase(name, name);
     }
 
     public Page<BankBranch> fetchBranchByMainBank(Bank mb, Pageable pageable) {
