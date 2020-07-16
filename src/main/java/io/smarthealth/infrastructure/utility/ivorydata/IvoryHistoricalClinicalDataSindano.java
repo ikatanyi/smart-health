@@ -81,9 +81,12 @@ public class IvoryHistoricalClinicalDataSindano {
             }
 //            pst.executeBatch();
 
-            //insertTriage(patients, conn);
-//            insertDoctorNotes(patients, conn);
+            insertTriage(patients, conn);
+            System.out.println("Done inserting vitals");
+            insertDoctorNotes(patients, conn);
+            System.out.println("Done inserting doctor notes");
             insertHistoricalPatientDiagnosis(patients, conn);
+            System.out.println("Done inserting diagnosis");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -99,7 +102,7 @@ public class IvoryHistoricalClinicalDataSindano {
                     String triageHistoryNote = "SELECT d_Checked_Date,d_Checked_Date,v_BP,v_Height,v_Pulse_Rate,v_BP,v_Temperature,v_Weight  FROM dbo.m_triage WHERE pfv_Entity_No = '" + d.getPvEntityNo() + "'";
                     pst2 = conn.prepareStatement(triageHistoryNote);
                     rs = pst2.executeQuery();
-                    if (rs.next()) {
+                    while (rs.next()) {
 
                         try {
                             String dia = null;
@@ -142,7 +145,7 @@ public class IvoryHistoricalClinicalDataSindano {
                     String historicalClinicalNotes = "SELECT pd_Doctor_Date, v_Doctor_Comments,v_Remarks   FROM dbo.t_doctor WHERE pfv_Patient_No = '" + d.getPvEntityNo() + "'";
                     pst2 = conn.prepareStatement(historicalClinicalNotes);
                     rs = pst2.executeQuery();
-                    if (rs.next()) {
+                    while (rs.next()) {
                         String clinicalNotes = "";
                         try {
                             clinicalNotes = "INSERT INTO smarthealth.patient_clinical_notes (created_by, created_on, last_modified_by, last_modified_on, version, date_recorded, voided, chief_complaint, examination_notes, health_provider_id, patient_id, visit_id) VALUES ('system', NOW(), 'system', NOW(), '0', '" + rs.getString("pd_Doctor_Date") + "', b'0', '" + rs.getString("v_Doctor_Comments").replace("'", "''") + "', '" + rs.getString("v_Remarks").replace("'", "''") + "', NULL, (SELECT id FROM smarthealth.patient WHERE patient_number = '" + d.getCurrentPatientNo() + "'), (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' ))";
@@ -174,7 +177,7 @@ public class IvoryHistoricalClinicalDataSindano {
                     String historicalClinicalNotes = "SELECT pd_Doctor_Date, v_Doctor_Comments,v_Remarks , fv_Diagnosis  FROM dbo.t_doctor WHERE pfv_Patient_No = '" + d.getPvEntityNo() + "'";
                     pst2 = conn.prepareStatement(historicalClinicalNotes);
                     rs = pst2.executeQuery();
-                    if (rs.next()) {
+                    while (rs.next()) {
                         String diagnosis = "";
                         try {
                             diagnosis = "INSERT INTO smarthealth.patient_diagnosis (created_by, created_on, last_modified_by, last_modified_on, version, voided, certainty,date_recorded, code, description, diagnosis_order, notes, patient_id, visit_id) VALUES ('system', NOW(), 'system', NOW(), '0', b'0', NULL, '" + rs.getString("pd_Doctor_Date") + "', NULL, '" + rs.getString("fv_Diagnosis").replace("'", "''") + "', 'Primary', '" + rs.getString("fv_Diagnosis").replace("'", "''") + "', (SELECT id FROM smarthealth.patient WHERE patient_number = '" + d.getCurrentPatientNo() + "'), (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' ))";

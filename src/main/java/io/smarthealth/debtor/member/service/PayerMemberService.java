@@ -7,11 +7,14 @@ package io.smarthealth.debtor.member.service;
 
 import io.smarthealth.debtor.member.domain.PayerMember;
 import io.smarthealth.debtor.member.domain.PayerMemberRepository;
+import io.smarthealth.debtor.member.domain.specification.MemberSpecification;
+import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.exception.APIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 /**
@@ -26,6 +29,12 @@ public class PayerMemberService {
 
     public PayerMember createNewMember(PayerMember member) {
         return payerMemberRepository.save(member);
+    }
+
+    public Page<PayerMember> filterMembers(Payer payer, Scheme scheme, String policyNo, String term, Pageable pageable) {
+        Specification<PayerMember> spec = MemberSpecification.createMemberSpecification(payer, scheme, policyNo, term);
+
+        return payerMemberRepository.findAll(spec, pageable);
     }
 
     public Page<PayerMember> fetchPayerMemberByScheme(Scheme scheme, Pageable pageable) {

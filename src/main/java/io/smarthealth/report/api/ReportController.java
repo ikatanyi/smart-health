@@ -213,7 +213,7 @@ public class ReportController {
             case Patient_Statement:
                 reportService.getPatientStatement(queryParams, format, response);
                 break;
-           case Dispatch_Note:
+            case Dispatch_Note:
                 reportService.getDispatchStatement(queryParams, format, response);
                 break;
           case Interim_Bill:
