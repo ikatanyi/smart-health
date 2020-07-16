@@ -64,5 +64,6 @@ public enum ReportName {
         Shift_Report,
         Patient_Statement,
         Dispatch_Note,
-        Inventory_Stock
+        Inventory_Stock,
+        Interim_Bill
 }

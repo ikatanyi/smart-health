@@ -23,6 +23,7 @@ import io.smarthealth.accounting.accounts.service.LedgerService;
 import io.smarthealth.accounting.accounts.service.TrialBalanceService;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.SummaryBill;
+import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
@@ -739,6 +740,19 @@ public class AccountReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/payments/patient_statement");
         reportData.setReportName("Patient_Statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getInterimBill(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String visitNumber = reportParam.getFirst("visitNumber");
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        BillDetail data = billService.getBillDetails(visitNumber, Pageable.unpaged());  
+        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        reportData.setData(data.getBills());
+        reportData.setFormat(format);
+        reportData.setTemplate("/payments/interim_bill");
+        reportData.setReportName("Interim_Bill"+visitNumber);
         reportService.generateReport(reportData, response);
     }
     
