@@ -61,8 +61,9 @@ public class IncomesStatementService {
                                 BigDecimal totalValue = subLedgerEntity.getTotalValue() != null ? subLedgerEntity.getTotalValue() : BigDecimal.ZERO; // this is one needs
                                 if (incomeStatement.getAsAt() != null) {
                                     totalValue = calculateTotalAsAt(subLedgerEntity, incomeStatement.getAsAt());
+                                    subLedgerEntity.setTotalValue(totalValue);
                                 }
-
+                               
                                 incomeStatementEntry.setValue(totalValue);
                                 incomeStatementSection.add(incomeStatementEntry);
                             });

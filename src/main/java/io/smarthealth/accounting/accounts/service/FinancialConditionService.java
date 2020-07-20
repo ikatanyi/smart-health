@@ -30,6 +30,7 @@ public class FinancialConditionService {
         final FinancialCondition financialCondition = new FinancialCondition();
         if (localDate != null) {
             financialCondition.setDate(DateConverter.toIsoString(localDate));
+            financialCondition.setAsAt(localDate);
         } else {
             financialCondition.setDate(DateConverter.toIsoString(LocalDateTime.now()));
         }
@@ -66,8 +67,9 @@ public class FinancialConditionService {
 
                                 if (financialCondition.getAsAt() != null) {
                                     totalValue = calculateTotalAsAt(subLedgerEntity, financialCondition.getAsAt());
+                                    subLedgerEntity.setTotalValue(totalValue);
                                 }
-
+                                
                                 financialConditionEntry.setValue(totalValue);
                                 financialConditionSection.add(financialConditionEntry);
                             });

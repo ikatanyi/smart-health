@@ -39,13 +39,14 @@ public class TrialBalanceService {
                             BigDecimal totalValue = subLedger.getTotalValue() != null ? subLedger.getTotalValue() : BigDecimal.ZERO;
                             if (date != null) {
                                 totalValue = calculateTotalAsAt(subLedger, date);
+                                 subLedger.setTotalValue(totalValue);
                             }
 
                             if (!includeEmptyEntries && totalValue.compareTo(BigDecimal.ZERO) == 0) {
                                 return;
                             }
                             final TrialBalanceEntry trialBalanceEntry = new TrialBalanceEntry();
-                            subLedger.setTotalValue(totalValue);
+                           
                             trialBalanceEntry.setLedger(LedgerData.map(subLedger));
                             switch (subLedger.getAccountType()) {
                                 case ASSET:
