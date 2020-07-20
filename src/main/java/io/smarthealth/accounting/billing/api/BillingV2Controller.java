@@ -153,6 +153,7 @@ public class BillingV2Controller {
     }
 
     @PutMapping("/billing/{visitNumber}/void")
+    @PreAuthorize("hasAuthority('edit_billV2')")
     public ResponseEntity<?> cancelBills(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody List<VoidBillItem> billItems) {
         List<BillItemData> bills = service.voidBillItem(visitNumber, billItems).stream().map(x -> x.toData()).collect(Collectors.toList());
 
