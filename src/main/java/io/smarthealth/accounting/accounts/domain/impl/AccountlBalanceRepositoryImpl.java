@@ -105,7 +105,7 @@ public class AccountlBalanceRepositoryImpl implements AccountlBalanceRepository 
         query.where(predicates.toArray(new Predicate[0]));
 
         TypedQuery<BigDecimal> typedQuery = em.createQuery(query);
-        BigDecimal sum = typedQuery.getSingleResult();
+        BigDecimal sum = typedQuery.getSingleResult(); 
         return sum;
     }
 

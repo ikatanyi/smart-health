@@ -78,6 +78,7 @@ public class DispensingService {
             drugRequest.getDrugItems()
                     .stream()
                     .forEach(drugData -> {
+                        System.err.println("Dispensed Drugs: "+drugData);
                         DispensedDrug drugs = new DispensedDrug();
                         Item item = billingService.getItemByCode(drugData.getItemCode());
                         drugs.setPatient(patient);

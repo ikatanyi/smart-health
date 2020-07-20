@@ -2,6 +2,7 @@ package io.smarthealth.accounting.accounts.data.financial.statement;
 
  
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ public class TrialBalance {
   private List<TrialBalanceEntry> trialBalanceEntries;
   private BigDecimal debitTotal;
   private BigDecimal creditTotal;
+  private LocalDate asAt;
 
   public TrialBalance() {
     super();
@@ -42,4 +44,13 @@ public class TrialBalance {
   public void setCreditTotal(final BigDecimal creditTotal) {
     this.creditTotal = creditTotal;
   }
+
+    public LocalDate getAsAt() {
+        return asAt;
+    }
+
+    public void setAsAt(LocalDate asAt) {
+        this.asAt = asAt;
+    }
+  
 }
