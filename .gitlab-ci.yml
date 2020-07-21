@@ -12,7 +12,7 @@ build:
   artifacts:
     paths:
       - target/*.jar
-    expire_in: 1 week
+    expire_in: 1d
       
 deploy_dev:
     stage: staging

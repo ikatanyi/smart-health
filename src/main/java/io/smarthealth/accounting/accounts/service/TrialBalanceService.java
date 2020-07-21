@@ -3,33 +3,50 @@ package io.smarthealth.accounting.accounts.service;
 import io.smarthealth.accounting.accounts.data.LedgerData;
 import io.smarthealth.accounting.accounts.data.financial.statement.TrialBalance;
 import io.smarthealth.accounting.accounts.data.financial.statement.TrialBalanceEntry;
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.domain.AccountRepository;
+import io.smarthealth.accounting.accounts.domain.JournalEntryItemRepository;
+import io.smarthealth.accounting.accounts.domain.Ledger;
 import io.smarthealth.accounting.accounts.domain.LedgerRepository;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TrialBalanceService {
 
     private final LedgerRepository ledgerRepository;
+    private final JournalEntryItemRepository journalEntryItemRepository;
+    private final AccountRepository accountRepository;
 
-    public TrialBalanceService(final LedgerRepository ledgerRepository) {
+    public TrialBalanceService(LedgerRepository ledgerRepository, JournalEntryItemRepository journalEntryItemRepository, AccountRepository accountRepository) {
         super();
         this.ledgerRepository = ledgerRepository;
+        this.journalEntryItemRepository = journalEntryItemRepository;
+        this.accountRepository = accountRepository;
     }
 
-    public TrialBalance getTrialBalance(final boolean includeEmptyEntries) {
+    public TrialBalance getTrialBalance(final boolean includeEmptyEntries, LocalDate date) {
         final TrialBalance trialBalance = new TrialBalance();
+        trialBalance.setAsAt(date != null ? date : LocalDate.now());
 
         this.ledgerRepository.findByParentLedgerIsNull()
                 .forEach(ledgerEntity
                         -> this.ledgerRepository.findByParentLedgerOrderByIdentifier(ledgerEntity)
                         .forEach(subLedger -> {
-                            final BigDecimal totalValue = subLedger.getTotalValue() != null ? subLedger.getTotalValue() : BigDecimal.ZERO;
+                            BigDecimal totalValue = subLedger.getTotalValue() != null ? subLedger.getTotalValue() : BigDecimal.ZERO;
+                            if (date != null) {
+                                totalValue = calculateTotalAsAt(subLedger, date);
+                                 subLedger.setTotalValue(totalValue);
+                            }
+
                             if (!includeEmptyEntries && totalValue.compareTo(BigDecimal.ZERO) == 0) {
                                 return;
                             }
                             final TrialBalanceEntry trialBalanceEntry = new TrialBalanceEntry();
+                           
                             trialBalanceEntry.setLedger(LedgerData.map(subLedger));
                             switch (subLedger.getAccountType()) {
                                 case ASSET:
@@ -68,5 +85,20 @@ public class TrialBalanceService {
                 .sort(Comparator.comparing(trailBalanceEntry -> trailBalanceEntry.getLedger().getIdentifier()));
 
         return trialBalance;
+    }
+
+    private BigDecimal calculateTotalAsAt(Ledger ledger, LocalDate asAt) {
+        List<Account> accounts = accountRepository.findByLedger(ledger);
+        return accounts
+                .stream()
+                .map(x -> {
+                    BigDecimal amt = journalEntryItemRepository.getAccountsBalance(x.getIdentifier(), asAt);
+                    if (amt == null) {
+                        return BigDecimal.ZERO;
+                    }
+                    return amt;
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
     }
 }
