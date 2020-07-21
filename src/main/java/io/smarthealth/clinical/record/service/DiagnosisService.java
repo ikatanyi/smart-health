@@ -5,7 +5,9 @@
  */
 package io.smarthealth.clinical.record.service;
 
+import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.PatientTestsData;
+import io.smarthealth.clinical.record.domain.Diagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosisRepository;
 import io.smarthealth.clinical.record.domain.specification.DiagnosisSpecification;
@@ -34,35 +36,47 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class DiagnosisService {
-
+    
     @Autowired
     private PatientDiagnosisRepository diagnosisRepository;
     @Autowired
     private VisitRepository visitRepository;
-
+    
     @Autowired
     private PatientRepository patientRepository;
-
+    
     public Long addDiagnosis(String visitNumber, PatientTestsData diagnosis) {
-
+        
         Visit visit = findVisitOrThrow(visitNumber);
-
+        
         if (!StringUtils.equalsIgnoreCase(visit.getPatient().getPatientNumber(), diagnosis.getPatientNumber())) {
             throw APIException.badRequest("Invalid Patient Number! mismatch in Patient Visit's patient number");
         }
-
+        
         PatientDiagnosis diagnosisEntity = PatientTestsData.map(diagnosis);
         diagnosisEntity.setVisit(visit);
         diagnosisEntity.setPatient(visit.getPatient());
         return diagnosisRepository.save(diagnosisEntity).getId();
     }
-
+    
+    public PatientDiagnosis updateDiagnosis(Long diagnosisId, DiagnosisData pd) {
+        PatientDiagnosis d = diagnosisRepository.findById(diagnosisId).get();
+        d.setCertainty(pd.getCertainty() != null ? pd.getCertainty().name() : null);
+        d.setDiagnosisOrder(pd.getDiagnosisOrder() != null ? pd.getDiagnosisOrder().name() : null);
+        d.setNotes(pd.getNotes());
+        return diagnosisRepository.save(d);
+    }
+    
+    public void deleteDiagnosis(final Long diagnosisId) {
+        diagnosisRepository.deleteById(diagnosisId);
+    }
+    
     public ContentPage<PatientTestsData> fetchDiagnosisByVisit(String visitNumber, Pageable page) {
         final ContentPage<PatientTestsData> triagePage = new ContentPage();
         Optional<Visit> visit = visitRepository.findByVisitNumber(visitNumber);
         if (visit.isPresent()) {
             Page<PatientDiagnosis> triageEntities = this.diagnosisRepository.findByPatient(visit.get().getPatient(), page);
-
+            
             triagePage.setTotalPages(triageEntities.getTotalPages());
             triagePage.setTotalElements(triageEntities.getTotalElements());
             if (triageEntities.getSize() > 0) {
@@ -73,30 +87,30 @@ public class DiagnosisService {
         }
         return triagePage;
     }
-
+    
     @Transactional
     public List<PatientDiagnosis> createListOfPatientDiagnosis(List<PatientDiagnosis> patientDiagnosises) {
         return diagnosisRepository.saveAll(patientDiagnosises);
     }
-
+    
     public Page<PatientDiagnosis> fetchAllDiagnosisByVisit(Visit visit, Pageable pageable) {
         return diagnosisRepository.findByVisit(visit, pageable);
     }
-
-    public Page<PatientDiagnosis> fetchAllDiagnosis(String visitNumber, String patientNumber, DateRange range, Gender gender,Integer minAge, Integer maxAge,Pageable pageable) {
+    
+    public Page<PatientDiagnosis> fetchAllDiagnosis(String visitNumber, String patientNumber, DateRange range, Gender gender, Integer minAge, Integer maxAge, Pageable pageable) {
         Specification spec = DiagnosisSpecification.createSpecification(visitNumber, patientNumber, gender, range);
         return diagnosisRepository.findAll(spec, pageable);
     }
     
     public PatientTestsData getDiagnosisById(String visitNumber, Long id) {
-
+        
         Optional<PatientDiagnosis> entity = diagnosisRepository.findById(id);
-
+        
         return entity.map(PatientTestsData::map).orElse(null);
     }
-
+    
     public ContentPage<PatientTestsData> fetchDiagnosis(String patientNumber, Pageable page) {
-
+        
         Page<PatientDiagnosis> diagnosisEntities = Page.empty();
         if (patientNumber != null) {
             Optional<Patient> patient = patientRepository.findByPatientNumber(patientNumber);
@@ -106,7 +120,7 @@ public class DiagnosisService {
         } else {
             diagnosisEntities = diagnosisRepository.findAll(page);
         }
-
+        
         final ContentPage<PatientTestsData> triagePage = new ContentPage();
         triagePage.setTotalPages(diagnosisEntities.getTotalPages());
         triagePage.setTotalElements(diagnosisEntities.getTotalElements());
@@ -115,14 +129,14 @@ public class DiagnosisService {
             triagePage.setContents(triagelist);
             diagnosisEntities.forEach((vt) -> triagelist.add(PatientTestsData.map(vt)));
         }
-
+        
         return triagePage;
-
+        
     }
-
+    
     private Visit findVisitOrThrow(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Session with Visit Number : {0} not found.", visitNumber));
     }
-
+    
 }

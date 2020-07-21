@@ -14,6 +14,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.Data;
@@ -24,6 +26,7 @@ import lombok.Data;
  */
 @Data
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Referrals extends Auditable {
 
     @Enumerated(EnumType.STRING)

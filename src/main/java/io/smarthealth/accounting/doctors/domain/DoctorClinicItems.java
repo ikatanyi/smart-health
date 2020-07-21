@@ -27,9 +27,15 @@ public class DoctorClinicItems extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_doctor_clinic_service_id"))
     private Item serviceType;
 
-//    @ManyToOne
-//    @JoinColumn(foreignKey = @ForeignKey(name = "fk_doctor_clinic_clinic_id"))
-//    private EmployeeSpecialization clinic;
     @Column(nullable = false, unique = true)
     private String clinicName;
+    
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean hasReviewCost;
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_doctor_clinic_review_service_id"))
+    private Item reviewService;
+
 }
