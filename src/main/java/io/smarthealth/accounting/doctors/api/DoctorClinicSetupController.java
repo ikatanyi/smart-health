@@ -59,6 +59,10 @@ public class DoctorClinicSetupController {
         DoctorClinicItems clinic = new DoctorClinicItems();
         clinic.setClinicName(data.getClinicName());
         clinic.setServiceType(item);
+        if (data.getHasReviewCost()) {
+            clinic.setHasReviewCost(Boolean.TRUE);
+            clinic.setReviewService(itemService.findItemEntityOrThrow(data.getReviewServiceId()));
+        }
 
         DoctorClinicItems savedClinic = doctorClinicService.saveClinicItem(clinic);
 
@@ -118,6 +122,13 @@ public class DoctorClinicSetupController {
         Item item = itemService.findItemEntityOrThrow(data.getServiceId());
         clinic.setClinicName(data.getClinicName());
         clinic.setServiceType(item);
+        if (data.getHasReviewCost()) {
+            clinic.setHasReviewCost(Boolean.TRUE);
+            clinic.setReviewService(itemService.findItemEntityOrThrow(data.getReviewServiceId()));
+        } else {
+            clinic.setHasReviewCost(Boolean.FALSE);
+            clinic.setReviewService(null);
+        }
 
         DoctorClinicItems savedClinic = doctorClinicService.saveClinicItem(clinic);
 

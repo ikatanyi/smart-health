@@ -163,6 +163,7 @@ public class PatientController {
             patient.setSurname(patientData.getSurname());
             patient.setTitle(patientData.getTitle());
             patient.setDateOfBirth(patientData.getDateOfBirth());
+            patient.setPrimaryContact(patientData.getPrimaryContact());
 
             this.patientService.updatePatient(patientNumber, patient);
         } else {
