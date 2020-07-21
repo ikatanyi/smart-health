@@ -14,6 +14,7 @@ import io.smarthealth.administration.banks.service.BankService;
 import io.smarthealth.administration.finances.domain.PaymentTerms;
 import io.smarthealth.administration.finances.service.PaymentTermsService;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
+import io.smarthealth.debtor.payer.data.PayerStatement;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.PayerRepository;
 import io.smarthealth.debtor.payer.domain.Scheme;
@@ -25,8 +26,10 @@ import io.smarthealth.debtor.scheme.domain.enumeration.DiscountType;
 import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -189,4 +192,8 @@ public class PayerService {
         throw APIException.internalError("Provide a Valid PolicyCover Type");
     }
 
+    public List<PayerStatement> getStatement(Long payerId, DateRange range) {
+        List<PayerStatement> lists = payerRepository.getPayerStatement(payerId, range);
+        return lists;
+    }
 }

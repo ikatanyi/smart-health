@@ -165,7 +165,7 @@ public class CreditNoteService {
             ServicePoint servicepoint = servicePointService.getServicePoint(item.getInvoiceItem().getBillItem().getServicePointId());
             BigDecimal amount = BigDecimal.valueOf(item.getInvoiceItem().getBillItem().getAmount());
             amountToDebit = amountToDebit.add(amount);
-            journalEntries.add(new JournalEntryItem(servicepoint.getIncomeAccount(), narration, amountToDebit, BigDecimal.ZERO));
+            journalEntries.add(new JournalEntryItem(servicepoint.getIncomeAccount(), narration, amount, BigDecimal.ZERO));
         }
         //BigDecimal amount = BigDecimal.valueOf(creditNote.getAmount());
         journalEntries.add(new JournalEntryItem(creditAccount, narration,BigDecimal.ZERO, amountToDebit));

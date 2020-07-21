@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
  * @author Kelsas
  */
 @Repository
-public interface PayerRepository extends JpaRepository<Payer, Long>, JpaSpecificationExecutor<Payer> {
+public interface PayerRepository extends JpaRepository<Payer, Long>, JpaSpecificationExecutor<Payer>, PayerStatementRepository {
+
     Payer findByPayerName(String payerName);
 }
