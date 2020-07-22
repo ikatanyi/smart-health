@@ -219,6 +219,9 @@ public class ReportController {
           case Interim_Bill:
                 reportService.getInterimBill(queryParams, format, response);
                 break;
+           case Expiry_Report:
+                stockReportService.InventoryExpiryStock(queryParams, format, response);
+                break;      
             default:
                 break;
 
