@@ -85,17 +85,6 @@ public class ConsultationController {
     private final LaboratoryService laboratoryService;
     private final RadiologyService radiologyService;
 
-//    public ConsultationController(PatientNotesService patientNotesService, PatientService patientService, VisitService visitService, EmployeeService employeeService, DiseaseService diseaseService, DiagnosisService diagnosisService, DepartmentService departmentService, SickOffNoteService sickOffNoteService, UserService userService) {
-//        this.patientNotesService = patientNotesService;
-//        this.patientService = patientService;
-//        this.visitService = visitService;
-//        this.employeeService = employeeService;
-//        this.diseaseService = diseaseService;
-//        this.diagnosisService = diagnosisService;
-//        this.departmentService = departmentService;
-//        this.sickOffNoteService = sickOffNoteService;
-//        this.userService = userService;
-//    }
 
     /* Patient Notes */
     @PostMapping("/patient-notes")
@@ -324,6 +313,29 @@ public class ConsultationController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(pagers);
+    }
+
+    @PutMapping("/diagnosis/{id}")
+    @PreAuthorize("hasAuthority('create_consultation')")
+    public @ResponseBody
+    ResponseEntity<?> updatePatientDiagnosis(
+            @PathVariable("id") final Long id,
+            @Valid @RequestBody DiagnosisData diagnosisData) {
+        PatientDiagnosis diagnosis = diagnosisService.updateDiagnosis(id, diagnosisData);
+
+        Pager<DiagnosisData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Patient Diagnosis");
+        pagers.setContent(DiagnosisData.map(diagnosis));
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
+    @DeleteMapping("/diagnosis/{id}")
+    @PreAuthorize("hasAuthority('create_consultation')")
+    public @ResponseBody
+    ResponseEntity.BodyBuilder deletePatientDiagnosis(@PathVariable("id") final Long id) {
+        diagnosisService.deleteDiagnosis(id);
+        return ResponseEntity.ok();
     }
 
     @GetMapping("/consultation-waiting-list")

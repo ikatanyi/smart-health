@@ -1,6 +1,8 @@
 package io.smarthealth.accounting.accounts.data.financial.statement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
@@ -10,6 +12,8 @@ public class FinancialCondition {
 
     @NotEmpty
     private String date;
+    @JsonIgnore
+    private LocalDate asAt;
     @NotEmpty
     private List<FinancialConditionSection> financialConditionSections = new ArrayList<>();
     @NotNull
@@ -52,4 +56,13 @@ public class FinancialCondition {
     public void add(final FinancialConditionSection financialConditionSection) {
         this.financialConditionSections.add(financialConditionSection);
     }
+
+    public LocalDate getAsAt() {
+        return asAt;
+    }
+
+    public void setAsAt(LocalDate asAt) {
+        this.asAt = asAt;
+    }
+
 }

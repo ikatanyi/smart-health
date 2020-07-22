@@ -36,6 +36,7 @@ public class CreditNote extends Auditable {
     private Double amount;
     private String comments;
     private String transactionId;
+    private LocalDate creditDate;
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_credit_note_id_payer_id"))
     private Payer payer;

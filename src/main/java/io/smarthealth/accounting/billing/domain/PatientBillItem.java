@@ -1,18 +1,14 @@
 package io.smarthealth.accounting.billing.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.stock.item.domain.Item;
-import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import java.time.LocalDate;
 import javax.persistence.*;
 import lombok.Data;
-import lombok.ToString;
 
 /**
  *

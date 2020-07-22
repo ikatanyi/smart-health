@@ -16,4 +16,5 @@ public interface LedgerRepository extends JpaRepository<Ledger, Long>, JpaSpecif
     List<Ledger> findByParentLedgerOrderByIdentifier(final Ledger parentLedger);
 
     Optional<Ledger> findByIdentifier(final String identifier);
+    
 }

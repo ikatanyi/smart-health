@@ -23,6 +23,11 @@ public class DoctorClinicData {
     private String serviceName;
     private String serviceCode;
 
+    private Boolean hasReviewCost;
+    private Long reviewServiceId;
+    private String reviewServiceName;
+    private String reviewServiceCode;
+
     public static DoctorClinicData map(DoctorClinicItems clinicItems) {
         DoctorClinicData data = new DoctorClinicData();
         data.setClinicId(clinicItems.getId());
@@ -30,6 +35,12 @@ public class DoctorClinicData {
         data.setServiceId(clinicItems.getServiceType().getId());
         data.setServiceCode(clinicItems.getServiceType().getItemCode());
         data.setServiceName(clinicItems.getServiceType().getItemName());
+        if (clinicItems.getHasReviewCost()) {
+            data.setHasReviewCost(Boolean.TRUE);
+            data.setReviewServiceCode(clinicItems.getServiceType().getItemCode());
+            data.setReviewServiceName(clinicItems.getServiceType().getItemName());
+            data.setReviewServiceId(clinicItems.getServiceType().getId());
+        }
         return data;
     }
 

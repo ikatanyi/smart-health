@@ -49,6 +49,7 @@ import io.smarthealth.debtor.claim.dispatch.data.DispatchData;
 import io.smarthealth.debtor.claim.dispatch.service.DispatchService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateConverter;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
@@ -60,6 +61,7 @@ import io.smarthealth.report.data.accounts.ReportReceiptData;
 import io.smarthealth.report.data.accounts.TrialBalanceData;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -110,8 +112,9 @@ public class AccountReportService {
     public void getTrialBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         
         Boolean includeEmptyEntries = Boolean.valueOf(reportParam.getFirst("includeEmptyEntries"));
+        LocalDate asAt= DateConverter.dateFromIsoString(reportParam.getFirst("asAt"));
         ReportData reportData = new ReportData();
-        List<TrialBalanceData> dataList = trialBalanceService.getTrialBalance(includeEmptyEntries).getTrialBalanceEntries()
+        List<TrialBalanceData> dataList = trialBalanceService.getTrialBalance(includeEmptyEntries, asAt).getTrialBalanceEntries()
                 .stream()
                 .map((trialBalEntry) -> {
                     TrialBalanceData data = new TrialBalanceData();
@@ -202,9 +205,10 @@ public class AccountReportService {
         reportService.generateReport(reportData, response);
     }
     
-    public void getBalanceSheet(ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getBalanceSheet(MultiValueMap<String, String> reportParam,ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        List<FinancialConditionSection> financialConditionSection = financialConditionService.getFinancialCondition().getFinancialConditionSections();
+         LocalDate asAt= DateConverter.dateFromIsoString(reportParam.getFirst("asAt"));
+        List<FinancialConditionSection> financialConditionSection = financialConditionService.getFinancialCondition(asAt).getFinancialConditionSections();
         
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
@@ -221,9 +225,10 @@ public class AccountReportService {
         reportService.generateReport(reportData, response);
     }
     
-    public void getIncomeStatement(ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getIncomeStatement( MultiValueMap<String, String> reportParam,ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        List<IncomeStatementSection> incomeStatement = incomesStatementService.getIncomeStatement(null).getIncomeStatementSections();
+         LocalDate asAt= DateConverter.dateFromIsoString(reportParam.getFirst("asAt"));
+        List<IncomeStatementSection> incomeStatement = incomesStatementService.getIncomeStatement(asAt).getIncomeStatementSections();
         
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();

@@ -136,10 +136,10 @@ public class ReportController {
                 reportService.getChartOfAccounts(format, response);
                 break;
             case Balance_Sheet:
-                reportService.getBalanceSheet(format, response);
+                reportService.getBalanceSheet(queryParams,format, response);
                 break;
             case Income_Statement:
-                reportService.getIncomeStatement(format, response);
+                reportService.getIncomeStatement(queryParams,format, response);
                 break;
             case Petty_Cash_Form:
                 paymentReportService.getPettyCash(queryParams, format, response);

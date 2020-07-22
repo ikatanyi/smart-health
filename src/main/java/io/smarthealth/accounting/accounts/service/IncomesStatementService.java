@@ -3,12 +3,17 @@ package io.smarthealth.accounting.accounts.service;
 import io.smarthealth.accounting.accounts.data.financial.statement.IncomeStatement;
 import io.smarthealth.accounting.accounts.data.financial.statement.IncomeStatementEntry;
 import io.smarthealth.accounting.accounts.data.financial.statement.IncomeStatementSection;
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.accounting.accounts.domain.AccountRepository;
 import io.smarthealth.accounting.accounts.domain.AccountType;
+import io.smarthealth.accounting.accounts.domain.JournalEntryItemRepository;
+import io.smarthealth.accounting.accounts.domain.Ledger;
 import io.smarthealth.accounting.accounts.domain.LedgerRepository;
 import io.smarthealth.infrastructure.lang.DateConverter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +22,15 @@ import org.springframework.stereotype.Service;
 public class IncomesStatementService {
 
     private final LedgerRepository ledgerRepository;
+    private final JournalEntryItemRepository journalEntryItemRepository;
+    private final AccountRepository accountRepository;
 
     public IncomeStatement getIncomeStatement(LocalDate asAt) {
         final IncomeStatement incomeStatement = new IncomeStatement();
         if (asAt != null) {
             incomeStatement.setDate(DateConverter.toIsoString(asAt));
+            incomeStatement.setAsAt(asAt);
+
         } else {
             incomeStatement.setDate(DateConverter.toIsoString(LocalDateTime.now()));
         }
@@ -49,11 +58,31 @@ public class IncomesStatementService {
                             .forEach(subLedgerEntity -> {
                                 final IncomeStatementEntry incomeStatementEntry = new IncomeStatementEntry();
                                 incomeStatementEntry.setDescription(subLedgerEntity.getName());
-                                final BigDecimal totalValue = subLedgerEntity.getTotalValue() != null ? subLedgerEntity.getTotalValue() : BigDecimal.ZERO;
+                                BigDecimal totalValue = subLedgerEntity.getTotalValue() != null ? subLedgerEntity.getTotalValue() : BigDecimal.ZERO; // this is one needs
+                                if (incomeStatement.getAsAt() != null) {
+                                    totalValue = calculateTotalAsAt(subLedgerEntity, incomeStatement.getAsAt());
+                                    subLedgerEntity.setTotalValue(totalValue);
+                                }
+                               
                                 incomeStatementEntry.setValue(totalValue);
                                 incomeStatementSection.add(incomeStatementEntry);
                             });
                 });
+    }
+
+     private BigDecimal calculateTotalAsAt(Ledger ledger, LocalDate asAt) {
+        List<Account> accounts = accountRepository.findByLedger(ledger);
+        return accounts
+                .stream()
+                .map(x -> {
+                    BigDecimal amt = journalEntryItemRepository.getAccountsBalance(x.getIdentifier(), asAt);
+                    if (amt == null) {
+                        return BigDecimal.ZERO;
+                    }
+                    return amt;
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
     }
 
     private BigDecimal calculateTotal(final IncomeStatement incomeStatement, final IncomeStatementSection.Type incomeStatementType) {
@@ -61,7 +90,8 @@ public class IncomesStatementService {
                 .stream()
                 .filter(incomeStatementSection
                         -> incomeStatementSection.getType().equals(incomeStatementType.name()))
-                .map(IncomeStatementSection::getSubtotal)
+                .map(IncomeStatementSection::getSubtotal) // this  now I need to go to journal and calculate balances
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
 }
