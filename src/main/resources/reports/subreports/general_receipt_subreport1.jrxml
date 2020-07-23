@@ -43,7 +43,7 @@
 			<line>
 				<reportElement positionType="FixRelativeToBottom" x="1" y="13" width="271" height="1" uuid="85ab7cfc-736f-4014-91d3-bb5bbed8c659"/>
 				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#999999"/>
+					<pen lineWidth="0.5" lineColor="#000000"/>
 				</graphicElement>
 			</line>
 		</band>
@@ -53,21 +53,21 @@
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="1" y="0" width="105" height="13" uuid="366d03f8-0b6b-4bc5-8e9b-14b8b124e9e5"/>
 				<textElement>
-					<font size="9"/>
+					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="113" y="0" width="31" height="13" uuid="cca98489-cc58-4a83-b52f-27ae01241ece"/>
 				<textElement textAlignment="Center">
-					<font size="9"/>
+					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="144" y="0" width="55" height="13" uuid="f7a667f1-10bd-4360-b3e9-a65515fa7771"/>
 				<textElement textAlignment="Right">
-					<font size="9"/>
+					<font size="10"/>
 					<paragraph rightIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
@@ -75,7 +75,7 @@
 			<textField>
 				<reportElement x="204" y="0" width="68" height="13" uuid="eeac2738-50c5-4902-956e-d604d05f863c"/>
 				<textElement textAlignment="Right">
-					<font size="9"/>
+					<font size="10"/>
 					<paragraph rightIndent="15"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{amountPaid}]]></textFieldExpression>

@@ -11,6 +11,7 @@ import io.smarthealth.infrastructure.lang.EnglishNumberToWords;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.report.data.ReportData;
+import io.smarthealth.stock.inventory.data.ExpiryStock;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.StockAdjustmentData;
 import io.smarthealth.stock.inventory.service.InventoryAdjustmentService;
@@ -169,7 +170,23 @@ public class StockReportService {
         reportData.setData(inventoryItemData);
         reportData.setFormat(format);
         reportData.setTemplate("/inventory/inventory_stock");
-        reportData.setReportName("Inventory--Stock-Statement");
+        reportData.setReportName("Inventory-Stock-Statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void InventoryExpiryStock(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        Long storeId = NumberUtils.createLong(reportParam.getFirst("storeId"));
+        Long itemId = NumberUtils.createLong(reportParam.getFirst("item_id"));
+        String search = reportParam.getFirst("search");
+        Boolean includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
+
+        List<ExpiryStock> inventoryItemData = inventoryItemService.getExpiryStock();
+
+        reportData.setData(inventoryItemData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/inventory_expiry_statement");
+        reportData.setReportName("Inventory-expiry-Statement");
         reportService.generateReport(reportData, response);
     }
 

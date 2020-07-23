@@ -212,6 +212,9 @@
 			</line>
 			<subreport>
 				<reportElement x="-1" y="0" width="573" height="31" uuid="bcc512bb-37ca-4dad-bbdf-b131cc967f1c"/>
+				<subreportParameter name="Patient_Data">
+					<subreportParameterExpression><![CDATA[$P{Patient_Data}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="PIC_DIR"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
@@ -243,14 +246,6 @@
 	</pageHeader>
 	<columnHeader>
 		<band height="57">
-			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="289" height="56" uuid="723d9069-2550-4fab-889b-3030f26303b3"/>
-				<subreportParameter name="IMAGE_DIR">
-					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
-			</subreport>
 			<line>
 				<reportElement positionType="Float" x="-1" y="56" width="573" height="1" forecolor="#CC3300" uuid="5f46f972-c1e9-4a16-bea9-62717a522a18"/>
 				<graphicElement>

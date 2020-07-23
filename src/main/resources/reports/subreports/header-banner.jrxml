@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="header-banner" pageWidth="515" pageHeight="802" columnWidth="515" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f999e9d8-48c8-4d99-8793-0d8624a84a5f">
-	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="bannerStyle" mode="Transparent">
@@ -14,6 +14,11 @@
 		<parameterDescription><![CDATA[]]></parameterDescription>
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Patient_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="display_patient" class="java.lang.String"/>
 	<field name="facilityName" class="java.lang.String"/>
 	<field name="facilityType" class="java.lang.String"/>
 	<field name="orgLegalName" class="java.lang.String"/>
@@ -31,53 +36,68 @@
 	<field name="contactMobile" class="java.lang.String"/>
 	<field name="salutation" class="java.lang.String"/>
 	<field name="telephone" class="java.lang.String"/>
+	<field name="tax" class="java.lang.String"/>
 	<variable name="locale" class="java.lang.String">
 		<variableExpression><![CDATA[$F{orgAddressLine1}+","+$F{orgAddressLine2}+"\n"+$F{orgAddressCountry}+", "+$F{orgAddressCounty}]]></variableExpression>
 	</variable>
 	<detail>
-		<band height="148" splitType="Stretch">
+		<band height="141" splitType="Stretch">
 			<frame>
-				<reportElement style="headerStyle" x="1" y="0" width="514" height="146" uuid="288e7b4d-03b5-484a-81d7-dadfed865991"/>
-				<image hAlign="Left" isUsingCache="true" isLazy="true" onErrorType="Blank">
-					<reportElement style="bannerStyle" x="7" y="2" width="495" height="58" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
-					<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
-				</image>
+				<reportElement style="headerStyle" x="1" y="62" width="233" height="79" uuid="288e7b4d-03b5-484a-81d7-dadfed865991"/>
+				<textField isBlankWhenNull="true">
+					<reportElement style="headerStyle" positionType="Float" x="0" y="65" width="233" height="12" isRemoveLineWhenBlank="true" uuid="3b2f550d-0698-4e89-ab2f-752c51b7b64d"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA["PIN: "+$F{tax}]]></textFieldExpression>
+				</textField>
 			</frame>
 			<textField isBlankWhenNull="true">
-				<reportElement key="" style="headerStyle" positionType="Float" mode="Transparent" x="0" y="62" width="503" height="12" isRemoveLineWhenBlank="true" uuid="e9865714-00b3-4db4-8af1-82492bcbde9f"/>
+				<reportElement key="" style="headerStyle" positionType="Float" mode="Transparent" x="0" y="61" width="234" height="12" isRemoveLineWhenBlank="true" uuid="e9865714-00b3-4db4-8af1-82492bcbde9f"/>
 				<textElement textAlignment="Left">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{facilityName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement style="headerStyle" positionType="Float" x="0" y="86" width="503" height="12" isRemoveLineWhenBlank="true" uuid="511806e2-2cb1-496a-8a82-cacf24ac7b87"/>
+				<reportElement style="headerStyle" positionType="Float" x="0" y="85" width="234" height="12" isRemoveLineWhenBlank="true" uuid="511806e2-2cb1-496a-8a82-cacf24ac7b87"/>
 				<textElement textAlignment="Left">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{telephone}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement style="headerStyle" positionType="Float" x="0" y="74" width="503" height="12" isRemoveLineWhenBlank="true" uuid="cc7cea67-13d9-4bf7-8722-8b2929716fb8"/>
+				<reportElement style="headerStyle" positionType="Float" x="0" y="73" width="234" height="12" isRemoveLineWhenBlank="true" uuid="cc7cea67-13d9-4bf7-8722-8b2929716fb8"/>
 				<textElement textAlignment="Left">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{locale}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement style="headerStyle" positionType="Float" x="0" y="100" width="503" height="12" isRemoveLineWhenBlank="true" uuid="a99a1f49-aba5-4697-b3a9-955ed87a1fe7"/>
+				<reportElement style="headerStyle" positionType="Float" x="0" y="99" width="234" height="12" isRemoveLineWhenBlank="true" uuid="a99a1f49-aba5-4697-b3a9-955ed87a1fe7"/>
 				<textElement textAlignment="Left">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{contactEmail}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement style="headerStyle" positionType="Float" x="0" y="114" width="503" height="12" isRemoveLineWhenBlank="true" uuid="62fb63a8-b796-4d59-9661-52d7659f3091"/>
+				<reportElement style="headerStyle" positionType="Float" x="0" y="113" width="234" height="12" isRemoveLineWhenBlank="true" uuid="62fb63a8-b796-4d59-9661-52d7659f3091"/>
 				<textElement textAlignment="Left">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{orgWebsite}]]></textFieldExpression>
 			</textField>
+			<image hAlign="Left" isUsingCache="true" isLazy="true" onErrorType="Blank">
+				<reportElement style="bannerStyle" x="1" y="2" width="233" height="58" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
+				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
+			</image>
+			<subreport>
+				<reportElement x="329" y="60" width="184" height="79" uuid="a47b2fd5-4260-4202-9855-d0183ebebc73"/>
+				<subreportParameter name="PIC_DIR"/>
+				<subreportParameter name="IMAGE_DIR"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</detail>
 </jasperReport>

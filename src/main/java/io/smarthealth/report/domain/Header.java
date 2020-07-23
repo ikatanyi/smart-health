@@ -36,6 +36,7 @@ public class Header {
     private String contactMobile;
     private String salutation;
     private String telephone;
+    private String tax;
 
     public static Header map(Facility facility) {
         Header header = new Header();
@@ -65,6 +66,7 @@ public class Header {
             header.setTaxNumber(facility.getOrganization().getTaxNumber());
             header.setFacilityName(facility.getFacilityName());
             header.setFacilityType(facility.getFacilityType());
+            header.setTax(facility.getTaxNumber());
             
         }
 

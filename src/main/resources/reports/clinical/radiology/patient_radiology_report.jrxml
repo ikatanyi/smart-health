@@ -29,9 +29,9 @@
 	<field name="patientScanTestData" class="java.util.List"/>
 	<field name="isWalkin" class="java.lang.Boolean"/>
 	<title>
-		<band height="86" splitType="Stretch">
+		<band height="110" splitType="Stretch">
 			<subreport isUsingCache="false">
-				<reportElement x="1" y="1" width="293" height="58" uuid="e89e1818-4d89-4b2a-b6b3-78ffd1f66ae4"/>
+				<reportElement x="1" y="1" width="320" height="108" uuid="e89e1818-4d89-4b2a-b6b3-78ffd1f66ae4"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -39,70 +39,70 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement x="336" y="22" width="90" height="14" uuid="94b09690-eab9-4c89-97a9-f9e9a0cbf892"/>
+				<reportElement x="335" y="48" width="90" height="14" uuid="94b09690-eab9-4c89-97a9-f9e9a0cbf892"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient Name :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="425" y="38" width="129" height="14" uuid="48f3771a-e820-4ec3-8bc0-73ecb2dd5dff"/>
+				<reportElement x="424" y="64" width="129" height="14" uuid="48f3771a-e820-4ec3-8bc0-73ecb2dd5dff"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{visitNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="336" y="38" width="90" height="14" uuid="ea956abd-310a-4181-8fa3-a0d3f7282830"/>
+				<reportElement x="335" y="64" width="90" height="14" uuid="ea956abd-310a-4181-8fa3-a0d3f7282830"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Visit No.]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="426" y="54" width="128" height="14" uuid="266b3b6f-3700-4b88-83b9-db0da87f4317"/>
+				<reportElement x="425" y="80" width="128" height="14" uuid="266b3b6f-3700-4b88-83b9-db0da87f4317"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{orderedDate}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="425" y="7" width="129" height="14" uuid="fc71da6d-13f2-4f25-b973-86d06fe2856d"/>
+				<reportElement x="424" y="33" width="129" height="14" uuid="fc71da6d-13f2-4f25-b973-86d06fe2856d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="425" y="22" width="129" height="14" uuid="6afee897-37d5-4f7a-ad5e-7516da761e61"/>
+				<reportElement x="424" y="48" width="129" height="14" uuid="6afee897-37d5-4f7a-ad5e-7516da761e61"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="335" y="54" width="91" height="14" uuid="b58c9c89-3600-4d14-97cb-54294659940f"/>
+				<reportElement x="335" y="80" width="90" height="14" uuid="b58c9c89-3600-4d14-97cb-54294659940f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Request Date:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="335" y="7" width="90" height="14" uuid="b0c11fb9-76aa-40db-ba24-0d9ccefc3859"/>
+				<reportElement x="335" y="33" width="89" height="14" uuid="b0c11fb9-76aa-40db-ba24-0d9ccefc3859"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="336" y="69" width="91" height="14" uuid="a384b799-e2c2-4053-9faf-983ffc018757"/>
+				<reportElement x="335" y="95" width="91" height="14" uuid="a384b799-e2c2-4053-9faf-983ffc018757"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Requesting Physician :]]></text>
 			</staticText>
 			<subreport>
-				<reportElement x="425" y="69" width="129" height="14" uuid="0de24d60-b41c-4a99-b595-b454833deec3"/>
+				<reportElement x="424" y="95" width="129" height="14" uuid="0de24d60-b41c-4a99-b595-b454833deec3"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "physician.jasper"]]></subreportExpression>
 			</subreport>
