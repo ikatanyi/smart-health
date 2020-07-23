@@ -8,6 +8,7 @@ package io.smarthealth.report.domain;
 import io.smarthealth.organization.facility.data.FacilityData;
 import io.smarthealth.organization.facility.domain.Facility;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import lombok.Data;
 
 /**
@@ -37,6 +38,7 @@ public class Header {
     private String salutation;
     private String telephone;
     private String tax;
+    private ByteArrayInputStream IMAGE;
 
     public static Header map(Facility facility) {
         Header header = new Header();
@@ -60,6 +62,7 @@ public class Header {
                 header.setOrgTown(facility.getOrganization().getAddress().get(0).getTown());
                 header.setOrgType(facility.getOrganization().getAddress().get(0).getType().name());
             }
+            
             header.setOrgLegalName(facility.getOrganization().getLegalName());
             header.setOrgName(facility.getOrganization().getOrganizationName());
             header.setOrgWebsite(facility.getOrganization().getWebsite());

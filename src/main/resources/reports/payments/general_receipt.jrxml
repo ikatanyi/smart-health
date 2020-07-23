@@ -13,6 +13,7 @@
 			<style backcolor="#E6DAC3"/>
 		</conditionalStyle>
 	</style>
+	<scriptlet name="RoundingHelper" class="com.smarthealth.jasper.RoundingHelper"/>
 	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -94,7 +95,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{payer}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{payer}.equals(null)?"":$F{payer}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="1" y="19" width="45" height="15" uuid="93648659-360e-4303-a31f-f02af77fb196"/>
@@ -179,7 +180,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{RoundingHelper_SCRIPTLET}.round($F{amount}, RoundingMode.HALF_UP, "#,##0.00")]]></textFieldExpression>
 			</textField>
 			<subreport>
 				<reportElement positionType="Float" x="-21" y="17" width="313" height="10" isRemoveLineWhenBlank="true" uuid="a0c77665-5798-498b-b480-c3720413878d"/>
@@ -221,7 +222,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[ServedBy:]]></text>
+				<text><![CDATA[Served by:]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="58" y="36" width="177" height="15" uuid="02113826-f210-4ff2-baf2-10389fad918d"/>

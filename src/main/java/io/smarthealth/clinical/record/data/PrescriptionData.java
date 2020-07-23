@@ -42,6 +42,8 @@ public class PrescriptionData extends DoctorRequestData {
     private String patientNumber;
     @ApiModelProperty(required = false, hidden = true)
     private String itemType;
+    @ApiModelProperty(required = false, hidden = true)
+    private String physician;
     
 
     @ApiModelProperty(required = false, hidden = true)
@@ -92,6 +94,10 @@ public class PrescriptionData extends DoctorRequestData {
             pd.setUrgency(Urgency.valueOf(p.getUrgency()));
         }
 
+        if(p.getVisit()!=null){
+            if(p.getVisit().getHealthProvider()!=null)
+                 pd.setPhysician(p.getVisit().getHealthProvider().getFullName());
+        }
         pd.setVisitNumber(p.getVisitNumber());
         pd.setPrescriptionNo(p.getOrderNumber());
         pd.setPrescriptionId(p.getId());
