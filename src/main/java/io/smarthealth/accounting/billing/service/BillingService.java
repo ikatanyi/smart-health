@@ -165,7 +165,7 @@ public class BillingService {
     }
 
     public PatientBill save(PatientBill bill) {
-        log.info("START save bill");
+        log.debug("START save bill");
         String bill_no = bill.getBillNumber() == null ? sequenceNumberService.next(1L, Sequences.BillNumber.name()) : bill.getBillNumber();
         String trdId = bill.getTransactionId() == null ? sequenceNumberService.next(1L, Sequences.Transactions.name()) : bill.getTransactionId();
         bill.setBillNumber(bill_no);
@@ -179,8 +179,7 @@ public class BillingService {
         List<DoctorInvoice> doctorInvoices = toDoctorInvoice(savedBill);
         if (doctorInvoices.size() > 0) {
             doctorInvoices.forEach(inv -> doctorInvoiceService.save(inv));
-        }
-        log.info("END save bill");
+        } 
         return savedBill;
     }
 
