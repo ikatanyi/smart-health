@@ -25,9 +25,9 @@ public class PatientDiagnosis extends ClinicalRecord {
 
     @Column(length = 25)
     private String diagnosisOrder;
-    
+
     @Type(type = "text")
     private String notes;
-    
-//    private int age;
+
+    private Boolean isCondition = Boolean.FALSE;
 }

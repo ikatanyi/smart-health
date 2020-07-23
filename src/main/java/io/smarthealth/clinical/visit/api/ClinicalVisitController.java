@@ -224,38 +224,40 @@ public class ClinicalVisitController {
             }
 
             //TODO: use pricelist not item service i.e fetchPriceListByItemAndPriceBook
-            Item item = visit.getServiceType().equals(VisitEnum.ServiceType.Consultation) ? clinic.getServiceType() : clinic.getReviewService();
-            double sellimgPrice = pricelistService.fetchPriceAmountByItemAndPriceBook(item, pb);
-            List<BillItemData> billItems = new ArrayList<>();
-            BillItemData itemData = new BillItemData();
-            itemData.setAmount(sellimgPrice);
-            itemData.setBalance(sellimgPrice);
-            itemData.setBillingDate(LocalDate.now());
-            itemData.setPrice(sellimgPrice);
-            itemData.setItem(item.getItemName());
-            itemData.setItemCode(item.getItemCode());
-            if (employee != null) {
-                itemData.setMedicId(employee.getId());
-                itemData.setMedicName(employee.getFullName());
+            Item item = visit.getServiceType().equals(VisitEnum.ServiceType.Consultation) ? clinic.getServiceType() : clinic.getHasReviewCost() ? clinic.getReviewService() : null;
+            if (item != null) {
+                double sellimgPrice = pricelistService.fetchPriceAmountByItemAndPriceBook(item, pb);
+                List<BillItemData> billItems = new ArrayList<>();
+                BillItemData itemData = new BillItemData();
+                itemData.setAmount(sellimgPrice);
+                itemData.setBalance(sellimgPrice);
+                itemData.setBillingDate(LocalDate.now());
+                itemData.setPrice(sellimgPrice);
+                itemData.setItem(item.getItemName());
+                itemData.setItemCode(item.getItemCode());
+                if (employee != null) {
+                    itemData.setMedicId(employee.getId());
+                    itemData.setMedicName(employee.getFullName());
+                }
+                itemData.setQuantity(1.0);
+                itemData.setServicePoint(sp.getName());
+                itemData.setServicePointId(sp.getId());
+                billItems.add(itemData);
+
+                BillData data = new BillData();
+                data.setWalkinFlag(false);
+                data.setBillItems(billItems);
+                data.setAmount(sellimgPrice);
+                data.setBalance(sellimgPrice);
+                data.setBillingDate(LocalDate.now());
+                data.setDiscount(0.00);
+                data.setPatientName(patient.getFullName());
+                data.setPatientNumber(patient.getPatientNumber());
+                data.setPaymentMode(visit.getPaymentMethod().name());
+                data.setVisitNumber(visit.getVisitNumber());
+
+                billingService.createPatientBill(data);
             }
-            itemData.setQuantity(1.0);
-            itemData.setServicePoint(sp.getName());
-            itemData.setServicePointId(sp.getId());
-            billItems.add(itemData);
-
-            BillData data = new BillData();
-            data.setWalkinFlag(false);
-            data.setBillItems(billItems);
-            data.setAmount(sellimgPrice);
-            data.setBalance(sellimgPrice);
-            data.setBillingDate(LocalDate.now());
-            data.setDiscount(0.00);
-            data.setPatientName(patient.getFullName());
-            data.setPatientNumber(patient.getPatientNumber());
-            data.setPaymentMode(visit.getPaymentMethod().name());
-            data.setVisitNumber(visit.getVisitNumber());
-
-            billingService.createPatientBill(data);
         }
         //update visit
         visit = visitService.createAVisit(visit);

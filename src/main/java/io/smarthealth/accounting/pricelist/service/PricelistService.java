@@ -240,6 +240,7 @@ public class PricelistService {
     }
 
     public double fetchPriceAmountByItemAndPriceBook(final Item item, final PriceBook book) {
+        System.out.println("Item "+item.getItemName());
         if (book != null) {
             if (book.isGlobalRate()) {
                 if (book.getIncrease()) {

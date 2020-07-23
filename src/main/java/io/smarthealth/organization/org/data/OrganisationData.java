@@ -84,7 +84,7 @@ public class OrganisationData {
                 contactData.setEmail(contact.getEmail());
                 contactData.setFullName(contact.getFullName());
                 contactData.setMobile(contact.getMobile());
-                contactData.setSalutation(contactData.getSalutation());
+                contactData.setSalutation(contact.getSalutation());
                 contactData.setTelephone(contact.getTelephone());
                 data.setContact(contactData);
             }

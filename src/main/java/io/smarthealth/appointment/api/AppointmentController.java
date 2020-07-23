@@ -149,7 +149,6 @@ public class AppointmentController {
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        System.err.println("my current statys "+status);
         Page<AppointmentData> results = appointmentService.fetchAllAppointments(practitionerNumber, patientId, status, deptCode, urgency, name, range, pageable).map(a->AppointmentData.map(a));
         
         Pager pager = new Pager();
