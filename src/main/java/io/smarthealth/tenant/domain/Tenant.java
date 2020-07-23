@@ -4,6 +4,7 @@
 //import java.time.LocalDateTime;
 //import org.hibernate.annotations.GenericGenerator;
 //
+// https://blog.aliprax.me/schema-based-multitenancy/
 //import javax.persistence.*;
 //
 //@Entity

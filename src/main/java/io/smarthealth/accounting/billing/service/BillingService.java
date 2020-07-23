@@ -165,7 +165,7 @@ public class BillingService {
     }
 
     public PatientBill save(PatientBill bill) {
-        log.info("START save bill");
+        log.debug("START save bill");
         String bill_no = bill.getBillNumber() == null ? sequenceNumberService.next(1L, Sequences.BillNumber.name()) : bill.getBillNumber();
         String trdId = bill.getTransactionId() == null ? sequenceNumberService.next(1L, Sequences.Transactions.name()) : bill.getTransactionId();
         bill.setBillNumber(bill_no);
@@ -179,8 +179,7 @@ public class BillingService {
         List<DoctorInvoice> doctorInvoices = toDoctorInvoice(savedBill);
         if (doctorInvoices.size() > 0) {
             doctorInvoices.forEach(inv -> doctorInvoiceService.save(inv));
-        }
-        log.info("END save bill");
+        } 
         return savedBill;
     }
 
@@ -642,18 +641,19 @@ public class BillingService {
 
         patientItems.stream()
                 .forEach(x -> {
-                    if (x.getBalance() > 0) {
+                    if (x.getBalance() > 0 && (x.getStatus()==BillStatus.Draft)) {
                         bills.add(x.toBillItem());
-                    } else if (x.getBalance() < 0 && x.getStatus() == BillStatus.Paid) {
-                        paidBills.add(x.toBillItem());
-                        BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
-                        BigDecimal amount = BigDecimal.valueOf(x.getAmount());
-                        if (amount.signum() == -1) {
-                            amount = amount.negate();
-                        }
-                        payments.add(new BillPayment(type, x.getPaymentReference(), amount));
+                    } else 
+                        if (x.getStatus() == BillStatus.Paid ) {
+                            paidBills.add(x.toBillItem());
+                            BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
+                            BigDecimal amount = BigDecimal.valueOf(x.getAmount());
+                            if (amount.signum() == -1) {
+                                amount = amount.negate();
+                            }
+                            payments.add(new BillPayment(type, x.getPaymentReference(), amount));
                     } else {
-                        //System.err.println("Canceled Billed");
+                        System.err.println("Canceled Billed");
                     }
                 });
 

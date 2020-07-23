@@ -104,8 +104,12 @@ public class FacilityService {
     }
 
     public Facility loggedFacility() {
-        return getFacility(Long.valueOf("1"))
-                .orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", Long.valueOf("1")));
+        //find any organization one
+        Optional<Facility> facility = facilityRepository.findAll().stream().findAny();
+        return facility
+                .orElseThrow(() -> APIException.notFound("No facility is configured, Register a Facility to proceed"));
+//        return getFacility(Long.valueOf("1"))
+//                .orElseThrow(() -> APIException.notFound("Facility identified by code {0} not found", Long.valueOf("1")));
     }
 
     public CompanyLogo storeLogo(Long facilityId, MultipartFile file) {

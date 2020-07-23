@@ -84,7 +84,7 @@
 	<title>
 		<band height="49">
 			<subreport>
-				<reportElement x="0" y="1" width="196" height="46" isRemoveLineWhenBlank="true" uuid="adfc9a30-3824-4d61-94f1-3e899ffa0ccc"/>
+				<reportElement x="0" y="1" width="379" height="46" isRemoveLineWhenBlank="true" uuid="adfc9a30-3824-4d61-94f1-3e899ffa0ccc"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -97,11 +97,6 @@
 					<pen lineWidth="0.15" lineColor="#666666"/>
 				</graphicElement>
 			</line>
-			<subreport>
-				<reportElement stretchType="RelativeToBandHeight" x="273" y="15" width="107" height="32" isRemoveLineWhenBlank="true" uuid="5a3d7add-cd31-463f-8ede-5b40a21393c7"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
-			</subreport>
 		</band>
 	</title>
 	<pageHeader>

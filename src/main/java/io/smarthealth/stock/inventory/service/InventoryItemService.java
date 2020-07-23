@@ -5,6 +5,7 @@ import io.smarthealth.infrastructure.imports.data.InventoryStockData;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.inventory.data.CreateInventoryItem;
+import io.smarthealth.stock.inventory.data.ExpiryStock;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.ItemDTO;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
@@ -157,6 +158,7 @@ public class InventoryItemService {
         Store store = storeService.getStoreWithNoFoundDetection(storeId);
         return inventoryItemRepository.findByStore(store, page).map(d -> d.toData());
     }
+    
 
     @Transactional
     public void processInventoryBalance(InventoryEvent event) {
@@ -174,6 +176,9 @@ public class InventoryItemService {
         }
     }
     
+    public List<ExpiryStock> getExpiryStock() {
+        return stockEntryRepository.findExpiryStockInterface();
+    }
     
     public void uploadInventoryItems(List<InventoryStockData> itemData) {
         List<InventoryItem> items = new ArrayList<>();

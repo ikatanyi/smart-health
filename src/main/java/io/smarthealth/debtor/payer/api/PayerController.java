@@ -11,10 +11,14 @@ import io.smarthealth.administration.app.domain.Contact;
 import io.smarthealth.administration.app.service.ContactService;
 import io.smarthealth.administration.banks.service.BankService;
 import io.smarthealth.debtor.payer.data.PayerData;
+import io.smarthealth.debtor.payer.data.PayerStatement;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
+import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.supplier.data.SupplierStatement;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.ArrayList;
@@ -213,5 +217,18 @@ public class PayerController {
 
         return ResponseEntity.ok(pagers);
     }
+ @GetMapping("/payer/{payerId}/statement")
+    public ResponseEntity<?> getStatement(
+            @PathVariable(value = "payerId") Long payerId,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
 
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        List<PayerStatement> list = payerService.getStatement(payerId, range);
+
+        return ResponseEntity.ok(PaginationUtil.paginateList(list, "Debtor Statement", "", pageable));
+    }
 }

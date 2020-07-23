@@ -14,6 +14,7 @@ import io.smarthealth.administration.banks.service.BankService;
 import io.smarthealth.administration.finances.domain.PaymentTerms;
 import io.smarthealth.administration.finances.service.PaymentTermsService;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
+import io.smarthealth.debtor.payer.data.PayerStatement;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.PayerRepository;
 import io.smarthealth.debtor.payer.domain.Scheme;
@@ -25,8 +26,14 @@ import io.smarthealth.debtor.scheme.domain.enumeration.DiscountType;
 import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.utility.DateUtility;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -189,4 +196,37 @@ public class PayerService {
         throw APIException.internalError("Provide a Valid PolicyCover Type");
     }
 
+    public List<PayerStatement> getStatement(Long payerId, DateRange range) {
+        Payer payer = payerRepository.findById(payerId)
+                .orElseThrow(() -> APIException.notFound("Payer with Id {0} Not Found", payerId));
+
+        LocalDate startDate = (range == null ? DateUtility.getStartOfCurrentMonth() : range.getStartDate());
+        LocalDate endDate = (range == null ? DateUtility.getEndOfCurrentMonth() : range.getEndDate());
+
+        BigDecimal bal = toDefault(payerRepository.getPayerBalance(payerId, startDate.minusDays(1)));
+
+        List<PayerStatement> statement = new ArrayList<>();
+
+        statement.add(openingEntry(payer, startDate.minusDays(1), bal));
+        List<PayerStatement> lists = payerRepository.getPayerStatement(payerId, new DateRange(startDate, endDate));
+        for (PayerStatement st : lists) {
+            bal = bal.add(BigDecimal.valueOf(st.getRunningAmount()));
+            st.setRunningAmount(bal.doubleValue());
+            statement.add(st);
+        }
+        return statement;
+    }
+
+    private PayerStatement openingEntry(Payer payer, LocalDate startDate, BigDecimal bal) {
+        Double amount = bal.doubleValue();
+        return new PayerStatement(BigInteger.valueOf(payer.getId()), payer.getPayerName(), DateUtility.toDate(startDate), "Opening Balance", "Balance b/f", "", "", amount, amount, amount);
+    }
+
+    private BigDecimal toDefault(BigDecimal val) {
+        if (val == null) {
+            return BigDecimal.ZERO;
+        }
+
+        return val;
+    }
 }
