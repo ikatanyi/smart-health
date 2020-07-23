@@ -23,7 +23,7 @@ public class CustomAuditEventRepository implements AuditEventRepository {
 
     private static final String AUTHORIZATION_FAILURE = "AUTHORIZATION_FAILURE";
 
-    protected static final int EVENT_DATA_COLUMN_MAX_LENGTH = 255;
+    protected static final int EVENT_DATA_COLUMN_MAX_LENGTH = 100000;
 
     private final PersistenceAuditEventRepository persistenceAuditEventRepository;
 

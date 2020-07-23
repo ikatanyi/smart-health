@@ -339,9 +339,7 @@ public class PatientService {
                 savedPatient.setIdentifications(patientIdentifiersList);
             }*/
 
-        }
-
-        Facility facilityLogged = facilityService.loggedFacility();
+        } 
         if (patient.getVisitType() != null) {
             String visitid = sequenceNumberService.next(1L, Sequences.Visit.name());
             Visit visit = new Visit();

@@ -8,6 +8,7 @@ package io.smarthealth.clinical.record.service;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.PatientTestsData;
 import io.smarthealth.clinical.record.domain.Diagnosis;
+import io.smarthealth.clinical.record.domain.PatientConditionRepository;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosisRepository;
 import io.smarthealth.clinical.record.domain.specification.DiagnosisSpecification;
@@ -18,6 +19,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.domain.PatientCondition;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,8 @@ public class DiagnosisService {
     
     @Autowired
     private PatientRepository patientRepository;
+    @Autowired
+    private PatientConditionRepository patientConditionRepository;
     
     public Long addDiagnosis(String visitNumber, PatientTestsData diagnosis) {
         
@@ -64,6 +68,21 @@ public class DiagnosisService {
         d.setCertainty(pd.getCertainty() != null ? pd.getCertainty().name() : null);
         d.setDiagnosisOrder(pd.getDiagnosisOrder() != null ? pd.getDiagnosisOrder().name() : null);
         d.setNotes(pd.getNotes());
+        d.setIsCondition(pd.getCondition() != null ? pd.getCondition() : Boolean.FALSE);
+        if (pd.getCondition()) {
+            PatientCondition condition = new PatientCondition();
+            condition.setCode(d.getDiagnosis().getCode());
+            condition.setName(d.getDiagnosis().getDescription());
+            condition.setPatient(d.getPatient());
+            patientConditionRepository.save(condition);
+        }
+        if (!pd.getCondition()) {
+            
+            Optional<PatientCondition> isCondition = patientConditionRepository.findByPatientAndCode(d.getPatient(), d.getDiagnosis().getCode());
+            if (isCondition.isPresent()) {
+                patientConditionRepository.delete(isCondition.get());
+            }
+        }
         return diagnosisRepository.save(d);
     }
     
