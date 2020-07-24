@@ -89,16 +89,13 @@
 				<textFieldExpression><![CDATA[$F{orgWebsite}]]></textFieldExpression>
 			</textField>
 			<image hAlign="Left" isUsingCache="true" isLazy="true" onErrorType="Blank">
-				<reportElement x="0" y="2" width="234" height="58" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
+				<reportElement style="headerStyle" x="0" y="2" width="234" height="58" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
 				<imageExpression><![CDATA[$F{IMAGE}]]></imageExpression>
 			</image>
-			<subreport>
-				<reportElement style="headerStyle" x="329" y="60" width="184" height="79" isRemoveLineWhenBlank="true" uuid="a47b2fd5-4260-4202-9855-d0183ebebc73">
+			<subreport isUsingCache="false">
+				<reportElement x="329" y="60" width="184" height="79" isRemoveLineWhenBlank="true" uuid="a47b2fd5-4260-4202-9855-d0183ebebc73">
 					<printWhenExpression><![CDATA[$P{Patient_Data}!=null]]></printWhenExpression>
 				</reportElement>
-				<subreportParameter name="IMAGE_DIR">
-					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} +"patient-banner.jasper"]]></subreportExpression>
 			</subreport>
