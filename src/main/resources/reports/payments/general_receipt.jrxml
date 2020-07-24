@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="receipt" pageWidth="312" pageHeight="595" whenNoDataType="AllSectionsNoDetail" columnWidth="272" leftMargin="20" rightMargin="20" topMargin="5" bottomMargin="20" uuid="e3432a93-c4e5-42d0-9c23-a88c9aff2afc">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="41"/>
+	<property name="ireport.y" value="118"/>
 	<style name="Title" fontName="Times New Roman" fontSize="50" isBold="true" pdfFontName="Times-Bold"/>
 	<style name="SubTitle" forecolor="#736343" fontName="Arial" fontSize="18"/>
 	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
@@ -220,14 +220,14 @@
 				<text><![CDATA[AMOUNT TENDERED  :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="54" width="57" height="15" uuid="b1b3883e-d63c-4434-896b-44bb48f46b50"/>
+				<reportElement x="1" y="54" width="70" height="15" uuid="b1b3883e-d63c-4434-896b-44bb48f46b50"/>
 				<textElement verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Served by:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="58" y="54" width="177" height="15" uuid="02113826-f210-4ff2-baf2-10389fad918d"/>
+				<reportElement x="65" y="54" width="177" height="15" uuid="02113826-f210-4ff2-baf2-10389fad918d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
