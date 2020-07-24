@@ -118,13 +118,8 @@ public class AccountReportService {
                 .stream()
                 .map((trialBalEntry) -> {
                     TrialBalanceData data = new TrialBalanceData();
-//            data.setCreditTotal(trialBalEntry.getCreditTotal());
-//            data.setDebitTotal(trialBalance.getDebitTotal());
-//            data.setCreatedBy(trialBalEntry.getLedger().getType());
                     data.setCreatedOn(trialBalEntry.getLedger().getCreatedOn());
                     data.setDescription(trialBalEntry.getLedger().getDescription());
-//            data.setLastModifiedBy(trialBalEntry.getLedger().getLastModifiedBy());
-//            data.setLastModifiedOn(trialBalEntry.getLedger().getLastModifiedOn());
                     data.setName(trialBalEntry.getLedger().getIdentifier() + " - " + trialBalEntry.getLedger().getName());
                     data.setParentLedgerIdentifier(trialBalEntry.getLedger().getParentLedgerIdentifier());
                     data.setTotalValue(trialBalEntry.getLedger().getTotalValue());
@@ -132,6 +127,7 @@ public class AccountReportService {
                     return data;
                 }).collect(Collectors.toList());
         reportData.setData(dataList);
+        reportData.getFilters().put("asAt", reportParam.getFirst("asAt"));
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/TrialBalance");
         reportData.setReportName("trialBalance");
@@ -219,6 +215,7 @@ public class AccountReportService {
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         
         reportData.setData(financialConditionSection);
+        reportData.getFilters().put("asAt", reportParam.getFirst("asAt"));
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/balance_sheet");
         reportData.setReportName("balance_sheet");
@@ -237,7 +234,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+        reportData.getFilters().put("asAt", reportParam.getFirst("asAt"));
         reportData.setData(incomeStatement);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/income_statement");

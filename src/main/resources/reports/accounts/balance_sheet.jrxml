@@ -37,6 +37,7 @@
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="Footer_Data" class="java.util.List"/>
+	<parameter name="asAt" class="java.lang.String" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -57,16 +58,16 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="24" splitType="Stretch">
+		<band height="41" splitType="Stretch">
 			<staticText>
-				<reportElement x="1" y="3" width="136" height="20" uuid="58bcc108-d8ef-413f-a71e-ff80df5fbb56"/>
-				<textElement verticalAlignment="Middle" markup="none">
+				<reportElement x="1" y="3" width="513" height="13" uuid="58bcc108-d8ef-413f-a71e-ff80df5fbb56"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Balance Sheet]]></text>
 			</staticText>
 			<line>
-				<reportElement positionType="Float" x="1" y="22" width="515" height="1" uuid="728cb34a-6e20-428b-8d86-b777b3e58b76"/>
+				<reportElement positionType="Float" x="1" y="40" width="515" height="1" uuid="728cb34a-6e20-428b-8d86-b777b3e58b76"/>
 				<graphicElement>
 					<pen lineWidth="0.15"/>
 				</graphicElement>
@@ -77,6 +78,20 @@
 					<pen lineWidth="0.15"/>
 				</graphicElement>
 			</line>
+			<staticText>
+				<reportElement x="1" y="26" width="82" height="12" uuid="0239d5ef-7cfa-457b-b820-22d3ba9623e6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Balance Sheet as at :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="82" y="26" width="118" height="12" uuid="0e4e0f86-3d8e-456a-9a89-11aecdebb2c8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{asAt}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<detail>
@@ -87,7 +102,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "balance_sheet_subreport.jasper"]]></subreportExpression>
 			</subreport>
 			<textField>
-				<reportElement mode="Opaque" x="1" y="7" width="514" height="12" forecolor="#FFFFFF" backcolor="#6666FF" uuid="70544dc4-7d76-4ae5-bcfd-2c9ac38d695c"/>
+				<reportElement mode="Opaque" x="1" y="7" width="514" height="12" forecolor="#000000" backcolor="#FFFFFF" uuid="70544dc4-7d76-4ae5-bcfd-2c9ac38d695c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
@@ -98,7 +113,7 @@
 	<columnFooter>
 		<band height="76">
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="514" height="12" forecolor="#FFFFFF" backcolor="#6666FF" uuid="9232f2be-eacf-49f9-8030-961bcd895bb8"/>
+				<reportElement mode="Opaque" x="0" y="0" width="514" height="12" forecolor="#333333" backcolor="#FFFFFF" uuid="9232f2be-eacf-49f9-8030-961bcd895bb8"/>
 				<textElement verticalAlignment="Middle" markup="none">
 					<font size="9" isBold="true"/>
 				</textElement>

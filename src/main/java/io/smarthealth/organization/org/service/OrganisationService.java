@@ -32,10 +32,10 @@ public class OrganisationService {
     @Transactional
     public OrganisationData createOrganization(OrganisationData o) {
 
-        Optional<Organisation> orgx = orgRepository.findTopByOrderByOrganizationNameDesc();
-        if (orgx.isPresent()) {
-            throw APIException.notFound("Organization Already Exists");
-        }
+//        Optional<Organisation> orgx = orgRepository.findTopByOrderByOrganizationNameDesc();
+//        if (orgx.isPresent()) {
+//            throw APIException.notFound("Organization Already Exists");
+//        }
 
         Organisation org = new Organisation();
         //check if there is an organization already
@@ -65,7 +65,6 @@ public class OrganisationService {
         a.setLine2(o.getLine2());
         a.setPostalCode(o.getPostalCode());
         a.setTown(o.getTown());
-        System.out.println("o.getAddressType() " + o.getAddressType());
         if (o.getAddressType() != null && !o.getAddressType().equals("")) {
             a.setType(Address.Type.valueOf(o.getAddressType()));
         }

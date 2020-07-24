@@ -81,14 +81,14 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Item Code]]></text>
+				<text><![CDATA[ItemCode]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="179" y="14" width="75" height="15" forecolor="#FF0000" uuid="39a56b9d-4c64-426d-bff4-302e706ebb28"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Available Stock]]></text>
+				<text><![CDATA[StockCount]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="395" y="14" width="66" height="15" forecolor="#FF0000" uuid="fd9a15ab-4661-4f49-befd-1ab88f92cb68"/>

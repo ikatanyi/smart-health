@@ -38,6 +38,7 @@
 	<field name="duration" class="java.lang.Integer"/>
 	<field name="durationUnits" class="java.lang.String"/>
 	<field name="prescriptionDate" class="java.lang.Object"/>
+	<field name="physician" class="java.lang.String"/>
 	<variable name="amount" class="java.lang.String">
 		<variableExpression><![CDATA[]]></variableExpression>
 	</variable>
@@ -199,7 +200,7 @@
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="40">
+		<band height="54">
 			<staticText>
 				<reportElement x="0" y="2" width="100" height="11" uuid="a828130b-d2e4-4223-9f7b-b722d11713ba"/>
 				<textElement>
@@ -208,23 +209,30 @@
 				<text><![CDATA[Physician Signature]]></text>
 			</staticText>
 			<line>
-				<reportElement x="73" y="11" width="121" height="1" uuid="321348a3-011e-4025-a7a5-8437cd9309ee"/>
+				<reportElement x="73" y="11" width="142" height="1" uuid="321348a3-011e-4025-a7a5-8437cd9309ee"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Dashed" lineColor="#666666"/>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="0" y="13" width="381" height="13" uuid="e682a494-5a4c-4795-b1e2-9bc9316621b5"/>
+				<reportElement x="0" y="26" width="381" height="13" uuid="e682a494-5a4c-4795-b1e2-9bc9316621b5"/>
 				<textElement textAlignment="Center">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Do not substitute. Dispense as prescribed]]></text>
 			</staticText>
 			<subreport>
-				<reportElement x="0" y="26" width="380" height="14" uuid="73c131ce-a28d-4a51-856f-f9b851e173af"/>
+				<reportElement x="0" y="38" width="380" height="14" uuid="73c131ce-a28d-4a51-856f-f9b851e173af"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
 			</subreport>
+			<textField isBlankWhenNull="true">
+				<reportElement x="100" y="11" width="125" height="12" uuid="2b3a6e33-83d0-45dd-8ffc-ae358094811c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{physician}]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnFooter>
 </jasperReport>

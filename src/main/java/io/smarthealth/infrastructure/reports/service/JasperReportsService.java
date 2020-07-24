@@ -293,6 +293,15 @@ public class JasperReportsService {
         Facility facility = facilityService.loggedFacility();
 
         Header headerData = Header.map(facility);
+        
+         if (facility.getCompanyLogo() == null) {
+             headerData.setIMAGE(new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
+             jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
+        } else {
+             headerData.setIMAGE(new ByteArrayInputStream(facility.getCompanyLogo().getData()));
+             jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream(facility.getCompanyLogo().getData()));
+        }
+        
         header.add(headerData);
         jasperParameter.put("Header_Data", header);
         jasperParameter.put("SUBREPORT_DIR", appProperties.getReportLoc() + "/subreports/");
@@ -373,11 +382,7 @@ public class JasperReportsService {
         jasperParameter.put("Employee_Data", employeeDataArray);
         jasperParameter.put("Supplier_Data", Arrays.asList(supplierData));
 
-        if (facility.getCompanyLogo() == null) {
-            jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
-        } else {
-            jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream(facility.getCompanyLogo().getData()));
-        }
+       
         return jasperParameter;
     }
 
