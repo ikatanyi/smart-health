@@ -180,7 +180,7 @@
 			</line>
 			<staticText>
 				<reportElement positionType="Float" mode="Transparent" x="1" y="44" width="570" height="14" forecolor="#000000" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
-				<textElement verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient Medical Note]]></text>
@@ -190,7 +190,6 @@
 				<subreportParameter name="Patient_Data">
 					<subreportParameterExpression><![CDATA[$P{Patient_Data}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="PIC_DIR"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
