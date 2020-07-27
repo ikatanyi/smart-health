@@ -51,7 +51,7 @@
 					<font size="9"/>
 					<paragraph rightIndent="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{amount}.equals(null)?new BigDecimal(0):$F{amount}.setScale( 2, RoundingMode.HALF_UP)]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{amount}.equals(null)?new BigDecimal(0):$F{amount}.setScale(2, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

@@ -331,14 +331,14 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{Helper_SCRIPTLET}.round($F{amount}.equals(null)?new BigDecimal(0):$F{amount}, RoundingMode.HALF_UP, "#,##0.00")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{amount}.equals(null)?new BigDecimal(0):$F{amount}.setScale(2, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
 			</textField>
 			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="486" y="37" width="57" height="14" uuid="c932f3de-d592-4733-bd3b-cf904407985f"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{Helper_SCRIPTLET}.round($F{balance}.equals(null)?new BigDecimal(0):$F{balance}, RoundingMode.HALF_UP, "#,##0")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{balance}.equals(null)?new BigDecimal(0):$F{balance}.setScale(2, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
 			</textField>
 			<subreport>
 				<reportElement x="361" y="18" width="182" height="18" isRemoveLineWhenBlank="true" uuid="1ffcc075-b8e6-43dc-8c9f-166f6c6e5b7d"/>
