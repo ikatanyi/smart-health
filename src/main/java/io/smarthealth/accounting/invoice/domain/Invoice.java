@@ -11,6 +11,7 @@ import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,7 +124,7 @@ public class Invoice extends Auditable {
         data.setInvoiceDate(this.date);
         data.setDueDate(this.dueDate);
         data.setNumber(this.number);
-        data.setAmount(this.amount);
+        data.setAmount(this.amount.setScale(0, RoundingMode.HALF_UP));
         data.setDiscount(this.discount);
         data.setTax(this.tax);
         data.setBalance(this.balance);

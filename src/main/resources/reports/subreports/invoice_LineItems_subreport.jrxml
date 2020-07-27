@@ -38,7 +38,7 @@
 				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement x="355" y="0" width="82" height="20" uuid="20c53067-d5ae-424e-9714-ed7243ef2d4a"/>
+				<reportElement x="355" y="0" width="96" height="20" uuid="20c53067-d5ae-424e-9714-ed7243ef2d4a"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 					<paragraph rightIndent="10"/>
@@ -51,7 +51,7 @@
 					<font size="9"/>
 					<paragraph rightIndent="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{amount}.equals(null)?new BigDecimal(0):$F{amount}.setScale(2, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{amount}.equals( null )?new BigDecimal(0):$F{amount}.setScale(0,  java.math.RoundingMode.HALF_UP)]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
