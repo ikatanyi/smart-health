@@ -24,7 +24,8 @@ public class InvoiceReceipt {
         Receipt
     }
     private Long id;
-    private Type type;
+    private Type type;    
+    private String reportType;
     private String reference;
     private BigDecimal amount;
     

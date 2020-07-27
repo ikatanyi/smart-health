@@ -3,9 +3,10 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<field name="type" class="java.lang.String"/>
+	<field name="type" class="java.lang.Object"/>
 	<field name="reference" class="java.lang.String"/>
 	<field name="amount" class="java.math.BigDecimal"/>
+	<field name="reportType" class="java.lang.String"/>
 	<variable name="total_receipt" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
 		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>

@@ -142,7 +142,7 @@ public class Invoice extends Auditable {
                         .filter(x -> x.getBillItem().getAmount() < 0)
                         .map(x -> {
                             InvoiceReceipt.Type type = x.getBillItem().getItem().getCategory() == ItemCategory.CoPay ? InvoiceReceipt.Type.Copayment : InvoiceReceipt.Type.Receipt;
-                            return new InvoiceReceipt(x.getId(), type, x.getBillItem().getPaymentReference(), toBigDecimal(x.getBillItem().getAmount()).negate());
+                            return new InvoiceReceipt(x.getId(), type, type.name(), x.getBillItem().getPaymentReference(), toBigDecimal(x.getBillItem().getAmount()).negate());
                         })
                         .collect(Collectors.toList())
         );

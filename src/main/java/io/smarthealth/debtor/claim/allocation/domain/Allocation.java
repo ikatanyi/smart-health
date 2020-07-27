@@ -9,7 +9,9 @@ import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.infrastructure.utility.RoundingHelper;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import javax.persistence.Entity;
@@ -41,7 +43,7 @@ public class Allocation extends Auditable {
         data.setAmount(this.getAmount());
         data.setBalance(this.getBalance());
         if (this.getInvoice() != null) {
-            data.setInvoiceAmount(this.getInvoice().getAmount());
+            data.setInvoiceAmount(this.getInvoice().getAmount().setScale(2,RoundingMode.HALF_UP));
             data.setInvoiceNo(this.getInvoice().getNumber());
             data.setPayer(this.getInvoice().getPayer().getPayerName());
             data.setScheme(this.getInvoice().getScheme().getSchemeName());
