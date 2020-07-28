@@ -133,6 +133,10 @@ public class VisitService {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
     }
+    
+    public Optional<Visit> findVisit(String visitNumber){
+        return this.visitRepository.findByVisitNumber(visitNumber);
+    }
 
     public Optional<Visit> fetchVisitByPatientAndStatus(final Patient patient, final VisitEnum.Status status) {
         return this.visitRepository.findByPatientAndStatus(patient, status);
