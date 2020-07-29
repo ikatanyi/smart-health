@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="480" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="54"/>
+	<property name="ireport.y" value="689"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
@@ -46,19 +46,19 @@
 		<band height="440" splitType="Stretch">
 			<elementGroup>
 				<rectangle>
-					<reportElement positionType="Float" x="2" y="185" width="553" height="206" uuid="63e193d5-7bbe-4c2a-a8d0-875e62be2939"/>
+					<reportElement positionType="Float" x="2" y="241" width="553" height="150" uuid="63e193d5-7bbe-4c2a-a8d0-875e62be2939"/>
 					<graphicElement>
 						<pen lineWidth="0.25"/>
 					</graphicElement>
 				</rectangle>
 				<rectangle>
-					<reportElement positionType="Float" x="2" y="185" width="183" height="187" uuid="458b962a-9611-4cb9-a17c-3191d2044366"/>
+					<reportElement positionType="Float" x="2" y="241" width="183" height="131" uuid="458b962a-9611-4cb9-a17c-3191d2044366"/>
 					<graphicElement>
 						<pen lineWidth="0.25"/>
 					</graphicElement>
 				</rectangle>
 				<rectangle>
-					<reportElement positionType="Float" x="372" y="185" width="183" height="206" uuid="d2bb9564-ed7b-4d84-96c4-96592302e432"/>
+					<reportElement positionType="Float" x="372" y="241" width="183" height="150" uuid="d2bb9564-ed7b-4d84-96c4-96592302e432"/>
 					<graphicElement>
 						<pen lineWidth="0.25"/>
 					</graphicElement>
@@ -108,7 +108,7 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="70">
+		<band height="64">
 			<subreport>
 				<reportElement x="1" y="2" width="307" height="48" uuid="9f408f77-6458-4591-935a-77d74f77e4d6">
 					<printWhenExpression><![CDATA[$P{category}.equals( "Supplier" )]]></printWhenExpression>
@@ -185,7 +185,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="13" splitType="Stretch">
+		<band height="15" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="0" width="555" height="12" uuid="54e99b1e-9fa6-4102-80a1-2ada1552b1e9">
 					<printWhenExpression><![CDATA[$P{category}.equals( "Doctor" )||$P{category}.equals( "Supplier" )]]></printWhenExpression>
@@ -194,7 +194,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "payment_voucher_subreport.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement x="0" y="0" width="555" height="13" uuid="f9c90bad-1d6a-4b5d-ac83-0e773438bbbe">
+				<reportElement x="0" y="0" width="555" height="14" uuid="f9c90bad-1d6a-4b5d-ac83-0e773438bbbe">
 					<printWhenExpression><![CDATA[$P{category}.equals( "PettyCash" )]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{PaymentData})]]></dataSourceExpression>
