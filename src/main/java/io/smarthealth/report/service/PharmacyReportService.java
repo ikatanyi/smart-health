@@ -44,18 +44,22 @@ public class PharmacyReportService {
     
     public void getPrescription(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        Visit visit = null;
         String visitNumber = reportParam.getFirst("visitNumber");
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        List<PrescriptionData> requestData = prescriptionService.fetchAllPrescriptionsByVisit(visit, Pageable.unpaged())
-                .getContent()
+        String orderNumber = reportParam.getFirst("orderNumber");
+        Optional<Visit> visit1 = visitService.findVisit(visitNumber);
+        if(visit1.isPresent())
+            visit = visit1.get();
+        List<PrescriptionData> requestData = prescriptionService.fetchPrescriptionByNumber(orderNumber, visit)
+//                .getContent()
                 .stream()
                 .map((test) -> PrescriptionData.map(test))
                 .collect(Collectors.toList());
 
-        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
-        if (visit.getHealthProvider() != null) {
-            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
-        }
+//        reportData.setPatientNumber(requestData.get(0).visit.getPatient().getPatientNumber());
+//        if (visit.getHealthProvider() != null) {
+//            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
+//        }
         reportData.setData(requestData);
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/pharmacy/prescription");

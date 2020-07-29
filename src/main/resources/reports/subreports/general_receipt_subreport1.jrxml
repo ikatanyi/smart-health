@@ -79,7 +79,7 @@
 					<font size="10"/>
 					<paragraph rightIndent="15"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{Helper_SCRIPTLET}.round(($F{itemName}.equalsIgnoreCase( "Copay" )?$F{amountPaid}.negate():$F{amountPaid}), RoundingMode.HALF_UP, "#,##0.00")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{itemName}.equalsIgnoreCase( "Copay" )?$F{amountPaid}.negate():$F{amountPaid}).setScale(0, RoundingMode.HALF_UP)]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

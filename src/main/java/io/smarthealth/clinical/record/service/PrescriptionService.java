@@ -39,6 +39,10 @@ public class PrescriptionService {
         return prescriptionRepository.saveAll(prescription);
     }
     
+     public List<Prescription> fetchPrescriptionByNumber(final String orderNumber, final Visit visit) {
+        return prescriptionRepository.findByOrderNumberOrVisit(orderNumber, visit);
+    }
+    
     public Page<Prescription> fetchAllPrescriptionsByVisit(final Visit visit, final Pageable pageable){
        return  prescriptionRepository.findByVisit(visit, pageable);
     }
