@@ -730,14 +730,19 @@ public class AccountReportService {
     
     public void getPatientStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        String patientNumber = reportParam.getFirst("patientNumber");
         String visitNumber = reportParam.getFirst("visitNumber");
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        List<BillItemData> data = billService.getReceiptedBillItems(visitNumber, Pageable.unpaged())
+        String billNumber = reportParam.getFirst("billNumber");
+        Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
+        Boolean hasBalance = reportParam.getFirst("hasBalance") != null ? Boolean.getBoolean(reportParam.getFirst("hasBalance")) : null;
+        BillStatus status = BillStatusToEnum(reportParam.getFirst("billStatus"));
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
+        List<BillItemData> data = billService.getPatientBillItems(patientNumber, visitNumber, billNumber, null,servicePointId, hasBalance, status, range, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((bill)->bill.toData())
                 .collect(Collectors.toList());    
-        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        reportData.setPatientNumber(patientNumber);
         reportData.setData(data);
         reportData.setFormat(format);
         reportData.setTemplate("/payments/patient_statement");
@@ -830,6 +835,16 @@ public class AccountReportService {
             return PaymentMethod.valueOf(status);
         }
         throw APIException.internalError("Provide a Valid Payment Method");
+    }
+    
+    private BillStatus BillStatusToEnum(String status) {
+        if (status == null || status.equals("null") || status.equals("")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(BillStatus.class, status)) {
+            return BillStatus.valueOf(status);
+        }
+        throw APIException.internalError("Provide a Valid Bill Status");
     }
     
 }
