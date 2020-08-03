@@ -28,7 +28,7 @@ public class CareTeam extends Auditable {
     
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_care_team_admission_id"))
     @ManyToOne
-    private Admissions admission;
+    private Admission admission;
     
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_care_team_medic_id"))

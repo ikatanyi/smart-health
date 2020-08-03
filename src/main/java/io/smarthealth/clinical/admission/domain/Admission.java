@@ -20,7 +20,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "patient_admissions")
-public class Admissions extends Visit {
+public class Admission extends Visit {
 
 //    public enum Status {
 //        Admitted,

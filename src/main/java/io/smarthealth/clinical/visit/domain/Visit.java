@@ -38,9 +38,9 @@ public class Visit extends Auditable {
     private Employee healthProvider;
 
     private LocalDateTime startDatetime;
-    
+
     private LocalDateTime stopDatetime;
-    
+
     private String comments;
 
     @Column(length = 50)
@@ -60,7 +60,7 @@ public class Visit extends Auditable {
     private VisitEnum.ServiceType serviceType;
 
     private int triageCategory;
-    
+
     private Boolean isActiveOnConsultation;
 
     @ManyToOne(fetch = FetchType.LAZY)
