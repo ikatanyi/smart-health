@@ -129,16 +129,7 @@ public class UserService {
 
         return notificationRepository.findByRecipientAndIsRead(user, false);
     }
-
-//    public void addEmitter(final SseEmitter emitter) {
-//        emitters.add(emitter);
-//    }
-//
-//    public void removeEmitter(final SseEmitter emitter) {
-//        emitters.remove(emitter);
-//    }
-////Will convert this to an event so that it listens to this
-//
+ 
 //    @Async
 //    @Scheduled(fixedRate = 5000)
 //    public void doNotify() throws IOException {
