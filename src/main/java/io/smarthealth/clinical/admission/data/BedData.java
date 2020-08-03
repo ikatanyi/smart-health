@@ -1,6 +1,6 @@
-package io.smarthealth.clinical.inpatient.setup.data;
+package io.smarthealth.clinical.admission.data;
 
-import io.smarthealth.clinical.inpatient.setup.domain.Bed;
+import io.smarthealth.clinical.admission.domain.Bed;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;

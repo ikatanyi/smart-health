@@ -1,11 +1,7 @@
-package io.smarthealth.clinical.inpatient.setup.domain;
+package io.smarthealth.clinical.admission.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.clinical.inpatient.setup.data.BedData;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
+import io.smarthealth.clinical.admission.data.BedData;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,7 +9,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -23,7 +18,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "hp_beds")
+@Table(name = "facility_bed")
 public class Bed extends Identifiable {
 
     public enum Status {
@@ -40,35 +35,18 @@ public class Bed extends Identifiable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_bed_room_id"))
     private Room room;
-
-    @OneToMany(mappedBy = "bed", cascade = CascadeType.ALL)
-    private List<BedCharge> bedCharges = new ArrayList<>();
-
-    private Boolean active;
-
-    public void addCharges(BedCharge charge) {
-        charge.setBed(this);
-        bedCharges.add(charge);
-    }
-
-    public void addCharges(List<BedCharge> charge) {
-        this.bedCharges = charge;
-        this.bedCharges.forEach(x -> x.setBed(this));
-    }
+ 
+    private Boolean isActive=Boolean.TRUE;
 
     public BedData toData() {
         BedData data = new BedData();
         data.setId(this.getId());
-        data.setActive(this.active);
+        data.setActive(this.isActive);
         data.setDescription(this.description);
         data.setName(this.name);
         data.setRoom(this.room.getName());
         data.setRoomId(this.room.getId());
-        data.setStatus(this.status);
-        data.setBedCharges(
-                this.getBedCharges().stream()
-                        .map(x -> x.toData()).collect(Collectors.toList())
-        );
+        data.setStatus(this.status); 
         return data;
     }
 }

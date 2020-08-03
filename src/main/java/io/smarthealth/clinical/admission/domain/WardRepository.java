@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.inpatient.setup.domain;
+package io.smarthealth.clinical.admission.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,6 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author Kelsas
  */
-public interface RoomRepository extends JpaRepository<Room, Long> {
+public interface WardRepository extends JpaRepository<Ward, Long> {
 
 }

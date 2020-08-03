@@ -38,7 +38,9 @@ public class Visit extends Auditable {
     private Employee healthProvider;
 
     private LocalDateTime startDatetime;
+    
     private LocalDateTime stopDatetime;
+    
     private String comments;
 
     @Column(length = 50)

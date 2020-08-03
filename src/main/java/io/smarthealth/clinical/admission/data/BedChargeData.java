@@ -3,16 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.inpatient.setup.data;
+package io.smarthealth.clinical.admission.data;
 
-import io.smarthealth.infrastructure.domain.Auditable;
-import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import lombok.Data;
 
 /**

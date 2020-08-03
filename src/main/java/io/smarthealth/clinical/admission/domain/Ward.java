@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.inpatient.setup.domain;
+package io.smarthealth.clinical.admission.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.clinical.inpatient.setup.data.WardData;
+import io.smarthealth.clinical.admission.data.WardData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "hp_wards")
+@Table(name = "facility_ward")
 public class Ward extends Identifiable {
 
     @Column(name = "ward_name")
@@ -32,11 +32,11 @@ public class Ward extends Identifiable {
     @OneToMany(mappedBy = "ward")
     private List<Room> rooms = new ArrayList<>();
 
-    private Boolean active;
+    private Boolean isActive=Boolean.TRUE;
 
     public WardData toData() {
         WardData data = new WardData();
-        data.setActive(this.active);
+        data.setActive(this.isActive);
         data.setDescription(this.description);
         data.setId(this.getId());
         data.setName(this.name);

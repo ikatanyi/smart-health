@@ -1,6 +1,6 @@
-package io.smarthealth.clinical.inpatient.setup.data;
+package io.smarthealth.clinical.admission.data;
 
-import io.smarthealth.clinical.inpatient.setup.domain.Room;
+import io.smarthealth.clinical.admission.domain.Room;
 import lombok.Data;
 
 /**

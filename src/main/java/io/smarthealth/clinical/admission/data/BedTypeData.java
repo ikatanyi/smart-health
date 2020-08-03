@@ -3,14 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.inpatient.setup.domain;
+package io.smarthealth.clinical.admission.data;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import lombok.Data;
 
 /**
  *
  * @author Kelsas
  */
-public interface WardRepository extends JpaRepository<Ward, Long> {
+@Data
+public class BedTypeData {
 
+    private String name;
+    private String description;
 }

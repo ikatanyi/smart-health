@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.inpatient.setup.domain;
-
-import org.springframework.data.jpa.repository.JpaRepository;
+package io.smarthealth.clinical.admission.domain;
 
 /**
  *
  * @author Kelsas
  */
-public interface BedRepository extends JpaRepository<Bed, Long> {
-
+public enum CareTeamRole {
+    Admitting,
+    Nursing,
+    Referring
 }

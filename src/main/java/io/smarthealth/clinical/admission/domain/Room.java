@@ -1,7 +1,8 @@
-package io.smarthealth.clinical.inpatient.setup.domain;
+package io.smarthealth.clinical.admission.domain;
 
+import io.smarthealth.clinical.admission.domain.Ward;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.clinical.inpatient.setup.data.RoomData;
+import io.smarthealth.clinical.admission.data.RoomData;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,13 +19,12 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "hp_rooms")
+@Table(name = "facility_room")
 public class Room extends Identifiable {
 
     public enum Type {
         Male,
         Female,
-        Mixed,
         General
     }
     @Column(name = "room_name")
@@ -35,12 +35,12 @@ public class Room extends Identifiable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_room_ward_id"))
     private Ward ward;
-    private Boolean active;
+    private Boolean isActive=Boolean.TRUE;
 
     public RoomData toData() {
         RoomData data = new RoomData();
         data.setId(this.getId());
-        data.setActive(this.active);
+        data.setActive(this.isActive);
         data.setDescription(this.description);
         data.setName(this.name);
         data.setType(this.type);
