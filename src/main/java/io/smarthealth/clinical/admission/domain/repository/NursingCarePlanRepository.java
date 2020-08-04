@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.admission.domain;
+package io.smarthealth.clinical.admission.domain.repository;
 
+import io.smarthealth.clinical.admission.domain.NursingCarePlan;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
  * @author Kelsas
  */
-public interface WardTransferRepository extends JpaRepository<WardTransfer, Long>{
+public interface NursingCarePlanRepository extends JpaRepository<NursingCarePlan, Long> {
     
 }
