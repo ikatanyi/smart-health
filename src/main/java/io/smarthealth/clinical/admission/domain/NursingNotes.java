@@ -25,10 +25,10 @@ import lombok.Data;
 @Table(name = "patient_nursing_notes")
 public class NursingNotes extends Auditable{
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_discharge_patient_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_nursing_notes_patient_id"))
     private Patient patient;
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_discharge_admission_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_nursing_notes_admission_id"))
     private Admission admission;
     private LocalDateTime datetime;
     private String notes;

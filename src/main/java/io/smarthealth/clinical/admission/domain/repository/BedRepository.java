@@ -1,5 +1,6 @@
-package io.smarthealth.clinical.admission.domain;
+package io.smarthealth.clinical.admission.domain.repository;
 
+import io.smarthealth.clinical.admission.domain.Bed;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
