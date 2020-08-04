@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
@@ -30,6 +32,7 @@ public class Ward extends Identifiable {
     private String description;
 
     @OneToMany(mappedBy = "ward")
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_facility_ward_room_id"))
     private List<Room> rooms = new ArrayList<>();
 
     private Boolean isActive=Boolean.TRUE;
