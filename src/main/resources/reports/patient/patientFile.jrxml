@@ -215,9 +215,11 @@
 				<subreportParameter name="Patient_Data">
 					<subreportParameterExpression><![CDATA[$P{Patient_Data}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="PIC_DIR"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
@@ -253,7 +255,7 @@
 				</graphicElement>
 			</line>
 			<subreport>
-				<reportElement x="290" y="0" width="282" height="57" uuid="efaeaba5-2b9b-4a48-9bfe-9bdbe239e0c6"/>
+				<reportElement x="2" y="0" width="570" height="57" uuid="efaeaba5-2b9b-4a48-9bfe-9bdbe239e0c6"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{employeeData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "employee-banner.jasper"]]></subreportExpression>
 			</subreport>

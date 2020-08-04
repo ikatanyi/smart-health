@@ -77,9 +77,26 @@
 	</variable>
 	<group name="visit">
 		<groupExpression><![CDATA[$F{visitNumber}]]></groupExpression>
+		<groupHeader>
+			<band height="26">
+				<textField>
+					<reportElement x="1" y="9" width="100" height="14" uuid="43e5d31a-7965-4dee-87b8-037633af7252"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{visitNumber}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement positionType="Float" x="0" y="23" width="556" height="1" uuid="fe89c31e-cf26-412d-99b5-389df3f7e0ab"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineColor="#9999FF"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupHeader>
 		<groupFooter>
 			<band height="16">
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="488" y="0" width="66" height="16" uuid="b7c94109-3627-4e12-a3f5-51e4dc4a0718"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
@@ -87,16 +104,16 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$V{balance_1}]]></textFieldExpression>
 				</textField>
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="416" y="0" width="69" height="16" uuid="6b2a76ca-4934-4f9e-ad90-13d33b008779"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
-						<paragraph rightIndent="10"/>
+						<paragraph rightIndent="15"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{price_1}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{price_1}.equals( null )?0.00:$V{price_1}]]></textFieldExpression>
 				</textField>
-				<textField>
-					<reportElement x="233" y="0" width="57" height="16" uuid="262201e1-b3d2-4cb2-b29a-97e7d9828137"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="269" y="0" width="57" height="16" uuid="262201e1-b3d2-4cb2-b29a-97e7d9828137"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 						<paragraph rightIndent="10"/>
@@ -110,7 +127,7 @@
 					</graphicElement>
 				</line>
 				<staticText>
-					<reportElement x="160" y="1" width="56" height="15" uuid="df0e9522-aa63-4340-a179-67512062870c"/>
+					<reportElement x="217" y="1" width="52" height="15" uuid="df0e9522-aa63-4340-a179-67512062870c"/>
 					<textElement>
 						<font isBold="true"/>
 						<paragraph leftIndent="10" rightIndent="10"/>
@@ -120,80 +137,164 @@
 			</band>
 		</groupFooter>
 	</group>
-	<background>
-		<band height="159" splitType="Stretch">
-			<staticText>
-				<reportElement x="87" y="49" width="376" height="64" forecolor="#FF3333" uuid="6aeee70c-2e6a-447a-a105-a8261caa2c11">
-					<printWhenExpression><![CDATA[]]></printWhenExpression>
-				</reportElement>
-				<textElement textAlignment="Center" rotation="None">
-					<font size="48" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Incomplete]]></text>
-			</staticText>
-		</band>
-	</background>
 	<title>
-		<band height="76" splitType="Stretch">
+		<band height="121" splitType="Stretch">
+			<staticText>
+				<reportElement x="376" y="1" width="179" height="18" uuid="48ee5463-c19a-4f34-8b19-898a3142d7ab"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Patient Statement]]></text>
+			</staticText>
 			<subreport>
-				<reportElement x="1" y="0" width="252" height="42" uuid="e89e1818-4d89-4b2a-b6b3-78ffd1f66ae4"/>
+				<reportElement x="0" y="1" width="290" height="119" uuid="e89e1818-4d89-4b2a-b6b3-78ffd1f66ae4"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
-			<subreport>
-				<reportElement positionType="Float" x="352" y="35" width="202" height="41" uuid="1e86a1f4-ea41-4273-b237-bcfcc4bdc3ea"/>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
-			</subreport>
-		</band>
-	</title>
-	<pageHeader>
-		<band height="18" splitType="Stretch">
+			<rectangle>
+				<reportElement x="424" y="19" width="129" height="38" uuid="4dcc328a-1413-47e4-8a6a-771ed28490d5"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="377" y="19" width="47" height="12" uuid="68d8ad53-9591-4fc0-a3b3-df478f89d3fe"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="377" y="31" width="47" height="13" uuid="1395541b-f2dd-4efe-8aa8-77671d093904"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Statement #]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="377" y="45" width="47" height="13" uuid="a66b4f3d-a96b-46e5-ab81-297055714a9a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Patient Id :]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="424" y="31" width="129" height="13" uuid="d89d371a-8420-4841-9e9f-3ae2426fc417"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
 			<textField pattern="dd-MM-yyyy">
-				<reportElement x="477" y="1" width="78" height="16" uuid="70e6d0b1-f36d-44f3-8fb7-d8e848c1b7ef"/>
+				<reportElement x="424" y="19" width="129" height="12" uuid="70e6d0b1-f36d-44f3-8fb7-d8e848c1b7ef"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
+					<paragraph leftIndent="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
+			<textField>
+				<reportElement x="424" y="44" width="129" height="13" uuid="8214cb3c-6978-47f9-83aa-b6da6e153d04"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="82" splitType="Stretch">
 			<line>
-				<reportElement x="1" y="17" width="553" height="1" uuid="51220d0c-28bd-4499-b2db-49b38453630b"/>
+				<reportElement x="2" y="81" width="553" height="1" uuid="51220d0c-28bd-4499-b2db-49b38453630b"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineColor="#9999FF"/>
 				</graphicElement>
 			</line>
-			<staticText>
-				<reportElement x="1" y="0" width="553" height="18" uuid="48ee5463-c19a-4f34-8b19-898a3142d7ab"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Patient Statement]]></text>
-			</staticText>
 			<line>
 				<reportElement x="2" y="0" width="553" height="1" uuid="8d1004cc-e11a-40f1-8eba-53611f04a6c7"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineColor="#9999FF"/>
 				</graphicElement>
 			</line>
+			<staticText>
+				<reportElement x="2" y="1" width="231" height="14" uuid="83f02c13-6a69-40ec-960c-150370ac0292"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bill To:]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="2" y="16" width="231" height="58" uuid="b2964ccc-ef89-4139-bb81-e5e49b803f0a"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="412" y="1" width="141" height="14" uuid="aac00334-d529-4391-924a-7d4b2690bc42"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Account Summary]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="415" y="39" width="68" height="11" uuid="f92d596b-8904-45ca-add4-ee96e06d7f7e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[New Charges]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="415" y="27" width="68" height="11" uuid="9a360330-c860-4e40-86d9-bca7963b181f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Credits.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="415" y="16" width="68" height="11" uuid="be4e769e-e3af-48d2-a100-3442ddb6c470"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Previous Balance.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="415" y="51" width="68" height="11" uuid="d5b77cfc-0014-4f60-86d3-85340fa988a3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Balance Due.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="415" y="63" width="68" height="11" uuid="af89e9e4-c882-4f74-b06b-3c7b7ea9c482"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payment Due Date]]></text>
+			</staticText>
+			<line>
+				<reportElement x="415" y="63" width="137" height="1" uuid="c93ce44f-b915-411d-a508-948a26b2f873"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="41" splitType="Stretch">
+		<band height="22" splitType="Stretch">
 			<staticText>
-				<reportElement x="75" y="27" width="66" height="14" uuid="1a00218e-ee18-47e7-9145-6bdd048f041e"/>
+				<reportElement x="75" y="8" width="66" height="14" uuid="1a00218e-ee18-47e7-9145-6bdd048f041e"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Service Point]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="142" y="27" width="127" height="14" uuid="2566fda8-beee-468d-829c-ad5299c5d77f"/>
+				<reportElement x="142" y="8" width="127" height="14" uuid="2566fda8-beee-468d-829c-ad5299c5d77f"/>
 				<textElement>
 					<font isBold="true"/>
 					<paragraph leftIndent="10" rightIndent="10"/>
@@ -201,45 +302,45 @@
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="269" y="27" width="57" height="14" uuid="b956b4f7-ce3c-4411-be11-848e1546904f"/>
+				<reportElement x="269" y="8" width="57" height="14" uuid="b956b4f7-ce3c-4411-be11-848e1546904f"/>
 				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Amount]]></text>
+				<text><![CDATA[Charges]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="488" y="27" width="66" height="14" uuid="77dc0733-032d-4ae6-8a77-7bdcb8436ff6"/>
+				<reportElement x="488" y="8" width="66" height="14" uuid="77dc0733-032d-4ae6-8a77-7bdcb8436ff6"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Running Amt.]]></text>
 			</staticText>
 			<line>
-				<reportElement positionType="Float" x="0" y="40" width="556" height="1" uuid="2bfa96f9-aaec-4bd9-b34d-e3fadd079a05"/>
+				<reportElement positionType="Float" x="0" y="21" width="556" height="1" uuid="2bfa96f9-aaec-4bd9-b34d-e3fadd079a05"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineColor="#9999FF"/>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="328" y="26" width="84" height="14" uuid="64b94a65-29aa-4aac-9345-077c0a7573fb"/>
+				<reportElement x="328" y="7" width="84" height="14" uuid="64b94a65-29aa-4aac-9345-077c0a7573fb"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Payment Ref.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="416" y="26" width="69" height="14" uuid="f41ca1db-cb44-42c1-9593-0a2744d6921d"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement x="416" y="7" width="69" height="14" uuid="f41ca1db-cb44-42c1-9593-0a2744d6921d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Paid Amount]]></text>
+				<text><![CDATA[Credit]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="2" y="26" width="73" height="14" uuid="107d12ba-6a38-4151-a3a3-c0a16bd918f4"/>
+				<reportElement x="2" y="8" width="73" height="13" uuid="107d12ba-6a38-4151-a3a3-c0a16bd918f4"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Billing Date]]></text>
+				<text><![CDATA[Date]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -268,18 +369,18 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="328" y="0" width="84" height="13" uuid="9b3d4a8b-0316-4ff1-95ad-e2fec2c2526f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{paymentReference}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="416" y="0" width="69" height="13" uuid="8147eadf-5290-47b2-936f-d7a542b14d9d"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
-					<paragraph rightIndent="10"/>
+					<paragraph rightIndent="15"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{price}.equals( null )?0.00:$F{price}]]></textFieldExpression>
 			</textField>

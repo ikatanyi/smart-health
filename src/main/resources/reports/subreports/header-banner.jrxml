@@ -17,7 +17,7 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="Patient_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Patient_Data" class="java.util.List"/>
 	<parameter name="display_patient" class="java.lang.String"/>
 	<field name="facilityName" class="java.lang.String"/>
 	<field name="facilityType" class="java.lang.String"/>
@@ -37,6 +37,7 @@
 	<field name="salutation" class="java.lang.String"/>
 	<field name="telephone" class="java.lang.String"/>
 	<field name="tax" class="java.lang.String"/>
+	<field name="IMAGE" class="java.io.InputStream"/>
 	<variable name="locale" class="java.lang.String">
 		<variableExpression><![CDATA[$F{orgAddressLine1}+","+$F{orgAddressLine2}+"\n"+$F{orgAddressCountry}+", "+$F{orgAddressCounty}]]></variableExpression>
 	</variable>
@@ -88,15 +89,15 @@
 				<textFieldExpression><![CDATA[$F{orgWebsite}]]></textFieldExpression>
 			</textField>
 			<image hAlign="Left" isUsingCache="true" isLazy="true" onErrorType="Blank">
-				<reportElement style="bannerStyle" x="1" y="2" width="233" height="58" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
-				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
+				<reportElement style="headerStyle" x="0" y="2" width="234" height="58" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
+				<imageExpression><![CDATA[$F{IMAGE}]]></imageExpression>
 			</image>
-			<subreport>
-				<reportElement x="329" y="60" width="184" height="79" uuid="a47b2fd5-4260-4202-9855-d0183ebebc73"/>
-				<subreportParameter name="PIC_DIR"/>
-				<subreportParameter name="IMAGE_DIR"/>
+			<subreport isUsingCache="false">
+				<reportElement x="329" y="60" width="184" height="79" isRemoveLineWhenBlank="true" uuid="a47b2fd5-4260-4202-9855-d0183ebebc73">
+					<printWhenExpression><![CDATA[$P{Patient_Data}!=null]]></printWhenExpression>
+				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Patient_Data})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient-banner.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} +"patient-banner.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>

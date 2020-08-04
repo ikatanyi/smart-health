@@ -16,17 +16,17 @@
 		<band height="13" splitType="Stretch">
 			<textField>
 				<reportElement x="120" y="0" width="80" height="13" uuid="f7a667f1-10bd-4360-b3e9-a65515fa7771"/>
-				<textElement textAlignment="Right">
-					<font size="9" isBold="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font size="10" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{method}+" :"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="200" y="0" width="55" height="13" uuid="eeac2738-50c5-4902-956e-d604d05f863c"/>
-				<textElement textAlignment="Right">
-					<font size="9" isBold="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font size="10" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{amount}.round( new MathContext(0, RoundingMode.HALF_UP) )]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

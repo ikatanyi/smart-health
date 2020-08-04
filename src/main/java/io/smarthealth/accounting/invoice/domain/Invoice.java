@@ -11,6 +11,7 @@ import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,7 +124,7 @@ public class Invoice extends Auditable {
         data.setInvoiceDate(this.date);
         data.setDueDate(this.dueDate);
         data.setNumber(this.number);
-        data.setAmount(this.amount);
+        data.setAmount(this.amount.setScale(0, RoundingMode.HALF_UP));
         data.setDiscount(this.discount);
         data.setTax(this.tax);
         data.setBalance(this.balance);
@@ -142,7 +143,7 @@ public class Invoice extends Auditable {
                         .filter(x -> x.getBillItem().getAmount() < 0)
                         .map(x -> {
                             InvoiceReceipt.Type type = x.getBillItem().getItem().getCategory() == ItemCategory.CoPay ? InvoiceReceipt.Type.Copayment : InvoiceReceipt.Type.Receipt;
-                            return new InvoiceReceipt(x.getId(), type, x.getBillItem().getPaymentReference(), toBigDecimal(x.getBillItem().getAmount()).negate());
+                            return new InvoiceReceipt(x.getId(), type, type.name(), x.getBillItem().getPaymentReference(), toBigDecimal(x.getBillItem().getAmount()).negate());
                         })
                         .collect(Collectors.toList())
         );

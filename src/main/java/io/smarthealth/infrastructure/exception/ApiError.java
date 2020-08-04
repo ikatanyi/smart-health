@@ -23,42 +23,44 @@ import org.springframework.validation.ObjectError;
  */
 @Data
 @JsonInclude(Include.NON_NULL)
-public class ApiError { 
+public class ApiError {
+
     private String code;
     @JsonIgnore
-     private HttpStatus httpStatus; 
+    private HttpStatus httpStatus;
     private String message;
     private String debugMessage;
-    private List<ApiSubError> errors; 
-    public ApiError() { 
+    private List<ApiSubError> errors;
+
+    public ApiError() {
     }
 
     public ApiError(HttpStatus status) {
         this();
         this.httpStatus = status;
-        this.code=String.valueOf(status.value());
-        this.message=status.getReasonPhrase();
+        this.code = String.valueOf(status.value());
+        this.message = status.getReasonPhrase();
     }
 
     public ApiError(HttpStatus status, Throwable ex) {
         this();
         this.httpStatus = status;
-        this.code=String.valueOf(status.value());
-        this.message=ex.getLocalizedMessage();
+        this.code = String.valueOf(status.value());
+        this.message = ex.getLocalizedMessage();
     }
 
-   public ApiError(HttpStatus status, String message, Throwable ex) {
+    public ApiError(HttpStatus status, String message, Throwable ex) {
         this();
-         this.code=String.valueOf(status.value());
-        this.message=message;
+        this.code = String.valueOf(status.value());
+        this.message = message;
         this.httpStatus = status;
     }
-    
+
     public ApiError(HttpStatus status, String message) {
         this();
         this.httpStatus = status;
-         this.code=String.valueOf(status.value());
-        this.message=message;
+        this.code = String.valueOf(status.value());
+        this.message = message;
     }
 
     private void addSubError(ApiSubError subError) {
@@ -77,8 +79,8 @@ public class ApiError {
     }
 
     private void addValidationError(FieldError fieldError) {
-        this.addValidationError( 
-                fieldError.getField(), 
+        this.addValidationError(
+                fieldError.getField(),
                 fieldError.getDefaultMessage());
     }
 
@@ -87,9 +89,7 @@ public class ApiError {
     }
 
     private void addValidationError(ObjectError objectError) {
-        this.addValidationError(
-                objectError.getObjectName(),
-                objectError.getDefaultMessage());
+        this.addValidationError(objectError.getObjectName(), objectError.getDefaultMessage());
     }
 
     void addValidationError(List<ObjectError> globalErrors) {
@@ -97,20 +97,20 @@ public class ApiError {
     }
 
     /**
-     * Utility method for adding error of ConstraintViolation. Usually when a @Validated validation fails.
+     * Utility method for adding error of ConstraintViolation. Usually when a
+     * @Validated validation fails.
      *
      * @param cv the ConstraintViolation
      */
     private void addValidationError(ConstraintViolation<?> cv) {
-        this.addValidationError( 
-                ((PathImpl) cv.getPropertyPath()).getLeafNode().asString(), 
+        this.addValidationError(
+                ((PathImpl) cv.getPropertyPath()).getLeafNode().asString(),
                 cv.getMessage());
     }
 
     void addValidationErrors(Set<ConstraintViolation<?>> constraintViolations) {
         constraintViolations.forEach(this::addValidationError);
     }
-
 
     abstract class ApiSubError {
 
@@ -121,6 +121,7 @@ public class ApiError {
     @AllArgsConstructor
     class ApiValidationError extends ApiSubError {
 //        private String object;
+
         private String field;
 //        private Object rejectedValue;
         private String message;

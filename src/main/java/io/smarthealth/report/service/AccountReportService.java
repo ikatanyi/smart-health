@@ -118,13 +118,8 @@ public class AccountReportService {
                 .stream()
                 .map((trialBalEntry) -> {
                     TrialBalanceData data = new TrialBalanceData();
-//            data.setCreditTotal(trialBalEntry.getCreditTotal());
-//            data.setDebitTotal(trialBalance.getDebitTotal());
-//            data.setCreatedBy(trialBalEntry.getLedger().getType());
                     data.setCreatedOn(trialBalEntry.getLedger().getCreatedOn());
                     data.setDescription(trialBalEntry.getLedger().getDescription());
-//            data.setLastModifiedBy(trialBalEntry.getLedger().getLastModifiedBy());
-//            data.setLastModifiedOn(trialBalEntry.getLedger().getLastModifiedOn());
                     data.setName(trialBalEntry.getLedger().getIdentifier() + " - " + trialBalEntry.getLedger().getName());
                     data.setParentLedgerIdentifier(trialBalEntry.getLedger().getParentLedgerIdentifier());
                     data.setTotalValue(trialBalEntry.getLedger().getTotalValue());
@@ -132,6 +127,7 @@ public class AccountReportService {
                     return data;
                 }).collect(Collectors.toList());
         reportData.setData(dataList);
+        reportData.getFilters().put("asAt", reportParam.getFirst("asAt"));
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/TrialBalance");
         reportData.setReportName("trialBalance");
@@ -219,6 +215,7 @@ public class AccountReportService {
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         
         reportData.setData(financialConditionSection);
+        reportData.getFilters().put("asAt", reportParam.getFirst("asAt"));
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/balance_sheet");
         reportData.setReportName("balance_sheet");
@@ -237,7 +234,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+        reportData.getFilters().put("asAt", reportParam.getFirst("asAt"));
         reportData.setData(incomeStatement);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/income_statement");
@@ -733,14 +730,19 @@ public class AccountReportService {
     
     public void getPatientStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        String patientNumber = reportParam.getFirst("patientNumber");
         String visitNumber = reportParam.getFirst("visitNumber");
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        List<BillItemData> data = billService.getReceiptedBillItems(visitNumber, Pageable.unpaged())
+        String billNumber = reportParam.getFirst("billNumber");
+        Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
+        Boolean hasBalance = reportParam.getFirst("hasBalance") != null ? Boolean.getBoolean(reportParam.getFirst("hasBalance")) : null;
+        BillStatus status = BillStatusToEnum(reportParam.getFirst("billStatus"));
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
+        List<BillItemData> data = billService.getPatientBillItems(patientNumber, visitNumber, billNumber, null,servicePointId, hasBalance, status, range, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((bill)->bill.toData())
                 .collect(Collectors.toList());    
-        reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        reportData.setPatientNumber(patientNumber);
         reportData.setData(data);
         reportData.setFormat(format);
         reportData.setTemplate("/payments/patient_statement");
@@ -833,6 +835,16 @@ public class AccountReportService {
             return PaymentMethod.valueOf(status);
         }
         throw APIException.internalError("Provide a Valid Payment Method");
+    }
+    
+    private BillStatus BillStatusToEnum(String status) {
+        if (status == null || status.equals("null") || status.equals("")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(BillStatus.class, status)) {
+            return BillStatus.valueOf(status);
+        }
+        throw APIException.internalError("Provide a Valid Bill Status");
     }
     
 }
