@@ -5,10 +5,21 @@
  */
 package io.smarthealth.clinical.admission.service;
 
+import io.smarthealth.clinical.admission.data.AdmissionData;
 import io.smarthealth.clinical.admission.domain.Admission;
+import io.smarthealth.clinical.admission.domain.Bed;
+import io.smarthealth.clinical.admission.domain.BedType;
+import io.smarthealth.clinical.admission.domain.Room;
+import io.smarthealth.clinical.admission.domain.Ward;
 import io.smarthealth.clinical.admission.domain.repository.AdmissionRepository;
+import io.smarthealth.clinical.admission.domain.specification.AdmissionSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,6 +31,33 @@ import org.springframework.stereotype.Service;
 public class AdmissionService {
 
     private final AdmissionRepository admissionRepository;
+    private final SequenceNumberService sequenceNumberService;
+    private final WardService wardService;
+    private final BedService bedService;
+    private final RoomService roomService;
+
+    public Admission createAdmission(AdmissionData d) {
+        Ward w = wardService.getWard(d.getWardId());
+        Bed b = bedService.getBed(d.getBedId());
+        BedType bt = bedService.getBedType(d.getBedTypeId());
+
+        Admission a = AdmissionData.map(d);
+        a.setAdmissionNo(sequenceNumberService.next(1l, Sequences.Admission.name()));
+        a.setWard(w);
+        a.setBed(b);
+        a.setBedType(bt);
+        if (d.getRoomId() != null) {
+            Room room = roomService.getRoom(d.getRoomId());
+            a.setRoom(room);
+        }
+
+        return admissionRepository.save(a);
+    }
+
+    public Page<Admission> fetchAdmissions(final String admissionNo, final String term, final Pageable pageable) {
+        Specification<Admission> s = AdmissionSpecification.createSpecification(admissionNo, term);
+        return admissionRepository.findAll(s, pageable);
+    }
 
     public Admission findAdmissionById(Long id) {
         if (id != null) {

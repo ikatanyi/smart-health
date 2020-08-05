@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Data;
 
 /**
@@ -26,7 +27,7 @@ public class AdmissionData {
     private String patientNumber;
     @ApiModelProperty(hidden = true)
     private String patientName;
-
+    
     private VisitEnum.PaymentMethod paymentMethod;
     private Long wardId;
     
@@ -43,7 +44,9 @@ public class AdmissionData {
     @ApiModelProperty(hidden = true)
     private String bedName;
     
-    private BedTypeData bedType;
+    private Long bedTypeId;
+    @ApiModelProperty(hidden = true)
+    private BedTypeData bedTypeData;
     private Boolean discharged = Boolean.FALSE;
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime dischargeDate;
@@ -51,7 +54,41 @@ public class AdmissionData {
     private VisitEnum.Status status;
     private List<CareTeamData> careTeam = new ArrayList<>();
     
-    public static AdmissionData map(Admission adm){
-        
+    public static AdmissionData map(Admission adm) {
+        AdmissionData d = new AdmissionData();
+        d.setAdmissionDate(adm.getAdmissionDate());
+        d.setAdmissionNumber(adm.getAdmissionNo());
+        d.setBedId(adm.getBed().getId());
+        d.setBedName(adm.getBed().getName());
+        d.setBedTypeData(BedTypeData.map(adm.getBedType()));
+        d.setBedTypeId(adm.getBedType().getId());
+        d.setCareTeam(adm.getCareTeam().stream().map(c -> CareTeamData.map(c)).collect(Collectors.toList()));
+        d.setDischargeDate(adm.getAdmissionDate());
+        d.setDischarged(adm.getDischarged());
+        d.setDischargedBy(adm.getDischargedBy());
+        d.setId(adm.getId());
+        d.setPatientName(adm.getPatient().getFullName());
+        d.setPatientNumber(adm.getPatient().getPatientNumber());
+        d.setPaymentMethod(adm.getPaymentMethod());
+        if (adm.getRoom() != null) {
+            d.setRoomId(adm.getRoom().getId());
+            d.setRoomName(adm.getRoom().getName());
+        }
+        d.setStatus(adm.getStatus());
+        d.setWardId(adm.getWard().getId());
+        d.setWardName(adm.getWard().getName());
+        return d;
+    }
+    
+    public static Admission map(AdmissionData adm) {
+        Admission d = new Admission();
+        d.setAdmissionDate(adm.getAdmissionDate());
+        d.setCareTeam(adm.getCareTeam().stream().map(c -> CareTeamData.map(c)).collect(Collectors.toList()));
+        d.setDischargeDate(adm.getAdmissionDate());
+        d.setDischarged(adm.getDischarged());
+        d.setDischargedBy(adm.getDischargedBy());
+        d.setPaymentMethod(adm.getPaymentMethod());
+        d.setStatus(adm.getStatus());
+        return d;
     }
 }

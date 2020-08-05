@@ -6,8 +6,6 @@
 package io.smarthealth.clinical.admission.api;
 
 import io.smarthealth.clinical.admission.data.CareTeamData;
-import io.smarthealth.clinical.admission.domain.Admission;
-import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.clinical.admission.service.CareTeamService;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;

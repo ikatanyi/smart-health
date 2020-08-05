@@ -3,8 +3,10 @@ package io.smarthealth.clinical.admission.service;
 import io.smarthealth.clinical.admission.data.BedData;
 import io.smarthealth.clinical.admission.domain.Bed;
 import io.smarthealth.clinical.admission.domain.Bed.Status;
+import io.smarthealth.clinical.admission.domain.BedType;
 import io.smarthealth.clinical.admission.domain.Room;
 import io.smarthealth.clinical.admission.domain.repository.BedRepository;
+import io.smarthealth.clinical.admission.domain.repository.BedTypeRepository;
 import io.smarthealth.clinical.admission.domain.specification.BedSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,7 @@ public class BedService {
 
     private final BedRepository bedRepository;
     private final RoomService roomService;
+    private final BedTypeRepository bedTypeRepository;
 
     public Bed createBed(BedData data) {
         Bed bed = data.map();
@@ -46,6 +49,11 @@ public class BedService {
     public Bed getBed(Long id) {
         return bedRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bed with id  {0} not found.", id));
+    }
+    
+    public BedType getBedType(Long id) {
+        return bedTypeRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Bedtype with id  {0} not found.", id));
     }
 
     public Bed updateBed(Long id, BedData data) {
