@@ -35,8 +35,10 @@ public class Bed extends Identifiable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_bed_room_id"))
     private Room room;
- 
-    private Boolean isActive=Boolean.TRUE;
+    private Integer col;
+    private Integer row;
+
+    private Boolean isActive = Boolean.TRUE;
 
     public BedData toData() {
         BedData data = new BedData();
@@ -44,9 +46,13 @@ public class Bed extends Identifiable {
         data.setActive(this.isActive);
         data.setDescription(this.description);
         data.setName(this.name);
-        data.setRoom(this.room.getName());
-        data.setRoomId(this.room.getId());
-        data.setStatus(this.status); 
+        if (this.getRoom() != null) {
+            data.setRoom(this.room.getName());
+            data.setRoomId(this.room.getId());
+        }
+        data.setStatus(this.status);
+        data.setCol(this.col);
+        data.setRow(this.row);
         return data;
     }
 }
