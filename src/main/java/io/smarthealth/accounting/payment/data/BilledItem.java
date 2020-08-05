@@ -12,6 +12,7 @@ public class BilledItem {
 
     private Long billItemId; //this can be the 
     private Double quantity;
+    private BigDecimal discount;
     private Double price;
     private BigDecimal amount;
     private Long pricelistItemId;

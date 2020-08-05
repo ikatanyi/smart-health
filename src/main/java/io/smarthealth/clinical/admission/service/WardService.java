@@ -1,6 +1,5 @@
 package io.smarthealth.clinical.admission.service;
 
-import io.smarthealth.clinical.admission.data.RoomData;
 import io.smarthealth.clinical.admission.data.WardData;
 import io.smarthealth.clinical.admission.domain.Room;
 import io.smarthealth.clinical.admission.domain.Ward;
