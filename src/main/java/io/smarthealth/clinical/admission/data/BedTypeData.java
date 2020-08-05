@@ -1,6 +1,7 @@
 package io.smarthealth.clinical.admission.data;
 
 import io.smarthealth.clinical.admission.domain.BedType;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -9,14 +10,17 @@ import lombok.Data;
  */
 @Data
 public class BedTypeData {
-
+    @ApiModelProperty(hidden=true)
+    private Long id;
     private String name;
     private String description;
+    private Boolean active = Boolean.TRUE;
 
-    public static BedTypeData map(BedType type) {
-        BedTypeData d = new BedTypeData();
-        d.setDescription(type.getDescription());
-        d.setName(type.getName());
+    public BedType map() {
+        BedType d = new BedType();
+        d.setDescription(this.getDescription());
+        d.setName(this.getName());
+        d.setIsActive(this.getActive());
         return d;
     }
 }

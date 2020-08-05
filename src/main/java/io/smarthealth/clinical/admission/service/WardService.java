@@ -24,7 +24,6 @@ import org.springframework.data.jpa.domain.Specification;
 public class WardService {
 
     private final WardRepository wardRepository;
-    private final RoomService roomService;
     
     public Ward createWard(WardData data) {
         Ward ward = data.map();
@@ -36,6 +35,10 @@ public class WardService {
 //            rooms.add(roomService.getRoom(room.getId()));
 //        });
 //        ward.setRooms(rooms);
+        return saveWard(ward);
+    }
+    
+    public Ward saveWard(Ward ward){
         return wardRepository.save(ward);
     }
 

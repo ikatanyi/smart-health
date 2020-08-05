@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.admission.domain;
 
+import io.smarthealth.clinical.admission.data.BedTypeData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,4 +20,13 @@ public class BedType extends Identifiable {
     private String name;
     private String description;
     private Boolean isActive=Boolean.TRUE;
+    
+    public BedTypeData toData(){
+        BedTypeData data = new BedTypeData();
+        data.setId(this.getId());
+        data.setDescription(this.getDescription());
+        data.setName(this.getName());
+        data.setActive(this.getIsActive());
+        return data;
+    }
 }

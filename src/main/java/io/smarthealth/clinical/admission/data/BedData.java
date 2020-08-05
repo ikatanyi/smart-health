@@ -25,18 +25,19 @@ public class BedData {
     @ApiModelProperty(hidden=true)
     private String room;
     private Boolean active;
-    private Integer col;
-    private Integer row;
-    private List<BedChargeData> bedCharges = new ArrayList<>();
+    private Integer bedCol;
+    private Integer bedRow;
+//    private List<BedChargeData> bedCharges = new ArrayList<>();
     
     public Bed map() {
         Bed data = new Bed();
         data.setId(this.getId());
+        data.setName(this.getName());
         data.setIsActive(this.getActive());
         data.setDescription(this.description);
         data.setStatus(this.getStatus()); 
-        data.setCol(this.col);
-        data.setRow(this.row);
+        data.setBedCol(this.bedCol);
+        data.setBedRow(this.bedRow);
         return data;
     }
 }

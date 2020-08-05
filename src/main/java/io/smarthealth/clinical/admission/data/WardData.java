@@ -6,6 +6,7 @@
 package io.smarthealth.clinical.admission.data;
 
 import io.smarthealth.clinical.admission.domain.Ward;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
@@ -16,10 +17,11 @@ import lombok.Data;
  */
 @Data
 public class WardData {
-
+    @ApiModelProperty(hidden = true)
     private Long id;
     private String name;
     private String description;
+    @ApiModelProperty(hidden = true)
     private List<RoomData> rooms;
     private Boolean active=Boolean.TRUE;
     

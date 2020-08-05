@@ -7,14 +7,17 @@ package io.smarthealth.clinical.admission.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.clinical.admission.data.WardData;
+import io.smarthealth.clinical.laboratory.domain.Analyte;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
+import static org.hibernate.engine.internal.Cascade.cascade;
 
 /**
  *
@@ -29,15 +32,26 @@ public class Ward extends Identifiable {
     private String name;
     private String description;
     
-    @OneToMany(mappedBy = "ward")
+    @OneToMany(mappedBy = "ward", cascade = {CascadeType.ALL})
     private List<Room> rooms = new ArrayList<>();
 
     private Boolean isActive=Boolean.TRUE;
+    
+    public void addRoom(Room room) {
+        room.setWard(this);
+        rooms.add(room);
+    }
+
+    public void addRooms(List<Room> rooms) {
+        this.rooms = new ArrayList<>();
+        this.rooms = rooms;
+        this.rooms.forEach(x -> x.setWard(this));
+    }
 
     public WardData toData() {
         WardData data = new WardData();
         data.setActive(this.isActive);
-        data.setDescription(this.description);
+        data.setDescription(this.getDescription());
         data.setId(this.getId());
         data.setName(this.name);
         data.setRooms(this.rooms

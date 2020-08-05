@@ -60,7 +60,7 @@ public class AdmissionData {
         d.setAdmissionNumber(adm.getAdmissionNo());
         d.setBedId(adm.getBed().getId());
         d.setBedName(adm.getBed().getName());
-        d.setBedTypeData(BedTypeData.map(adm.getBedType()));
+        d.setBedTypeData(adm.getBedType().toData());
         d.setBedTypeId(adm.getBedType().getId());
         d.setCareTeam(adm.getCareTeam().stream().map(c -> CareTeamData.map(c)).collect(Collectors.toList()));
         d.setDischargeDate(adm.getAdmissionDate());

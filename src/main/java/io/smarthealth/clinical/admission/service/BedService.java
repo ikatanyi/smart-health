@@ -9,6 +9,7 @@ import io.smarthealth.clinical.admission.domain.repository.BedRepository;
 import io.smarthealth.clinical.admission.domain.repository.BedTypeRepository;
 import io.smarthealth.clinical.admission.domain.specification.BedSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,9 @@ public class BedService {
 
     public Bed createBed(BedData data) {
         Bed bed = data.map();
+        if (fetchBedByName(data.getName()).isPresent()) {
+            throw APIException.conflict("Bed {0} already exists.", data.getName());
+        }
         Room room = roomService.getRoom(data.getRoomId());
         bed.setRoom(room);
         return bedRepository.save(bed);
@@ -43,9 +47,9 @@ public class BedService {
         return bedRepository.findAll(spec, page);
     }
 
-//    public Optional<Bed> fetchBedByName(String name){
-//        return bedRepository.findByNameContainingIgnoreCase(name);
-//    }
+    public Optional<Bed> fetchBedByName(String name){
+        return bedRepository.findByNameContainingIgnoreCase(name);
+    }
     public Bed getBed(Long id) {
         return bedRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bed with id  {0} not found.", id));
@@ -63,8 +67,8 @@ public class BedService {
         }
         bed.setDescription(data.getDescription());
         bed.setIsActive(data.getActive());
-        bed.setRow(data.getRow());
-        bed.setCol(data.getCol());
+        bed.setBedRow(data.getBedRow());
+        bed.setBedCol(data.getBedCol());
         Room room = roomService.getRoom(data.getRoomId());
         bed.setRoom(room);
         return bedRepository.save(bed);
