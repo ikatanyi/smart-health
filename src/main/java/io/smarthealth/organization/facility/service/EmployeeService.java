@@ -13,7 +13,6 @@ import io.smarthealth.organization.facility.domain.EmployeeRepository;
 import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.patient.service.PersonContactService;
 import io.smarthealth.security.domain.Role;
-import io.smarthealth.security.domain.RoleName;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -25,13 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 /**
  *
