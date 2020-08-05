@@ -30,7 +30,7 @@ public class Ward extends Identifiable {
     @Column(name = "ward_name")
     private String name;
     private String description;
-
+    
     @OneToMany(mappedBy = "ward")
     @JoinColumn(foreignKey=@ForeignKey(name="fk_facility_ward_room_id"))
     private List<Room> rooms = new ArrayList<>();

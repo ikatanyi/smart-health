@@ -16,4 +16,14 @@ public class RoomData {
     private Long wardId;
     private String ward;
     private Boolean active;
+    
+    public Room map() {
+        Room data = new Room();
+        data.setId(this.getId());
+        data.setIsActive(this.getActive());
+        data.setDescription(this.getDescription());
+        data.setName(this.getName());
+        data.setType(this.getType());
+        return data;
+    }
 }
