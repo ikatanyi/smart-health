@@ -22,15 +22,15 @@ import lombok.Data;
 @Table(name = "patient_care_team")
 public class CareTeam extends Auditable {
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_care_team_patient_id"))
     private Patient patient;
     
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_care_team_admission_id"))
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Admission admission;
     
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_care_team_medic_id"))
     private Employee medic;
     //we can consider this as a look up
