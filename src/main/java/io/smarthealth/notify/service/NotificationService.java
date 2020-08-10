@@ -43,15 +43,7 @@ public class NotificationService {
     @Transactional
     public Notification createNotification(NotificationData request) {
         User user = userService.findUserByUsernameOrEmail(request.getUsername()).orElse(null);
-
-//        if (request.getReference() != null) {
-//            Optional<Notification> notices = notificationRepository.findByRecipientAndReferenceAndNoticeType(user, request.getReference(), request.getNoticeType());
-//            if (notices.isPresent()) {
-//                return null;
-//            }
-//        }
         Notification notify = new Notification(user, request.getDescription(), request.getNoticeType(), request.getReference());
-
         return notificationRepository.save(notify);
     }
 
@@ -114,25 +106,7 @@ public class NotificationService {
             messagingTemplate.convertAndSend("/topic/requests." + type.name(), requestService.getUnfilledDoctorRequests(type));
         });
     }
-
-//    @TransactionalEventListener
-//    public void handleUserNotificationEvent(UserNotificationEvent e) {
-//        log.info("Sending user notification .... " + e.getUsername());
-//        System.err.println("Sending notification to user " + e.getNotification().getUsername());
-//        List<Notification> notices = notificationRepository.findByRecipientAndIsRead(e.getNotification().getUser(), false);
-//        System.err.println("Total unread messages : " + notices.size());
-//
-//        if (e.getUsername() != null) {
-//            System.err.println("<<<sending notifications to ... >>>>");
-//            this.messagingTemplate.convertAndSendToUser(
-//                    e.getNotification().getUsername(),
-//                    "/queue/notifys",
-//                    notices.stream()
-//                            .map(x -> x.toData())
-//                            .collect(Collectors.toList())
-//            );
-//        }
-//    }
+ 
     @Async
     @EventListener
 //    @TransactionalEventListener
@@ -150,18 +124,14 @@ public class NotificationService {
             Notification notice = new Notification(toNotify, data.getDescription(), data.getNoticeType(), data.getReference());
             notice.setRead(false);
             //save
-            Notification saveNotice = notificationRepository.save(notice);
-            System.err.println("Notice saved status ... " + saveNotice.toString());
+            Notification saveNotice = notificationRepository.save(notice); 
             this.messagingTemplate.convertAndSendToUser(toNotify.getUsername(), "/queue/notify", saveNotice.toData());
 
             System.err.println("Notifying user ... " + toNotify.getUsername() + " Message: " + saveNotice.getMessage());
         }
-
     }
 
     public void notifyUser(NotificationData data) {
         notificationEventPublisher.publishUserNotificationEvent(data);
-    }
-
-    //need a job to be able to
+    } 
 }
