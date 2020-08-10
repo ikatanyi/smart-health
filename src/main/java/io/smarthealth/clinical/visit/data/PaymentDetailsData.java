@@ -8,6 +8,7 @@ package io.smarthealth.clinical.visit.data;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
+import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -20,10 +21,13 @@ import lombok.Data;
 public class PaymentDetailsData {
 ///api/integration/smart/claim/{memberNumber}
 
+    @ApiModelProperty(hidden = true)
     private Long visitId;
     private Long payerId;
+    @ApiModelProperty(hidden = true)
     private String payerName;
     private Long schemeId;
+    @ApiModelProperty(hidden = true)
     private String schemeName;
     private String policyNo;
     private String comments;
@@ -31,10 +35,17 @@ public class PaymentDetailsData {
     private String memberName;
     private double limitAmount;
     private Long priceBookId;
+    @ApiModelProperty(hidden = true)
     private String priceBookName;
+    
+    @ApiModelProperty(hidden = true)
     @Enumerated(EnumType.STRING)
     private CoPayType coPayCalcMethod;
+    
+    @ApiModelProperty(hidden = true)
     private double coPayValue;
+    
+    @ApiModelProperty(hidden = true)
     private VisitEnum.PaymentMethod paymentMethod;
 
     public static PaymentDetailsData map(PaymentDetails e) {
