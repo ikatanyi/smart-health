@@ -15,6 +15,7 @@ import lombok.Data;
 /**
  *
  * @author Kennedy.Imbenzi
+ * 
  */
 @Data
 public class DispatchData {  
@@ -28,7 +29,10 @@ public class DispatchData {
     private String comments;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
     private LocalDate dispatchDate=LocalDate.now();
-    private List<InvoiceData>dispatchInvoiceData=new ArrayList();
+    private List<DispatchedInvoiceData>dispatchInvoiceData=new ArrayList();
+    
+    @ApiModelProperty(required=false,hidden=true)
+    private List<InvoiceData>invoiceData=new ArrayList();
     
     public static DispatchData map(Dispatch dispatch){
         DispatchData data = new DispatchData();
@@ -39,7 +43,7 @@ public class DispatchData {
             data.setPayer(dispatch.getPayer().getPayerName());
             data.setPayerId(dispatch.getPayer().getId());
         }
-        data.setDispatchInvoiceData(dispatch.getDispatchedInvoice()
+        data.setInvoiceData(dispatch.getDispatchedInvoice()
                 .stream()
                 .map((invoice)->invoice.toData())
                 .collect(Collectors.toList())
