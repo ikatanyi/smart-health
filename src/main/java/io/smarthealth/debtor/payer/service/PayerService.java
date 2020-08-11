@@ -125,32 +125,27 @@ public class PayerService {
                 payer = this.createPayer(payer);
             }
             Scheme scheme = new Scheme();
-            Optional<Scheme> savedScheme = schemeService.fetchSchemeBySchemeName(data.getSchemeName());
-            if (!savedScheme.isPresent()) {
-                scheme.setActive(Boolean.TRUE);
-                scheme.setCover(PolicyCoverToEnum(data.getCover()));
-                if (data.getSchemeCode() == null) {
-                    scheme.setSchemeCode(sequenceNumberService.next(1L, Sequences.SchemeCode.name()));
-                } else {
-                    scheme.setSchemeCode(data.getSchemeCode());
-                }
-                scheme.setSchemeName(data.getSchemeName());
-                scheme.setType(Scheme.SchemeType.Corporate);
-                scheme.setPayer(payer);
-                scheme = schemeService.createScheme(scheme);
+            scheme.setActive(Boolean.TRUE);
+            scheme.setCover(PolicyCoverToEnum(data.getCover()));
+            if (data.getSchemeCode() == null) {
+                scheme.setSchemeCode(sequenceNumberService.next(1L, Sequences.SchemeCode.name()));
+            } else {
+                scheme.setSchemeCode(data.getSchemeCode());
+            }
+            scheme.setSchemeName(data.getSchemeName());
+            scheme.setType(Scheme.SchemeType.Corporate);
+            scheme.setPayer(payer);
+            scheme = schemeService.createScheme(scheme);
 
-                SchemeConfigurations sconfig = new SchemeConfigurations();
-                sconfig.setCoPayType(CopayTypeToEnum(data.getCoPayType()));
-                sconfig.setCoPayValue(data.getCoPayValue());
-                sconfig.setDiscountMethod(DiscountTypeToEnum(data.getDiscountMethod()));
-                sconfig.setDiscountValue(data.getDiscountValue());
-                sconfig.setScheme(scheme);
-                sconfig.setSmartEnabled(data.getSmartEnabled());
-                sconfig.setStatus(true);
-                schemeService.updateSchemeConfigurations(sconfig);
-            }
-            else{
-            }
+            SchemeConfigurations sconfig = new SchemeConfigurations();
+            sconfig.setCoPayType(CopayTypeToEnum(data.getCoPayType()));
+            sconfig.setCoPayValue(data.getCoPayValue());
+            sconfig.setDiscountMethod(DiscountTypeToEnum(data.getDiscountMethod()));
+            sconfig.setDiscountValue(data.getDiscountValue());
+            sconfig.setScheme(scheme);
+            sconfig.setSmartEnabled(data.getSmartEnabled());
+            sconfig.setStatus(true);
+            schemeService.updateSchemeConfigurations(sconfig);
             System.out.println(++i + " " + data.getSchemeName() + "uploaded successfully");
 
         }
