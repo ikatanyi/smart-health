@@ -257,6 +257,11 @@ public class ReceivePaymentService {
         return receiptItemRepository.findAll(spec, page);
     }
 
+    public Page<ReceiptItem> getVoidedItems(Long servicePointId,String patientNumber,Boolean voided, DateRange range, Pageable page) {
+        Specification<ReceiptItem> spec = ReceiptSpecification.createVoidedReceiptItemSpecification(servicePointId, patientNumber, voided, range);
+        return receiptItemRepository.findAll(spec, page);
+    }
+    
     private ReceiptTransaction createPaymentTransaction(ReceiptMethod data) {
         ReceiptTransaction trans = new ReceiptTransaction();
         trans.setCurrency(data.getCurrency());

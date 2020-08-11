@@ -149,6 +149,8 @@ public class PayerService {
                 sconfig.setStatus(true);
                 schemeService.updateSchemeConfigurations(sconfig);
             }
+            else{
+            }
             System.out.println(++i + " " + data.getSchemeName() + "uploaded successfully");
 
         }

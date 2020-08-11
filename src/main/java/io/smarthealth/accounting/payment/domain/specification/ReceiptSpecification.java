@@ -68,6 +68,31 @@ public class ReceiptSpecification {
         };
     }
     
+    public static Specification<ReceiptItem> createVoidedReceiptItemSpecification(Long servicePoint, String patientNumber, Boolean voided, DateRange range) {
+
+        return (root, query, cb) -> {
+
+            final ArrayList<Predicate> predicates = new ArrayList<>();                 
+            
+            if (patientNumber != null) {
+                predicates.add(cb.equal(root.get("item").get("patientBill").get("patient").get("patientNumber"), patientNumber));
+            }
+            if (servicePoint != null) {
+                predicates.add(cb.equal(root.get("item").get("servicePointId"), servicePoint));
+            }
+            if(voided!=null){
+                predicates.add(cb.equal(root.get("voided"),voided));
+            }
+            if (range != null) {
+                predicates.add(
+                        cb.between(root.get("receipt").get("transactionDate"), range.getStartDateTime(), range.getEndDateTime())
+                );
+            }
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
+    
 
     public static Specification<Copayment> getCopayment(String visitNumber, String patientNumber, String invoiceNumber, String receiptNo, Boolean paid, DateRange range) {
 
