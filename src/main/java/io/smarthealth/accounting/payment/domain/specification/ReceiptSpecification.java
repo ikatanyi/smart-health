@@ -68,7 +68,7 @@ public class ReceiptSpecification {
         };
     }
     
-    public static Specification<ReceiptItem> createVoidedReceiptItemSpecification(Long servicePoint, String patientNumber, Boolean voided, DateRange range) {
+    public static Specification<ReceiptItem> createVoidedReceiptItemSpecification(Long servicePoint, String patientNumber, String itemCode, Boolean voided, DateRange range) {
 
         return (root, query, cb) -> {
 
@@ -79,6 +79,9 @@ public class ReceiptSpecification {
             }
             if (servicePoint != null) {
                 predicates.add(cb.equal(root.get("item").get("servicePointId"), servicePoint));
+            }
+            if (itemCode != null) {
+                predicates.add(cb.equal(root.get("item").get("item").get("itemCode"), itemCode));
             }
             if(voided!=null){
                 predicates.add(cb.equal(root.get("voided"),voided));
