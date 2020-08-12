@@ -668,10 +668,11 @@ public class AccountReportService {
         Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         String receiptNo = reportParam.getFirst("receiptNo");
+        String itemCode = reportParam.getFirst("itemCode");
         Boolean voided = reportParam.getFirst("cancelled")==null?Boolean.parseBoolean(reportParam.getFirst("cancelled")):null;
         String patientNo = reportParam.getFirst("patientNo");
         //"RCT-00009"
-        List<ReceiptItemData> receiptDataArray = receivePaymentService.getVoidedItems(servicePointId, patientNo, voided, range, Pageable.unpaged())
+        List<ReceiptItemData> receiptDataArray = receivePaymentService.getVoidedItems(servicePointId, patientNo,itemCode, voided, range, Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
@@ -820,9 +821,10 @@ public class AccountReportService {
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         String receiptNo = reportParam.getFirst("receiptNo");
         String patientNo = reportParam.getFirst("patientNo");
+        String itemCode = reportParam.getFirst("itemCode");
         Boolean voided = reportParam.getFirst("cancelled")==null?null:Boolean.parseBoolean(reportParam.getFirst("cancelled"));
         //"RCT-00009"
-        List<ReceiptItemData> receiptDataArray = receivePaymentService.getVoidedItems(servicePointId, patientNo, voided, range, Pageable.unpaged())
+        List<ReceiptItemData> receiptDataArray = receivePaymentService.getVoidedItems(servicePointId, patientNo,  itemCode, voided, range, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((receipt) -> receipt.toData())
