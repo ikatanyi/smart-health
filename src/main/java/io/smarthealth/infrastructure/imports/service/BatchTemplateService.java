@@ -5,6 +5,7 @@
  */
 package io.smarthealth.infrastructure.imports.service;
 
+import io.smarthealth.accounting.pricelist.data.PriceBookData;
 import io.smarthealth.clinical.laboratory.data.LabTestData;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
@@ -12,6 +13,7 @@ import io.smarthealth.debtor.member.data.PayerMemberData;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
 import io.smarthealth.infrastructure.imports.data.InventoryStockData;
 import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
+import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.stock.item.data.CreateItem;
 import java.io.IOException;
@@ -79,8 +81,12 @@ public class BatchTemplateService {
                 componentClass = PayerMemberData.class;
                 break;
             case InventoryStock:
-                fileName="Inventory Stock";
+                fileName = "Inventory Stock";
                 componentClass = InventoryStockData.class;
+                break;
+            case PriceBookItems:
+                fileName = "Price Book Service Setup";
+                componentClass = PriceBookItemData.class;
                 break;
             default:
                 break;
