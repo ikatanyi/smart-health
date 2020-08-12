@@ -8,6 +8,7 @@ import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
+import io.smarthealth.stock.stores.domain.Store.Type;
 import io.smarthealth.stock.stores.domain.StoreRepository;
 import java.util.List;
 import java.util.Optional;
@@ -102,6 +103,11 @@ public class StoreService {
 
     public Optional<Store> getStore(Long id) {
         return storeRepository.findById(id);
+    }
+    
+    public Store getMainStore(Type type) {
+        return storeRepository.findByType(type.MainStore)
+                 .orElseThrow(() -> APIException.notFound("Main Store not found", ""));
     }
 
     public Store getStoreWithNoFoundDetection(Long id) {

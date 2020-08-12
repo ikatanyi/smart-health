@@ -68,5 +68,6 @@ public enum ReportName {
         Interim_Bill,
         Expiry_Report,
         Voided_Invoice_Statement,
-        Service_Statement
+        Service_Statement,
+        Product_Statement
 }

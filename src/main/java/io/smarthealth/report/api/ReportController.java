@@ -228,6 +228,9 @@ public class ReportController {
            case Service_Statement:
                 reportService.getServicesDispensed(queryParams, format, response);
                 break;     
+           case Product_Statement:
+                stockReportService.getItems(queryParams, format, response);
+                break;
             default:
                 break;
 

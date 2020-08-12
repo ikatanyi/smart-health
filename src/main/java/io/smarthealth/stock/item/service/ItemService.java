@@ -47,6 +47,16 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.taxes.domain.TaxRepository;
+import io.smarthealth.clinical.laboratory.data.LabTestData;
+import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
+import io.smarthealth.clinical.procedure.data.ProcedureData;
+import io.smarthealth.clinical.procedure.service.ProcedureService;
+import io.smarthealth.clinical.radiology.data.RadiologyTestData;
+import io.smarthealth.clinical.radiology.domain.enumeration.Gender;
+import io.smarthealth.clinical.radiology.service.RadiologyConfigService;
+import io.smarthealth.infrastructure.imports.data.InventoryStockData;
+import io.smarthealth.stock.inventory.service.InventoryItemService;
+import java.util.ArrayList;
 import org.springframework.transaction.annotation.Propagation;
 
 /**
@@ -68,13 +78,17 @@ public class ItemService {
     private final InventoryEventSender inventoryEventSender;
     private final SequenceNumberService sequenceNumberService;
     private final ServicePointRepository servicePointRepository;
+    private final LabConfigurationService labService;
+    private final ProcedureService procedureService;
+    private final RadiologyConfigService radiologyService;
+    private final InventoryItemService inventoryItemService;
 
     @Transactional
     @CachePut
     public ItemData createItem(CreateItem createItem) {
 
-        Sequences seq=createItem.getItemType()==ItemType.Inventory ? Sequences.StockItem : Sequences.ServiceItem;
-        
+        Sequences seq = createItem.getItemType() == ItemType.Inventory ? Sequences.StockItem : Sequences.ServiceItem;
+
         String sku = StringUtils.isBlank(createItem.getSku()) ? sequenceNumberService.next(1L, seq.name()) : createItem.getSku().trim();
 
         if (findByItemCode(sku).isPresent()) {
@@ -265,7 +279,7 @@ public class ItemService {
     public Optional<Item> findByItemCode(final String itemCode) {
         return itemRepository.findByItemCode(itemCode);
     }
-    
+
     public Optional<Item> findByItemName(final String itemName) {
         return itemRepository.findByItemName(itemName);
     }
@@ -360,6 +374,63 @@ public class ItemService {
     }
 
     public void importItem(List<CreateItem> list) {
-        list.forEach(x -> createItem(x));
+        List<LabTestData> labTestArray = new ArrayList();
+        List<ProcedureData> procArray = new ArrayList();
+        List<RadiologyTestData> imageArray = new ArrayList();
+        List<InventoryStockData> inventoryArray = new ArrayList();
+        list.forEach(x -> {
+            ItemData item = createItem(x);
+            if (item.getCategory() == item.getCategory().Lab) {
+                labTestArray.add(createLabTest(item));
+            }
+            if (item.getCategory() == item.getCategory().Drug) {
+                inventoryArray.add(createDrug(item, x.getAvailable()));
+            }
+            if (item.getCategory() == item.getCategory().Procedure) {
+                procArray.add(createProcedure(item));
+            }
+            if (item.getCategory() == item.getCategory().Imaging) {
+                imageArray.add(createScan(item));
+            }
+        }
+        );
+        labService.createTest(labTestArray);
+        procedureService.createProcedureTest(procArray);
+        radiologyService.createRadiologyTest(imageArray);
+        inventoryItemService.uploadInventoryItems(inventoryArray);
+    }
+
+    private LabTestData createLabTest(ItemData item) {
+        LabTestData data = new LabTestData();
+        data.setActive(Boolean.TRUE);
+        data.setItemCode(item.getItemCode());
+        data.setItemName(item.getItemName());
+        return data;
+    }
+
+    private ProcedureData createProcedure(ItemData item) {
+        ProcedureData data = new ProcedureData();
+        data.setProcedureName(item.getItemName());
+        data.setItemCode(item.getItemCode());
+        data.setStatus(Boolean.TRUE);
+        return data;
+    }
+
+    private RadiologyTestData createScan(ItemData item) {
+        RadiologyTestData data = new RadiologyTestData();
+        data.setScanName(item.getItemName());
+        data.setItemCode(item.getItemCode());
+        data.setActive(Boolean.TRUE);
+        data.setGender(Gender.Both);
+        return data;
+    }
+
+    private InventoryStockData createDrug(ItemData item, Double available) {
+        InventoryStockData data = new InventoryStockData();
+        Store store = storeService.getMainStore(Store.Type.MainStore);
+        data.setStoreId(store.getId());
+        data.setItemCode(item.getItemCode());
+        data.setStockCount(available);
+        return data;
     }
 }
