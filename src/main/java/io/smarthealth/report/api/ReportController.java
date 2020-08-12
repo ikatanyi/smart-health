@@ -221,7 +221,13 @@ public class ReportController {
                 break;
            case Expiry_Report:
                 stockReportService.InventoryExpiryStock(queryParams, format, response);
-                break;      
+                break;    
+           case Voided_Invoice_Statement:
+                reportService.getVoidedInvoicesItems(queryParams, format, response);
+                break;
+           case Service_Statement:
+                reportService.getServicesDispensed(queryParams, format, response);
+                break;     
             default:
                 break;
 

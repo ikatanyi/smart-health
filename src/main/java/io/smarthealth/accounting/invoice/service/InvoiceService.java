@@ -23,6 +23,7 @@ import io.smarthealth.accounting.invoice.domain.InvoiceItemRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceMerge;
 import io.smarthealth.accounting.invoice.domain.InvoiceMergeRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
+import io.smarthealth.accounting.invoice.domain.specification.InvoiceItemSpecification;
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -195,6 +196,14 @@ public class InvoiceService {
         Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
 //        Page<Invoice> invoices = invoiceRepository.findByItemsVoidedFalse(spec, pageable);
+        
+        return invoices;
+    }
+    
+    public Page<InvoiceItem> fetchVoidedInvoiceItem(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Pageable page) {
+
+        Specification<InvoiceItem> spec = InvoiceItemSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range);
+        Page<InvoiceItem> invoices = invoiceItemRepository.findAll(spec, page);
         
         return invoices;
     }

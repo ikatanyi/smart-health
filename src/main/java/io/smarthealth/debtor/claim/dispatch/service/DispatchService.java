@@ -52,7 +52,7 @@ public class DispatchService {
         dispatch.setPayer(payer);
         List<Invoice> dispatchInvoiceArr = new ArrayList();
         dispatchData.getDispatchInvoiceData().stream().map((item) -> {
-            Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(item.getNumber());
+            Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(item.getInvoiceNumber());
             invoice.setStatus(InvoiceStatus.Sent);
             if (payer.getPaymentTerms() != null) {
                 invoice.setDueDate(LocalDate.now().plusDays(payer.getPaymentTerms().getCreditDays()));
@@ -74,7 +74,7 @@ public class DispatchService {
         dispatch.setPayer(payer);
         List<Invoice> dispatchInvoiceArr = new ArrayList();
         dispatchData.getDispatchInvoiceData().stream().map((item) -> {
-            Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(item.getNumber());
+            Invoice invoice = invoiceService.getInvoiceByNumberOrThrow(item.getInvoiceNumber());
             invoiceRepository.save(invoice);
             return invoice;
         }).forEachOrdered((invoice) -> {
@@ -112,7 +112,7 @@ public class DispatchService {
         dispatch.getDispatchedInvoice().stream().map((invoice) -> {
             return invoice.toData();
         }).forEachOrdered((dispInvoice) -> {
-            data.getDispatchInvoiceData().add(dispInvoice);
+            data.getInvoiceData().add(dispInvoice);
         });
         if (dispatch.getPayer() != null) {
             data.setPayerId(dispatch.getPayer().getId());
