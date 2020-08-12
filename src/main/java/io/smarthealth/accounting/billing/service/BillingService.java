@@ -380,9 +380,7 @@ public class BillingService {
 
                     });
                 }
-
             }
-
         }
 
         JournalEntry toSave = new JournalEntry(bill.getBillingDate(), description, items);

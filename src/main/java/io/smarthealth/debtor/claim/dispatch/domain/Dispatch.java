@@ -31,12 +31,13 @@ public class Dispatch extends Auditable {
 
     private String dispatchNo;
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_invoice_dispatch_payer_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk__dispatch_payer_id"))
     private Payer payer;
     
     private LocalDate dispatchDate;
     private String comments;
     
     @OneToMany
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_dispatch__patient_invoice_id"))
     private List<Invoice>dispatchedInvoice;    
 }
