@@ -5,8 +5,8 @@
  */
 package io.smarthealth.infrastructure.utility.vimakdata;
 
+import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.organization.person.patient.data.PatientData;
-import io.smarthealth.organization.person.patient.service.PatientService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,12 +15,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import io.smarthealth.clinical.visit.data.VisitDatas;
-import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import java.sql.Statement;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 /**
@@ -200,7 +195,6 @@ public class VimakHistoricalClinicalData {
 
     private int getVisit(String visitNumber, String patientNumber, LocalDate toDate) throws Exception {
         try {
-            VisitDatas data = null;
             ResultSet rs = null;
             int visitId = 0;
             Connection connection = connector.ConnectToCurrentDB();
@@ -240,7 +234,7 @@ public class VimakHistoricalClinicalData {
 
     private Long getUser(String userId) throws Exception {
         try {
-            VisitDatas data = null;
+            VisitData data = null;
             ResultSet rs = null;
             Long id = null;
             Connection connection = connector.ConnectToCurrentDB();

@@ -9,6 +9,9 @@ import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
+import io.smarthealth.accounting.billing.data.BillData;
+import io.smarthealth.accounting.billing.data.BillItemData;
+import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
@@ -36,6 +39,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.item.domain.ItemRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -196,15 +200,15 @@ public class InvoiceService {
         Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
 //        Page<Invoice> invoices = invoiceRepository.findByItemsVoidedFalse(spec, pageable);
-        
+
         return invoices;
     }
-    
+
     public Page<InvoiceItem> fetchVoidedInvoiceItem(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Pageable page) {
 
         Specification<InvoiceItem> spec = InvoiceItemSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range);
         Page<InvoiceItem> invoices = invoiceItemRepository.findAll(spec, page);
-        
+
         return invoices;
     }
 
@@ -266,13 +270,12 @@ public class InvoiceService {
     }
 
     //TODO cancelling of the invoice
-     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Invoice cancelInvoice(String invoiceNo, List<InvoiceItemData> items) {
         Invoice invoice = invoiceRepository.findByNumber(invoiceNo).orElseThrow(() -> APIException.notFound("Invoice Number {0} not found", invoiceNo));
-   
-        BigDecimal oldAmount=invoice.getBalance();
-        
-       
+
+        BigDecimal oldAmount = invoice.getBalance();
+
         List<InvoiceItem> lists
                 = items.stream()
                         .map(x -> {
@@ -283,10 +286,10 @@ public class InvoiceService {
                                 iv.setVoided(Boolean.TRUE);
                                 iv.setVoidedBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
                                 iv.setVoidedDatetime(LocalDateTime.now());
-                                BigDecimal newAmt=invoice.getAmount().subtract(iv.getBalance());
-                                BigDecimal bal=invoice.getBalance().subtract(iv.getBalance());
+                                BigDecimal newAmt = invoice.getAmount().subtract(iv.getBalance());
+                                BigDecimal bal = invoice.getBalance().subtract(iv.getBalance());
                                 invoice.setBalance(bal);
-                                invoice.setAmount(newAmt); 
+                                invoice.setAmount(newAmt);
                                 return iv;
                             }
                             return null;
@@ -297,12 +300,10 @@ public class InvoiceService {
         invoiceItemRepository.saveAll(lists);
         //if items provided cancel the said items
         //otherwise cancel the entire
-        BigDecimal amount=lists.stream().map(x -> x.getBalance()).reduce(BigDecimal.ZERO, (x,y) -> x.add(y));
-         BigDecimal adjustedAmount=oldAmount.subtract(amount);
-         System.err.println("Main amount: "+amount);
-         System.err.println("Adjusted Amount: "+adjustedAmount);
+        BigDecimal amount = lists.stream().map(x -> x.getBalance()).reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
+        BigDecimal adjustedAmount = oldAmount.subtract(amount);
         reverseInvoiceItem(invoice, adjustedAmount);
-        
+
         // post the journal
         return new Invoice();
     }
@@ -351,8 +352,8 @@ public class InvoiceService {
         toSave.setStatus(JournalState.PENDING);
         return toSave;
     }
-    
-     private JournalEntry reverseInvoiceItem(Invoice invoice, BigDecimal amount) {
+
+    private JournalEntry reverseInvoiceItem(Invoice invoice, BigDecimal amount) {
 
         Account reverseCredit;
         if (invoice.getPayer().getDebitAccount() != null) {
@@ -366,12 +367,12 @@ public class InvoiceService {
         FinancialActivityAccount reverseDebit = activityAccountRepository
                 .findByFinancialActivity(FinancialActivity.Patient_Control)
                 .orElseThrow(() -> APIException.notFound("Patient Control Account is Not Mapped"));
- 
+
         String narration = "Invoice Bill Reversal - " + invoice.getNumber();
         JournalEntry toSave = new JournalEntry(invoice.getDate(), narration,
                 new JournalEntryItem[]{
                     new JournalEntryItem(reverseDebit.getAccount(), narration, amount, BigDecimal.ZERO),
-                    new JournalEntryItem(reverseCredit, narration, BigDecimal.ZERO, amount) 
+                    new JournalEntryItem(reverseCredit, narration, BigDecimal.ZERO, amount)
                 }
         );
         toSave.setTransactionNo(invoice.getTransactionNo());
@@ -380,4 +381,121 @@ public class InvoiceService {
         return toSave;
     }
 
+    @Transactional
+    public Invoice addInvoiceItem(String invoiceNumber, List<BillItemData> invoiceItems) {
+        Invoice invoice = getInvoiceByNumberOrThrow(invoiceNumber);
+        // create the patient bill and then invoice them
+        Double amount = invoiceItems.stream()
+                .map(x -> x.getAmount())
+                .reduce(0D, (x, y) -> x + y);
+//
+//        PatientBill patientbill = new PatientBill();
+//        patientbill.setVisit(invoice.getVisit());
+//        patientbill.setPatient(invoice.getPatient());
+//        patientbill.setWalkinFlag(Boolean.FALSE);
+//
+//        patientbill.setAmount(amount);
+//        patientbill.setDiscount(0D);
+//        patientbill.setBalance(0D);
+//        patientbill.setBillingDate(invoice.getDate());
+//        patientbill.setPaymentMode(invoice.getVisit().getPaymentMethod().name());
+//
+//        patientbill.setStatus(BillStatus.Paid);
+//
+//        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+//        String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
+//
+//        patientbill.setBillNumber(bill_no);
+//        patientbill.setTransactionId(trdId);
+//
+//        List<PatientBillItem> lineItems = invoiceItems
+//                .stream()
+//                .map(lineData -> {
+//                    Item item = itemRepository.findById(lineData.getItemId()).orElseThrow(() -> APIException.notFound("Item with ID {0} Not Found.", lineData.getItemId()));
+//                    PatientBillItem billItem = new PatientBillItem();
+//
+//                    billItem.setBillingDate(lineData.getBillingDate());
+//                    billItem.setTransactionId(trdId);
+//                    billItem.setItem(item);
+//                    billItem.setPaid(Boolean.TRUE);
+//                    billItem.setPrice(lineData.getPrice());
+//                    if (item.getCategory().equals(ItemCategory.CoPay)) {
+//                        billItem.setPrice(lineData.getAmount());
+//                    }
+//                    billItem.setQuantity(lineData.getQuantity());
+//                    billItem.setAmount(lineData.getAmount());
+//                    billItem.setDiscount(lineData.getDiscount());
+//                    billItem.setBalance(lineData.getAmount());
+//                    billItem.setServicePoint(lineData.getServicePoint());
+//                    billItem.setServicePointId(lineData.getServicePointId());
+//                    billItem.setStatus(BillStatus.Draft);
+//                    billItem.setMedicId(lineData.getMedicId());
+//                    return billItem;
+//                })
+//                .collect(Collectors.toList());
+//        patientbill.addBillItems(lineItems);
+
+        BillData billdata = new BillData();
+        billdata.setVisitNumber(invoice.getVisit().getVisitNumber());
+        billdata.setBillingDate(invoice.getDate());
+        billdata.setPaymentMode("Insurance");
+        billdata.setWalkinFlag(Boolean.FALSE);
+        billdata.setBillItems(invoiceItems);
+        billdata.setAmount(amount);
+
+        PatientBill patientBill = billingService.createPatientBill(billdata);
+        //then finalize this bill
+        patientBill.getBillItems()
+                .stream()
+                .forEach(item -> {
+
+                    InvoiceItem lineItem = new InvoiceItem();
+                    item.setPaid(Boolean.TRUE);
+                    item.setStatus(BillStatus.Paid);
+                    item.setPaymentReference(invoice.getNumber());
+                    item.setBalance(0D);
+                    PatientBillItem updatedItem = billingService.updateBillItem(item);
+                    lineItem.setBillItem(updatedItem);
+//                lineItem.setBalance(inv.getAmount().doubleValue() > 0 ? inv.getAmount() : BigDecimal.ZERO);
+                    lineItem.setBalance(BigDecimal.valueOf(item.getAmount()));
+                    invoice.addItem(lineItem);
+                });
+
+        BigDecimal addBal = patientBill.getBillItems()
+                .stream().map(x -> BigDecimal.valueOf(0))
+                .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
+
+        invoice.setBalance(invoice.getBalance().add(addBal));
+        //recalculate the new balance
+        Invoice savedInvoice = invoiceRepository.save(invoice);
+        //to journal the amendments
+        Account debitAccount;
+        if (invoice.getPayer().getDebitAccount() != null) {
+            debitAccount = invoice.getPayer().getDebitAccount();
+        } else {
+            FinancialActivityAccount debit = activityAccountRepository
+                    .findByFinancialActivity(FinancialActivity.Accounts_Receivable)
+                    .orElseThrow(() -> APIException.notFound("Account Receivable Account is Not Mapped"));
+            debitAccount = debit.getAccount();
+        }
+        FinancialActivityAccount creditAccount = activityAccountRepository
+                .findByFinancialActivity(FinancialActivity.Patient_Control)
+                .orElseThrow(() -> APIException.notFound("Patient Control Account is Not Mapped"));
+
+        BigDecimal amt = BigDecimal.valueOf(amount);
+
+        String narration = "Amended Invoice  - " + invoice.getNumber();
+        JournalEntry toSave = new JournalEntry(invoice.getDate(), narration,
+                new JournalEntryItem[]{
+                    new JournalEntryItem(debitAccount, narration, amt, BigDecimal.ZERO),
+                    new JournalEntryItem(creditAccount.getAccount(), narration, BigDecimal.ZERO, amt)
+                }
+        );
+        toSave.setTransactionNo(invoice.getTransactionNo());
+        toSave.setTransactionType(TransactionType.Invoicing);
+        toSave.setStatus(JournalState.PENDING);
+
+        journalService.save(toSave);
+        return savedInvoice;
+    }
 }
