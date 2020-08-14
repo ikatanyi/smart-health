@@ -78,10 +78,10 @@ public class ItemService {
     private final InventoryEventSender inventoryEventSender;
     private final SequenceNumberService sequenceNumberService;
     private final ServicePointRepository servicePointRepository;
-    private final LabConfigurationService labService;
-    private final ProcedureService procedureService;
-    private final RadiologyConfigService radiologyService;
-    private final InventoryItemService inventoryItemService;
+//    private final LabConfigurationService labService;
+//    private final ProcedureService procedureService;
+//    private final RadiologyConfigService radiologyService;
+//    private final InventoryItemService inventoryItemService;
 
     @Transactional
     @CachePut
@@ -394,10 +394,10 @@ public class ItemService {
             }
         }
         );
-        labService.createTest(labTestArray);
-        procedureService.createProcedureTest(procArray);
-        radiologyService.createRadiologyTest(imageArray);
-        inventoryItemService.uploadInventoryItems(inventoryArray);
+//        labService.createTest(labTestArray);
+//        procedureService.createProcedureTest(procArray);
+//        radiologyService.createRadiologyTest(imageArray);
+//        inventoryItemService.uploadInventoryItems(inventoryArray);
     }
 
     private LabTestData createLabTest(ItemData item) {
