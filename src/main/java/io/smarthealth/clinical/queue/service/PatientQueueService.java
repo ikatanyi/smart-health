@@ -13,7 +13,7 @@ import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.domain.PatientQueueRepository;
 import io.smarthealth.clinical.queue.domain.specification.PatientQueueSpecification;
-import io.smarthealth.clinical.visit.data.VisitDatas;
+import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -124,7 +124,7 @@ public class PatientQueueService {
     public PatientQueueData convertToPatientQueueData(PatientQueue patientQueue) {
         PatientQueueData patientQueueData = new PatientQueueData();
         patientQueueData.setVisitNumber(patientQueue.getVisit().getVisitNumber());
-        patientQueueData.setVisitData(VisitDatas.map(patientQueue.getVisit()));
+        patientQueueData.setVisitData(VisitData.map(patientQueue.getVisit()));
         patientQueueData.setPatientNumber(patientQueue.getPatient().getPatientNumber());
         
         if (patientQueue.getServicePoint() != null) {

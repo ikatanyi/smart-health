@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.invoice.api;
 
+import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.invoice.data.CreateInvoice;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
@@ -57,16 +58,14 @@ public class InvoiceController {
         return ResponseEntity.ok(trans.toData());
     }
 
-//    @PatchMapping("/invoices/{id}")
-//    public InvoiceData updateInvoice(@PathVariable(value = "id") Long id, InvoiceData transactionData) {
-//        InvoiceData trans = InvoiceData.map(service.updateInvoice(id, transactionData));
-//        return trans;
-//    }
-//    @PatchMapping("/invoices/{id}/verify")
-//    public InvoiceData updateInvoice(@PathVariable(value = "id") Long id, Boolean Isverified) {
-//        InvoiceData trans = InvoiceData.map(service.verifyInvoice(id, Isverified));
-//        return trans;
-//    }
+    @PostMapping("/invoices/{invoiceNumber}/add-items")
+    @PreAuthorize("hasAuthority('create_invoices')")
+    public ResponseEntity<?> addInvoiceItem(@PathVariable(value = "invoiceNumber") String invoiceNumber, @Valid @RequestBody List<BillItemData> invoiceItems) {
+
+        Invoice invoice = service.addInvoiceItem(invoiceNumber, invoiceItems);
+        return ResponseEntity.ok(invoice);
+    }
+
     @GetMapping("/invoices")
     @PreAuthorize("hasAuthority('view_invoices')")
     public ResponseEntity<?> getInvoices(

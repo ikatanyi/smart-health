@@ -145,8 +145,7 @@ public class BillingService {
                     return billItem;
                 })
                 .collect(Collectors.toList());
-        patientbill.addBillItems(lineItems);
-        System.out.println("End of bill items");
+        patientbill.addBillItems(lineItems); 
 
         PatientBill savedBill = save(patientbill);
         if (savedBill.getPaymentMode().equals("Insurance")) {

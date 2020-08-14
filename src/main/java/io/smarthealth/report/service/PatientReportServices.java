@@ -30,7 +30,7 @@ import io.smarthealth.clinical.record.service.PatientNotesService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.record.service.ReferralsService;
 import io.smarthealth.clinical.record.service.SickOffNoteService;
-import io.smarthealth.clinical.visit.data.VisitDatas;
+import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -306,7 +306,7 @@ public class PatientReportServices {
     public void getVisitNote(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
-        VisitDatas visitData = VisitDatas.map(visitService.findVisitEntityOrThrow(visitNumber));
+        VisitData visitData = VisitData.map(visitService.findVisitEntityOrThrow(visitNumber));
 
         reportData.setPatientNumber(visitData.getPatientNumber());
         reportData.setEmployeeId(visitData.getPractitionerCode());
