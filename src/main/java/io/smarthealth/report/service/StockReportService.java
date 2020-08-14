@@ -17,6 +17,11 @@ import io.smarthealth.stock.inventory.data.StockAdjustmentData;
 import io.smarthealth.stock.inventory.service.InventoryAdjustmentService;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.stock.inventory.service.InventoryService;
+import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+import io.smarthealth.stock.item.domain.enumeration.ItemType;
+import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
 import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;
@@ -28,6 +33,7 @@ import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +41,11 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRSortField;
+import net.sf.jasperreports.engine.design.JRDesignSortField;
+import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
+import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.domain.Pageable;
@@ -57,6 +68,7 @@ public class StockReportService {
     private final PurchaseInvoiceService purchaseInvoiceService;
     private final PurchaseService purchaseService;
     private final InventoryService inventoryService;
+    private final ItemService itemService;
 
     public void getSuppliers(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -204,6 +216,35 @@ public class StockReportService {
         reportData.setReportName("Stock-Adjustment-Statement");
         reportService.generateReport(reportData, response);
     }
+    
+    public void getItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        ItemCategory category = ItemCategoryToEnum(reportParam.getFirst("category"));
+        ItemType type = ItemTypeToEnum(reportParam.getFirst("type"));
+        Boolean includeClosed = true;
+        String term = reportParam.getFirst("term");
+
+        List<ItemData> ItemData = itemService.fetchItems(category, type, includeClosed, term, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map(x->x.toData())
+                .collect(Collectors.toList());
+        
+        
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("Category");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.setData(ItemData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/item_statement");
+        reportData.setReportName("Products-Statement");
+        reportService.generateReport(reportData, response);
+    }
 
     private PurchaseInvoiceStatus PurchaseInvoiceStatusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
@@ -213,6 +254,26 @@ public class StockReportService {
             return PurchaseInvoiceStatus.valueOf(status);
         }
         throw APIException.internalError("Provide a Valid PurchaseInvoice Status");
+    }
+    
+    private ItemCategory ItemCategoryToEnum(String category) {
+        if (category == null || category.equals("null") || category.equals("")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(ItemCategory.class, category)) {
+            return ItemCategory.valueOf(category);
+        }
+        throw APIException.internalError("Provide a Valid Item Category");
+    }
+    
+    private ItemType ItemTypeToEnum(String category) {
+        if (category == null || category.equals("null") || category.equals("")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(ItemType.class, category)) {
+            return ItemType.valueOf(category);
+        }
+        throw APIException.internalError("Provide a Valid Item Type");
     }
 
 }
