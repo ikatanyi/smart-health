@@ -17,7 +17,7 @@ public interface StoreRepository extends JpaRepository<Store, Long>, JpaSpecific
 
     Optional<Store> findByStoreName(String name);
     
-    Optional<Store> findByType(Type type);
+    Optional<Store> findByStoreType(Type type);
 
     Page<Store> findByPatientStore(Boolean isPatientStore, Pageable page);
 }

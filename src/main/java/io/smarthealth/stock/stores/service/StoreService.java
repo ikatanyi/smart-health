@@ -106,7 +106,7 @@ public class StoreService {
     }
     
     public Store getMainStore(Type type) {
-        return storeRepository.findByType(type.MainStore)
+        return storeRepository.findByStoreType(type.MainStore)
                  .orElseThrow(() -> APIException.notFound("Main Store not found", ""));
     }
 
