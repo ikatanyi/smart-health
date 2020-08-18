@@ -19,9 +19,13 @@ public class CareTeamData {
 
     @ApiModelProperty(hidden = true)
     private String patientName;
+    @ApiModelProperty(hidden = true)
     private String patientNumber;
+    @ApiModelProperty(hidden = true)
     private String admissionNumber;
     private Long medicId;
+
+    @ApiModelProperty(hidden = true)
     private String medicName;
     @ApiModelProperty(example = "Admitting,Nursing,Referring")
     @Enumerated(EnumType.STRING)
@@ -31,7 +35,9 @@ public class CareTeamData {
 
     public static CareTeamData map(CareTeam ct) {
         CareTeamData d = new CareTeamData();
-        d.setAdmissionNumber(ct.getAdmission().getAdmissionNo());
+        if (ct.getAdmission() != null) {
+            d.setAdmissionNumber(ct.getAdmission().getAdmissionNo());
+        }
         d.setDateAssigned(ct.getDateAssigned());
         d.setMedicId(ct.getMedic().getId());
         d.setMedicName(ct.getMedic().getFullName());

@@ -36,7 +36,7 @@ public class CareTeamController {
     private final CareTeamService careTeamService;
 
     @PostMapping("/care-team")
-    @PreAuthorize("hasAuthority('create_care_team')")
+//    @PreAuthorize("hasAuthority('create_care_team')")
     public ResponseEntity<?> createCareTeam(@Valid @RequestBody List<CareTeamData> data) {
         List<CareTeamData> ct = careTeamService.createCareTeam(data).stream()
                 .map(e -> CareTeamData.map(e))
@@ -51,7 +51,7 @@ public class CareTeamController {
     }
 
     @GetMapping("/care-team/{admissionNumber}")
-    @PreAuthorize("hasAuthority('view_care_team')")
+//    @PreAuthorize("hasAuthority('view_care_team')")
     public ResponseEntity<?> viewCareTeam(
             @PathVariable("admissionNumber") final String admissionNumber
     ) {

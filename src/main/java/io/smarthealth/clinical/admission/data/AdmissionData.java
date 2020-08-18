@@ -21,39 +21,45 @@ public class AdmissionData {
     //patient details
     @ApiModelProperty(hidden = true)
     private Long id;
+    @ApiModelProperty(hidden = true)
     private String admissionNumber; //this should be same as visit number
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime admissionDate;
     private String patientNumber;
     @ApiModelProperty(hidden = true)
     private String patientName;
-    
+
     private VisitEnum.PaymentMethod paymentMethod;
     private Long wardId;
-    
+
     @ApiModelProperty(hidden = true)
     private String wardName;
-    
+
     private Long roomId;
-    
+
     @ApiModelProperty(hidden = true)
     private String roomName;
-    
+
     private Long bedId;
-    
+
     @ApiModelProperty(hidden = true)
     private String bedName;
-    
+
     private Long bedTypeId;
     @ApiModelProperty(hidden = true)
     private BedTypeData bedTypeData;
+    @ApiModelProperty(hidden = true)
     private Boolean discharged = Boolean.FALSE;
+    @ApiModelProperty(hidden = true)
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime dischargeDate;
+
+    @ApiModelProperty(hidden = true)
     private String dischargedBy;
+    @ApiModelProperty(example = "CheckIn,CheckOut,Admitted,Transferred, Discharged, Booked")
     private VisitEnum.Status status;
     private List<CareTeamData> careTeam = new ArrayList<>();
-    
+
     public static AdmissionData map(Admission adm) {
         AdmissionData d = new AdmissionData();
         d.setAdmissionDate(adm.getAdmissionDate());
@@ -79,11 +85,11 @@ public class AdmissionData {
         d.setWardName(adm.getWard().getName());
         return d;
     }
-    
+
     public static Admission map(AdmissionData adm) {
         Admission d = new Admission();
         d.setAdmissionDate(adm.getAdmissionDate());
-        d.setCareTeam(adm.getCareTeam().stream().map(c -> CareTeamData.map(c)).collect(Collectors.toList()));
+       // d.setCareTeam(adm.getCareTeam().stream().map(c -> CareTeamData.map(c)).collect(Collectors.toList()));
         d.setDischargeDate(adm.getAdmissionDate());
         d.setDischarged(adm.getDischarged());
         d.setDischargedBy(adm.getDischargedBy());
