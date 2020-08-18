@@ -7,11 +7,12 @@ package io.smarthealth.clinical.admission.domain.repository;
 
 import io.smarthealth.clinical.admission.domain.WardTransfer;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
  *
  * @author Kelsas
  */
-public interface WardTransferRepository extends JpaRepository<WardTransfer, Long>{
+public interface WardTransferRepository extends JpaRepository<WardTransfer, Long>, JpaSpecificationExecutor<WardTransfer>{
     
 }

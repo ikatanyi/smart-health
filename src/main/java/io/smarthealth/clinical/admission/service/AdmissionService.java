@@ -14,6 +14,8 @@ import io.smarthealth.clinical.admission.domain.Ward;
 import io.smarthealth.clinical.admission.domain.repository.AdmissionRepository;
 import io.smarthealth.clinical.admission.domain.specification.AdmissionSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import lombok.RequiredArgsConstructor;
@@ -35,17 +37,20 @@ public class AdmissionService {
     private final WardService wardService;
     private final BedService bedService;
     private final RoomService roomService;
+    private final PatientService patientService;
 
     public Admission createAdmission(AdmissionData d) {
         Ward w = wardService.getWard(d.getWardId());
         Bed b = bedService.getBed(d.getBedId());
         BedType bt = bedService.getBedType(d.getBedTypeId());
+        Patient patient = patientService.findPatientOrThrow(d.getPatientNumber());
 
         Admission a = AdmissionData.map(d);
         a.setAdmissionNo(sequenceNumberService.next(1l, Sequences.Admission.name()));
         a.setWard(w);
         a.setBed(b);
         a.setBedType(bt);
+        a.setPatient(patient);//ulisahau hii part
         if (d.getRoomId() != null) {
             Room room = roomService.getRoom(d.getRoomId());
             a.setRoom(room);
