@@ -131,8 +131,7 @@ public class PricelistService {
             Optional<PriceBook> priceBook = priceBookRepository.findById(priceBookId);
             if (priceBook.isPresent()) {
                 PriceBook book = priceBook.get();
-                
-               
+
                 if (book.isGlobalRate()) {
                     return prices.map(pb -> book.toPriceBookRate(pb));
                 } else {
@@ -202,7 +201,7 @@ public class PricelistService {
     }
 
     private PriceBookItem findPriceItem(PriceBook book, Item item) {
-         return book.getPriceBookItems()
+        return book.getPriceBookItems()
                 .stream()
                 .filter(x -> Objects.equals(x.getItem().getId(), item.getId()))
                 .findAny()
@@ -221,11 +220,11 @@ public class PricelistService {
         if (priceBookId != null) {
             Optional<PriceBook> priceBook = priceBookRepository.findById(priceBookId);
             if (priceBook.isPresent()) {
-                PriceBook book = priceBook.get(); 
+                PriceBook book = priceBook.get();
                 if (book.isGlobalRate()) {
                     return prices.map(pb -> book.toPriceBookRate(pb));
                 } else {
-                    prices.map(pbi -> { 
+                    prices.map(pbi -> {
                         PriceBookItem i = findPriceItem(book, pbi.getItem());
                         System.err.println("finding i " + i);
                         if (i != null) {
@@ -240,13 +239,14 @@ public class PricelistService {
     }
 
     public double fetchPriceAmountByItemAndPriceBook(final Item item, final PriceBook book) {
-        System.out.println("Item "+item.getItemName());
+        System.out.println("Item " + item.getItemName());
         if (book != null) {
             if (book.isGlobalRate()) {
+                double perc = book.getPercentage() != null ? book.getPercentage() : 0;
                 if (book.getIncrease()) {
-                    return (item.getRate().doubleValue() * (100 + book.getPercentage()) / 100);
+                    return (item.getRate().doubleValue() * (100 + perc) / 100);
                 } else {
-                    return (item.getRate().doubleValue() * (100 - book.getPercentage()) / 100);
+                    return (item.getRate().doubleValue() * (100 - perc) / 100);
                 }
             } else {
                 PriceBookItem i = findPriceItem(book, item);
