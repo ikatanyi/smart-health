@@ -20,6 +20,7 @@ public class BedData {
     private String name;
     private String description;
     @Enumerated(EnumType.STRING)
+    @ApiModelProperty(example="Occupied,Available")
     public Status status;
     private Long roomId;
     @ApiModelProperty(hidden=true)

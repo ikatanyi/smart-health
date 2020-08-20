@@ -131,7 +131,7 @@ public class BatchImportService {
                     payerMemberRepository.saveAll(members);
                     break;
                 case InventoryStock:
-                    List<InventoryStockData>stockData = toPojoUtil.toPojo(InventoryStockData.class, inputFilestream);
+                    List<InventoryStockData> stockData = toPojoUtil.toPojo(InventoryStockData.class, inputFilestream);
                     inventoryItemService.uploadInventoryItems(stockData);
                     break;
                 default:

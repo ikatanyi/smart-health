@@ -66,5 +66,7 @@ public enum ReportName {
         Dispatch_Note,
         Inventory_Stock,
         Interim_Bill,
-        Expiry_Report
+        Expiry_Report,
+        Voided_Invoice_Statement,
+        Service_Statement
 }

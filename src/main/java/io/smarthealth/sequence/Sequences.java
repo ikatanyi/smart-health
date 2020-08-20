@@ -30,5 +30,6 @@ public enum Sequences {
     Admission,
     DocumentNumber,
     PayerCode,
-    SchemeCode;
+    SchemeCode,
+    DischargeNumber;
 }

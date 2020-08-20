@@ -5,7 +5,9 @@
  */
 package io.smarthealth.clinical.admission.domain.repository;
 
+import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.admission.domain.NursingCarePlan;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -13,5 +15,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Kelsas
  */
 public interface NursingCarePlanRepository extends JpaRepository<NursingCarePlan, Long> {
-    
+
+    List<NursingCarePlan> findByAdmission(final Admission admission);
 }

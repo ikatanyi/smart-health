@@ -144,7 +144,7 @@ public class AdmissionService {
 
     public Admission findAdmissionByNumber(String admissionNo) {
         if (admissionNo != null) {
-            return admissionRepository.findByAdmissionNo(admissionNo).orElseThrow(() -> APIException.notFound("Admission with number {0} not found", admissionNo));
+            return admissionRepository.findByAdmissionNo(admissionNo).orElseThrow(() -> APIException.notFound("Admission number {0} not found", admissionNo));
         } else {
             throw APIException.badRequest("Please provide admission number ", "");
         }

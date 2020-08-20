@@ -23,7 +23,8 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "patient_nursing_notes")
-public class NursingNotes extends Auditable{
+public class NursingNotes extends Auditable {
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_nursing_notes_patient_id"))
     private Patient patient;

@@ -5,6 +5,7 @@ import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.Constants;
+import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class AdmissionData {
     private Long id;
     @ApiModelProperty(hidden = true)
     private String admissionNumber; //this should be same as visit number
-    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime admissionDate;
     private String patientNumber;
     @ApiModelProperty(hidden = true)
@@ -62,7 +63,7 @@ public class AdmissionData {
     private List<CareTeamData> careTeam = new ArrayList<>();
 
     private String narration;
-    
+
     private PaymentDetailsData paymentDetailsData;
 
     public static AdmissionData map(Admission adm) {

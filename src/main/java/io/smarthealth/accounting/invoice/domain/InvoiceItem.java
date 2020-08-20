@@ -58,6 +58,10 @@ public class InvoiceItem extends Auditable {
         data.setTransactionId(this.billItem.getTransactionId());
         data.setServicePointId(this.billItem.getServicePointId());
         data.setServicePoint(this.billItem.getServicePoint());
+        data.setMemberName(this.invoice.getMemberName());
+        data.setMemberNo(this.invoice.getMemberNumber());
+        data.setPayer(this.invoice.getPayer().getPayerName());
+        data.setScheme(this.invoice.getScheme().getSchemeName());
         return data;
     }
 
