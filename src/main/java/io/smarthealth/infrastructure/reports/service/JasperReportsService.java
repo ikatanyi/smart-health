@@ -215,7 +215,7 @@ public class JasperReportsService {
                 response.setContentType("text/html");
                 final SimpleHtmlReportConfiguration configuration = new SimpleHtmlReportConfiguration();
 
-                configuration.setIgnorePageMargins(true);
+                configuration.setIgnorePageMargins(false);
 //                configuration.setSizeUnit(POINT);
 
                 // Or try this instead of setSizeUnit(POINT)...
