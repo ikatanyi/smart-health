@@ -78,10 +78,7 @@ public class ItemService {
     private final InventoryEventSender inventoryEventSender;
     private final SequenceNumberService sequenceNumberService;
     private final ServicePointRepository servicePointRepository;
-//    private final LabConfigurationService labService;
-//    private final ProcedureService procedureService;
-//    private final RadiologyConfigService radiologyService;
-//    private final InventoryItemService inventoryItemService;
+//    
 
     @Transactional
     @CachePut
@@ -373,64 +370,4 @@ public class ItemService {
         return data;
     }
 
-    public void importItem(List<CreateItem> list) {
-        List<LabTestData> labTestArray = new ArrayList();
-        List<ProcedureData> procArray = new ArrayList();
-        List<RadiologyTestData> imageArray = new ArrayList();
-        List<InventoryStockData> inventoryArray = new ArrayList();
-        list.forEach(x -> {
-            ItemData item = createItem(x);
-            if (item.getCategory() == item.getCategory().Lab) {
-                labTestArray.add(createLabTest(item));
-            }
-            if (item.getCategory() == item.getCategory().Drug) {
-                inventoryArray.add(createDrug(item, x.getAvailable()));
-            }
-            if (item.getCategory() == item.getCategory().Procedure) {
-                procArray.add(createProcedure(item));
-            }
-            if (item.getCategory() == item.getCategory().Imaging) {
-                imageArray.add(createScan(item));
-            }
-        }
-        );
-//        labService.createTest(labTestArray);
-//        procedureService.createProcedureTest(procArray);
-//        radiologyService.createRadiologyTest(imageArray);
-//        inventoryItemService.uploadInventoryItems(inventoryArray);
-    }
-
-    private LabTestData createLabTest(ItemData item) {
-        LabTestData data = new LabTestData();
-        data.setActive(Boolean.TRUE);
-        data.setItemCode(item.getItemCode());
-        data.setItemName(item.getItemName());
-        return data;
-    }
-
-    private ProcedureData createProcedure(ItemData item) {
-        ProcedureData data = new ProcedureData();
-        data.setProcedureName(item.getItemName());
-        data.setItemCode(item.getItemCode());
-        data.setStatus(Boolean.TRUE);
-        return data;
-    }
-
-    private RadiologyTestData createScan(ItemData item) {
-        RadiologyTestData data = new RadiologyTestData();
-        data.setScanName(item.getItemName());
-        data.setItemCode(item.getItemCode());
-        data.setActive(Boolean.TRUE);
-        data.setGender(Gender.Both);
-        return data;
-    }
-
-    private InventoryStockData createDrug(ItemData item, Double available) {
-        InventoryStockData data = new InventoryStockData();
-        Store store = storeService.getMainStore(Store.Type.MainStore);
-        data.setStoreId(store.getId());
-        data.setItemCode(item.getItemCode());
-        data.setStockCount(available);
-        return data;
-    }
 }
