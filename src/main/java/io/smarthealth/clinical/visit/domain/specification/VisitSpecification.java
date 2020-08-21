@@ -111,7 +111,7 @@ public class VisitSpecification {
                 query.orderBy(cb.asc(root.get("triageCategory")), cb.asc(root.get("startDatetime")));
             }
             if (!orderByTriageCategory) {
-                query.orderBy(cb.asc(root.get("startDatetime")), cb.asc(root.get("triageCategory")));
+                query.orderBy(cb.desc(root.get("startDatetime")), cb.desc(root.get("triageCategory")));
             }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
