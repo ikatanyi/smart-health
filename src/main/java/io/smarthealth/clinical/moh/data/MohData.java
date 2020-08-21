@@ -1,7 +1,8 @@
-package io.smarthealth.clinical.moh.domain;
+package io.smarthealth.clinical.moh.data;
 
-import io.smarthealth.clinical.moh.data.MohData;
-import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.clinical.moh.domain.Moh;
+import io.smarthealth.clinical.moh.domain.Moh.Category;
+import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -9,28 +10,20 @@ import lombok.Data;
  *
  * @author Kennedy.Ikatanyi
  */
-@Entity
 @Data
-@Table(name = "moh")
-public class Moh extends Identifiable {
+public class MohData {
 
-    public enum Category {
-        morbidity,
-    }
-    
     @Enumerated(EnumType.STRING)
     private Category category;
-
+    @ApiModelProperty(hidden=true)
+    private Long id;
     private String description;
-
     @Column(length = 10)
     private String code;
     private Boolean active;
     
-    
-    public MohData toData(){
-        MohData data = new MohData();
-        data.setId(this.getId());
+    public Moh toData(){
+        Moh data = new Moh();
         data.setActive(this.getActive());
         data.setCategory(this.getCategory());
         data.setCode(this.getCode());
