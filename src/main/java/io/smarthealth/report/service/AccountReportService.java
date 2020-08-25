@@ -248,8 +248,7 @@ public class AccountReportService {
         Boolean hasBalance = reportParam.getFirst("hasBalance") != null ? Boolean.getBoolean(reportParam.getFirst("hasBalance")) : null;
         String receipt = reportParam.getFirst("receipt");
         String remittanceNo = reportParam.getFirst("remittanceNo");
-        String dateRange = reportParam.getFirst("range");
-        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
 
         List<RemittanceData> remittanceData = remittanceService.getRemittances(payerId, receipt, remittanceNo, hasBalance, range, Pageable.unpaged()).getContent()
                 .stream()
@@ -337,7 +336,7 @@ public class AccountReportService {
         reportData.getFilters().put("accountName", data.getName());
         reportData.getFilters().put("accountType", data.getType());
         reportData.getFilters().put("status", data.getState());
-        reportData.getFilters().put("range", range);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.getFilters().put("ledger", data.getLedger());
         reportData.getFilters().put("balance", data.getBalance());
 
@@ -421,7 +420,8 @@ public class AccountReportService {
         sortList.add(sortField);
 
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.getFilters().put("range", reportParam.getFirst("dateRange"));
+        
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
 
         reportData.setData(billData);
         reportData.setFormat(format);
@@ -787,12 +787,11 @@ public class AccountReportService {
         Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
         String patientNo = reportParam.getFirst("patientNo");
         String invoiceNo = reportParam.getFirst("invoiceNo");
-        String dateRange = reportParam.getFirst("range");
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));
 
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
-        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(1, 500);
         List<InvoiceItemData> invoiceData = invoiceService.fetchVoidedInvoiceItem(payer, scheme, invoiceNo, status, patientNo, range, Pageable.unpaged()).getContent()
                 .stream()

@@ -105,7 +105,7 @@ public class PatientReportServices {
                 .map((patient) -> patientService.convertToPatientData((Patient) patient))
                 .collect(Collectors.toList());
 
-        reportData.getFilters().put("range", reportParam.getFirst("dateRange"));
+        reportData.getFilters().put("range", DateRange.getReportPeriod(DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"))));
         reportData.setData(patientData);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/PatientList");

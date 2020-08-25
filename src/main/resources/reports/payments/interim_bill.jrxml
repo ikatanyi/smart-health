@@ -54,17 +54,17 @@
 	<variable name="runningAmt" class="java.lang.Double" resetType="Column" calculation="Sum">
 		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
 	</variable>
-	<variable name="balance_1" class="java.lang.Double" resetType="Group" resetGroup="visit" calculation="Sum">
+	<variable name="balance_1" class="java.lang.Double" resetType="Group" resetGroup="BillDate" calculation="Sum">
 		<variableExpression><![CDATA[$F{netAmount}.equals( null )?0.00:$F{netAmount}]]></variableExpression>
 	</variable>
-	<variable name="price_1" class="java.lang.Double" resetType="Group" resetGroup="visit" calculation="Sum">
+	<variable name="price_1" class="java.lang.Double" resetType="Group" resetGroup="BillDate" calculation="Sum">
 		<variableExpression><![CDATA[$F{amount}.equals(null)?0.00:$F{amount}]]></variableExpression>
 	</variable>
-	<variable name="amount_1" class="java.lang.Double" resetType="Group" resetGroup="visit" calculation="Sum">
+	<variable name="amount_1" class="java.lang.Double" resetType="Group" resetGroup="BillDate" calculation="Sum">
 		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
 	</variable>
-	<group name="visit">
-		<groupExpression><![CDATA[$V{PAGE_COUNT}]]></groupExpression>
+	<group name="BillDate">
+		<groupExpression><![CDATA[$F{billingDate}]]></groupExpression>
 		<groupFooter>
 			<band height="16">
 				<textField>

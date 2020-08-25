@@ -120,7 +120,7 @@ public class SupplierReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList); 
-        reportData.getFilters().put("range", reportParam.getFirst("dateRange"));
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(doctorInvoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/supplier/DoctorInvoiceStatement");
@@ -167,7 +167,7 @@ public class SupplierReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.getFilters().put("range", reportParam.getFirst("dateRange"));
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(purchaseInvoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/supplier/SupplierInvoiceStatement");

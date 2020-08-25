@@ -1,9 +1,11 @@
 package io.smarthealth.infrastructure.lang;
 
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.utility.DateUtility;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
@@ -93,4 +95,11 @@ public class DateRange {
       }
     }
   }
+  
+  public static String getReportPeriod(DateRange range) {
+        LocalDate startDate = (range == null ? DateUtility.getStartOfCurrentMonth() : range.getStartDate());
+        LocalDate endDate = (range == null ? DateUtility.getEndOfCurrentMonth() : range.getEndDate());
+        String reportPeriod = String.format("From %s To %s", startDate.format(DateTimeFormatter.ofPattern("d MMM uuuu")), endDate.format(DateTimeFormatter.ofPattern("d MMM uuuu")));
+        return reportPeriod;
+    }
 }
