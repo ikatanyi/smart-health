@@ -15,7 +15,7 @@ import lombok.Data;
 public class Moh extends Identifiable {
 
     public enum Category {
-        morbidity,
+        MORBIDITY,OPAS
     }
     
     @Enumerated(EnumType.STRING)

@@ -10,6 +10,8 @@ import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
+import io.smarthealth.clinical.moh.data.MonthlyMobidity;
+import io.smarthealth.clinical.moh.service.MohService;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
 import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.service.ProcedureService;
@@ -92,6 +94,7 @@ public class PatientReportServices {
     private final EmployeeService employeeService;
     private final ReferralsService referralService;
     private final AppointmentService appointmentService;
+    private final MohService mohService;
 
     private final VisitService visitService;
 
@@ -448,6 +451,20 @@ public class PatientReportServices {
         }
         reportData.setTemplate("/patient/sick_off_note");
         reportData.setReportName("sick-off-note");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getMorbidityReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        DateRange range = DateRange.fromIsoString(reportParam.getFirst("dateRange"));
+
+       
+
+        List<MonthlyMobidity> requestData = mohService.getMonthlyMobidity(range);
+        reportData.setData(requestData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/patient/morbidity_monthly");
+        reportData.setReportName("morbidity-report");
         reportService.generateReport(reportData, response);
     }
 

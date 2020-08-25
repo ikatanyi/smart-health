@@ -35,14 +35,14 @@ public class MohController {
     }
 
     @GetMapping("/moh/{id}")
-    @PreAuthorize("hasAuthority('view_moh')")
+//    @PreAuthorize("hasAuthority('view_moh')")
     public Moh getMoh(@PathVariable(value = "id") Long code) {
         Moh moh = service.fetchMohById(code);
         return moh;
     }
 
     @GetMapping("/moh")
-    @PreAuthorize("hasAuthority('view_moh')")
+//    @PreAuthorize("hasAuthority('view_moh')")
     public ResponseEntity<?> getAllMohs(
             @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
             @RequestParam(value = "q", required = false) final String term,
@@ -69,7 +69,7 @@ public class MohController {
     }
 
     @PostMapping("/moh")
-    @PreAuthorize("hasAuthority('create_moh')")
+//    @PreAuthorize("hasAuthority('create_moh')")
     public ResponseEntity<?> createMoh(@Valid @RequestBody MohData mohData) {
 
         MohData result = service.createMoh(mohData).toData();
@@ -84,7 +84,7 @@ public class MohController {
     }
 
     @PostMapping("/moh/Batch")
-    @PreAuthorize("hasAuthority('create_moh')")
+//    @PreAuthorize("hasAuthority('create_moh')")
     public ResponseEntity<?> createBatchMoh(@Valid @RequestBody List<MohData> mohData) {
 
         List<MohData> result = service.createBatchMoh(mohData)
@@ -102,7 +102,7 @@ public class MohController {
     }
 
     @PutMapping("/moh/{id}")
-    @PreAuthorize("hasAuthority('create_moh')")
+//    @PreAuthorize("hasAuthority('create_moh')")
     public ResponseEntity<?> updateMoh(@PathVariable("id") Long id, @Valid @RequestBody MohData mohData) {
 
         MohData result = service.updateMoh(id, mohData).toData();
