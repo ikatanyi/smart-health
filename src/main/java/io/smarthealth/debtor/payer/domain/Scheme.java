@@ -24,7 +24,7 @@ public class Scheme extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_scheme_payer_id"))
     private Payer payer;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = false)
     private String schemeName;
 
     @Column(nullable = false, unique = true)
