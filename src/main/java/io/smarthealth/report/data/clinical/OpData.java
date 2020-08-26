@@ -18,4 +18,8 @@ public class OpData {
     private Integer newFemale;
     private Integer revMale;
     private Integer revFemale;
+    private Integer males;
+    private Integer females;
+    private Integer revMales;
+    private Integer revFemales;
 }

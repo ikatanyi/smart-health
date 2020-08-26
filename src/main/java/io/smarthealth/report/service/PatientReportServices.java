@@ -48,11 +48,13 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.clinical.EmployeeBanner;
+import io.smarthealth.report.data.clinical.OpData;
 import io.smarthealth.report.data.clinical.PatientVisitData;
 import io.smarthealth.report.data.clinical.reportVisitData;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -453,18 +455,96 @@ public class PatientReportServices {
         reportData.setReportName("sick-off-note");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getMorbidityReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         DateRange range = DateRange.fromIsoString(reportParam.getFirst("dateRange"));
-
-       
-
         List<MonthlyMobidity> requestData = mohService.getMonthlyMobidity(range);
         reportData.setData(requestData);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/morbidity_monthly");
         reportData.setReportName("morbidity-report");
+        reportService.generateReport(reportData, response);
+    }
+
+    public void getMohOPAttendanceReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        List<OpData> dataArray = new ArrayList();
+        OpData data = null;
+        String[] groups = {"Under 1 Year", "1-4 Years", "5-14 Years", "15-24 Years", "25-34 Years", "35-44  Years", "45-49 Years", "50-54 Years", "55-64 Years", "Over 65 Years", "  All Ages  "};
+        for (String group : groups) {
+            data = new OpData();
+            data.setAgeGroup(group);
+            data.setNewFemale(0);
+            data.setNewMale(0);
+            data.setRevFemale(0);
+            data.setRevMale(0);
+            
+            data.setFemales(0);
+            data.setMales(0);
+            data.setRevFemales(0);
+            data.setRevMales(0);
+            dataArray.add(data);
+        }
+
+        LocalDate date = LocalDate.parse(reportParam.getFirst("dateRange"));
+        List<Visit> visits = visitService.fetchVisitAttendance(date);
+        for (Visit visit : visits) {
+            OpData data2 = dataArray.get(9);
+            OpData data3 = dataArray.get(10);
+            Integer age = visit.getPatient().getAge();
+            Gender gender = visit.getPatient().getGender();
+            if (age < 1) {
+                data2 = dataArray.get(0);
+            }
+            if (age >= 1 && age <= 4) {
+                data2 = dataArray.get(1);
+            }
+            if (age >= 5 && age <= 14) {
+                data2 = dataArray.get(2);
+            }
+            if (age >= 15 && age <= 24) {
+                data2 = dataArray.get(3);
+            }
+            if (age >= 25 && age <= 34) {
+                data2 = dataArray.get(4);
+            }
+            if (age >= 35 && age <= 44) {
+                data2 = dataArray.get(5);
+            }
+            if (age >= 45 && age <= 49) {
+                data2 = dataArray.get(6);
+            }
+            if (age >= 50 && age <= 54) {
+                data2 = dataArray.get(7);
+            }
+            if (age >= 55 && age <= 64) {
+                data2 = dataArray.get(8);
+            }
+            if (age >= 65) {
+                data2 = dataArray.get(9);
+            }
+
+            if (gender == Gender.F) {
+                if (visit.getPatient().getDateRegistered() == visit.getStartDatetime().toLocalDate()) {
+                    data2.setNewMale(data2.getNewMale() + 1);
+                    data3.setMales(data3.getMales() + 1);
+                } else {
+                    data2.setRevMale(data2.getRevMale() + 1);
+                    data3.setRevMales(data3.getRevMales() + 1);
+                }
+            } else if (visit.getPatient().getDateRegistered() == visit.getStartDatetime().toLocalDate()) {
+                data2.setNewFemale(data2.getNewFemale() + 1);
+                data3.setFemales(data3.getFemales() + 1);
+            } else {
+                data2.setRevFemale(data2.getRevFemale() + 1);
+                data3.setRevFemales(data3.getRevFemales() + 1);
+            }
+        }
+        reportData.setData(dataArray);
+        reportData.setFormat(format);
+        reportData.setTemplate("/patient/op_statement");
+        reportData.setReportName("out-patient-summary");
         reportService.generateReport(reportData, response);
     }
 
