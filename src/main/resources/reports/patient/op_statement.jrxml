@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rpt_morbidity" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="06ed7150-f811-444e-ad1e-77f9cf29c1ed">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="patientId" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CompanyName" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Email" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Phone" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Address" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="State" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Web" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="City" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kennedy.ikatanyi\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="hospitalId" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGE_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\kennedy.ikatanyi\\Documents\\NetBeansProjects\\hmis\\backend\\src\\main\\resources\\com\\smart\\reports\\smart_logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="from" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="to" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="age" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select (case when extract(year from current_date)-extract(year from dob)<1 then 'Under 1 Year'
+when extract(year from current_date)-extract(year from dob) between 1 and 4 then '1-4 Years'
+when extract(year from current_date)-extract(year from dob) between 5 and 14 then '5-14 Years'
+when extract(year from current_date)-extract(year from dob) between 15 and 24 then '15-24 Years'
+when extract(year from current_date)-extract(year from dob) between 25 and 34 then '25-34 Years'
+when extract(year from current_date)-extract(year from dob) between 35 and 44 then '35-44 Years'
+when extract(year from current_date)-extract(year from dob) between 45 and 49 then '45-49 Years'
+when extract(year from current_date)-extract(year from dob) between 50 and 54 then '50-54 Years'
+when extract(year from current_date)-extract(year from dob) between 55 and 64 then '55-64 Years'
+else 'Over 65' end) Age_groups,
+sum(gender='MALE' AND RegDate BETWEEN $P{from} AND $P{to}) as new_MALE,
+sum(gender='FEMALE' AND RegDate BETWEEN $P{from} AND $P{to}) as new_FEMALE,
+sum(gender='MALE' AND NOT RegDate BETWEEN $P{from} AND $P{to}) as rev_MALE,
+sum(gender='FEMALE' AND NOT RegDate BETWEEN $P{from} AND $P{to}) as rev_FEMALE,
+sum(gender='MALE') as MALE,
+sum(gender='FEMALE') as FEMALE
+from dt_patientdetails
+WHERE RegDate BETWEEN $P{from} AND $P{to} AND hospital_id=$P{hospitalId}
+group by Age_groups]]>
+	</queryString>
+	<field name="Age_groups" class="java.lang.String"/>
+	<field name="new_MALE" class="java.math.BigDecimal"/>
+	<field name="new_FEMALE" class="java.math.BigDecimal"/>
+	<field name="rev_MALE" class="java.math.BigDecimal"/>
+	<field name="rev_FEMALE" class="java.math.BigDecimal"/>
+	<field name="MALE" class="java.math.BigDecimal"/>
+	<field name="FEMALE" class="java.math.BigDecimal"/>
+	<title>
+		<band height="164" splitType="Stretch">
+			<staticText>
+				<reportElement x="232" y="66" width="164" height="13" uuid="4ba31b1f-8042-48e0-ae99-592382120eb9"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[STATEMENT OF OUT-PATIENTS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="160" y="146" width="134" height="18" uuid="9afac2d4-2a32-41ba-801e-5068a6352d17"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NEW]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="294" y="146" width="129" height="18" uuid="5fe72973-5411-4bfd-8d4b-2530c6510923"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REVISIT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="423" y="146" width="132" height="18" uuid="5c0fc390-f423-43e2-a0f3-3bcd8e4ff3a8"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="146" width="160" height="18" uuid="3d24dd14-161c-4044-9ca9-7656c4d30c1f"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="128" width="555" height="18" uuid="ca6e1503-e8c5-47c5-bc2c-2440d38c1771"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[A.OUT - PATIENTS]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="3" y="78" width="309" height="15" uuid="87f1154c-d294-4948-8b8e-3ea242500bef"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Web}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="56" y="105" width="123" height="13" uuid="f7083095-329c-4a7a-8abf-cc15a4d0e9ec"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Phone}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="105" width="53" height="13" uuid="352086af-d510-4ba0-af85-08a15510f62a"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Phone :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="2" y="46" width="310" height="20" uuid="78e53df8-c5c6-4c02-9603-78ee4e718ae0"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CompanyName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="66" width="309" height="12" uuid="d1c2000a-3e26-47fe-82d2-3b93cf184b56"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Email}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="92" width="53" height="13" uuid="64c8d12e-a8bb-4e21-9828-0f23f17112a1"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Address :]]></text>
+			</staticText>
+			<image>
+				<reportElement x="2" y="10" width="250" height="36" uuid="74683b74-7cf1-41b1-9451-7027abc54ca4"/>
+				<imageExpression><![CDATA[$P{IMAGE_DIR}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="56" y="92" width="123" height="13" uuid="36298d64-a1d8-4e0c-a208-f2cb640dfe3e"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Address}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="18" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="160" height="18" uuid="0c7c57cc-e799-4cfd-af8c-e43f4af94b7d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AGE GROUPS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="160" y="0" width="62" height="18" uuid="111d6643-f2f4-44f3-9f13-9a6601d9d2f0"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Male]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="222" y="0" width="72" height="18" uuid="56dc2108-4aec-467a-9986-7c171ca3c73b"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Female]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="294" y="0" width="59" height="18" uuid="cf924fc5-a2ce-4f6f-b17f-1e2a63d59eea"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Male]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="353" y="0" width="70" height="18" uuid="935dc447-3cc8-4aec-9f2d-7f14d880ea89"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Female]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="423" y="0" width="66" height="18" uuid="fbea9d30-eafc-41ca-b853-ae1fbc7b470d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Male]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="489" y="0" width="66" height="18" uuid="4d6bdb92-cec2-478b-9a06-d86b1dc144bf"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Female]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="160" height="14" uuid="0acb9247-6050-463d-b0a5-d16be5e55be0"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[      $F{Age_groups}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="160" y="0" width="62" height="14" uuid="d234e41a-c558-4a90-9f39-01f0c1de7abc"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{new_MALE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="222" y="0" width="72" height="14" uuid="ed3366b8-ae5a-421c-aa97-c19ea6c82648"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{new_FEMALE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="294" y="0" width="59" height="14" uuid="44d723c9-abba-433e-a5cf-e1ab78940b07"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rev_MALE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="353" y="0" width="70" height="14" uuid="83093f2b-4b2c-4b94-9839-aa1ca49a5250"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rev_FEMALE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="423" y="0" width="66" height="14" uuid="4a13db37-4046-4a8d-aa3d-44054d0b7ead"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MALE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="489" y="0" width="66" height="14" uuid="0edb1af6-4f96-49fd-b0a2-e19c712d08b5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FEMALE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

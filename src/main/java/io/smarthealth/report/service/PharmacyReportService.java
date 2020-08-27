@@ -48,15 +48,18 @@ public class PharmacyReportService {
         String visitNumber = reportParam.getFirst("visitNumber");
         String orderNumber = reportParam.getFirst("orderNumber");
         Optional<Visit> visit1 = visitService.findVisit(visitNumber);
-        if(visit1.isPresent())
+        if(visit1.isPresent()){
             visit = visit1.get();
+            reportData.setPatientNumber(visit.getPatient().getPatientNumber());
+        }
         List<PrescriptionData> requestData = prescriptionService.fetchPrescriptionByNumber(orderNumber, visit)
 //                .getContent()
                 .stream()
                 .map((test) -> PrescriptionData.map(test))
                 .collect(Collectors.toList());
 
-//        reportData.setPatientNumber(requestData.get(0).visit.getPatient().getPatientNumber());
+        
+        
 //        if (visit.getHealthProvider() != null) {
 //            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
 //        }

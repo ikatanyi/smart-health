@@ -69,5 +69,7 @@ public enum ReportName {
         Expiry_Report,
         Voided_Invoice_Statement,
         Service_Statement,
-        Product_Statement
+        Product_Statement,
+        Morbidity_Report,
+        OP_Statement
 }

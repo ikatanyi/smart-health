@@ -9,6 +9,7 @@ import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -59,5 +60,8 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
 
     @Query(value = "SELECT v FROM Visit v WHERE v.patient=:patient AND  v.visitNumber <> :visitNumber ORDER BY v.id DESC")
     Page<Visit> lastVisit(@Param("patient") Patient patient, @Param("visitNumber") String visitNumber, Pageable pageable);
+    
+    @Query(value = "SELECT v FROM Visit v WHERE DATE(v.startDatetime)=:date GROUP BY v.patient.patientNumber, DATE(v.startDatetime)")
+    List<Visit> visitAttendance(@Param("date") LocalDate date);
 
 }

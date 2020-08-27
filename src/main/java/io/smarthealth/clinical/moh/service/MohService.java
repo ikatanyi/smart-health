@@ -4,6 +4,8 @@ import io.smarthealth.clinical.moh.data.MohData;
 import io.smarthealth.clinical.moh.domain.Moh;
 import io.smarthealth.clinical.moh.domain.MohRepository;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import io.smarthealth.clinical.moh.data.MonthlyMobidity;
 
 /**
  *
@@ -87,5 +90,9 @@ public class MohService {
     public List<MohData> getAllMohs() {
         Page<MohData> list = mohRepository.findAll(Pageable.unpaged()).map(um -> um.toData());
         return list.getContent();
+    }
+    
+    public List<MonthlyMobidity>getMonthlyMobidity(DateRange range){
+        return mohRepository.findMorbiditySummaryInterface(range.getStartDate(), range.getEndDate());
     }
 }
