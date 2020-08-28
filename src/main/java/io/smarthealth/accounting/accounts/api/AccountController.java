@@ -14,6 +14,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.DateUtility;
+import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -23,6 +24,7 @@ import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -44,8 +46,8 @@ public class AccountController {
     @PostMapping("/accounts")
     @ResponseBody
 //    @PreAuthorize("hasAuthority('create_account')")        
-    ResponseEntity<Void> createAccount(@RequestBody @Valid final AccountData account) {
-        
+    ResponseEntity<Pager<AccountData>> createAccount(@RequestBody @Valid final AccountData account) {
+
         if (this.accountService.findAccount(account.getIdentifier()).isPresent()) {
             throw APIException.conflict("Account {0} already exists.", account.getIdentifier());
         }
@@ -58,9 +60,14 @@ public class AccountController {
 
         validateLedger(account);
 
-        accountService.createAccount(account);
+        Account savedAcc = accountService.createAccount(account);
 
-        return ResponseEntity.accepted().build();
+        Pager<AccountData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Account Created Successfully");
+        pagers.setContent(AccountData.map(savedAcc));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
     @GetMapping("/accounts")
@@ -127,7 +134,7 @@ public class AccountController {
         final DateRange range = DateRange.fromIsoString(dateRange);
 
         Pageable pageable = PaginationUtil.createPage(page, size, Sort.by("journalEntry_date").ascending());
-         
+
         Page<JournalEntryItemData> lists = accountService.getAccountEntries(identifier, pageable)
                 .map(x -> x.toData());
 //        accountService.fetchAccountEntries( identifier,range, pageable)
@@ -136,7 +143,7 @@ public class AccountController {
 
     @DeleteMapping("/accounts/{identifier}")
     @ResponseBody
-    @PreAuthorize("hasAuthority('delete_account')")            
+    @PreAuthorize("hasAuthority('delete_account')")
     ResponseEntity<Void> deleteAccount(@PathVariable("identifier") final String identifier) {
         final Account account = accountService.findByAccountNumberOrThrow(identifier);
 
@@ -166,7 +173,7 @@ public class AccountController {
     }
 
     @GetMapping("/accounts/lite")
-    @PreAuthorize("hasAuthority('view_account')")    
+    @PreAuthorize("hasAuthority('view_account')")
     public ResponseEntity<?> geTransactionalAccounts(
             @RequestParam(value = "type", required = false) final AccountType type,
             @RequestParam(value = "grouped", required = false) final boolean grouped) {
@@ -177,7 +184,7 @@ public class AccountController {
     }
 
     @GetMapping("/accounts/income-expenses")
-    @PreAuthorize("hasAuthority('view_account')")    
+    @PreAuthorize("hasAuthority('view_account')")
     public ResponseEntity<?> getIncomeExpenseAccount() {
         return ResponseEntity.ok(accountService.getIncomeExpenseAccounts());
     }
@@ -209,7 +216,7 @@ public class AccountController {
 //        TransactionList list = accountService.getTransactionLists(identifier, range);
         List<JournalEntryItemData> list = accountService.getAccountTransaction(identifier, range);
 
-        return ResponseEntity.ok(PaginationUtil.paginateList(list, "Accounts transactions",getReportPeriod(range), pageable));
+        return ResponseEntity.ok(PaginationUtil.paginateList(list, "Accounts transactions", getReportPeriod(range), pageable));
     }
 
     private String getReportPeriod(DateRange range) {

@@ -85,7 +85,7 @@ public class AccountService {
     }
 
     @Transactional
-    public String createAccount(AccountData account) {
+    public Account createAccount(AccountData account) {
         final Account accountEntity = new Account();
         accountEntity.setIdentifier(account.getIdentifier());
         accountEntity.setName(account.getName());
@@ -116,7 +116,7 @@ public class AccountService {
                     savedAccount.getLedger().getIdentifier(), savedAccount.getBalance());
         }
 
-        return account.getIdentifier();
+        return savedAccount;
     }
 
     @Transactional

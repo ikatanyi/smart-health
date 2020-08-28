@@ -8,7 +8,9 @@ import io.smarthealth.accounting.accounts.service.LedgerService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.swagger.annotations.Api;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +31,7 @@ public class LedgerController {
 
     @PostMapping
     @ResponseBody
-    @PreAuthorize("hasAuthority('create_Legder')")        
+    @PreAuthorize("hasAuthority('create_Legder')")
     ResponseEntity<?> createLedger(@RequestBody @Valid final LedgerData ledger) {
         if (ledger.getParentLedgerIdentifier() != null) {
             throw APIException.badRequest("Ledger {0} is not a root.", ledger.getIdentifier());
@@ -45,7 +47,7 @@ public class LedgerController {
 
     @GetMapping
     @ResponseBody
-    @PreAuthorize("hasAuthority('view_Legder')")          
+    @PreAuthorize("hasAuthority('view_Legder')")
     ResponseEntity<LedgerPage> fetchLedgers(@RequestParam(value = "includeSubLedgers", required = false, defaultValue = "false") final boolean includeSubLedgers,
             @RequestParam(value = "term", required = false) final String term,
             @RequestParam(value = "type", required = false) final String type,
@@ -59,21 +61,36 @@ public class LedgerController {
         );
     }
 
+    @GetMapping("/types")
+    @ResponseBody
+    @PreAuthorize("hasAuthority('view_Legder')")
+    ResponseEntity< ?> fetchLedgers(Boolean isGrouped) {
+        if (isGrouped != null && isGrouped) {
+            return ResponseEntity.ok(ledgerService.getGroupedAccountsTypes());
+        }
+        List<LedgerData> ledgerList = ledgerService.listAllAccountTypes()
+                .stream()
+                .map(LedgerData::map)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(ledgerList);
+    }
+
     @GetMapping("/{identifier}")
     @ResponseBody
-    @PreAuthorize("hasAuthority('view_Legder')")          
+    @PreAuthorize("hasAuthority('view_Legder')")
     ResponseEntity<LedgerData> findLedger(@PathVariable("identifier") final String identifier) {
-       Optional<LedgerData> ledger = ledgerService.findLedgerData(identifier);
-       if(ledger.isPresent()){
-           return ResponseEntity.ok(ledger.get());
-       }else{
-         throw APIException.notFound("Ledger {0} not found", identifier);
-       }
+        Optional<LedgerData> ledger = ledgerService.findLedgerData(identifier);
+        if (ledger.isPresent()) {
+            return ResponseEntity.ok(ledger.get());
+        } else {
+            throw APIException.notFound("Ledger {0} not found", identifier);
+        }
     }
 
     @PostMapping("/{identifier}")
     @ResponseBody
-    @PreAuthorize("hasAuthority('create_Legder')")  
+    @PreAuthorize("hasAuthority('create_Legder')")
     ResponseEntity<Void> addSubLedger(@PathVariable("identifier") final String identifier, @RequestBody @Valid final LedgerData subLedger) {
         final Optional<Ledger> optionalParentLedger = this.ledgerService.findLedger(identifier);
         if (optionalParentLedger.isPresent()) {
@@ -97,7 +114,7 @@ public class LedgerController {
 
     @PutMapping("/{identifier}")
     @ResponseBody
-    @PreAuthorize("hasAuthority('edit_Legder')")  
+    @PreAuthorize("hasAuthority('edit_Legder')")
     ResponseEntity<Void> modifyLedger(@PathVariable("identifier") final String identifier, @RequestBody @Valid final LedgerData ledger) {
         if (!identifier.equals(ledger.getIdentifier())) {
             throw APIException.badRequest("Addressed resource {0} does not match ledger {1}", identifier, ledger.getIdentifier());
@@ -114,7 +131,7 @@ public class LedgerController {
 
     @DeleteMapping("/{identifier}")
     @ResponseBody
-    @PreAuthorize("hasAuthority('delete_Legder')")  
+    @PreAuthorize("hasAuthority('delete_Legder')")
     ResponseEntity<Void> deleteLedger(@PathVariable("identifier") final String identifier) {
         final Optional<LedgerData> optionalLedger = this.ledgerService.findLedgerData(identifier);
         if (optionalLedger.isPresent()) {
@@ -138,7 +155,7 @@ public class LedgerController {
 
     @GetMapping("/{identifier}/accounts")
     @ResponseBody
-    @PreAuthorize("hasAuthority('view_Legder')")          
+    @PreAuthorize("hasAuthority('view_Legder')")
     ResponseEntity<AccountPage> fetchAccountsOfLedger(@PathVariable("identifier") final String identifier,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
