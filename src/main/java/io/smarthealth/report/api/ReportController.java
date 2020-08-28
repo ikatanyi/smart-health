@@ -236,7 +236,16 @@ public class ReportController {
                 break;  
            case OP_Statement:
                 patientReportService.getMohOPAttendanceReport(queryParams, format, response);
-                break;       
+                break;  
+           case Patient_Register:
+               patientReportService.getPatientRegisterReport(queryParams, format, response);
+               break;
+           case Dispensed_Drugs:
+                pharmacyReportService.DispenseReport(queryParams, format, response);
+                break;    
+           case Stock_Purchase_Report:
+               stockReportService.StockPurchase(queryParams, format, response);
+               break;
             default:
                 break;
 

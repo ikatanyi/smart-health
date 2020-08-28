@@ -79,6 +79,7 @@ public class StockEntry extends Auditable {
         data.setMoveType(this.getMoveType());
         data.setPurpose(this.getPurpose());
         data.setCostCenter(this.getCostCenter());
+        data.setCreatedBy(this.getCreatedBy());
 
         return data;
     }

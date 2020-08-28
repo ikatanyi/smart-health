@@ -86,6 +86,7 @@ public class DispensedDrug extends Auditable implements Cloneable {
         data.setDispensedBy(this.dispensedBy);
         data.setCollectedBy(this.collectedBy);
         data.setTransactionId(this.transactionId);
+        data.setCost(amount);
         data.setIsReturn(this.isReturn);
         if (this.getDrug() != null) {
             data.setDrugId(this.getDrug().getId());

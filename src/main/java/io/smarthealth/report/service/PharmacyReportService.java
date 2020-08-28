@@ -5,11 +5,15 @@
  */
 package io.smarthealth.report.service;
 
+import io.smarthealth.clinical.moh.data.Register;
+import io.smarthealth.clinical.pharmacy.domain.DispensedDrugsInterface;
+import io.smarthealth.clinical.pharmacy.service.DispensingService;
 import io.smarthealth.clinical.record.data.PrescriptionData;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.organization.person.patient.service.PatientService;
@@ -38,6 +42,7 @@ public class PharmacyReportService {
     private final JasperReportsService reportService;
     private final PatientService patientService;
     private final PrescriptionService prescriptionService;
+    private final DispensingService dispenseService;
     
     private final VisitService visitService;
     
@@ -93,6 +98,18 @@ public class PharmacyReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/pharmacy/presc_label");
         reportData.setReportName("prescription-label");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void DispenseReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        DateRange range = DateRange.fromIsoString(reportParam.getFirst("dateRange"));
+        List<DispensedDrugsInterface> requestData = dispenseService.dispensedDrugs(range);
+        reportData.setData(requestData);
+        reportData.setFormat(format);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.setTemplate("/clinical/pharmacy/dispensed_drugs");
+        reportData.setReportName("Dispensed-Drugs");
         reportService.generateReport(reportData, response);
     }
     

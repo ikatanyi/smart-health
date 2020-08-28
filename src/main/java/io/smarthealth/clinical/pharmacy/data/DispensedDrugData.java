@@ -37,6 +37,7 @@ public class DispensedDrugData implements Serializable {
     private String billNumber;
     private Double qtyIssued;
     private Double price;
+    private Double cost;
     private Double amount; 
     private String units;
     private String instructions;
@@ -46,7 +47,7 @@ public class DispensedDrugData implements Serializable {
     private String dispensedBy;
     private String collectedBy;
     private Boolean isReturn=false;
-      private String otherReference;
+    private String otherReference;
     private Boolean walkinFlag=Boolean.FALSE;
     private String batchNumber;
    
