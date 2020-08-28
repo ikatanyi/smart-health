@@ -124,7 +124,7 @@ public class Invoice extends Auditable {
         data.setInvoiceDate(this.date);
         data.setDueDate(this.dueDate);
         data.setNumber(this.number);
-        data.setAmount(this.amount.setScale(0, RoundingMode.HALF_UP));
+        data.setAmount(this.amount!=null ? this.amount.setScale(0, RoundingMode.HALF_UP) : BigDecimal.ZERO);
         data.setDiscount(this.discount);
         data.setTax(this.tax);
         data.setBalance(this.balance);
