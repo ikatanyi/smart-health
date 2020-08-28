@@ -166,6 +166,7 @@ public class IvoryHistoricalClinicalDataSindano {
                     rs = pst2.executeQuery();
 
                     while (rs.next()) {
+                        System.out.println("d.getPvEntityNo() " + d.getPvEntityNo());
                         try {
                             //create doctor request
 //                            if (!isDoctorRequestOrderNumberExists("VST-".concat(d.getPvEntityNo()), conn)) {
