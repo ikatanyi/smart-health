@@ -129,8 +129,21 @@ public class AdmissionService {
         return admissionRepository.save(a);
     }
 
-    public Page<Admission> fetchAdmissions(final String admissionNo, final String term, final Pageable pageable) {
-        Specification<Admission> s = AdmissionSpecification.createSpecification(admissionNo, term);
+    public Page<Admission> fetchAdmissions(final String admissionNo, final Long wardId, final Long roomId, final Long bedId, final String term, final Pageable pageable) {
+
+        Ward ward = null;
+        Room room = null;
+        Bed bed = null;
+        if (wardId != null) {
+            ward = wardService.getWard(wardId);
+        }
+        if (roomId != null) {
+            room = roomService.getRoom(roomId);
+        }
+        if (bedId != null) {
+            bed = bedService.getBed(bedId);
+        }
+        Specification<Admission> s = AdmissionSpecification.createSpecification(admissionNo, ward, room, bed, term);
         return admissionRepository.findAll(s, pageable);
     }
 

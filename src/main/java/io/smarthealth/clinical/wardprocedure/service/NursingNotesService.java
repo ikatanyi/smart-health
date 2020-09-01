@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.admission.service;
+package io.smarthealth.clinical.wardprocedure.service;
 
-import io.smarthealth.clinical.admission.data.NursingNotesData;
+import io.smarthealth.clinical.wardprocedure.data.NursingNotesData;
 import io.smarthealth.clinical.admission.domain.Admission;
-import io.smarthealth.clinical.admission.domain.NursingNotes;
-import io.smarthealth.clinical.admission.domain.repository.NursingNotesRepository;
+import io.smarthealth.clinical.wardprocedure.domain.NursingNotes;
+import io.smarthealth.clinical.wardprocedure.domain.repository.NursingNotesRepository;
+import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

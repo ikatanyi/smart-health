@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.admission.api;
+package io.smarthealth.clinical.wardprocedure.api;
 
-import io.smarthealth.clinical.admission.data.NursingCarePlanData;
-import io.smarthealth.clinical.admission.domain.NursingCarePlan;
-import io.smarthealth.clinical.admission.service.NursingCarePlanService;
+import io.smarthealth.clinical.wardprocedure.data.NursingCarePlanData;
+import io.smarthealth.clinical.wardprocedure.domain.NursingCarePlan;
+import io.smarthealth.clinical.wardprocedure.service.NursingCarePlanService;
 import io.smarthealth.infrastructure.utility.ListData;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
