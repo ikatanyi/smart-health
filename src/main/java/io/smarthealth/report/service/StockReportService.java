@@ -14,6 +14,9 @@ import io.smarthealth.report.data.ReportData;
 import io.smarthealth.stock.inventory.data.ExpiryStock;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.StockAdjustmentData;
+import io.smarthealth.stock.inventory.data.StockEntryData;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.service.InventoryAdjustmentService;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.stock.inventory.service.InventoryService;
@@ -209,6 +212,7 @@ public class StockReportService {
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
 
         List<StockAdjustmentData> inventoryItemData = inventoryAdjustmentService.getStockAdjustments(storeId, itemId, range, Pageable.unpaged()).getContent();
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
 
         reportData.setData(inventoryItemData);
         reportData.setFormat(format);
@@ -243,6 +247,26 @@ public class StockReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/inventory/item_statement");
         reportData.setReportName("Products-Statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void StockPurchase(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        Long storeId = NumberUtils.createLong(reportParam.getFirst("storeId"));
+        String referenceNumber = reportParam.getFirst("invoiceNo");
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+
+        List<StockEntryData> inventoryItemData = inventoryService.getStockEntries(storeId, null, referenceNumber, null, null, null, MovementType.Purchase, range, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map((u)->u.toData())
+                .collect(Collectors.toList());
+
+        reportData.setData(inventoryItemData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/stock_purchase");
+        reportData.setReportName("Stock-Purchase-Statement");
         reportService.generateReport(reportData, response);
     }
 

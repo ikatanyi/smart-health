@@ -111,6 +111,8 @@ public class PaymentReportService {
         sortList.add(sortField);
 
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+
         reportData.setData(pettyCashData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/pettyCash_statement");
@@ -222,6 +224,7 @@ public class PaymentReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
 
         reportData.setReportName("Payment-Statement");
         reportService.generateReport(reportData, response);
@@ -239,6 +242,8 @@ public class PaymentReportService {
         
         reportData.getFilters().put("PaymentData", shiftPayment);
         reportData.getFilters().put("CashierShiftData", paymentshiftData);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+
         if(!paymentshiftData.isEmpty())
            reportData.getFilters().put("Cashier_Data", Arrays.asList(cashierService.getCashier(paymentshiftData.get(0).getCashierId()).toData()));
       

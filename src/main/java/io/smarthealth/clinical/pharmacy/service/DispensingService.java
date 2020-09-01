@@ -20,6 +20,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
+import io.smarthealth.clinical.pharmacy.domain.DispensedDrugsInterface;
 import io.smarthealth.clinical.pharmacy.domain.specification.DispensingSpecification;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
@@ -28,6 +29,7 @@ import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.notify.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
@@ -233,6 +235,10 @@ public class DispensingService {
     private Item getItemById(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", id));
+    }
+    
+    public List<DispensedDrugsInterface>dispensedDrugs(DateRange range){
+        return repository.dispensedDrugs(range.getStartDate(), range.getEndDate());
     }
 
     private void fulfillDocRequest(Long id) {
