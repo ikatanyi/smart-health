@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import io.smarthealth.clinical.moh.data.MonthlyMobidity;
+import io.smarthealth.clinical.moh.data.Register;
 
 /**
  *
@@ -57,10 +58,14 @@ public interface MohRepository extends JpaRepository<Moh, Long>, JpaSpecificatio
             + "     case when DAYOFMONTH(d.created_on) = '31' then (select count(pd.code) FROM patient_diagnosis pd WHERE DAYOFMONTH(pd.created_on)='31' AND pd.code=d.code) else 0 end AS  day_31,"
             + "     d.id AS diagnosis_id,"
             + "     d.created_on AS created_on,"
-            + "     m.code AS m_ICD10"
+            + "     m.code AS m_ICD10,"
+            + "     p.date_of_birth"
             + "   FROM"
-            + "      moh m LEFT JOIN patient_diagnosis d ON m.code = d.code AND  d.created_on BETWEEN :fromDate AND :toDate"
-            + "   GROUP BY DAYOFMONTH(d.created_on), m.code", nativeQuery=true)
-    List<MonthlyMobidity>findMorbiditySummaryInterface(LocalDate fromDate, LocalDate toDate);
+            + "      moh m LEFT JOIN patient_diagnosis d ON m.code = d.code JOIN person p ON d.patient_id = p.id AND m.active='1' AND m.category='MORBIDITY' AND  d.created_on BETWEEN :fromDate AND :toDate"
+            + "   GROUP BY DAYOFMONTH(d.created_on), m.code HAVING CASE WHEN :term='>5' THEN timestampdiff(YEAR,now(),(p.date_of_birth))>=5 ELSE timestampdiff(YEAR,now(),(p.date_of_birth))<=5 END"  , nativeQuery=true)
+    List<MonthlyMobidity> findMorbiditySummaryInterface(LocalDate fromDate, LocalDate toDate, Object term);
+   
+    
+    
 
 }

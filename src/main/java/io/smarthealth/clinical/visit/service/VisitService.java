@@ -8,6 +8,7 @@ package io.smarthealth.clinical.visit.service;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.moh.data.Register;
 import io.smarthealth.clinical.record.data.DocResults;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.visit.data.VisitData;
@@ -25,6 +26,8 @@ import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -159,8 +162,12 @@ public class VisitService {
         return visitRepository.visitsPast24hours();
     }
     
-    public List<Visit> fetchVisitAttendance(LocalDate date) {
+    public List<Visit> fetchVisitAttendance(Date date) {
         return visitRepository.visitAttendance(date);
+    }
+    
+    public List<Register> getPatientRegister(DateRange range) {
+        return visitRepository.patientRegister(range.getStartDateTime(),range.getEndDateTime());
     }
 
     public Page<Visit> fetchVisitsGroupByVisitNumber(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Pageable pageable) {

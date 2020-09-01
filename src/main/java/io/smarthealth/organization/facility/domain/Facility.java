@@ -43,6 +43,7 @@ public class Facility extends Auditable {
     private String taxNumber;
     private String facilityClass; //government classifications
     private String facilityName;
+    private String footerMsg;
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_facility_facility_parent_id"))
     private Facility parentFacility;

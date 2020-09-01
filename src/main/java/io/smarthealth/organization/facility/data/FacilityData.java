@@ -41,6 +41,7 @@ public class FacilityData {
     private String parentFacility;
     private MultipartFile file;
     private String logo;
+    private String footerMsg;
     private boolean enabled;
     
     public static FacilityData map(Facility facility) {
@@ -66,6 +67,7 @@ public class FacilityData {
         facilityData.setOrganizationName(facility.getOrganization().getOrganizationName());
         facilityData.setRegistrationNumber(facility.getRegistrationNumber());
         facilityData.setFacilityId(facility.getId());
+        facilityData.setFooterMsg(facility.getFooterMsg());
         
         return facilityData;
     }

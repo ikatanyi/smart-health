@@ -183,6 +183,7 @@ public class ClinicalVisitController {
                 pd.setCoPayCalcMethod(config.get().getCoPayType());
                 pd.setCoPayValue(config.get().getCoPayValue());
             }
+            pd.setPatient(patient);
             paymentDetailsService.createPaymentDetails(pd);
             //create bill for copay
             //Modification - reusing copayment billing (kelsas)
@@ -405,6 +406,24 @@ public class ClinicalVisitController {
         pagers.setCode("0");
         pagers.setMessage("Payment Mode");
         pagers.setContent(PaymentDetailsData.map(pde));
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
+    @GetMapping("/last-payment-mode/{patientNumber}")
+    @PreAuthorize("hasAuthority('view_visits')")
+    public ResponseEntity<?> fetchpaymentModeByLastVisit(@PathVariable("patientNumber") String patientNumber) {
+        Patient p = patientService.findPatientOrThrow(patientNumber);
+        Optional<PaymentDetails> pde = paymentDetailsService.getLastPaymentDetailsByPatient(p);
+        Pager<PaymentDetailsData> pagers = new Pager();
+        if (pde.isPresent()) {
+            pagers.setCode("200");
+            pagers.setMessage("Payment Mode");
+            pagers.setContent(PaymentDetailsData.map(pde.get()));
+        } else {
+            pagers.setCode("404");
+            pagers.setMessage("Payment Mode Not Found");
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }

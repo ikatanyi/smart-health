@@ -92,7 +92,7 @@ public class MohService {
         return list.getContent();
     }
     
-    public List<MonthlyMobidity>getMonthlyMobidity(DateRange range){
-        return mohRepository.findMorbiditySummaryInterface(range.getStartDate(), range.getEndDate());
+    public List<MonthlyMobidity>getMonthlyMobidity(DateRange range, Object term){
+        return mohRepository.findMorbiditySummaryInterface(range.getStartDate(), range.getEndDate(),term);
     }
 }

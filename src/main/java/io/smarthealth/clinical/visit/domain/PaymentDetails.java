@@ -9,6 +9,7 @@ import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.infrastructure.domain.Auditable;
+import io.smarthealth.organization.person.patient.domain.Patient;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,6 +38,11 @@ public class PaymentDetails extends Auditable {
     @JoinColumn(name = "visit_id", foreignKey = @ForeignKey(name = "fk_payment_details_visit_id"))
     private Visit visit;
 
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_payment_details_patient_id"))
+    private Patient patient;
+
     @OneToOne(fetch = FetchType.LAZY, optional = true)
 //    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "payer_id", foreignKey = @ForeignKey(name = "fk_payment_details_payer"))
@@ -51,7 +57,7 @@ public class PaymentDetails extends Auditable {
     private String comments;
 
     private String memberName, policyNo, relation, idNo;
-    
+
     private double limitAmount;
     @Enumerated(EnumType.STRING)
     private CoPayType coPayCalcMethod;

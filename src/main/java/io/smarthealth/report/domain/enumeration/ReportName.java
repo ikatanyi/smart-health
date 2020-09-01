@@ -71,5 +71,8 @@ public enum ReportName {
         Service_Statement,
         Product_Statement,
         Morbidity_Report,
-        OP_Statement
+        OP_Statement,
+        Patient_Register,
+        Dispensed_Drugs,
+        Stock_Purchase_Report
 }

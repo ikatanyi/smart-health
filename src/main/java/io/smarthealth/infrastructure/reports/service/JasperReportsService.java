@@ -12,8 +12,9 @@ import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.clinical.EmployeeBanner;
+import io.smarthealth.report.data.clinical.Footer;
 import io.smarthealth.report.data.clinical.PatientBanner;
-import io.smarthealth.report.domain.Header;
+import io.smarthealth.report.data.clinical.Header;
 import io.smarthealth.report.storage.StorageService;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
@@ -299,7 +300,7 @@ public class JasperReportsService {
         Facility facility = facilityService.loggedFacility();
 
         Header headerData = Header.map(facility);
-
+        Footer footerData = Footer.map(facility);
         if (facility.getCompanyLogo() == null) {
             headerData.setIMAGE(new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
             jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
@@ -310,6 +311,7 @@ public class JasperReportsService {
 
         header.add(headerData);
         jasperParameter.put("Header_Data", header);
+        jasperParameter.put("Footer_Data", Arrays.asList(footerData));
         jasperParameter.put("SUBREPORT_DIR", appProperties.getReportLoc() + "/subreports/");
         jasperParameter.put("PIC_DIR", appProperties.getReportLoc() + "/");
 
