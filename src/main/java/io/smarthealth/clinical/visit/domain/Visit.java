@@ -7,7 +7,6 @@ import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.report.data.clinical.OpData;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.Data;
