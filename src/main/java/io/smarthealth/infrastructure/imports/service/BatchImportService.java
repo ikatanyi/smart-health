@@ -5,6 +5,7 @@
  */
 package io.smarthealth.infrastructure.imports.service;
 
+import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.accounting.pricelist.service.PricebookService;
 import io.smarthealth.clinical.laboratory.data.AnalyteData;
 import io.smarthealth.clinical.laboratory.data.LabTestData;
@@ -27,6 +28,7 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.imports.data.AccBalanceData;
 import io.smarthealth.infrastructure.imports.data.InventoryStockData;
 import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
 import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
@@ -71,6 +73,7 @@ public class BatchImportService {
     private final LabConfigurationService labService;
     private final ProcedureService procedureService;
     private final RadiologyConfigService radiologyService;
+    private final AccountService accountService;
 
     public void importData(final TemplateType type, final MultipartFile file) {
 
@@ -145,6 +148,10 @@ public class BatchImportService {
                 case InventoryStock:
                     List<InventoryStockData> stockData = toPojoUtil.toPojo(InventoryStockData.class, inputFilestream);
                     inventoryItemService.uploadInventoryItems(stockData);
+                    break;
+                case Account_Balances:
+                    List<AccBalanceData> balData = toPojoUtil.toPojo(AccBalanceData.class, inputFilestream);
+                    accountService.openingBatchEntry(balData);
                     break;
                 default:
                     throw APIException.notFound("Coming Soon!!!", "");
