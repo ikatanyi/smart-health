@@ -4,6 +4,7 @@ import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.PaymentDetailsRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,12 @@ public class PaymentDetailsService {
     public Optional<PaymentDetails> getPaymentDetailsByVist(Visit visit) {
         return paymentDetailsRepository.findByVisit(visit);
     }
-@Transactional
+    
+    public Optional<PaymentDetails> getLastPaymentDetailsByPatient(Patient patient) {
+        return paymentDetailsRepository.findFirstByPatientOrderByIdDesc(patient);
+    }
+
+    @Transactional
     public void deletePaymentDetails(PaymentDetails pd) {
         paymentDetailsRepository.delete(pd);
     }
