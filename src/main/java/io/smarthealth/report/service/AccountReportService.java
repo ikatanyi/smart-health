@@ -64,6 +64,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -856,6 +857,31 @@ public class AccountReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/Service_statement");
         reportData.setReportName("Department-Service-Statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getAccountsBals( ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+//        MultiValueMap<String, String> reportParam = new Map();
+//        Boolean includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
+//        String term = reportParam.getFirst("term");
+//        AccountType type = AccountTypeToEnum(reportParam.getFirst("type"));
+//        Boolean includeCustomerAccounts = reportParam.getFirst("includeCustomerAccounts") != null ? Boolean.getBoolean(reportParam.getFirst("includeCustomerAccounts")) : null;
+        ReportData reportData = new ReportData();
+        List<AccountData> accountData = accountService.fetchAccounts(null, null, null, null, Pageable.unpaged()).getAccounts();
+
+//        List<JRSortField> sortList = new ArrayList<>();
+//        JRDesignSortField sortField = new JRDesignSortField();
+//        sortField.setName("type");
+//        sortField.setOrder(SortOrderEnum.ASCENDING);
+//        sortField.setType(SortFieldTypeEnum.FIELD);
+//        sortList.add(sortField);
+//
+//        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+
+        reportData.setData(accountData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/accounts_bf");
+        reportData.setReportName("accounts_Statement");
         reportService.generateReport(reportData, response);
     }
 

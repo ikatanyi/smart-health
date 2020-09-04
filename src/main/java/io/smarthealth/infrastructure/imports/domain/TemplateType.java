@@ -27,5 +27,6 @@ public enum TemplateType {
     PriceBookItems,
     LabTestsFixer, 
     SchemeMembers,
-    InventoryStock
+    InventoryStock,
+    Account_Balances
 }
