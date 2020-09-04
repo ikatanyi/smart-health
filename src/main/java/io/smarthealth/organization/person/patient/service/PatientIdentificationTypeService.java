@@ -18,10 +18,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PatientIdentificationTypeService {
-    
+
     @Autowired
     PatientIdentificationTypeRepository identificationTypeRepository;
-    
+
     public PatientIdentificationType creatIdentificationType(PatientIdentificationType patientIdentificationType) {
         try {
             return identificationTypeRepository.save(patientIdentificationType);
@@ -29,12 +29,12 @@ public class PatientIdentificationTypeService {
             throw APIException.badRequest(e.getMessage(), "");
         }
     }
-    
+
     public List<PatientIdentificationType> fetchAllPatientIdTypes() {
         return identificationTypeRepository.findAll();
     }
-    
-    public PatientIdentificationType fetchIdType(Long patientIdType) {
-        return identificationTypeRepository.findById(patientIdType).get();
+
+    public PatientIdentificationType fetchIdType(Long idType) {
+        return identificationTypeRepository.findById(idType).orElseThrow(() -> APIException.notFound("Identification type identified by {0} not found", idType));
     }
 }

@@ -1,5 +1,6 @@
 package io.smarthealth.organization.person.patient.data;
 
+import io.smarthealth.organization.person.data.PersonIdentifierData;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.smarthealth.organization.person.data.PersonData;
 import io.smarthealth.organization.person.data.PortraitData;
@@ -33,7 +34,7 @@ public final class PatientData extends PersonData {
     private String criticalInformation;
     private String basicNotes;
     private Integer age;
-    private List<PatientIdentifierData> identifiers;
+    private List<PersonIdentifierData> identifiers;
     private String visitType;
     private PortraitData portraitData;
 }
