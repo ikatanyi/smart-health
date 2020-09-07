@@ -89,8 +89,9 @@ public class PatientScanTest extends Auditable {
             entity.setPatientNumber(this.getPatientScanRegister().getPatientNo());
             entity.setIsWalkin(this.getPatientScanRegister().getIsWalkin());           
             entity.setOrderedDate(this.getPatientScanRegister().getReceivedDate());
-            if(this.getPatientScanRegister().getVisit()!=null && this.getPatientScanRegister().getVisit().getHealthProvider()!=null) {
-               entity.setRequestedByStaffNumber(this.getPatientScanRegister().getVisit().getHealthProvider().getStaffNumber()); 
+            if(this.getPatientScanRegister().getVisit()!=null) {
+                if(this.getPatientScanRegister().getVisit().getHealthProvider()!=null)
+                    entity.setRequestedByStaffNumber(this.getPatientScanRegister().getVisit().getHealthProvider().getStaffNumber()); 
                entity.setVisitNumber(this.getPatientScanRegister().getVisit().getVisitNumber());
             }
         }
@@ -122,7 +123,7 @@ public class PatientScanTest extends Auditable {
         if (this.getRequest() != null) {
             entity.setRequestId(this.getRequest().getId());
             if (this.getRequest().getRequestedBy() != null) {
-                entity.setRequestedBy(this.getRequest().getRequestedBy().getName());                
+                entity.setRequestedBy(this.getRequest().getRequestedBy().getName());  
             }
         }
         return entity;

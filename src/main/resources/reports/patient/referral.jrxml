@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="referral" pageWidth="612" pageHeight="795" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="7f5d1719-2150-4099-8058-82165eccb7fc">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="11"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -182,21 +182,21 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="39" width="571" height="14" forecolor="#000000" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
+				<reportElement positionType="Float" mode="Transparent" x="1" y="39" width="571" height="14" forecolor="#000000" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Referral Form]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="61" width="65" height="14" forecolor="#000000" backcolor="#9999FF" uuid="b0f4afea-1b92-4545-be36-354aaa2cec14"/>
+				<reportElement positionType="Float" mode="Transparent" x="3" y="61" width="64" height="14" forecolor="#000000" backcolor="#9999FF" uuid="b0f4afea-1b92-4545-be36-354aaa2cec14"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Visit Date :]]></text>
 			</staticText>
 			<textField pattern="">
-				<reportElement positionType="Float" x="68" y="61" width="84" height="14" uuid="45f4fe00-03c3-4f12-ae3b-bed97f679481"/>
+				<reportElement positionType="Float" x="68" y="61" width="139" height="14" uuid="45f4fe00-03c3-4f12-ae3b-bed97f679481"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -224,7 +224,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="76" width="65" height="14" forecolor="#000000" backcolor="#9999FF" uuid="f8e4ca63-4897-444f-99d5-a5ae2308baac"/>
+				<reportElement positionType="Float" mode="Transparent" x="3" y="76" width="64" height="14" forecolor="#000000" backcolor="#9999FF" uuid="f8e4ca63-4897-444f-99d5-a5ae2308baac"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -244,14 +244,14 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="3" y="101" width="151" height="14" forecolor="#000000" backcolor="#9999FF" uuid="ad52767c-f4c9-40fb-ac7c-3c9f83527976"/>
+				<reportElement positionType="Float" mode="Transparent" x="3" y="101" width="143" height="14" forecolor="#000000" backcolor="#9999FF" uuid="ad52767c-f4c9-40fb-ac7c-3c9f83527976"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Institution/Doctor Transferred To :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="141" y="101" width="255" height="14" isRemoveLineWhenBlank="true" uuid="e3f62d18-6e4a-4c6c-8454-f3fd5633cac4"/>
+				<reportElement positionType="Float" x="146" y="101" width="255" height="14" isRemoveLineWhenBlank="true" uuid="e3f62d18-6e4a-4c6c-8454-f3fd5633cac4"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -394,9 +394,9 @@
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="28" splitType="Stretch">
+		<band height="14" splitType="Stretch">
 			<subreport>
-				<reportElement x="1" y="0" width="572" height="28" uuid="36683fba-4efa-4f0f-b114-81290ac93992"/>
+				<reportElement x="1" y="0" width="572" height="12" uuid="36683fba-4efa-4f0f-b114-81290ac93992"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
 			</subreport>

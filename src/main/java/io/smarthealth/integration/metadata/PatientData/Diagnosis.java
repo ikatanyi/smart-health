@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.integration.metadata;
+package io.smarthealth.integration.metadata.PatientData;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -15,8 +17,18 @@ import lombok.Data;
 @Data
 @JacksonXmlRootElement(localName="Diagnosis")
 public class Diagnosis {
+    @ApiModelProperty(hidden=true)
+    @JsonProperty("Stage")
     private String Stage="P";
+    
+    @ApiModelProperty(example="ICD10")
+    @JsonProperty(value = "Code_Type")
     private String Code_Type="ICD10";
+    
+    @ApiModelProperty(example="0")
+    @JsonProperty("Code")
     private String code="0";
-    private String GroupPracticeName;
+    
+//    @JsonProperty("Group_Practice_Name")
+//    private String GroupPracticeName;
 }

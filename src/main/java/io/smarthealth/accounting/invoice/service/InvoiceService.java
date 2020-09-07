@@ -148,8 +148,7 @@ public class InvoiceService {
                                         .map(x -> x.getAmount())
                                         .reduce(BigDecimal.ZERO, (x, y) -> x.add(y))
                                 );
-                            }
-
+                            }                            
                             savedInvoices.add(saveInvoice(invoice));
                         }
                 );

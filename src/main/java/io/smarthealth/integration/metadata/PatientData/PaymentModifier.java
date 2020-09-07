@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.integration.metadata;
+package io.smarthealth.integration.metadata.PatientData;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
 
@@ -13,9 +14,13 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-@JacksonXmlRootElement(localName="Payment_modifier")
+@JacksonXmlRootElement(localName = "Payment_modifier")
 public class PaymentModifier {
-    private String Type="1";
-    private String Amount="0";
-    private String Receipt="0";
+
+    @JsonProperty("Type")
+    private String type = "1";
+    @JsonProperty("Amount")
+    private String amount = "0";
+    @JsonProperty("Receipt")
+    private String receipt = "0";
 }
