@@ -20,7 +20,7 @@ import lombok.Data;
 public class NursingNotesData {
 
     @ApiModelProperty(hidden = true)
-    private Long nursingNotesId;
+    private Long id;
     @ApiModelProperty(hidden = true)
     private String patientName;
     @ApiModelProperty(hidden = true)
@@ -38,7 +38,7 @@ public class NursingNotesData {
         d.setDatetime(e.getDatetime());
         d.setNotes(e.getNotes());
         d.setNotesBy(e.getNotesBy());
-        d.setNursingNotesId(e.getId());
+        d.setId(e.getId());
         d.setPatientName(e.getPatient().getFullName());
         d.setPatientNumber(e.getPatient().getPatientNumber());
         d.setStatus(e.getStatus());

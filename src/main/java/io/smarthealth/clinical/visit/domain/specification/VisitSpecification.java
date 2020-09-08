@@ -11,7 +11,6 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.security.domain.User;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -32,15 +31,17 @@ public class VisitSpecification {
 
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
+//            if (visitNumber != null) {
+//                final String visitNumberExpression = "%" + visitNumber + "%";
+//                predicates.add(
+//                        cb.or(
+//                                cb.like(root.get("visitNumber"), visitNumberExpression)
+//                        )
+//                );
+//            }
             if (visitNumber != null) {
-                final String visitNumberExpression = "%" + visitNumber + "%";
-                predicates.add(
-                        cb.or(
-                                cb.like(root.get("visitNumber"), visitNumberExpression)
-                        )
-                );
+                predicates.add(cb.equal(root.get("visitNumber"), visitNumber));
             }
-
             if (employee != null) {
                 predicates.add(cb.equal(root.get("healthProvider"), employee));
             }
