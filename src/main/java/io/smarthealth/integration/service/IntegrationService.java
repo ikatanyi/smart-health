@@ -5,66 +5,62 @@
  */
 package io.smarthealth.integration.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import io.smarthealth.integration.domain.ExchangeFile;
-import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.facility.domain.Facility;
+import io.smarthealth.ApplicationProperties;
+import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.organization.facility.service.FacilityService;
 import io.smarthealth.integration.data.ClaimFileData;
-import io.smarthealth.integration.data.SmartFileData;
+import io.smarthealth.integration.data.ExchangeFileData;
 import io.smarthealth.integration.domain.ExchangeFileRepository;
 import io.smarthealth.integration.domain.ExchangeLocationsRepository;
-import io.smarthealth.integration.metadata.claim;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 /**
  *
  * @author Kennedy.Imbenzi
  */
 @Service
+@RequiredArgsConstructor
 public class IntegrationService {
+
+    @Autowired
+    RestTemplate restTemplate;
+
+    private final ApplicationProperties properties;
 
     ExchangeLocationsRepository exchangeLocationRepository;
     ExchangeFileRepository exchangeFileRepository;
     FacilityService facilityService;
 
-    public IntegrationService(ExchangeLocationsRepository exchangeLocationRepository, ExchangeFileRepository exchangeFileRepository, FacilityService facilityService) {
-        this.exchangeLocationRepository = exchangeLocationRepository;
-        this.exchangeFileRepository = exchangeFileRepository;
-        this.facilityService = facilityService;
+    
+    /**
+     * Consuming a service by postForObject method, this method is exposed as a
+     * get operation if user doesn 't post a request object we will create a new
+     * request and post it to the URL /service endpoint
+     *
+     */
+    public ExchangeFileData getClaimStatus(String location) {
+        return restTemplate.postForObject("ws://"+properties.getIntegServer()+"/"+location, "", ExchangeFileData.class);
     }
 
-    public SmartFileData fetchSmartFile(String memberNr, Long progressFlag) throws JsonProcessingException {
-        SmartFileData value = null;
-        SmartFileData result = new SmartFileData();
-        ExchangeFile exFile = fetchExchangeFileByMemberNrOrThrow(memberNr);
-        XmlMapper xmlMapper = new XmlMapper();
-        if (exFile.getResultFile() != null) {
-            value = xmlMapper.readValue(exFile.getResultFile(), SmartFileData.class);
-        }
-
-        return value;
+    /**
+     * Consuming a service by postForEntity method, this method is exposed as a
+     * post operation if user post a request object(JSON) it will be
+     * automatically mapped to Request parameter.
+     */
+    
+    public ExchangeFileData createClaim(Invoice invoice) {
+        ClaimFileData data = new ClaimFileData();
+        ExchangeFileData response = restTemplate.postForObject(properties.getIntegServer(), data.toData(invoice),  ExchangeFileData.class);
+        return response;
     }
 
-    public ExchangeFile createclaimFile(String memberNr, ClaimFileData fileData) throws JsonProcessingException {
-        SmartFileData value = null;
-
-        SmartFileData result = fetchSmartFile(memberNr, 1L);
-        Facility facility = facilityService.loggedFacility();
-        claim claimFile = ClaimFileData.map(fileData, result);
-
-        claimFile.getClaimHeader().getProvider().setGroupPracticeName(facility.getFacilityName());
-        claimFile.getClaimHeader().getProvider().setGroupPracticeNumber(facility.getRegistrationNumber());
-        XmlMapper xmlMapper = new XmlMapper();
-        String xml = xmlMapper.writeValueAsString(claimFile);
-        ExchangeFile exFile = fetchExchangeFileByMemberNrOrThrow(memberNr);        
-        exFile.setResultFile(xml);
-        return exchangeFileRepository.save(exFile);
+    @Bean
+    public RestTemplate rest() {
+        return new RestTemplate();
     }
 
-    public ExchangeFile fetchExchangeFileByMemberNrOrThrow(final String memberNumber) {
-        return exchangeFileRepository.findByMemberNrAndProgressFlag(memberNumber, 1L).orElseThrow(() -> APIException.notFound("ExchangeFile identified by number {0} was not found ", memberNumber));
-    }
 }
