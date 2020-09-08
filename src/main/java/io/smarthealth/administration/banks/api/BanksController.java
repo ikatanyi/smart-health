@@ -76,7 +76,7 @@ public class BanksController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-    
+
     @PutMapping("/bank/{id}")
     @PreAuthorize("hasAuthority('create_bank')")
     public ResponseEntity<?> updateBank(@PathVariable("id") Long id, @Valid @RequestBody BankData bankData) {
@@ -104,7 +104,8 @@ public class BanksController {
 
     @GetMapping("/bank")
     @PreAuthorize("hasAuthority('view_bank')")
-    public ResponseEntity<?> fetchAllBanks(Pageable pageable) {
+    public ResponseEntity<?> fetchAllBanks() {
+        Pageable pageable = Pageable.unpaged();
 
         Page<Bank> result = bankService.fetchAllMainBanks(pageable);
         List<BankData> bd = new ArrayList<>();
@@ -144,7 +145,7 @@ public class BanksController {
 
         return ResponseEntity.ok(pagers);
     }
-    
+
     @GetMapping("/bank/{term}/search")
     @PreAuthorize("hasAuthority('view_bank')")
     public ResponseEntity<?> searchAllBanksBy(@PathVariable("term") String term) {
@@ -211,8 +212,7 @@ public class BanksController {
 
     @GetMapping("/bank-branch")
     @PreAuthorize("hasAuthority('view_bank')")
-    public ResponseEntity<?> fetchBranchesByBank(
-            ) {
+    public ResponseEntity<?> fetchBranchesByBank() {
         Pageable pageable = Pageable.unpaged();
         Page<BankBranch> result = bankService.fetchAllBranchsInBank(pageable);
         List<BankBranchData> branchesData = new ArrayList<>();
