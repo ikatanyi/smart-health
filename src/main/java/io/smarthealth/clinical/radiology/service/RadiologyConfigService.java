@@ -77,8 +77,11 @@ public class RadiologyConfigService {
     }
 
     @Transactional
-    public Page<ServiceTemplate> findAllTemplates(Pageable pgbl) {
-        return serviceTemplateRepository.findAll(pgbl);
+    public Page<ServiceTemplate> findAllTemplates(String name, Pageable pgbl) {
+        if(name==null)
+            return serviceTemplateRepository.findAll(pgbl);
+        else
+            return serviceTemplateRepository.findByTemplateNameContainingIgnoreCase(name, pgbl);
     }
 
     @Transactional
