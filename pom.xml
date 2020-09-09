@@ -12,6 +12,7 @@
     <groupId>io.smarthealth</groupId>
     <artifactId>smart-health</artifactId>
     <version>1.0.0</version>
+    <!--<version.number>${git.commit.time}.${git.commit.id.abbrev}</version.number>-->
     <name>smart-health-v2</name>
     <description>Healthcare Management System </description>
 
@@ -243,6 +244,18 @@
                 </configuration>
             </plugin>
         </plugins>
+        <!--
+<plugins>
+   <plugin>
+       <groupId>com.amashchenko.maven.plugin</groupId>
+       <artifactId>gitflow-maven-plugin</artifactId>
+       <version>1.13.0</version>
+       <configuration>
+           <executable>true</executable>
+       </configuration>
+   </plugin>
+</plugins>
+        -->
     </build>
-
+       
 </project>
