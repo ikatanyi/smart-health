@@ -41,20 +41,21 @@ public class BedService {
     public Page<Bed> fetchAllBeds(Pageable page) {
         return bedRepository.findAll(page);
     }
-    
-    public Page<Bed> fetchBeds(String name, Status status, Boolean active,  Long roomId,  String term, Pageable page) {        
-        Specification<Bed>spec = BedSpecification.createSpecification(name, status, active, roomId, term);
+
+    public Page<Bed> fetchBeds(String name, Status status, Boolean active, Long roomId, String term, Pageable page) {
+        Specification<Bed> spec = BedSpecification.createSpecification(name, status, active, roomId, term);
         return bedRepository.findAll(spec, page);
     }
 
-    public Optional<Bed> fetchBedByName(String name){
+    public Optional<Bed> fetchBedByName(String name) {
         return bedRepository.findByNameContainingIgnoreCase(name);
     }
+
     public Bed getBed(Long id) {
         return bedRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bed with id  {0} not found.", id));
     }
-    
+
     public BedType getBedType(Long id) {
         return bedTypeRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bedtype with id  {0} not found.", id));
@@ -71,6 +72,10 @@ public class BedService {
         bed.setBedCol(data.getBedCol());
         Room room = roomService.getRoom(data.getRoomId());
         bed.setRoom(room);
+        return bedRepository.save(bed);
+    }
+
+    public Bed updateBed(Bed bed) {
         return bedRepository.save(bed);
     }
 }

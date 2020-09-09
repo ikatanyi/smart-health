@@ -2,8 +2,10 @@ package io.smarthealth.clinical.admission.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.admission.domain.Admission;
+import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.Constants;
+import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ public class AdmissionData {
     private Long id;
     @ApiModelProperty(hidden = true)
     private String admissionNumber; //this should be same as visit number
-    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime admissionDate;
     private String patientNumber;
     @ApiModelProperty(hidden = true)
@@ -60,6 +62,10 @@ public class AdmissionData {
     private VisitEnum.Status status;
     private List<CareTeamData> careTeam = new ArrayList<>();
 
+    private String narration;
+
+    private PaymentDetailsData paymentDetailsData;
+
     public static AdmissionData map(Admission adm) {
         AdmissionData d = new AdmissionData();
         d.setAdmissionDate(adm.getAdmissionDate());
@@ -80,7 +86,7 @@ public class AdmissionData {
             d.setRoomId(adm.getRoom().getId());
             d.setRoomName(adm.getRoom().getName());
         }
-        d.setStatus(adm.getStatus());
+        d.setStatus(VisitEnum.Status.Admitted);
         d.setWardId(adm.getWard().getId());
         d.setWardName(adm.getWard().getName());
         return d;
@@ -89,7 +95,7 @@ public class AdmissionData {
     public static Admission map(AdmissionData adm) {
         Admission d = new Admission();
         d.setAdmissionDate(adm.getAdmissionDate());
-       // d.setCareTeam(adm.getCareTeam().stream().map(c -> CareTeamData.map(c)).collect(Collectors.toList()));
+        // d.setCareTeam(adm.getCareTeam().stream().map(c -> CareTeamData.map(c)).collect(Collectors.toList()));
         d.setDischargeDate(adm.getAdmissionDate());
         d.setDischarged(adm.getDischarged());
         d.setDischargedBy(adm.getDischargedBy());

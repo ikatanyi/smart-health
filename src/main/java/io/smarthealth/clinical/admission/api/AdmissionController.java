@@ -73,13 +73,15 @@ public class AdmissionController {
 //    @PreAuthorize("hasAuthority('view_admission')")
     public ResponseEntity<?> getAdmission(
             @RequestParam(value = "admissionNo", required = false) final String admissionNo,
+            @RequestParam(value = "wardId", required = false) final Long wardId,
+            @RequestParam(value = "roomId", required = false) final Long roomId,
+            @RequestParam(value = "bedId", required = false) final Long bedId,
             @RequestParam(value = "q", required = false) final String term,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-
-        Page<AdmissionData> list = admissionService.fetchAdmissions(admissionNo, term, pageable).map(a -> AdmissionData.map(a));
+        Page<AdmissionData> list = admissionService.fetchAdmissions(admissionNo, wardId, roomId, bedId, term, pageable).map(a -> AdmissionData.map(a));
 
         Pager<List<AdmissionData>> pagers = new Pager();
         pagers.setCode("200");

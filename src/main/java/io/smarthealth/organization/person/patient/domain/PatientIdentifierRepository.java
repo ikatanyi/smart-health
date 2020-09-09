@@ -6,6 +6,7 @@
 package io.smarthealth.organization.person.patient.domain;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -13,5 +14,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Simon.waweru
  */
 public interface PatientIdentifierRepository extends JpaRepository<PatientIdentifier, Long> {
-    List<PatientIdentifier> findByPatient(Patient patient);
+
+    List<PatientIdentifier> findByPatient(final Patient patient);
+
+    Optional<PatientIdentifier> findByPatientAndId(final Patient patient, final Long Id);
 }

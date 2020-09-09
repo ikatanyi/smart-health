@@ -5,11 +5,12 @@
  */
 package io.smarthealth.organization.person.patient.service;
 
-import io.smarthealth.organization.person.patient.data.PatientIdentifierData;
+import io.smarthealth.organization.person.data.PersonIdentifierData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientIdentifier;
 import io.smarthealth.organization.person.patient.domain.PatientIdentifierRepository;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,21 +31,22 @@ public class PatientIdentifierService {
         return patientIdentifierRepository.save(patientIdentifier);
     }
 
-    public PatientIdentifier convertIdentifierDataToEntity(PatientIdentifierData patientIdentifierData) {
+    public PatientIdentifier convertIdentifierDataToEntity(PersonIdentifierData patientIdentifierData) {
         PatientIdentifier patientIdentifier = new PatientIdentifier();
-        if (patientIdentifierData.getId_type().equals("-Select-")) {
+        if (patientIdentifierData.getIdType() == null) {
             return null;
         }
-        patientIdentifier.setType(patientIdentificationTypeService.fetchIdType(Long.valueOf(patientIdentifierData.getId_type())));
-        patientIdentifier.setValue(patientIdentifierData.getIdentification_value());
+        patientIdentifier.setType(patientIdentificationTypeService.fetchIdType(patientIdentifierData.getIdType()));
+        patientIdentifier.setValue(patientIdentifierData.getIdentificationValue());
 
         return patientIdentifier;
     }
 
-    public PatientIdentifierData convertIdentifierEntityToData(PatientIdentifier patientIdentifier) {
-        PatientIdentifierData patientIdentifierData = new PatientIdentifierData();
-        patientIdentifierData.setId_type(patientIdentifier.getId().toString());
-        patientIdentifierData.setIdentification_value(patientIdentifier.getValue());
+    public PersonIdentifierData convertIdentifierEntityToData(PatientIdentifier patientIdentifier) {
+        PersonIdentifierData patientIdentifierData = new PersonIdentifierData();
+        patientIdentifierData.setId(patientIdentifier.getId());
+        patientIdentifierData.setIdType(patientIdentifier.getType().getId());
+        patientIdentifierData.setIdentificationValue(patientIdentifier.getValue());
         patientIdentifierData.setIdentificationType(patientIdentifier.getType().getIdentificationName());
         patientIdentifierData.setValidated(patientIdentifier.getValidated());
         return patientIdentifierData;
@@ -52,6 +54,10 @@ public class PatientIdentifierService {
 
     public List<PatientIdentifier> fetchPatientIdentifiers(Patient patient) {
         return patientIdentifierRepository.findByPatient(patient);
+    }
+
+    public Optional<PatientIdentifier> fetchPatientIdentifierByPatientAndId(Patient patient, final Long identifierId) {
+        return patientIdentifierRepository.findByPatientAndId(patient, identifierId);
     }
 
 }
