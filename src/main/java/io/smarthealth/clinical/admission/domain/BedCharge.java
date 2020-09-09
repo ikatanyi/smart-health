@@ -8,7 +8,6 @@ package io.smarthealth.clinical.admission.domain;
 import io.smarthealth.clinical.admission.data.BedChargeData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.item.domain.Item;
-import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -25,27 +24,30 @@ import lombok.Data;
 @Data
 @Table(name = "bed_charge")
 public class BedCharge extends Identifiable{
-    @ManyToOne
-    @JoinColumn(foreignKey=@ForeignKey(name="fk_bed_charge_bed_id"))
-    private Bed bed;
+//    @ManyToOne
+//    @JoinColumn(foreignKey=@ForeignKey(name="fk_bed_charge_bed_id"))
+//    private Bed bed;
     @ManyToOne
     @JoinColumn(foreignKey=@ForeignKey(name="fk_bed_charge_item_id"))
     private Item item;
     private BigDecimal rate;
-    private Boolean active;
+    private Boolean active = Boolean.TRUE;
+    private Boolean recurrent = Boolean.FALSE;
     
     public BedChargeData toData(){
         BedChargeData data = new BedChargeData();
         data.setActive(this.getActive());
         data.setId(this.getId());
-        if(this.getBed()!=null){
-            data.setBed(this.getBed().getName());
-            data.setBedId(this.getBed().getId());
-        }
+        data.setRecurrent(this.getRecurrent());
+//        if(this.getBed()!=null){
+//            data.setBed(this.getBed().getName());
+//            data.setBedId(this.getBed().getId());
+//        }
         if(this.getItem()!=null){
             data.setItem(this.getItem().getItemName());
             data.setItemCode(this.getItem().getItemCode());
             data.setItemId(this.getItem().getId());
+            
         }
         
         return data;

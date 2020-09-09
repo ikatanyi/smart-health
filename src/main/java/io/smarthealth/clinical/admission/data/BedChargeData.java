@@ -19,9 +19,6 @@ public class BedChargeData {
     
     @ApiModelProperty(hidden = true)
     private Long id;
-    private Long bedId;
-    @ApiModelProperty(hidden = true)
-    private String bed;
     private Long itemId;
     @ApiModelProperty(hidden = true)
     private String itemCode;
@@ -29,6 +26,7 @@ public class BedChargeData {
     private String item;
     private BigDecimal rate;
     private Boolean active;
+    private Boolean recurrent;
 
     public BedCharge map(){
         BedCharge charge = new BedCharge();

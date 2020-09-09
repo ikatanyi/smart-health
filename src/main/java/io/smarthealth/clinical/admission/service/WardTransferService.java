@@ -10,6 +10,7 @@ import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.admission.domain.Bed;
 import io.smarthealth.clinical.admission.domain.BedType;
 import io.smarthealth.clinical.admission.domain.Room;
+import io.smarthealth.clinical.admission.domain.TransferLogs;
 import io.smarthealth.clinical.admission.domain.Ward;
 import io.smarthealth.clinical.admission.domain.WardTransfer;
 import io.smarthealth.clinical.admission.domain.repository.AdmissionRepository;
@@ -21,6 +22,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.sequence.SequenceNumberService;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +50,7 @@ public class WardTransferService {
 
     public WardTransfer createWardTransfer(WardTransferData data) {
         WardTransfer transfer = data.map();
+        TransferLogs log = new TransferLogs();
         Admission admission = admissionService.findAdmissionById(data.getAdmissionId());   
         Bed AvailBed = admission.getBed();
         
@@ -64,7 +67,13 @@ public class WardTransferService {
         AvailBed.setStatus(Bed.Status.Available);
         bed.setStatus(Bed.Status.Occupied);        
         admission.setBed(bed);
-        
+        log.setFromBed(bed.getName());
+        log.setFromRoom(AvailBed.getRoom().getName());
+        log.setFromWard(AvailBed.getRoom().getWard().getName());
+        log.setToBed(bed.getName());
+        log.setToRoom(bed.getRoom().getName());
+        log.setTransferDate(LocalDate.now());
+        transfer.setTransferLogs(log);
         bedRepository.save(AvailBed);
         admissionRepository.save(admission);
         return wardTransferRepository.save(transfer);
@@ -105,6 +114,13 @@ public class WardTransferService {
         transfer.setComment(data.getComment());
         transfer.setMethodOfTransfer(data.getMethodOfTransfer());
         transfer.setTransferDatetime(data.getTransferDatetime());
+        
+        transfer.getTransferLogs().setFromBed(bed.getName());
+        transfer.getTransferLogs().setFromRoom(AvailBed.getRoom().getName());
+        transfer.getTransferLogs().setFromWard(AvailBed.getRoom().getWard().getName());
+        transfer.getTransferLogs().setToBed(bed.getName());
+        transfer.getTransferLogs().setToRoom(bed.getRoom().getName());
+        transfer.getTransferLogs().setTransferDate(LocalDate.now());
         
         AvailBed.setStatus(Bed.Status.Available);
         bed.setStatus(Bed.Status.Occupied);        
