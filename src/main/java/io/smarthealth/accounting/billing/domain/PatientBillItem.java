@@ -33,9 +33,10 @@ public class PatientBillItem extends Auditable {
     private Double quantity;
     private Double price; 
     private Double discount = 0.0; 
+    @Transient
+    private Double subTotal=0.0; // (qty*price)-discount
     private Double taxes = 0.0;
-
-    private Double amount = 0.0;
+    private Double amount = 0.0; // subtotal + tax %
     private Double balance = 0.0;
     private String servicePoint;
     private Long servicePointId;
@@ -136,5 +137,7 @@ public class PatientBillItem extends Auditable {
     public String toString() {
         return "Patient Bill Item [id=" + getId() + ",patientBill=" + patientBill + " , service point=" +servicePoint+ ", quantity=" +quantity+ ", price=" + price + ", amount=" +amount+ " ]";
     }
-
+   public Double getSubTotal(){
+       return ((this.quantity*this.price)-this.discount);
+   }
 }

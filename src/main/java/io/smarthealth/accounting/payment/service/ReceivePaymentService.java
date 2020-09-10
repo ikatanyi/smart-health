@@ -54,6 +54,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.ReceiptRepository;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+import lombok.Getter;
 
 /**
  *
@@ -79,6 +80,9 @@ public class ReceivePaymentService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(ReceivePayment data) {
+        
+        //validate the net amount being send
+        
 
         Receipt receipt = new Receipt();
         receipt.setAmount(data.getAmount());
@@ -145,7 +149,8 @@ public class ReceivePaymentService {
                                     toBigDecimal(item.getPrice()),
                                     toBigDecimal(item.getDiscount()),
                                     toBigDecimal(item.getTaxes()),
-                                    toBigDecimal(item.getAmount())
+                                    
+                                    toBigDecimal((item.getAmount() - (item.getDiscount()!=null ? item.getDiscount() : 0D)))
                             ));
 //                    receipt.addReceiptItem(ReceiptItem.createReceipt+" "+ill));
                 });
@@ -214,11 +219,7 @@ public class ReceivePaymentService {
     public List<CashierShift> getCashierShift(String shiftNo, Long cashierId) {
         return receiptItemRepository.findTotalByCashierShift(shiftNo, cashierId);
     }
-
-//    public List<ShiftPayment> getShiftPayment(LocalDateTime from, LocalDateTime to, String shiftNo, Long cashierId){
-//        return transactionrepository.findTotalShiftPayment(from, to, shiftNo, cashierId);
-//    }
-//TODO cancelling or adjustment of the receipt
+ 
     public void voidPayment(String receiptNo) {
 
         Receipt payment = getPaymentByReceiptNumber(receiptNo);
@@ -257,11 +258,11 @@ public class ReceivePaymentService {
         return receiptItemRepository.findAll(spec, page);
     }
 
-    public Page<ReceiptItem> getVoidedItems(Long servicePointId,String patientNumber,String itemCode, Boolean voided, DateRange range, Pageable page) {
-        Specification<ReceiptItem> spec = ReceiptSpecification.createVoidedReceiptItemSpecification(servicePointId, patientNumber, itemCode,voided, range);
+    public Page<ReceiptItem> getVoidedItems(Long servicePointId, String patientNumber, String itemCode, Boolean voided, DateRange range, Pageable page) {
+        Specification<ReceiptItem> spec = ReceiptSpecification.createVoidedReceiptItemSpecification(servicePointId, patientNumber, itemCode, voided, range);
         return receiptItemRepository.findAll(spec, page);
     }
-    
+
     private ReceiptTransaction createPaymentTransaction(ReceiptMethod data) {
         ReceiptTransaction trans = new ReceiptTransaction();
         trans.setCurrency(data.getCurrency());
@@ -289,25 +290,28 @@ public class ReceivePaymentService {
     private JournalEntry toJournalReceipting(Receipt payment, List<PatientBillItem> billedItems, List<ReceiptMethod> methods) {
 
         Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
-
+ 
         Optional<FinancialActivityAccount> copay = activityAccountRepository.findByFinancialActivity(FinancialActivity.Copayment);
 
         if (!debitAccount.isPresent()) {
-            throw APIException.badRequest("Receipt Control Account is Not Mapped");
+            throw APIException.badRequest("Receipt Control Account is Not Mapped For Transaction");
         }
+        
         if (!copay.isPresent()) {
-            throw APIException.badRequest("Copayment Account is Not Mapped");
+            throw APIException.badRequest("Copayment Account is Not Mapped For Transaction");
         }
 
 //        String debitAcc = debitAccount.get().getAccount().getIdentifier();
         List<JournalEntryItem> items = new ArrayList<>();
 
         if (!billedItems.isEmpty()) {
-            Map<Long, Double> map = billedItems
+
+            Map<Long, List<PatientBillItem>> map = billedItems
                     .stream()
                     .filter(x -> x.getItem().getCategory() != ItemCategory.CoPay)
                     .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
-                            Collectors.summingDouble(PatientBillItem::getAmount)
+                            Collectors.toList()
+                    //                            Collectors.summingDouble(PatientBillItem::getAmount)
                     )
                     );
             //then here since we making a revenue
@@ -315,12 +319,35 @@ public class ReceivePaymentService {
                 //revenue
                 ServicePoint srv = servicePointService.getServicePoint(k);
                 String narration = "Receipting for " + srv.getName();
-                Account credit = srv.getIncomeAccount();
-                BigDecimal amount = BigDecimal.valueOf(v);
-
-                items.add(new JournalEntryItem(debitAccount.get().getAccount(), narration, amount, BigDecimal.ZERO));
+                Account credit = srv.getIncomeAccount();//account receivable full amount
+//                BigDecimal amount = BigDecimal.valueOf(v);
+                Double subTotal = 0D;
+                Double discount = 0D;
+                Double taxes=0D;
+                for (PatientBillItem b : v) {
+                    subTotal += b.getSubTotal(); //
+                    discount += b.getDiscount();
+                    taxes +=b.getTaxes();
+                }
+               
+                
+                //amount less discount
+                BigDecimal amount = BigDecimal.valueOf(subTotal).add(BigDecimal.valueOf(discount));
+                if (discount > 0) {
+                    FinancialActivityAccount debitDiscountAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Discount_Allowed)
+                            .orElseThrow(() -> APIException.badRequest("Discount Account is Not Mapped For Transaction"));
+                    items.add(new JournalEntryItem(debitDiscountAccount.getAccount(), "Sales Discount - " + srv.getName(), BigDecimal.valueOf(discount), BigDecimal.ZERO));
+                }
+//                if (taxes > 0) {
+//                    FinancialActivityAccount debitDiscountAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Tax_Payable)
+//                            .orElseThrow(() -> APIException.badRequest("Discount Account is Not Mapped For Transaction"));
+//                    items.add(new JournalEntryItem(debitDiscountAccount.getAccount(), "Sales Discount - " + srv.getName(), BigDecimal.valueOf(discount), BigDecimal.ZERO));
+//                }
+                items.add(new JournalEntryItem(debitAccount.get().getAccount(), narration, BigDecimal.valueOf(subTotal), BigDecimal.ZERO));
                 items.add(new JournalEntryItem(credit, narration, BigDecimal.ZERO, amount));
             });
+            //
+
             //expenses
             Map<Long, Double> inventory = billedItems
                     .stream()
@@ -416,4 +443,5 @@ public class ReceivePaymentService {
         }
         return BigDecimal.valueOf(val);
     }
+ 
 }

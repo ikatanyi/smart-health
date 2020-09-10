@@ -9,6 +9,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.stock.item.data.ItemSimpleData;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -108,4 +109,26 @@ public class PricebookRestController {
         return ResponseEntity.ok(pagers);
     }
 
+     @PutMapping("/pricebooks/{id}/items")
+    @PreAuthorize("hasAuthority('edit_pricebook')")
+    public ResponseEntity<?> updatePricebookItem(@PathVariable(value = "id") Long id, @Valid @RequestBody  ItemSimpleData pricebookItem) {
+      //  PriceBookData result = service.updatePricebook(id, priceBookData);
+
+        Pager<PriceBookData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Pricebook updated successful");
+        pagers.setContent(null);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+    @DeleteMapping("/pricebooks/{id}/items/{itemId}")
+    @PreAuthorize("hasAuthority('edit_pricebook')")
+    public ResponseEntity<?> deletePricebookItems(@PathVariable(value = "id") Long id, @PathVariable(value = "itemId") Long itemId) {
+         Pager<PriceBookData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Pricebook updated successful");
+        pagers.setContent(null);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
 }
