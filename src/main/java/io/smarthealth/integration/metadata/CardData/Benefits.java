@@ -3,20 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.integration.metadata;
+package io.smarthealth.integration.metadata.CardData;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import java.util.List;
 import lombok.Data;
 
 /**
  *
- * @author Kennedy.Imbenzi
+ * @author kent
  */
 @Data
-@JacksonXmlRootElement(localName="Member")
-public class Member {
-    private String Membership_Number;
-    private String card_serialnumber;
-    private String Scheme_Code;
-    private String Scheme_Plan;
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JacksonXmlRootElement(localName = "Benefits")
+public class Benefits {
+    List<Benefit>benefit;
 }

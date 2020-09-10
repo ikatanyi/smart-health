@@ -36,4 +36,6 @@ public class ApplicationProperties {
     private String docUploadDir;
     
     private String templateUploadDir;
+    
+    private String integServer;
 }

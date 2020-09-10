@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.radiology.api;
 
+import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.radiology.data.RadiologyTestData;
 import io.smarthealth.clinical.radiology.data.ServiceTemplateData;
 import io.smarthealth.clinical.radiology.service.RadiologyConfigService;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -117,27 +119,27 @@ public class RadiologyController {
     @GetMapping("/radiology-template")
     @PreAuthorize("hasAuthority('view_radiology')")
     public ResponseEntity<?> fetchAllServiceTemplates(
+            @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "page", required = false) Integer page1,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
 
         Pageable pageable = PaginationUtil.createPage(page1, size);
-        List<ServiceTemplateData> testData = radiologyConfigService.findAllTemplates(pageable)
-                .stream()
-                .map((template) -> template.toData()
-                ).collect(Collectors.toList());
+        Page<ServiceTemplateData> list = radiologyConfigService.findAllTemplates(name, pageable)
+                .map(x -> x.toData());
 
-        Pager page = new Pager();
-        page.setCode("200");
-        page.setContent(testData);
-        page.setMessage("Service Templates fetched successfully");
+        Pager<List<ServiceTemplateData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
         PageDetails details = new PageDetails();
-        details.setPage(1);
-        details.setPerPage(25);
-        details.setReportName("Service Template fetched");
-//        details.setTotalElements(Long.parseLong(String.valueOf(pag.getNumberOfElements())));
-        page.setPageDetails(details);
-        return ResponseEntity.ok(page);
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Service Templates");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
     }
 
     @PostMapping("/radiology-tests")
@@ -179,21 +181,23 @@ public class RadiologyController {
     ) {
 
         Pageable pageable = PaginationUtil.createPage(page1, size);
-        List<RadiologyTestData> testData = radiologyConfigService.findAll(pageable)
-                .stream()
-                .map((radiology) -> {
-                    RadiologyTestData testdata = radiology.toData();
-                    return testdata;
-                }).collect(Collectors.toList());
-        Pager page = new Pager();
-        page.setCode("200");
-        page.setContent(testData);
-        page.setMessage("Radiology Tests fetched successfully");
+        Page<RadiologyTestData> list = radiologyConfigService.findAll(pageable)
+                .map(x -> x.toData());
+        
+        Pager<List<RadiologyTestData>> pagers = new Pager();
+        pagers.setCode("200");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
         PageDetails details = new PageDetails();
-        details.setPage(1);
-        details.setPerPage(25);
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
         details.setReportName("Radiology Tests fetched");
-        page.setPageDetails(details);
-        return ResponseEntity.ok(page);
+        pagers.setMessage("Radiology Tests fetched successfully");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+        
+       
     }
 }

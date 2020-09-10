@@ -62,6 +62,8 @@ public class DoctorClinicSetupController {
         if (data.getHasReviewCost()) {
             clinic.setHasReviewCost(Boolean.TRUE);
             clinic.setReviewService(itemService.findItemEntityOrThrow(data.getReviewServiceId()));
+        } else {
+            clinic.setHasReviewCost(Boolean.FALSE);
         }
 
         DoctorClinicItems savedClinic = doctorClinicService.saveClinicItem(clinic);
