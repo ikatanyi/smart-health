@@ -103,7 +103,7 @@ public class NotificationService {
     public void handleCreatedUpdatedEvent(DocRequestEvent e) {
         log.info("Doctor Requests notification ... ");
         e.getRequestType().forEach((type) -> {
-            messagingTemplate.convertAndSend("/topic/requests." + type.name(), requestService.getUnfilledDoctorRequests(type));
+            messagingTemplate.convertAndSend("/topic/requests." + type.name(), requestService.getUnfilledDoctorRequests(type)); 
         });
     }
  
