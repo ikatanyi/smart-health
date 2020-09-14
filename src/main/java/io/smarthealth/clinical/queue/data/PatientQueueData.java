@@ -30,6 +30,7 @@ public class PatientQueueData {
     private  String servicePointName;
     
     private Instant startDateTime;
+    private Instant stopDateTime;
     
 
 }

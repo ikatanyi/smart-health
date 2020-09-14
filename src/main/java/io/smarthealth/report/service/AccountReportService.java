@@ -270,7 +270,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(remittanceData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/remittance_report");
@@ -306,7 +306,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.getFilters().put("range", reportParam.getFirst("range"));
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(remittanceData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/allocation_trans_report");
@@ -807,6 +807,7 @@ public class AccountReportService {
         sortList.add(sortField);    
 
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(invoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/voided_invoice_statement");
@@ -852,7 +853,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.getFilters().put("range", reportParam.getFirst("range"));
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/Service_statement");

@@ -185,7 +185,7 @@
 				<text><![CDATA[Date Range:]]></text>
 			</staticText>
 			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
-				<reportElement x="51" y="26" width="104" height="13" isRemoveLineWhenBlank="true" uuid="296dd85b-0679-49de-80e7-b8bed8a46890"/>
+				<reportElement x="51" y="26" width="261" height="13" isRemoveLineWhenBlank="true" uuid="296dd85b-0679-49de-80e7-b8bed8a46890"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="false"/>
 				</textElement>
