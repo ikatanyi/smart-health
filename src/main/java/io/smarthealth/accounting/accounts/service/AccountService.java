@@ -343,6 +343,7 @@ public class AccountService {
         List<JournalEntryItem> itemArray = new ArrayList();
         for (AccBalanceData acc : accs) {
             Account account = findByAccountNumber(acc.getIdentifier()).orElse(null);
+            
             JournalEntryItem data = new JournalEntryItem(account, "Balance b/f", BigDecimal.ZERO, acc.getBalance());
 
             itemArray.add(data);
