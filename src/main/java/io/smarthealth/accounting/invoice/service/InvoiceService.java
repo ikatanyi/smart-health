@@ -191,6 +191,12 @@ public class InvoiceService {
         getInvoiceByIdOrThrow(id);
         invoiceRepository.updateInvoiceStatus(status, id);
     }
+    
+    public void updateInvoiceSmartStatus(Long id, Boolean awaitingSmart) {
+        Invoice invoice  = getInvoiceByIdOrThrow(id);
+        invoice.setAwaitingSmart(awaitingSmart);
+        invoiceRepository.save(invoice);
+    }
 
     public Invoice updateInvoice(Invoice invoice) {
         if (invoice != null) {
@@ -199,9 +205,9 @@ public class InvoiceService {
         return null;
     }
 
-    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, Boolean filterPastDue, Double amountLessThanOrEqualTo, Pageable pageable) {
+    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, Boolean filterPastDue, Boolean awaitingSmart, Double amountLessThanOrEqualTo, Pageable pageable) {
 
-        Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo);
+        Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
 //        Page<Invoice> invoices = invoiceRepository.findByItemsVoidedFalse(spec, pageable);
 

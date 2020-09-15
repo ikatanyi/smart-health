@@ -437,6 +437,7 @@ public class AccountReportService {
         Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
         String patientNo = reportParam.getFirst("patientNo");
         String invoiceNo = reportParam.getFirst("invoiceNo");
+        Boolean awaitingSmart = reportParam.getFirst("awaitingSmart")!=null?Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")):false;
         String dateRange = reportParam.getFirst("range");
         String invoiceStatus = reportParam.getFirst("invoiceStatus");
         Double amountGreaterThan = 0.0;
@@ -449,7 +450,7 @@ public class AccountReportService {
         InvoiceStatus status = invoiceStatusToEnum(invoiceStatus);
 
         Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<InvoiceData> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable).getContent()
+        List<InvoiceData> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, pageable).getContent()
                 .stream()
                 .map((invoice) -> invoice.toData())
                 .collect(Collectors.toList());
@@ -520,7 +521,7 @@ public class AccountReportService {
         String invoiceNo = reportParam.getFirst("invoiceNo");
         String dateRange = reportParam.getFirst("range");
         InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));
-
+        Boolean awaitingSmart = reportParam.getFirst("awaitingSmart")!=null?Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")):false;
         Double amountGreaterThan = 0.0;
         Boolean filterPastDue = false;
         Double amountLessThanOrEqualTo = 0.0;
@@ -529,7 +530,7 @@ public class AccountReportService {
         Map<String, Object> map = reportData.getFilters();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable).getContent()
+        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue,awaitingSmart, amountLessThanOrEqualTo, pageable).getContent()
                 .stream()
                 .map(x -> x.toData())
                 .collect(Collectors.toList());
