@@ -53,5 +53,6 @@ public class InvoiceData {
     private List<InvoiceReceipt> invoicePayments=new ArrayList<>();
     @ApiModelProperty(hidden=true, required=false)
     private String state;
+    private Boolean awaitingSmart;
    
 }

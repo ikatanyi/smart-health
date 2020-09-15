@@ -33,6 +33,7 @@ import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
+import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -121,6 +122,10 @@ public class InvoiceService {
                             invoice.setTax(invoiceData.getTaxes());
                             invoice.setTransactionNo(trxId);
                             invoice.setVisit(visit);
+                            Optional<SchemeConfigurations>config = schemeService.fetchSchemeConfigByScheme(scheme);
+                            if(config.isPresent())
+                                if(config.get().isSmartEnabled())
+                                    invoice.setAwaitingSmart(Boolean.TRUE);
 
                             if (!invoiceData.getItems().isEmpty()) {
                                 BigDecimal balance = BigDecimal.ZERO;
