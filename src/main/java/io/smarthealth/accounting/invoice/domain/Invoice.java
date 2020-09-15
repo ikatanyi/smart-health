@@ -76,6 +76,7 @@ public class Invoice extends Auditable {
     @Enumerated(EnumType.STRING)
     private InvoiceStatus status;
     private String notes;
+    private Boolean awaitingSmart = Boolean.FALSE;
 
     @Where(clause = "voided = false")
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
@@ -131,6 +132,7 @@ public class Invoice extends Auditable {
         data.setCreatedBy(this.getCreatedBy());
         data.setTransactionNo(this.transactionNo);
         data.setState(this.status!=null ? this.status.name(): null);
+        data.setAwaitingSmart(this.getAwaitingSmart());
         data.setInvoiceItems(
                 this.items.stream()
                         .filter(x -> x.getBillItem().getAmount() > 0)
