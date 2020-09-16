@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -47,6 +48,10 @@ public class WardTransfer extends Auditable {
     private BedType bedType; // to bill bed category
     private String comment;
     private String methodOfTransfer;
+    
+    @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_ward_transfer_transfer_logs_id"))
+    private TransferLogs transferLogs;
 
     public WardTransferData todata() {
         WardTransferData data = new WardTransferData();

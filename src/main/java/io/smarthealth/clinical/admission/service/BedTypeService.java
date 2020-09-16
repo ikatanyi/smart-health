@@ -1,6 +1,7 @@
 package io.smarthealth.clinical.admission.service;
 
 import io.smarthealth.clinical.admission.data.BedTypeData;
+import io.smarthealth.clinical.admission.domain.BedCharge;
 import io.smarthealth.clinical.admission.domain.BedType;
 import io.smarthealth.clinical.admission.domain.repository.BedTypeRepository;
 import io.smarthealth.clinical.admission.domain.specification.BedTypeSpecification;
@@ -20,9 +21,12 @@ import org.springframework.data.jpa.domain.Specification;
 @RequiredArgsConstructor
 public class BedTypeService {
     private final BedTypeRepository bedTypeRepository;
+    private final BedChargeService chargeService;
 
     public BedType createBedType(BedTypeData data) {
         BedType bedType = data.map();
+        BedCharge charge = chargeService.getBedCharge(data.getBedChargeId());
+        bedType.setBedCharge(charge);
         if (fetchBedTypeByName(data.getName()).isPresent()) {
             throw APIException.conflict("BedType {0} already exists.", data.getName());
         }
@@ -52,6 +56,8 @@ public class BedTypeService {
         if (!bedType.getName().equals(data.getName())) {
             bedType.setName(data.getName());
         }
+        BedCharge charge = chargeService.getBedCharge(data.getBedChargeId());
+        bedType.setBedCharge(charge);
         bedType.setDescription(data.getDescription());
         bedType.setIsActive(data.getActive());
         bedType.setName(data.getName());
