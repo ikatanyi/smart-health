@@ -122,7 +122,7 @@ public class InvoiceController {
         return ResponseEntity.ok(invoice != null ? invoice.toData() : new InvoiceData());
     }
     
-    @PostMapping("/invoices/{id}/update-smart-status")
+    @PutMapping("/invoices/{id}/update-smart-status")
     @PreAuthorize("hasAuthority('create_invoices')")
     public ResponseEntity<?> updateInvoiceSmartStatus(@PathVariable(value = "id") Long id, @RequestParam(value = "awaitingSmart", required = true) Boolean status) {
 
