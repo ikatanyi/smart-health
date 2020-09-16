@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.clinical.admission.domain;
+package io.smarthealth.clinical.wardprocedure.domain;
 
+import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDateTime;
@@ -22,7 +23,8 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "patient_nursing_careplan")
-public class NursingCarePlan extends Auditable{
+public class NursingCarePlan extends Auditable {
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_nursing_care_plan_patient_id"))
     private Patient patient;

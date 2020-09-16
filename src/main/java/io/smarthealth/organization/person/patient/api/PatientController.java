@@ -6,14 +6,13 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.data.AddressData;
 import io.smarthealth.organization.person.data.ContactData;
+import io.smarthealth.organization.person.data.PersonIdentifierData;
 import io.smarthealth.organization.person.data.PersonNextOfKinData;
 import io.smarthealth.organization.person.data.PortraitData;
-import io.smarthealth.organization.person.data.WalkInData;
 import io.smarthealth.organization.person.domain.PersonAddress;
 import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.domain.PersonNextOfKin;
 import io.smarthealth.organization.person.domain.Portrait;
-import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.patient.data.AllergyTypeData;
 import io.smarthealth.organization.person.patient.data.PatientAllergiesData;
 import io.smarthealth.organization.person.patient.data.PatientData;
@@ -21,8 +20,10 @@ import io.smarthealth.organization.person.patient.domain.Allergy;
 import io.smarthealth.organization.person.patient.domain.AllergyType;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientIdentificationType;
+import io.smarthealth.organization.person.patient.domain.PatientIdentifier;
 import io.smarthealth.organization.person.patient.service.AllergiesService;
 import io.smarthealth.organization.person.patient.service.PatientIdentificationTypeService;
+import io.smarthealth.organization.person.patient.service.PatientIdentifierService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.organization.person.service.PersonService;
 import io.swagger.annotations.Api;
@@ -60,35 +61,38 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api")
 @Api
 public class PatientController {
-
+    
     @Autowired
     private PatientService patientService;
     @Autowired
     private PersonService personService;
-
+    
     @Autowired
     private AllergiesService allergiesService;
-
+    
     @Autowired
     private PatientIdentificationTypeService patientIdentificationTypeService;
-
+    
     @Autowired
     ModelMapper modelMapper;
-
+    
+    @Autowired
+    private PatientIdentifierService patientIdentifierService;
+    
     @PostMapping("/patients")
     @PreAuthorize("hasAuthority('create_patients')")
     public @ResponseBody
     ResponseEntity<?> createPatient(@RequestPart PatientData patientData, @RequestPart(name = "file", required = false) MultipartFile file) {
-
+        
         Patient patient = this.patientService.createPatient(patientData, file);
-
+        
         PatientData savedpatientData = patientService.convertToPatientData(patient);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
-
+        
         return ResponseEntity.created(location).body(ApiResponse.successMessage("Patient successfuly created", HttpStatus.CREATED, savedpatientData));
     }
-
+    
     @GetMapping("/patients/{id}")
     @PreAuthorize("hasAuthority('view_patients')")
     public @ResponseBody
@@ -100,7 +104,7 @@ public class PatientController {
             throw APIException.notFound("Patient Number {0} not found.", patientNumber);
         }
     }
-
+    
     @GetMapping("/patients")
     @PreAuthorize("hasAuthority('view_patients')")
     public ResponseEntity<?> fetchAllPatients(
@@ -141,7 +145,7 @@ public class PatientController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pagers);
     }
-
+    
     @PutMapping("/patients/{patientNumber}")
     @PreAuthorize("hasAuthority('edit_patients')")
     public @ResponseBody
@@ -164,7 +168,7 @@ public class PatientController {
             patient.setTitle(patientData.getTitle());
             patient.setDateOfBirth(patientData.getDateOfBirth());
             patient.setPrimaryContact(patientData.getPrimaryContact());
-
+            
             this.patientService.updatePatient(patientNumber, patient);
         } else {
             //entDa
@@ -172,10 +176,10 @@ public class PatientController {
         }
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
-
+        
         return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
     }
-
+    
     @GetMapping("/identifier/{identifier}/patient/{no}")
     @PreAuthorize("hasAuthority('view_patients')")
     public @ResponseBody
@@ -187,7 +191,7 @@ public class PatientController {
             throw APIException.notFound("Patient Number {0} not found.", patientNumber);
         }
     }
-
+    
     @PutMapping("/patients/{patientid}/contacts/{contactid}")
     @PreAuthorize("hasAuthority('edit_patients')")
     @ApiOperation(value = "Update a patient's contact details", response = PatientData.class)
@@ -207,13 +211,13 @@ public class PatientController {
         } else {
             throw APIException.notFound("Contact {0} not found.", contactid);
         }
-
+        
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
         return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
     }
-
+    
     @PutMapping("/patients/{patientid}/address/{addressid}")
     @PreAuthorize("hasAuthority('edit_patients')")
     @ApiOperation(value = "Update a patient's address details", response = PatientData.class)
@@ -238,10 +242,10 @@ public class PatientController {
         }
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
-
+        
         return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
     }
-
+    
     @PostMapping("/patients/{patientNumber}/next-of-kin")
     @PreAuthorize("hasAuthority('edit_patients')")
     public ResponseEntity<?> createPatientNextOfKin(
@@ -259,10 +263,10 @@ public class PatientController {
         pagers.setCode("0");
         pagers.setMessage("Next of kin created");
         pagers.setContent(PersonNextOfKinData.map(nextOfKin));
-
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-
+    
     @PutMapping("/patients/{nextOfKinId}/next-of-kin")
     @PreAuthorize("hasAuthority('edit_patients')")
     public ResponseEntity<?> editPatientNextOfKin(
@@ -278,19 +282,19 @@ public class PatientController {
         pagers.setCode("0");
         pagers.setMessage("Next of kin updated");
         pagers.setContent(PersonNextOfKinData.map(nextOfKin));
-
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-
+    
     @PostMapping("/patients/{id}/image")
     @PreAuthorize("hasAuthority('create_patients')")
     @ApiOperation(value = "Update a patient's image details", response = Portrait.class)
     public @ResponseBody
     ResponseEntity<PortraitData> postPatientImage(@PathVariable("id") final String patientNumber, @RequestParam final MultipartFile image) {
         Patient patient = patientService.findPatientOrThrow(patientNumber);
-
+        
         try {
-
+            
             Portrait portrait = this.patientService.createPortrait(patient, image);
             URI location = fromCurrentRequest().buildAndExpand(portrait.getId()).toUri();
             PortraitData data = modelMapper.map(portrait, PortraitData.class);
@@ -299,19 +303,19 @@ public class PatientController {
             ex.printStackTrace();
             throw APIException.internalError("Error saving patient's image ", ex.getMessage());
         }
-
+        
     }
-
+    
     @PostMapping("/patient_identification_type")
     @PreAuthorize("hasAuthority('create_patients')")
     public @ResponseBody
     ResponseEntity<?> createPatientIdtype(@RequestBody @Valid final PatientIdentificationType patientIdentificationType) {
-
+        
         PatientIdentificationType patientIdtype = this.patientIdentificationTypeService.creatIdentificationType(patientIdentificationType);
-
+        
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patient_identification_type/{id}")
                 .buildAndExpand(patientIdtype.getId()).toUri();
-
+        
         return ResponseEntity.created(location).body(ApiResponse.successMessage("Identity type was successfully created", HttpStatus.CREATED, patientIdtype));
     }
 
@@ -330,7 +334,7 @@ public class PatientController {
 //        return new ResponseEntity<List<PatientIdentificationType>>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
         return new ResponseEntity<>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
     }
-
+    
     @GetMapping("/patient_identification_type/{id}")
     @PreAuthorize("hasAuthority('view_patients')")
     public PatientIdentificationType fetchAllPatientIdTypes(@PathVariable("id") final String patientIdType) {
@@ -353,7 +357,7 @@ public class PatientController {
                 .buildAndExpand(allergy.getId()).toUri();
         return ResponseEntity.created(location).body(savedData);
     }
-
+    
     @PostMapping("/allergy-type")
     @PreAuthorize("hasAuthority('create_patients')")
     public @ResponseBody
@@ -364,7 +368,7 @@ public class PatientController {
                 .buildAndExpand(allergyType.getId()).toUri();
         return ResponseEntity.created(location).body(savedData);
     }
-
+    
     @GetMapping("/patient/{patientNumber}/allergy")
     @PreAuthorize("hasAuthority('view_patients')")
     public ResponseEntity<?> fetchAllPatientsAllergy(@PathVariable("patientNumber") final String patientNumber, @RequestParam MultiValueMap<String, String> queryParams, Pageable pageable) {
@@ -372,7 +376,7 @@ public class PatientController {
         Page<PatientAllergiesData> page = allergiesService.fetchPatientAllergies(patient, pageable).map(p -> allergiesService.convertPatientAllergiesToData(p));
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
-
+    
     @GetMapping("/allergy-type")
     @PreAuthorize("hasAuthority('view_patients')")
     public ResponseEntity<List<AllergyTypeData>> fetchAllAllergyTypes() {
@@ -407,4 +411,54 @@ public class PatientController {
         String contentType = null;
         patientService.exportPatientPdfFile(response);
     }
+
+    /* Functions pertaining patient identifier*/
+    @PostMapping("/patients/{patientNumber}/identifiers")
+    @PreAuthorize("hasAuthority('edit_patients')")
+    public ResponseEntity<?> addPatientIdentifier(
+            @Valid @RequestBody PersonIdentifierData data,
+            @PathVariable("patientNumber") final String patientNumber) {
+        Patient patient = patientService.findPatientOrThrow(patientNumber);
+        
+        PatientIdentifier patientIdentifier = new PatientIdentifier();
+        patientIdentifier.setType(patientIdentificationTypeService.fetchIdType(data.getIdType()));
+        patientIdentifier.setValue(data.getIdentificationValue());
+        patientIdentifier.setPatient(patient);
+        
+        PatientIdentifier savedPi = patientIdentifierService.createPatientIdentifier(patientIdentifier);
+        
+        Pager<PersonIdentifierData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Patient identification type created");
+        pagers.setContent(patientIdentifierService.convertIdentifierEntityToData(savedPi));
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+    
+    @PutMapping("/patients/{patientNumber}/identifiers/{identifierId}")
+    @PreAuthorize("hasAuthority('edit_patients')")
+    public ResponseEntity<?> editPatientIdentifier(
+            @Valid @RequestBody PersonIdentifierData data,
+            @PathVariable("patientNumber") final String patientNumber,
+            @PathVariable("identifierId") final Long identifierId
+    ) {
+        Patient patient = patientService.findPatientOrThrow(patientNumber);
+        Optional<PatientIdentifier> pi = patientIdentifierService.fetchPatientIdentifierByPatientAndId(patient, identifierId);
+        if (!pi.isPresent()) {
+            throw APIException.notFound("Patient identifier notified ", "");
+        }
+        PatientIdentifier patientIdentifier = pi.get();
+        patientIdentifier.setType(patientIdentificationTypeService.fetchIdType(data.getIdType()));
+        patientIdentifier.setValue(data.getIdentificationValue());
+        
+        PatientIdentifier savedPi = patientIdentifierService.createPatientIdentifier(patientIdentifier);
+        
+        Pager<PersonIdentifierData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Patient identification type updated");
+        pagers.setContent(patientIdentifierService.convertIdentifierEntityToData(savedPi));
+        
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+    
 }

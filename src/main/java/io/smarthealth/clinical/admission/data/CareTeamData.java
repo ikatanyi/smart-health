@@ -21,7 +21,6 @@ public class CareTeamData {
     private String patientName;
     @ApiModelProperty(hidden = true)
     private String patientNumber;
-    @ApiModelProperty(hidden = true)
     private String admissionNumber;
     private Long medicId;
 

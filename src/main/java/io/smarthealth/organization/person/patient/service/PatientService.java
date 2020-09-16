@@ -25,7 +25,7 @@ import io.smarthealth.organization.person.data.PersonNextOfKinData;
 import io.smarthealth.organization.person.data.PortraitData;
 import io.smarthealth.organization.person.domain.*;
 import io.smarthealth.organization.person.patient.data.PatientData;
-import io.smarthealth.organization.person.patient.data.PatientIdentifierData;
+import io.smarthealth.organization.person.data.PersonIdentifierData;
 import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientIdentifier;
@@ -164,7 +164,7 @@ public class PatientService {
                     final List<PatientIdentifier> patientIdentifiers = this.patientIdentifierService.fetchPatientIdentifiers(patientEntity);
 
                     if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
-                        List<PatientIdentifierData> ids = new ArrayList<>();
+                        List<PersonIdentifierData> ids = new ArrayList<>();
                         for (PatientIdentifier id : patientIdentifiers) {
                             ids.add(patientIdentifierService.convertIdentifierEntityToData(id));
                         }
@@ -321,10 +321,10 @@ public class PatientService {
             List<PatientIdentifier> values = patient.getIdentifiers()
                     .stream()
                     .map(identity -> {
-                        if (identity.getId_type().equals("")) {
+                        if (identity.getIdType().equals("")) {
                             return null;
                         }
-                        if (identity.getId_type().equals("-Select-")) {
+                        if (identity.getIdType().equals("-Select-")) {
                             return null;
                         }
                         final PatientIdentifier patientIdentifier = patientIdentifierService.convertIdentifierDataToEntity(identity) /*modelMapper.map(identity, PatientIdentifier.class)*/;
@@ -466,7 +466,7 @@ public class PatientService {
             final List<PatientIdentifier> patientIdentifiers = this.patientIdentifierService.fetchPatientIdentifiers(patient);
 
             if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
-                List<PatientIdentifierData> ids = new ArrayList<>();
+                List<PersonIdentifierData> ids = new ArrayList<>();
                 for (PatientIdentifier id : patientIdentifiers) {
                     ids.add(patientIdentifierService.convertIdentifierEntityToData(id));
                 }

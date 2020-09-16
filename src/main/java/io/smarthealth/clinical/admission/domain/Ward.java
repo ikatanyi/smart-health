@@ -7,7 +7,6 @@ package io.smarthealth.clinical.admission.domain;
 
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.clinical.admission.data.WardData;
-import io.smarthealth.clinical.laboratory.domain.Analyte;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +16,6 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
-import static org.hibernate.engine.internal.Cascade.cascade;
 
 /**
  *

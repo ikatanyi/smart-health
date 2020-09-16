@@ -21,14 +21,11 @@ import lombok.RequiredArgsConstructor;
 public class BedChargeService {
 
     private final BedChargeRepository bedChargeRepository;
-    private final BedService bedService;
     private final ItemService itemService;
 
     public BedCharge createBedCharge(BedChargeData data) {
         BedCharge bedCharge = data.map();
-        Bed bed = bedService.getBed(data.getBedId());
         Item item = itemService.findItemEntityOrThrow(data.getItemId());
-        bedCharge.setBed(bed);
         bedCharge.setItem(item);
         return bedChargeRepository.save(bedCharge);
     }
@@ -49,9 +46,7 @@ public class BedChargeService {
         BedCharge bedCharge = getBedCharge(id);
         bedCharge.setActive(data.getActive());
         bedCharge.setRate(data.getRate());
-        Bed bed = bedService.getBed(data.getBedId());
         Item item = itemService.findItemEntityOrThrow(data.getItemId());
-        bedCharge.setBed(bed);
         bedCharge.setItem(item);
         return bedChargeRepository.save(bedCharge);
     }
