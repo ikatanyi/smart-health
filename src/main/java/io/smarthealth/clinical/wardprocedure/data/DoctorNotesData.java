@@ -6,7 +6,7 @@
 package io.smarthealth.clinical.wardprocedure.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.clinical.wardprocedure.domain.NursingNotes;
+import io.smarthealth.clinical.wardprocedure.domain.DoctorNotes;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ import lombok.Data;
  * @author Simon.waweru
  */
 @Data
-public class NursingNotesData {
+public class DoctorNotesData {
 
     @ApiModelProperty(hidden = true)
     private Long id;
@@ -32,8 +32,8 @@ public class NursingNotesData {
     private String status;
     private String notesBy;
 
-    public static NursingNotesData map(NursingNotes e) {
-        NursingNotesData d = new NursingNotesData();
+    public static DoctorNotesData map(DoctorNotes e) {
+        DoctorNotesData d = new DoctorNotesData();
         d.setAdmissionNumber(e.getAdmission().getAdmissionNo());
         d.setDatetime(e.getDatetime());
         d.setNotes(e.getNotes());
@@ -45,8 +45,8 @@ public class NursingNotesData {
         return d;
     }
 
-    public static NursingNotes map(NursingNotesData d) {
-        NursingNotes e = new NursingNotes();
+    public static DoctorNotes map(DoctorNotesData d) {
+        DoctorNotes e = new DoctorNotes();
         e.setDatetime(d.getDatetime());
         e.setNotes(d.getNotes());
         e.setNotesBy(d.getNotesBy());

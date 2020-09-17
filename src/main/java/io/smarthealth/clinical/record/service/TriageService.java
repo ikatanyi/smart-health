@@ -14,6 +14,7 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,6 +44,9 @@ public class TriageService {
 
     @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    ModelMapper modelMapper;
 
     //VITALS
     public VitalsRecord addVitalRecordsByVisit(Visit visit, VitalRecordData triage) {
@@ -91,6 +95,7 @@ public class TriageService {
     }
 
     public Page<VitalsRecord> fetchVitalRecordsByVisit(String visitNumber, Pageable page) {
+
         Optional<Visit> visit = visitRepository.findByVisitNumber(visitNumber);
         if (visit.isPresent()) {
             return this.triageRepository.findByVisit(visit.get(), page);
@@ -101,9 +106,7 @@ public class TriageService {
 
     public Page<VitalsRecord> fetchVitalRecordsByPatient(String patientNumber, Pageable page) {
         Patient patient = this.patientService.findPatientOrThrow(patientNumber);
-        //Sort.by(Sort.Direction.ASC, "dateRecorded")
-        Pageable paging = PageRequest.of(page.getPageNumber(), page.getPageSize(), Sort.by(Sort.Direction.DESC, "dateRecorded"));
-        return this.triageRepository.findByPatient(patient, paging);
+        return this.triageRepository.findByPatient(patient, page);
     }
 
     public Optional<VitalsRecord> fetchLastVitalRecordsByPatient(String patientNumber) {
@@ -144,6 +147,10 @@ public class TriageService {
     private Visit findVisitOrThrow(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Patient Session with Visit Number : {0} not found.", visitNumber));
+    }
+
+    public VitalRecordData convertToVitalsData(VitalsRecord vitalsRecord) {
+        return modelMapper.map(vitalsRecord, VitalRecordData.class);
     }
 
 }

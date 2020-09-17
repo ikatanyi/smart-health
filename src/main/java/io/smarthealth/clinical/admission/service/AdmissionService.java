@@ -90,6 +90,8 @@ public class AdmissionService {
         a.setComments(d.getNarration());
         a.setScheduled(Boolean.FALSE);
         a.setIsActiveOnConsultation(Boolean.FALSE);
+        a.setServiceType(VisitEnum.ServiceType.Admission);
+        a.setStatus(VisitEnum.Status.Admitted);
 
         //payment data
         Scheme scheme = null;
