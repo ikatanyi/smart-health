@@ -6,6 +6,7 @@ import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.StockEntryData;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -41,5 +42,7 @@ public class PurchaseInvoiceData {
     private PurchaseInvoiceStatus status;
     private String createdBy;
     private List<StockEntryData>stockEntryData = new ArrayList();
+    @ApiModelProperty(hidden=true)
+    private Long age;
 
 }

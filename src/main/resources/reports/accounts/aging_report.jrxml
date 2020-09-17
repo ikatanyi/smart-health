@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="insurance_statement" pageWidth="555" pageHeight="802" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="160"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="from" class="java.util.Date"/>
 	<parameter name="to" class="java.util.Date"/>
@@ -60,7 +60,7 @@
 					<textFieldExpression><![CDATA[$F{payer}]]></textFieldExpression>
 				</textField>
 				<line>
-					<reportElement positionType="Float" x="2" y="14" width="223" height="1" forecolor="#6666FF" uuid="cabbb1ca-cbd2-4796-9bb7-e546e3080b5e"/>
+					<reportElement x="2" y="14" width="223" height="1" forecolor="#6666FF" uuid="cabbb1ca-cbd2-4796-9bb7-e546e3080b5e"/>
 					<graphicElement>
 						<pen lineWidth="0.25" lineColor="#000000"/>
 					</graphicElement>
@@ -88,7 +88,6 @@
 					<reportElement x="423" y="0" width="44" height="15" uuid="a464799d-7406-44e9-9ad7-2407dcbd20f4"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
-						<paragraph rightIndent="5"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{amount_1}]]></textFieldExpression>
 				</textField>
@@ -195,7 +194,7 @@
 				<text><![CDATA[Balance]]></text>
 			</staticText>
 			<line>
-				<reportElement positionType="Float" x="1" y="64" width="514" height="1" forecolor="#6666FF" uuid="14761926-4c06-4d35-ba7c-e283b165fa1a"/>
+				<reportElement x="1" y="64" width="514" height="1" forecolor="#6666FF" uuid="14761926-4c06-4d35-ba7c-e283b165fa1a"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineColor="#000000"/>
 				</graphicElement>
@@ -215,7 +214,7 @@
 				<textFieldExpression><![CDATA[$P{range}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement positionType="Float" x="0" y="44" width="514" height="1" forecolor="#6666FF" uuid="d81a4166-5119-4b66-a38a-0ee5934df60e"/>
+				<reportElement x="0" y="44" width="514" height="1" forecolor="#6666FF" uuid="d81a4166-5119-4b66-a38a-0ee5934df60e"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineColor="#000000"/>
 				</graphicElement>
@@ -246,7 +245,7 @@
 				<textFieldExpression><![CDATA[$F{memberName}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement positionType="Float" x="3" y="12" width="512" height="1" forecolor="#9999FF" uuid="0857bc25-5cba-42f9-920c-2039555116dd"/>
+				<reportElement x="3" y="12" width="512" height="1" forecolor="#9999FF" uuid="0857bc25-5cba-42f9-920c-2039555116dd"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineStyle="Dashed"/>
 				</graphicElement>
