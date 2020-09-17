@@ -5,7 +5,9 @@
  */
 package io.smarthealth.clinical.admission.api;
 
+import io.smarthealth.clinical.admission.data.AdmissionData;
 import io.smarthealth.clinical.admission.data.CareTeamData;
+import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.admission.service.CareTeamService;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,6 +68,20 @@ public class CareTeamController {
         pagers.setContent(ct);
 
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+    
+    @PutMapping("/care-team/{id}")
+//    @PreAuthorize("hasAuthority('create_admission')")
+    public ResponseEntity<?> updateCareTeam(@PathVariable("id") Long id, @Valid @RequestBody CareTeamData careTeamData) {
+
+        CareTeamData a = CareTeamData.map(careTeamService.updateCareTeam(id, careTeamData));
+
+        Pager<CareTeamData> pagers = new Pager();
+        pagers.setCode("200");
+        pagers.setMessage("Care team Updated successfully");
+        pagers.setContent(a);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
 }

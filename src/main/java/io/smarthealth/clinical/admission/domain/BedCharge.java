@@ -6,6 +6,7 @@
 package io.smarthealth.clinical.admission.domain;
 
 import io.smarthealth.clinical.admission.data.BedChargeData;
+import io.smarthealth.clinical.admission.data.ChargeData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
@@ -49,6 +50,20 @@ public class BedCharge extends Identifiable{
             data.setItemId(this.getItem().getId());
             
         }
+        
+        return data;
+    }
+    
+    public ChargeData toChargeData(){
+        ChargeData data = new ChargeData();
+        data.setBedChargeId(Long.MIN_VALUE);
+        data.setRate(rate);
+        data.setRecurrentCost(this.getRecurrent());
+        if(this.getItem()!=null){
+            data.setName(this.getItem().getItemName());
+            data.setItemCode(this.getItem().getItemCode());
+            
+}
         
         return data;
     }

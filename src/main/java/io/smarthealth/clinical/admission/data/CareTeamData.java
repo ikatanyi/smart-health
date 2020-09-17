@@ -31,6 +31,8 @@ public class CareTeamData {
     private CareTeamRole role;
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime dateAssigned;
+    //void reason
+    private String reason;
 
     public static CareTeamData map(CareTeam ct) {
         CareTeamData d = new CareTeamData();

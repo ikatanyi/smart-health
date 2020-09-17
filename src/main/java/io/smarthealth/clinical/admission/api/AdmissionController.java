@@ -6,6 +6,7 @@
 package io.smarthealth.clinical.admission.api;
 
 import io.smarthealth.clinical.admission.data.AdmissionData;
+import io.smarthealth.clinical.admission.data.CareTeamData;
 import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -19,9 +20,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -96,6 +99,40 @@ public class AdmissionController {
         pagers.setPageDetails(details);
 
         return ResponseEntity.ok(pagers);
+    }
+    
+    @PutMapping("/admission/{id}")
+//    @PreAuthorize("hasAuthority('create_admission')")
+    public ResponseEntity<?> updateAdmission(@PathVariable("id") Long id, @Valid @RequestBody AdmissionData admissionData) {
+
+        Admission a = admissionService.updateAdmission(id, admissionData);
+
+        Pager<AdmissionData> pagers = new Pager();
+        pagers.setCode("200");
+        pagers.setMessage("Admission Updated successfully");
+        pagers.setContent(AdmissionData.map(a));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+    
+    @PostMapping("/admission/{id}/add-careteam")
+//    @PreAuthorize("hasAuthority('create_admission')")
+    public ResponseEntity<?> addCareteam(@PathVariable("id") Long id, @Valid @RequestBody List<CareTeamData> careTeamData) {
+
+        admissionService.addCareTeam(id, careTeamData);
+        Pager<AdmissionData> pagers = new Pager();
+        pagers.setCode("200");
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+    
+    @DeleteMapping("/admission/{id}/remove-careteam")
+//    @PreAuthorize("hasAuthority('create_admission')")
+    public ResponseEntity<?> removeCareteam(@PathVariable("id") Long id, @Valid @RequestParam(value="reason", required=false) String reason) {
+
+        admissionService.removeCareTeam(id, reason);
+        Pager<AdmissionData> pagers = new Pager();
+        pagers.setCode("200");
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
 }
