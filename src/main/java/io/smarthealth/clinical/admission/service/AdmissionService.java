@@ -60,8 +60,6 @@ public class AdmissionService {
     private final PaymentDetailsService paymentDetailsService;
     private final BillingService billingService;
     private final SchemeService schemeService;
-    private final CareTeamService careTeamService;
-    private final CareTeamRepository careTeamRepository;
 
     @Transactional
     public Admission createAdmission(AdmissionData d) {
@@ -170,28 +168,7 @@ public class AdmissionService {
     
     
     
-    public CareTeam removeCareTeam(Long id, String reason) {
-        CareTeam ct = careTeamService.getCareTeam(id);
-        ct.setIsActive(Boolean.FALSE);
-        ct.setVoided(Boolean.TRUE);
-        ct.setReason(reason);
-        return careTeamRepository.save(ct);
-    }
     
-    public void addCareTeam(Long admissionId, List<CareTeamData> ctdata){
-        Admission a = findAdmissionById(admissionId);
-        List<CareTeam> ctList = ctdata.stream().map(c
-                -> {
-            CareTeam ct = CareTeamData.map(c);
-            ct.setAdmission(a);
-            ct.setMedic(employeeService.findEmployeeById(c.getMedicId()));
-            return ct;
-        }
-        ).collect(Collectors.toList());
-
-        a.setCareTeam(ctList);
-        admissionRepository.save(a);
-    }
     
     @Transactional
     public Admission updateAdmission(Long id, AdmissionData d) {

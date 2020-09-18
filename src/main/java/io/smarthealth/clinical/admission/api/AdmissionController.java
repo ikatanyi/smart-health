@@ -115,24 +115,6 @@ public class AdmissionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
     
-    @PostMapping("/admission/{id}/add-careteam")
-//    @PreAuthorize("hasAuthority('create_admission')")
-    public ResponseEntity<?> addCareteam(@PathVariable("id") Long id, @Valid @RequestBody List<CareTeamData> careTeamData) {
-
-        admissionService.addCareTeam(id, careTeamData);
-        Pager<AdmissionData> pagers = new Pager();
-        pagers.setCode("200");
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
-    }
     
-    @DeleteMapping("/admission/{id}/remove-careteam")
-//    @PreAuthorize("hasAuthority('create_admission')")
-    public ResponseEntity<?> removeCareteam(@PathVariable("id") Long id, @Valid @RequestParam(value="reason", required=false) String reason) {
-
-        admissionService.removeCareTeam(id, reason);
-        Pager<AdmissionData> pagers = new Pager();
-        pagers.setCode("200");
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
-    }
 
 }

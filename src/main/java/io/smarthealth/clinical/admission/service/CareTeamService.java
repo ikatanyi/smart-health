@@ -15,6 +15,7 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +57,29 @@ public class CareTeamService {
     public CareTeam getCareTeam(Long id) {
         return careTeamRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("CareTeam with id  {0} not found.", id));
+    }
+    
+    public CareTeam removeCareTeam(Long id, String reason) {
+        CareTeam ct = getCareTeam(id);
+        ct.setIsActive(Boolean.FALSE);
+        ct.setVoided(Boolean.TRUE);
+        ct.setReason(reason);
+        return careTeamRepository.save(ct);
+    }
+    
+    public List<CareTeam> addCareTeam(List<CareTeamData> ctdata){
+        List<CareTeam> ctList = ctdata.stream().map(c
+                -> {
+            CareTeam ct = CareTeamData.map(c);
+            Admission adm = admissionService.findAdmissionByNumber(c.getAdmissionNumber());
+            ct.setIsActive(Boolean.TRUE);
+            ct.setAdmission(adm);
+            ct.setPatient(adm.getPatient());
+            ct.setMedic(employeeService.findEmployeeById(c.getMedicId()));
+            return ct;
+        }
+        ).collect(Collectors.toList());
+       return careTeamRepository.saveAll(ctList);
     }
 
     
