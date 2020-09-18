@@ -40,8 +40,7 @@ public class Organisation implements Serializable {
     private String organizationName;
     private String legalName;
     private String taxNumber;
-    private String website;
-
+    private String website; 
     private Boolean active;
 
     @CreatedDate
