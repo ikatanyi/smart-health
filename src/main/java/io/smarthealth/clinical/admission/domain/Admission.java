@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.Where;
 
 /**
  *
@@ -49,6 +50,7 @@ public class Admission extends Visit {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pat_admisssion_bed_type_id"))
     private BedType bedType;
 
+    @Where(clause = "voided = false")
     @OneToMany(mappedBy = "admission", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareTeam> careTeam = new ArrayList<>();
 

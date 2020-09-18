@@ -7,8 +7,10 @@ package io.smarthealth.clinical.admission.service;
 
 import io.smarthealth.clinical.admission.data.CareTeamData;
 import io.smarthealth.clinical.admission.domain.Admission;
+import io.smarthealth.clinical.admission.domain.BedType;
 import io.smarthealth.clinical.admission.domain.CareTeam;
 import io.smarthealth.clinical.admission.domain.repository.CareTeamRepository;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import java.util.ArrayList;
@@ -49,6 +51,28 @@ public class CareTeamService {
     public List<CareTeam> fetchCareTeamByAdmissionNumber(final String admissionNumber) {
         Admission adm = admissionService.findAdmissionByNumber(admissionNumber);
         return careTeamRepository.findByAdmission(adm);
+    }
+
+    public CareTeam getCareTeam(Long id) {
+        return careTeamRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("CareTeam with id  {0} not found.", id));
+    }
+
+    
+
+    public CareTeam updateCareTeam(Long id, CareTeamData data) {
+        CareTeam ct = getCareTeam(id);
+        //find med selected
+        Employee med = employeeService.findEmployeeById(data.getMedicId());
+        //find Admission
+        Admission adm = admissionService.findAdmissionByNumber(data.getAdmissionNumber());
+        ct.setAdmission(adm);
+        ct.setCareRole(data.getRole());
+        ct.setDateAssigned(data.getDateAssigned());
+        ct.setIsActive(Boolean.TRUE);
+        ct.setMedic(med);
+        ct.setPatient(adm.getPatient());
+        return careTeamRepository.save(ct);
     }
 
 }

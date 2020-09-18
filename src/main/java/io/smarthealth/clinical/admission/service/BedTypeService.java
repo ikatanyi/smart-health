@@ -1,11 +1,14 @@
 package io.smarthealth.clinical.admission.service;
 
 import io.smarthealth.clinical.admission.data.BedTypeData;
+import io.smarthealth.clinical.admission.data.ChargeData;
 import io.smarthealth.clinical.admission.domain.BedCharge;
 import io.smarthealth.clinical.admission.domain.BedType;
 import io.smarthealth.clinical.admission.domain.repository.BedTypeRepository;
 import io.smarthealth.clinical.admission.domain.specification.BedTypeSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +28,12 @@ public class BedTypeService {
 
     public BedType createBedType(BedTypeData data) {
         BedType bedType = data.map();
-        BedCharge charge = chargeService.getBedCharge(data.getBedChargeId());
-        bedType.setBedCharge(charge);
+        List<BedCharge> bedCharges = new ArrayList();
+        for(ChargeData charge : data.getCharges()){
+            BedCharge bedCharge = chargeService.getBedCharge(charge.getBedChargeId());
+            bedCharges.add(bedCharge);
+        }
+        bedType.setBedCharge(bedCharges);
         if (fetchBedTypeByName(data.getName()).isPresent()) {
             throw APIException.conflict("BedType {0} already exists.", data.getName());
         }
@@ -53,11 +60,16 @@ public class BedTypeService {
 
     public BedType updateBedType(Long id, BedTypeData data) {
         BedType bedType = getBedType(id);
+        
         if (!bedType.getName().equals(data.getName())) {
             bedType.setName(data.getName());
         }
-        BedCharge charge = chargeService.getBedCharge(data.getBedChargeId());
-        bedType.setBedCharge(charge);
+        List<BedCharge> bedCharges = new ArrayList();
+        for(ChargeData charge : data.getCharges()){
+            BedCharge bedCharge = chargeService.getBedCharge(charge.getBedChargeId());
+            bedCharges.add(bedCharge);
+        }
+        bedType.setBedCharge(bedCharges);
         bedType.setDescription(data.getDescription());
         bedType.setIsActive(data.getActive());
         bedType.setName(data.getName());

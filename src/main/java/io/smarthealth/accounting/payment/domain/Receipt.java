@@ -36,7 +36,7 @@ public class Receipt extends Auditable {
     private String description; //Insurance payment | Cheque deposit
     private BigDecimal amount;
 //    private BigDecimal credit;
-     private BigDecimal tenderedAmount;
+    private BigDecimal tenderedAmount;
     private BigDecimal refundedAmount;
     private BigDecimal paid;
     private String paymentMethod;
@@ -54,7 +54,7 @@ public class Receipt extends Auditable {
 
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)
     private List<ReceiptTransaction> transactions = new ArrayList<>();
-
+    
     @Where(clause = "voided = false")
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)
     private List<ReceiptItem> receiptItems = new ArrayList<>();
