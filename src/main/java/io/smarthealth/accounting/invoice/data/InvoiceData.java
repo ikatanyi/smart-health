@@ -54,5 +54,7 @@ public class InvoiceData {
     @ApiModelProperty(hidden=true, required=false)
     private String state;
     private Boolean awaitingSmart;
+    @ApiModelProperty(hidden=true, required=false)
+    private Long age;
    
 }

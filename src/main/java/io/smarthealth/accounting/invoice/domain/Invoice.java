@@ -13,6 +13,8 @@ import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -119,6 +121,7 @@ public class Invoice extends Auditable {
         if (this.visit != null) {
             data.setVisitNumber(this.visit.getVisitNumber());
             data.setVisitDate(this.visit.getStartDatetime().toLocalDate());
+            data.setAge(ChronoUnit.DAYS.between(this.date, LocalDate.now()));
         }
         data.setMemberName(this.memberName);
         data.setMemberNumber(this.memberNumber);

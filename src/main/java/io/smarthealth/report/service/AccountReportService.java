@@ -345,6 +345,7 @@ public class AccountReportService {
 
         reportData.setData(list);
         reportData.setFormat(format);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setTemplate("/accounts/account_transactions_report");
         reportData.setReportName("Account-Transactionst");
         reportService.generateReport(reportData, response);
@@ -449,8 +450,7 @@ public class AccountReportService {
         ReportData reportData = new ReportData();
         InvoiceStatus status = invoiceStatusToEnum(invoiceStatus);
 
-        Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<InvoiceData> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, pageable).getContent()
+        List<InvoiceData> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, Pageable.unpaged()).getContent()
                 .stream()
                 .map((invoice) -> invoice.toData())
                 .collect(Collectors.toList());
@@ -505,6 +505,7 @@ public class AccountReportService {
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setData(invoiceData);
         reportData.setFormat(format);
@@ -521,10 +522,10 @@ public class AccountReportService {
         String invoiceNo = reportParam.getFirst("invoiceNo");
         String dateRange = reportParam.getFirst("range");
         InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));
-        Boolean awaitingSmart = reportParam.getFirst("awaitingSmart")!=null?Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")):false;
-        Double amountGreaterThan = 0.0;
-        Boolean filterPastDue = false;
-        Double amountLessThanOrEqualTo = 0.0;
+        Boolean awaitingSmart = reportParam.getFirst("awaitingSmart")!=null?Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")):null;
+        Double amountGreaterThan = null;
+        Boolean filterPastDue = null;
+        Double amountLessThanOrEqualTo = null;
 
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
@@ -549,9 +550,54 @@ public class AccountReportService {
         sortList.add(sortField);
 
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(invoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/insurance_statement");
+        reportData.setReportName("insurance_statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getAgingReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+
+        Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
+        Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
+        String patientNo = reportParam.getFirst("patientNo");
+        String invoiceNo = reportParam.getFirst("invoiceNo");
+        String dateRange = reportParam.getFirst("dateRange");
+        InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));
+        Boolean awaitingSmart = reportParam.getFirst("awaitingSmart")!=null?Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")):null;
+        Double amountGreaterThan = null;
+        Boolean filterPastDue = null;
+        Double amountLessThanOrEqualTo = null;
+
+        ReportData reportData = new ReportData();
+        Map<String, Object> map = reportData.getFilters();
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Pageable pageable = PaginationUtil.createPage(1, 500);
+        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue,awaitingSmart, amountLessThanOrEqualTo, pageable).getContent()
+                .stream()
+                .map(x -> x.toData())
+                .collect(Collectors.toList());
+
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("visitDate");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+
+        sortField = new JRDesignSortField();
+        sortField.setName("payer");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.setData(invoiceData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/aging_report");
         reportData.setReportName("insurance_statement");
         reportService.generateReport(reportData, response);
     }
@@ -657,7 +703,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.getFilters().put("range", reportParam.getFirst("range"));
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/departmental_mode_report");
@@ -697,7 +743,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.getFilters().put("range", reportParam.getFirst("range"));
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/Department_payment_statement");
@@ -748,6 +794,7 @@ public class AccountReportService {
                 .map((bill) -> bill.toData())
                 .collect(Collectors.toList());
         reportData.setPatientNumber(patientNumber);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(data);
         reportData.setFormat(format);
         reportData.setTemplate("/payments/patient_statement");
@@ -831,10 +878,6 @@ public class AccountReportService {
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
-
-//        receiptData.forEach((receipt) -> {
-//            receiptDataArray.addAll(receipt.getReceiptItems());
-//        });
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("servicePoint");

@@ -74,5 +74,8 @@ public enum ReportName {
         OP_Statement,
         Patient_Register,
         Dispensed_Drugs,
-        Stock_Purchase_Report
+        Stock_Purchase_Report,
+        Aging_Report,
+        Supplier_Aging_Report,
+        Patient_Dispensed_Drugs
 }

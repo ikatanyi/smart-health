@@ -66,6 +66,9 @@ public class ReportController {
             case Invoice_Statement:
                 reportService.getInvoiceStatement(queryParams, format, response);
                 break;
+             case Aging_Report:
+                reportService.getAgingReport(queryParams, format, response);
+                break;    
             case Invoice:
                 paymentReportService.getInvoice(queryParams, format, response);
                 break;
@@ -123,6 +126,9 @@ public class ReportController {
             case Supplier_Invoice:
                 supplierInvoiceService.SupplierInvoiceStatement(queryParams, format, response);
                 break;
+             case Supplier_Aging_Report:
+                supplierInvoiceService.SupplierAgingReport(queryParams, format, response);
+                break;    
             case Patient_Receipt:
                 reportService.getPatientReceipt(queryParams, format, response);
                 break;
@@ -242,7 +248,10 @@ public class ReportController {
                break;
            case Dispensed_Drugs:
                 pharmacyReportService.DispenseReport(queryParams, format, response);
-                break;    
+                break; 
+            case Patient_Dispensed_Drugs:
+                pharmacyReportService.getPatientDispensedDrugs(queryParams, format, response);
+                break;     
            case Stock_Purchase_Report:
                stockReportService.StockPurchase(queryParams, format, response);
                break;
