@@ -17,6 +17,7 @@
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="asAt" class="java.lang.String"/>
+	<parameter name="Footer_Data" class="java.util.List"/>
 	<field name="type" class="java.lang.String"/>
 	<field name="description" class="java.lang.String"/>
 	<field name="name" class="java.lang.String"/>
@@ -37,6 +38,36 @@
 	<variable name="creditTotal" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{type}.equals( "CREDIT" )?$F{totalValue}:0.0]]></variableExpression>
 	</variable>
+	<group name="total">
+		<groupExpression><![CDATA[$P{REPORT_MAX_COUNT}]]></groupExpression>
+		<groupFooter>
+			<band height="15">
+				<textField>
+					<reportElement x="305" y="0" width="73" height="14" uuid="5e4eb62e-9239-4df9-9ddd-63f93e9bfaf2"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{debitTotal}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="438" y="0" width="100" height="14" uuid="c26afc6a-bf1f-40f1-b045-f1ef8720bb51"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{creditTotal}]]></textFieldExpression>
+				</textField>
+				<break type="Column">
+					<reportElement x="0" y="0" width="553" height="1" uuid="c42faf2f-6344-4b47-afed-8b19f5aeefb5"/>
+				</break>
+				<line>
+					<reportElement x="0" y="0" width="553" height="1" uuid="d0422ff8-016c-4fa1-aa0d-48e1235ece0c"/>
+					<graphicElement>
+						<pen lineWidth="0.5" lineStyle="Solid"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -53,6 +84,12 @@
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
+			<line>
+				<reportElement positionType="Float" x="1" y="31" width="555" height="1" uuid="05b69e8a-d367-40af-b58d-607f87583a78"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
 		</band>
 	</title>
 	<pageHeader>
@@ -93,14 +130,14 @@
 				<textElement>
 					<font size="7" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Revenue]]></text>
+				<text><![CDATA[Debit]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="438" y="1" width="100" height="12" uuid="23ab9476-2f8f-4f6d-b372-9d9aeac97dfd"/>
 				<textElement>
 					<font size="7" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Expense]]></text>
+				<text><![CDATA[Credit]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="1" width="100" height="12" uuid="4897cda3-6234-4815-923d-ccc6638d5c0c"/>
@@ -110,7 +147,7 @@
 				<text><![CDATA[Ledger]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="13" width="553" height="1" uuid="a2488beb-2b6e-4f20-8734-52dddc5ae5f7"/>
+				<reportElement x="0" y="13" width="554" height="1" uuid="a2488beb-2b6e-4f20-8734-52dddc5ae5f7"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
@@ -118,7 +155,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="12" splitType="Stretch">
+		<band height="13" splitType="Stretch">
 			<textField>
 				<reportElement x="2" y="0" width="198" height="12" uuid="8e3f00a2-f522-419f-8ca0-475994c34751"/>
 				<textElement>
@@ -153,12 +190,6 @@
 				</textElement>
 				<text><![CDATA[-]]></text>
 			</staticText>
-			<line>
-				<reportElement x="0" y="11" width="553" height="1" uuid="cca1d5c7-ced8-4448-a596-ebe8666f4d18"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineStyle="Dotted"/>
-				</graphicElement>
-			</line>
 			<staticText>
 				<reportElement x="438" y="0" width="34" height="12" uuid="8d2ce446-0a71-413e-b242-8c0d96644316">
 					<printWhenExpression><![CDATA[$F{type}.equals( "DEBIT" )]]></printWhenExpression>
@@ -168,51 +199,21 @@
 				</textElement>
 				<text><![CDATA[-]]></text>
 			</staticText>
-		</band>
-	</detail>
-	<columnFooter>
-		<band height="14" splitType="Stretch">
-			<textField>
-				<reportElement x="305" y="0" width="73" height="14" uuid="5e4eb62e-9239-4df9-9ddd-63f93e9bfaf2"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{debitTotal}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="438" y="0" width="100" height="14" uuid="c26afc6a-bf1f-40f1-b045-f1ef8720bb51"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{creditTotal}]]></textFieldExpression>
-			</textField>
-			<break type="Column">
-				<reportElement x="0" y="0" width="553" height="1" uuid="c42faf2f-6344-4b47-afed-8b19f5aeefb5"/>
-			</break>
-		</band>
-	</columnFooter>
-	<pageFooter>
-		<band height="12" splitType="Stretch">
-			<textField>
-				<reportElement x="472" y="0" width="41" height="12" uuid="d1bdd204-c70c-4d59-9023-afc725dd211b"/>
-				<textElement>
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Report">
-				<reportElement x="513" y="0" width="40" height="12" uuid="3f2c5ca6-37b8-4cfd-a319-a2e53e8a26ad"/>
-				<textElement>
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
 			<line>
-				<reportElement x="2" y="0" width="553" height="1" uuid="ba93a925-4cb0-4789-8153-741d02bd337d"/>
+				<reportElement x="1" y="12" width="553" height="1" uuid="cca1d5c7-ced8-4448-a596-ebe8666f4d18"/>
 				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Solid"/>
+					<pen lineWidth="0.25" lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
 		</band>
-	</pageFooter>
+	</detail>
+	<columnFooter>
+		<band height="17" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="17" uuid="54ddd9b9-35c1-431c-9241-a8336e3ce62e"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</columnFooter>
 </jasperReport>

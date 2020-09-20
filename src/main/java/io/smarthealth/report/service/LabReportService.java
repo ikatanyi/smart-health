@@ -77,6 +77,7 @@ public class LabReportService {
             reportData.setTemplate("/clinical/laboratory/LabStatement_summary");
         }
         reportData.setReportName("Lab-Statement");
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportService.generateReport(reportData, response);
     }
 
@@ -111,6 +112,7 @@ public class LabReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setReportName("Lab-Statement");
         reportService.generateReport(reportData, response);
     }

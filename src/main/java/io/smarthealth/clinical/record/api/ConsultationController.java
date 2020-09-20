@@ -25,7 +25,7 @@ import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.DiseaseService;
 import io.smarthealth.clinical.record.service.PatientNotesService;
 import io.smarthealth.clinical.record.service.SickOffNoteService;
-import io.smarthealth.clinical.visit.data.VisitDatas;
+import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -352,7 +352,7 @@ public class ConsultationController {
             }
             q.setPatientData(patientService.convertToPatientData(v.getPatient()));
             q.setPatientNumber(v.getPatient().getPatientNumber());
-            q.setVisitData(VisitDatas.map(v));
+            q.setVisitData(VisitData.map(v));
             q.setVisitNumber(v.getVisitNumber());
             patientQueue.add(q);
         }

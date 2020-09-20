@@ -8,19 +8,24 @@ package io.smarthealth.infrastructure.imports.service;
 import io.smarthealth.clinical.laboratory.data.LabTestData;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
+import io.smarthealth.report.service.AccountReportService;
 import io.smarthealth.debtor.member.data.PayerMemberData;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
 import io.smarthealth.infrastructure.imports.data.InventoryStockData;
 import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
+import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
+import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.stock.item.data.CreateItem;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.JRException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +38,9 @@ import org.springframework.stereotype.Service;
 public class BatchTemplateService {
 
     private final ImportService importService;
+    private final AccountReportService accReportService;
 
-    public void generateTemplate(TemplateType type, HttpServletResponse response) throws IOException {
+    public void generateTemplate(TemplateType type, HttpServletResponse response) throws IOException, JRException, SQLException {
         List list = new ArrayList();
         HashMap<Integer, List> map = new HashMap();
         String fileName = "";
@@ -79,15 +85,23 @@ public class BatchTemplateService {
                 componentClass = PayerMemberData.class;
                 break;
             case InventoryStock:
-                fileName="Inventory Stock";
+                fileName = "Inventory Stock";
                 componentClass = InventoryStockData.class;
+                break;
+            case PriceBookItems:
+                fileName = "Price Book Service Setup";
+                componentClass = PriceBookItemData.class;
+                break;
+            case Account_Balances:
+                accReportService.getAccountsBals(ExportFormat.XLSX, response);
                 break;
             default:
                 break;
 
         }
 //        map.put(1, getFieldDescriptions(componentClass));
-        importService.exportExcel(type.name(), fileName, map, componentClass, response);
+        if(type!=TemplateType.Account_Balances)
+           importService.exportExcel(type.name(), fileName, map, componentClass, response);
     }
 
     private List<String> getFieldDescriptions(Class<?> componentClass) {

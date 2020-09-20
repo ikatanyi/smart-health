@@ -19,6 +19,9 @@
 	</parameter>
 	<parameter name="Patient_Data" class="java.util.List"/>
 	<parameter name="display_patient" class="java.lang.String"/>
+	<parameter name="tax" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
 	<field name="facilityName" class="java.lang.String"/>
 	<field name="facilityType" class="java.lang.String"/>
 	<field name="orgLegalName" class="java.lang.String"/>
@@ -46,7 +49,9 @@
 			<frame>
 				<reportElement style="headerStyle" x="1" y="62" width="233" height="79" uuid="288e7b4d-03b5-484a-81d7-dadfed865991"/>
 				<textField isBlankWhenNull="true">
-					<reportElement style="headerStyle" positionType="Float" x="0" y="65" width="233" height="12" isRemoveLineWhenBlank="true" uuid="3b2f550d-0698-4e89-ab2f-752c51b7b64d"/>
+					<reportElement style="headerStyle" positionType="Float" x="0" y="65" width="233" height="12" isRemoveLineWhenBlank="true" uuid="3b2f550d-0698-4e89-ab2f-752c51b7b64d">
+						<printWhenExpression><![CDATA[$P{tax}.equals( true )]]></printWhenExpression>
+					</reportElement>
 					<textElement textAlignment="Left">
 						<font size="8"/>
 					</textElement>

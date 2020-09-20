@@ -8,14 +8,7 @@ package io.smarthealth.notify.domain.specification;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.notify.data.NoticeType;
 import io.smarthealth.notify.domain.Notification;
-import io.smarthealth.security.domain.User;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 

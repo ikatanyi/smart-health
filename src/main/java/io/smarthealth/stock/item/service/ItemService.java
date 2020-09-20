@@ -47,6 +47,16 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.taxes.domain.TaxRepository;
+import io.smarthealth.clinical.laboratory.data.LabTestData;
+import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
+import io.smarthealth.clinical.procedure.data.ProcedureData;
+import io.smarthealth.clinical.procedure.service.ProcedureService;
+import io.smarthealth.clinical.radiology.data.RadiologyTestData;
+import io.smarthealth.clinical.radiology.domain.enumeration.Gender;
+import io.smarthealth.clinical.radiology.service.RadiologyConfigService;
+import io.smarthealth.infrastructure.imports.data.InventoryStockData;
+import io.smarthealth.stock.inventory.service.InventoryItemService;
+import java.util.ArrayList;
 import org.springframework.transaction.annotation.Propagation;
 
 /**
@@ -68,13 +78,14 @@ public class ItemService {
     private final InventoryEventSender inventoryEventSender;
     private final SequenceNumberService sequenceNumberService;
     private final ServicePointRepository servicePointRepository;
+//    
 
     @Transactional
     @CachePut
     public ItemData createItem(CreateItem createItem) {
 
-        Sequences seq=createItem.getItemType()==ItemType.Inventory ? Sequences.StockItem : Sequences.ServiceItem;
-        
+        Sequences seq = createItem.getItemType() == ItemType.Inventory ? Sequences.StockItem : Sequences.ServiceItem;
+
         String sku = StringUtils.isBlank(createItem.getSku()) ? sequenceNumberService.next(1L, seq.name()) : createItem.getSku().trim();
 
         if (findByItemCode(sku).isPresent()) {
@@ -265,7 +276,7 @@ public class ItemService {
     public Optional<Item> findByItemCode(final String itemCode) {
         return itemRepository.findByItemCode(itemCode);
     }
-    
+
     public Optional<Item> findByItemName(final String itemName) {
         return itemRepository.findByItemName(itemName);
     }
@@ -359,7 +370,4 @@ public class ItemService {
         return data;
     }
 
-    public void importItem(List<CreateItem> list) {
-        list.forEach(x -> createItem(x));
-    }
 }

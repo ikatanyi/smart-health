@@ -26,9 +26,7 @@ public class BedType extends Identifiable {
     private String name;
     private String description;
     private Boolean isActive = Boolean.TRUE;
-
-    
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_bed_type_bed_charge_id"))
+//    @JoinColumn(foreignKey = @ForeignKey(name = "fk_bed_type_bed_charge_id"))
     @OneToMany(cascade = CascadeType.ALL)
     private List<BedCharge> bedCharge;
 

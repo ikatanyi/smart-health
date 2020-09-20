@@ -8,13 +8,13 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.facility.service.FacilityService;
-import io.smarthealth.organization.org.domain.Organisation.Type;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.clinical.EmployeeBanner;
+import io.smarthealth.report.data.clinical.Footer;
 import io.smarthealth.report.data.clinical.PatientBanner;
-import io.smarthealth.report.domain.Header;
+import io.smarthealth.report.data.clinical.Header;
 import io.smarthealth.report.storage.StorageService;
 import io.smarthealth.supplier.data.SupplierData;
 import io.smarthealth.supplier.domain.Supplier;
@@ -25,9 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -44,6 +42,7 @@ import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
@@ -59,8 +58,12 @@ import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
+import net.sf.jasperreports.j2ee.servlets.ImageServlet;
+import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -215,13 +218,17 @@ public class JasperReportsService {
                 response.setContentType("text/html");
                 final SimpleHtmlReportConfiguration configuration = new SimpleHtmlReportConfiguration();
 
+                SimpleHtmlExporterOutput htmlOutput = new SimpleHtmlExporterOutput(out);
+                htmlOutput.setImageHandler(new WebHtmlResourceHandler("/jasper_images?image={0}"));
+                
                 configuration.setIgnorePageMargins(true);
 //                configuration.setSizeUnit(POINT);
 
                 // Or try this instead of setSizeUnit(POINT)...
                 configuration.setZoomRatio(2.0f);
                 exporter.setConfiguration(configuration);
-                exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
+                exporter.setExporterOutput(htmlOutput);
+//                exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
@@ -245,7 +252,7 @@ public class JasperReportsService {
                 AbstractXlsReportConfiguration config = new SimpleXlsxReportConfiguration();
                 config.setOnePagePerSheet(false);
 //                config.setDetectCellType(Boolean.TRUE);
-                config.setRemoveEmptySpaceBetweenRows(Boolean.TRUE);
+                config.setRemoveEmptySpaceBetweenRows(Boolean.FALSE);
                 config.setCollapseRowSpan(Boolean.TRUE);
                 config.setIgnoreGraphics(Boolean.TRUE);
                 config.setWrapText(Boolean.TRUE);
@@ -293,17 +300,18 @@ public class JasperReportsService {
         Facility facility = facilityService.loggedFacility();
 
         Header headerData = Header.map(facility);
-        
-         if (facility.getCompanyLogo() == null) {
-             headerData.setIMAGE(new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
-             jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
+        Footer footerData = Footer.map(facility);
+        if (facility.getCompanyLogo() == null) {
+            headerData.setIMAGE(new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
+            jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
         } else {
-             headerData.setIMAGE(new ByteArrayInputStream(facility.getCompanyLogo().getData()));
-             jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream(facility.getCompanyLogo().getData()));
+            headerData.setIMAGE(new ByteArrayInputStream(facility.getCompanyLogo().getData()));
+            jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream(facility.getCompanyLogo().getData()));
         }
-        
+
         header.add(headerData);
         jasperParameter.put("Header_Data", header);
+        jasperParameter.put("Footer_Data", Arrays.asList(footerData));
         jasperParameter.put("SUBREPORT_DIR", appProperties.getReportLoc() + "/subreports/");
         jasperParameter.put("PIC_DIR", appProperties.getReportLoc() + "/");
 
@@ -367,13 +375,13 @@ public class JasperReportsService {
         JRStyle s = new JRBaseStyle("bannerStyle");
         s.setHorizontalImageAlign(HorizontalImageAlignEnum.RIGHT);
         template.addStyle(s);
-        
+
         s = new JRBaseStyle("headerStyle");
         s.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
         s.setFontSize(18.0F);
         s.setBackcolor(Color.RED);
         template.addStyle(s);
-        
+
         ArrayList templateList = new ArrayList();
         templateList.add(template);
 
@@ -382,7 +390,6 @@ public class JasperReportsService {
         jasperParameter.put("Employee_Data", employeeDataArray);
         jasperParameter.put("Supplier_Data", Arrays.asList(supplierData));
 
-       
         return jasperParameter;
     }
 
@@ -418,5 +425,14 @@ public class JasperReportsService {
 
         byte[] bytes = out.toByteArray();
         return new String(bytes);
+    }
+
+    @Bean
+    public ServletRegistrationBean<ImageServlet> imageServlet() {
+        ServletRegistrationBean<ImageServlet> servRegBean = new ServletRegistrationBean<>();
+        servRegBean.setServlet(new ImageServlet());
+        servRegBean.addUrlMappings("/jasper_images");
+        servRegBean.setLoadOnStartup(1);
+        return servRegBean;
     }
 }

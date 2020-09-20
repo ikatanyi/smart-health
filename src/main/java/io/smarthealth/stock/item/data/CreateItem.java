@@ -2,6 +2,7 @@ package io.smarthealth.stock.item.data;
 
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,5 +38,8 @@ public class CreateItem {
     private Double orderQuantity;
     private List<Long> expenseTo = new ArrayList<>();
     private String uom;
+    //for import of drugs
+    @ApiModelProperty(hidden=true)
+    private Double available;
     
 }

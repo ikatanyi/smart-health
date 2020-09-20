@@ -26,6 +26,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.pricelist.domain.PriceListDTO;
 import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
+import io.smarthealth.stock.item.data.ItemSimpleData;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -120,6 +121,10 @@ public class PricebookService {
 
         PriceBook savedBook = priceBookRepository.save(book);
         return PriceBookData.map(savedBook);
+    }
+    public PriceBookItem addItem(Long id, ItemSimpleData item){
+        // 
+        return null;
     }
 
     public Optional<PriceBook> getPricebook(Long id) {

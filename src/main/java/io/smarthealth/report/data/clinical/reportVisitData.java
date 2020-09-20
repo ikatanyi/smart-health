@@ -66,6 +66,20 @@ public class reportVisitData {
     private Boolean laboratory;
     private Boolean pharmacy;
     private Boolean other;
+    @ApiModelProperty(hidden=true)
+    private Long conDuration;
+    @ApiModelProperty(hidden=true)
+    private Long procDuration;
+    @ApiModelProperty(hidden=true)
+    private Long radDuration;
+    @ApiModelProperty(hidden=true)
+    private Long triDuration;
+    @ApiModelProperty(hidden=true)
+    private Long labDuration;
+    @ApiModelProperty(hidden=true)
+    private Long pharmDuration;
+    @ApiModelProperty(hidden=true)
+    private Long otherDuration;
 
     private Long itemToBill;
 

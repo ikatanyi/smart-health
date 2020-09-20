@@ -68,5 +68,14 @@ public enum ReportName {
         Interim_Bill,
         Expiry_Report,
         Voided_Invoice_Statement,
-        Service_Statement
+        Service_Statement,
+        Product_Statement,
+        Morbidity_Report,
+        OP_Statement,
+        Patient_Register,
+        Dispensed_Drugs,
+        Stock_Purchase_Report,
+        Aging_Report,
+        Supplier_Aging_Report,
+        Patient_Dispensed_Drugs
 }

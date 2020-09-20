@@ -10,7 +10,6 @@ import io.smarthealth.clinical.record.domain.VitalsRecord;
 import io.smarthealth.clinical.triage.data.VisitVitalsChartData;
 import io.smarthealth.clinical.triage.service.TriageService;
 import io.smarthealth.clinical.triage.data.VisitVitalsData;
-import io.smarthealth.clinical.visit.data.VisitDatas;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;

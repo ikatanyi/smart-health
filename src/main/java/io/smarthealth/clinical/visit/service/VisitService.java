@@ -8,9 +8,10 @@ package io.smarthealth.clinical.visit.service;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.moh.data.Register;
 import io.smarthealth.clinical.record.data.DocResults;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
-import io.smarthealth.clinical.visit.data.VisitDatas;
+import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
@@ -24,6 +25,9 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -101,12 +105,12 @@ public class VisitService {
 //        }
     }
 
-    public String updateVisit(final String visitNumber, final VisitDatas visitDTO) {
+    public String updateVisit(final String visitNumber, final VisitData visitDTO) {
         findVisitEntityOrThrow(visitNumber);
         //validate and fetch patient
         Patient patient = findPatientOrThrow(visitDTO.getPatientNumber());
 
-        Visit visitEntity = VisitDatas.map(visitDTO);
+        Visit visitEntity = VisitData.map(visitDTO);
         visitEntity.setPatient(patient);
         visitRepository.save(visitEntity);
         return visitDTO.getVisitNumber();
@@ -146,8 +150,8 @@ public class VisitService {
         return this.visitRepository.lastVisit(patient, currentVisitNumber,PageRequest.of(0, 1));
     }
 
-    public VisitDatas convertVisitEntityToData(Visit visit) {
-        return VisitDatas.map(visit);
+    public VisitData convertVisitEntityToData(Visit visit) {
+        return VisitData.map(visit);
     }
 
     public List<Employee> practionersByActiveVisits() {
@@ -156,6 +160,14 @@ public class VisitService {
 
     public List<Visit> fetchAllVisitsSurpassed24hrs() {
         return visitRepository.visitsPast24hours();
+    }
+    
+    public List<Visit> fetchVisitAttendance(Date date) {
+        return visitRepository.visitAttendance(date);
+    }
+    
+    public List<Register> getPatientRegister(DateRange range) {
+        return visitRepository.patientRegister(range.getStartDateTime(),range.getEndDateTime());
     }
 
     public Page<Visit> fetchVisitsGroupByVisitNumber(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Pageable pageable) {

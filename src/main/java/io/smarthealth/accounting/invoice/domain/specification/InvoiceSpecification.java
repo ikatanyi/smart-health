@@ -14,7 +14,7 @@ public class InvoiceSpecification {
         super();
     }
 
-    public static Specification<Invoice> createSpecification(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, Boolean filterPastDue, Double amountLessThanOrEqualTo) {
+    public static Specification<Invoice> createSpecification(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, Boolean filterPastDue, Boolean awaitingSmart, Double amountLessThanOrEqualTo) {
 
         return (root, query, cb) -> {
 
@@ -52,6 +52,9 @@ public class InvoiceSpecification {
                 predicates.add(
                         cb.between(root.get("date"), range.getStartDate(), range.getEndDate())
                 );
+            }
+            if (awaitingSmart != null) {
+                predicates.add(cb.equal(root.get("awaitingSmart"), awaitingSmart));
             }
             if (amountGreaterThan != null) {
                 predicates.add(cb.greaterThan(root.get("balance"), amountGreaterThan));

@@ -53,6 +53,8 @@ public class FacilityService {
         facility.setFacilityClass(facilityData.getFacilityClass());
         facility.setFacilityName(facilityData.getFacilityName());
         facility.setEnabled(facilityData.isEnabled());
+        facility.setFooterMsg(facilityData.getFooterMsg());
+        facility.setCurrency(facilityData.getCurrency());
 
         facility.setOrganization(org);
         facility.setRegistrationNumber(facilityData.getRegistrationNumber());
@@ -71,7 +73,9 @@ public class FacilityService {
         facility.setFacilityClass(facilityData.getFacilityClass());
         facility.setFacilityName(facilityData.getFacilityName());
         facility.setEnabled(facilityData.isEnabled());
+        facility.setFooterMsg(facilityData.getFooterMsg());
         facility.setRegistrationNumber(facilityData.getRegistrationNumber());
+        facility.setCurrency(facilityData.getCurrency());
         return facilityRepository.save(facility);
     }
 

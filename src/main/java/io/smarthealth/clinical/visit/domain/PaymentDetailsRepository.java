@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.visit.domain;
 
+import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,7 @@ import org.springframework.stereotype.Repository;
 public interface PaymentDetailsRepository extends JpaRepository<PaymentDetails, Long> {
 
     Optional<PaymentDetails> findByVisit(final Visit visit);
+
+    Optional<PaymentDetails> findFirstByPatientOrderByIdDesc(final Patient patient);
+
 }

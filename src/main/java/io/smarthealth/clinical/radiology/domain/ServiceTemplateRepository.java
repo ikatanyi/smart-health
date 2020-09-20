@@ -5,7 +5,10 @@
  */
 package io.smarthealth.clinical.radiology.domain;
 
+import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -13,5 +16,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Kennedy.Imbenzi
  */
 public interface ServiceTemplateRepository extends JpaRepository<ServiceTemplate, Long>{
-//    Optional<ServiceTemplate> findTemplateById(final Long id);
+    Page<ServiceTemplate> findByTemplateNameContainingIgnoreCase(final String name, Pageable page);
 }

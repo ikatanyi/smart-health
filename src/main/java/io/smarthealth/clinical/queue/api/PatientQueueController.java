@@ -20,6 +20,7 @@ import io.smarthealth.organization.facility.service.FacilityService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.swagger.annotations.Api;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,6 +142,7 @@ public class PatientQueueController {
     public ResponseEntity<?> deactivateFromQueue(@PathVariable("queueNo") final Long queueNo) {
         PatientQueue pq = patientQueueService.fetchQueueByID(queueNo);
         pq.setStatus(false);
+        pq.setStopTime(Instant.now());
         patientQueueService.createPatientQueue(pq);
         return new ResponseEntity<>(HttpStatus.OK);
     }

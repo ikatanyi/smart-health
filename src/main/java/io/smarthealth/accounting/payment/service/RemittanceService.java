@@ -21,10 +21,10 @@ import io.smarthealth.accounting.payment.data.CreateRemittance;
 import io.smarthealth.accounting.payment.data.PayChannel;
 import io.smarthealth.accounting.payment.domain.Banking;
 import io.smarthealth.accounting.payment.domain.Receipt;
-import io.smarthealth.accounting.payment.domain.ReceiptRepository;
+import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
 import io.smarthealth.accounting.payment.domain.ReceiptTransaction;
 import io.smarthealth.accounting.payment.domain.Remittance;
-import io.smarthealth.accounting.payment.domain.RemittanceRepository;
+import io.smarthealth.accounting.payment.domain.repository.RemittanceRepository;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.accounting.payment.domain.specification.RemittanceSpecification;
 import io.smarthealth.debtor.payer.domain.Payer;
@@ -62,13 +62,14 @@ public class RemittanceService {
     private final BankingService bankingService;
     private final JournalService journalService;
     private final FinancialActivityAccountRepository activityAccountRepository;
-    private final AccountRepository accountRepository;
+//    private final AccountRepository accountRepository;
 
     public Remittance createRemittance(CreateRemittance data) {
         Payer payer = payerRepository.findById(data.getPayerId())
                 .orElseThrow(() -> APIException.notFound("Payer ID {0} Not Found", data.getPayerId()));
 
         Receipt receipt = new Receipt();
+        receipt.setPrepayment(Boolean.FALSE);
         receipt.setAmount(data.getAmount());
         receipt.setCurrency(data.getCurrency());
         receipt.setPayer(payer.getPayerName());

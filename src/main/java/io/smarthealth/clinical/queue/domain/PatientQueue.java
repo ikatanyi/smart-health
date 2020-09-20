@@ -11,6 +11,7 @@ import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import java.time.Instant;
 import javax.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
@@ -60,5 +61,7 @@ public class PatientQueue extends Auditable {
 
     @Type(type = "text")
     private String specialNotes;
+    
+    private Instant stopTime;
 
 }

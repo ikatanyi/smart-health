@@ -12,11 +12,14 @@ public class BilledItem {
 
     private Long billItemId; //this can be the 
     private Double quantity;
-    private BigDecimal discount;
     private Double price;
+    private BigDecimal discount;
+    private BigDecimal subTotal;
+    private BigDecimal taxes;
     private BigDecimal amount;
     private Long pricelistItemId;
     private Long servicePointId;
     private String servicePoint;
     private Long medicId;
+
 }

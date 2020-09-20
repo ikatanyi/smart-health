@@ -20,46 +20,46 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DiagnosisData {
-    
+
     public enum Certainty {
         Confirmed,
         Presumed
     }
-    
+
     public enum Order {
         Primary,
         Secondary
     }
     private Long id;
-    
+
     private String patientNumber;
     private String visitNumber;
-    
+
     private String code;
-    
+
     private String description;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(length = 25)
     private Certainty certainty;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(length = 25)
     private Order diagnosisOrder;
-    
+
     private String notes;
-    
+
     private PatientData patientData;
     @ApiModelProperty(required = false, hidden = true)
     private int age;
     private Boolean condition;
-    
+
     public DiagnosisData() {
     }
-    
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime recorded = LocalDateTime.now();
-    
+
     public static PatientDiagnosis map(DiagnosisData diagnosis) {
         PatientDiagnosis entity = new PatientDiagnosis();
         System.out.println(diagnosis.toString());
@@ -72,7 +72,7 @@ public class DiagnosisData {
         entity.setNotes(diagnosis.getNotes());
         return entity;
     }
-    
+
     public static DiagnosisData map(PatientDiagnosis entity) {
         DiagnosisData diagnos = new DiagnosisData();
         diagnos.setId(entity.getId());
@@ -80,11 +80,13 @@ public class DiagnosisData {
         diagnos.setVisitNumber(entity.getVisit().getVisitNumber());
         diagnos.setCode(entity.getDiagnosis().getCode());
         diagnos.setDescription(entity.getDiagnosis().getDescription());
-        diagnos.setCertainty(Certainty.valueOf(entity.getCertainty()));
+        if (entity.getCertainty() != null) {
+            diagnos.setCertainty(Certainty.valueOf(entity.getCertainty()));
+        }
         diagnos.setDiagnosisOrder(Order.valueOf(entity.getDiagnosisOrder()));
         diagnos.setNotes(entity.getNotes());
         diagnos.setCondition(entity.getIsCondition());
         return diagnos;
     }
-    
+
 }
