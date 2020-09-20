@@ -36,6 +36,7 @@ public class ReceiptData {
     private String shiftNo;
     private String currency;
     private String createdBy;
+    private Boolean prepayment;
     private List<ReceiptTransactionData> transactions = new ArrayList<>();
     private List<ReceiptItemData> receiptItems = new ArrayList<>();
     

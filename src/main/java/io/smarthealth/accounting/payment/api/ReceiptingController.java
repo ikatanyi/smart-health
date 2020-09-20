@@ -139,11 +139,4 @@ public class ReceiptingController {
         return ResponseEntity.ok(pagers);
     }
 
-    //receipting other payments
-//    @PostMapping("/receipting/other")
-//    public ResponseEntity<?> otherReceipts(@Valid @RequestBody ReceivePayment paymentData) {
-//        
-//        
-//    }
-    //provision to change payment mode
 }

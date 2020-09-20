@@ -16,6 +16,8 @@ import java.util.Locale;
 public class SystemUtils {
 
     public static String formatCurrency(BigDecimal amount) {
+        //determine the current syste
+        //
         return NumberFormat.getCurrencyInstance(new Locale("en", "KE")).format(amount);
     }
 }

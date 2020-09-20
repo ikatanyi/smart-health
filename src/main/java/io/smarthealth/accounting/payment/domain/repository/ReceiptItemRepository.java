@@ -1,7 +1,9 @@
-package io.smarthealth.accounting.payment.domain;
+package io.smarthealth.accounting.payment.domain.repository;
 
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.cashier.data.CashierShift;
+import io.smarthealth.accounting.payment.domain.Receipt;
+import io.smarthealth.accounting.payment.domain.ReceiptItem;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
