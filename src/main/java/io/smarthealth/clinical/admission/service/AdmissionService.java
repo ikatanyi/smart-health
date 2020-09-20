@@ -16,6 +16,7 @@ import io.smarthealth.clinical.admission.domain.CareTeam;
 import io.smarthealth.clinical.admission.domain.Room;
 import io.smarthealth.clinical.admission.domain.Ward;
 import io.smarthealth.clinical.admission.domain.repository.AdmissionRepository;
+import io.smarthealth.clinical.admission.domain.repository.CareTeamRepository;
 import io.smarthealth.clinical.admission.domain.specification.AdmissionSpecification;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
@@ -163,5 +164,75 @@ public class AdmissionService {
         } else {
             throw APIException.badRequest("Please provide admission number ", "");
         }
+    }
+    
+    
+    
+    
+    
+    @Transactional
+    public Admission updateAdmission(Long id, AdmissionData d) {
+        Ward w = wardService.getWard(d.getWardId());
+        Bed b = bedService.getBed(d.getBedId());
+        BedType bt = bedService.getBedType(d.getBedTypeId());
+        Patient p = patientService.findPatientOrThrow(d.getPatientNumber());
+
+        Admission a = findAdmissionById(id);
+        a.setWard(w);
+        a.setBed(b);
+        a.setBedType(bt);
+        a.setPatient(p);
+        if (d.getRoomId() != null) {
+            Room room = roomService.getRoom(d.getRoomId());
+            a.setRoom(room);
+}
+
+        //visit data
+        a.setStartDatetime(d.getAdmissionDate());
+        a.setVisitType(VisitEnum.VisitType.Inpatient);
+        a.setComments(d.getNarration());
+        a.setScheduled(Boolean.FALSE);
+        a.setIsActiveOnConsultation(Boolean.FALSE);
+
+        //payment data
+        Scheme scheme = null;
+        if (d.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
+            scheme = schemeService.fetchSchemeById(d.getPaymentDetailsData().getSchemeId());
+            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+            PaymentDetails pd = PaymentDetailsData.map(d.getPaymentDetailsData());
+
+            pd.setScheme(scheme);
+            pd.setPayer(scheme.getPayer());
+            pd.setVisit(a);
+            if (config.isPresent()) {
+                pd.setCoPayCalcMethod(config.get().getCoPayType());
+                pd.setCoPayValue(config.get().getCoPayValue());
+            }
+
+            paymentDetailsService.createPaymentDetails(pd);
+            //create bill for copay
+            if (config.isPresent() && config.get().getCoPayValue() > 0) {
+                billingService.createCopay(new CopayData(a.getAdmissionNo(), d.getPaymentDetailsData().getSchemeId()));
+            }
+        }
+
+        List<CareTeam> ctList = d.getCareTeam().stream().map(c
+                -> {
+            CareTeam ct = CareTeamData.map(c);
+            ct.setAdmission(a);
+            ct.setMedic(employeeService.findEmployeeById(c.getMedicId()));
+            ct.setPatient(p);
+            return ct;
+        }
+        ).collect(Collectors.toList());
+
+        a.setCareTeam(ctList);
+        a.getBed().setStatus(Bed.Status.Available);
+        b.setStatus(Bed.Status.Occupied);
+
+        bedService.updateBed(a.getBed());
+        bedService.updateBed(b);
+
+        return admissionRepository.save(a);
     }
 }

@@ -38,5 +38,8 @@ public class CareTeam extends Auditable {
     private CareTeamRole careRole;
     private LocalDateTime dateAssigned;
     private Boolean isActive = Boolean.TRUE;
+    //voided reason
+    private String reason;
+    private Boolean voided = Boolean.FALSE;
 
 }
