@@ -1,8 +1,9 @@
-package io.smarthealth.clinical.record.service;
+package io.smarthealth.clinical.triage.service;
 
 import io.smarthealth.clinical.record.data.VitalRecordData;
 import io.smarthealth.clinical.record.domain.TriageRepository;
 import io.smarthealth.clinical.record.domain.VitalsRecord;
+import io.smarthealth.clinical.record.service.BMI;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -95,7 +96,6 @@ public class TriageService {
     }
 
     public Page<VitalsRecord> fetchVitalRecordsByVisit(String visitNumber, Pageable page) {
-
         Optional<Visit> visit = visitRepository.findByVisitNumber(visitNumber);
         if (visit.isPresent()) {
             return this.triageRepository.findByVisit(visit.get(), page);
