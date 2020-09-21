@@ -23,11 +23,13 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "bed_charge")
+@Table(name = "facility_bed_charge")
 public class BedCharge extends Identifiable{
-//    @ManyToOne
-//    @JoinColumn(foreignKey=@ForeignKey(name="fk_bed_charge_bed_id"))
-//    private Bed bed;
+
+    @ManyToOne
+    @JoinColumn(foreignKey=@ForeignKey(name="fk_bed_charge_bed_id"))
+    private BedType bedType;
+    
     @ManyToOne
     @JoinColumn(foreignKey=@ForeignKey(name="fk_bed_charge_item_id"))
     private Item item;

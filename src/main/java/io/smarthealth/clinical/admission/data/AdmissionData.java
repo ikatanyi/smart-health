@@ -6,6 +6,7 @@ import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.lang.Constants;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
+import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,6 +31,12 @@ public class AdmissionData {
     private String patientNumber;
     @ApiModelProperty(hidden = true)
     private String patientName;
+    @ApiModelProperty(hidden = true)
+    private Integer age;
+    @ApiModelProperty(hidden = true)
+    private Gender gender;
+    
+    private String admittingReason;
 
     private VisitEnum.PaymentMethod paymentMethod;
     private Long wardId;
@@ -61,6 +68,8 @@ public class AdmissionData {
     @ApiModelProperty(example = "CheckIn,CheckOut,Admitted,Transferred, Discharged, Booked")
     private VisitEnum.Status status;
     private List<CareTeamData> careTeam = new ArrayList<>();
+    
+    private List<EmergencyContactData>emergencyContactData = new ArrayList();
 
     private String narration;
 
@@ -75,12 +84,16 @@ public class AdmissionData {
         d.setBedTypeData(adm.getBedType().toData());
         d.setBedTypeId(adm.getBedType().getId());
         d.setCareTeam(adm.getCareTeam().stream().map(c -> CareTeamData.map(c)).collect(Collectors.toList()));
+        d.setEmergencyContactData(adm.getEmergencyContacts().stream().map(c -> c.toData()).collect(Collectors.toList()));
         d.setDischargeDate(adm.getAdmissionDate());
         d.setDischarged(adm.getDischarged());
         d.setDischargedBy(adm.getDischargedBy());
         d.setId(adm.getId());
+        d.setAdmittingReason(adm.getAdmissionReason());
         d.setPatientName(adm.getPatient().getFullName());
         d.setPatientNumber(adm.getPatient().getPatientNumber());
+        d.setAge(adm.getPatient().getAge());
+        d.setGender(adm.getPatient().getGender());
         d.setPaymentMethod(adm.getPaymentMethod());
         if (adm.getRoom() != null) {
             d.setRoomId(adm.getRoom().getId());

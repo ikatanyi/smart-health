@@ -13,6 +13,7 @@ import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.admission.domain.Bed;
 import io.smarthealth.clinical.admission.domain.BedType;
 import io.smarthealth.clinical.admission.domain.CareTeam;
+import io.smarthealth.clinical.admission.domain.EmergencyContact;
 import io.smarthealth.clinical.admission.domain.Room;
 import io.smarthealth.clinical.admission.domain.Ward;
 import io.smarthealth.clinical.admission.domain.repository.AdmissionRepository;
@@ -128,7 +129,9 @@ public class AdmissionService {
         b.setStatus(Bed.Status.Occupied);
 
         bedService.updateBed(b);
-
+        
+        List<EmergencyContact> EcList = d.getEmergencyContactData().stream().map(c->c.map()).collect(Collectors.toList());
+        a.setEmergencyContacts(EcList);
         return admissionRepository.save(a);
     }
 
@@ -165,10 +168,6 @@ public class AdmissionService {
             throw APIException.badRequest("Please provide admission number ", "");
         }
     }
-    
-    
-    
-    
     
     @Transactional
     public Admission updateAdmission(Long id, AdmissionData d) {
@@ -215,18 +214,6 @@ public class AdmissionService {
                 billingService.createCopay(new CopayData(a.getAdmissionNo(), d.getPaymentDetailsData().getSchemeId()));
             }
         }
-
-        List<CareTeam> ctList = d.getCareTeam().stream().map(c
-                -> {
-            CareTeam ct = CareTeamData.map(c);
-            ct.setAdmission(a);
-            ct.setMedic(employeeService.findEmployeeById(c.getMedicId()));
-            ct.setPatient(p);
-            return ct;
-        }
-        ).collect(Collectors.toList());
-
-        a.setCareTeam(ctList);
         a.getBed().setStatus(Bed.Status.Available);
         b.setStatus(Bed.Status.Occupied);
 

@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.admission.service;
 
+import io.smarthealth.clinical.admission.data.BedChargeData;
 import io.smarthealth.clinical.admission.data.BedTypeData;
 import io.smarthealth.clinical.admission.data.ChargeData;
 import io.smarthealth.clinical.admission.domain.BedCharge;
@@ -23,17 +24,18 @@ import org.springframework.data.jpa.domain.Specification;
 @Service
 @RequiredArgsConstructor
 public class BedTypeService {
+
     private final BedTypeRepository bedTypeRepository;
     private final BedChargeService chargeService;
 
     public BedType createBedType(BedTypeData data) {
         BedType bedType = data.map();
         List<BedCharge> bedCharges = new ArrayList();
-        for(ChargeData charge : data.getCharges()){
+        for (ChargeData charge : data.getCharges()) {
             BedCharge bedCharge = chargeService.getBedCharge(charge.getBedChargeId());
             bedCharges.add(bedCharge);
         }
-        bedType.setBedCharge(bedCharges);
+        bedType.addBedCharges(bedCharges);
         if (fetchBedTypeByName(data.getName()).isPresent()) {
             throw APIException.conflict("BedType {0} already exists.", data.getName());
         }
@@ -43,36 +45,44 @@ public class BedTypeService {
     public Page<BedType> fetchAllBedTypes(Pageable page) {
         return bedTypeRepository.findAll(page);
     }
-    
-    public Page<BedType> fetchBedTypes(String name, Boolean active,  String term, Pageable page) {        
-        Specification<BedType>spec = BedTypeSpecification.createSpecification(name, active, term);
+
+    public Page<BedType> fetchBedTypes(String name, Boolean active, String term, Pageable page) {
+        Specification<BedType> spec = BedTypeSpecification.createSpecification(name, active, term);
         return bedTypeRepository.findAll(spec, page);
     }
 
-    public Optional<BedType> fetchBedTypeByName(String name){
+    public Optional<BedType> fetchBedTypeByName(String name) {
         return bedTypeRepository.findByNameContainingIgnoreCase(name);
     }
+
     public BedType getBedType(Long id) {
         return bedTypeRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("BedType with id  {0} not found.", id));
     }
-    
 
     public BedType updateBedType(Long id, BedTypeData data) {
         BedType bedType = getBedType(id);
-        
-        if (!bedType.getName().equals(data.getName())) {
-            bedType.setName(data.getName());
-        }
-        List<BedCharge> bedCharges = new ArrayList();
-        for(ChargeData charge : data.getCharges()){
-            BedCharge bedCharge = chargeService.getBedCharge(charge.getBedChargeId());
-            bedCharges.add(bedCharge);
-        }
-        bedType.setBedCharge(bedCharges);
+
+        bedType.setName(data.getName());
         bedType.setDescription(data.getDescription());
         bedType.setIsActive(data.getActive());
         bedType.setName(data.getName());
+        return bedTypeRepository.save(bedType);
+    }
+
+    public BedType addBedCharge(Long id, BedChargeData data) {
+        BedType bedType = getBedType(id);
+        BedCharge bedCharge = null;
+        if (data.getId()!= null) {
+            bedCharge = chargeService.getBedCharge(data.getId());
+            bedCharge.setActive(data.getActive());
+            bedCharge.setRate(data.getRate());
+            bedCharge.setRecurrent(data.getRecurrent());
+        } else {
+            bedCharge = data.map();
+            bedCharge.setBedType(bedType);
+        }
+        bedType.addBedCharge(bedCharge);
         return bedTypeRepository.save(bedType);
     }
 }

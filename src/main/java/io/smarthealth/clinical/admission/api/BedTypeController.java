@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.admission.api;
 
+import io.smarthealth.clinical.admission.data.BedChargeData;
 import io.smarthealth.clinical.admission.data.BedTypeData;
 import io.smarthealth.clinical.admission.domain.BedType;
 import io.smarthealth.clinical.admission.service.BedTypeService;
@@ -86,6 +87,21 @@ public class BedTypeController {
     public ResponseEntity<?> updateBedType(@PathVariable("id") Long id, @Valid @RequestBody BedTypeData bedTypeData) {
         
         BedTypeData result = service.updateBedType(id,bedTypeData).toData();
+        
+        Pager<BedTypeData> pagers=new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("BedType Updated successful");
+        pagers.setContent(result); 
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+
+    }
+    
+    @PutMapping("/bed-type/{bedTypeId}/charges")
+//    @PreAuthorize("hasAuthority('create_bedtype')")
+    public ResponseEntity<?> addCharge(@PathVariable("bedTypeId") Long id, @Valid @RequestBody BedChargeData bedChargeData) {
+        
+        BedTypeData result = service.addBedCharge(id,bedChargeData).toData();
         
         Pager<BedTypeData> pagers=new Pager();
         pagers.setCode("0");

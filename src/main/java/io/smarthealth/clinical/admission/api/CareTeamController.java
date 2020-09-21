@@ -88,7 +88,7 @@ public class CareTeamController {
     
     @PostMapping("/care-team/add")
 //    @PreAuthorize("hasAuthority('create_admission')")
-    public ResponseEntity<?> addCareteam(@PathVariable("id") Long id, @Valid @RequestBody List<CareTeamData> careTeamData) {
+    public ResponseEntity<?> addCareteam(@Valid @RequestBody List<CareTeamData> careTeamData) {
 
         List<CareTeamData> ct = careTeamService.addCareTeam(careTeamData).stream()
                 .map(e -> CareTeamData.map(e))

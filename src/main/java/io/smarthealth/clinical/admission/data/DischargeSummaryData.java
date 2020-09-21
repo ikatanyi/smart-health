@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.admission.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.admission.domain.DischargeSummary;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.swagger.annotations.ApiModelProperty;
@@ -22,7 +23,7 @@ public class DischargeSummaryData {
     @ApiModelProperty(hidden=true)
     private String patientName;
     private Long admissionId;
-    @ApiModelProperty(example=Constants.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime dischargeDate = LocalDateTime.now();
     private String dischargeNo;
     private String dischargeMethod;
