@@ -7,7 +7,8 @@ package io.smarthealth.clinical.triage.api;
 
 import io.smarthealth.clinical.record.data.VitalRecordData;
 import io.smarthealth.clinical.record.domain.VitalsRecord;
-import io.smarthealth.clinical.record.service.TriageService;
+import io.smarthealth.clinical.triage.data.VisitVitalsChartData;
+import io.smarthealth.clinical.triage.service.TriageService;
 import io.smarthealth.clinical.triage.data.VisitVitalsData;
 import io.smarthealth.clinical.visit.data.VisitDatas;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -138,6 +139,51 @@ public class VitalsController {
             return ResponseEntity.ok(new VitalRecordData());
         }
 
+    }
+
+    @GetMapping("/vitals-chart")
+    @ApiOperation(value = "Fetch all patient's last vitals by patient", response = VisitVitalsChartData.class)
+    public ResponseEntity<?> fetchVisitVitalsChart(
+            @RequestParam(value = "dateRange", required = false) final String dateRange,
+            @RequestParam(value = "visitNumber", required = true) final String visitNumber,
+            @RequestParam(value = "pageNo", required = false, defaultValue = "0") final Integer pageNo,
+            @RequestParam(value = "pageSize", required = false, defaultValue = Constants.PAGE_SIZE) final Integer pageSize
+    ) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<VitalsRecord> vitalsRecords = triageService.fetchVitalRecordsByVisit(visitNumber, pageable);
+        List<VisitVitalsChartData> chartData = new ArrayList<>();
+        for (VitalsRecord v : vitalsRecords.getContent()) {
+            VisitVitalsChartData chart = new VisitVitalsChartData();
+            chart.setDateRecorded(v.getDateRecorded());
+            chart.setType("Temp");
+            chart.setValue(v.getTemp());
+            chartData.add(chart);
+
+            chart = new VisitVitalsChartData();
+            chart.setDateRecorded(v.getDateRecorded());
+            chart.setType("Diastolic");
+            chart.setValue(v.getDiastolic());
+            chartData.add(chart);
+
+            chart = new VisitVitalsChartData();
+            chart.setDateRecorded(v.getDateRecorded());
+            chart.setType("Systolic");
+            chart.setValue(v.getSystolic());
+            chartData.add(chart);
+        }
+
+        Pager<List<VisitVitalsChartData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(chartData);
+        PageDetails details = new PageDetails();
+        details.setPage(vitalsRecords.getNumber());
+        details.setPerPage(vitalsRecords.getSize());
+        details.setTotalElements(vitalsRecords.getTotalElements());
+        details.setTotalPage(vitalsRecords.getTotalPages());
+        details.setReportName("Visit Vitals");
+        pagers.setPageDetails(details);
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
 }

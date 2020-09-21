@@ -25,7 +25,7 @@ import io.smarthealth.clinical.record.data.VitalRecordData;
 import io.smarthealth.clinical.record.domain.TriageNotes;
 import io.smarthealth.clinical.record.domain.VitalsRecord;
 import io.smarthealth.clinical.record.service.TriageNotesService;
-import io.smarthealth.clinical.record.service.TriageService;
+import io.smarthealth.clinical.triage.service.TriageService;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.VisitDatas;
 //import io.smarthealth.clinical.visit.data.enums.TriageCategory;
