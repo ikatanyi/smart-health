@@ -14,6 +14,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  *
  * @author Kelsas
  */
-public interface DischargeSummaryRepository extends JpaRepository<DischargeSummary, Long>,JpaSpecificationExecutor<DischargeSummary> {
+public interface DischargeSummaryRepository extends JpaRepository<DischargeSummary, Long>, JpaSpecificationExecutor<DischargeSummary> {
     Optional<DischargeSummary>findByDischargeNo(String dischargNo);
 }

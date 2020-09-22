@@ -24,7 +24,6 @@ import io.smarthealth.clinical.record.domain.PatientNotes;
 import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.DiseaseService;
 import io.smarthealth.clinical.record.service.PatientNotesService;
-import io.smarthealth.clinical.record.service.SickOffNoteService;
 import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -35,8 +34,6 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.facility.service.DepartmentService;
-import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;
@@ -74,14 +71,14 @@ public class ConsultationController {
 
     private final VisitService visitService;
 
-    private final EmployeeService employeeService;
+//    private final EmployeeService employeeService;
 
     private final UserService userService;
     private final DiseaseService diseaseService;
 
     private final DiagnosisService diagnosisService;
-    private final DepartmentService departmentService;
-    private final SickOffNoteService sickOffNoteService;
+//    private final DepartmentService departmentService;
+//    private final SickOffNoteService sickOffNoteService;
     private final LaboratoryService laboratoryService;
     private final RadiologyService radiologyService;
 

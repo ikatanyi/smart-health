@@ -57,12 +57,11 @@ public class DiagnosisData {
     public DiagnosisData() {
     }
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
+    @JsonFormat( pattern = DATE_TIME_PATTERN)
     private LocalDateTime recorded = LocalDateTime.now();
 
     public static PatientDiagnosis map(DiagnosisData diagnosis) {
         PatientDiagnosis entity = new PatientDiagnosis();
-        System.out.println(diagnosis.toString());
         Diagnosis diagnosis1 = new Diagnosis();
         diagnosis1.setCode(diagnosis.getCode());
         diagnosis1.setDescription(diagnosis.getDescription());

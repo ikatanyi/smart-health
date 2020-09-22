@@ -15,5 +15,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @author Simon.waweru
  */
 public interface AdmissionRepository extends JpaRepository<Admission, Long>, JpaSpecificationExecutor<Admission> {
+
     Optional<Admission> findByAdmissionNo(final String admissionNo);
+    
 }
