@@ -2,7 +2,6 @@ package io.smarthealth.clinical.admission.data;
 
 import io.smarthealth.clinical.admission.domain.BedType;
 import io.swagger.annotations.ApiModelProperty;
-import java.math.BigDecimal;
 import java.util.List;
 import lombok.Data;
 

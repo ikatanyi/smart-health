@@ -42,15 +42,11 @@ public class BedCharge extends Identifiable{
         data.setActive(this.getActive());
         data.setId(this.getId());
         data.setRecurrent(this.getRecurrent());
-//        if(this.getBed()!=null){
-//            data.setBed(this.getBed().getName());
-//            data.setBedId(this.getBed().getId());
-//        }
+        data.setRate(this.getRate());
         if(this.getItem()!=null){
             data.setItem(this.getItem().getItemName());
             data.setItemCode(this.getItem().getItemCode());
-            data.setItemId(this.getItem().getId());
-            
+            data.setItemId(this.getItem().getId());            
         }
         
         return data;
@@ -58,8 +54,8 @@ public class BedCharge extends Identifiable{
     
     public ChargeData toChargeData(){
         ChargeData data = new ChargeData();
-        data.setBedChargeId(Long.MIN_VALUE);
-        data.setRate(rate);
+        data.setBedChargeId(this.getId());
+        data.setRate(this.getRate());
         data.setRecurrentCost(this.getRecurrent());
         if(this.getItem()!=null){
             data.setName(this.getItem().getItemName());
