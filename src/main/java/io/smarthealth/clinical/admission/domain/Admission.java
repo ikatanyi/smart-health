@@ -23,11 +23,6 @@ import org.hibernate.annotations.Where;
 @Table(name = "patient_admissions")
 public class Admission extends Visit {
 
-//    public enum Status {
-//        Admitted,
-//        Transferred,
-//        Discharged,
-//    }
     private LocalDateTime admissionDate;
 
     private String admissionNo;
@@ -49,6 +44,9 @@ public class Admission extends Visit {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pat_admisssion_bed_type_id"))
     private BedType bedType;
+    
+    @OneToMany(mappedBy = "admission", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EmergencyContact> emergencyContacts;
 
     @Where(clause = "voided = false")
     @OneToMany(mappedBy = "admission", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -57,5 +55,25 @@ public class Admission extends Visit {
     private Boolean discharged = Boolean.FALSE;
     private String dischargedBy;
     private LocalDateTime dischargeDate;
+    
+    public void addEmergencyContact(EmergencyContact emergencyContact) {
+        emergencyContact.setAdmission(this);
+        emergencyContacts.add(emergencyContact);
+    }
+
+    public void ddEmergencyContacts(List<EmergencyContact> emergencyContacts) {
+        this.emergencyContacts = emergencyContacts;
+        this.emergencyContacts.forEach(x -> x.setAdmission(this));
+    }
+    
+    public void addCareTeam(CareTeam ct) {
+        ct.setAdmission(this);
+        careTeam.add(ct);
+    }
+
+    public void addCareTeams(List<CareTeam> careTeam) {
+        this.careTeam = careTeam;
+        this.careTeam.forEach(x -> x.setAdmission(this));
+    }
 
 }

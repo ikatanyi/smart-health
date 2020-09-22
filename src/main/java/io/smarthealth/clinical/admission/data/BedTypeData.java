@@ -2,7 +2,6 @@ package io.smarthealth.clinical.admission.data;
 
 import io.smarthealth.clinical.admission.domain.BedType;
 import io.swagger.annotations.ApiModelProperty;
-import java.math.BigDecimal;
 import java.util.List;
 import lombok.Data;
 
@@ -17,7 +16,8 @@ public class BedTypeData {
     private String name;
     private String description;
     private Boolean active = Boolean.TRUE;
-    List<ChargeData>charges;
+    @ApiModelProperty(hidden=true)
+    List<BedChargeData>bedCharges;
     
 
     public BedType map() {

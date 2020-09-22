@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,70 +29,7 @@ import org.springframework.web.bind.annotation.*;
 public class BedChargeController {
 
     private final BedChargeService service;
-     
-    @GetMapping("/bed-charge/{id}")
-//    @PreAuthorize("hasAuthority('view_bed-charge')")
-    public BedChargeData getBedCharge(@PathVariable(value = "id") Long code) {
-        return service.getBedCharge(code).toData();
-    }
 
-    @GetMapping("/bed-charge")
-//    @PreAuthorize("hasAuthority('view_bed-charge')")
-    public ResponseEntity<?> getAllChargeTypes(
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "pageSize", required = false) Integer size) {
+    
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
-
-        Page<BedChargeData> list = service.fetchAllBedCharges(pageable).map(u -> u.toData());
-        
-        
-        Pager<List<BedChargeData>> pagers=new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Success");
-        pagers.setContent(list.getContent());
-        PageDetails details=new PageDetails();
-        details.setPage(list.getNumber()+1);
-        details.setPerPage(list.getSize());
-        details.setTotalElements(list.getTotalElements());
-        details.setTotalPage(list.getTotalPages());
-        details.setReportName("Charge");
-        pagers.setPageDetails(details);
-         
-        return ResponseEntity.ok(pagers);
-    }
-    
-    
-     @PostMapping("/bed-charge")
-//     @PreAuthorize("hasAuthority('create_bed-charge')")
-    public ResponseEntity<?> createChargeType(@Valid @RequestBody BedChargeData bedChargeData) {
-        
-        BedChargeData result = service.createBedCharge(bedChargeData).toData();
-        
-        Pager<BedChargeData> pagers=new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Charge created successful");
-        pagers.setContent(result); 
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
-
-    }
-    
-    @PutMapping("/bed-charge/{id}")
-//    @PreAuthorize("hasAuthority('create_bedcharge')")
-    public ResponseEntity<?> updateCharge(@PathVariable("id") Long id, @Valid @RequestBody BedChargeData bedTypeData) {
-        
-        BedChargeData result = service.updateBedCharge(id,bedTypeData).toData();
-        
-        Pager<BedChargeData> pagers=new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Charge Updated successful");
-        pagers.setContent(result); 
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
-
-    }
-    
-    
-    
 }

@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
@@ -26,9 +24,22 @@ public class BedType extends Identifiable {
     private String name;
     private String description;
     private Boolean isActive = Boolean.TRUE;
+
+    
 //    @JoinColumn(foreignKey = @ForeignKey(name = "fk_bed_type_bed_charge_id"))
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<BedCharge> bedCharge;
+//    @OneToMany()
+    @OneToMany(mappedBy = "bedType", cascade = CascadeType.ALL)
+    private List<BedCharge> bedCharges;
+    
+    public void addBedCharge(BedCharge bedCharge) {
+        bedCharge.setBedType(this);
+        bedCharges.add(bedCharge);
+    }
+
+    public void addBedCharges(List<BedCharge> bedCharges) {
+        this.bedCharges = bedCharges;
+        this.bedCharges.forEach(x -> x.setBedType(this));
+    }
 
     public BedTypeData toData() {
         BedTypeData data = new BedTypeData();
@@ -36,9 +47,9 @@ public class BedType extends Identifiable {
         data.setDescription(this.getDescription());
         data.setName(this.getName());
         data.setActive(this.getIsActive());
-        data.setCharges(this.getBedCharge()
+        data.setBedCharges(this.getBedCharges()
              .stream()
-             .map(x->x.toChargeData())
+             .map(x->x.toData())
              .collect(Collectors.toList()));
         return data;
     }
