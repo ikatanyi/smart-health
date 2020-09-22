@@ -24,45 +24,45 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "facility_bed_charge")
-public class BedCharge extends Identifiable{
+public class BedCharge extends Identifiable {
 
     @ManyToOne
-    @JoinColumn(foreignKey=@ForeignKey(name="fk_bed_charge_bed_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_bed_charge_bed_id"))
     private BedType bedType;
-    
+
     @ManyToOne
-    @JoinColumn(foreignKey=@ForeignKey(name="fk_bed_charge_item_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_bed_charge_item_id"))
     private Item item;
     private BigDecimal rate;
     private Boolean active = Boolean.TRUE;
     private Boolean recurrent = Boolean.FALSE;
-    
-    public BedChargeData toData(){
+
+    public BedChargeData toData() {
         BedChargeData data = new BedChargeData();
         data.setActive(this.getActive());
         data.setId(this.getId());
         data.setRecurrent(this.getRecurrent());
         data.setRate(this.getRate());
-        if(this.getItem()!=null){
+        if (this.getItem() != null) {
             data.setItem(this.getItem().getItemName());
             data.setItemCode(this.getItem().getItemCode());
-            data.setItemId(this.getItem().getId());            
+            data.setItemId(this.getItem().getId());
         }
-        
+
         return data;
     }
-    
-    public ChargeData toChargeData(){
+
+    public ChargeData toChargeData() {
         ChargeData data = new ChargeData();
         data.setBedChargeId(this.getId());
         data.setRate(this.getRate());
         data.setRecurrentCost(this.getRecurrent());
-        if(this.getItem()!=null){
+        if (this.getItem() != null) {
             data.setName(this.getItem().getItemName());
             data.setItemCode(this.getItem().getItemCode());
-            
-}
-        
+
+        }
+
         return data;
     }
 }

@@ -32,7 +32,8 @@ public class BedTypeSpecification {
                 final String likeExpression = "%" + term + "%";
                 predicates.add(
                         cb.or(
-                                cb.like(root.get("name"), likeExpression)
+                                cb.like(root.get("name"), likeExpression),
+                                cb.like(root.get("bedCharges").get("item").get("itemName"), likeExpression)
                         )
                 );
             }

@@ -8,6 +8,8 @@ import io.smarthealth.clinical.admission.domain.BedType;
 import io.smarthealth.clinical.admission.domain.repository.BedTypeRepository;
 import io.smarthealth.clinical.admission.domain.specification.BedTypeSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.service.ItemService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,12 +29,15 @@ public class BedTypeService {
 
     private final BedTypeRepository bedTypeRepository;
     private final BedChargeService chargeService;
+    private final ItemService itemService;
 
     public BedType createBedType(BedTypeData data) {
         BedType bedType = data.map();
         List<BedCharge> bedCharges = new ArrayList();
-        for (ChargeData charge : data.getCharges()) {
-            BedCharge bedCharge = chargeService.getBedCharge(charge.getBedChargeId());
+        for (BedChargeData charge : data.getBedCharges()) {
+            BedCharge bedCharge = charge.map();
+            Item item = itemService.findItemEntityOrThrow(charge.getItemId());
+            bedCharge.setItem(item);
             bedCharges.add(bedCharge);
         }
         bedType.addBedCharges(bedCharges);
@@ -75,11 +80,15 @@ public class BedTypeService {
         BedCharge bedCharge = null;
         if (data.getId()!= null) {
             bedCharge = chargeService.getBedCharge(data.getId());
+            Item item = itemService.findItemEntityOrThrow(data.getItemId());
+            bedCharge.setItem(item);
             bedCharge.setActive(data.getActive());
             bedCharge.setRate(data.getRate());
             bedCharge.setRecurrent(data.getRecurrent());
         } else {
             bedCharge = data.map();
+            Item item = itemService.findItemEntityOrThrow(data.getItemId());
+            bedCharge.setItem(item);
             bedCharge.setBedType(bedType);
         }
         bedType.addBedCharge(bedCharge);

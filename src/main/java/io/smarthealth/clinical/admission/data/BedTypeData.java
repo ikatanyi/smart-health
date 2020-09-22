@@ -17,7 +17,7 @@ public class BedTypeData {
     private String description;
     private Boolean active = Boolean.TRUE;
     @ApiModelProperty(hidden=true)
-    List<ChargeData>charges;
+    List<BedChargeData>bedCharges;
     
 
     public BedType map() {

@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
@@ -49,9 +47,9 @@ public class BedType extends Identifiable {
         data.setDescription(this.getDescription());
         data.setName(this.getName());
         data.setActive(this.getIsActive());
-        data.setCharges(this.getBedCharges()
+        data.setBedCharges(this.getBedCharges()
              .stream()
-             .map(x->x.toChargeData())
+             .map(x->x.toData())
              .collect(Collectors.toList()));
         return data;
     }
