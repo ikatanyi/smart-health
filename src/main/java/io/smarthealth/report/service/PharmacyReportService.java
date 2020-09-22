@@ -6,6 +6,7 @@
 package io.smarthealth.report.service;
 
 import io.smarthealth.clinical.moh.data.Register;
+import io.smarthealth.clinical.pharmacy.data.DispensedDrugData;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrugsInterface;
 import io.smarthealth.clinical.pharmacy.service.DispensingService;
 import io.smarthealth.clinical.record.data.PrescriptionData;
@@ -110,6 +111,33 @@ public class PharmacyReportService {
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setTemplate("/clinical/pharmacy/dispensed_drugs");
         reportData.setReportName("Dispensed-Drugs");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getPatientDispensedDrugs(MultiValueMap<String,String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String transactionNo= reportParam.getFirst("transactionNo");
+        String visitNo = reportParam.getFirst("visitNo");
+        String patientNo = reportParam.getFirst("patientNo");
+        String prescriptionNo = reportParam.getFirst("prescriptionNo");
+        String billNo= reportParam.getFirst("billNo");
+        Boolean isReturn=null;
+        reportData.setPatientNumber(patientNo);
+        List<DispensedDrugData> requestData = dispenseService.findDispensedDrugs(transactionNo, visitNo, patientNo, prescriptionNo, billNo, isReturn, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map(drug -> drug.toData())
+                .collect(Collectors.toList());
+
+        
+        
+//        if (visit.getHealthProvider() != null) {
+//            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
+//        }
+        reportData.setData(requestData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/clinical/pharmacy/Patient_dispensed_drugs");
+        reportData.setReportName("Patient-Dispensed-Drugs");
         reportService.generateReport(reportData, response);
     }
     
