@@ -97,21 +97,20 @@ public class BedTypeController {
 
     }
     
-    @PutMapping("/bed-type/{bedTypeId}/charges")
-//    @PreAuthorize("hasAuthority('create_bedtype')")
-    public ResponseEntity<?> addCharge(@PathVariable("bedTypeId") Long id, @Valid @RequestBody BedChargeData bedChargeData) {
-        
-        BedTypeData result = service.addBedCharge(id,bedChargeData).toData();
-        
-        Pager<BedTypeData> pagers=new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("BedType Updated successful");
-        pagers.setContent(result); 
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
-
-    }
-    
+//    @PutMapping("/bed-type/{bedTypeId}/charges")
+////    @PreAuthorize("hasAuthority('create_bedtype')")
+//    public ResponseEntity<?> addCharge(@PathVariable("bedTypeId") Long id, @Valid @RequestBody BedChargeData bedChargeData) {
+//        
+//        BedTypeData result = service.addBedCharge(id,bedChargeData).toData();
+//        
+//        Pager<BedTypeData> pagers=new Pager();
+//        pagers.setCode("0");
+//        pagers.setMessage("BedType Updated successful");
+//        pagers.setContent(result); 
+//        
+//        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+//
+//    }   
     
     
 }

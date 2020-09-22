@@ -43,6 +43,10 @@ public class BedCharge extends Identifiable {
         data.setId(this.getId());
         data.setRecurrent(this.getRecurrent());
         data.setRate(this.getRate());
+        if(this.getBedType()!=null){
+            data.setBedType(this.getBedType().getName());
+            data.setBedTypeId(this.getBedType().getId());
+        }
         if (this.getItem() != null) {
             data.setItem(this.getItem().getItemName());
             data.setItemCode(this.getItem().getItemCode());

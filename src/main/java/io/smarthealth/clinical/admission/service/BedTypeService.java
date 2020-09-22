@@ -28,7 +28,6 @@ import org.springframework.data.jpa.domain.Specification;
 public class BedTypeService {
 
     private final BedTypeRepository bedTypeRepository;
-    private final BedChargeService chargeService;
     private final ItemService itemService;
 
     public BedType createBedType(BedTypeData data) {
@@ -75,23 +74,23 @@ public class BedTypeService {
         return bedTypeRepository.save(bedType);
     }
 
-    public BedType addBedCharge(Long id, BedChargeData data) {
-        BedType bedType = getBedType(id);
-        BedCharge bedCharge = null;
-        if (data.getId()!= null) {
-            bedCharge = chargeService.getBedCharge(data.getId());
-            Item item = itemService.findItemEntityOrThrow(data.getItemId());
-            bedCharge.setItem(item);
-            bedCharge.setActive(data.getActive());
-            bedCharge.setRate(data.getRate());
-            bedCharge.setRecurrent(data.getRecurrent());
-        } else {
-            bedCharge = data.map();
-            Item item = itemService.findItemEntityOrThrow(data.getItemId());
-            bedCharge.setItem(item);
-            bedCharge.setBedType(bedType);
-        }
-        bedType.addBedCharge(bedCharge);
-        return bedTypeRepository.save(bedType);
-    }
+//    public BedType addBedCharge(Long id, BedChargeData data) {
+//        BedType bedType = getBedType(id);
+//        BedCharge bedCharge = null;
+//        if (data.getId()!= null) {
+//            bedCharge = chargeService.getBedCharge(data.getId());
+//            Item item = itemService.findItemEntityOrThrow(data.getItemId());
+//            bedCharge.setItem(item);
+//            bedCharge.setActive(data.getActive());
+//            bedCharge.setRate(data.getRate());
+//            bedCharge.setRecurrent(data.getRecurrent());
+//        } else {
+//            bedCharge = data.map();
+//            Item item = itemService.findItemEntityOrThrow(data.getItemId());
+//            bedCharge.setItem(item);
+//            bedCharge.setBedType(bedType);
+//        }
+//        bedType.addBedCharge(bedCharge);
+//        return bedTypeRepository.save(bedType);
+//    }
 }
