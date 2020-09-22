@@ -45,26 +45,11 @@ public class BedCharge extends Identifiable {
         data.setRate(this.getRate());
         if(this.getBedType()!=null){
             data.setBedType(this.getBedType().getName());
-            data.setBedTypeId(this.getBedType().getId());
         }
         if (this.getItem() != null) {
             data.setItem(this.getItem().getItemName());
             data.setItemCode(this.getItem().getItemCode());
             data.setItemId(this.getItem().getId());
-        }
-
-        return data;
-    }
-
-    public ChargeData toChargeData() {
-        ChargeData data = new ChargeData();
-        data.setBedChargeId(this.getId());
-        data.setRate(this.getRate());
-        data.setRecurrentCost(this.getRecurrent());
-        if (this.getItem() != null) {
-            data.setName(this.getItem().getItemName());
-            data.setItemCode(this.getItem().getItemCode());
-
         }
 
         return data;

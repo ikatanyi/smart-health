@@ -5,7 +5,9 @@ import io.smarthealth.clinical.admission.data.BedTypeData;
 import io.smarthealth.clinical.admission.data.ChargeData;
 import io.smarthealth.clinical.admission.domain.BedCharge;
 import io.smarthealth.clinical.admission.domain.BedType;
+import io.smarthealth.clinical.admission.domain.repository.BedChargeRepository;
 import io.smarthealth.clinical.admission.domain.repository.BedTypeRepository;
+import io.smarthealth.clinical.admission.domain.specification.BedChargeSpecification;
 import io.smarthealth.clinical.admission.domain.specification.BedTypeSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.domain.Item;
@@ -29,6 +31,7 @@ public class BedTypeService {
 
     private final BedTypeRepository bedTypeRepository;
     private final ItemService itemService;
+    private final BedChargeRepository bedChargeRepository;
 
     public BedType createBedType(BedTypeData data) {
         BedType bedType = data.map();
@@ -74,23 +77,62 @@ public class BedTypeService {
         return bedTypeRepository.save(bedType);
     }
 
-//    public BedType addBedCharge(Long id, BedChargeData data) {
-//        BedType bedType = getBedType(id);
-//        BedCharge bedCharge = null;
-//        if (data.getId()!= null) {
-//            bedCharge = chargeService.getBedCharge(data.getId());
-//            Item item = itemService.findItemEntityOrThrow(data.getItemId());
-//            bedCharge.setItem(item);
-//            bedCharge.setActive(data.getActive());
-//            bedCharge.setRate(data.getRate());
-//            bedCharge.setRecurrent(data.getRecurrent());
-//        } else {
-//            bedCharge = data.map();
-//            Item item = itemService.findItemEntityOrThrow(data.getItemId());
-//            bedCharge.setItem(item);
-//            bedCharge.setBedType(bedType);
-//        }
-//        bedType.addBedCharge(bedCharge);
-//        return bedTypeRepository.save(bedType);
-//    }
+    public BedCharge createBedCharge(Long bedTypeId, BedChargeData data) {
+        BedCharge bedCharge = null;
+        if (data.getId() == null) {
+            bedCharge = data.map();
+        } else {
+            bedCharge = getBedCharge(data.getId());
+            bedCharge.setActive(data.getActive());
+            bedCharge.setRate(data.getRate());
+            bedCharge.setRecurrent(data.getRecurrent());
+        }
+        BedType bedType = getBedType(bedTypeId);
+        Item item = itemService.findItemEntityOrThrow(data.getItemId());
+        bedCharge.setItem(item);
+        bedCharge.setBedType(bedType);
+        return bedChargeRepository.save(bedCharge);
+    }
+
+    public List<BedCharge> createBatchBedCharge(Long bedTypeId, List<BedChargeData> list) {
+        List<BedCharge> bedCharges = new ArrayList();
+        list.stream().map((data) -> {
+            BedCharge bedCharge = null;
+            if (data.getId() == null) {
+                bedCharge = data.map();
+            } else {
+                bedCharge = getBedCharge(data.getId());
+                bedCharge.setActive(data.getActive());
+                bedCharge.setRate(data.getRate());
+                bedCharge.setRecurrent(data.getRecurrent());
+            }
+            BedType bedType = getBedType(bedTypeId);
+            Item item = itemService.findItemEntityOrThrow(data.getItemId());
+            bedCharge.setItem(item);
+            bedCharge.setBedType(bedType);
+            return bedCharge;
+        }).forEachOrdered((bedCharge) -> {
+            bedCharges.add(bedCharge);
+        });
+        return bedChargeRepository.saveAll(bedCharges);
+    }
+
+    public Page<BedCharge> fetchAllBedCharges(Long bedTypeId, String itemName, Pageable page) {
+        Specification<BedCharge> spec = BedChargeSpecification.createSpecification(bedTypeId, itemName);
+        return bedChargeRepository.findAll(spec, page);
+    }
+
+    public BedCharge getBedCharge(Long id) {
+        return bedChargeRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("BedCharge with id  {0} not found.", id));
+    }
+
+    public BedCharge updateBedCharge(Long id, BedChargeData data) {
+        BedCharge bedCharge = getBedCharge(id);
+        bedCharge.setActive(data.getActive());
+        bedCharge.setRate(data.getRate());
+        Item item = itemService.findItemEntityOrThrow(data.getItemId());
+        bedCharge.setItem(item);
+        return bedChargeRepository.save(bedCharge);
+    }
 }

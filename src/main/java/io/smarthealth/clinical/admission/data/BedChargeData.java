@@ -19,7 +19,7 @@ public class BedChargeData {
     
     @ApiModelProperty(hidden = true)
     private Long id;
-    private Long bedTypeId;
+//    private Long bedTypeId;
     private Long itemId;
     @ApiModelProperty(hidden = true)
     private String itemCode;

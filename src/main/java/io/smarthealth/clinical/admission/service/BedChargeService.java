@@ -30,46 +30,7 @@ public class BedChargeService {
     private final ItemService itemService;
     private final BedTypeService bedTypeService;
 
-    public BedCharge createBedCharge(BedChargeData data) {
-        BedCharge bedCharge = data.map();
-        BedType bedType = bedTypeService.getBedType(data.getBedTypeId());
-        Item item = itemService.findItemEntityOrThrow(data.getItemId());
-        bedCharge.setItem(item);
-        bedCharge.setBedType(bedType);
-        return bedChargeRepository.save(bedCharge);
-    }
+    
 
-    public List<BedCharge> createBatchBedCharge(List<BedChargeData> list) {
-        List<BedCharge> bedCharges = new ArrayList();
-        list.stream().map((data) -> {
-            BedCharge bedCharge = data.map();
-            BedType bedType = bedTypeService.getBedType(data.getBedTypeId());
-            Item item = itemService.findItemEntityOrThrow(data.getItemId());
-            bedCharge.setItem(item);
-            bedCharge.setBedType(bedType);
-            return bedCharge;
-        }).forEachOrdered((bedCharge) -> {
-            bedCharges.add(bedCharge);
-        });
-        return bedChargeRepository.saveAll(bedCharges);
-    }
-
-    public Page<BedCharge> fetchAllBedCharges(Long bedTypeId, String itemName, Pageable page) {
-        Specification<BedCharge> spec = BedChargeSpecification.createSpecification(bedTypeId, itemName);
-        return bedChargeRepository.findAll(spec, page);
-    }
-
-    public BedCharge getBedCharge(Long id) {
-        return bedChargeRepository.findById(id)
-                .orElseThrow(() -> APIException.notFound("BedCharge with id  {0} not found.", id));
-    }
-
-    public BedCharge updateBedCharge(Long id, BedChargeData data) {
-        BedCharge bedCharge = getBedCharge(id);
-        bedCharge.setActive(data.getActive());
-        bedCharge.setRate(data.getRate());
-        Item item = itemService.findItemEntityOrThrow(data.getItemId());
-        bedCharge.setItem(item);
-        return bedChargeRepository.save(bedCharge);
-    }
+    
 }
