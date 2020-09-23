@@ -14,16 +14,18 @@ import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.cashier.domain.ShiftRepository;
+import io.smarthealth.accounting.payment.data.PayChannel;
+import io.smarthealth.accounting.payment.data.CreatePrepayment;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.accounting.payment.data.ReceiptMethod;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
 import io.smarthealth.accounting.payment.domain.Banking;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.domain.ReceiptItem;
-import io.smarthealth.accounting.payment.domain.ReceiptItemRepository;
+import io.smarthealth.accounting.payment.domain.repository.ReceiptItemRepository;
 import io.smarthealth.accounting.payment.domain.ReceiptTransaction;
 import io.smarthealth.accounting.payment.domain.Remittance;
-import io.smarthealth.accounting.payment.domain.RemittanceRepository;
+import io.smarthealth.accounting.payment.domain.repository.RemittanceRepository;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.accounting.payment.domain.specification.ReceiptSpecification;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
@@ -52,8 +54,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import io.smarthealth.accounting.payment.domain.ReceiptRepository;
+import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
+import io.smarthealth.infrastructure.lang.SystemUtils;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+import java.time.LocalTime;
 
 /**
  *
@@ -79,8 +83,8 @@ public class ReceivePaymentService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(ReceivePayment data) {
-
         Receipt receipt = new Receipt();
+        receipt.setPrepayment(Boolean.FALSE);
         receipt.setAmount(data.getAmount());
         receipt.setCurrency(data.getCurrency());
         receipt.setPayer(data.getPayer());
@@ -145,7 +149,7 @@ public class ReceivePaymentService {
                                     toBigDecimal(item.getPrice()),
                                     toBigDecimal(item.getDiscount()),
                                     toBigDecimal(item.getTaxes()),
-                                    toBigDecimal(item.getAmount())
+                                    toBigDecimal((item.getAmount() - (item.getDiscount() != null ? item.getDiscount() : 0D)))
                             ));
 //                    receipt.addReceiptItem(ReceiptItem.createReceipt+" "+ill));
                 });
@@ -215,10 +219,6 @@ public class ReceivePaymentService {
         return receiptItemRepository.findTotalByCashierShift(shiftNo, cashierId);
     }
 
-//    public List<ShiftPayment> getShiftPayment(LocalDateTime from, LocalDateTime to, String shiftNo, Long cashierId){
-//        return transactionrepository.findTotalShiftPayment(from, to, shiftNo, cashierId);
-//    }
-//TODO cancelling or adjustment of the receipt
     public void voidPayment(String receiptNo) {
 
         Receipt payment = getPaymentByReceiptNumber(receiptNo);
@@ -257,11 +257,11 @@ public class ReceivePaymentService {
         return receiptItemRepository.findAll(spec, page);
     }
 
-    public Page<ReceiptItem> getVoidedItems(Long servicePointId,String patientNumber,String itemCode, Boolean voided, DateRange range, Pageable page) {
-        Specification<ReceiptItem> spec = ReceiptSpecification.createVoidedReceiptItemSpecification(servicePointId, patientNumber, itemCode,voided, range);
+    public Page<ReceiptItem> getVoidedItems(Long servicePointId, String patientNumber, String itemCode, Boolean voided, DateRange range, Pageable page) {
+        Specification<ReceiptItem> spec = ReceiptSpecification.createVoidedReceiptItemSpecification(servicePointId, patientNumber, itemCode, voided, range);
         return receiptItemRepository.findAll(spec, page);
     }
-    
+
     private ReceiptTransaction createPaymentTransaction(ReceiptMethod data) {
         ReceiptTransaction trans = new ReceiptTransaction();
         trans.setCurrency(data.getCurrency());
@@ -293,21 +293,24 @@ public class ReceivePaymentService {
         Optional<FinancialActivityAccount> copay = activityAccountRepository.findByFinancialActivity(FinancialActivity.Copayment);
 
         if (!debitAccount.isPresent()) {
-            throw APIException.badRequest("Receipt Control Account is Not Mapped");
+            throw APIException.badRequest("Receipt Control Account is Not Mapped For Transaction");
         }
+
         if (!copay.isPresent()) {
-            throw APIException.badRequest("Copayment Account is Not Mapped");
+            throw APIException.badRequest("Copayment Account is Not Mapped For Transaction");
         }
 
 //        String debitAcc = debitAccount.get().getAccount().getIdentifier();
         List<JournalEntryItem> items = new ArrayList<>();
 
         if (!billedItems.isEmpty()) {
-            Map<Long, Double> map = billedItems
+
+            Map<Long, List<PatientBillItem>> map = billedItems
                     .stream()
                     .filter(x -> x.getItem().getCategory() != ItemCategory.CoPay)
                     .collect(Collectors.groupingBy(PatientBillItem::getServicePointId,
-                            Collectors.summingDouble(PatientBillItem::getAmount)
+                            Collectors.toList()
+                    //                            Collectors.summingDouble(PatientBillItem::getAmount)
                     )
                     );
             //then here since we making a revenue
@@ -315,12 +318,34 @@ public class ReceivePaymentService {
                 //revenue
                 ServicePoint srv = servicePointService.getServicePoint(k);
                 String narration = "Receipting for " + srv.getName();
-                Account credit = srv.getIncomeAccount();
-                BigDecimal amount = BigDecimal.valueOf(v);
+                Account credit = srv.getIncomeAccount();//account receivable full amount
+//                BigDecimal amount = BigDecimal.valueOf(v);
+                Double subTotal = 0D;
+                Double discount = 0D;
+                Double taxes = 0D;
+                for (PatientBillItem b : v) {
+                    subTotal += b.getSubTotal(); //
+                    discount += b.getDiscount();
+                    taxes += b.getTaxes();
+                }
 
-                items.add(new JournalEntryItem(debitAccount.get().getAccount(), narration, amount, BigDecimal.ZERO));
+                //amount less discount
+                BigDecimal amount = BigDecimal.valueOf(subTotal).add(BigDecimal.valueOf(discount));
+                if (discount > 0) {
+                    FinancialActivityAccount debitDiscountAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Discount_Allowed)
+                            .orElseThrow(() -> APIException.badRequest("Discount Account is Not Mapped For Transaction"));
+                    items.add(new JournalEntryItem(debitDiscountAccount.getAccount(), "Sales Discount - " + srv.getName(), BigDecimal.valueOf(discount), BigDecimal.ZERO));
+                }
+//                if (taxes > 0) {
+//                    FinancialActivityAccount debitDiscountAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Tax_Payable)
+//                            .orElseThrow(() -> APIException.badRequest("Discount Account is Not Mapped For Transaction"));
+//                    items.add(new JournalEntryItem(debitDiscountAccount.getAccount(), "Sales Discount - " + srv.getName(), BigDecimal.valueOf(discount), BigDecimal.ZERO));
+//                }
+                items.add(new JournalEntryItem(debitAccount.get().getAccount(), narration, BigDecimal.valueOf(subTotal), BigDecimal.ZERO));
                 items.add(new JournalEntryItem(credit, narration, BigDecimal.ZERO, amount));
             });
+            //
+
             //expenses
             Map<Long, Double> inventory = billedItems
                     .stream()
@@ -416,4 +441,117 @@ public class ReceivePaymentService {
         }
         return BigDecimal.valueOf(val);
     }
+
+//    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+//    public Receipt prepayments(CreatePrepayment data) {
+//        Receipt receipt = new Receipt();
+//        receipt.setAmount(data.getAmount());
+//        receipt.setCurrency(data.getCurrency());
+//        receipt.setPayer(data.getPatientName());
+//        receipt.setPaid(data.getAmount());
+//        receipt.setPaymentMethod(data.getPaymentMethod());
+////        receipt.setTenderedAmount(data.getTenderedAmount() != null ? data.getTenderedAmount() : BigDecimal.ZERO);
+//        receipt.setReferenceNumber(data.getReferenceNo());
+//        receipt.setRefundedAmount(BigDecimal.ZERO);
+//        if (data.getShiftNo() != null) {
+//            Shift shift = shiftRepository.findByShiftNo(data.getShiftNo()).orElse(null);
+//            receipt.setShift(shift);
+//        }
+//        receipt.setTransactionDate(data.getPaymentDate().atTime(LocalTime.now()));
+//        receipt.setDescription(data.getMemo());
+//
+//        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+//        String receiptNo = sequenceNumberService.next(1L, Sequences.Receipt.name());
+//
+//        receipt.setTransactionNo(trdId);
+//        receipt.setReceiptNo(receiptNo);
+//
+////        data.setReceiptNo(receiptNo);
+////        data.setTransactionNo(trdId);
+//
+//        Receipt savedReceipt = repository.save(receipt);
+//
+//        //post the journals
+//        journalEntryService.save(toJournalPrepayment(receipt, data));
+//
+//        return savedReceipt;
+//    }
+//
+//    private JournalEntry toJournalPrepayment(Receipt payment, CreatePrepayment data) {
+//        // Liabilities  -> credit the current liability
+//        // Income  -> debit where I am receiving cash to
+//        Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.DeferredRevenue);
+//
+//        if (!creditAccount.isPresent()) {
+//            throw APIException.badRequest("Deferred Revenue (Deposit) Account is Not Mapped for Transaction");
+//        }
+//
+//        PayChannel channel = data.getDepositedTo();
+//
+//        List<JournalEntryItem> items = new ArrayList<>();
+//        String descType = "";
+////        switch (data.getCustomerType()) {
+////            case Patient: { 
+////                String narration = SystemUtils.formatCurrency(payment.getAmount()) + " patient deposit for " + payment.getDescription();
+////                items.add(new JournalEntryItem(creditAccount.get().getAccount(), narration, BigDecimal.ZERO, payment.getAmount()));
+////                //create the invoice payments
+////                descType = "Patient Prepayment/deposit"; 
+////            }
+////            break;
+////            case Payer: { 
+////                String narration =  SystemUtils.formatCurrency(payment.getAmount()) + " Payer/Insurance deposit for " + payment.getDescription();
+////                items.add(new JournalEntryItem(creditAccount.get().getAccount(), narration, BigDecimal.ZERO, payment.getAmount()));
+////                descType = "Payer Prepayment/deposit)"; 
+////            }
+////            break;
+////            default:
+////        }
+//        String liabilityNarration = SystemUtils.formatCurrency(payment.getAmount()) + " patient deposit for " + payment.getDescription();
+//        items.add(new JournalEntryItem(creditAccount.get().getAccount(), liabilityNarration, BigDecimal.ZERO, payment.getAmount()));
+//        //create the invoice payments
+//        descType = "Patient Prepayment/deposit";
+//
+//        //PAYMENT CHANNEL
+//        String narration = descType + "  for " + payment.getDescription() + " Reference No : " + payment.getReceiptNo();
+//        if (channel.getType() == PayChannel.Type.Bank) {
+//            BankAccount bank = bankingService.findBankAccountByNumber(channel.getAccountNumber())
+//                    .orElseThrow(() -> APIException.notFound("Bank Account Number {0} Not Found", channel.getAccountNumber()));
+//            Account debitAccount = bank.getLedgerAccount();
+//            //withdraw this amount from this bank
+//            bankingService.deposit(bank, payment, data.getAmount());
+//            items.add(new JournalEntryItem(debitAccount, narration, payment.getAmount(), BigDecimal.ZERO));
+//            //at this pointwithdraw the cash
+//        } else if (channel.getType() == PayChannel.Type.Cash) {
+//            Account debitAccount = null;
+//            if (channel.getAccountId() == 1) {
+//                Optional<FinancialActivityAccount> pettycashAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Petty_Cash);
+//                if (!pettycashAccount.isPresent()) {
+//                    throw APIException.badRequest("Petty Cash Account is Not Mapped");
+//                }
+//                debitAccount = pettycashAccount.get().getAccount();
+//            }
+//            if (channel.getAccountId() == 2) {
+//                Optional<FinancialActivityAccount> receiptAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
+//                if (!receiptAccount.isPresent()) {
+//                    throw APIException.badRequest("Undeposited Fund Account (Receipt Control) is Not Mapped");
+//                }
+//                debitAccount = receiptAccount.get().getAccount();
+//            }
+//            if (debitAccount == null) {
+//                return null;
+//            }
+//            items.add(new JournalEntryItem(debitAccount, narration, payment.getAmount(), BigDecimal.ZERO));
+//        }
+//
+//        String description = descType + " Reference No " + payment.getReceiptNo();
+//
+//        JournalEntry toSave = new JournalEntry(payment.getTransactionDate().toLocalDate(), description, items);
+//        toSave.setTransactionType(TransactionType.Receipting);
+//        toSave.setTransactionNo(payment.getTransactionNo());
+//        toSave.setStatus(JournalState.PENDING);
+//
+//        //save this to prepayments
+//        
+//        return toSave;
+//    }
 }

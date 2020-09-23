@@ -6,7 +6,7 @@
 package io.smarthealth.clinical.record.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.clinical.visit.data.VisitDatas;
+import io.smarthealth.clinical.visit.data.VisitData;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.patient.data.PatientData;

@@ -12,18 +12,15 @@ public class DischargeSummarySpecification {
         super();
     }
 
-    public static Specification<DischargeSummary> createSpecification(final String dischargeNo, Long doctorId, Long patientId, final String term, DateRange range) {
+    public static Specification<DischargeSummary> createSpecification(final String dischargeNo, String patientNo, final String term, DateRange range) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
             if (dischargeNo != null) {
                 predicates.add(cb.equal(root.get("dischargeNo"), dischargeNo));
             }
-            if (doctorId != null) {
-                predicates.add(cb.equal(root.get("doctor").get("id"), doctorId));
-            }
-            if (patientId != null) {
-                predicates.add(cb.equal(root.get("patient").get("id"), patientId));
+            if (patientNo != null) {
+                predicates.add(cb.equal(root.get("patient").get("patientNumber"), patientNo));
             }
             if (range != null) {
                 predicates.add(
@@ -36,6 +33,7 @@ public class DischargeSummarySpecification {
                 predicates.add(
                         cb.or(
                                 cb.like(root.get("doctor").get("fullName"), likeExpression),
+                                cb.like(root.get("patient").get("patientNumber"), likeExpression),
                                 cb.like(root.get("patient").get("fullName"), likeExpression)
                         )
                 );

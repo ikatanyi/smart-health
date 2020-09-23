@@ -109,7 +109,7 @@ public class JournalEntry extends Auditable {
                 .filter(x -> x.isDebit())
                 .map(x -> x.getCredit())
                 .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
-        System.err.println("My credut ... " + c);
+//        System.err.println("My credut ... " + c);
     }
     public JournalEntryData toData() {
         final JournalEntryData data = new JournalEntryData();

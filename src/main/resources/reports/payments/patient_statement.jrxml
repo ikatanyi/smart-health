@@ -12,21 +12,6 @@
 	<parameter name="HEADER_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="orgLegalName" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgName" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="TaxNumber" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgAddressCountry" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgAddressCounty" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgAddressLine1" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgPostalCode" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgAddressLine2" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgTown" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="orgType" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="contactEmail" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="contactFullName" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="contactMobile" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="salutation" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="telephone" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -80,7 +65,7 @@
 		<groupHeader>
 			<band height="26">
 				<textField>
-					<reportElement x="1" y="9" width="100" height="14" uuid="43e5d31a-7965-4dee-87b8-037633af7252"/>
+					<reportElement x="75" y="10" width="100" height="14" uuid="43e5d31a-7965-4dee-87b8-037633af7252"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
@@ -92,6 +77,13 @@
 						<pen lineWidth="0.5" lineColor="#9999FF"/>
 					</graphicElement>
 				</line>
+				<staticText>
+					<reportElement x="2" y="10" width="73" height="13" uuid="d2d884df-d79f-48e7-9abf-e9f2d0136699"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Visit Number :]]></text>
+				</staticText>
 			</band>
 		</groupHeader>
 		<groupFooter>
@@ -140,7 +132,7 @@
 	<title>
 		<band height="121" splitType="Stretch">
 			<staticText>
-				<reportElement x="376" y="1" width="179" height="18" uuid="48ee5463-c19a-4f34-8b19-898a3142d7ab"/>
+				<reportElement x="362" y="1" width="193" height="18" uuid="48ee5463-c19a-4f34-8b19-898a3142d7ab"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -164,21 +156,21 @@
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="377" y="19" width="47" height="12" uuid="68d8ad53-9591-4fc0-a3b3-df478f89d3fe"/>
+				<reportElement x="362" y="19" width="62" height="12" uuid="68d8ad53-9591-4fc0-a3b3-df478f89d3fe"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Date :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="377" y="31" width="47" height="13" uuid="1395541b-f2dd-4efe-8aa8-77671d093904"/>
+				<reportElement x="362" y="31" width="62" height="13" uuid="1395541b-f2dd-4efe-8aa8-77671d093904"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Statement #]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="377" y="45" width="47" height="13" uuid="a66b4f3d-a96b-46e5-ab81-297055714a9a"/>
+				<reportElement x="362" y="45" width="62" height="13" uuid="a66b4f3d-a96b-46e5-ab81-297055714a9a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -322,7 +314,7 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="328" y="7" width="84" height="14" uuid="64b94a65-29aa-4aac-9345-077c0a7573fb"/>
+				<reportElement x="329" y="7" width="84" height="14" uuid="64b94a65-29aa-4aac-9345-077c0a7573fb"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
@@ -370,7 +362,7 @@
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="328" y="0" width="84" height="13" uuid="9b3d4a8b-0316-4ff1-95ad-e2fec2c2526f"/>
+				<reportElement x="329" y="0" width="84" height="13" uuid="9b3d4a8b-0316-4ff1-95ad-e2fec2c2526f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>

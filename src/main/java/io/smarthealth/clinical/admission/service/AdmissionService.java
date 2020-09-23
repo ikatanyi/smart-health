@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package io.smarthealth.clinical.admission.service;
+ package io.smarthealth.clinical.admission.service;
 
 import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.service.BillingService;
@@ -17,7 +12,6 @@ import io.smarthealth.clinical.admission.domain.EmergencyContact;
 import io.smarthealth.clinical.admission.domain.Room;
 import io.smarthealth.clinical.admission.domain.Ward;
 import io.smarthealth.clinical.admission.domain.repository.AdmissionRepository;
-import io.smarthealth.clinical.admission.domain.repository.CareTeamRepository;
 import io.smarthealth.clinical.admission.domain.specification.AdmissionSpecification;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
@@ -27,7 +21,6 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;

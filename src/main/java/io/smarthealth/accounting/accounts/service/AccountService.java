@@ -11,6 +11,7 @@ import io.smarthealth.accounting.accounts.domain.AccountRepository;
 import io.smarthealth.accounting.accounts.domain.AccountState;
 import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.domain.IncomeExpenseData;
+import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItemRepository;
 import io.smarthealth.accounting.accounts.domain.JournalState;
@@ -20,6 +21,7 @@ import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.domain.specification.AccountSpecification;
 import io.smarthealth.accounting.accounts.domain.specification.JournalSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.imports.data.AccBalanceData;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.DateUtility;
 import java.math.BigDecimal;
@@ -85,7 +87,7 @@ public class AccountService {
     }
 
     @Transactional
-    public String createAccount(AccountData account) {
+    public Account createAccount(AccountData account) {
         final Account accountEntity = new Account();
         accountEntity.setIdentifier(account.getIdentifier());
         accountEntity.setName(account.getName());
@@ -116,7 +118,7 @@ public class AccountService {
                     savedAccount.getLedger().getIdentifier(), savedAccount.getBalance());
         }
 
-        return account.getIdentifier();
+        return savedAccount;
     }
 
     @Transactional
@@ -285,7 +287,6 @@ public class AccountService {
 //
 //        return list;
 //    }
-
     public List<JournalEntryItemData> getAccountTransaction(String identifier, DateRange period) {
 
         LocalDate startDate = (period == null ? DateUtility.getStartOfCurrentMonth() : period.getStartDate());
@@ -300,21 +301,17 @@ public class AccountService {
         List<JournalEntryItem> transactions = journalEntryItemRepository.findAll(JournalSpecification.getTransactions(identifier, startDate, endDate));
 
         for (JournalEntryItem x : transactions) {
-            if(x.getAccount().getType() == AccountType.REVENUE || x.getAccount().getType() == AccountType.LIABILITY ){
-               bal = bal.add((toDefault(x.getCredit()).subtract(toDefault(x.getDebit())))); 
-            }else{
-            bal = bal.add((toDefault(x.getDebit()).subtract(toDefault(x.getCredit()))));
+            if (x.getAccount().getType() == AccountType.REVENUE || x.getAccount().getType() == AccountType.LIABILITY) {
+                bal = bal.add((toDefault(x.getCredit()).subtract(toDefault(x.getDebit()))));
+            } else {
+                bal = bal.add((toDefault(x.getDebit()).subtract(toDefault(x.getCredit()))));
             }
             JournalEntryItemData data = x.toData();
             data.setAmount(bal);
             list.add(data);
         }
-        
-        //period details From 01 May 2020 To 31 May 2020
-        
-        
-        
 
+        //period details From 01 May 2020 To 31 May 2020
         return list;
     }
 
@@ -339,6 +336,19 @@ public class AccountService {
         data.setType(TransactionType.Balance_Brought_Forward);
 
         return data;
+    }
+
+    public List<JournalEntryItem> openingBatchEntry(List<AccBalanceData> accs) {
+//        List<JournalEntry> entries =new ArrayList();
+        List<JournalEntryItem> itemArray = new ArrayList();
+        for (AccBalanceData acc : accs) {
+            Account account = findByAccountNumber(acc.getIdentifier()).orElse(null);
+            
+            JournalEntryItem data = new JournalEntryItem(account, "Balance b/f", BigDecimal.ZERO, acc.getBalance());
+
+            itemArray.add(data);
+        }
+        return journalEntryItemRepository.saveAll(itemArray);
     }
 
     private BigDecimal toDefault(BigDecimal val) {

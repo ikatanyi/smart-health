@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.record.data;
 
-import io.smarthealth.clinical.visit.data.VisitDatas;
+import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class WaitingRequestsData {
     private Long requestId;
     private String patientNumber;
     private String visitNumber;
-    private VisitDatas visitData;
+    private VisitData visitData;
     private PatientData patientData;
     private String requestedByName, requestedByNo;
     private List<DoctorRequestItem> item = new ArrayList<>();

@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.invoice.api;
 
+import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.invoice.data.CreateInvoice;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
@@ -57,16 +58,14 @@ public class InvoiceController {
         return ResponseEntity.ok(trans.toData());
     }
 
-//    @PatchMapping("/invoices/{id}")
-//    public InvoiceData updateInvoice(@PathVariable(value = "id") Long id, InvoiceData transactionData) {
-//        InvoiceData trans = InvoiceData.map(service.updateInvoice(id, transactionData));
-//        return trans;
-//    }
-//    @PatchMapping("/invoices/{id}/verify")
-//    public InvoiceData updateInvoice(@PathVariable(value = "id") Long id, Boolean Isverified) {
-//        InvoiceData trans = InvoiceData.map(service.verifyInvoice(id, Isverified));
-//        return trans;
-//    }
+    @PostMapping("/invoices/{invoiceNumber}/add-items")
+    @PreAuthorize("hasAuthority('create_invoices')")
+    public ResponseEntity<?> addInvoiceItem(@PathVariable(value = "invoiceNumber") String invoiceNumber, @Valid @RequestBody List<BillItemData> invoiceItems) {
+
+        Invoice invoice = service.addInvoiceItem(invoiceNumber, invoiceItems);
+        return ResponseEntity.ok(invoice);
+    }
+
     @GetMapping("/invoices")
     @PreAuthorize("hasAuthority('view_invoices')")
     public ResponseEntity<?> getInvoices(
@@ -77,6 +76,7 @@ public class InvoiceController {
             @RequestParam(value = "patientNo", required = false) String patientNo,
             @RequestParam(value = "status", required = false) InvoiceStatus status,
             @RequestParam(value = "filterPastDue", required = false) Boolean filterPastDue,
+            @RequestParam(value = "awaitingSmart", required = false) Boolean awaitingSmart,
             @RequestParam(value = "amountGreaterThan", required = false) Double amountGreaterThan,
             @RequestParam(value = "amountLessThanOrEqualTo", required = false) Double amountLessThanOrEqualTo,
             @RequestParam(value = "page", required = false) Integer page,
@@ -85,7 +85,7 @@ public class InvoiceController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, amountLessThanOrEqualTo, pageable)
+        Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, pageable)
                 .map(x -> x.toData());
 
         Pager<List<InvoiceData>> pagers = new Pager();
@@ -120,6 +120,14 @@ public class InvoiceController {
         Invoice invoice = service.cancelInvoice(invoiceNo, invoiceItems);
 
         return ResponseEntity.ok(invoice != null ? invoice.toData() : new InvoiceData());
+    }
+    
+    @PutMapping("/invoices/{id}/update-smart-status")
+    @PreAuthorize("hasAuthority('create_invoices')")
+    public ResponseEntity<?> updateInvoiceSmartStatus(@PathVariable(value = "id") Long id, @RequestParam(value = "awaitingSmart", required = true) Boolean status) {
+
+        service.updateInvoiceSmartStatus(id, status);
+        return ResponseEntity.ok(HttpStatus.CREATED);
     }
     //TODO
     /*

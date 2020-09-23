@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="4aae1193-a82d-4555-b88f-e537201ac06a">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="169"/>
 	<style name="headerStyles" mode="Opaque" forecolor="#0000FF" backcolor="#FF0033"/>
 	<scriptlet name="Helper" class="io.smarthealth.infrastructure.utility.RoundingHelper"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
@@ -15,6 +15,7 @@
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="Header_Data" class="java.util.List"/>
+	<parameter name="Footer_Data" class="java.util.List"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -52,6 +53,9 @@
 	</variable>
 	<variable name="receipt_amount" class="java.math.BigDecimal">
 		<variableExpression><![CDATA[]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="total" class="java.math.BigDecimal">
 		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
 	</variable>
 	<background>
@@ -108,98 +112,98 @@
 	<pageHeader>
 		<band height="172">
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="336" y="136" width="92" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
+				<reportElement positionType="Float" mode="Transparent" x="336" y="131" width="78" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Insurance :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="336" y="153" width="92" height="16" forecolor="#000000" backcolor="#9966FF" uuid="e480ec8a-e6de-414a-8827-42d638720712"/>
+				<reportElement positionType="Float" mode="Transparent" x="336" y="148" width="78" height="16" forecolor="#000000" backcolor="#9966FF" uuid="e480ec8a-e6de-414a-8827-42d638720712"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Scheme :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="428" y="136" width="126" height="16" uuid="1eafd5cb-179e-4783-9fb9-933e46d441d7"/>
+				<reportElement positionType="Float" x="415" y="131" width="140" height="16" uuid="1eafd5cb-179e-4783-9fb9-933e46d441d7"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{payer}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="428" y="153" width="126" height="16" uuid="35b60930-d90e-4906-8708-e0d617ece117"/>
+				<reportElement positionType="Float" x="415" y="148" width="140" height="16" uuid="35b60930-d90e-4906-8708-e0d617ece117"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{scheme}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="336" y="101" width="92" height="13" uuid="fe562e29-aad3-45dd-b0c4-fa8ba349ed98"/>
+				<reportElement positionType="Float" x="336" y="101" width="78" height="13" uuid="fe562e29-aad3-45dd-b0c4-fa8ba349ed98"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Member Name:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="336" y="73" width="92" height="13" uuid="dd747499-49e1-47a0-a0b4-e243aaeacf1d"/>
+				<reportElement positionType="Float" x="336" y="73" width="78" height="13" uuid="dd747499-49e1-47a0-a0b4-e243aaeacf1d"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Invoice Date :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="336" y="115" width="92" height="13" uuid="3ca0e4ed-78c6-4055-b598-3535412fe202"/>
+				<reportElement positionType="Float" x="336" y="115" width="78" height="13" uuid="3ca0e4ed-78c6-4055-b598-3535412fe202"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Member No :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" pattern="dd-MM-yyyy" isBlankWhenNull="true">
-				<reportElement x="428" y="73" width="126" height="13" isRemoveLineWhenBlank="true" uuid="6e8ee49e-9160-41cb-a7bb-1e225794004c"/>
+				<reportElement positionType="Float" x="415" y="73" width="140" height="13" isRemoveLineWhenBlank="true" uuid="6e8ee49e-9160-41cb-a7bb-1e225794004c"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="428" y="59" width="126" height="13" forecolor="#000000" uuid="66ddc2a0-8061-4fa8-8c7d-b5a0c6704846"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="415" y="59" width="140" height="13" forecolor="#000000" uuid="66ddc2a0-8061-4fa8-8c7d-b5a0c6704846"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{number}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="428" y="101" width="126" height="13" uuid="6c43b589-8dbc-4cfd-8621-63c6e3c5eb39"/>
+				<reportElement positionType="Float" x="415" y="101" width="140" height="13" uuid="6c43b589-8dbc-4cfd-8621-63c6e3c5eb39"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{memberName}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="428" y="115" width="126" height="13" uuid="357516ad-e8d0-4046-9359-0e36ab26475a"/>
+				<reportElement positionType="Float" x="415" y="115" width="140" height="13" uuid="357516ad-e8d0-4046-9359-0e36ab26475a"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{memberNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="336" y="59" width="92" height="13" forecolor="#000000" uuid="f65afb30-85e4-4d6b-b5f7-c1786359a0fb"/>
+				<reportElement positionType="Float" x="336" y="59" width="78" height="13" forecolor="#000000" uuid="f65afb30-85e4-4d6b-b5f7-c1786359a0fb"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Invoice No :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="428" y="87" width="126" height="13" uuid="65012583-6d90-42d6-9715-e8781619b3ed"/>
+				<reportElement positionType="Float" x="415" y="87" width="140" height="13" uuid="65012583-6d90-42d6-9715-e8781619b3ed"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="336" y="87" width="92" height="13" uuid="28719ca1-77c9-4692-8cce-8b12e53f5e11"/>
+				<reportElement positionType="Float" x="336" y="87" width="78" height="13" uuid="28719ca1-77c9-4692-8cce-8b12e53f5e11"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
@@ -215,6 +219,9 @@
 				</subreportParameter>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tax">
+					<subreportParameterExpression><![CDATA[true]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
@@ -272,6 +279,7 @@
 			<subreport>
 				<reportElement x="0" y="0" width="555" height="11" uuid="4fb7f8d0-65c0-4be1-86ff-bd6d8d263878"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{invoiceItems})]]></dataSourceExpression>
+				<returnValue subreportVariable="total" toVariable="total"/>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "invoice_LineItems_subreport.jasper"]]></subreportExpression>
 			</subreport>
 			<break>
@@ -331,18 +339,19 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{amount}.equals(null)?new BigDecimal(0):$F{amount}.setScale(0, RoundingMode.HALF_UP)]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{total}]]></textFieldExpression>
 			</textField>
 			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="486" y="37" width="57" height="14" uuid="c932f3de-d592-4733-bd3b-cf904407985f"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{balance}.equals(null)?new BigDecimal(0):$F{balance}.setScale(0, RoundingMode.HALF_UP)]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{balance}.equals( null )?new BigDecimal(0):$F{balance}.setScale(0,  java.math.RoundingMode.HALF_UP)]]></textFieldExpression>
 			</textField>
 			<subreport>
 				<reportElement x="361" y="18" width="182" height="18" isRemoveLineWhenBlank="true" uuid="1ffcc075-b8e6-43dc-8c9f-166f6c6e5b7d"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{invoicePayments})]]></dataSourceExpression>
+				<returnValue subreportVariable="total_receipt" toVariable="receipt_amount"/>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "invoice_payments_subreport.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
@@ -350,7 +359,7 @@
 	<pageFooter>
 		<band height="86" splitType="Stretch">
 			<staticText>
-				<reportElement x="1" y="11" width="259" height="35" uuid="17f31811-0ef9-4546-b89f-1122b3500a8c"/>
+				<reportElement x="1" y="11" width="259" height="28" uuid="17f31811-0ef9-4546-b89f-1122b3500a8c"/>
 				<textElement>
 					<font size="7"/>
 				</textElement>
@@ -366,59 +375,43 @@
 				<text><![CDATA[Make all cheques payable to the Company stated above]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="295" y="46" width="101" height="20" uuid="d34f5209-ff0b-4051-b8a3-ac76fb5a184c"/>
+				<reportElement positionType="Float" x="295" y="42" width="101" height="20" uuid="d34f5209-ff0b-4051-b8a3-ac76fb5a184c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient Signature :]]></text>
 			</staticText>
 			<line>
-				<reportElement x="383" y="60" width="169" height="1" uuid="14b67ca0-0ce6-424f-992d-eb9256d71c98"/>
+				<reportElement positionType="Float" x="383" y="56" width="169" height="1" uuid="14b67ca0-0ce6-424f-992d-eb9256d71c98"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineColor="#999999"/>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="3" y="46" width="59" height="20" uuid="b9e187c3-f01f-4dfd-90a5-2550bcfbf525"/>
+				<reportElement positionType="Float" x="3" y="42" width="59" height="20" uuid="b9e187c3-f01f-4dfd-90a5-2550bcfbf525"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Served by :]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="434" y="78" width="80" height="8" uuid="e7649eda-3681-4858-982c-f4a93e5a9b72"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="5"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Report">
-				<reportElement x="514" y="78" width="40" height="8" uuid="f660aa9d-35be-4b08-b56a-5b81c9550d81"/>
-				<textElement verticalAlignment="Middle">
-					<font size="5"/>
-				</textElement>
-				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<textField pattern="dd/MM/yyyy">
-				<reportElement x="4" y="72" width="72" height="14" uuid="d33176b1-58bd-49dd-a29d-3b1d095aa717"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="84" y="59" width="151" height="16" uuid="31462754-0376-4c15-aac1-fe59ab0c155a"/>
+				<reportElement positionType="Float" x="84" y="55" width="151" height="16" uuid="31462754-0376-4c15-aac1-fe59ab0c155a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="63" y="60" width="169" height="1" uuid="b59060fc-3e70-4618-a6aa-662d22642c37"/>
+				<reportElement positionType="Float" x="63" y="56" width="169" height="1" uuid="b59060fc-3e70-4618-a6aa-662d22642c37"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineColor="#999999"/>
 				</graphicElement>
 			</line>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="73" width="555" height="13" uuid="da05ba89-7237-4eb7-a7bc-86903b428529"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</pageFooter>
 </jasperReport>

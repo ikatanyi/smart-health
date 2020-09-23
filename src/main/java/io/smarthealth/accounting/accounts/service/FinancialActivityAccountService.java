@@ -29,6 +29,10 @@ public class FinancialActivityAccountService {
     }
 
     public FinancialActivityAccount createMapping(ActivityAccount activityAccount) {
+        Optional<FinancialActivityAccount> fac = repository.findByFinancialActivity(activityAccount.getActivity());
+        if (fac.isPresent()) {
+            throw APIException.badRequest("Financial Activity {0} is already mapped", activityAccount.getActivity().name());
+        }
 
         Account account = accountServices.findByAccountNumber(activityAccount.getAccountIdentifier())
                 .orElseThrow(() -> APIException.notFound("Account {0} Not Found", activityAccount.getAccountIdentifier()));

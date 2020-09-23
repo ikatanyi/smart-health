@@ -121,6 +121,12 @@ public class DiagnosisService {
         return diagnosisRepository.findAll(spec, pageable);
     }
     
+     public Page<PatientDiagnosis> getPatientDiagnosis(String visitNumber, String patientNumber, DateRange range, Gender gender, Pageable pageable) {
+        Specification spec = DiagnosisSpecification.createSpecification(visitNumber, patientNumber, gender, range);
+        return diagnosisRepository.findAll(spec, pageable);
+    }
+      
+    
     public PatientTestsData getDiagnosisById(String visitNumber, Long id) {
         
         Optional<PatientDiagnosis> entity = diagnosisRepository.findById(id);

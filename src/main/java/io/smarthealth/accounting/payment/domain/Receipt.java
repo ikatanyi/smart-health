@@ -36,7 +36,7 @@ public class Receipt extends Auditable {
     private String description; //Insurance payment | Cheque deposit
     private BigDecimal amount;
 //    private BigDecimal credit;
-    private BigDecimal tenderedAmount;
+     private BigDecimal tenderedAmount;
     private BigDecimal refundedAmount;
     private BigDecimal paid;
     private String paymentMethod;
@@ -48,13 +48,14 @@ public class Receipt extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_receipts_shift_id"))
     private Shift shift;
+    private Boolean prepayment;
     private Boolean voided;
     private String voidedBy;
     private LocalDateTime voidedDatetime;
 
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)
     private List<ReceiptTransaction> transactions = new ArrayList<>();
-    
+
     @Where(clause = "voided = false")
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)
     private List<ReceiptItem> receiptItems = new ArrayList<>();
@@ -94,6 +95,7 @@ public class Receipt extends Auditable {
         data.setReceiptNo(this.receiptNo);
         data.setCurrency(this.currency);
         data.setPaid(this.getPaid());
+        data.setPrepayment(this.prepayment);
         data.setTransactionDate(this.getTransactionDate());
         data.setCreatedBy(this.getCreatedBy());
         if (this.shift != null) {

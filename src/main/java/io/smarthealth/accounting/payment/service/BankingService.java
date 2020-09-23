@@ -4,7 +4,7 @@ import io.smarthealth.accounting.payment.data.BankChargeData;
 import io.smarthealth.accounting.payment.data.BankingData;
 import io.smarthealth.accounting.payment.data.InterbankData;
 import io.smarthealth.accounting.payment.domain.Banking;
-import io.smarthealth.accounting.payment.domain.BankingRepository;
+import io.smarthealth.accounting.payment.domain.repository.BankingRepository;
 import io.smarthealth.accounting.payment.domain.Payment;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.domain.enumeration.BankingType;

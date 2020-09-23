@@ -6,6 +6,8 @@ import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.supplier.domain.Supplier;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -65,7 +67,7 @@ public class PurchaseInvoice extends Auditable {
         data.setType(this.type);
         data.setCreatedBy(this.getCreatedBy());
         data.setTransactionId(this.getTransactionNumber());
-
+        data.setAge(ChronoUnit.DAYS.between(this.transactionDate, LocalDate.now()));
         return data;
     }
 }

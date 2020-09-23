@@ -120,7 +120,7 @@ public class SupplierReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList); 
-        reportData.getFilters().put("range", reportParam.getFirst("dateRange"));
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(doctorInvoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/supplier/DoctorInvoiceStatement");
@@ -167,11 +167,44 @@ public class SupplierReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.getFilters().put("range", reportParam.getFirst("dateRange"));
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(purchaseInvoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/supplier/SupplierInvoiceStatement");
         reportData.setReportName("Supplier-invoice-statement");
+        reportService.generateReport(reportData, response);
+    } 
+    
+    public void SupplierAgingReport(MultiValueMap<String, String>reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        Long supplierId = NumberUtils.createLong(reportParam.getFirst("supplierId"));  
+        String invoiceNumber = reportParam.getFirst("invoiceNumber");
+        Boolean paid = reportParam.getFirst("paid")!=null?Boolean.getBoolean(reportParam.getFirst("paid")):null;
+        PurchaseInvoiceStatus status = PurchaseInvoiceStatusToEnum(reportParam.getFirst("status"));
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        
+        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map((invoice) -> invoice.toData())
+                .collect(Collectors.toList());
+        
+        List<JRSortField> sortList = new ArrayList();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("supplier");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        sortField.setName("invoiceDate");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.setData(purchaseInvoiceData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/supplier/Supplier_aging_report");
+        reportData.setReportName("Supplier-Aging-Report");
         reportService.generateReport(reportData, response);
     } 
     

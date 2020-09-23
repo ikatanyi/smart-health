@@ -13,7 +13,7 @@ import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.domain.PatientQueueRepository;
 import io.smarthealth.clinical.queue.domain.specification.PatientQueueSpecification;
-import io.smarthealth.clinical.visit.data.VisitDatas;
+import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -24,6 +24,7 @@ import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -78,9 +79,15 @@ public class PatientQueueService {
         return patientQueueRepository.findById(id).orElseThrow(() -> APIException.notFound("Queue identified by id {0} is not available", id));
     }
 
-//    public PatientQueue fetchQueueByVisitNumber(Visit visit) {
-//        return patientQueueRepository.findByVisit(visit).orElseThrow(() -> APIException.notFound("Queue identified by visit number {0} is not available", visit.getVisitNumber()));
-//    }
+    public void Deactivate(ServicePoint servicePoint) {
+        Page<PatientQueue> queueList = patientQueueRepository.findByServicePointAndStatus(servicePoint, true, Pageable.unpaged());
+        for(PatientQueue queue : queueList){
+            queue.setStatus(false);
+            queue.setStopTime(Instant.now());
+            patientQueueRepository.save(queue);
+        }            
+        return ;
+    }
 //    public Page<PatientQueue> fetchQueue(Pageable pageable) {
 //        // return patientQueueRepository.findAll(pageable);
 //        return patientQueueRepository.findActivePatientQueue(pageable);
@@ -124,7 +131,7 @@ public class PatientQueueService {
     public PatientQueueData convertToPatientQueueData(PatientQueue patientQueue) {
         PatientQueueData patientQueueData = new PatientQueueData();
         patientQueueData.setVisitNumber(patientQueue.getVisit().getVisitNumber());
-        patientQueueData.setVisitData(VisitDatas.map(patientQueue.getVisit()));
+        patientQueueData.setVisitData(VisitData.map(patientQueue.getVisit()));
         patientQueueData.setPatientNumber(patientQueue.getPatient().getPatientNumber());
         
         if (patientQueue.getServicePoint() != null) {

@@ -96,7 +96,7 @@ public class IvoryHistoricalClinicalDataSindano {
 
     }
 
-    private void insertPrescriptions(List<PatientData> patients, Connection conn) {
+    private void insertLabResults(List<PatientData> patients, Connection conn) {
         try {
             int countOrderNo = 1;
             //insert precription history
@@ -111,7 +111,7 @@ public class IvoryHistoricalClinicalDataSindano {
                         try {
                             //create doctor request
 //                            if (!isDoctorRequestOrderNumberExists("VST-".concat(d.getPvEntityNo()), conn)) {
-                            String docRequest = "INSERT INTO smarthealth.patient_doctor_request (created_by, created_on, last_modified_by, last_modified_on, version, fulfiller_comment, fulfiller_status, item_cost_rate, item_rate, notes, order_date, order_number, request_type, urgency,  patient_id, requested_by_id, visit_id,DeploymentCount) VALUES ('system', NOW(), 'system', NOW(), '0', 'Fulfilled', 'Carried down past clinic data', 0.00, 0.00, 'Carried down past clinic data', '" + rs.getString("Date") + "', '" + "VST-".concat(d.getPvEntityNo()) + "', 'Pharmacy', 'Medium', (SELECT id FROM smarthealth.patient WHERE patient_number = '" + d.getCurrentPatientNo() + "'), '1', (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' ), '" + countOrderNo + "')";
+                            String docRequest = "INSERT INTO smarthealth.patient_doctor_request (created_by, created_on, last_modified_by, last_modified_on, version, fulfiller_comment, fulfiller_status, item_cost_rate, item_rate, notes, order_date, order_number, request_type, urgency,  patient_id, requested_by_id, visit_id,DeploymentCount) VALUES ('system', NOW(), 'system', NOW(), '0', 'Fulfilled', 'Carried down past clinic data', 0.00, 0.00, 'Carried down past clinic data', '" + rs.getString("Date") + "', '" + "LAB-".concat(d.getPvEntityNo()) + "', 'Pharmacy', 'Medium', (SELECT id FROM smarthealth.patient WHERE patient_number = '" + d.getCurrentPatientNo() + "'), '1', (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' ), '" + countOrderNo + "')";
                             pst = conn.prepareStatement(docRequest);
                             pst.execute();
 //                            }
@@ -136,12 +136,71 @@ public class IvoryHistoricalClinicalDataSindano {
                             } catch (Exception e) {
 //                                System.out.println("Problem encountered manipulating duration units for order number " + "VST-".concat(d.getPvEntityNo()));
                             }
-                            String prescriptionNote = "INSERT INTO smarthealth.patient_prescriptions (as_needed, brand_name,  duration,duration_units, frequency, id) VALUES (b'0', '" + rs.getString("DrugName") + "', '" + duration + "', '" + durationUnits + "', '" + rs.getString("TimesPerDay") + "', (SELECT id FROM smarthealth.patient_doctor_request WHERE DeploymentCount ='" + countOrderNo + "' ));";
+                            String prescriptionNote = "INSERT INTO smarthealth.patient_prescriptions (as_needed, brand_name,  duration,duration_units, frequency, id) VALUES (b'0', '" + rs.getString("DrugName") + "', '" + duration + "', '" + durationUnits + "', '" + rs.getString("TimesPerDay") + "', (SELECT id FROM smarthealth.patient_doctor_request WHERE DeploymentCount ='" + countOrderNo + "' AND order_number =  '" + "LAB-".concat(d.getPvEntityNo()) + "'));";
                             pst = conn.prepareStatement(prescriptionNote);
                             pst.execute();
                         } catch (Exception e) {
                             e.printStackTrace();
                             //System.out.println("error " + e.getMessage());
+                        }
+                        countOrderNo++;
+                    }
+                    // pst.executeBatch();
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void insertPrescriptions(List<PatientData> patients, Connection conn) {
+        try {
+            int countOrderNo = 1;
+            //insert precription history
+            for (PatientData d : patients) {
+                if (patientAvailable(d.getCurrentPatientNo(), conn)) {
+                    //find equivalent prescription data
+                    String precription = "SELECT DrugName, Duration, TimesPerDay,Date FROM clinicdb.t_prescription WHERE PatientId = '" + d.getPvEntityNo() + "'";
+                    pst2 = conn.prepareStatement(precription);
+                    rs = pst2.executeQuery();
+
+                    while (rs.next()) {
+                        System.out.println("d.getPvEntityNo() " + d.getPvEntityNo());
+                        try {
+                            //create doctor request
+//                            if (!isDoctorRequestOrderNumberExists("VST-".concat(d.getPvEntityNo()), conn)) {
+                            String docRequest = "INSERT INTO smarthealth.patient_doctor_request (created_by, created_on, last_modified_by, last_modified_on, version, fulfiller_comment, fulfiller_status, item_cost_rate, item_rate, notes, order_date, order_number, request_type, urgency,  patient_id, requested_by_id, visit_id,DeploymentCount) VALUES ('system', NOW(), 'system', NOW(), '0', 'Fulfilled', 'Carried down past clinic data', 0.00, 0.00, 'Carried down past clinic data', '" + rs.getString("Date") + "', '" + "PRESC-".concat(d.getPvEntityNo()) + "', 'Pharmacy', 'Medium', (SELECT id FROM smarthealth.patient WHERE patient_number = '" + d.getCurrentPatientNo() + "'), '1', (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' ), '" + countOrderNo + "')";
+                            pst = conn.prepareStatement(docRequest);
+                            pst.execute();
+//                            }
+                            //add the prescription
+                            Integer duration = 0;
+                            String durationUnits = "UnSpecified";
+                            try {
+                                //manipulate duration
+                                String durationConcat = rs.getString("Duration").replace("/", ",");
+                                String[] durationList = durationConcat.split(",");
+                                duration = Integer.valueOf(durationList[0]);
+                                String unit = durationList[1];
+                                if (unit.equals("7")) {
+                                    durationUnits = "Day(s)";
+                                }
+                                if (unit.equals("12")) {
+                                    durationUnits = "Month(s)";
+                                }
+                                if (unit.equals("52")) {
+                                    durationUnits = "Week(s)";
+                                }
+                            } catch (Exception e) {
+//                                System.out.println("Problem encountered manipulating duration units for order number " + "VST-".concat(d.getPvEntityNo()));
+                            }
+                            String prescriptionNote = "INSERT INTO smarthealth.patient_prescriptions (as_needed, brand_name,  duration,duration_units, frequency, id) VALUES (b'0', '" + rs.getString("DrugName") + "', '" + duration + "', '" + durationUnits + "', '" + rs.getString("TimesPerDay") + "', (SELECT id FROM smarthealth.patient_doctor_request WHERE DeploymentCount ='" + countOrderNo + "' AND order_number = '" + "PRESC-".concat(d.getPvEntityNo()) + "' ));";
+                            pst = conn.prepareStatement(prescriptionNote);
+                            pst.execute();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println("error " + e.getMessage());
                         }
                         countOrderNo++;
                     }

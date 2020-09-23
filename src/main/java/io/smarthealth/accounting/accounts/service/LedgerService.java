@@ -3,17 +3,23 @@ package io.smarthealth.accounting.accounts.service;
 import io.smarthealth.accounting.accounts.data.AccountData;
 import io.smarthealth.accounting.accounts.data.AccountPage;
 import io.smarthealth.accounting.accounts.data.LedgerData;
+import io.smarthealth.accounting.accounts.data.LedgerGrouping;
 import io.smarthealth.accounting.accounts.data.LedgerPage;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.AccountRepository;
+import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.domain.Ledger;
 import io.smarthealth.accounting.accounts.domain.LedgerRepository;
 import io.smarthealth.accounting.accounts.domain.specification.LedgerSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.security.domain.Permission;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.groupingBy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -47,6 +53,37 @@ public class LedgerService {
         return ledgerPage;
     }
 
+    public LedgerPage listLedgers(Pageable pageable) {
+        final LedgerPage ledgerPage = new LedgerPage();
+
+        Page<LedgerData> ledgerEntities = this.ledgerRepository.findAll(pageable)
+                .map(LedgerData::map);
+
+        ledgerPage.setTotalPages(ledgerEntities.getTotalPages());
+        ledgerPage.setTotalElements(ledgerEntities.getTotalElements());
+
+        ledgerPage.setLedgers(ledgerEntities.getContent());
+
+        return ledgerPage;
+    }
+
+    public List<Ledger> listAllAccountTypes() {
+        return ledgerRepository.findByParentLedgerNotNull();
+    }
+
+    public ArrayList<LedgerGrouping> getGroupedAccountsTypes() {
+        ArrayList<LedgerGrouping> list = new ArrayList<>();
+        Map<AccountType, List<LedgerData>> accountTypes = listAllAccountTypes().stream()
+                .map(LedgerData::map)
+                .collect(groupingBy(LedgerData::getType));
+
+        accountTypes.forEach((k, v) -> {
+            list.add(new LedgerGrouping(k.name(), v));
+        });
+
+        return list;
+    }
+
     private List<LedgerData> mapToLedger(List<Ledger> ledgerEntities) {
         final List<LedgerData> result = new ArrayList<>(ledgerEntities.size());
 
@@ -72,7 +109,7 @@ public class LedgerService {
 
     public Optional<LedgerData> findLedgerData(final String identifier) {
         final Optional<Ledger> ledgerEntity = findLedger(identifier);
-        if (ledgerEntity .isPresent()) {
+        if (ledgerEntity.isPresent()) {
             final LedgerData ledger = LedgerData.map(ledgerEntity.get());
             this.addSubLedgers(ledger, this.ledgerRepository.findByParentLedgerOrderByIdentifier(ledgerEntity.get()));
             return Optional.of(ledger);
@@ -122,9 +159,9 @@ public class LedgerService {
         parentLedgerEntity.setName(ledgerData.getName());
         parentLedgerEntity.setDescription(ledgerData.getDescription());
         parentLedgerEntity.setShowAccountsInChart(ledgerData.getShowAccountsInChart());
-        
+
         final Ledger savedParentLedger = this.ledgerRepository.save(parentLedgerEntity);
-        
+
         this.addSubLedgersInternal(ledgerData.getSubLedgers(), savedParentLedger);
 
         log.debug("Ledger {} created.", ledgerData.getIdentifier());
@@ -146,7 +183,7 @@ public class LedgerService {
         this.ledgerRepository.save(parentLedger);
         return subLedger.getIdentifier();
     }
-    
+
     @Transactional
     public String modifyLedger(final LedgerData ledgerData) {
         final Ledger ledgerEntity = findLedgerOrThrow(ledgerData.getIdentifier());

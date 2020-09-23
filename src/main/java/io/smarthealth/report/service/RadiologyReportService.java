@@ -91,7 +91,8 @@ public class RadiologyReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+
         reportData.setReportName("Radiology-Statement");
         reportService.generateReport(reportData, response);
     }    
