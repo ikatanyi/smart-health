@@ -1,11 +1,7 @@
 package io.smarthealth.clinical.admission.data;
 
-import io.smarthealth.clinical.admission.domain.Bed;
-import io.smarthealth.clinical.admission.domain.Bed.Status;
 import io.smarthealth.clinical.admission.domain.EmergencyContact;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;

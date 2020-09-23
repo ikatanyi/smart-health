@@ -16,7 +16,8 @@ import lombok.Data;
  */
 @Data
 public class CareTeamData {
-
+    @ApiModelProperty(hidden = true)
+    private Long id;
     @ApiModelProperty(hidden = true)
     private String patientName;
     @ApiModelProperty(hidden = true)
@@ -45,6 +46,7 @@ public class CareTeamData {
         d.setPatientName(ct.getPatient().getFullName());
         d.setPatientNumber(ct.getPatient().getPatientNumber());
         d.setRole(ct.getCareRole());
+        d.setId(ct.getId());
         return d;
     }
 
