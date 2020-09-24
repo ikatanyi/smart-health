@@ -83,29 +83,8 @@ public class AdmissionService {
         a.setScheduled(Boolean.FALSE);
         a.setIsActiveOnConsultation(Boolean.FALSE);
         a.setServiceType(VisitEnum.ServiceType.Admission);
-        a.setStatus(VisitEnum.Status.Admitted);
-
-        //payment data
-        Scheme scheme = null;
-        if (d.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
-            scheme = schemeService.fetchSchemeById(d.getPaymentDetailsData().getSchemeId());
-            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
-            PaymentDetails pd = PaymentDetailsData.map(d.getPaymentDetailsData());
-
-            pd.setScheme(scheme);
-            pd.setPayer(scheme.getPayer());
-            pd.setVisit(a);
-            if (config.isPresent()) {
-                pd.setCoPayCalcMethod(config.get().getCoPayType());
-                pd.setCoPayValue(config.get().getCoPayValue());
-            }
-
-            paymentDetailsService.createPaymentDetails(pd);
-            //create bill for copay
-            if (config.isPresent() && config.get().getCoPayValue() > 0) {
-                billingService.createCopay(new CopayData(admissionNo, d.getPaymentDetailsData().getSchemeId()));
-            }
-        }
+        a.setStatus(VisitEnum.Status.Admitted);      
+        a.setPaymentMethod(d.getPaymentMethod());
 
         List<CareTeam> ctList = d.getCareTeam().stream().map(c
                 -> {
@@ -123,9 +102,38 @@ public class AdmissionService {
 
         bedService.updateBed(b);
         
-        List<EmergencyContact> EcList = d.getEmergencyContactData().stream().map(c->c.map()).collect(Collectors.toList());
+        List<EmergencyContact> EcList = d.getEmergencyContactData().stream().map(c->{
+            EmergencyContact contact = c.map();
+            contact.setAdmission(a);
+            return contact;            
+                    }).collect(Collectors.toList());
         a.setEmergencyContacts(EcList);
-        return admissionRepository.save(a);
+        Admission savedAdmissions = admissionRepository.save(a);
+        
+        //payment data
+        Scheme scheme = null;
+        if (d.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
+            scheme = schemeService.fetchSchemeById(d.getPaymentDetailsData().getSchemeId());
+            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+            PaymentDetails pd = PaymentDetailsData.map(d.getPaymentDetailsData());
+
+            pd.setScheme(scheme);
+            pd.setPayer(scheme.getPayer());
+            pd.setVisit(savedAdmissions);
+            pd.setPatient(p);
+            if (config.isPresent()) {
+                pd.setCoPayCalcMethod(config.get().getCoPayType());
+                pd.setCoPayValue(config.get().getCoPayValue());
+            }
+
+            paymentDetailsService.createPaymentDetails(pd);
+            //create bill for copay
+            if (config.isPresent() && config.get().getCoPayValue() > 0) {
+                billingService.createCopay(new CopayData(admissionNo, d.getPaymentDetailsData().getSchemeId()));
+            }
+        }
+        return savedAdmissions;
+        
     }
 
     public Page<Admission> fetchAdmissions(final String admissionNo, final Long wardId, final Long roomId, final Long bedId, final String term, final Pageable pageable) {

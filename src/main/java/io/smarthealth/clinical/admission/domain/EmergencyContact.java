@@ -41,7 +41,8 @@ public class EmergencyContact extends Identifiable {
     public EmergencyContactData toData() {
         EmergencyContactData data = new EmergencyContactData();
         data.setId(this.getId());
-        data.setAdmissionId(this.getAdmission().getId());
+        if(this.getAdmission()!=null)
+           data.setAdmissionId(this.getAdmission().getId());
         data.setName(this.getName());
         data.setRelation(this.getRelation());
         data.setContactNumber(this.getContactNumber());
