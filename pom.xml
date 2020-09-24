@@ -11,7 +11,7 @@
     
     <groupId>io.smarthealth</groupId>
     <artifactId>smart-health</artifactId>
-    <version>2.0</version>
+    <version>1.0.0</version>
     <name>smart-health-v2</name>
     <description>Healthcare Management System </description>
 
