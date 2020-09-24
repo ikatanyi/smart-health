@@ -16,6 +16,8 @@ import lombok.Data;
 public class PriceBookItemData {
 
     private String itemCode;
+    private String itemName;
+    private Long itemId;
     private String priceBookName;
     private BigDecimal amount;
 }
