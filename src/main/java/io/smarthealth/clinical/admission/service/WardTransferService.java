@@ -79,8 +79,8 @@ public class WardTransferService {
         return wardTransferRepository.save(transfer);
     }
 
-    public Page<WardTransfer> fetchWardTransfers(final Long wardId, Long roomId, Long bedId, Long patientId, DateRange range, final String term, final Pageable pageable) {
-        Specification<WardTransfer> s = WardTransferSpecification.createSpecification(wardId, roomId, bedId,patientId, range, term);
+    public Page<WardTransfer> fetchWardTransfers(final Long wardId, Long roomId, Long bedId, String patientNo, String admissionNo, DateRange range, final String term, final Pageable pageable) {
+        Specification<WardTransfer> s = WardTransferSpecification.createSpecification(wardId, roomId, bedId,patientNo,admissionNo, range, term);
         return wardTransferRepository.findAll(s, pageable);
     }
 

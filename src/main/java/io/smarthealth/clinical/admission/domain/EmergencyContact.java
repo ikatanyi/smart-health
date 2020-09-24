@@ -34,7 +34,7 @@ public class EmergencyContact extends Identifiable {
         Friend
     }    
     @Enumerated(EnumType.STRING)
-    public Relation relation;
+    private Relation relation;
     private String name;
     private String contactNumber;
     
