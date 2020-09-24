@@ -19,7 +19,7 @@ deploy_dev:
     tags:
     - smarthealthv2
     variables:
-      - $buildNumber == cat buildNumber.properties | grep "$buildNumber" | cut -d'=' -f2
+      - buildNumber: "cat buildNumber.properties | grep "$buildNumber" | cut -d'=' -f2"
 
     script:
         - echo $buildNumber
