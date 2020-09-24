@@ -233,7 +233,7 @@
         </dependency>  
     </dependencies>
 
-    <!--    <build>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -243,16 +243,11 @@
                 </configuration>
             </plugin>
         </plugins>
-    </build>-->
+    </build>
+    
+   
     
     <!--    <scm>
-        <connection>scm:svn:http://127.0.0.1/dummy</connection>
-        <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
-        <tag>HEAD</tag>
-        <url>http://127.0.0.1/dummy</url>
-    </scm>-->
-    
-    <scm>
         <connection>scm:svn:http://192.180.3.23/smarthealth/backend.git</connection>
         <developerConnection>scm:svn:http://192.180.3.23/smarthealth/backend.git</developerConnection>
         <tag>HEAD</tag>
@@ -286,6 +281,6 @@
             </plugin>    
         </plugins>
         <finalName>${project.artifactId}-${project.version}.${buildNumber}</finalName>
-    </build>
+    </build>-->
        
 </project>
