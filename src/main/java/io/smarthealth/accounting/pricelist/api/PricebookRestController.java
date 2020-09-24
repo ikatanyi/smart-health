@@ -2,16 +2,20 @@ package io.smarthealth.accounting.pricelist.api;
 
 import io.smarthealth.accounting.pricelist.data.PriceBookData;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
+import io.smarthealth.accounting.pricelist.domain.PriceBookItem;
 import io.smarthealth.accounting.pricelist.domain.enumeration.PriceCategory;
 import io.smarthealth.accounting.pricelist.domain.enumeration.PriceType;
 import io.smarthealth.accounting.pricelist.service.PricebookService;
+import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.item.data.ItemSimpleData;
 import io.swagger.annotations.Api;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -109,22 +113,33 @@ public class PricebookRestController {
         return ResponseEntity.ok(pagers);
     }
 
-     @PutMapping("/pricebooks/{id}/items")
-    @PreAuthorize("hasAuthority('edit_pricebook')")
-    public ResponseEntity<?> updatePricebookItem(@PathVariable(value = "id") Long id, @Valid @RequestBody  ItemSimpleData pricebookItem) {
-      //  PriceBookData result = service.updatePricebook(id, priceBookData);
+    @GetMapping("/pricebooks/{id}/items")
+//    @PreAuthorize("hasAuthority('edit_pricebook')")
+    public ResponseEntity<?> getPricebookItem(@PathVariable(value = "id") Long id) {
+        List<PriceBookItemData> result = service.getPriceBookItems(id).stream()
+                .map(x -> x.toData())
+                .collect(Collectors.toList());
 
-        Pager<PriceBookData> pagers = new Pager();
+        Pager<List<PriceBookItemData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Pricebook updated successful");
-        pagers.setContent(null);
+        pagers.setContent(result);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+        return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/pricebooks/{id}/items")
+//    @PreAuthorize("hasAuthority('edit_pricebook')")
+    public ResponseEntity<?> addPricebookItem(@PathVariable(value = "id") Long id, @Valid @RequestBody ItemSimpleData pricebookItem) {
+        service.addPriceBookItem(id, pricebookItem);
+        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "Item Successfully addedd"));
+    }
+
     @DeleteMapping("/pricebooks/{id}/items/{itemId}")
     @PreAuthorize("hasAuthority('edit_pricebook')")
     public ResponseEntity<?> deletePricebookItems(@PathVariable(value = "id") Long id, @PathVariable(value = "itemId") Long itemId) {
-         Pager<PriceBookData> pagers = new Pager();
+        service.deletePriceItem(id,itemId);
+        Pager<PriceBookData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Pricebook updated successful");
         pagers.setContent(null);

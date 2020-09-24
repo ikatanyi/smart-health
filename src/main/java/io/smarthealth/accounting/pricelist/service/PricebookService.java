@@ -1,6 +1,6 @@
 package io.smarthealth.accounting.pricelist.service;
 
-import com.google.common.collect.Sets;
+import com.google.common.base.Objects;
 import io.smarthealth.accounting.pricelist.data.PriceBookData;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.accounting.pricelist.domain.PriceBookItem;
@@ -13,13 +13,9 @@ import io.smarthealth.administration.app.domain.CurrencyRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,9 +23,8 @@ import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.pricelist.domain.PriceListDTO;
 import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
 import io.smarthealth.stock.item.data.ItemSimpleData;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -71,7 +66,7 @@ public class PricebookService {
         if (priceBook.getPricebookItems() != null) {
 //            Set<PriceBookItem> itemlist = new HashSet<>();
             List<PriceBookItem> itemlist = new ArrayList<>();
-            
+
             priceBook.getPricebookItems()
                     .stream()
                     .forEach(x -> {
@@ -122,9 +117,33 @@ public class PricebookService {
         PriceBook savedBook = priceBookRepository.save(book);
         return PriceBookData.map(savedBook);
     }
-    public PriceBookItem addItem(Long id, ItemSimpleData item){
-        // 
-        return null;
+
+    @Transactional
+    public void addPriceBookItem(Long id, ItemSimpleData item) {
+        PriceBook book = getPricebookWithNotFoundExeption(id);
+        Item toSaveItem = itemService.findByItemCodeOrThrow(item.getItemCode());
+
+        PriceBookItem priceBookItem = book.getPriceBookItems()
+                .stream()
+                .filter(x -> Objects.equal(x.getItem(), item.getItemId()))
+                .findAny()
+                .orElse(null);
+        if (priceBookItem == null) {
+            priceBookRepository.addPriceBookItem(item.getAmount(), book.getId(), toSaveItem.getId());
+        } else {
+            priceBookRepository.updateBookItem(item.getAmount(), book.getId(), priceBookItem.getItem().getId());
+        }
+    }
+
+    @Transactional
+    public void deletePriceItem(Long id, Long itemId) {
+        PriceBook book = getPricebookWithNotFoundExeption(id);
+        priceBookRepository.deleteBookItem(book.getId(), itemId);
+    }
+
+    public List<PriceBookItem> getPriceBookItems(Long priceBookId) {
+        PriceBook book = getPricebookWithNotFoundExeption(priceBookId);
+        return book.getPriceBookItems();
     }
 
     public Optional<PriceBook> getPricebook(Long id) {
@@ -181,11 +200,10 @@ public class PricebookService {
         return priceBookRepository.searchPriceListByItem(likeExpression);
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public void createPriceBookItem(List<PriceBookItemData> d) {
 
-        for (PriceBookItemData data : d) {
-
+        d.forEach((data) -> {
             Item item = itemService.findByItemCodeOrThrow(data.getItemCode());
             PriceBook priceBook = getPricebookByNameOrThrowError(data.getPriceBookName());
 
@@ -197,7 +215,8 @@ public class PricebookService {
 //            priceBook.addPriceItems(Sets.newHashSet(priceBookItem));
 //            priceBookRepository.save(priceBook);
             priceBookRepository.addPriceBookItem(data.getAmount(), priceBook.getId(), item.getId());
-        }
+        });
 
     }
+
 }

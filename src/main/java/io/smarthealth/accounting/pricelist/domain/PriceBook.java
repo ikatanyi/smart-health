@@ -75,8 +75,7 @@ public class PriceBook extends Auditable {
         this.priceBookItems.forEach(x -> x.setPriceBook(this));
     }
 
-    public void addPriceItem(PriceBookItem bookItem) {
-        System.err.println("my id "+this.getId());
+    public void addPriceItem(PriceBookItem bookItem) { 
         bookItem.setPriceBook(this);
         this.priceBookItems.add(bookItem);
     }
