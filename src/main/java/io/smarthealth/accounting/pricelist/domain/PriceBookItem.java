@@ -5,6 +5,7 @@
  */
 package io.smarthealth.accounting.pricelist.domain;
 
+import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
 import io.smarthealth.stock.item.domain.Item;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -59,6 +60,14 @@ public class PriceBookItem implements Serializable {
         priceList.setPriceBookAmount(this.amount);
         
         return priceList;
+    }
+    public PriceBookItemData toData(){
+        PriceBookItemData data=new PriceBookItemData();
+        data.setAmount(this.amount);
+        data.setItemCode(this.getItem().getItemCode());
+        data.setItemName(this.item.getItemName());
+        data.setItemId(this.item.getId());
+        return data;
     }
      @Override
     public String toString() {

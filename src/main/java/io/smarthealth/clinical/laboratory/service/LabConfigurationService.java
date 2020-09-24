@@ -94,7 +94,7 @@ public class LabConfigurationService {
         clearAnalyte(toUpdateTest.getId());
 
         Item item = findByItemCodeOrThrow(data.getItemCode());
-        LabDiscipline displine = displineRepository.findById(data.getCategoryId()).orElse(null);
+        LabDiscipline displine =data.getCategoryId()!=null ? displineRepository.findById(data.getCategoryId()).orElse(null) : null;
 //        toUpdateTest.setActive(data.getActive()!=null ? data.getActive() : true);
         toUpdateTest.setRequiresConsent(data.getRequiresConsent());
         toUpdateTest.setTurnAroundTime(data.getTurnAroundTime());

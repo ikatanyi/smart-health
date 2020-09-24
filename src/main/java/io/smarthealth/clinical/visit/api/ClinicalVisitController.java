@@ -455,6 +455,7 @@ public class ClinicalVisitController {
             pd.setScheme(scheme);
             pd.setPayer(scheme.getPayer());
             pd.setVisit(visit);
+            pd.setPatient(visit.getPatient());
             pd.setRelation(data.getRelation());
             if (config.isPresent()) {
                 pd.setCoPayCalcMethod(config.get().getCoPayType());
