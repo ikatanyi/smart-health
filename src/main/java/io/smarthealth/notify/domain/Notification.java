@@ -14,18 +14,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  *
  * @author Kelsas
  */
+@Data
 @Entity 
 @NoArgsConstructor
-@Table(name = "user_notifications")
-@Data
+@Table(name = "user_notifications") 
 public class Notification extends Auditable {
 
     private LocalDateTime datetime;
