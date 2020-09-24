@@ -18,7 +18,11 @@ deploy_dev:
     stage: staging
     tags:
     - smarthealthv2
+    variables:
+      - $buildNumber == cat buildNumber.properties | grep "$buildNumber" | cut -d'=' -f2
+
     script:
+        - echo $buildNumber
         - sudo rsync -rav -e --stats target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
         - sudo chmod 775 /var/log/smarthealth-app.log
         - sudo service smarthealth-app restart
