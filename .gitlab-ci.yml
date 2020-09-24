@@ -19,9 +19,10 @@ deploy_dev:
     tags:
     - smarthealthv2
     variables:
-      BUILD_NUMBER: $(cat buildNumber.properties | grep "$buildNumber" | cut -d'=' -f2)
+      #BUILD_NUMBER: $(cat buildNumber.properties | grep "$buildNumber" | cut -d'=' -f2)
 
     script:
+        - export BUILD_NUMBER = $(cat buildNumber.properties | grep "$buildNumber" | cut -d'=' -f2)
         - echo $BUILD_NUMBER
         - sudo rsync -rav -e --stats target/smart-health-1.0.0.jar /opt/smarthealth/latest/smart-health-1.0.0.jar
         - sudo chmod 775 /var/log/smarthealth-app.log
