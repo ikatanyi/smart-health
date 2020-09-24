@@ -2,7 +2,7 @@ package io.smarthealth.accounting.payment.service;
 
 import io.smarthealth.accounting.payment.data.CopaymentData;
 import io.smarthealth.accounting.payment.domain.Copayment;
-import io.smarthealth.accounting.payment.domain.CopaymentRepository;
+import io.smarthealth.accounting.payment.domain.repository.CopaymentRepository;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.domain.specification.ReceiptSpecification;
 import io.smarthealth.infrastructure.exception.APIException;

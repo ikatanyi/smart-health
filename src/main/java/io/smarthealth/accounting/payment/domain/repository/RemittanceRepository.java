@@ -1,5 +1,7 @@
-package io.smarthealth.accounting.payment.domain;
+package io.smarthealth.accounting.payment.domain.repository;
 
+import io.smarthealth.accounting.payment.domain.Receipt;
+import io.smarthealth.accounting.payment.domain.Remittance;
 import java.math.BigDecimal;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

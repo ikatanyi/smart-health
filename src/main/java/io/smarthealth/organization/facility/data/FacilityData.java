@@ -6,20 +6,8 @@
 package io.smarthealth.organization.facility.data;
 
 import io.smarthealth.organization.facility.domain.Facility;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.persistence.Lob;
 import lombok.Data;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -42,6 +30,7 @@ public class FacilityData {
     private MultipartFile file;
     private String logo;
     private String footerMsg;
+      private String currency;
     private boolean enabled;
     
     public static FacilityData map(Facility facility) {
@@ -68,6 +57,7 @@ public class FacilityData {
         facilityData.setRegistrationNumber(facility.getRegistrationNumber());
         facilityData.setFacilityId(facility.getId());
         facilityData.setFooterMsg(facility.getFooterMsg());
+        facilityData.setCurrency(facility.getCurrency());
         
         return facilityData;
     }

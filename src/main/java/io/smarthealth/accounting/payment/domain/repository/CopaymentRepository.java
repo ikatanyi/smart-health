@@ -1,5 +1,6 @@
-package io.smarthealth.accounting.payment.domain;
+package io.smarthealth.accounting.payment.domain.repository;
 
+import io.smarthealth.accounting.payment.domain.Copayment;
 import io.smarthealth.clinical.visit.domain.Visit;
 import java.math.BigDecimal;
 import java.util.Optional;

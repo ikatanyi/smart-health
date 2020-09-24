@@ -48,6 +48,7 @@ public class Receipt extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_receipts_shift_id"))
     private Shift shift;
+    private Boolean prepayment;
     private Boolean voided;
     private String voidedBy;
     private LocalDateTime voidedDatetime;
@@ -94,6 +95,7 @@ public class Receipt extends Auditable {
         data.setReceiptNo(this.receiptNo);
         data.setCurrency(this.currency);
         data.setPaid(this.getPaid());
+        data.setPrepayment(this.prepayment);
         data.setTransactionDate(this.getTransactionDate());
         data.setCreatedBy(this.getCreatedBy());
         if (this.shift != null) {
