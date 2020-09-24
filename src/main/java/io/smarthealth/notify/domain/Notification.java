@@ -20,12 +20,12 @@ import lombok.Setter;
 /**
  *
  * @author Kelsas
- */
-@Entity
+ */ 
+@Entity 
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "user_notifications")
+@Table(name = "user_notifications") 
 public class Notification extends Auditable {
 
     private LocalDateTime datetime;

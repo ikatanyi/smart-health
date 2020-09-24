@@ -41,5 +41,5 @@ public class SickOffNote extends Auditable {
 
     private String recommendation;
     private String reason;
-
+   private String doctor;
 }

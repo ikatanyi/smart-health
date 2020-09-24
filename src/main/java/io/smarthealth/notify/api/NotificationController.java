@@ -6,7 +6,6 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.notify.data.NoticeType;
 import io.smarthealth.notify.data.NotificationData;
 import io.smarthealth.notify.data.NotificationResponse;
-import io.smarthealth.notify.domain.Notification;
 import io.smarthealth.notify.service.NotificationService;
 import io.swagger.annotations.Api;
 import javax.validation.Valid;
@@ -14,8 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -54,7 +51,7 @@ public class NotificationController {
 
     @GetMapping("/current-user")
     public ResponseEntity getCurrentUserNotifications(Authentication authentication,
-            @RequestParam(value = "isRead",  required = false) Boolean isRead,
+            @RequestParam(value = "isRead", required = false) Boolean isRead,
             @RequestParam(value = "noticeType", required = false) NoticeType noticeType,
             @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
@@ -104,11 +101,12 @@ public class NotificationController {
 
         return new ResponseEntity<>(new NotificationResponse(true, "Notification has been Read"), HttpStatus.OK);
     }
-     @PutMapping("/{username}/read-all")
+
+    @PutMapping("/{username}/read-all")
     public ResponseEntity clearAllNotice(@PathVariable("username") String username) {
-         
+
         notificationService.updateReadAll(username);
 
         return new ResponseEntity<>(new NotificationResponse(true, "All Notification have been Cleared"), HttpStatus.OK);
-    } 
+    }
 }
