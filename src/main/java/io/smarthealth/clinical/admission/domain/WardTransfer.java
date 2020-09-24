@@ -49,7 +49,7 @@ public class WardTransfer extends Auditable {
     private String comment;
     private String methodOfTransfer;
     
-    @OneToOne
+    @OneToOne(cascade=CascadeType.ALL)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_ward_transfer_transfer_logs_id"))
     private TransferLogs transferLogs;
 
