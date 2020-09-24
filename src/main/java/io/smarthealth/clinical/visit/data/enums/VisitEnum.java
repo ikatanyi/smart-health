@@ -33,7 +33,8 @@ public class VisitEnum {
     public enum ServiceType {
         Consultation,
         Review,
-        Other
+        Other,
+        Admission
     }
 
 }
