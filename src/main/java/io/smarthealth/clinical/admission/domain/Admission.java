@@ -50,7 +50,7 @@ public class Admission extends Visit {
     @OneToMany(mappedBy = "admission", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmergencyContact> emergencyContacts;
 
-    @Where(clause = "voided = false")
+//    @Where(clause = "voided = false")
     @OneToMany(mappedBy = "admission", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareTeam> careTeam = new ArrayList<>();
     

@@ -77,11 +77,11 @@ public class AdmissionController {
     @GetMapping("/admission")
 //    @PreAuthorize("hasAuthority('view_admission')")
     public ResponseEntity<?> getAdmission(
-            @RequestParam(value = "admissionNo", required = false) final String admissionNo,
+            @RequestParam(value = "admissionNumber", required = false) final String admissionNo,
             @RequestParam(value = "wardId", required = false) final Long wardId,
             @RequestParam(value = "roomId", required = false) final Long roomId,
             @RequestParam(value = "bedId", required = false) final Long bedId,
-            @RequestParam(value = "dischraged", required = false) final Boolean discharged,
+            @RequestParam(value = "discharged", required = false) final Boolean discharged,
             @RequestParam(value = "activeVisit", required = false) final Boolean active,
             @RequestParam(value = "status", required = false) final Status status,
             @RequestParam(value = "q", required = false) final String term,

@@ -83,8 +83,8 @@ public class CareTeamController {
 //    @PreAuthorize("hasAuthority('view_bed')")
     public ResponseEntity<?> getCareTeams(
             @RequestParam(value = "active", required = false, defaultValue = "false") final Boolean active,
-            @RequestParam(value = "patientNo", required = false) final String patientNo,
-            @RequestParam(value = "admissionNo", required = false) final String admissionNo,
+            @RequestParam(value = "patientNumber", required = false) final String patientNo,
+            @RequestParam(value = "admissionNumber", required = false) final String admissionNo,
             @RequestParam(value = "careRole", required = false) final CareTeamRole careRole,          
             @RequestParam(value = "voided", required = false) final Boolean voided,
             @RequestParam(value = "page", required = false) Integer page,

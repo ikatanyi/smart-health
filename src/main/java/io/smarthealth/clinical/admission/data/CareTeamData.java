@@ -32,7 +32,6 @@ public class CareTeamData {
     private CareTeamRole role;
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime dateAssigned;
-    @ApiModelProperty(hidden = true)
     private Boolean voided;
     //void reason
     private String reason;
