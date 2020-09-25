@@ -19,5 +19,6 @@ public enum ItemCategory {
     Drug,
     CoPay,
     Dental,
+    Admission,
     Others
 }

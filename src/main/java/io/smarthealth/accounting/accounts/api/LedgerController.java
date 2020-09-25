@@ -65,7 +65,7 @@ public class LedgerController {
     @GetMapping("/types")
     @ResponseBody
     @PreAuthorize("hasAuthority('view_Legder')")
-    ResponseEntity< ?> fetchLedgers(@RequestParam(value = "page", required = false) Boolean isGrouped, @RequestParam(value = "type", required = false) AccountType accountType) {
+    ResponseEntity< ?> fetchLedgers(@RequestParam(value = "isGrouped", required = false) Boolean isGrouped, @RequestParam(value = "type", required = false) AccountType accountType) {
         if (isGrouped != null && isGrouped) {
             return ResponseEntity.ok(ledgerService.getGroupedAccountsTypes());
         }

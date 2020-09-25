@@ -68,6 +68,7 @@ public class JournalService {
 
     public JournalEntry save(JournalEntry journal) {
         JournalEntry je = journalRepository.save(journal);
+        System.err.println(je.getAmount());
         bookJournalEntry(je.getId());
         return je;
     }
