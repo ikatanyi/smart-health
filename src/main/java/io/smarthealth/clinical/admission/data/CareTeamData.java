@@ -32,6 +32,7 @@ public class CareTeamData {
     private CareTeamRole role;
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime dateAssigned;
+    private Boolean voided;
     //void reason
     private String reason;
 
@@ -45,6 +46,8 @@ public class CareTeamData {
         d.setMedicName(ct.getMedic().getFullName());
         d.setPatientName(ct.getPatient().getFullName());
         d.setPatientNumber(ct.getPatient().getPatientNumber());
+        d.setVoided(ct.getVoided());
+        d.setReason(ct.getReason());
         d.setRole(ct.getCareRole());
         d.setId(ct.getId());
         return d;
@@ -54,6 +57,8 @@ public class CareTeamData {
         CareTeam e = new CareTeam();
         e.setCareRole(d.getRole());
         e.setDateAssigned(d.getDateAssigned());
+        e.setVoided(d.getVoided());
+        e.setReason(d.getReason());
         return e;
     }
 }

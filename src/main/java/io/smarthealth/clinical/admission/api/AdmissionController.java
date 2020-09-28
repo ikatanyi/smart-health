@@ -8,6 +8,8 @@ package io.smarthealth.clinical.admission.api;
 import io.smarthealth.clinical.admission.data.AdmissionData;
 import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.admission.service.AdmissionService;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -61,7 +63,6 @@ public class AdmissionController {
     ) {
 
         Admission a = admissionService.findAdmissionById(id);
-
         Pager<AdmissionData> pagers = new Pager();
         pagers.setCode("200");
         pagers.setMessage("Admission Data");
@@ -73,16 +74,19 @@ public class AdmissionController {
     @GetMapping("/admission")
 //    @PreAuthorize("hasAuthority('view_admission')")
     public ResponseEntity<?> getAdmission(
-            @RequestParam(value = "admissionNo", required = false) final String admissionNo,
+            @RequestParam(value = "admissionNumber", required = false) final String admissionNo,
             @RequestParam(value = "wardId", required = false) final Long wardId,
             @RequestParam(value = "roomId", required = false) final Long roomId,
             @RequestParam(value = "bedId", required = false) final Long bedId,
+            @RequestParam(value = "discharged", required = false) final Boolean discharged,
+            @RequestParam(value = "activeVisit", required = false) final Boolean active,
+            @RequestParam(value = "status", required = false) final Status status,
             @RequestParam(value = "q", required = false) final String term,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<AdmissionData> list = admissionService.fetchAdmissions(admissionNo, wardId, roomId, bedId, term, pageable).map(a -> AdmissionData.map(a));
+        Page<AdmissionData> list = admissionService.fetchAdmissions(admissionNo, wardId, roomId, bedId, term, discharged, active, status, pageable).map(a -> AdmissionData.map(a));
 
         Pager<List<AdmissionData>> pagers = new Pager();
         pagers.setCode("200");

@@ -59,7 +59,8 @@ public class WardTransferController {
             @RequestParam(value = "wardId", required = false) final String dischargeNo,
             @RequestParam(value = "roomId", required = false) final Long doctorId,
             @RequestParam(value = "bedId", required = false) final Long bedId,
-            @RequestParam(value = "patientId", required = false) final Long patientId,
+            @RequestParam(value = "patientNo", required = false) final String patientNo,
+            @RequestParam(value = "admissionNo", required = false) final String admissionNo,
             @RequestParam(value = "q", required = false) final String term,
             @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
@@ -67,7 +68,7 @@ public class WardTransferController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<WardTransferData> list = service.fetchWardTransfers(bedId, bedId, bedId, patientId, range, term, pageable).map(u -> u.todata());
+        Page<WardTransferData> list = service.fetchWardTransfers(bedId, bedId, bedId, patientNo, admissionNo, range, term, pageable).map(u -> u.todata());
 
         Pager<List<WardTransferData>> pagers = new Pager();
         pagers.setCode("0");

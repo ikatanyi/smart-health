@@ -15,6 +15,7 @@ import io.smarthealth.clinical.admission.domain.repository.AdmissionRepository;
 import io.smarthealth.clinical.admission.domain.specification.AdmissionSpecification;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.debtor.payer.domain.Scheme;
@@ -62,6 +63,9 @@ public class AdmissionService {
         BedType bt = bedService.getBedType(d.getBedTypeId());
         Patient p = patientService.findPatientOrThrow(d.getPatientNumber());
 
+        if(findAdmissionByPatientAndStatus(d.getPatientNumber()).isPresent())
+            throw APIException.conflict("Patient {0} already Admitted.", d.getPatientNumber());
+            
         String admissionNo = sequenceNumberService.next(1l, Sequences.Admission.name());
 
         Admission a = AdmissionData.map(d);
@@ -136,7 +140,7 @@ public class AdmissionService {
         
     }
 
-    public Page<Admission> fetchAdmissions(final String admissionNo, final Long wardId, final Long roomId, final Long bedId, final String term, final Pageable pageable) {
+    public Page<Admission> fetchAdmissions(final String admissionNo, final Long wardId, final Long roomId, final Long bedId, final String term, final Boolean discharged, final Boolean active, final Status status, final Pageable pageable) {
 
         Ward ward = null;
         Room room = null;
@@ -150,7 +154,7 @@ public class AdmissionService {
         if (bedId != null) {
             bed = bedService.getBed(bedId);
         }
-        Specification<Admission> s = AdmissionSpecification.createSpecification(admissionNo, ward, room, bed, term);
+        Specification<Admission> s = AdmissionSpecification.createSpecification(admissionNo, ward, room, bed, term, discharged, active, status);
         return admissionRepository.findAll(s, pageable);
     }
 
@@ -160,6 +164,12 @@ public class AdmissionService {
         } else {
             throw APIException.badRequest("Please provide admission id ", "");
         }
+    }
+    
+    public Optional<Admission> findAdmissionByPatientAndStatus(String patientId) {
+        Patient patient = patientService.findPatientOrThrow(patientId);
+        return admissionRepository.findByPatientAndStatus(patient, Status.Admitted);
+       
     }
 
     public Admission findAdmissionByNumber(String admissionNo) {

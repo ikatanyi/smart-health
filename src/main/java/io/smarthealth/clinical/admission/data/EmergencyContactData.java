@@ -26,6 +26,7 @@ public class EmergencyContactData {
         EmergencyContact data = new EmergencyContact();
         data.setId(this.getId());
         data.setName(this.getName());
+        data.setRelation(this.getRelation());
         data.setContactNumber(this.getContactNumber());
         return data;
     }

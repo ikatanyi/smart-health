@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.admission.domain;
 
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 import org.hibernate.annotations.Where;
@@ -48,9 +50,10 @@ public class Admission extends Visit {
     @OneToMany(mappedBy = "admission", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmergencyContact> emergencyContacts;
 
-    @Where(clause = "voided = false")
+//    @Where(clause = "voided = false")
     @OneToMany(mappedBy = "admission", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareTeam> careTeam = new ArrayList<>();
+    
 
     private Boolean discharged = Boolean.FALSE;
     private String dischargedBy;
