@@ -65,7 +65,6 @@ public class AdmissionController {
     ) {
 
         Admission a = admissionService.findAdmissionById(id);
-
         Pager<AdmissionData> pagers = new Pager();
         pagers.setCode("200");
         pagers.setMessage("Admission Data");
