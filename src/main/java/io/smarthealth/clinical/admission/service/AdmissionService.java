@@ -136,6 +136,7 @@ public class AdmissionService {
                 billingService.createCopay(new CopayData(admissionNo, d.getPaymentDetailsData().getSchemeId()));
             }
         }
+        billingService.createAdmissionFee(admissionNo);
         return savedAdmissions;
         
     }

@@ -66,6 +66,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -820,5 +821,56 @@ public class BillingService {
         }
         return bills;
     }
+    
+    
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public PatientBill createAdmissionFee(String admissionNumber) {
+        //TODO check if the visit is valid or not
+        Visit visit = visitRepository.findByVisitNumberAndStatus(admissionNumber, VisitEnum.Status.CheckIn)
+                .orElseThrow(() -> APIException.badRequest("Admission Number {0} is not active for transaction", admissionNumber));
+        PatientBill patientbill = null;
+                Optional<Item> admission = itemService.findFirstByCategory(ItemCategory.Admission);
+                if (admission.isPresent()) {
+                    Item item = admission.get();
+                    patientbill = new PatientBill();
+                    patientbill.setVisit(visit);
+                    patientbill.setPatient(visit.getPatient());
+                    patientbill.setWalkinFlag(Boolean.FALSE);
+                    patientbill.setAmount(NumberUtils.toDouble(item.getRate()));
+                    patientbill.setDiscount(0D);
+                    patientbill.setBalance(NumberUtils.toDouble(item.getRate()));
+                    patientbill.setBillingDate(LocalDate.now());
+                    patientbill.setPaymentMode(visit.getPaymentMethod().name());
+                    patientbill.setStatus(BillStatus.Draft);
+
+                    String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+                    String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
+
+                    patientbill.setBillNumber(bill_no);
+                    patientbill.setTransactionId(trdId);
+
+                    PatientBillItem billItem = new PatientBillItem();
+
+                    billItem.setBillingDate(LocalDate.now());
+                    billItem.setTransactionId(trdId);
+                    billItem.setItem(item);
+                    billItem.setPaid(false);
+                    billItem.setPrice(NumberUtils.toDouble(item.getRate()));
+                    billItem.setQuantity(1D);
+                    billItem.setAmount(NumberUtils.toDouble(item.getRate()));
+                    billItem.setDiscount(0D);
+                    billItem.setBalance(NumberUtils.toDouble(item.getRate()));
+                    //determine where the copay should be posted
+                    billItem.setServicePoint("Admission_Fee");
+                    billItem.setServicePointId(0L);
+                    billItem.setStatus(BillStatus.Draft);
+                    billItem.setMedicId(null);
+
+                    patientbill.addBillItem(billItem);
+
+                    return save(patientbill);
+                }
+                return null;
+            }
 
 }
