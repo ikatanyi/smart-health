@@ -5,7 +5,6 @@
  */
 package io.smarthealth.report.service;
 
-import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.clinical.admission.data.AdmissionData;
 import io.smarthealth.clinical.admission.data.BedData;
 import io.smarthealth.clinical.admission.data.CareTeamData;
@@ -13,7 +12,7 @@ import io.smarthealth.clinical.admission.data.RoomData;
 import io.smarthealth.clinical.admission.data.WardData;
 import io.smarthealth.clinical.admission.domain.Bed;
 import io.smarthealth.clinical.admission.domain.CareTeamRole;
-import io.smarthealth.clinical.admission.domain.Room;
+import io.smarthealth.clinical.admission.domain.DischargeSummary;
 import io.smarthealth.clinical.admission.domain.Room.Type;
 import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.clinical.admission.service.BedService;
@@ -21,64 +20,21 @@ import io.smarthealth.clinical.admission.service.CareTeamService;
 import io.smarthealth.clinical.admission.service.DischargeService;
 import io.smarthealth.clinical.admission.service.RoomService;
 import io.smarthealth.clinical.admission.service.WardService;
-import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
-import io.smarthealth.clinical.laboratory.data.LabResultData;
-import io.smarthealth.clinical.moh.data.MonthlyMobidity;
-import io.smarthealth.clinical.moh.data.Register;
-import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
-import io.smarthealth.clinical.radiology.data.PatientScanTestData;
-import io.smarthealth.clinical.record.data.DiagnosisData;
-import io.smarthealth.clinical.record.data.DoctorRequestData;
-import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
-import io.smarthealth.clinical.record.data.PatientTestsData;
-import io.smarthealth.clinical.record.data.PrescriptionData;
-import io.smarthealth.clinical.record.data.ReferralData;
-import io.smarthealth.clinical.record.data.SickOffNoteData;
-import io.smarthealth.clinical.record.domain.PatientNotes;
-import io.smarthealth.clinical.record.domain.Referrals;
-import io.smarthealth.clinical.visit.data.VisitData;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
-import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
-import io.smarthealth.infrastructure.common.PaginationUtil;
-import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.lang.DateConverter;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
-import io.smarthealth.organization.facility.domain.Employee;
-import io.smarthealth.organization.person.domain.enumeration.Gender;
-import io.smarthealth.organization.person.patient.data.PatientData;
-import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
-import io.smarthealth.report.data.clinical.EmployeeBanner;
-import io.smarthealth.report.data.clinical.OpData;
-import io.smarthealth.report.data.clinical.PatientVisitData;
-import io.smarthealth.report.data.clinical.reportVisitData;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.ZoneId;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JRSortField;
-import net.sf.jasperreports.engine.design.JRDesignSortField;
-import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
-import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang.NumberUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Pageable;
@@ -100,7 +56,7 @@ public class AdmissionReportService {
     private final RoomService roomService;
     private final WardService wardService;
     private final CareTeamService careTeamService;
-    private final DischargeService dischrageService;
+    private final DischargeService dischargeService;
 
     private final VisitService visitService;
 
@@ -113,9 +69,9 @@ public class AdmissionReportService {
         String term = reportParam.getFirst("term");
         Boolean discharged = Boolean.getBoolean(reportParam.getFirst("discharged"));
         Boolean active = Boolean.getBoolean(reportParam.getFirst("active"));
-        String dateRange = reportParam.getFirst("dateRange");
+        DateRange dateRange = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         Status status = EnumUtils.getEnumIgnoreCase(Status.class, reportParam.getFirst("status"));
-        List<AdmissionData> admissionData =  admissionService.fetchAdmissions(admissionNo, wardId, roomId, bedId, term, discharged, active, status, Pageable.unpaged())
+        List<AdmissionData> admissionData =  admissionService.fetchAdmissions(admissionNo, wardId, roomId, bedId, term, discharged, active, status, dateRange, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((adm) -> AdmissionData.map(adm))
@@ -142,9 +98,9 @@ public class AdmissionReportService {
                 .map((b) ->b.toData())
                 .collect(Collectors.toList());
 
-        reportData.setData(Arrays.asList(bedData));
+        reportData.setData(bedData);
         reportData.setFormat(format);
-        reportData.setTemplate("/Admission/beds");
+        reportData.setTemplate("/admission/bed_report");
         reportData.setReportName("Bed-list");
         reportService.generateReport(reportData, response);
     }
@@ -154,7 +110,7 @@ public class AdmissionReportService {
         String name = reportParam.getFirst("name");
         String term = reportParam.getFirst("term");
         Long wardId =  NumberUtils.createLong(reportParam.getFirst("wardId"));
-        Type type = EnumUtils.getEnumIgnoreCase(Type.class, reportParam.getFirst("status"));
+        Type type = EnumUtils.getEnumIgnoreCase(Type.class, reportParam.getFirst("type"));
         Boolean active = Boolean.getBoolean(reportParam.getFirst("active"));
         List<RoomData> bedData = roomService.fetchRooms(name, type, active, wardId, term, Pageable.unpaged())
                 .getContent()
@@ -162,9 +118,9 @@ public class AdmissionReportService {
                 .map((b) ->b.toData())
                 .collect(Collectors.toList());
 
-        reportData.setData(Arrays.asList(bedData));
+        reportData.setData(bedData);
         reportData.setFormat(format);
-        reportData.setTemplate("/Admission/rooms");
+        reportData.setTemplate("/admission/room_report");
         reportData.setReportName("room-list");
         reportService.generateReport(reportData, response);
     }
@@ -180,17 +136,45 @@ public class AdmissionReportService {
                 .map((b) ->b.toData())
                 .collect(Collectors.toList());
 
-        reportData.setData(Arrays.asList(bedData));
+        reportData.setData(bedData);
         reportData.setFormat(format);
-        reportData.setTemplate("/Admission/wards");
+        reportData.setTemplate("/admission/ward_report");
         reportData.setReportName("ward-list");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getDischarges(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String admissionNo = reportParam.getFirst("admissionNo");
+        String patientNo = reportParam.getFirst("patientNo");
+        String term = reportParam.getFirst("term");
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        
+        List<DischargeSummary> discharges = dischargeService.getDischarges(admissionNo, patientNo, term, range, Pageable.unpaged()).getContent();
+
+        reportData.setData(discharges);
+        reportData.setFormat(format);
+        reportData.setTemplate("/admission/discharge_report");
+        reportData.setReportName("discharge_report");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getDischargeSlip(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String dischargeNo = reportParam.getFirst("dischargeNo");
+        
+        DischargeSummary discharges = dischargeService.getDischargeByNumber(dischargeNo);
+
+        reportData.setData(Arrays.asList(discharges));
+        reportData.setFormat(format);
+        reportData.setTemplate("/admission/discharge_slip");
+        reportData.setReportName("discharge-slip");
         reportService.generateReport(reportData, response);
     }
 
     public void careTeam(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String patientNo = reportParam.getFirst("patientNo");
-        String term = reportParam.getFirst("term");
         String admissionNo = reportParam.getFirst("admissionNumber");
         Boolean active = Boolean.getBoolean(reportParam.getFirst("active"));
         Boolean voided = Boolean.getBoolean(reportParam.getFirst("voided"));
@@ -201,7 +185,7 @@ public class AdmissionReportService {
                 .map((b) ->CareTeamData.map(b))
                 .collect(Collectors.toList());
 
-        reportData.setData(Arrays.asList(careTeamData));
+        reportData.setData(careTeamData);
         reportData.setFormat(format);
         reportData.setTemplate("/Admission/care-team");
         reportData.setReportName("care-team-list");

@@ -79,6 +79,8 @@ public enum ReportName {
         Supplier_Aging_Report,
         Patient_Dispensed_Drugs,
         Admitted_Patients,
+        Discharged_Patients,
+        Discharge_Slip,
         Registered_Wards,
         Room_Report,
         Bed_Report

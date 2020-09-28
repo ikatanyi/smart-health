@@ -270,6 +270,12 @@ public class ReportController {
             case Bed_Report:
                 admissionReportService.getBeds(queryParams, format, response);
                 break;
+            case Discharged_Patients:
+                admissionReportService.getDischarges(queryParams, format, response);
+                break;
+            case Discharge_Slip:
+                admissionReportService.getDischargeSlip(queryParams, format, response);
+                break;
             default:
                 break;
         }

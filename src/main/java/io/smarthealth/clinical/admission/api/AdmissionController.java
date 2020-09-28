@@ -12,6 +12,7 @@ import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
@@ -84,11 +85,13 @@ public class AdmissionController {
             @RequestParam(value = "activeVisit", required = false) final Boolean active,
             @RequestParam(value = "status", required = false) final Status status,
             @RequestParam(value = "q", required = false) final String term,
+            @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<AdmissionData> list = admissionService.fetchAdmissions(admissionNo, wardId, roomId, bedId, term, discharged, active, status, pageable).map(a -> AdmissionData.map(a));
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Page<AdmissionData> list = admissionService.fetchAdmissions(admissionNo, wardId, roomId, bedId, term, discharged, active, status, range, pageable).map(a -> AdmissionData.map(a));
 
         Pager<List<AdmissionData>> pagers = new Pager();
         pagers.setCode("200");

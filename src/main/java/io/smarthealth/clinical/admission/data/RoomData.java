@@ -19,6 +19,8 @@ public class RoomData {
     @ApiModelProperty(hidden = true)
     private String ward;
     private Boolean active;
+    @ApiModelProperty(hidden = true)
+    private Integer totalBeds;
     
     public Room map() {
         Room data = new Room();
