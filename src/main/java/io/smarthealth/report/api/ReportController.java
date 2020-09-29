@@ -1,11 +1,13 @@
 package io.smarthealth.report.api;
 
+import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.report.domain.enumeration.ReportName;
 import io.smarthealth.report.service.LabReportService;
 import io.smarthealth.report.service.PatientReportServices;
 import io.smarthealth.report.service.RadiologyReportService;
 import io.smarthealth.report.service.AccountReportService;
+import io.smarthealth.report.service.AdmissionReportService;
 import io.smarthealth.report.service.PaymentReportService;
 import io.smarthealth.report.service.PharmacyReportService;
 import io.smarthealth.report.service.ProcedureReportService;
@@ -42,6 +44,7 @@ public class ReportController {
     private final PharmacyReportService pharmacyReportService;
     private final PaymentReportService paymentReportService;
     private final StockReportService stockReportService;
+    private final AdmissionReportService admissionReportService;
 
     @GetMapping("/report")
     @PreAuthorize("hasAuthority('view_reports')")
@@ -66,9 +69,9 @@ public class ReportController {
             case Invoice_Statement:
                 reportService.getInvoiceStatement(queryParams, format, response);
                 break;
-             case Aging_Report:
+            case Aging_Report:
                 reportService.getAgingReport(queryParams, format, response);
-                break;    
+                break;
             case Invoice:
                 paymentReportService.getInvoice(queryParams, format, response);
                 break;
@@ -126,9 +129,9 @@ public class ReportController {
             case Supplier_Invoice:
                 supplierInvoiceService.SupplierInvoiceStatement(queryParams, format, response);
                 break;
-             case Supplier_Aging_Report:
+            case Supplier_Aging_Report:
                 supplierInvoiceService.SupplierAgingReport(queryParams, format, response);
-                break;    
+                break;
             case Patient_Receipt:
                 reportService.getPatientReceipt(queryParams, format, response);
                 break;
@@ -142,10 +145,10 @@ public class ReportController {
                 reportService.getChartOfAccounts(format, response);
                 break;
             case Balance_Sheet:
-                reportService.getBalanceSheet(queryParams,format, response);
+                reportService.getBalanceSheet(queryParams, format, response);
                 break;
             case Income_Statement:
-                reportService.getIncomeStatement(queryParams,format, response);
+                reportService.getIncomeStatement(queryParams, format, response);
                 break;
             case Petty_Cash_Form:
                 paymentReportService.getPettyCash(queryParams, format, response);
@@ -209,10 +212,10 @@ public class ReportController {
                 break;
             case Goods_Receive_Note:
                 stockReportService.SupplierGRN(queryParams, format, response);
-                break;   
+                break;
             case Inventory_Stock:
                 stockReportService.InventoryStock(queryParams, format, response);
-                break;       
+                break;
             case Shift_Report:
                 paymentReportService.shiftPayments(queryParams, format, response);
                 break;
@@ -222,42 +225,59 @@ public class ReportController {
             case Dispatch_Note:
                 reportService.getDispatchStatement(queryParams, format, response);
                 break;
-          case Interim_Bill:
+            case Interim_Bill:
                 reportService.getInterimBill(queryParams, format, response);
                 break;
-           case Expiry_Report:
+            case Expiry_Report:
                 stockReportService.InventoryExpiryStock(queryParams, format, response);
-                break;    
-           case Voided_Invoice_Statement:
+                break;
+            case Voided_Invoice_Statement:
                 reportService.getVoidedInvoicesItems(queryParams, format, response);
                 break;
-           case Service_Statement:
+            case Service_Statement:
                 reportService.getServicesDispensed(queryParams, format, response);
-                break;     
-           case Product_Statement:
+                break;
+            case Product_Statement:
                 stockReportService.getItems(queryParams, format, response);
                 break;
-           case Morbidity_Report:
+            case Morbidity_Report:
                 patientReportService.getMorbidityReport(queryParams, format, response);
-                break;  
-           case OP_Statement:
+                break;
+            case OP_Statement:
                 patientReportService.getMohOPAttendanceReport(queryParams, format, response);
-                break;  
-           case Patient_Register:
-               patientReportService.getPatientRegisterReport(queryParams, format, response);
-               break;
-           case Dispensed_Drugs:
+                break;
+            case Patient_Register:
+                patientReportService.getPatientRegisterReport(queryParams, format, response);
+                break;
+            case Dispensed_Drugs:
                 pharmacyReportService.DispenseReport(queryParams, format, response);
-                break; 
+                break;
             case Patient_Dispensed_Drugs:
                 pharmacyReportService.getPatientDispensedDrugs(queryParams, format, response);
-                break;     
-           case Stock_Purchase_Report:
-               stockReportService.StockPurchase(queryParams, format, response);
-               break;
+                break;
+            case Stock_Purchase_Report:
+                stockReportService.StockPurchase(queryParams, format, response);
+                break;
+            case Admitted_Patients:
+                admissionReportService.getAdmittedPatients(queryParams, format, response);
+                break;
+            case Registered_Wards:
+                admissionReportService.getWards(queryParams, format, response);
+                break;
+            case Room_Report:
+                admissionReportService.getRooms(queryParams, format, response);
+                break;
+            case Bed_Report:
+                admissionReportService.getBeds(queryParams, format, response);
+                break;
+            case Discharged_Patients:
+                admissionReportService.getDischarges(queryParams, format, response);
+                break;
+            case Discharge_Slip:
+                admissionReportService.getDischargeSlip(queryParams, format, response);
+                break;
             default:
                 break;
-
         }
         return ResponseEntity.ok("success");
     }

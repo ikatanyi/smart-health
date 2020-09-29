@@ -23,6 +23,8 @@ public class WardData {
     private String description;
     @ApiModelProperty(hidden = true)
     private List<RoomData> rooms;
+    @ApiModelProperty(hidden = true)
+    private Integer totalRooms;
     private Boolean active=Boolean.TRUE;
     
     public Ward map() {

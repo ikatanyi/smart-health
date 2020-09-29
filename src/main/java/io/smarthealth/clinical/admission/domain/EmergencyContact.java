@@ -34,14 +34,15 @@ public class EmergencyContact extends Identifiable {
         Friend
     }    
     @Enumerated(EnumType.STRING)
-    public Relation relation;
+    private Relation relation;
     private String name;
     private String contactNumber;
     
     public EmergencyContactData toData() {
         EmergencyContactData data = new EmergencyContactData();
         data.setId(this.getId());
-        data.setAdmissionId(this.getAdmission().getId());
+        if(this.getAdmission()!=null)
+           data.setAdmissionId(this.getAdmission().getId());
         data.setName(this.getName());
         data.setRelation(this.getRelation());
         data.setContactNumber(this.getContactNumber());

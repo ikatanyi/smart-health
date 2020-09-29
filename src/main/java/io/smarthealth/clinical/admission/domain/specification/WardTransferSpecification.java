@@ -13,7 +13,7 @@ public class WardTransferSpecification {
         super();
     }
 
-    public static Specification<WardTransfer> createSpecification(final Long wardId, Long roomId, Long bedId, Long patientId, DateRange range, final String term) {
+    public static Specification<WardTransfer> createSpecification(final Long wardId, Long roomId, Long bedId, String patientNo, String admissionNo, DateRange range, final String term) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
@@ -26,8 +26,11 @@ public class WardTransferSpecification {
             if (bedId != null) {
                 predicates.add(cb.equal(root.get("bed").get("id"), bedId));
             }
-            if (patientId != null) {
-                predicates.add(cb.equal(root.get("patient").get("id"), patientId));
+            if (patientNo != null) {
+                predicates.add(cb.equal(root.get("patient").get("patientNumber"), patientNo));
+            }
+             if (admissionNo != null) {
+                predicates.add(cb.equal(root.get("admission").get("admissionNo"), admissionNo));
             }
              if (range != null) {
                 predicates.add(                      

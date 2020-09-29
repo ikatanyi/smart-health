@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.admission.domain;
 
+import io.smarthealth.clinical.admission.data.RoomData;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.clinical.admission.data.WardData;
 import java.util.ArrayList;
@@ -53,7 +54,10 @@ public class Ward extends Identifiable {
         data.setId(this.getId());
         data.setName(this.name);
         data.setRooms(this.rooms
-                .stream().map(x -> x.toData())
+                .stream().map(x -> {RoomData rm = x.toData(); 
+                data.setTotalRooms(this.rooms.size());
+                return rm;
+                        })
                 .collect(Collectors.toList())
         );
         return data;

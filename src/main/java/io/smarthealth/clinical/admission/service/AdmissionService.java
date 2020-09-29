@@ -15,12 +15,14 @@ import io.smarthealth.clinical.admission.domain.repository.AdmissionRepository;
 import io.smarthealth.clinical.admission.domain.specification.AdmissionSpecification;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
@@ -62,6 +64,9 @@ public class AdmissionService {
         BedType bt = bedService.getBedType(d.getBedTypeId());
         Patient p = patientService.findPatientOrThrow(d.getPatientNumber());
 
+        if(findAdmissionByPatientAndStatus(d.getPatientNumber()).isPresent())
+            throw APIException.conflict("Patient {0} already Admitted.", d.getPatientNumber());
+            
         String admissionNo = sequenceNumberService.next(1l, Sequences.Admission.name());
 
         Admission a = AdmissionData.map(d);
@@ -83,29 +88,8 @@ public class AdmissionService {
         a.setScheduled(Boolean.FALSE);
         a.setIsActiveOnConsultation(Boolean.FALSE);
         a.setServiceType(VisitEnum.ServiceType.Admission);
-        a.setStatus(VisitEnum.Status.Admitted);
-
-        //payment data
-        Scheme scheme = null;
-        if (d.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
-            scheme = schemeService.fetchSchemeById(d.getPaymentDetailsData().getSchemeId());
-            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
-            PaymentDetails pd = PaymentDetailsData.map(d.getPaymentDetailsData());
-
-            pd.setScheme(scheme);
-            pd.setPayer(scheme.getPayer());
-            pd.setVisit(a);
-            if (config.isPresent()) {
-                pd.setCoPayCalcMethod(config.get().getCoPayType());
-                pd.setCoPayValue(config.get().getCoPayValue());
-            }
-
-            paymentDetailsService.createPaymentDetails(pd);
-            //create bill for copay
-            if (config.isPresent() && config.get().getCoPayValue() > 0) {
-                billingService.createCopay(new CopayData(admissionNo, d.getPaymentDetailsData().getSchemeId()));
-            }
-        }
+        a.setStatus(VisitEnum.Status.Admitted);      
+        a.setPaymentMethod(d.getPaymentMethod());
 
         List<CareTeam> ctList = d.getCareTeam().stream().map(c
                 -> {
@@ -123,12 +107,42 @@ public class AdmissionService {
 
         bedService.updateBed(b);
         
-        List<EmergencyContact> EcList = d.getEmergencyContactData().stream().map(c->c.map()).collect(Collectors.toList());
+        List<EmergencyContact> EcList = d.getEmergencyContactData().stream().map(c->{
+            EmergencyContact contact = c.map();
+            contact.setAdmission(a);
+            return contact;            
+                    }).collect(Collectors.toList());
         a.setEmergencyContacts(EcList);
-        return admissionRepository.save(a);
+        Admission savedAdmissions = admissionRepository.save(a);
+        
+        //payment data
+        Scheme scheme = null;
+        if (d.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
+            scheme = schemeService.fetchSchemeById(d.getPaymentDetailsData().getSchemeId());
+            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+            PaymentDetails pd = PaymentDetailsData.map(d.getPaymentDetailsData());
+
+            pd.setScheme(scheme);
+            pd.setPayer(scheme.getPayer());
+            pd.setVisit(savedAdmissions);
+            pd.setPatient(p);
+            if (config.isPresent()) {
+                pd.setCoPayCalcMethod(config.get().getCoPayType());
+                pd.setCoPayValue(config.get().getCoPayValue());
+            }
+
+            paymentDetailsService.createPaymentDetails(pd);
+            //create bill for copay
+            if (config.isPresent() && config.get().getCoPayValue() > 0) {
+                billingService.createCopay(new CopayData(admissionNo, d.getPaymentDetailsData().getSchemeId()));
+            }
+        }
+        billingService.createAdmissionFee(admissionNo);
+        return savedAdmissions;
+        
     }
 
-    public Page<Admission> fetchAdmissions(final String admissionNo, final Long wardId, final Long roomId, final Long bedId, final String term, final Pageable pageable) {
+    public Page<Admission> fetchAdmissions(final String admissionNo, final Long wardId, final Long roomId, final Long bedId, final String term, final Boolean discharged, final Boolean active, final Status status, final DateRange range, final Pageable pageable) {
 
         Ward ward = null;
         Room room = null;
@@ -142,7 +156,7 @@ public class AdmissionService {
         if (bedId != null) {
             bed = bedService.getBed(bedId);
         }
-        Specification<Admission> s = AdmissionSpecification.createSpecification(admissionNo, ward, room, bed, term);
+        Specification<Admission> s = AdmissionSpecification.createSpecification(admissionNo, ward, room, bed, term, discharged, active, status, range);
         return admissionRepository.findAll(s, pageable);
     }
 
@@ -152,6 +166,12 @@ public class AdmissionService {
         } else {
             throw APIException.badRequest("Please provide admission id ", "");
         }
+    }
+    
+    public Optional<Admission> findAdmissionByPatientAndStatus(String patientId) {
+        Patient patient = patientService.findPatientOrThrow(patientId);
+        return admissionRepository.findByPatientAndStatus(patient, Status.Admitted);
+       
     }
 
     public Admission findAdmissionByNumber(String admissionNo) {

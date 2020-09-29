@@ -9,7 +9,10 @@ import io.smarthealth.clinical.admission.data.CareTeamData;
 import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.admission.domain.BedType;
 import io.smarthealth.clinical.admission.domain.CareTeam;
+import io.smarthealth.clinical.admission.domain.CareTeamRole;
 import io.smarthealth.clinical.admission.domain.repository.CareTeamRepository;
+import io.smarthealth.clinical.admission.domain.specification.AdmissionSpecification;
+import io.smarthealth.clinical.admission.domain.specification.CareTeamSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
@@ -17,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 /**
@@ -57,6 +63,11 @@ public class CareTeamService {
     public CareTeam getCareTeam(Long id) {
         return careTeamRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("CareTeam with id  {0} not found.", id));
+    }
+    
+    public Page<CareTeam> getCareTeams(String patientNo, String admissionNo, CareTeamRole careRole, Boolean active,  Boolean voided, Pageable page) {
+        Specification<CareTeam> s = CareTeamSpecification.createSpecification(patientNo, admissionNo, careRole, active,  voided);
+        return careTeamRepository.findAll(s,page);
     }
     
     public CareTeam removeCareTeam(Long id, String reason) {

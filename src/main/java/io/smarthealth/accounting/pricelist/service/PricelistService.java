@@ -99,19 +99,20 @@ public class PricelistService {
         return repository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Pricelist with ID {0} Not Found"));
     }
-
+@Transactional
     public PriceList updatePriceList(Long id, PriceListData data) {
         PriceList toUpdateItem = getPriceList(id);
         Item item = findItem(data.getItemCode());
         ServicePoint servicePoint = getServicePoint(data.getServicePointId());
 
-        toUpdateItem.setActive(Boolean.TRUE);
+        toUpdateItem.setActive(data.getActive()!=null ? data.getActive() : Boolean.TRUE);
         toUpdateItem.setDefaultPrice(data.getDefaultPrice());
         toUpdateItem.setEffectiveDate(data.getEffectiveDate());
         toUpdateItem.setItem(item);
         toUpdateItem.setSellingRate(data.getSellingRate());
         toUpdateItem.setServicePoint(servicePoint);
-        return save(toUpdateItem);
+       return  repository.save(toUpdateItem);
+//        return save(toUpdateItem);
     }
 
     public Page<PriceList> getPriceLists(String queryItem, Long servicePointId, Boolean defaultPrice, List<ItemCategory> category, ItemType itemType, Pageable page) {
@@ -121,6 +122,10 @@ public class PricelistService {
 
     /**
      * Get PriceList by Location and optional filter of price book
+     * @param servicePointId
+     * @param priceBookId
+     * @param page
+     * @return 
      */
     public Page<PriceList> getPricelistByLocation(Long servicePointId, Long priceBookId, Pageable page) {
         ServicePoint servicePoint = getServicePoint(servicePointId);
@@ -193,6 +198,10 @@ public class PricelistService {
     private Item findItem(String itemCode) {
         return itemRepository.findByItemCode(itemCode)
                 .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", itemCode));
+    }
+     private Item findItemBy(Long id) {
+        return itemRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Item with ID {0} not found.", id));
     }
 
     public ServicePoint getServicePoint(Long id) {

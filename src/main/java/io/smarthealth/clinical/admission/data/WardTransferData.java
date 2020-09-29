@@ -5,8 +5,10 @@
  */
 package io.smarthealth.clinical.admission.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.admission.domain.*;
 import io.smarthealth.infrastructure.lang.Constants;
+import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -23,7 +25,7 @@ public class WardTransferData {
     @ApiModelProperty(hidden = true)
     private String patientNumber;
     private Long admissionId;
-    @ApiModelProperty(example = Constants.DATE_TIME_PATTERN)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime transferDatetime= LocalDateTime.now();
     @ApiModelProperty(hidden = true)
     private Long wardId;
