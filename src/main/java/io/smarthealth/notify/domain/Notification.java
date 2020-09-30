@@ -13,17 +13,15 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  *
  * @author Kelsas
  */ 
 @Entity 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Table(name = "user_notifications") 
 public class Notification extends Auditable {
