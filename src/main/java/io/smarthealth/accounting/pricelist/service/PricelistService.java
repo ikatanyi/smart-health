@@ -189,6 +189,10 @@ public class PricelistService {
     public PriceList fetchPriceListByItemAndServicePoint(final Item item, final ServicePoint servicePoint) {
         return repository.findByItemAndServicePoint(item, servicePoint).orElseThrow(() -> APIException.notFound("Pricelist not found ", ""));
     }
+    
+    public PriceList fetchPriceListByItemCategory(final ItemCategory category) {
+        return repository.getPriceListByItemCategory(category).orElseThrow(() -> APIException.notFound("Pricelist not found ", ""));
+    }
 
     public void deletePriceList(Long id) {
         PriceList item = getPriceList(id);

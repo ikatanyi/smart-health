@@ -28,6 +28,7 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -137,7 +138,7 @@ public class AdmissionService {
                 billingService.createCopay(new CopayData(admissionNo, d.getPaymentDetailsData().getSchemeId()));
             }
         }
-        billingService.createAdmissionFee(admissionNo);
+        billingService.createFee(admissionNo,ItemCategory.Admission, 1);
         return savedAdmissions;
         
     }

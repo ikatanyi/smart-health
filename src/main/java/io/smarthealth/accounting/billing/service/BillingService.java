@@ -43,6 +43,9 @@ import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
 import io.smarthealth.accounting.payment.data.BilledItem;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
+import io.smarthealth.accounting.pricelist.domain.PriceList;
+import io.smarthealth.accounting.pricelist.service.PricelistService;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
@@ -90,6 +93,7 @@ public class BillingService {
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final DoctorInvoiceService doctorInvoiceService;
     private final CashPaidUpdater cashPaidUpdater;
+    private final PricelistService pricelistService;
 
     //Create service bill
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -824,21 +828,27 @@ public class BillingService {
     
     
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public PatientBill createAdmissionFee(String admissionNumber) {
+    public PatientBill createFee(String admissionNumber, ItemCategory category, Integer qty) {
+        Double sellingRate = 0.0;
         //TODO check if the visit is valid or not
-        Visit visit = visitRepository.findByVisitNumberAndStatus(admissionNumber, VisitEnum.Status.CheckIn)
+        Visit visit = visitRepository.findByVisitNumber(admissionNumber)
                 .orElseThrow(() -> APIException.badRequest("Admission Number {0} is not active for transaction", admissionNumber));
         PatientBill patientbill = null;
-                Optional<Item> admission = itemService.findFirstByCategory(ItemCategory.Admission);
-                if (admission.isPresent()) {
-                    Item item = admission.get();
+                PriceList priceList = pricelistService.fetchPriceListByItemCategory(category);
+                if(category==ItemCategory.NHIF_Rebate){
+                    sellingRate = -1*(NumberUtils.toDouble(priceList.getSellingRate()));
+                    
+                }
+                else{
+                    sellingRate = (NumberUtils.toDouble(priceList.getSellingRate()));
+                }
                     patientbill = new PatientBill();
                     patientbill.setVisit(visit);
                     patientbill.setPatient(visit.getPatient());
                     patientbill.setWalkinFlag(Boolean.FALSE);
-                    patientbill.setAmount(NumberUtils.toDouble(item.getRate()));
+                    patientbill.setAmount(sellingRate*qty);
                     patientbill.setDiscount(0D);
-                    patientbill.setBalance(NumberUtils.toDouble(item.getRate()));
+                    patientbill.setBalance(sellingRate);
                     patientbill.setBillingDate(LocalDate.now());
                     patientbill.setPaymentMode(visit.getPaymentMethod().name());
                     patientbill.setStatus(BillStatus.Draft);
@@ -853,24 +863,21 @@ public class BillingService {
 
                     billItem.setBillingDate(LocalDate.now());
                     billItem.setTransactionId(trdId);
-                    billItem.setItem(item);
+                    billItem.setItem(priceList.getItem());
                     billItem.setPaid(false);
-                    billItem.setPrice(NumberUtils.toDouble(item.getRate()));
-                    billItem.setQuantity(1D);
-                    billItem.setAmount(NumberUtils.toDouble(item.getRate()));
+                    billItem.setPrice(sellingRate);
+                    billItem.setQuantity(NumberUtils.createDouble(String.valueOf(qty)));
+                    billItem.setAmount(sellingRate*qty);
                     billItem.setDiscount(0D);
-                    billItem.setBalance(NumberUtils.toDouble(item.getRate()));
-                    //determine where the copay should be posted
-                    billItem.setServicePoint("Admission_Fee");
-                    billItem.setServicePointId(0L);
+                    billItem.setBalance(sellingRate*qty);
+                    billItem.setServicePoint(priceList.getServicePoint().getName());
+                    billItem.setServicePointId(priceList.getServicePoint().getId());
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setMedicId(null);
 
                     patientbill.addBillItem(billItem);
 
                     return save(patientbill);
-                }
-                return null;
             }
 
 }
