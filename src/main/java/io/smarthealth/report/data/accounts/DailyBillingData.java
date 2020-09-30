@@ -30,6 +30,7 @@ public class DailyBillingData {
     private String lastModifiedBy;
     private Double lab=0.0;
     private Double pharmacy=0.0;
+    private Double discount=0.0;
     private Double radiology=0.0;
     private Double consultation=0.0;
     private Double procedure=0.0;
