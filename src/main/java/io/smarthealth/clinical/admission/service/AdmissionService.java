@@ -22,6 +22,7 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
@@ -136,11 +137,12 @@ public class AdmissionService {
                 billingService.createCopay(new CopayData(admissionNo, d.getPaymentDetailsData().getSchemeId()));
             }
         }
+        billingService.createAdmissionFee(admissionNo);
         return savedAdmissions;
         
     }
 
-    public Page<Admission> fetchAdmissions(final String admissionNo, final Long wardId, final Long roomId, final Long bedId, final String term, final Boolean discharged, final Boolean active, final Status status, final Pageable pageable) {
+    public Page<Admission> fetchAdmissions(final String admissionNo, final Long wardId, final Long roomId, final Long bedId, final String term, final Boolean discharged, final Boolean active, final Status status, final DateRange range, final Pageable pageable) {
 
         Ward ward = null;
         Room room = null;
@@ -154,7 +156,7 @@ public class AdmissionService {
         if (bedId != null) {
             bed = bedService.getBed(bedId);
         }
-        Specification<Admission> s = AdmissionSpecification.createSpecification(admissionNo, ward, room, bed, term, discharged, active, status);
+        Specification<Admission> s = AdmissionSpecification.createSpecification(admissionNo, ward, room, bed, term, discharged, active, status, range);
         return admissionRepository.findAll(s, pageable);
     }
 

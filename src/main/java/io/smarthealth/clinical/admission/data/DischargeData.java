@@ -18,7 +18,8 @@ public class DischargeData {
     private String patientNumber;
     private String patientName;
     private String gender;
-     private String doctor;
+    private Integer age;
+    private String doctor;
     private String admissionNumber;
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime admissionDate;
