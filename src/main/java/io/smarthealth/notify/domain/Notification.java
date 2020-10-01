@@ -21,8 +21,6 @@ import lombok.NoArgsConstructor;
  * @author Kelsas
  */ 
 @Entity 
-@Data
-@NoArgsConstructor
 @Table(name = "user_notifications") 
 public class Notification extends Auditable {
 
@@ -91,4 +89,53 @@ public class Notification extends Auditable {
                 .build();
 
     }
+
+    public LocalDateTime getDatetime() {
+        return datetime;
+    }
+
+    public void setDatetime(LocalDateTime datetime) {
+        this.datetime = datetime;
+    }
+
+    public User getRecipient() {
+        return recipient;
+    }
+
+    public void setRecipient(User recipient) {
+        this.recipient = recipient;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean isRead) {
+        this.isRead = isRead;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    public NoticeType getNoticeType() {
+        return noticeType;
+    }
+
+    public void setNoticeType(NoticeType noticeType) {
+        this.noticeType = noticeType;
+    }
+    
 }
