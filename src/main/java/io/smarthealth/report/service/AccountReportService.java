@@ -381,6 +381,7 @@ public class AccountReportService {
                 if (item.getStatus() == item.getStatus().Paid) {
                     data.setPaid(data.getPaid().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
                 }
+                data.setDiscount(data.getDiscount()+item.getDiscount());
 
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
