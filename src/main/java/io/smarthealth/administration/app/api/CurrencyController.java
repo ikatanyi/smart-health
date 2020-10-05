@@ -67,7 +67,7 @@ public class CurrencyController {
     }
 
     @GetMapping("/currencies/{id}")
-    @PreAuthorize("hasAuthority('view_currencies')")
+//    @PreAuthorize("hasAuthority('view_currencies')")
     public Currency getCurrency(@PathVariable(value = "id") Long code) {
         Currency currencyService = service.getCurrency(code)
                 .orElseThrow(() -> APIException.notFound("Payment Terms with id {0} not found.", code));

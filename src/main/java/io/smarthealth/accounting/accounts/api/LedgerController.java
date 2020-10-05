@@ -3,6 +3,7 @@ package io.smarthealth.accounting.accounts.api;
 import io.smarthealth.accounting.accounts.data.AccountPage;
 import io.smarthealth.accounting.accounts.data.LedgerData;
 import io.smarthealth.accounting.accounts.data.LedgerPage;
+import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.domain.Ledger;
 import io.smarthealth.accounting.accounts.service.LedgerService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -33,9 +34,9 @@ public class LedgerController {
     @ResponseBody
     @PreAuthorize("hasAuthority('create_Legder')")
     ResponseEntity<?> createLedger(@RequestBody @Valid final LedgerData ledger) {
-        if (ledger.getParentLedgerIdentifier() != null) {
-            throw APIException.badRequest("Ledger {0} is not a root.", ledger.getIdentifier());
-        }
+//        if (ledger.getParentLedgerIdentifier() != null) {
+//            throw APIException.badRequest("Ledger {0} is not a root.", ledger.getIdentifier());
+//        }
 
         if (this.ledgerService.findLedger(ledger.getIdentifier()).isPresent()) {
             throw APIException.conflict("Ledger {0} already exists.", ledger.getIdentifier());
@@ -64,9 +65,15 @@ public class LedgerController {
     @GetMapping("/types")
     @ResponseBody
     @PreAuthorize("hasAuthority('view_Legder')")
-    ResponseEntity< ?> fetchLedgers(Boolean isGrouped) {
+    ResponseEntity< ?> fetchLedgers(@RequestParam(value = "isGrouped", required = false) Boolean isGrouped, @RequestParam(value = "type", required = false) AccountType accountType) {
         if (isGrouped != null && isGrouped) {
             return ResponseEntity.ok(ledgerService.getGroupedAccountsTypes());
+        }
+        if (accountType != null) {
+            List<LedgerData> list = ledgerService.listByAccountType(accountType).stream().map(x -> LedgerData.map(x))
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(list);
         }
         List<LedgerData> ledgerList = ledgerService.listAllAccountTypes()
                 .stream()

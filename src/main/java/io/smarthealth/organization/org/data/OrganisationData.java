@@ -16,7 +16,7 @@ import lombok.Data;
  * @author Kelsas
  */
 @Data
-@JsonInclude(Include.NON_NULL)
+//@JsonInclude(Include.NON_NULL)
 public class OrganisationData {
 
     private String id;

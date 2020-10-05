@@ -42,6 +42,7 @@
 	<field name="paid" class="java.math.BigDecimal"/>
 	<field name="transactions" class="java.util.List"/>
 	<field name="tenderedAmount" class="java.math.BigDecimal"/>
+	<field name="discount" class="java.math.BigDecimal"/>
 	<variable name="amount" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[]]></variableExpression>
 		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>
@@ -54,8 +55,9 @@
 		<variableExpression><![CDATA[]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
 	</variable>
-	<variable name="discount" class="java.math.BigDecimal">
-		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	<variable name="discount" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{discount}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
 	</variable>
 	<group name="patient">
 		<groupExpression><![CDATA[]]></groupExpression>
@@ -192,24 +194,23 @@
 			<subreport>
 				<reportElement positionType="Float" x="-21" y="17" width="313" height="10" isRemoveLineWhenBlank="true" uuid="a0c77665-5798-498b-b480-c3720413878d"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{transactions})]]></dataSourceExpression>
-				<returnValue subreportVariable="discount" toVariable="discount"/>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "general_receipt_subreport2.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
-		<band height="58">
+		<band height="67">
 			<staticText>
 				<reportElement positionType="Float" x="90" y="17" width="110" height="15" uuid="ce6fb247-a0fb-4f6b-bcf9-472ab0bbedfa"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[CHANGE :]]></text>
+				<text><![CDATA[DISCOUNT :]]></text>
 			</staticText>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="199" y="17" width="56" height="15" uuid="55d48a9f-cd9c-4204-b07d-ab6a1ad03649"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[($F{tenderedAmount}== null?new BigDecimal(0):$F{tenderedAmount}.setScale(2, BigDecimal.ROUND_HALF_UP)).subtract( $F{amount}==null?new BigDecimal(0):$F{amount}.setScale(0, BigDecimal.ROUND_HALF_UP)).add($V{discount})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{discount}.setScale(0, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="199" y="1" width="56" height="15" uuid="49e2db46-e47d-4624-9ed3-e6b3f48a875e"/>
@@ -226,19 +227,33 @@
 				<text><![CDATA[AMOUNT TENDERED  :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="42" width="70" height="15" uuid="b1b3883e-d63c-4434-896b-44bb48f46b50"/>
+				<reportElement x="1" y="51" width="70" height="15" uuid="b1b3883e-d63c-4434-896b-44bb48f46b50"/>
 				<textElement verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Served by:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="65" y="42" width="177" height="15" uuid="02113826-f210-4ff2-baf2-10389fad918d"/>
+				<reportElement x="65" y="51" width="177" height="15" uuid="02113826-f210-4ff2-baf2-10389fad918d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
 			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="199" y="32" width="56" height="15" uuid="8bf604d6-19a5-4a3f-b9a7-aca94d0058f6"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{tenderedAmount}== null?new BigDecimal(0):$F{tenderedAmount}.setScale(2, BigDecimal.ROUND_HALF_UP)).subtract( $F{amount}==null?new BigDecimal(0):$F{amount}.setScale(0, BigDecimal.ROUND_HALF_UP)).add($V{discount})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="90" y="32" width="110" height="15" uuid="e7badea2-16a5-4d44-8363-c35095fd6832"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CHANGE :]]></text>
+			</staticText>
 		</band>
 	</detail>
 	<pageFooter>

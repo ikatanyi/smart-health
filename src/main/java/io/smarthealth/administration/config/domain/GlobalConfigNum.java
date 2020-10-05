@@ -26,5 +26,6 @@ public enum GlobalConfigNum {
     EnablePasswordPolicy,
     PatientPortrait,
     CashierShiftDuration,
-    Notifications
+    Notifications,
+    DefaultCurrency
 }
