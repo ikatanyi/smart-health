@@ -614,7 +614,7 @@ public class AccountReportService {
         reportService.generateReport(reportData, response);
     }
 
-    public void getPatientPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        public void getPatientPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String receiptNo = reportParam.getFirst("receiptNo");
         String payee = reportParam.getFirst("payee");
@@ -657,6 +657,7 @@ public class AccountReportService {
                         break;
                     case "MOBILE MONEY":
                         data.setMobilemoney(data.getMobilemoney().add(trx.getAmount()));
+                        data.setReferenceNumber(trx.getReference());
                         break;
                     case "CASH":
                         data.setCash(data.getCash().add(trx.getAmount()));
@@ -929,16 +930,50 @@ public class AccountReportService {
         reportData.setReportName("accounts_Statement");
         reportService.generateReport(reportData, response);
     }
+    
+    public void getPaymentTransactions(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        
+        Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        String receiptNo = reportParam.getFirst("receiptNo");
+        String patientNo = reportParam.getFirst("patientNo");
+        String itemCode = reportParam.getFirst("itemCode");
+        Boolean voided = reportParam.getFirst("cancelled")==null?null:Boolean.parseBoolean(reportParam.getFirst("cancelled"));
+        //"RCT-00009"
+        List<ReceiptItemData> receiptDataArray = receivePaymentService.getVoidedItems(servicePointId, patientNo,  itemCode, voided, range, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map((receipt) -> receipt.toData())
+                .collect(Collectors.toList());
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("servicePoint");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        
+        sortField = new JRDesignSortField();
+        sortField.setName("itemCode");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
 
+        sortField = new JRDesignSortField();
+        sortField.setName("transactionDate");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.setData(receiptDataArray);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/Service_statement");
+        reportData.setReportName("Department-Service-Statement");
+        reportService.generateReport(reportData, response);
+    }
 
-//     
-//     public void getAccountEntries(final String identifier,
-//            final DateRange range,
-//            final String message,
-//            final Pageable pageable){
-//         List<Account> accountEntries = accountService.fetchAccountEntries(identifier, range, message, pageable).getAccountEntries();
-//         
-//     }
+    
 //     
     private BillStatus statusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {

@@ -261,6 +261,7 @@ public class ReceivePaymentService {
         Specification<ReceiptItem> spec = ReceiptSpecification.createVoidedReceiptItemSpecification(servicePointId, patientNumber, itemCode, voided, range);
         return receiptItemRepository.findAll(spec, page);
     }
+    
 
     private ReceiptTransaction createPaymentTransaction(ReceiptMethod data) {
         ReceiptTransaction trans = new ReceiptTransaction();

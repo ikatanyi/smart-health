@@ -35,4 +35,6 @@ public class ReceiptItemData {
     private String referenceNumber;
     @ApiModelProperty(required=false, hidden=true)
     private LocalDate transactionDate;
+    @ApiModelProperty(required=false, hidden=true)
+    private String paymentMode;
 }

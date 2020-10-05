@@ -11,5 +11,6 @@ public enum ServicePointType {
     Pharmacy,
     Radiology,
     Procedure,
+    InPatient,
     Others
 }

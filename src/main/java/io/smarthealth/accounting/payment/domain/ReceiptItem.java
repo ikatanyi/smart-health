@@ -71,10 +71,11 @@ public class ReceiptItem extends Identifiable {
         ReceiptItemData data = new ReceiptItemData();
         data.setId(this.getId());
         data.setReceiptNumber(this.getReceipt().getReceiptNo());
+        data.setPaymentMode(this.getReceipt().getPaymentMethod());
         if(this.getReceipt()!=null){
             data.setPatientName(this.getReceipt().getPayer());
-            data.setReferenceNumber(this.getReceipt().getReferenceNumber());
-            data.setReceiptNumber(this.getReceipt().getReferenceNumber());
+            data.setReferenceNumber(this.getReceipt().getReceiptNo());
+            data.setReceiptNumber(this.getReceipt().getReceiptNo());
         }
         if(item!=null){
             data.setItemName(this.getItem().getItem().getItemName());
