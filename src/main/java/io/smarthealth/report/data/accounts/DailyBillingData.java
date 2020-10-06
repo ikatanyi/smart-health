@@ -19,6 +19,7 @@ public class DailyBillingData {
     private BigDecimal amount=BigDecimal.ZERO;
     private BigDecimal balance =BigDecimal.ZERO;
     private BigDecimal paid = BigDecimal.ZERO;
+    private Double discount = 0.0;
     private String visitNo;
     private String patientId;
     private String patientName;
@@ -30,7 +31,6 @@ public class DailyBillingData {
     private String lastModifiedBy;
     private Double lab=0.0;
     private Double pharmacy=0.0;
-    private Double discount=0.0;
     private Double radiology=0.0;
     private Double consultation=0.0;
     private Double procedure=0.0;

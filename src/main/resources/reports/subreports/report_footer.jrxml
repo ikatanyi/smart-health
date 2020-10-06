@@ -24,10 +24,10 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<text><![CDATA[Print Date:]]></text>
+				<text><![CDATA[Generated:]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="505" y="1" width="68" height="14" uuid="7555f5ad-4c25-46b1-9e41-583102067f3a"/>
+				<reportElement x="501" y="1" width="72" height="14" uuid="7555f5ad-4c25-46b1-9e41-583102067f3a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
