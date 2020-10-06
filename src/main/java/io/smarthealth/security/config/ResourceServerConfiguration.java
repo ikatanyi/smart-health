@@ -32,6 +32,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http
+                
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests().antMatchers(Public_Matchers).permitAll()
@@ -63,6 +64,10 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         "/api/downloadFile/**",
         "/api/report/**",
         "/v2/api-docs/**",
+        "/health**",
+        "/metrics**",
+        "/loggers**",
+        "/actuator/**",
         "/swagger-ui.html/**"
     };
 }
