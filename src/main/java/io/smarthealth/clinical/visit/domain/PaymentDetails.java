@@ -17,6 +17,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
@@ -32,12 +33,12 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "patient_visit_payment_details")
 public class PaymentDetails extends Auditable {
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "visit_id", foreignKey = @ForeignKey(name = "fk_payment_details_visit_id"))
     private Visit visit;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_payment_details_patient_id"))
     private Patient patient;
