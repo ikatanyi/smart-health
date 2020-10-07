@@ -12,7 +12,7 @@
 	<field name="amount" class="java.math.BigDecimal"/>
 	<field name="servicePoint" class="java.lang.String"/>
 	<variable name="total" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[($F{amount}.equals( null )?new BigDecimal(0):$F{amount}.setScale(0,  java.math.RoundingMode.HALF_UP))]]></variableExpression>
+		<variableExpression><![CDATA[$F{servicePoint}.equalsIgnoreCase( "copayment" )?$F{amount}.negate():$F{amount}.equals( null )?new BigDecimal(0):$F{amount}.setScale(0,  java.math.RoundingMode.HALF_UP)]]></variableExpression>
 		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
 	</variable>
 	<detail>
