@@ -12,6 +12,7 @@ import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
+import org.apache.commons.lang3.EnumUtils;
 import org.smarthealth.patient.validation.constraints.ValidIdentifier;
 
 /**
@@ -57,6 +58,7 @@ public class PatientTestsData {
     @Enumerated(EnumType.STRING)
     @Column(length = 25)
     private Order diagnosisOrder;
+    private LocalDateTime date=LocalDateTime.now();
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime recorded = LocalDateTime.now();
@@ -66,6 +68,7 @@ public class PatientTestsData {
     public static PatientDiagnosis map(PatientTestsData diagnosis) {
         PatientDiagnosis entity = new PatientDiagnosis();
         entity.getDiagnosis().setCode(diagnosis.getCode());
+        entity.setDate(diagnosis.getDate());
         entity.getDiagnosis().setDescription(diagnosis.getDescription());
         entity.setCertainty(diagnosis.getCertainty()!=null ? diagnosis.getCertainty().name(): null);
         entity.setDiagnosisOrder(diagnosis.getDiagnosisOrder()!=null ? diagnosis.getDiagnosisOrder().name(): null);
@@ -75,12 +78,13 @@ public class PatientTestsData {
     public static PatientTestsData map(PatientDiagnosis entity) {
         PatientTestsData diagnos = new PatientTestsData();
         diagnos.setId(entity.getId());
+        diagnos.setDate(entity.getDate());
         diagnos.setPatientNumber(entity.getPatient().getPatientNumber());
         diagnos.setVisitNumber(entity.getVisit().getVisitNumber());
         diagnos.setCode(entity.getDiagnosis().getCode());
         diagnos.setDescription(entity.getDiagnosis().getDescription());
-        diagnos.setCertainty(Certainty.valueOf(entity.getCertainty()));
-        diagnos.setDiagnosisOrder(Order.valueOf(entity.getDiagnosisOrder()));
+        diagnos.setCertainty(EnumUtils.getEnumIgnoreCase(Certainty.class,entity.getCertainty()));
+        diagnos.setDiagnosisOrder(EnumUtils.getEnumIgnoreCase(Order.class,entity.getDiagnosisOrder()));
         diagnos.setRecorded(entity.getDateRecorded());
         diagnos.setAge(entity.getPatient().getAge());
         diagnos.setGender(entity.getPatient().getGender());
@@ -91,11 +95,4 @@ public class PatientTestsData {
         return diagnos;
     }
 
-//    public String getDiagnosisCertainty() {
-//        return certainty != null ? certainty.name() : "";
-//    }
-//
-//    public String getDiagnosisOrder() {
-//        return diagnosisOrder != null ? diagnosisOrder.name() : "";
-//    }
 }
