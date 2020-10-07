@@ -124,7 +124,7 @@ public class InventoryItemService {
 
         return inventoryItems;
     }
-    
+
     public Optional<InventoryItem> getInventoryItem(Long inventoryId) {
         return inventoryItemRepository.findById(inventoryId);
     }
@@ -139,7 +139,7 @@ public class InventoryItemService {
                 .orElseThrow(() -> APIException.notFound("Item with given identifier can not be in given Store"));
     }
 
-    public Optional<InventoryItem> getInventoryItem(Long itemId,Long storeId) {
+    public Optional<InventoryItem> getInventoryItem(Long itemId, Long storeId) {
         Item item = itemService.findItemEntityOrThrow(itemId);
         Store store = storeService.getStoreWithNoFoundDetection(storeId);
         return inventoryItemRepository.findByItemAndStore(item, store);
@@ -158,7 +158,6 @@ public class InventoryItemService {
         Store store = storeService.getStoreWithNoFoundDetection(storeId);
         return inventoryItemRepository.findByStore(store, page).map(d -> d.toData());
     }
-    
 
     @Transactional
     public void processInventoryBalance(InventoryEvent event) {
@@ -175,11 +174,11 @@ public class InventoryItemService {
                 log.info("Nothing to calculate balance");
         }
     }
-    
+
     public List<ExpiryStock> getExpiryStock() {
         return stockEntryRepository.findExpiryStockInterface();
     }
-    
+
     public void uploadInventoryItems(List<InventoryStockData> itemData) {
         List<InventoryItem> items = new ArrayList<>();
         List<StockEntry> stockEntry = new ArrayList<>();
@@ -190,9 +189,9 @@ public class InventoryItemService {
                     InventoryItem inventory = inventoryItemRepository
                             .findByItemAndStore(item, store)
                             .orElse(InventoryItem.create(store, item));
-                    if (x.getStockCount() > 0) {
-                        inventory.setAvailableStock(x.getStockCount());
-                    }
+//                    if (x.getStockCount() > 0) {
+                    inventory.setAvailableStock(x.getStockCount());
+//                    }
                     String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
                     final String referenceNo = sequenceNumberService.next(1L, Sequences.StockTransferNumber.name());
 
@@ -210,7 +209,7 @@ public class InventoryItemService {
                     entry.setTransactionNumber(trdId);
                     entry.setUnit(item.getUnit());
                     stockEntry.add(entry);
-                    
+
                 });
 //        return save(inventory);
         inventoryItemRepository.saveAll(items);
