@@ -120,6 +120,7 @@ public class DoctorRequestService implements DateConverter {
     }
 
     public Page<DoctorRequest> fetchAllDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, final String groupBy, Pageable pageable, Boolean activeVisit, final String term, DateRange range) {
+        System.out.println("fulfillerStatus " + fulfillerStatus);
         Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, activeVisit, term, range);
 
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
@@ -179,11 +180,15 @@ public class DoctorRequestService implements DateConverter {
 
     public DoctorRequestItem toData(DoctorRequest d) {
         DoctorRequestItem requestItem = new DoctorRequestItem();
-        requestItem.setCode(d.getItem().getItemCode());
-        requestItem.setItemId(d.getItem().getId());
+        if (d.getItem() != null) {
+            requestItem.setCode(d.getItem().getItemCode());
+            requestItem.setItemId(d.getItem().getId());
+            requestItem.setItemName(d.getItem().getItemName());
+        }
+        
         requestItem.setRate(d.getItemRate());
         requestItem.setCostRate(d.getItemCostRate());
-        requestItem.setItemName(d.getItem().getItemName());
+
         requestItem.setRequestItemId(d.getId());
         if (d.getRequestType().equals(DoctorRequestData.RequestType.Pharmacy)) {
             requestItem.setPrescriptionData(PrescriptionData.map(prescriptionRepository.findPresriptionByRequestId(d.getId())));
@@ -204,7 +209,7 @@ public class DoctorRequestService implements DateConverter {
     public Pager<?> getUnfilledDoctorRequests(RequestType requestType) {
         Pageable pageable = PageRequest.of(0, 50);
         Page<DoctorRequest> pageList = doctorRequestRepository.findAll(DoctorRequestSpecification.unfullfilledRequests(requestType), pageable);
-       
+
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
 
         pageList.getContent().stream().map((docReq) -> {
@@ -245,5 +250,5 @@ public class DoctorRequestService implements DateConverter {
 
         return pagers;
     }
- 
+
 }

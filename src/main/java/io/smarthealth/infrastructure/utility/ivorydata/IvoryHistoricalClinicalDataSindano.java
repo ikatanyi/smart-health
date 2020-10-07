@@ -5,31 +5,47 @@
  */
 package io.smarthealth.infrastructure.utility.ivorydata;
 
+import io.smarthealth.organization.person.domain.enumeration.Gender;
+import io.smarthealth.organization.person.domain.enumeration.MaritalStatus;
+import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Simon.waweru
  */
+//@RequiredArgsConstructor
+@Service
 public class IvoryHistoricalClinicalDataSindano {
 
     ResultSet rs = null;
     PreparedStatement pst = null;
     PreparedStatement pst2 = null;
+    Connection conn = null;
     DBConnector connector = new DBConnector();
 
+//    private final PatientService patientService;
+//
+//    public IvoryHistoricalClinicalDataSindano(PatientService patientService) {
+//        this.patientService = patientService;
+//    }
     public static void main(String[] args) {
         IvoryHistoricalClinicalDataSindano sindano = new IvoryHistoricalClinicalDataSindano();
         sindano.processData();
     }
 
-    private void processData() {
+    public void processData() {
 
         List<PatientData> patients = new ArrayList<>();
         //fetch past data patients
@@ -37,7 +53,7 @@ public class IvoryHistoricalClinicalDataSindano {
         Connection conn = null;
         try {
             conn = connector.ConnectToPastDB();
-            String fetchPatientData = "SELECT e.pv_Entity_No, e.v_Fname,e.v_Mname, e.v_Lname, e.v_Id_No, e.d_Dob,e.d_Dor, e.v_File_No, e.d_Status_Date FROM dbo.m_Entity  AS e WHERE e.fv_Entity_Type_No = 'PAT'";
+            String fetchPatientData = "SELECT e.pv_Entity_No, e.v_Fname,e.v_Mname, e.v_Lname, e.v_Id_No, e.d_Dob,e.d_Dor, e.v_File_No, e.d_Status_Date FROM hospitaldb.dbo_m_Entity  AS e WHERE e.fv_Entity_Type_No = 'PAT'";
             pst = conn.prepareStatement(fetchPatientData);
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -56,12 +72,21 @@ public class IvoryHistoricalClinicalDataSindano {
 
                 patients.add(data);
             }
-            //  printMissingPatients(patients, conn);
+            //printMissingPatients(patients, conn);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        /* Start remove duplicates */
+//        this.conn = conn;
+//        patients.removeIf(da -> patientExists(da));
+//        
+//        for (PatientData data : patients) {
+//            insertMissingPatient(data);
+//        }
+//        
+        /* End remove duplicates */
         //create one patient visit for all the past visits
         try {
             for (PatientData d : patients) {
@@ -93,7 +118,6 @@ public class IvoryHistoricalClinicalDataSindano {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void insertLabResults(List<PatientData> patients, Connection conn) {
@@ -111,7 +135,7 @@ public class IvoryHistoricalClinicalDataSindano {
                         try {
                             //create doctor request
 //                            if (!isDoctorRequestOrderNumberExists("VST-".concat(d.getPvEntityNo()), conn)) {
-                            String docRequest = "INSERT INTO smarthealth.patient_doctor_request (created_by, created_on, last_modified_by, last_modified_on, version, fulfiller_comment, fulfiller_status, item_cost_rate, item_rate, notes, order_date, order_number, request_type, urgency,  patient_id, requested_by_id, visit_id,DeploymentCount) VALUES ('system', NOW(), 'system', NOW(), '0', 'Fulfilled', 'Carried down past clinic data', 0.00, 0.00, 'Carried down past clinic data', '" + rs.getString("Date") + "', '" + "LAB-".concat(d.getPvEntityNo()) + "', 'Pharmacy', 'Medium', (SELECT id FROM smarthealth.patient WHERE patient_number = '" + d.getCurrentPatientNo() + "'), '1', (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' ), '" + countOrderNo + "')";
+                            String docRequest = "INSERT INTO smarthealth.patient_doctor_request (created_by, created_on, last_modified_by, last_modified_on, version, fulfiller_comment, fulfiller_status, item_cost_rate, item_rate, notes, order_date, order_number, request_type, urgency,  patient_id, requested_by_id, visit_id,DeploymentCount) VALUES ('system', NOW(), 'system', NOW(), '0', 'Fulfilled', 'Fulfilled', 0.00, 0.00, 'Carried down past clinic data', '" + rs.getString("Date") + "', '" + "LAB-".concat(d.getPvEntityNo()) + "', 'Pharmacy', 'Medium', (SELECT id FROM smarthealth.patient WHERE patient_number = '" + d.getCurrentPatientNo() + "'), '1', (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' ), '" + countOrderNo + "')";
                             pst = conn.prepareStatement(docRequest);
                             pst.execute();
 //                            }
@@ -170,7 +194,7 @@ public class IvoryHistoricalClinicalDataSindano {
                         try {
                             //create doctor request
 //                            if (!isDoctorRequestOrderNumberExists("VST-".concat(d.getPvEntityNo()), conn)) {
-                            String docRequest = "INSERT INTO smarthealth.patient_doctor_request (created_by, created_on, last_modified_by, last_modified_on, version, fulfiller_comment, fulfiller_status, item_cost_rate, item_rate, notes, order_date, order_number, request_type, urgency,  patient_id, requested_by_id, visit_id,DeploymentCount) VALUES ('system', NOW(), 'system', NOW(), '0', 'Fulfilled', 'Carried down past clinic data', 0.00, 0.00, 'Carried down past clinic data', '" + rs.getString("Date") + "', '" + "PRESC-".concat(d.getPvEntityNo()) + "', 'Pharmacy', 'Medium', (SELECT id FROM smarthealth.patient WHERE patient_number = '" + d.getCurrentPatientNo() + "'), '1', (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' ), '" + countOrderNo + "')";
+                            String docRequest = "INSERT INTO smarthealth.patient_doctor_request (created_by, created_on, last_modified_by, last_modified_on, version, fulfiller_comment, fulfiller_status, item_cost_rate, item_rate, notes, order_date, order_number, request_type, urgency,  patient_id, requested_by_id, visit_id,DeploymentCount) VALUES ('system', NOW(), 'system', NOW(), '0', 'Fulfilled', 'Fulfilled', 0.00, 0.00, 'Carried down past clinic data', '" + rs.getString("Date") + "', '" + "PRESC-".concat(d.getPvEntityNo()) + "', 'Pharmacy', 'Medium', (SELECT id FROM smarthealth.patient WHERE patient_number = '" + d.getCurrentPatientNo() + "'), '1', (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' ), '" + countOrderNo + "')";
                             pst = conn.prepareStatement(docRequest);
                             pst.execute();
 //                            }
@@ -219,7 +243,7 @@ public class IvoryHistoricalClinicalDataSindano {
             for (PatientData d : patients) {
                 if (patientAvailable(d.getCurrentPatientNo(), conn)) {
                     //find equivalent triage data
-                    String triageHistoryNote = "SELECT d_Checked_Date,d_Checked_Date,v_BP,v_Height,v_Pulse_Rate,v_BP,v_Temperature,v_Weight  FROM dbo.m_triage WHERE pfv_Entity_No = '" + d.getPvEntityNo() + "'";
+                    String triageHistoryNote = "SELECT d_Checked_Date,d_Checked_Date,v_BP,v_Height,v_Pulse_Rate,v_BP,v_Temperature,v_Weight  FROM hospitaldb.dbo_m_triage WHERE pfv_Entity_No = '" + d.getPvEntityNo() + "'";
                     pst2 = conn.prepareStatement(triageHistoryNote);
                     rs = pst2.executeQuery();
                     while (rs.next()) {
@@ -262,7 +286,7 @@ public class IvoryHistoricalClinicalDataSindano {
             for (PatientData d : patients) {
                 if (patientAvailable(d.getCurrentPatientNo(), conn)) {
                     //find equivalent triage data
-                    String historicalClinicalNotes = "SELECT pd_Doctor_Date, v_Doctor_Comments,v_Remarks   FROM dbo.t_doctor WHERE pfv_Patient_No = '" + d.getPvEntityNo() + "'";
+                    String historicalClinicalNotes = "SELECT pd_Doctor_Date, v_Doctor_Comments,v_Remarks   FROM hospitaldb.dbo_t_doctor WHERE pfv_Patient_No = '" + d.getPvEntityNo() + "'";
                     pst2 = conn.prepareStatement(historicalClinicalNotes);
                     rs = pst2.executeQuery();
                     while (rs.next()) {
@@ -294,7 +318,7 @@ public class IvoryHistoricalClinicalDataSindano {
             for (PatientData d : patients) {
                 if (patientAvailable(d.getCurrentPatientNo(), conn)) {
                     //find equivalent triage data
-                    String historicalClinicalNotes = "SELECT pd_Doctor_Date, v_Doctor_Comments,v_Remarks , fv_Diagnosis  FROM dbo.t_doctor WHERE pfv_Patient_No = '" + d.getPvEntityNo() + "'";
+                    String historicalClinicalNotes = "SELECT pd_Doctor_Date, v_Doctor_Comments,v_Remarks , fv_Diagnosis  FROM hospitaldb.dbo_t_doctor WHERE pfv_Patient_No = '" + d.getPvEntityNo() + "'";
                     pst2 = conn.prepareStatement(historicalClinicalNotes);
                     rs = pst2.executeQuery();
                     while (rs.next()) {
@@ -368,12 +392,16 @@ public class IvoryHistoricalClinicalDataSindano {
         try {
             int count = 0;
             for (PatientData d : data) {
+                if (count >= 1) {
+                    break;
+                }
                 //check if exists
                 String validPatientNo = "SELECT * FROM smarthealth.patient WHERE patient_number = '" + d.getCurrentPatientNo() + "'";
                 pst = connection.prepareStatement(validPatientNo);
                 rs = pst.executeQuery();
                 if (!rs.next()) {
                     System.out.println(d.getVFname().concat(" ").concat(d.getVMname()).concat(" ").concat(d.getVLname()) + " " + d.getCurrentPatientNo());
+
                     count++;
                 }
             }
@@ -382,4 +410,55 @@ public class IvoryHistoricalClinicalDataSindano {
             e.printStackTrace();
         }
     }
+
+    private boolean patientExists(PatientData data) {
+        try {
+//            int count = 0;
+//            for (PatientData d : data) {
+//                if (count >= 1) {
+//                    break;
+//                }
+            //check if exists
+            String validPatientNo = "SELECT * FROM smarthealth.patient WHERE patient_number = '" + data.getCurrentPatientNo() + "'";
+            pst = conn.prepareStatement(validPatientNo);
+            rs = pst.executeQuery();
+            if (!rs.next()) {
+//                System.out.println(d.getVFname().concat(" ").concat(d.getVMname()).concat(" ").concat(d.getVLname()) + " " + d.getCurrentPatientNo());
+                return false;
+//                count++;
+            } else {
+                return true;
+            }
+//            }
+        } catch (Exception e) {
+            try {
+                throw new Exception(e.getMessage());
+            } catch (Exception ex) {
+                Logger.getLogger(IvoryHistoricalClinicalDataSindano.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+
+        }
+    }
+
+    private void insertMissingPatient(PatientData data) {
+        io.smarthealth.organization.person.patient.data.PatientData patient = new io.smarthealth.organization.person.patient.data.PatientData();
+        System.out.println("data.getDDOB() " + data.getDDOB());
+
+//        patient.setDateOfBirth(data.getDDOB().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        patient.setDateOfBirth(Instant.ofEpochMilli(data.getDDOB().getTime()).atZone(ZoneId.systemDefault()).toLocalDate());
+        patient.setAllergyStatus("Unknown");
+        patient.setBasicNotes("");
+        patient.setBloodType("Unknown");
+        patient.setCriticalInformation("");
+        patient.setGender(Gender.O);
+        patient.setGivenName(data.getVFname());
+        patient.setMaritalStatus(MaritalStatus.OTHERS);
+        patient.setMiddleName(data.getVMname());
+        patient.setStatus(PatientStatus.Active);
+        patient.setSurname(data.getVLname());
+        patient.setPatientNumber(data.getCurrentPatientNo());
+//        patientService.createPatient(patient, null);
+    }
+
 }
