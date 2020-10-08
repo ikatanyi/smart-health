@@ -33,5 +33,5 @@ public class PatientDiagnosis extends ClinicalRecord {
 
     private Boolean isCondition = Boolean.FALSE;
     
-    private LocalDateTime date;
+//    private LocalDateTime date;
 }

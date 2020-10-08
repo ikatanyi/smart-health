@@ -37,9 +37,9 @@ public class DoctorRequestSpecification {
                 }
             }
 
-//            if (fulfillerStatus != null) {
-//                predicates.add(cb.equal(root.get("fulfillerStatus"), fulfillerStatus));
-//            }
+            if (fulfillerStatus != null) {
+                predicates.add(cb.equal(root.get("fulfillerStatus"), fulfillerStatus));
+            }
 
             if (requestType != null) {
                 predicates.add(cb.equal(root.get("requestType"), requestType));

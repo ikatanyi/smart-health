@@ -77,6 +77,7 @@ import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang.NumberUtils;
 import org.apache.commons.lang3.EnumUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -155,12 +156,12 @@ public class PatientReportServices {
         List<reportVisitData> visitArrayList = new ArrayList();
         for (Visit visit : patientvisits) {
             List<Visit> visits1 = visitService.fetchVisitByPatientNumberAndVisitNumber(visit.getPatient().getPatientNumber(), visit.getVisitNumber(), Pageable.unpaged()).getContent();
-    
+
             reportVisitData data = reportVisitData.map(visits1.get(0));
             data.setDuration(Math.abs(Duration.between(data.getStopDatetime(), data.getStartDatetime()).toMinutes()));
             for (Visit visit2 : visits1) {
                 Long duration = Duration.between(visit2.getStopDatetime(), visit2.getStartDatetime()).toMinutes();
-                switch (visit2.getServicePoint().getServicePointType()) {                    
+                switch (visit2.getServicePoint().getServicePointType()) {
                     case Consultation:
                         data.setConsultation(Boolean.TRUE);
                         data.setConDuration(duration);
@@ -202,7 +203,6 @@ public class PatientReportServices {
 //        sortField.setType(SortFieldTypeEnum.FIELD);
 //        sortList.add(sortField);
 //        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-
         reportData.setData(visitArrayList);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/PatientVisit");
@@ -220,7 +220,7 @@ public class PatientReportServices {
         Integer minAge = Integer.getInteger(reportParam.getFirst("minAge"));
         Integer maxAge = Integer.getInteger(reportParam.getFirst("maxAge"));
         ReportData reportData = new ReportData();
-        
+
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
@@ -398,21 +398,20 @@ public class PatientReportServices {
                     .stream()
                     .map((test) -> test.toData(Boolean.TRUE))
                     .collect(Collectors.toList());
-            
-            
-            List<PatientNotes> patientNotes = patientNotesService.fetchAllPatientNotesByVisit(visit);
-            
-            patientNotes.stream().map((notes) -> {                
-                pVisitData.setBriefNotes(pVisitData.getBriefNotes()+","+notes.getBriefNotes());
+
+            Page<PatientNotes> patientNotes = patientNotesService.fetchAllPatientNotesByVisit(visit, Pageable.unpaged());
+
+            patientNotes.stream().map((notes) -> {
+                pVisitData.setBriefNotes(pVisitData.getBriefNotes() + "," + notes.getBriefNotes());
                 return notes;
             }).map((notes) -> {
-                pVisitData.setChiefComplaint(pVisitData.getChiefComplaint()+","+notes.getChiefComplaint());
+                pVisitData.setChiefComplaint(pVisitData.getChiefComplaint() + "," + notes.getChiefComplaint());
                 return notes;
             }).map((notes) -> {
-                pVisitData.setExaminationNotes(pVisitData.getExaminationNotes()+","+notes.getExaminationNotes());
+                pVisitData.setExaminationNotes(pVisitData.getExaminationNotes() + "," + notes.getExaminationNotes());
                 return notes;
             }).forEachOrdered((notes) -> {
-                pVisitData.setHistoryNotes(pVisitData.getHistoryNotes()+","+notes.getHistoryNotes());
+                pVisitData.setHistoryNotes(pVisitData.getHistoryNotes() + "," + notes.getHistoryNotes());
             });
 
             List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(visit, Pageable.unpaged())
@@ -483,14 +482,14 @@ public class PatientReportServices {
         ReportData reportData = new ReportData();
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         String term = reportParam.getFirst("term");
-        List<MonthlyMobidity> requestData = mohService.getMonthlyMobidity(range,term);
+        List<MonthlyMobidity> requestData = mohService.getMonthlyMobidity(range, term);
         reportData.setData(requestData);
         reportData.setFormat(format);
-        
+
         LocalDate ld = range.getStartDate();
         Month month = ld.getMonth();
         Integer year = ld.getYear();
-        
+
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.getFilters().put("year", year);
         reportData.getFilters().put("month", month.getDisplayName(TextStyle.FULL, Locale.ENGLISH));
@@ -502,7 +501,7 @@ public class PatientReportServices {
 
     public void getMohOPAttendanceReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        List<OpData>dataArray = new ArrayList();
+        List<OpData> dataArray = new ArrayList();
         OpData data = null;
         String[] groups = {"Under 1 Year", "1-4 Years", "5-14 Years", "15-24 Years", "25-34 Years", "35-44  Years", "45-49 Years", "50-54 Years", "55-64 Years", "Over 65 Years", "  All Ages  "};
         for (String group : groups) {
@@ -576,7 +575,7 @@ public class PatientReportServices {
         reportData.setReportName("out-patient-summary");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getPatientRegisterReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         DateRange range = DateRange.fromIsoString(reportParam.getFirst("dateRange"));

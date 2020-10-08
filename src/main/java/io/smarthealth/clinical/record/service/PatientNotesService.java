@@ -91,8 +91,8 @@ public class PatientNotesService {
     }
     
     //e. Read patient notes by visit
-    public List<PatientNotes> fetchAllPatientNotesByVisit(Visit visit) {
-        return patientNotesRepository.findByVisit(visit, Pageable.unpaged()).getContent();
+    public Page<PatientNotes> fetchAllPatientNotesByVisit(Visit visit, Pageable pgbl) {
+        return patientNotesRepository.findByVisit(visit,pgbl);
     }
     
     public PatientNotes convertDataToEntity(PatientNotesData patientNotesData) {

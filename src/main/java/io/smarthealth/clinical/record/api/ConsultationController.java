@@ -287,6 +287,7 @@ public class ConsultationController {
             patientDiagnosis.setVisit(visit);
             patientDiagnosis.setPatient(patient);
             patientDiagnosises.add(patientDiagnosis);
+            
         }
 
         List<PatientDiagnosis> savedDiagnosisList = diagnosisService.createListOfPatientDiagnosis(patientDiagnosises);
