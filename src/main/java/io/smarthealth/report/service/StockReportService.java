@@ -175,11 +175,15 @@ public class StockReportService {
     
     public void InventoryStock(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        Long storeId = NumberUtils.createLong(reportParam.getFirst("storeId"));
-        Long itemId = NumberUtils.createLong(reportParam.getFirst("item_id"));
-        String search = reportParam.getFirst("search");
-        Boolean includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
-
+        Long storeId = null,itemId = null;
+        String search = null;
+        Boolean includeClosed = null;
+        if(reportParam!=null){
+            storeId = NumberUtils.createLong(reportParam.getFirst("storeId"));
+            itemId = NumberUtils.createLong(reportParam.getFirst("item_id"));
+            search = reportParam.getFirst("search");
+            includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
+        }
         List<InventoryItemData> inventoryItemData = inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged()).getContent();
 
         reportData.setData(inventoryItemData);
