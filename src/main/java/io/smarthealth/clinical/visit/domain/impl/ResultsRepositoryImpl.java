@@ -90,7 +90,7 @@ public class ResultsRepositoryImpl implements ResultsRepository {
             sb.append(" GROUP BY v.visit_number ORDER BY 1 ");
         }
 
-//        System.out.println("sb.toString() " + sb.toString());
+        System.out.println("sb.toString() " + sb.toString());
         final DocResultMapper resultMapper = new DocResultMapper();
         final List<DocResults> results = this.jdbcTemplate.query(sb.toString(), resultMapper, new Object[]{});
         return results;
