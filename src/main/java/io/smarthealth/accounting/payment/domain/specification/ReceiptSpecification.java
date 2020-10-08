@@ -3,6 +3,8 @@ package io.smarthealth.accounting.payment.domain.specification;
 import io.smarthealth.accounting.payment.domain.Copayment;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.domain.ReceiptItem;
+import io.smarthealth.accounting.payment.domain.ReceiptTransaction;
+import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
@@ -121,6 +123,32 @@ public class ReceiptSpecification {
             if (range != null) {
                 predicates.add(
                         cb.between(root.get("date"), range.getStartDate(), range.getEndDate())
+                );
+            }
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
+    
+     public static Specification<ReceiptTransaction> createSpecification(String method, String receiptNo, TrnxType type, DateRange range) {
+
+        return (root, query, cb) -> {
+
+            final ArrayList<Predicate> predicates = new ArrayList<>();
+                 
+            if (method != null) {
+                predicates.add(cb.equal(root.get("method"), method));
+            }
+            if (receiptNo != null) {
+                predicates.add(cb.equal(root.get("receiptNo"), receiptNo));
+            }
+            if (type != null) {
+                predicates.add(cb.equal(root.get("type"), type));
+            }
+            
+            if (range != null) {
+                predicates.add(
+                        cb.between(root.get("receipt").get("datetime"), range.getStartDateTime(), range.getEndDateTime())
                 );
             }
 

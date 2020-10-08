@@ -167,17 +167,23 @@ public class DoctorRequestController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
+        System.out.println("patientNo " + patientNo);
         Pageable pageable = PaginationUtil.createPage(page, size);
         Patient patient = patientService.findPatientOrThrow(patientNo);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         //fetch all visits by patient
         Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, range, null, null, false, null, pageable);
+        System.out.println("patientVisits " + patientVisits.getContent().size());
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
 
         for (Visit v : patientVisits.getContent()) {
+            System.out.println("Visit number " + v.getVisitNumber());
+            System.out.println("Patient number " + patientNo);
             Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(v.getVisitNumber(), patientNo, requestType, fulfillerStatus, "patient", pageable, null, null, null);
-
+            System.out.println("pageList " + pageList.getContent().size());
+            int count = 0;
             for (DoctorRequest docReq : pageList.getContent()) {
+                System.out.println("count " + count);
                 HistoricalDoctorRequestsData waitingRequest = new HistoricalDoctorRequestsData();
                 waitingRequest.setPatientName(patient.getFullName());
                 waitingRequest.setPatientNumber(patient.getPatientNumber());
@@ -189,12 +195,14 @@ public class DoctorRequestController {
                 waitingRequest.setVisitNotes(v.getComments());
                 //find line items by request_id
                 List<DoctorRequest> serviceItems = requestService.fetchServiceRequests(docReq.getPatient(), fulfillerStatus, requestType, v);
+                System.out.println("serviceItems " + serviceItems.size());
                 List<DoctorRequestItem> requestItems = new ArrayList<>();
                 for (DoctorRequest r : serviceItems) {
                     requestItems.add(requestService.toData(r));
                 }
                 waitingRequest.setItem(requestItems);
                 doctorRequestsData.add(waitingRequest);
+                count++;
             }
 
         }

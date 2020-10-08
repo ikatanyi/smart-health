@@ -28,7 +28,7 @@ public class ReportReceiptData {
     private String payer;
     private String payerId;
     private String description; //Insurance payment | Cheque deposit
-    private BigDecimal amount;
+    private BigDecimal amount = BigDecimal.ZERO;;
     private BigDecimal paid;
     private BigDecimal tenderedAmount;
     private BigDecimal refundedAmount;

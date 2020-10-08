@@ -37,6 +37,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .and()
                 .authorizeRequests().antMatchers(Public_Matchers).permitAll()
                 .antMatchers(HttpMethod.GET, GET_Public_Matchers).permitAll()
+                .antMatchers("/api/report/**").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()

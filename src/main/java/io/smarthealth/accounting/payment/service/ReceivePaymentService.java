@@ -55,6 +55,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
+import io.smarthealth.accounting.payment.domain.repository.ReceiptTransactionRepository;
 import io.smarthealth.infrastructure.lang.SystemUtils;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import java.time.LocalTime;
@@ -80,6 +81,7 @@ public class ReceivePaymentService {
     private final PayerRepository payerRepository;
     private final RemittanceRepository remittanceRepository;
     private final CopaymentService copaymentService;
+    private final ReceiptTransactionRepository transactionRepository;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(ReceivePayment data) {
@@ -88,7 +90,7 @@ public class ReceivePaymentService {
         receipt.setAmount(data.getAmount());
         receipt.setCurrency(data.getCurrency());
         receipt.setPayer(data.getPayer());
-        receipt.setPaid(data.getTenderedAmount());
+        receipt.setPaid(data.getAmount());
         receipt.setPaymentMethod(data.getPaymentMethod());
         receipt.setTenderedAmount(data.getTenderedAmount() != null ? data.getTenderedAmount() : BigDecimal.ZERO);
         receipt.setReferenceNumber(data.getReferenceNumber());
@@ -260,6 +262,11 @@ public class ReceivePaymentService {
     public Page<ReceiptItem> getVoidedItems(Long servicePointId, String patientNumber, String itemCode, Boolean voided, DateRange range, Pageable page) {
         Specification<ReceiptItem> spec = ReceiptSpecification.createVoidedReceiptItemSpecification(servicePointId, patientNumber, itemCode, voided, range);
         return receiptItemRepository.findAll(spec, page);
+    }
+    
+    public Page<ReceiptTransaction> getTransactions(String method, String receiptNo, TrnxType type, DateRange range, Pageable page) {
+        Specification<ReceiptTransaction> spec = ReceiptSpecification.createSpecification(method, receiptNo, type, range);
+        return transactionRepository.findAll(spec, page);
     }
 
     private ReceiptTransaction createPaymentTransaction(ReceiptMethod data) {

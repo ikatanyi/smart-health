@@ -33,13 +33,13 @@ public class DoctorRequestSpecification {
                 if (activeVisit) {
                     predicates.add(root.get("visit").get("status").in(Arrays.asList(VisitEnum.Status.CheckIn, VisitEnum.Status.Admitted)));
                 } else {
-                    predicates.add(root.get("visit").get("status").in(Arrays.asList(VisitEnum.Status.CheckOut, VisitEnum.Status.Discharged)));
+                    predicates.add(root.get("visit").get("status").in(Arrays.asList(VisitEnum.Status.CheckOut, VisitEnum.Status.Discharged, VisitEnum.Status.Transferred)));
                 }
             }
 
-            if (fulfillerStatus != null) {
-                predicates.add(cb.equal(root.get("fulfillerStatus"), fulfillerStatus));
-            }
+//            if (fulfillerStatus != null) {
+//                predicates.add(cb.equal(root.get("fulfillerStatus"), fulfillerStatus));
+//            }
 
             if (requestType != null) {
                 predicates.add(cb.equal(root.get("requestType"), requestType));

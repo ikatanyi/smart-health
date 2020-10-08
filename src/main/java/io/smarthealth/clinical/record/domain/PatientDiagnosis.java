@@ -1,5 +1,7 @@
 package io.smarthealth.clinical.record.domain;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -30,4 +32,6 @@ public class PatientDiagnosis extends ClinicalRecord {
     private String notes;
 
     private Boolean isCondition = Boolean.FALSE;
+    
+    private LocalDateTime date;
 }

@@ -213,14 +213,14 @@ public class PatientReportServices {
     public void getDiagnosis(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws JRException, SQLException, IOException {
         String visitNumber = reportParam.getFirst("visitNumber");
         String patientNumber = reportParam.getFirst("patientNumber");
-        Gender gender = genderToEnum(reportParam.getFirst("gender"));
+        Gender gender = EnumUtils.getEnumIgnoreCase(Gender.class, reportParam.getFirst("gender"));
         String dateRange = reportParam.getFirst("dateRange");
         Integer page = Integer.getInteger(reportParam.getFirst("page"));
         Integer size = Integer.getInteger(reportParam.getFirst("size"));
         Integer minAge = Integer.getInteger(reportParam.getFirst("minAge"));
         Integer maxAge = Integer.getInteger(reportParam.getFirst("maxAge"));
         ReportData reportData = new ReportData();
-
+        
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
@@ -230,6 +230,7 @@ public class PatientReportServices {
                 .map((diagnosis) -> PatientTestsData.map(diagnosis))
                 .collect(Collectors.toList());
         reportData.setData(diagnosisData);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setFormat(format);
         reportData.setTemplate("/patient/diagnosis_report");
         reportData.setReportName("Diagnosis-Report");

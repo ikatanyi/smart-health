@@ -301,7 +301,7 @@ public class JasperReportsService {
 
         Header headerData = Header.map(facility);
         Footer footerData = Footer.map(facility);
-        if (facility.getCompanyLogo() == null) {
+        if (facility.getCompanyLogo().getData() == null) {
             headerData.setIMAGE(new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
             jasperParameter.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
         } else {
