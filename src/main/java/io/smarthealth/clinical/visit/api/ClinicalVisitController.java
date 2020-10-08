@@ -343,6 +343,25 @@ public class ClinicalVisitController {
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
+    @GetMapping("/visits/{visitNumber}")
+    @PreAuthorize("hasAuthority('view_visits')")
+    @ApiOperation(value = "View patient visit", response = VisitData.class)
+    public @ResponseBody
+    ResponseEntity<?> viewVisit(
+            @PathVariable("visitNumber") final String visitNumber) {
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+
+        //Convert to data
+        VisitData visitDat = VisitData.map(visit);
+
+        Pager<VisitData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Visit Data");
+        pagers.setContent(visitDat);
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
     @PutMapping("/visits/{visitNumber}/doctor/{staffNumber}")
     @PreAuthorize("hasAuthority('edit_visits')")
     @ApiOperation(value = "Update patient visit's doctor", response = VisitData.class)

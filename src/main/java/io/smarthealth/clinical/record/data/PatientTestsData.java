@@ -68,7 +68,7 @@ public class PatientTestsData {
     public static PatientDiagnosis map(PatientTestsData diagnosis) {
         PatientDiagnosis entity = new PatientDiagnosis();
         entity.getDiagnosis().setCode(diagnosis.getCode());
-        entity.setDate(diagnosis.getDate());
+        entity.setDateRecorded(diagnosis.getDate());
         entity.getDiagnosis().setDescription(diagnosis.getDescription());
         entity.setCertainty(diagnosis.getCertainty()!=null ? diagnosis.getCertainty().name(): null);
         entity.setDiagnosisOrder(diagnosis.getDiagnosisOrder()!=null ? diagnosis.getDiagnosisOrder().name(): null);
@@ -78,7 +78,7 @@ public class PatientTestsData {
     public static PatientTestsData map(PatientDiagnosis entity) {
         PatientTestsData diagnos = new PatientTestsData();
         diagnos.setId(entity.getId());
-        diagnos.setDate(entity.getDate());
+        diagnos.setDate(entity.getDateRecorded());
         diagnos.setPatientNumber(entity.getPatient().getPatientNumber());
         diagnos.setVisitNumber(entity.getVisit().getVisitNumber());
         diagnos.setCode(entity.getDiagnosis().getCode());

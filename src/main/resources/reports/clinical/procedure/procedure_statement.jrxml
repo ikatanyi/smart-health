@@ -15,7 +15,7 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="PatientData" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Patient_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Footer_Data" class="java.util.List"/>
 	<parameter name="range" class="java.lang.String" isForPrompting="false"/>
@@ -65,6 +65,9 @@
 			<band height="12">
 				<staticText>
 					<reportElement x="0" y="0" width="471" height="12" uuid="2ef2d7ce-ce26-4e77-98e6-fa3a8cff4ee7"/>
+					<box>
+						<topPen lineWidth="0.25"/>
+					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
@@ -72,6 +75,9 @@
 				</staticText>
 				<textField>
 					<reportElement x="470" y="0" width="83" height="12" uuid="de7f34eb-c8a3-4dca-b577-a5078bbc3e32"/>
+					<box>
+						<topPen lineWidth="0.25"/>
+					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 						<paragraph rightIndent="20"/>
@@ -94,6 +100,9 @@
 			</line>
 			<subreport>
 				<reportElement x="0" y="0" width="555" height="69" uuid="05921211-9986-4f9b-a55e-0186167db752"/>
+				<subreportParameter name="Patient_Data">
+					<subreportParameterExpression><![CDATA[$P{Patient_Data}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -119,7 +128,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Range :]]></text>
+				<text><![CDATA[Period :]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="33" y="22" width="522" height="13" uuid="1095c570-98bd-4b8d-ad0d-6de711a8d460"/>
@@ -183,7 +192,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[RequestedBy]]></text>
+				<text><![CDATA[Requested By]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="19" y="0" width="62" height="12" uuid="22c1770b-b435-417e-8703-0d947e62e1bf"/>
@@ -220,7 +229,7 @@
 	<detail>
 		<band height="11" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="1" y="0" width="18" height="11" isRemoveLineWhenBlank="true" uuid="28a286f5-96d7-4da6-a69c-c2fff1228a27"/>
+				<reportElement x="1" y="0" width="18" height="11" uuid="28a286f5-96d7-4da6-a69c-c2fff1228a27"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
@@ -230,7 +239,7 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="81" y="0" width="77" height="11" isRemoveLineWhenBlank="true" uuid="85ed173e-b92d-4939-bd99-a57a71e43dba"/>
+				<reportElement x="81" y="0" width="77" height="11" uuid="85ed173e-b92d-4939-bd99-a57a71e43dba"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
@@ -240,7 +249,7 @@
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="158" y="0" width="72" height="11" isRemoveLineWhenBlank="true" uuid="7d5cc57c-8607-4bbf-9422-d8fef653804b"/>
+				<reportElement x="158" y="0" width="72" height="11" uuid="7d5cc57c-8607-4bbf-9422-d8fef653804b"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
@@ -250,7 +259,7 @@
 				<textFieldExpression><![CDATA[$F{patientNo}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="230" y="0" width="98" height="11" isRemoveLineWhenBlank="true" uuid="1dd9610f-5fb8-433d-b9fe-65dbdeff6f6c"/>
+				<reportElement x="230" y="0" width="98" height="11" uuid="1dd9610f-5fb8-433d-b9fe-65dbdeff6f6c"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
@@ -260,7 +269,7 @@
 				<textFieldExpression><![CDATA[$F{procedureName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="364" y="0" width="107" height="11" isRemoveLineWhenBlank="true" uuid="adfcdddb-95c0-4d5d-834d-ed5a82d03a17"/>
+				<reportElement x="364" y="0" width="107" height="11" uuid="adfcdddb-95c0-4d5d-834d-ed5a82d03a17"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
@@ -270,7 +279,7 @@
 				<textFieldExpression><![CDATA[$F{medicName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="18" y="0" width="63" height="11" isRemoveLineWhenBlank="true" uuid="79e2aaed-fc87-45c0-a74a-cda85abf850d"/>
+				<reportElement x="18" y="0" width="63" height="11" uuid="79e2aaed-fc87-45c0-a74a-cda85abf850d"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
@@ -280,7 +289,7 @@
 				<textFieldExpression><![CDATA[$F{procedureDate}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="470" y="0" width="83" height="11" isRemoveLineWhenBlank="true" uuid="dccc97c9-dba3-4498-8758-3ca559fb7590"/>
+				<reportElement x="470" y="0" width="83" height="11" uuid="dccc97c9-dba3-4498-8758-3ca559fb7590"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>

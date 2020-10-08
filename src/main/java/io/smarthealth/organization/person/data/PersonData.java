@@ -47,7 +47,8 @@ public class PersonData {
     private List<PersonNextOfKinData> nok;
     private String fullName;
     private LocalDate createdOn;
-    private LocalDate dateRegistered;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
+    private LocalDate dateRegistered=LocalDate.now();
     private String phone;
     private String addressLine;
 
