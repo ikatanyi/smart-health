@@ -61,6 +61,7 @@ import io.smarthealth.report.data.accounts.InsuranceInvoiceData;
 import io.smarthealth.report.data.accounts.ReportReceiptData;
 import io.smarthealth.report.data.accounts.TrialBalanceData;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -637,7 +638,7 @@ public class AccountReportService {
             data.setId(receipt.getId());
             data.setPayer(receipt.getPayer());
             data.setDescription(receipt.getDescription());
-            data.setAmount(receipt.getAmount());
+//            data.setAmount(receipt.getAmount());
             data.setRefundedAmount(receipt.getRefundedAmount());
             data.setTenderedAmount(receipt.getTenderedAmount());
             data.setPaymentMethod(receipt.getPaymentMethod());
@@ -677,28 +678,29 @@ public class AccountReportService {
             for (ReceiptItemData item : receipt.getReceiptItems()) {
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
-                        data.setLab(data.getLab().add(item.getAmountPaid()));
+                        data.setLab(data.getLab().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
                         break;
                     case "PHARMACY":
-                        data.setPharmacy(data.getPharmacy().add(item.getAmountPaid()));
+                        data.setPharmacy(data.getPharmacy().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
                         break;
                     case "PROCEDURE":
                     case "TRIAGE":
-                        data.setProcedure(data.getProcedure().add(item.getAmountPaid()));
+                        data.setProcedure(data.getProcedure().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
                         break;
                     case "RADIOLOGY":
-                        data.setRadiology(data.getRadiology().add(item.getAmountPaid()));
+                        data.setRadiology(data.getRadiology().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
                         break;
                     case "CONSULTATION":
-                        data.setConsultation(data.getConsultation().add(item.getAmountPaid()));
+                        data.setConsultation(data.getConsultation().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
                         break;
                     case "COPAYMENT":
-                        data.setCopayment(data.getCopayment().add(item.getAmountPaid()));
+                        data.setCopayment(data.getCopayment().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
                         break;
                     default:
                         data.setOther(data.getOther() != null ? data.getOther().add(item.getAmountPaid()) : item.getAmountPaid());
                         break;
                 }
+                data.setAmount(data.getAmount().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
                 data.setDiscount(data.getDiscount().add(NumberUtils.toScaledBigDecimal(item.getDiscount())));
             }
             receiptDataArray.add(data);

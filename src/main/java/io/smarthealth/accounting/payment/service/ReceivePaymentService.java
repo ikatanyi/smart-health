@@ -90,7 +90,7 @@ public class ReceivePaymentService {
         receipt.setAmount(data.getAmount());
         receipt.setCurrency(data.getCurrency());
         receipt.setPayer(data.getPayer());
-        receipt.setPaid(data.getTenderedAmount());
+        receipt.setPaid(data.getAmount());
         receipt.setPaymentMethod(data.getPaymentMethod());
         receipt.setTenderedAmount(data.getTenderedAmount() != null ? data.getTenderedAmount() : BigDecimal.ZERO);
         receipt.setReferenceNumber(data.getReferenceNumber());
