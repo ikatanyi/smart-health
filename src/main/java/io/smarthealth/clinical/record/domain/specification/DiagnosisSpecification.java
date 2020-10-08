@@ -36,7 +36,7 @@ public class DiagnosisSpecification {
             }
            
             if (range != null) {
-                predicates.add(cb.between(root.get("date"), range.getStartDateTime(), range.getEndDateTime()));
+                predicates.add(cb.between(root.get("dateRecorded"), range.getStartDateTime(), range.getEndDateTime()));
             }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
