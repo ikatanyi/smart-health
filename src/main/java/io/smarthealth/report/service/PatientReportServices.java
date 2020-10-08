@@ -398,16 +398,22 @@ public class PatientReportServices {
                     .stream()
                     .map((test) -> test.toData(Boolean.TRUE))
                     .collect(Collectors.toList());
-
-            Optional<PatientNotes> patientNotes = patientNotesService.fetchPatientNotesByVisit(visit);
-            if (patientNotes.isPresent()) {
-                PatientNotes notes = patientNotes.get();
-                pVisitData.setBriefNotes(notes.getBriefNotes());
-                pVisitData.setChiefComplaint(notes.getChiefComplaint());
-                pVisitData.setExaminationNotes(notes.getExaminationNotes());
-                pVisitData.setHistoryNotes(notes.getHistoryNotes());
-
-            }
+            
+            
+            List<PatientNotes> patientNotes = patientNotesService.fetchAllPatientNotesByVisit(visit);
+            
+            patientNotes.stream().map((notes) -> {                
+                pVisitData.setBriefNotes(pVisitData.getBriefNotes()+","+notes.getBriefNotes());
+                return notes;
+            }).map((notes) -> {
+                pVisitData.setChiefComplaint(pVisitData.getChiefComplaint()+","+notes.getChiefComplaint());
+                return notes;
+            }).map((notes) -> {
+                pVisitData.setExaminationNotes(pVisitData.getExaminationNotes()+","+notes.getExaminationNotes());
+                return notes;
+            }).forEachOrdered((notes) -> {
+                pVisitData.setHistoryNotes(pVisitData.getHistoryNotes()+","+notes.getHistoryNotes());
+            });
 
             List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(visit, Pageable.unpaged())
                     .stream()

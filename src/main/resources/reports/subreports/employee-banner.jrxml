@@ -16,16 +16,22 @@
 	<field name="phoneNumber" class="java.lang.String"/>
 	<field name="fullName" class="java.lang.String"/>
 	<detail>
-		<band height="67" splitType="Stretch">
+		<band height="14" splitType="Stretch">
 			<staticText>
-				<reportElement x="2" y="3" width="41" height="11" uuid="d76393e5-cb06-4e48-b0c9-88e1ad05a986"/>
+				<reportElement x="0" y="2" width="43" height="11" uuid="d76393e5-cb06-4e48-b0c9-88e1ad05a986"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Name :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="43" y="3" width="136" height="11" isRemoveLineWhenBlank="true" uuid="511806e2-2cb1-496a-8a82-cacf24ac7b87"/>
+				<reportElement x="43" y="2" width="160" height="11" isRemoveLineWhenBlank="true" uuid="511806e2-2cb1-496a-8a82-cacf24ac7b87"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>

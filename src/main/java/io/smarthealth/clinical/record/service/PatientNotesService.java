@@ -15,6 +15,7 @@ import io.smarthealth.organization.person.domain.PersonRepository;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.organization.person.service.PersonService;
+import java.util.List;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -87,6 +88,11 @@ public class PatientNotesService {
     //e. Read patient notes by visit
     public Optional<PatientNotes> fetchPatientNotesByVisit(Visit visit) {
         return patientNotesRepository.findByVisit(visit);
+    }
+    
+    //e. Read patient notes by visit
+    public List<PatientNotes> fetchAllPatientNotesByVisit(Visit visit) {
+        return patientNotesRepository.findByVisit(visit, Pageable.unpaged()).getContent();
     }
     
     public PatientNotes convertDataToEntity(PatientNotesData patientNotesData) {
