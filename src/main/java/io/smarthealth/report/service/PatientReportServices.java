@@ -5,6 +5,7 @@
  */
 package io.smarthealth.report.service;
 
+import com.mchange.lang.StringUtils;
 import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
@@ -402,16 +403,16 @@ public class PatientReportServices {
             Page<PatientNotes> patientNotes = patientNotesService.fetchAllPatientNotesByVisit(visit, Pageable.unpaged());
 
             patientNotes.stream().map((notes) -> {
-                pVisitData.setBriefNotes(pVisitData.getBriefNotes() + "," + notes.getBriefNotes());
+                pVisitData.setBriefNotes(StringUtils.nonNullOrBlank(pVisitData.getBriefNotes()) + "," + StringUtils.nonNullOrBlank(notes.getBriefNotes()));
                 return notes;
             }).map((notes) -> {
-                pVisitData.setChiefComplaint(pVisitData.getChiefComplaint() + "," + notes.getChiefComplaint());
+                pVisitData.setChiefComplaint(StringUtils.nonNullOrBlank(pVisitData.getChiefComplaint()) + "," + StringUtils.nonNullOrBlank(notes.getChiefComplaint()));
                 return notes;
             }).map((notes) -> {
-                pVisitData.setExaminationNotes(pVisitData.getExaminationNotes() + "," + notes.getExaminationNotes());
+                pVisitData.setExaminationNotes(StringUtils.nonNullOrBlank(pVisitData.getExaminationNotes()) + "," + StringUtils.nonNullOrBlank(notes.getExaminationNotes()));
                 return notes;
             }).forEachOrdered((notes) -> {
-                pVisitData.setHistoryNotes(pVisitData.getHistoryNotes() + "," + notes.getHistoryNotes());
+                pVisitData.setHistoryNotes(StringUtils.nonNullOrBlank(pVisitData.getHistoryNotes()) + "," + StringUtils.nonNullOrBlank(notes.getHistoryNotes()));
             });
 
             List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(visit, Pageable.unpaged())
