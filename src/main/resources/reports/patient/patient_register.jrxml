@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patient_register" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="91"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
@@ -62,21 +62,27 @@
 	<pageHeader>
 		<band height="40">
 			<staticText>
-				<reportElement x="1" y="24" width="124" height="13" uuid="1ad72789-069b-4b02-9ee0-130f518a3f81"/>
+				<reportElement x="1" y="10" width="124" height="13" uuid="1ad72789-069b-4b02-9ee0-130f518a3f81"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Patient Register[New &Revisit]]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="125" y="24" width="28" height="13" uuid="d3b9a7dc-a9bc-48c5-abaf-1ede3d2377f1"/>
+				<reportElement x="1" y="23" width="32" height="13" uuid="d3b9a7dc-a9bc-48c5-abaf-1ede3d2377f1"/>
+				<box>
+					<bottomPen lineWidth="0.2"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Period:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="155" y="24" width="136" height="13" uuid="d28c5eaf-be14-47b2-899e-736fe3a8985c"/>
+				<reportElement x="33" y="23" width="521" height="13" uuid="d28c5eaf-be14-47b2-899e-736fe3a8985c"/>
+				<box>
+					<bottomPen lineWidth="0.2"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -219,12 +225,6 @@
 				</textElement>
 				<text><![CDATA[Residence]]></text>
 			</staticText>
-			<line>
-				<reportElement positionType="Float" x="1" y="-3" width="554" height="1" uuid="25b12e0c-aaed-4070-8e23-74e82a17ad6a"/>
-				<graphicElement>
-					<pen lineWidth="0.15" lineStyle="Solid"/>
-				</graphicElement>
-			</line>
 			<staticText>
 				<reportElement x="455" y="0" width="43" height="18" uuid="98bf13d7-3b5e-47c6-af74-ca5149933f49"/>
 				<box rightPadding="0">
@@ -244,14 +244,14 @@
 	</columnHeader>
 	<detail>
 		<band height="12" splitType="Stretch">
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="65" y="0" width="93" height="12" uuid="3c105f01-5c48-4446-a091-7fd820d516e9"/>
 				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
@@ -259,14 +259,14 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fullName}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="197" y="0" width="34" height="12" uuid="0797b2f2-15a9-4e18-8546-c0b543e4c3ad"/>
 				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
@@ -274,14 +274,14 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{gender}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="158" y="0" width="39" height="12" uuid="40d3bdb5-d777-4f35-b6c5-1b7665cf387d"/>
 				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
 				</box>
 				<textElement textAlignment="Center">
 					<font size="8"/>
@@ -289,14 +289,14 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{age}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="19" y="0" width="46" height="12" uuid="aabcb449-0ebb-4ddc-aede-56381b6f08bc"/>
 				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
@@ -304,28 +304,28 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="2" y="0" width="17" height="12" uuid="3267125e-a357-4f46-8446-7f31e5ec3452"/>
 				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="231" y="0" width="102" height="12" uuid="16009c45-4c4a-4a8f-a9f2-0d550ea88423"/>
 				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
@@ -333,14 +333,14 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{diagnosis}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="498" y="0" width="56" height="12" uuid="bf3f1f51-2d6b-49d7-8a9c-43f2f2e2bf96"/>
 				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
@@ -348,14 +348,14 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="403" y="0" width="52" height="12" uuid="79d8f6b4-d701-4024-83d7-af9871f4f6cb"/>
 				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
@@ -363,14 +363,14 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="333" y="0" width="70" height="12" uuid="bc361b69-7f8f-46a0-a813-8f6fff0077ac"/>
 				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
@@ -378,14 +378,14 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{residence}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isStretchWithOverflow="true">
 				<reportElement isPrintRepeatedValues="false" x="455" y="0" width="43" height="12" uuid="d7c244bb-6173-4d8d-bdd6-626b761c2e03"/>
 				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
 				</box>
 				<textElement>
 					<font size="8"/>
