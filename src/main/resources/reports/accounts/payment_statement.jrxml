@@ -113,7 +113,10 @@
 		<groupHeader>
 			<band height="23">
 				<textField>
-					<reportElement x="0" y="11" width="116" height="12" uuid="629d07f8-acc8-4717-a2c2-82bef35056d3"/>
+					<reportElement x="0" y="11" width="555" height="12" uuid="629d07f8-acc8-4717-a2c2-82bef35056d3"/>
+					<box>
+						<bottomPen lineWidth="0.15"/>
+					</box>
 					<textElement verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>
@@ -231,7 +234,7 @@
 	<columnHeader>
 		<band height="67" splitType="Stretch">
 			<staticText>
-				<reportElement x="55" y="53" width="63" height="13" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
+				<reportElement x="55" y="53" width="75" height="13" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -341,17 +344,7 @@
 				<text><![CDATA[Other]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="159" y="53" width="44" height="13" uuid="7be076f4-8d63-46e6-b73c-7d7f85dc3e9c"/>
-				<box>
-					<bottomPen lineWidth="0.25"/>
-				</box>
-				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
-				</textElement>
-				<text><![CDATA[VisitNo]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="118" y="53" width="41" height="13" uuid="7e5c1a9c-6928-4ac3-aa23-dc32c6e9438e"/>
+				<reportElement x="130" y="53" width="73" height="13" uuid="7e5c1a9c-6928-4ac3-aa23-dc32c6e9438e"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -388,7 +381,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Date Range:]]></text>
+				<text><![CDATA[Period :]]></text>
 			</staticText>
 			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
 				<reportElement x="50" y="26" width="505" height="13" isRemoveLineWhenBlank="true" uuid="296dd85b-0679-49de-80e7-b8bed8a46890"/>
@@ -428,7 +421,7 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="55" y="0" width="63" height="14" uuid="cc1a1d37-9600-4848-ad5d-9c8e7f855692"/>
+				<reportElement x="55" y="0" width="75" height="14" uuid="cc1a1d37-9600-4848-ad5d-9c8e7f855692"/>
 				<box>
 					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
 				</box>
@@ -536,17 +529,7 @@
 				<textFieldExpression><![CDATA[$F{paid}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="159" y="0" width="44" height="14" uuid="da40231e-f7ce-4896-920d-88b9c74f9a3d"/>
-				<box>
-					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
-				</box>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{visitNo}]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="118" y="0" width="41" height="14" uuid="384700db-e122-4bc9-bb94-4a4031bcaa37"/>
+				<reportElement x="130" y="0" width="73" height="14" uuid="384700db-e122-4bc9-bb94-4a4031bcaa37"/>
 				<box>
 					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
 				</box>
