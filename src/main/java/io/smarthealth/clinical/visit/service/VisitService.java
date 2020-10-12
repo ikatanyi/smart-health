@@ -137,8 +137,8 @@ public class VisitService {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
     }
-    
-    public Optional<Visit> findVisit(String visitNumber){
+
+    public Optional<Visit> findVisit(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber);
     }
 
@@ -147,7 +147,16 @@ public class VisitService {
     }
 
     public Page<Visit> lastVisit(final Patient patient, final String currentVisitNumber) {
-        return this.visitRepository.lastVisit(patient, currentVisitNumber,PageRequest.of(0, 1));
+        if (currentVisitNumber != null) {
+            return this.visitRepository.lastVisit(patient, currentVisitNumber, PageRequest.of(0, 1));
+        } else {
+            //find current visit
+            Optional<Visit> visit = visitRepository.findByPatientAndStatus(patient, VisitEnum.Status.CheckIn);
+            if (visit.isPresent()) {
+                return this.visitRepository.lastVisit(patient, visit.get().getVisitNumber(), PageRequest.of(0, 1));
+            }
+            return this.visitRepository.lastVisitWithoutCurrentActiveVisit(patient, PageRequest.of(0, 1));
+        }
     }
 
     public VisitData convertVisitEntityToData(Visit visit) {
@@ -161,13 +170,13 @@ public class VisitService {
     public List<Visit> fetchAllVisitsSurpassed24hrs() {
         return visitRepository.visitsPast24hours();
     }
-    
+
     public List<Visit> fetchVisitAttendance(Date date) {
         return visitRepository.visitAttendance(date);
     }
-    
+
     public List<Register> getPatientRegister(DateRange range) {
-        return visitRepository.patientRegister(range.getStartDateTime(),range.getEndDateTime());
+        return visitRepository.patientRegister(range.getStartDateTime(), range.getEndDateTime());
     }
 
     public Page<Visit> fetchVisitsGroupByVisitNumber(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Pageable pageable) {

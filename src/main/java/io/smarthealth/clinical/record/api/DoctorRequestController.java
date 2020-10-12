@@ -159,6 +159,7 @@ public class DoctorRequestController {
     }
 
     @GetMapping("/doctor-request/{patientNo}/past")
+    @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> pastDocRequests(
             @PathVariable(value = "patientNo", required = false) final String patientNo,
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
@@ -185,6 +186,7 @@ public class DoctorRequestController {
             for (DoctorRequest docReq : pageList.getContent()) {
                 System.out.println("count " + count);
                 HistoricalDoctorRequestsData waitingRequest = new HistoricalDoctorRequestsData();
+                waitingRequest.setId(docReq.getId());
                 waitingRequest.setPatientName(patient.getFullName());
                 waitingRequest.setPatientNumber(patient.getPatientNumber());
 
