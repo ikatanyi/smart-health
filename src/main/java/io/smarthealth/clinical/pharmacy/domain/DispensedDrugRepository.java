@@ -20,7 +20,7 @@ public interface DispensedDrugRepository extends JpaRepository<DispensedDrug, Lo
     @Query("UPDATE DispensedDrug d SET d.paid=true WHERE d.id=:id")
     int updateDrugPaid(@Param("id") Long id);
     
-    @Query("SELECT d.drug.itemCode AS itemId,  d.dispensedDate, d.drug.itemName AS drug, SUM(d.qtyIssued) AS  qty, d.price AS price, d.drug.rate AS cost FROM  DispensedDrug d WHERE d.dispensedDate BETWEEN :fromDate AND :toDate GROUP BY d.drug")
+    @Query("SELECT d.drug.itemCode AS itemId,  d.dispensedDate, d.drug.itemName AS drug, SUM(d.qtyIssued) AS  qty, d.price AS price, d.drug.rate AS cost, d.otherReference as otherReference FROM  DispensedDrug d WHERE d.dispensedDate BETWEEN :fromDate AND :toDate GROUP BY d.drug")
     List<DispensedDrugsInterface> dispensedDrugs(@Param("fromDate") LocalDate fromDate, @Param("toDate")LocalDate toDate);
     
 }
