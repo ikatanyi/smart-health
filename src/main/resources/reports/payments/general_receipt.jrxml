@@ -144,7 +144,7 @@
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement x="1" y="0" width="111" height="15" uuid="da08471a-e688-4c0a-935b-daf853466751"/>
+				<reportElement x="1" y="0" width="198" height="15" uuid="da08471a-e688-4c0a-935b-daf853466751"/>
 				<textElement verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
