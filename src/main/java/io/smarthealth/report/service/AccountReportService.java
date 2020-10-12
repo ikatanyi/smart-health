@@ -697,6 +697,7 @@ public class AccountReportService {
                         break;
                     default:
                         data.setOther(data.getOther() != null ? data.getOther().add(item.getAmountPaid()) : item.getAmountPaid());
+                        
                         break;
                 }
                 data.setAmount(data.getAmount().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
