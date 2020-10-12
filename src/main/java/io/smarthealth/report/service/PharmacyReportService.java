@@ -129,11 +129,6 @@ public class PharmacyReportService {
                 .map(drug -> drug.toData())
                 .collect(Collectors.toList());
 
-        
-        
-//        if (visit.getHealthProvider() != null) {
-//            reportData.setEmployeeId(visit.getHealthProvider().getStaffNumber());
-//        }
         reportData.setData(requestData);
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/pharmacy/Patient_dispensed_drugs");
