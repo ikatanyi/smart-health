@@ -189,7 +189,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Department Payment Statement]]></text>
+				<text><![CDATA[Department Income Statement]]></text>
 			</staticText>
 			<line>
 				<reportElement positionType="Float" x="0" y="0" width="552" height="1" forecolor="#6666FF" uuid="51c15655-6202-4aed-8e36-9c455d843b8a"/>
@@ -292,7 +292,7 @@
 				<textFieldExpression><![CDATA[$F{amountPaid}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="192" y="2" width="82" height="14" isRemoveLineWhenBlank="true" uuid="384700db-e122-4bc9-bb94-4a4031bcaa37"/>
+				<reportElement x="192" y="2" width="82" height="14" uuid="384700db-e122-4bc9-bb94-4a4031bcaa37"/>
 				<box>
 					<pen lineWidth="0.0"/>
 					<topPen lineWidth="0.0"/>
