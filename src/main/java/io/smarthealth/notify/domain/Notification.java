@@ -13,7 +13,6 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,10 +21,11 @@ import lombok.Setter;
  *
  * @author Kelsas
  */
-@Entity 
+@Entity
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "user_notifications")
-@Data
 public class Notification extends Auditable {
 
     private LocalDateTime datetime;
@@ -38,13 +38,13 @@ public class Notification extends Auditable {
     @Enumerated(EnumType.STRING)
     private NoticeType noticeType;
 
-    public Notification(User recipient, String message, NoticeType noticeType,String reference) {
+    public Notification(User recipient, String message, NoticeType noticeType, String reference) {
         this.recipient = recipient;
         this.message = message;
         this.isRead = false;
         this.noticeType = noticeType;
         this.datetime = LocalDateTime.now();
-        this.reference=reference;
+        this.reference = reference;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class Notification extends Auditable {
                 .name(this.recipient.getName())
                 .reference(this.reference)
                 .title(this.noticeType.getLabel())
-                .user(this.recipient) 
+                .user(this.recipient)
                 .build();
 
     }

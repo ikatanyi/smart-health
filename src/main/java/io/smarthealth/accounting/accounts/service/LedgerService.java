@@ -70,6 +70,10 @@ public class LedgerService {
     public List<Ledger> listAllAccountTypes() {
         return ledgerRepository.findByParentLedgerNotNull();
     }
+    
+     public List<Ledger> listByAccountType(AccountType accountType) {
+        return ledgerRepository.findByAccountType(accountType);
+    }
 
     public ArrayList<LedgerGrouping> getGroupedAccountsTypes() {
         ArrayList<LedgerGrouping> list = new ArrayList<>();
@@ -159,6 +163,11 @@ public class LedgerService {
         parentLedgerEntity.setName(ledgerData.getName());
         parentLedgerEntity.setDescription(ledgerData.getDescription());
         parentLedgerEntity.setShowAccountsInChart(ledgerData.getShowAccountsInChart());
+        
+        if(ledgerData.getParentLedgerIdentifier()!=null){
+            Ledger parentLedger = findLedgerOrThrow(ledgerData.getParentLedgerIdentifier());
+            parentLedgerEntity.setParentLedger(parentLedger);
+        }
 
         final Ledger savedParentLedger = this.ledgerRepository.save(parentLedgerEntity);
 

@@ -46,7 +46,7 @@ public class GlobalConfigurationController {
     }
     
     @GetMapping("/configurations/{configName}/name")
-    @PreAuthorize("hasAuthority('view_globalConfigurations')")
+//    @PreAuthorize("hasAuthority('view_globalConfigurations')")
     public ResponseEntity<?> getConfigurationByName(@PathVariable(value = "configName") GlobalConfigNum configName) {
         GlobalConfiguration config = service.getByNameOrThrow(configName.name());
         return ResponseEntity.ok(config);

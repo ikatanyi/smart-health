@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.accounts.data.JournalEntryItemData;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.persistence.Entity;
@@ -90,10 +91,12 @@ public class JournalEntryItem extends Auditable {
         data.setCredit(this.credit);
         data.setDebit(this.debit);
         data.setFormattedDebit(
-                NumberFormat.getCurrencyInstance(new Locale("en", "KE")).format(this.debit)
+//                NumberFormat.getCurrencyInstance(new Locale("en", "KE")).format(this.debit)
+                formatCurrency(this.debit!=null ? this.debit.toPlainString() : "0")
         );
         data.setFormattedCredit(
-                NumberFormat.getCurrencyInstance(new Locale("en", "KE")).format(this.credit)
+//                NumberFormat.getCurrencyInstance(new Locale("en", "KE")).format(this.credit)
+                formatCurrency(this.credit!=null ? this.credit.toPlainString() : "0")
         );
         data.setDescription(this.description);
         data.setJournalId(this.journalEntry.getId());
@@ -107,5 +110,10 @@ public class JournalEntryItem extends Auditable {
       @Override
     public String toString() {
         return "Journal Entry Item [id=" + getId() + ", Journal =" + journalEntry.getDescription() + ", account=" + account!=null ? account.getName(): null + ", debit=" + debit + ", credit=" +credit+ " ]";
+    }
+    
+    public static String formatCurrency(String amount) {
+        DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
+        return formatter.format(Double.parseDouble(amount));
     }
 }
