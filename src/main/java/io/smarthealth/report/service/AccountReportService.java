@@ -605,8 +605,7 @@ public class AccountReportService {
     }
     
     public void getPatientReceipt(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
-        ReportData reportData = new ReportData();
-        System.err.println("My reports "+reportData );
+        ReportData reportData = new ReportData(); 
         String receiptNo = reportParam.getFirst("receiptNo");
         //"RCT-00009"
         ReceiptData receiptData = paymentService.getPaymentByReceiptNumber(receiptNo).toData();
