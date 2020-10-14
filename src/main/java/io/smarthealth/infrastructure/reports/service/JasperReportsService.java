@@ -45,6 +45,7 @@ import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
@@ -247,9 +248,17 @@ public class JasperReportsService {
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
-            case XLS:
+            case XLS:                
             case XLSX:
-                exporter = new JRXlsxExporter();
+                
+                if(type.name().toLowerCase().equals("xlsx")){
+                    exporter = new JRXlsxExporter();
+                    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                }
+                else{
+                    exporter = new JRXlsExporter();
+                    response.setContentType("application/vnd.ms-excel");
+                }
                 SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
 //                AbstractXlsReportConfiguration config = new SimpleXlsxReportConfiguration();
                 config.setOnePagePerSheet(false);
@@ -268,10 +277,7 @@ public class JasperReportsService {
                 exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
 //                File outputFile = new File("excelTest.xlsx");
 //                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputFile));
-                if(type.name().toLowerCase().equals("xlsx"))
-                    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-                else
-                    response.setContentType("application/vnd.ms-excel");
+                
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
