@@ -22,6 +22,7 @@ import io.smarthealth.supplier.service.SupplierService;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -44,6 +45,7 @@ import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
@@ -220,7 +222,7 @@ public class JasperReportsService {
 
                 SimpleHtmlExporterOutput htmlOutput = new SimpleHtmlExporterOutput(out);
                 htmlOutput.setImageHandler(new WebHtmlResourceHandler("/jasper_images?image={0}"));
-                
+
                 configuration.setIgnorePageMargins(true);
 //                configuration.setSizeUnit(POINT);
 
@@ -246,11 +248,21 @@ public class JasperReportsService {
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
-            case XLS:
+            case XLS:                
             case XLSX:
-                exporter = new JRXlsxExporter();
-                AbstractXlsReportConfiguration config = new SimpleXlsxReportConfiguration();
+                
+                if(type.name().toLowerCase().equals("xlsx")){
+                    exporter = new JRXlsxExporter();
+                    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                }
+                else{
+                    exporter = new JRXlsExporter();
+                    response.setContentType("application/vnd.ms-excel");
+                }
+                SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
+//                AbstractXlsReportConfiguration config = new SimpleXlsxReportConfiguration();
                 config.setOnePagePerSheet(false);
+                config.setIgnoreGraphics(Boolean.TRUE);
 //                config.setDetectCellType(Boolean.TRUE);
                 config.setRemoveEmptySpaceBetweenRows(Boolean.FALSE);
                 config.setCollapseRowSpan(Boolean.TRUE);
@@ -263,7 +275,9 @@ public class JasperReportsService {
                 config.setSheetNames(new String[]{"Sheet1"});
                 exporter.setConfiguration(config);
                 exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
-                response.setContentType("application/vnd.ms-excel");
+//                File outputFile = new File("excelTest.xlsx");
+//                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputFile));
+                
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
