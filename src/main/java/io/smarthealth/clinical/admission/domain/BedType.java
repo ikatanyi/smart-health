@@ -29,7 +29,7 @@ public class BedType extends Identifiable {
 //    @JoinColumn(foreignKey = @ForeignKey(name = "fk_bed_type_bed_charge_id"))
 //    @OneToMany()
     @OneToMany(mappedBy = "bedType", cascade = CascadeType.ALL)
-    private List<BedCharge> bedCharges;
+    private List<BedCharge> bedCharges ;
     
     public void addBedCharge(BedCharge bedCharge) {
         bedCharge.setBedType(this);
