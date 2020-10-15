@@ -258,6 +258,12 @@ public class ReportController {
             case Payment_Transactions_Statement:
                 reportService.getPaymentTransactions(queryParams, format, response);
                 break;
+            case Registered_Schemes:
+                reportService.getSchemeConfig(queryParams, format, response);
+                break;    
+            case Insurance_Diagnosis_Summary:
+                reportService.genDiagnosisStatement(queryParams, format, response);
+                break;
             default:
                 break;
         }

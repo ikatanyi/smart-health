@@ -8,6 +8,7 @@ package io.smarthealth.debtor.scheme.data;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.debtor.scheme.domain.enumeration.DiscountType;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -36,6 +37,10 @@ public class SchemConfigData {
     private String schemeCover;
     private boolean checkMemberShipLimit;
     private boolean hasClaimSwithing;
+    @ApiModelProperty(hidden=true)
+    private String schemeName;
+    @ApiModelProperty(hidden=true)
+    private String payerName;
     
     public static SchemConfigData map(SchemeConfigurations config) {
         SchemConfigData scd = new SchemConfigData();
@@ -50,6 +55,11 @@ public class SchemConfigData {
         scd.setSchemeCover(config.getSchemeCover());
         scd.setCheckMemberShipLimit(config.isCheckMemberShipLimit());
         scd.setHasClaimSwithing(config.isClaimSwitching());
+        if(config.getScheme()!=null){
+            scd.setSchemeName(config.getScheme().getSchemeName());
+            if(config.getScheme().getPayer()!=null)
+                scd.setPayerName(config.getScheme().getPayer().getPayerName());
+        }
         return scd;
     }
     
