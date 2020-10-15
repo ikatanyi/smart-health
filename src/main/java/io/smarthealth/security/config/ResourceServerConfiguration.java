@@ -1,6 +1,6 @@
 package io.smarthealth.security.config;
 
-import io.kelsas.accounting.security.service.CustomAccessDeniedHandler;
+import io.smarthealth.security.service.CustomAccessDeniedHandler;
 import io.smarthealth.security.service.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
