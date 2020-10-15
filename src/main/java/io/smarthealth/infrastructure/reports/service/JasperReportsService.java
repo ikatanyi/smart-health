@@ -250,17 +250,18 @@ public class JasperReportsService {
 
             case XLS:                
             case XLSX:
-                
-                if(type.name().toLowerCase().equals("xlsx")){
+                AbstractXlsReportConfiguration config=null;
+                if(type.name().toLowerCase().equals("xlsx")){                    
                     exporter = new JRXlsxExporter();
+                    config = new SimpleXlsxReportConfiguration();
                     response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                 }
                 else{
                     exporter = new JRXlsExporter();
+                    config = new SimpleXlsxReportConfiguration();
                     response.setContentType("application/vnd.ms-excel");
                 }
-                SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
-//                AbstractXlsReportConfiguration config = new SimpleXlsxReportConfiguration();
+                
                 config.setOnePagePerSheet(false);
                 config.setIgnoreGraphics(Boolean.TRUE);
 //                config.setDetectCellType(Boolean.TRUE);
@@ -269,7 +270,7 @@ public class JasperReportsService {
                 config.setIgnoreGraphics(Boolean.TRUE);
                 config.setWrapText(Boolean.TRUE);
                 config.setColumnWidthRatio(2.0F);
-                config.setShowGridLines(Boolean.FALSE);
+                config.setShowGridLines(Boolean.TRUE);
 //                config.setRemoveEmptySpaceBetweenColumns(Boolean.TRUE);
                 config.setFontSizeFixEnabled(false);
                 config.setSheetNames(new String[]{"Sheet1"});

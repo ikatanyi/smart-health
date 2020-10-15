@@ -209,7 +209,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[ShiftNo.]]></text>
+				<text><![CDATA[Created By]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" x="1" y="69" width="16" height="12" uuid="b3e1e8e9-9c7e-498f-9741-2657e9e45f3a"/>
@@ -494,11 +494,11 @@
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
+				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 					<paragraph rightIndent="2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{shiftNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="1" y="0" width="16" height="16" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>

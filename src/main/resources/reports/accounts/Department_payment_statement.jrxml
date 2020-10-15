@@ -3,6 +3,7 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<parameter name="range" class="java.lang.String"/>
 	<parameter name="to" class="java.util.Date"/>
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
@@ -51,9 +52,9 @@
 	<group name="servicePoint" isStartNewPage="true">
 		<groupExpression><![CDATA[$F{servicePoint}]]></groupExpression>
 		<groupHeader>
-			<band height="22">
+			<band height="18">
 				<textField isBlankWhenNull="true">
-					<reportElement x="0" y="10" width="555" height="12" uuid="629d07f8-acc8-4717-a2c2-82bef35056d3"/>
+					<reportElement x="0" y="6" width="555" height="12" uuid="629d07f8-acc8-4717-a2c2-82bef35056d3"/>
 					<box>
 						<bottomPen lineWidth="0.25"/>
 					</box>
@@ -99,9 +100,9 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="77" splitType="Stretch">
+		<band height="58" splitType="Stretch">
 			<staticText>
-				<reportElement x="63" y="64" width="129" height="13" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
+				<reportElement x="63" y="45" width="129" height="13" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -111,7 +112,7 @@
 				<text><![CDATA[Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="11" y="64" width="52" height="13" uuid="20a7e05e-9914-4ca9-8b7c-7d990afaf6a4"/>
+				<reportElement x="11" y="45" width="52" height="13" uuid="20a7e05e-9914-4ca9-8b7c-7d990afaf6a4"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -121,7 +122,7 @@
 				<text><![CDATA[Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="64" width="11" height="13" uuid="b3e1e8e9-9c7e-498f-9741-2657e9e45f3a"/>
+				<reportElement x="0" y="45" width="11" height="13" uuid="b3e1e8e9-9c7e-498f-9741-2657e9e45f3a"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -131,7 +132,7 @@
 				<text><![CDATA[#]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="276" y="64" width="73" height="13" uuid="a0523b95-eda9-4ba5-b86f-b8743862a7df"/>
+				<reportElement x="276" y="45" width="73" height="13" uuid="a0523b95-eda9-4ba5-b86f-b8743862a7df"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -141,7 +142,7 @@
 				<text><![CDATA[Item Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="349" y="64" width="156" height="13" uuid="f8d742ac-25b5-4335-8d56-e4a3e828e5a4"/>
+				<reportElement x="349" y="45" width="156" height="13" uuid="f8d742ac-25b5-4335-8d56-e4a3e828e5a4"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -151,7 +152,7 @@
 				<text><![CDATA[Item Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="505" y="64" width="45" height="13" uuid="bd032a66-ca15-4ccd-9db8-87808bccb36c"/>
+				<reportElement x="505" y="45" width="45" height="13" uuid="bd032a66-ca15-4ccd-9db8-87808bccb36c"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -161,7 +162,7 @@
 				<text><![CDATA[Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="192" y="64" width="84" height="13" uuid="7e5c1a9c-6928-4ac3-aa23-dc32c6e9438e"/>
+				<reportElement x="192" y="45" width="84" height="13" uuid="7e5c1a9c-6928-4ac3-aa23-dc32c6e9438e"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -172,6 +173,9 @@
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="25" width="32" height="13" uuid="6ae293a2-064a-4450-a97d-aa5796c28340"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -179,6 +183,9 @@
 			</staticText>
 			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
 				<reportElement x="33" y="25" width="503" height="13" isRemoveLineWhenBlank="true" uuid="296dd85b-0679-49de-80e7-b8bed8a46890"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="false"/>
 				</textElement>
@@ -195,12 +202,6 @@
 				<reportElement positionType="Float" x="0" y="0" width="552" height="1" forecolor="#6666FF" uuid="51c15655-6202-4aed-8e36-9c455d843b8a"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineColor="#000000"/>
-				</graphicElement>
-			</line>
-			<line>
-				<reportElement x="2" y="39" width="552" height="1" forecolor="#000000" uuid="11c82c65-4787-43a9-8faf-6e3069cb5459"/>
-				<graphicElement>
-					<pen lineWidth="0.25"/>
 				</graphicElement>
 			</line>
 		</band>
