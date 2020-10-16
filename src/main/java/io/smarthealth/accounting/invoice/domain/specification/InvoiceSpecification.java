@@ -14,7 +14,7 @@ public class InvoiceSpecification {
         super();
     }
 
-    public static Specification<Invoice> createSpecification(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, Boolean filterPastDue, Boolean awaitingSmart, Double amountLessThanOrEqualTo) {
+    public static Specification<Invoice> createSpecification(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, Boolean filterPastDue, Boolean awaitingSmart, Double amountLessThanOrEqualTo, Boolean hasCapitation) {
 
         return (root, query, cb) -> {
 
@@ -29,7 +29,9 @@ public class InvoiceSpecification {
                if (scheme != null) {
                 predicates.add(cb.equal(root.get("scheme").get("id"), scheme));
             }
-
+          if(hasCapitation!=null){
+              predicates.add(cb.equal(root.get("capitation"), hasCapitation));
+          }
 //             if (customer != null) {
 //                final String likeExpression = "%" + customer + "%";
 //                predicates.add(

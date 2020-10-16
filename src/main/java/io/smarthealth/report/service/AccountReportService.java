@@ -442,6 +442,7 @@ public class AccountReportService {
         String patientNo = reportParam.getFirst("patientNo");
         String invoiceNo = reportParam.getFirst("invoiceNo");
         Boolean awaitingSmart = reportParam.getFirst("awaitingSmart") != null ? Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")) : false;
+         Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : false;
         DateRange dateRange = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         String invoiceStatus = reportParam.getFirst("invoiceStatus");
         Double amountGreaterThan = 0.0;
@@ -452,7 +453,7 @@ public class AccountReportService {
         ReportData reportData = new ReportData();
         InvoiceStatus status = invoiceStatusToEnum(invoiceStatus);
         
-        List<InvoiceData> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, dateRange, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, Pageable.unpaged()).getContent()
+        List<InvoiceData> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, dateRange, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation, Pageable.unpaged()).getContent()
                 .stream()
                 .map((invoice) -> invoice.toData())
                 .collect(Collectors.toList());
@@ -525,6 +526,7 @@ public class AccountReportService {
         String dateRange = reportParam.getFirst("range");
         InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));
         Boolean awaitingSmart = reportParam.getFirst("awaitingSmart") != null ? Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")) : null;
+        Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : false;
         Double amountGreaterThan = null;
         Boolean filterPastDue = null;
         Double amountLessThanOrEqualTo = null;
@@ -533,7 +535,7 @@ public class AccountReportService {
         Map<String, Object> map = reportData.getFilters();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, pageable).getContent()
+        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo,hasCapitation, pageable).getContent()
                 .stream()
                 .map(x -> x.toData())
                 .collect(Collectors.toList());
@@ -569,6 +571,7 @@ public class AccountReportService {
         String dateRange = reportParam.getFirst("dateRange");
         InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));
         Boolean awaitingSmart = reportParam.getFirst("awaitingSmart") != null ? Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")) : null;
+        Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : false;
         Double amountGreaterThan = null;
         Boolean filterPastDue = null;
         Double amountLessThanOrEqualTo = null;
@@ -577,7 +580,7 @@ public class AccountReportService {
         Map<String, Object> map = reportData.getFilters();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, pageable).getContent()
+        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation,pageable).getContent()
                 .stream()
                 .map(x -> x.toData())
                 .collect(Collectors.toList());

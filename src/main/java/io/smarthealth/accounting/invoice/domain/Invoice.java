@@ -28,6 +28,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -79,7 +80,11 @@ public class Invoice extends Auditable {
     private InvoiceStatus status;
     private String notes;
     private Boolean awaitingSmart = Boolean.FALSE;
-
+    @Column(name = "is_capitation_invoice")
+   private Boolean capitation=Boolean.FALSE;
+    @Transient
+    private BigDecimal invoiceAmount; //temporarly holding for orginal invoice amount
+    
     @Where(clause = "voided = false")
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     private List<InvoiceItem> items = new ArrayList<>();
@@ -152,6 +157,7 @@ public class Invoice extends Auditable {
                         })
                         .collect(Collectors.toList())
         );
+        data.setCapitation(this.capitation);
         
 
         return data;

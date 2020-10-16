@@ -121,12 +121,14 @@ public class ReceivePaymentService {
         if (!data.getPayment().isEmpty()) {
             receipt.addTransaction(
                     data.getPayment()
-                            .stream().map(t -> {
+                            .stream()
+                            .map(t -> {
                                 if (StringUtils.isNotBlank(t.getAccountNumber())) {
                                     toBank.add(t);
                                 }
                                 return createPaymentTransaction(t);
                             })
+                            .filter(x -> x.getAmount()!=null)
                             .collect(Collectors.toList())
             );
         }
