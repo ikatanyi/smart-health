@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.13.0.final using JasperReports Library version 6.13.0-46ada4d1be8f3c5985fd0b6146f3ed44caed6f05  -->
+<!-- Created with Jaspersoft Studio version 6.11.0.final using JasperReports Library version 6.11.0-0c4056ccaa4d25a5a8c45672d2f764ea3498bebb  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
@@ -271,13 +271,6 @@
 				</textElement>
 				<text><![CDATA[Authorised Signature]]></text>
 			</staticText>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="false">
-				<reportElement x="16" y="3" width="354" height="11" uuid="353f591c-e31b-48b8-84c5-92b3d3be7671"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["SUM OF "+$P{amountInWords}]]></textFieldExpression>
-			</textField>
 			<textField>
 				<reportElement x="459" y="3" width="60" height="11" uuid="d4e9c238-94d5-4d11-93f7-c03d95f275d1"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">

@@ -3,6 +3,7 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -162,10 +163,10 @@
 			<band/>
 		</groupFooter>
 	</group>
-	<pageHeader>
-		<band height="32" splitType="Stretch">
+	<title>
+		<band height="34">
 			<subreport>
-				<reportElement x="0" y="0" width="801" height="30" isRemoveLineWhenBlank="true" uuid="7dc52d1a-d526-4b91-b95f-3389786a6924"/>
+				<reportElement x="0" y="0" width="802" height="34" isRemoveLineWhenBlank="true" uuid="7dc52d1a-d526-4b91-b95f-3389786a6924"/>
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -173,17 +174,17 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<line>
-				<reportElement positionType="Float" x="-1" y="31" width="801" height="1" forecolor="#6666FF" uuid="d7ad5895-f0e7-43cb-a93c-1195cac617f0"/>
+				<reportElement positionType="Float" x="1" y="33" width="802" height="1" uuid="45fa6f87-eef4-4a94-b37d-00b86ad7ee73"/>
 				<graphicElement>
-					<pen lineWidth="0.25" lineColor="#000000"/>
+					<pen lineWidth="0.15"/>
 				</graphicElement>
 			</line>
 		</band>
-	</pageHeader>
+	</title>
 	<columnHeader>
-		<band height="92" splitType="Stretch">
+		<band height="82" splitType="Stretch">
 			<staticText>
-				<reportElement x="17" y="80" width="68" height="12" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
+				<reportElement positionType="Float" x="17" y="69" width="68" height="12" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -197,14 +198,7 @@
 				<text><![CDATA[  Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="20" width="227" height="20" uuid="2128f471-bc78-4bea-b26b-955f270cde40"/>
-				<textElement verticalAlignment="Middle">
-					<font size="9" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Payment Statement between The given Dates]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="755" y="80" width="47" height="12" uuid="03b536fc-5150-4ad1-aa6f-34c0e3488218"/>
+				<reportElement positionType="Float" x="755" y="69" width="47" height="12" uuid="03b536fc-5150-4ad1-aa6f-34c0e3488218"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -215,10 +209,10 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[ShiftNo.]]></text>
+				<text><![CDATA[Created By]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="80" width="16" height="12" uuid="b3e1e8e9-9c7e-498f-9741-2657e9e45f3a"/>
+				<reportElement positionType="Float" x="1" y="69" width="16" height="12" uuid="b3e1e8e9-9c7e-498f-9741-2657e9e45f3a"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -232,21 +226,7 @@
 				<text><![CDATA[#]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="43" width="50" height="13" uuid="6ae293a2-064a-4450-a97d-aa5796c28340"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Date Range :]]></text>
-			</staticText>
-			<textField pattern="dd-MM-yyyy">
-				<reportElement x="50" y="43" width="551" height="13" isRemoveLineWhenBlank="true" uuid="296dd85b-0679-49de-80e7-b8bed8a46890"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{range}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="152" y="80" width="102" height="12" uuid="e13a8d32-7e95-48f9-ad19-5457db79778c"/>
+				<reportElement positionType="Float" x="152" y="69" width="102" height="12" uuid="e13a8d32-7e95-48f9-ad19-5457db79778c"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -261,7 +241,7 @@
 				<text><![CDATA[Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="591" y="80" width="43" height="12" uuid="27731d5a-c33b-4e2c-9804-9bb5eeb5e0bc"/>
+				<reportElement positionType="Float" mode="Transparent" x="591" y="69" width="43" height="12" uuid="27731d5a-c33b-4e2c-9804-9bb5eeb5e0bc"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -275,7 +255,7 @@
 				<text><![CDATA[Cash]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="634" y="80" width="39" height="12" uuid="13e89626-92fe-4ecd-bd53-725cf307e0dc"/>
+				<reportElement positionType="Float" x="634" y="69" width="39" height="12" uuid="13e89626-92fe-4ecd-bd53-725cf307e0dc"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -289,7 +269,7 @@
 				<text><![CDATA[Bank]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="673" y="80" width="40" height="12" uuid="cdce1969-d77f-433e-8a94-1eb8a495a18e"/>
+				<reportElement positionType="Float" mode="Transparent" x="673" y="69" width="40" height="12" uuid="cdce1969-d77f-433e-8a94-1eb8a495a18e"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -303,7 +283,7 @@
 				<text><![CDATA[Mobile]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="713" y="80" width="42" height="12" uuid="99acabc5-fce0-41ec-a0fc-acaaedaaa79e"/>
+				<reportElement positionType="Float" x="713" y="69" width="42" height="12" uuid="99acabc5-fce0-41ec-a0fc-acaaedaaa79e"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -317,7 +297,7 @@
 				<text><![CDATA[Card]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="548" y="80" width="43" height="12" uuid="bc3e128f-2cc8-478e-9f93-aba3b53b684f"/>
+				<reportElement positionType="Float" x="548" y="69" width="43" height="12" uuid="bc3e128f-2cc8-478e-9f93-aba3b53b684f"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -331,7 +311,7 @@
 				<text><![CDATA[Disc.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="254" y="80" width="42" height="12" uuid="4bb135b1-e19c-4a94-9d8f-2a4c2320fee9"/>
+				<reportElement positionType="Float" x="254" y="69" width="42" height="12" uuid="4bb135b1-e19c-4a94-9d8f-2a4c2320fee9"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -345,7 +325,7 @@
 				<text><![CDATA[Conslt]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="296" y="80" width="41" height="12" uuid="3cf5ab34-6977-4899-831c-0cad53e39d24"/>
+				<reportElement positionType="Float" x="296" y="69" width="41" height="12" uuid="3cf5ab34-6977-4899-831c-0cad53e39d24"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -359,7 +339,7 @@
 				<text><![CDATA[Lab]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="337" y="80" width="38" height="12" uuid="51352d9a-9e38-4c5d-8cad-d657fd34648d"/>
+				<reportElement positionType="Float" x="337" y="69" width="38" height="12" uuid="51352d9a-9e38-4c5d-8cad-d657fd34648d"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -373,7 +353,7 @@
 				<text><![CDATA[Pharm]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="375" y="80" width="40" height="12" uuid="18aabfa1-2292-41da-8fa4-aa49376c696a"/>
+				<reportElement positionType="Float" x="375" y="69" width="40" height="12" uuid="18aabfa1-2292-41da-8fa4-aa49376c696a"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -387,7 +367,7 @@
 				<text><![CDATA[Scan]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="415" y="80" width="45" height="12" uuid="f3ff2e2d-a31f-47c1-99c1-53779c94f25c"/>
+				<reportElement positionType="Float" x="415" y="69" width="45" height="12" uuid="f3ff2e2d-a31f-47c1-99c1-53779c94f25c"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -401,7 +381,7 @@
 				<text><![CDATA[Proc.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="460" y="80" width="43" height="12" uuid="0321e60b-4d60-4632-ba88-da3f893211b8"/>
+				<reportElement positionType="Float" x="460" y="69" width="43" height="12" uuid="0321e60b-4d60-4632-ba88-da3f893211b8"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -415,7 +395,7 @@
 				<text><![CDATA[Copay]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="85" y="80" width="67" height="12" uuid="9638fb63-5268-480a-964c-bf730ccb175a"/>
+				<reportElement positionType="Float" x="85" y="69" width="67" height="12" uuid="9638fb63-5268-480a-964c-bf730ccb175a"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -430,20 +410,7 @@
 				<text><![CDATA[Receipt No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="0" width="156" height="20" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
-				<textElement verticalAlignment="Middle">
-					<font size="9" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Departmental General Income]]></text>
-			</staticText>
-			<line>
-				<reportElement positionType="Float" x="0" y="62" width="801" height="1" forecolor="#6666FF" uuid="a0b2ffdc-b830-4025-bdf2-fc3270e1c0c0"/>
-				<graphicElement>
-					<pen lineWidth="0.25" lineColor="#000000"/>
-				</graphicElement>
-			</line>
-			<staticText>
-				<reportElement mode="Transparent" x="503" y="80" width="45" height="12" uuid="60d06f24-e225-44e6-89f1-960d465d5bca"/>
+				<reportElement positionType="Float" mode="Transparent" x="503" y="69" width="45" height="12" uuid="60d06f24-e225-44e6-89f1-960d465d5bca"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -455,6 +422,49 @@
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="1" y="20" width="228" height="20" uuid="2128f471-bc78-4bea-b26b-955f270cde40"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payment Statement between The given Dates]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="1" y="43" width="50" height="13" uuid="6ae293a2-064a-4450-a97d-aa5796c28340"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Range :]]></text>
+			</staticText>
+			<textField pattern="dd-MM-yyyy">
+				<reportElement positionType="Float" x="51" y="43" width="752" height="13" isRemoveLineWhenBlank="true" uuid="296dd85b-0679-49de-80e7-b8bed8a46890"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{range}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement positionType="Float" x="1" y="19" width="802" height="1" uuid="7499e64d-343c-4346-9c4c-2eb154a87b71"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="803" height="20" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Departmental General Collection]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -484,11 +494,11 @@
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
+				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 					<paragraph rightIndent="2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{shiftNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="1" y="0" width="16" height="16" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
