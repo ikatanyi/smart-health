@@ -40,6 +40,8 @@ import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.accounting.payment.service.ReceivePaymentService;
 import io.smarthealth.accounting.payment.service.RemittanceService;
+import io.smarthealth.clinical.record.data.PatientTestsData;
+import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.PaymentMethod;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -48,12 +50,15 @@ import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
 import io.smarthealth.debtor.claim.dispatch.data.DispatchData;
 import io.smarthealth.debtor.claim.dispatch.service.DispatchService;
+import io.smarthealth.debtor.scheme.data.SchemConfigData;
+import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateConverter;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
+import io.smarthealth.infrastructure.utility.ContentPage;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.accounts.DailyBillingData;
@@ -78,6 +83,7 @@ import net.sf.jasperreports.engine.JRSortField;
 import net.sf.jasperreports.engine.design.JRDesignSortField;
 import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 import net.sf.jasperreports.engine.type.SortOrderEnum;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.domain.Page;
@@ -92,7 +98,7 @@ import org.springframework.util.MultiValueMap;
 @Service
 @RequiredArgsConstructor
 public class AccountReportService {
-    
+
     private final JasperReportsService reportService;
     private final TrialBalanceService trialBalanceService;
     private final BillingService billService;
@@ -111,9 +117,11 @@ public class AccountReportService {
     private final AllocationService allocationService;
     private final ReceivePaymentService receivePaymentService;
     private final DispatchService dispatchService;
-    
+    private final SchemeService schemeService;
+    private final DiagnosisService diagnosisService;
+
     public void getTrialBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
-        
+
         Boolean includeEmptyEntries = Boolean.valueOf(reportParam.getFirst("includeEmptyEntries"));
         LocalDate asAt = DateConverter.dateFromIsoString(reportParam.getFirst("asAt"));
         ReportData reportData = new ReportData();
@@ -136,7 +144,7 @@ public class AccountReportService {
         reportData.setReportName("trialBalance");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getAccounts(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         Boolean includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
         String term = reportParam.getFirst("term");
@@ -144,51 +152,51 @@ public class AccountReportService {
         Boolean includeCustomerAccounts = reportParam.getFirst("includeCustomerAccounts") != null ? Boolean.getBoolean(reportParam.getFirst("includeCustomerAccounts")) : null;
         ReportData reportData = new ReportData();
         List<AccountData> accountData = accountService.fetchAccounts(includeClosed, term, type, includeCustomerAccounts, Pageable.unpaged()).getAccounts();
-        
+
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("type");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+
         reportData.setData(accountData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/accounts");
         reportData.setReportName("accounts_Statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getIncomeExpenseAccounts(ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         List incomeExpeData = new ArrayList();
         IncomeExpenseData accountData = accountService.getIncomeExpenseAccounts();
-        
+
         incomeExpeData.addAll(accountData.getIncomeAccounts());
         incomeExpeData.addAll(accountData.getExpensesAccounts());
-        
+
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("type");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+
         reportData.setData(incomeExpeData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/income_expense_account");
         reportData.setReportName("income-expense-accounts");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getChartOfAccounts(ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         List<ChartOfAccountEntry> chartofAccount = chartOfAccountsService.getChartOfAccounts();
-        
+
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("type");
@@ -196,19 +204,19 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+
         reportData.setData(chartofAccount);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/chartOfAccount");
         reportData.setReportName("chart-of-account");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getBalanceSheet(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         LocalDate asAt = DateConverter.dateFromIsoString(reportParam.getFirst("asAt"));
         List<FinancialConditionSection> financialConditionSection = financialConditionService.getFinancialCondition(asAt).getFinancialConditionSections();
-        
+
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("type");
@@ -216,7 +224,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+
         reportData.setData(financialConditionSection);
         reportData.getFilters().put("asAt", reportParam.getFirst("asAt"));
         reportData.setFormat(format);
@@ -224,12 +232,12 @@ public class AccountReportService {
         reportData.setReportName("balance_sheet");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getIncomeStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         LocalDate asAt = DateConverter.dateFromIsoString(reportParam.getFirst("asAt"));
         List<IncomeStatementSection> incomeStatement = incomesStatementService.getIncomeStatement(asAt).getIncomeStatementSections();
-        
+
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("type");
@@ -244,7 +252,7 @@ public class AccountReportService {
         reportData.setReportName("income_statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getRemittanceReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long payerId = NumberUtils.createLong(reportParam.getFirst("payerId"));
@@ -252,12 +260,12 @@ public class AccountReportService {
         String receipt = reportParam.getFirst("receipt");
         String remittanceNo = reportParam.getFirst("remittanceNo");
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
-        
+
         List<RemittanceData> remittanceData = remittanceService.getRemittances(payerId, receipt, remittanceNo, hasBalance, range, Pageable.unpaged()).getContent()
                 .stream()
                 .map(rem -> (rem.toData()))
                 .collect(Collectors.toList());
-        
+
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("remittanceDate");
@@ -265,7 +273,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+
         sortField = new JRDesignSortField();
         sortField.setName("payer");
         sortField.setOrder(SortOrderEnum.DESCENDING);
@@ -279,7 +287,7 @@ public class AccountReportService {
         reportData.setReportName("Remittance_Statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getAllocationReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long payerId = NumberUtils.createLong(reportParam.getFirst("payerId"));
@@ -288,12 +296,12 @@ public class AccountReportService {
         String invoiceNo = reportParam.getFirst("invoiceNo");
         String remittanceNo = reportParam.getFirst("remittanceNo");
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
-        
+
         List<AllocationData> remittanceData = allocationService.getAllocations(invoiceNo, receiptNo, remittanceNo, payerId, schemeId, range, Pageable.unpaged()).getContent()
                 .stream()
                 .map(rem -> (rem.map()))
                 .collect(Collectors.toList());
-        
+
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("payer");
@@ -301,7 +309,7 @@ public class AccountReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+
         sortField = new JRDesignSortField();
         sortField.setName("transactionDate");
         sortField.setOrder(SortOrderEnum.DESCENDING);
@@ -315,19 +323,19 @@ public class AccountReportService {
         reportData.setReportName("Allocation-Report");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getJournal(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long journalId = NumberUtils.createLong(reportParam.getFirst("journalId"));
         JournalEntryData journalData = journalService.findJournalIdOrThrow(journalId).toData();
-        
+
         reportData.setData(Arrays.asList(journalData));
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/journal_report");
         reportData.setReportName("journal-statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getAccTransactions(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String identifier = reportParam.getFirst("identifier");
@@ -342,9 +350,9 @@ public class AccountReportService {
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.getFilters().put("ledger", data.getLedger());
         reportData.getFilters().put("balance", data.getBalance());
-        
+
         List<JournalEntryItemData> list = accountService.getAccountTransaction(identifier, range);
-        
+
         reportData.setData(list);
         reportData.setFormat(format);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
@@ -352,9 +360,9 @@ public class AccountReportService {
         reportData.setReportName("Account-Transactionst");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getDailyPayment(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
-        
+
         String transactionNo = reportParam.getFirst("transactionNo");
         PaymentMethod paymentMode = PaymentMethodToEnum(reportParam.getFirst("paymentMode"));
         String visitNumber = reportParam.getFirst("visitNumber");
@@ -362,13 +370,13 @@ public class AccountReportService {
         Boolean hasBalance = reportParam.getFirst("hasbalance") != null ? Boolean.valueOf(reportParam.getFirst("hasbalance")) : null;
         Boolean isWalkin = reportParam.getFirst("isWakin") != null ? Boolean.valueOf(reportParam.getFirst("isWakin")) : null;
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
-        
+
         List<DailyBillingData> billData = new ArrayList();
         ReportData reportData = new ReportData();
         List<SummaryBill> bills = billService.getBillTotals(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range);
         for (SummaryBill bill : bills) {
             DailyBillingData data = new DailyBillingData();
-            
+
             data.setBalance(bill.getBalance());
             data.setCreatedOn(bill.getDate());
             data.setVisitNo(bill.getVisitNumber());
@@ -383,7 +391,7 @@ public class AccountReportService {
                 if (item.getStatus() == item.getStatus().Paid) {
                     data.setPaid(data.getPaid().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
                 }
-                
+
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
                         data.setLab(data.getLab() + item.getAmount());
@@ -418,23 +426,23 @@ public class AccountReportService {
         sortField.setOrder(SortOrderEnum.DESCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         sortField.setName("paymentMode");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
-        
+
         reportData.setData(billData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/payment_statement");
         reportData.setReportName("Payement_Statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getInvoiceStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         String transactionNo = reportParam.getFirst("transactionNo");
         Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
@@ -442,22 +450,22 @@ public class AccountReportService {
         String patientNo = reportParam.getFirst("patientNo");
         String invoiceNo = reportParam.getFirst("invoiceNo");
         Boolean awaitingSmart = reportParam.getFirst("awaitingSmart") != null ? Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")) : false;
-         Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : false;
+        Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : false;
         DateRange dateRange = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         String invoiceStatus = reportParam.getFirst("invoiceStatus");
         Double amountGreaterThan = 0.0;
         Boolean filterPastDue = false;
         Double amountLessThanOrEqualTo = 0.0;
-        
+
         List<InsuranceInvoiceData> invoiceData = new ArrayList();
         ReportData reportData = new ReportData();
         InvoiceStatus status = invoiceStatusToEnum(invoiceStatus);
-        
+
         List<InvoiceData> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, dateRange, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation, Pageable.unpaged()).getContent()
                 .stream()
                 .map((invoice) -> invoice.toData())
                 .collect(Collectors.toList());
-        
+
         for (InvoiceData invoice : invoices) {
             InsuranceInvoiceData data = new InsuranceInvoiceData();
             data.setAmount(invoice.getAmount());
@@ -516,9 +524,9 @@ public class AccountReportService {
         reportData.setReportName("invoice_statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void genInsuranceStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
-        
+
         Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
         Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
         String patientNo = reportParam.getFirst("patientNo");
@@ -530,7 +538,7 @@ public class AccountReportService {
         Double amountGreaterThan = null;
         Boolean filterPastDue = null;
         Double amountLessThanOrEqualTo = null;
-        
+
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
@@ -539,20 +547,20 @@ public class AccountReportService {
                 .stream()
                 .map(x -> x.toData())
                 .collect(Collectors.toList());
-        
+
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("visitDate");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         sortField = new JRDesignSortField();
         sortField.setName("payer");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(invoiceData);
@@ -561,9 +569,9 @@ public class AccountReportService {
         reportData.setReportName("insurance_statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getAgingReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
-        
+
         Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
         Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
         String patientNo = reportParam.getFirst("patientNo");
@@ -575,7 +583,7 @@ public class AccountReportService {
         Double amountGreaterThan = null;
         Boolean filterPastDue = null;
         Double amountLessThanOrEqualTo = null;
-        
+
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
@@ -584,20 +592,20 @@ public class AccountReportService {
                 .stream()
                 .map(x -> x.toData())
                 .collect(Collectors.toList());
-        
+
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("visitDate");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         sortField = new JRDesignSortField();
         sortField.setName("payer");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(invoiceData);
@@ -606,9 +614,9 @@ public class AccountReportService {
         reportData.setReportName("insurance_statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getPatientReceipt(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
-        ReportData reportData = new ReportData(); 
+        ReportData reportData = new ReportData();
         String receiptNo = reportParam.getFirst("receiptNo");
         //"RCT-00009"
         ReceiptData receiptData = paymentService.getPaymentByReceiptNumber(receiptNo).toData();
@@ -618,7 +626,7 @@ public class AccountReportService {
         reportData.setReportName("Receipt" + receiptNo);
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getPatientPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String receiptNo = reportParam.getFirst("receiptNo");
@@ -674,9 +682,9 @@ public class AccountReportService {
                         data.setOtherPayment(data.getOtherPayment().add(trx.getAmount()));
                         break;
                 }
-                
+
             }
-            
+
             for (ReceiptItemData item : receipt.getReceiptItems()) {
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
@@ -700,7 +708,7 @@ public class AccountReportService {
                         break;
                     default:
                         data.setOther(data.getOther() != null ? data.getOther().add(item.getAmountPaid()) : item.getAmountPaid());
-                        
+
                         break;
                 }
                 data.setAmount(data.getAmount().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
@@ -708,7 +716,7 @@ public class AccountReportService {
             }
             receiptDataArray.add(data);
         }
-        
+
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("transactionDate");
@@ -723,7 +731,7 @@ public class AccountReportService {
         reportData.setReportName("Departmental-Payment-Stetment");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getDepartmentalPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
@@ -747,7 +755,7 @@ public class AccountReportService {
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         sortField = new JRDesignSortField();
         sortField.setName("transactionDate");
         sortField.setOrder(SortOrderEnum.DESCENDING);
@@ -761,35 +769,35 @@ public class AccountReportService {
         reportData.setReportName("Department-Income-Stetment");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getLedgers(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Boolean includeSubLedgers = reportParam.getFirst("includeSubLedgers") != null ? Boolean.getBoolean(reportParam.getFirst("includeSubLedgers")) : null;
         String term = reportParam.getFirst("term");
         String type = reportParam.getFirst("type");
-        
+
         List<LedgerData> ledgerData = ledgerService.fetchLedgers(includeSubLedgers, term, type, Pageable.unpaged()).getLedgers();
         reportData.setData(ledgerData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/ledger_statement");
-        
+
         reportData.setReportName("ledger-Statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getLedger(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String identifier = reportParam.getFirst("identifier");
         LedgerData ledgerData = ledgerService.findLedgerData(identifier).orElseThrow(() -> APIException.notFound("Ledger with id  {0} not found"));;
-        
+
         reportData.setData(Arrays.asList(ledgerData));
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/ledger_statement");
-        
+
         reportData.setReportName("Ledger-Report");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getPatientStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String patientNumber = reportParam.getFirst("patientNumber");
@@ -812,7 +820,7 @@ public class AccountReportService {
         reportData.setReportName("Patient_Statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getInterimBill(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
@@ -825,31 +833,31 @@ public class AccountReportService {
         reportData.setReportName("Interim_Bill" + visitNumber);
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getDispatchStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
-        
+
         String dispatchNo = reportParam.getFirst("dispatchNo");
-        
+
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
         DispatchData dispatchData = DispatchData.map(dispatchService.getDispatchByNumberWithFailDetection(dispatchNo));
-        
+
         reportData.setData(Arrays.asList(dispatchData));
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/dispatch_note");
         reportData.setReportName("Dispatch-Note");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getVoidedInvoicesItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
-        
+
         Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
         Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
         String patientNo = reportParam.getFirst("patientNo");
         String invoiceNo = reportParam.getFirst("invoiceNo");
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));
-        
+
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
         Pageable pageable = PaginationUtil.createPage(1, 500);
@@ -857,14 +865,14 @@ public class AccountReportService {
                 .stream()
                 .map(x -> x.toData())
                 .collect(Collectors.toList());
-        
+
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("invoiceNo");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
-        sortList.add(sortField);        
-        
+        sortList.add(sortField);
+
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(invoiceData);
@@ -873,10 +881,10 @@ public class AccountReportService {
         reportData.setReportName("voided_invoice_statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getServicesDispensed(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        
+
         Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         String receiptNo = reportParam.getFirst("receiptNo");
@@ -895,13 +903,13 @@ public class AccountReportService {
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         sortField = new JRDesignSortField();
         sortField.setName("itemCode");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         sortField = new JRDesignSortField();
         sortField.setName("transactionDate");
         sortField.setOrder(SortOrderEnum.DESCENDING);
@@ -915,7 +923,7 @@ public class AccountReportService {
         reportData.setReportName("Department-Service-Statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getAccountsBals(ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 //        MultiValueMap<String, String> reportParam = new Map();
 //        Boolean includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
@@ -939,10 +947,10 @@ public class AccountReportService {
         reportData.setReportName("accounts_Statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getPaymentTransactions(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        
+
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         String method = reportParam.getFirst("method");
         TrnxType trnxtype = EnumUtils.getEnum(TrnxType.class, reportParam.getFirst("trnxType"));
@@ -959,7 +967,7 @@ public class AccountReportService {
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(receiptDataArray);
@@ -969,27 +977,89 @@ public class AccountReportService {
         reportService.generateReport(reportData, response);
     }
 
-//     
-    private BillStatus statusToEnum(String status) {
-        if (status == null || status.equals("null") || status.equals("")) {
-            return null;
-        }
-        if (EnumUtils.isValidEnum(BillStatus.class, status)) {
-            return BillStatus.valueOf(status);
-        }
-        throw APIException.internalError("Provide a Valid Bill Status");
+    public void getSchemeConfig(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+
+        Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
+        String scheme = reportParam.getFirst("term");
+        Boolean withCopay = BooleanUtils.toBoolean(reportParam.getFirst("withCopay"));
+        Boolean smartEnabled = reportParam.getFirst("smartEnabled") != null ? BooleanUtils.toBoolean(reportParam.getFirst("smartEnabled")) : null;
+
+        ReportData reportData = new ReportData();
+        Map<String, Object> map = reportData.getFilters();
+        List<SchemConfigData> configData = schemeService.fetchSchemesConfig(payer, scheme, withCopay, smartEnabled, Pageable.unpaged()).getContent()
+                .stream()
+                .map(x -> SchemConfigData.map(x))
+                .collect(Collectors.toList());
+
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("payerName");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.setData(configData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/scheme_statement");
+        reportData.setReportName("Scheme_statement");
+        reportService.generateReport(reportData, response);
     }
-    
-    private ExportFormat ExportFormatToEnum(String status) {
-        if (status == null || status.equals("null") || status.equals("")) {
-            return null;
-        }
-        if (EnumUtils.isValidEnum(ExportFormat.class, status)) {
-            return ExportFormat.valueOf(status);
-        }
-        throw APIException.internalError("Provide a Valid Export Status");
+
+    public void genDiagnosisStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+
+        Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
+        Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
+        String patientNo = reportParam.getFirst("patientNumber");
+        String invoiceNo = reportParam.getFirst("invoiceNo");
+        String dateRange = reportParam.getFirst("dateRange");
+        InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));
+        Boolean awaitingSmart = reportParam.getFirst("awaitingSmart") != null ? Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")) : null;
+        Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : false;
+        Double amountGreaterThan = null;
+        Boolean filterPastDue = null;
+        Double amountLessThanOrEqualTo = null;
+
+        ReportData reportData = new ReportData();
+        Map<String, Object> map = reportData.getFilters();
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Pageable pageable = PaginationUtil.createPage(1, 500);
+        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation, pageable).getContent()
+                .stream()
+                .map(x -> {
+                    InvoiceData data = x.toData();
+                    ContentPage<PatientTestsData> d = diagnosisService.fetchDiagnosisByVisit(x.getVisit().getVisitNumber(), Pageable.unpaged());
+                    if (d != null) {
+                        if (d.getContents()!=null) {
+                            data.setDiagnosis(d.getContents().get(0).getDescription());
+                        }
+                    }
+                    return data;
+                })
+                .collect(Collectors.toList());
+
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("visitDate");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+
+        sortField = new JRDesignSortField();
+        sortField.setName("payer");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.setData(invoiceData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/insurance_diagnosis_summary");
+        reportData.setReportName("Insurance_Diagnosis_Summary");
+        reportService.generateReport(reportData, response);
     }
-    
+
     private InvoiceStatus invoiceStatusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;
@@ -999,7 +1069,7 @@ public class AccountReportService {
         }
         throw APIException.internalError("Provide a Valid Invoice Status");
     }
-    
+
     private AccountType AccountTypeToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;
@@ -1009,7 +1079,7 @@ public class AccountReportService {
         }
         throw APIException.internalError("Provide a Valid Account Type");
     }
-    
+
     private PaymentMethod PaymentMethodToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;
@@ -1019,7 +1089,7 @@ public class AccountReportService {
         }
         throw APIException.internalError("Provide a Valid Payment Method");
     }
-    
+
     private BillStatus BillStatusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;
@@ -1029,5 +1099,6 @@ public class AccountReportService {
         }
         throw APIException.internalError("Provide a Valid Bill Status");
     }
-    
+
 }
+

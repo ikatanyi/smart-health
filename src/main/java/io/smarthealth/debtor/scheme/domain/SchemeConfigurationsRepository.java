@@ -8,12 +8,13 @@ package io.smarthealth.debtor.scheme.domain;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
  *
  * @author simz
  */
-public interface SchemeConfigurationsRepository extends JpaRepository<SchemeConfigurations, Long> {
+public interface SchemeConfigurationsRepository extends JpaRepository<SchemeConfigurations, Long>,JpaSpecificationExecutor<SchemeConfigurations> {
 
     Optional<SchemeConfigurations> findByScheme(Scheme scheme);
 }

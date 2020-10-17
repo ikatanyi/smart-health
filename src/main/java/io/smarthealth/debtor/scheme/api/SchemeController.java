@@ -116,6 +116,9 @@ public class SchemeController {
     @PreAuthorize("hasAuthority('view_scheme')")
     public ResponseEntity<?> fetchAllSchemes(
             @RequestParam(required = false) final String term,
+            @RequestParam(value = "smartEnabled", required = false) Boolean smartEnabled, 
+            @RequestParam(value = "withCopay", required = false) Boolean withCopay, 
+
             Pageable pageable) {
         Page<SchemeData> scheme = schemeService.fetchSchemes(term, pageable).map(p
                 -> {

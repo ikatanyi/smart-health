@@ -56,5 +56,8 @@ public class InvoiceData {
     private Boolean awaitingSmart;
     @ApiModelProperty(hidden=true, required=false)
     private Long age;
+    @ApiModelProperty(hidden=true, required=false)
+    private String diagnosis;
+
      private Boolean capitation=Boolean.FALSE;
 }
