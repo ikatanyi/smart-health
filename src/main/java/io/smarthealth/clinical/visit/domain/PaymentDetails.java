@@ -10,6 +10,7 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -62,5 +63,8 @@ public class PaymentDetails extends Auditable {
     @Enumerated(EnumType.STRING)
     private CoPayType coPayCalcMethod;
     private double coPayValue;
+    
+    private boolean hasCapitation;
+    private BigDecimal capitationAmount = BigDecimal.ZERO;
 
 }

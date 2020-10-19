@@ -392,8 +392,8 @@ public class InvoiceService {
                             .findByFinancialActivity(FinancialActivity.CapitationIncome)
                             .orElseThrow(() -> APIException.notFound("Capitation Income Account is Not Mapped"));
                     //deferrence is what I post here otherwise 
-                    creditAmount = capitationAmount;
-                    debitAmount = invoice.getInvoiceAmount();
+                     debitAmount = capitationAmount;
+                    creditAmount = invoice.getInvoiceAmount();
                     
                     JournalEntryItem capitationIncomel = new JournalEntryItem(capitationAccount.getAccount(), "Capitation Income  for Invoice No. " + invoice.getNumber(), BigDecimal.ZERO, capitationDiff);
                     capitationJournal.add(capitationIncomel);
@@ -407,6 +407,10 @@ public class InvoiceService {
         capitationJournal.add(new JournalEntryItem(debitAccount, narration, debitAmount, BigDecimal.ZERO));
         capitationJournal.add(new JournalEntryItem(creditAccount.getAccount(), narration, BigDecimal.ZERO, creditAmount));
 
+        for(JournalEntryItem d : capitationJournal){
+            System.err.println("Account : "+d.getAccount().getName()+" Debit: "+d.getDebit()+" Credit: "+d.getCredit()+" ISDebit: "+d.isDebit());
+            System.err.println("Cred");
+        }
         JournalEntry toSave = new JournalEntry(invoice.getDate(), narration, capitationJournal
         //                new JournalEntryItem[]{
         //                    new JournalEntryItem(debitAccount, narration, debitAmount, BigDecimal.ZERO),

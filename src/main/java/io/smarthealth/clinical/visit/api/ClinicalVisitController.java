@@ -181,8 +181,11 @@ public class ClinicalVisitController {
             pd.setPayer(scheme.getPayer());
             pd.setVisit(visit);
             if (config.isPresent()) {
-                pd.setCoPayCalcMethod(config.get().getCoPayType());
-                pd.setCoPayValue(config.get().getCoPayValue());
+                SchemeConfigurations conf=config.get();
+                pd.setCoPayCalcMethod(conf.getCoPayType());
+                pd.setCoPayValue(conf.getCoPayValue());
+                pd.setHasCapitation(conf.isCapitationEnabled());
+                pd.setCapitationAmount(conf.getCapitationAmount());
             }
             pd.setPatient(patient);
             paymentDetailsService.createPaymentDetails(pd);
