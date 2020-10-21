@@ -54,6 +54,7 @@ public class DispatchData {
     
     public static Dispatch map(DispatchData data){
         Dispatch dispatch = new Dispatch();
+        dispatch.setDispatchDate(data.getDispatchDate());
         dispatch.setComments(data.getComments());
         return dispatch;
     }
