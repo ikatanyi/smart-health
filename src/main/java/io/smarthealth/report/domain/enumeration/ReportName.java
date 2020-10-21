@@ -42,12 +42,9 @@ public enum ReportName {
         Balance_Sheet,
         Income_Statement,
         Petty_Cash_Form,
-        Petty_Cash_statement,
-        
+        Petty_Cash_statement,        
         Payment_Voucher,
-//        Payment_Statement,
         Ledger_Report,
-//        Ledger_statement,
         Journal_Report,
         Payer_Credit_Note,
         Supplier_Credit_Note,
@@ -78,10 +75,7 @@ public enum ReportName {
         Aging_Report,
         Supplier_Aging_Report,
         Patient_Dispensed_Drugs,
-        Admitted_Patients,
-        Discharged_Patients,
-        Discharge_Slip,
-        Registered_Wards,
-        Room_Report,
-        Bed_Report
+        Payment_Transactions_Statement,
+        Registered_Schemes,
+        Insurance_Diagnosis_Summary
 }

@@ -70,6 +70,7 @@ public class LabReportService {
                 .map((register) -> register.toData(expand))
                 .collect(Collectors.toList());
         reportData.setData(patientData);
+        reportData.setPatientNumber(patientNumber);
         reportData.setFormat(format);
         if (!expand) {
             reportData.setTemplate("/clinical/laboratory/LabStatement");
@@ -88,7 +89,7 @@ public class LabReportService {
         String orderNumber = reportParam.getFirst("orderNumber");
         String patientNumber = reportParam.getFirst("patientNumber");
         String search = reportParam.getFirst("search");
-        String dateRange = reportParam.getFirst("dateRange");
+        String dateRange = reportParam.getFirst("dateRange");        
         LabTestStatus status = labService.LabTestStatusToEnum(reportParam.getFirst("status"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));
@@ -110,6 +111,7 @@ public class LabReportService {
         sortField.setName("status");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
+        reportData.setPatientNumber(patientNumber);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));

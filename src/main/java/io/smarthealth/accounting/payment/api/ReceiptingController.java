@@ -4,6 +4,7 @@ import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.domain.ShiftStatus;
 import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
+import io.smarthealth.accounting.payment.data.ReceiptMethod;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.service.ReceivePaymentService;
@@ -76,7 +77,13 @@ public class ReceiptingController {
     public ResponseEntity<?> receiptAdjustment(@PathVariable(value = "receiptNo") String receiptNo, @Valid @RequestBody List<ReceiptItemData> toAdjustItems) {
         Receipt receipt = service.receiptAdjustment(receiptNo, toAdjustItems);
         return ResponseEntity.ok(receipt.toData());
+    }
 
+    @PutMapping("/receipting/{receiptNo}/adjust-method")
+    @PreAuthorize("hasAuthority('edit_receipt')")
+    public ResponseEntity<?> paymentMethodAdjustment(@PathVariable(value = "receiptNo") String receiptNo, @Valid @RequestBody ReceiptMethod receiptMethod) {
+        Receipt receipt = service.receiptAdjustmentMethod(receiptNo, receiptMethod);
+        return ResponseEntity.ok(receipt.toData());
     }
 
     @GetMapping("/receipting")
@@ -138,5 +145,4 @@ public class ReceiptingController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-
 }

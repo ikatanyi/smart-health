@@ -7,7 +7,6 @@ package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
-import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,6 +18,7 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
 /**
  *
@@ -70,8 +70,9 @@ public class ReceiptItem extends Identifiable {
     public ReceiptItemData toData(){
         ReceiptItemData data = new ReceiptItemData();
         data.setId(this.getId());
-        data.setReceiptNumber(this.getReceipt().getReceiptNo());
-        data.setPaymentMode(this.getReceipt().getPaymentMethod());
+        data.setReceiptNumber(this.getReceipt().getReceiptNo()); 
+        data.setPaymentMode(this.getReceipt().getPaymentMethod()); 
+        data.setDiscount(this.getDiscount());
         if(this.getReceipt()!=null){
             data.setPatientName(this.getReceipt().getPayer());
             data.setReferenceNumber(this.getReceipt().getReceiptNo());

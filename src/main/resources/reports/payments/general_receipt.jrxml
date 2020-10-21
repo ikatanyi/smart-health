@@ -42,7 +42,6 @@
 	<field name="paid" class="java.math.BigDecimal"/>
 	<field name="transactions" class="java.util.List"/>
 	<field name="tenderedAmount" class="java.math.BigDecimal"/>
-	<field name="discount" class="java.math.BigDecimal"/>
 	<variable name="amount" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[]]></variableExpression>
 		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>
@@ -56,9 +55,10 @@
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
 	</variable>
 	<variable name="discount" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{discount}]]></variableExpression>
+		<variableExpression><![CDATA[$V{discount}]]></variableExpression>
 		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
 	</variable>
+	<variable name="netAmount" class="java.math.BigDecimal"/>
 	<group name="patient">
 		<groupExpression><![CDATA[]]></groupExpression>
 		<groupFooter>
@@ -98,7 +98,7 @@
 		<band splitType="Stretch"/>
 	</pageHeader>
 	<columnHeader>
-		<band height="78" splitType="Stretch">
+		<band height="75" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="47" y="19" width="208" height="15" uuid="30691af1-f71d-4155-bbc4-5a351385705f"/>
 				<textElement verticalAlignment="Middle">
@@ -122,6 +122,9 @@
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="51" width="45" height="16" uuid="ca475b7a-12c4-45b0-afb7-1f896397ebf3"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
@@ -141,25 +144,22 @@
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement x="1" y="0" width="111" height="15" uuid="da08471a-e688-4c0a-935b-daf853466751"/>
+				<reportElement x="1" y="0" width="183" height="15" uuid="da08471a-e688-4c0a-935b-daf853466751"/>
 				<textElement verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{receiptNo}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="47" y="51" width="208" height="16" uuid="1d9af465-481d-4eff-ae1b-c9833a8b1a92"/>
+				<reportElement x="47" y="51" width="225" height="16" uuid="1d9af465-481d-4eff-ae1b-c9833a8b1a92"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{shiftNo}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement positionType="FixRelativeToBottom" x="0" y="69" width="272" height="1" uuid="a47d0642-a41e-4cb6-b8e8-71894c93bc8d"/>
-				<graphicElement>
-					<pen lineWidth="0.75" lineColor="#000000"/>
-				</graphicElement>
-			</line>
 		</band>
 	</columnHeader>
 	<detail>
@@ -167,60 +167,62 @@
 			<subreport>
 				<reportElement x="-21" y="0" width="313" height="21" uuid="5e4cc929-2628-4795-944c-0e5db106a605"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{receiptItems})]]></dataSourceExpression>
+				<returnValue subreportVariable="discount_total" toVariable="discount"/>
+				<returnValue subreportVariable="amountPaid_1" toVariable="netAmount"/>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "general_receipt_subreport1.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
-		<band height="27">
-			<line>
-				<reportElement x="1" y="0" width="272" height="1" uuid="7cf47466-0d35-45c9-87cb-4036a17b3d6a"/>
-				<graphicElement>
-					<pen lineWidth="0.15"/>
-				</graphicElement>
-			</line>
-			<staticText>
-				<reportElement positionType="Float" x="129" y="0" width="71" height="17" uuid="37509a91-0c47-40a2-8bf1-1106d0b68085"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[TOTAL :]]></text>
-			</staticText>
-			<textField pattern="#,##0.00">
-				<reportElement positionType="Float" x="201" y="0" width="54" height="17" uuid="9a031d84-2778-4a88-b0c4-ae0c651d8919"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{amount}.setScale(0, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
-			</textField>
+		<band height="46">
 			<subreport>
-				<reportElement positionType="Float" x="-21" y="17" width="313" height="10" isRemoveLineWhenBlank="true" uuid="a0c77665-5798-498b-b480-c3720413878d"/>
+				<reportElement positionType="Float" x="-21" y="35" width="313" height="11" isRemoveLineWhenBlank="true" uuid="a0c77665-5798-498b-b480-c3720413878d"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{transactions})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "general_receipt_subreport2.jasper"]]></subreportExpression>
 			</subreport>
-		</band>
-		<band height="67">
 			<staticText>
-				<reportElement positionType="Float" x="90" y="17" width="110" height="15" uuid="ce6fb247-a0fb-4f6b-bcf9-472ab0bbedfa"/>
+				<reportElement positionType="Float" x="90" y="1" width="110" height="15" uuid="ce6fb247-a0fb-4f6b-bcf9-472ab0bbedfa"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[DISCOUNT :]]></text>
 			</staticText>
-			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="199" y="17" width="56" height="15" uuid="55d48a9f-cd9c-4204-b07d-ab6a1ad03649"/>
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="199" y="1" width="56" height="15" uuid="55d48a9f-cd9c-4204-b07d-ab6a1ad03649"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{discount}.setScale(0, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="1" y="16" width="199" height="14" uuid="c60c575d-bfe6-4d4f-a392-a58283475390"/>
+				<box>
+					<bottomPen lineWidth="0.15" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NET TOTAL :]]></text>
+			</staticText>
+			<textField pattern="#,##0.00;(#,##0.00)">
+				<reportElement x="200" y="16" width="55" height="14" uuid="a22821dd-8a69-4814-9935-8fa1630ed937"/>
+				<box>
+					<bottomPen lineWidth="0.15" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{netAmount}.subtract($V{discount})]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="67">
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="199" y="1" width="56" height="15" uuid="49e2db46-e47d-4624-9ed3-e6b3f48a875e"/>
+				<reportElement positionType="Float" x="199" y="4" width="56" height="15" uuid="49e2db46-e47d-4624-9ed3-e6b3f48a875e"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tenderedAmount}== null?new BigDecimal(0):$F{tenderedAmount}.setScale(0, BigDecimal.ROUND_HALF_UP)]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="90" y="1" width="110" height="15" uuid="e3d501b2-b873-4d00-b61b-7fb86477c062"/>
+				<reportElement positionType="Float" x="90" y="4" width="110" height="15" uuid="e3d501b2-b873-4d00-b61b-7fb86477c062"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
@@ -240,15 +242,15 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="199" y="32" width="56" height="15" uuid="8bf604d6-19a5-4a3f-b9a7-aca94d0058f6"/>
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="199" y="19" width="56" height="15" uuid="8bf604d6-19a5-4a3f-b9a7-aca94d0058f6"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[($F{tenderedAmount}== null?new BigDecimal(0):$F{tenderedAmount}.setScale(2, BigDecimal.ROUND_HALF_UP)).subtract( $F{amount}==null?new BigDecimal(0):$F{amount}.setScale(0, BigDecimal.ROUND_HALF_UP)).add($V{discount})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="90" y="32" width="110" height="15" uuid="e7badea2-16a5-4d44-8363-c35095fd6832"/>
+				<reportElement positionType="Float" x="90" y="19" width="110" height="15" uuid="e7badea2-16a5-4d44-8363-c35095fd6832"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>

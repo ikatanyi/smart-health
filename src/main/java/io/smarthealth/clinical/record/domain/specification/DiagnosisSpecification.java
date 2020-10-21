@@ -32,11 +32,11 @@ public class DiagnosisSpecification {
                 predicates.add(cb.equal(root.get("visit").get("visitNumber"), visitNumber));
             }
             if (gender != null) {
-                predicates.add(cb.equal(root.get("patient").get("gender").get("isWalkin"), gender));
+                predicates.add(cb.equal(root.get("patient").get("gender"), gender));
             }
            
             if (range != null) {
-                predicates.add(cb.between(root.get("recorded"), range.getStartDateTime(), range.getEndDateTime()));
+                predicates.add(cb.between(root.get("dateRecorded"), range.getStartDateTime(), range.getEndDateTime()));
             }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

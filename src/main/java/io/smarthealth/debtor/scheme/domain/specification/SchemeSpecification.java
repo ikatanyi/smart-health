@@ -30,7 +30,7 @@ public class SchemeSpecification {
             if (payer != null) {
                 predicates.add(cb.equal(root.get("payer"), payer));
             }
-
+          
             if (term != null) {
                 final String termExpression = "%" + term + "%";
                 predicates.add(

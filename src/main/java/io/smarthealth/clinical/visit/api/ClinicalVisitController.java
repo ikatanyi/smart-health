@@ -48,6 +48,7 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
+import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -64,6 +65,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -97,6 +99,9 @@ public class ClinicalVisitController {
 
     @Autowired
     PatientQueueService patientQueueService;
+
+    @Autowired
+    ModelMapper modelMapper;
 
     @Autowired
     private EmployeeService employeeService;
@@ -176,8 +181,11 @@ public class ClinicalVisitController {
             pd.setPayer(scheme.getPayer());
             pd.setVisit(visit);
             if (config.isPresent()) {
-                pd.setCoPayCalcMethod(config.get().getCoPayType());
-                pd.setCoPayValue(config.get().getCoPayValue());
+                SchemeConfigurations conf = config.get();
+                pd.setCoPayCalcMethod(conf.getCoPayType());
+                pd.setCoPayValue(conf.getCoPayValue());
+                pd.setHasCapitation(conf.isCapitationEnabled());
+                pd.setCapitationAmount(conf.getCapitationAmount());
             }
             paymentDetailsService.createPaymentDetails(pd);
             //create bill for copay
@@ -333,6 +341,28 @@ public class ClinicalVisitController {
         Pager<VisitData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Update Successful");
+        pagers.setContent(visitDat);
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
+    @GetMapping("/visits/{visitNumber}")
+    @PreAuthorize("hasAuthority('view_visits')")
+    @ApiOperation(value = "View patient visit", response = VisitData.class)
+    public @ResponseBody
+    ResponseEntity<?> viewVisit(
+            @PathVariable("visitNumber") final String visitNumber) {
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+
+        //Convert to data
+        VisitData visitDat = VisitData.map(visit);
+
+        PatientData patientData = patientService.convertToPatientData(visit.getPatient());
+        visitDat.setPatientData(patientData);
+
+        Pager<VisitData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Visit Data");
         pagers.setContent(visitDat);
 
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
@@ -518,27 +548,27 @@ public class ClinicalVisitController {
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
-    @PostMapping("/visits/{visitNumber}/vitals")
-    @PreAuthorize("hasAuthority('create_visits')")
-    @ApiOperation(value = "Create/Add a new patient vital by visit number", response = VitalRecordData.class)
-    public @ResponseBody
-    ResponseEntity<VitalRecordData> addVitalRecordByVisit(@PathVariable("visitNumber") String visitNumber,
-            @RequestBody
-            @Valid
-            final VitalRecordData vital
-    ) {
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        VitalsRecord vitalR = this.triageService.addVitalRecordsByVisit(visit, vital);
-
-//        VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
-        VitalRecordData vr = triageService.convertToVitalsData(vitalR);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/api/visits/{visitNumber}/vitals/{id}")
-                .buildAndExpand(visitNumber, vitalR.getId()).toUri();
-
-        return ResponseEntity.created(location).body(vr);
-    }
+//    @PostMapping("/visits/{visitNumber}/vitals")
+//    @PreAuthorize("hasAuthority('create_visits')")
+//    @ApiOperation(value = "Create/Add a new patient vital by visit number", response = VitalRecordData.class)
+//    public @ResponseBody
+//    ResponseEntity<VitalRecordData> addVitalRecordByVisit(@PathVariable("visitNumber") String visitNumber,
+//            @RequestBody
+//            @Valid
+//            final VitalRecordData vital
+//    ) {
+//        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+//        VitalsRecord vitalR = this.triageService.addVitalRecordsByVisit(visit, vital);
+//
+////        VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
+//        VitalRecordData vr = triageService.convertToVitalsData(vitalR);
+//
+//        URI location = ServletUriComponentsBuilder
+//                .fromCurrentContextPath().path("/api/visits/{visitNumber}/vitals/{id}")
+//                .buildAndExpand(visitNumber, vitalR.getId()).toUri();
+//
+//        return ResponseEntity.created(location).body(vr);
+//    }
 
     @PostMapping("/visits/{visitNumber}/triage-notes")
     @PreAuthorize("hasAuthority('create_visits')")
@@ -600,7 +630,7 @@ public class ClinicalVisitController {
         pagers.setContent(TriageNotesData.map(e));
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
-    
+
     @GetMapping("/patients/{patientNumber}/last-visit")
     @PreAuthorize("hasAuthority('view_visits')")
     @ApiOperation(value = "Fetch all patient's last vitals by patient", response = VitalRecordData.class)
@@ -705,6 +735,49 @@ public class ClinicalVisitController {
 
         return ResponseEntity.created(location).body(vr);
     }
+//
+//    @GetMapping("/visits/{visitNumber}/vitals")
+//    @PreAuthorize("hasAuthority('view_visits')")
+//    @ApiOperation(value = "Fetch all patient vitals by visits", response = VitalRecordData.class)
+//    public ResponseEntity<List<VitalRecordData>> fetchAllVitalsByVisit(@PathVariable("visitNumber")
+//            final String visitNumber,
+//            @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,
+//            Pageable pageable
+//    ) {
+//        Page<VitalRecordData> page = triageService.fetchVitalRecordsByVisit(visitNumber, pageable).map(v -> convertToVitalsData(v));
+//        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+//        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+//    }
+
+//    @GetMapping("/patients/{patientNumber}/vitals")
+//    @PreAuthorize("hasAuthority('view_visits')")
+//    @ApiOperation(value = "Fetch all patient vitals by patient", response = VitalRecordData.class)
+//    public ResponseEntity<List<VitalRecordData>> fetchAllVitalsByPatient(@PathVariable("patientNumber")
+//            final String patientNumber,
+//            @RequestParam(required = false) MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,
+//            Pageable pageable
+//    ) {
+//
+//        Page<VitalRecordData> page = triageService.fetchVitalRecordsByPatient(patientNumber, pageable).map(v -> convertToVitalsData(v));
+//        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+//        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+//    }
+
+//    @GetMapping("/patients/{patientNumber}/vitals/last")
+//    @PreAuthorize("hasAuthority('view_visits')")
+//    @ApiOperation(value = "Fetch all patient's last vitals by patient", response = VitalRecordData.class)
+//    public ResponseEntity<?> fetchLatestVitalsByPatient(@PathVariable("patientNumber")
+//            final String patientNumber
+//    ) {
+//
+//        Optional<VitalsRecord> vr = triageService.fetchLastVitalRecordsByPatient(patientNumber);
+//        if (vr.isPresent()) {
+//            return ResponseEntity.ok(VitalRecordData.map(vr.get()));
+//        } else {
+//            return ResponseEntity.ok(new VitalRecordData());
+//        }
+//
+//    }
 
     private VisitData convertToVisitData(Visit visit) {
         VisitData visitData = VisitData.map(visit);
@@ -731,6 +804,10 @@ public class ClinicalVisitController {
         Patient patient = patientService.findPatientOrThrow(visitData.getPatientNumber());
         visitData.setPatientData(patientService.convertToPatientData(patient));
         return visitData;
+    }
+
+    private VitalRecordData convertToVitalsData(VitalsRecord vitalsRecord) {
+        return modelMapper.map(vitalsRecord, VitalRecordData.class);
     }
 
     private void createDoctorInvoice(Visit visit, Employee newDoctorSelected, DoctorItem doctorItem) {

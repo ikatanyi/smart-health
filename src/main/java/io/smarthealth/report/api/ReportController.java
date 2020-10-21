@@ -258,23 +258,14 @@ public class ReportController {
             case Stock_Purchase_Report:
                 stockReportService.StockPurchase(queryParams, format, response);
                 break;
-            case Admitted_Patients:
-                admissionReportService.getAdmittedPatients(queryParams, format, response);
+            case Payment_Transactions_Statement:
+                reportService.getPaymentTransactions(queryParams, format, response);
                 break;
-            case Registered_Wards:
-                admissionReportService.getWards(queryParams, format, response);
-                break;
-            case Room_Report:
-                admissionReportService.getRooms(queryParams, format, response);
-                break;
-            case Bed_Report:
-                admissionReportService.getBeds(queryParams, format, response);
-                break;
-            case Discharged_Patients:
-                admissionReportService.getDischarges(queryParams, format, response);
-                break;
-            case Discharge_Slip:
-                admissionReportService.getDischargeSlip(queryParams, format, response);
+            case Registered_Schemes:
+                reportService.getSchemeConfig(queryParams, format, response);
+                break;    
+            case Insurance_Diagnosis_Summary:
+                reportService.genDiagnosisStatement(queryParams, format, response);
                 break;
             default:
                 break;

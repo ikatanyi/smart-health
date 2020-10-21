@@ -25,8 +25,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "user_notifications")
-public class Notification extends Auditable {
+@Table(name = "user_notifications") 
+public class Notifications extends Auditable {
 
     private LocalDateTime datetime;
     @OneToOne
@@ -38,7 +38,7 @@ public class Notification extends Auditable {
     @Enumerated(EnumType.STRING)
     private NoticeType noticeType;
 
-    public Notification(User recipient, String message, NoticeType noticeType, String reference) {
+    public Notifications(User recipient, String message, NoticeType noticeType,String reference) {
         this.recipient = recipient;
         this.message = message;
         this.isRead = false;
@@ -65,7 +65,7 @@ public class Notification extends Auditable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Notification other = (Notification) obj;
+        final Notifications other = (Notifications) obj;
         if (!Objects.equals(this.getId(), other.getId())) {
             return false;
         }

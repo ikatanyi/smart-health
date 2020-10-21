@@ -7,7 +7,7 @@ package io.smarthealth.notify.domain.specification;
 
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.notify.data.NoticeType;
-import io.smarthealth.notify.domain.Notification;
+import io.smarthealth.notify.domain.Notifications;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,7 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
  */
 public class NotificationSpecification {
 
-    public static Specification<Notification> createSpecification(String username, Boolean isRead, NoticeType noticeType, DateRange range) {
+    public static Specification<Notifications> createSpecification(String username, Boolean isRead, NoticeType noticeType, DateRange range) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 

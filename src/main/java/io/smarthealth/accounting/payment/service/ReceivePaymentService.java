@@ -14,8 +14,6 @@ import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.cashier.domain.ShiftRepository;
-import io.smarthealth.accounting.payment.data.PayChannel;
-import io.smarthealth.accounting.payment.data.CreatePrepayment;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.accounting.payment.data.ReceiptMethod;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
@@ -55,9 +53,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
-import io.smarthealth.infrastructure.lang.SystemUtils;
+import io.smarthealth.accounting.payment.domain.repository.ReceiptTransactionRepository;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
-import java.time.LocalTime;
 
 /**
  *
@@ -80,6 +77,7 @@ public class ReceivePaymentService {
     private final PayerRepository payerRepository;
     private final RemittanceRepository remittanceRepository;
     private final CopaymentService copaymentService;
+    private final ReceiptTransactionRepository transactionRepository;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(ReceivePayment data) {
@@ -88,7 +86,7 @@ public class ReceivePaymentService {
         receipt.setAmount(data.getAmount());
         receipt.setCurrency(data.getCurrency());
         receipt.setPayer(data.getPayer());
-        receipt.setPaid(data.getTenderedAmount());
+        receipt.setPaid(data.getAmount());
         receipt.setPaymentMethod(data.getPaymentMethod());
         receipt.setTenderedAmount(data.getTenderedAmount() != null ? data.getTenderedAmount() : BigDecimal.ZERO);
         receipt.setReferenceNumber(data.getReferenceNumber());
@@ -119,12 +117,14 @@ public class ReceivePaymentService {
         if (!data.getPayment().isEmpty()) {
             receipt.addTransaction(
                     data.getPayment()
-                            .stream().map(t -> {
+                            .stream()
+                            .map(t -> {
                                 if (StringUtils.isNotBlank(t.getAccountNumber())) {
                                     toBank.add(t);
                                 }
                                 return createPaymentTransaction(t);
                             })
+                            .filter(x -> x.getAmount()!=null)
                             .collect(Collectors.toList())
             );
         }
@@ -246,7 +246,11 @@ public class ReceivePaymentService {
         receiptItemRepository.saveAll(lists);
         return receipt;
     }
-
+  @Transactional
+    public Receipt receiptAdjustmentMethod(String receiptNo, ReceiptMethod method) {
+        Receipt receipt = getPaymentByReceiptNumber(receiptNo);
+        return null;
+    }
     public Page<Receipt> getPayments(String payee, String receiptNo, String transactionNo, String shiftNo, Long servicePointId, Long cashierId, DateRange range, Pageable page) {
         Specification<Receipt> spec = ReceiptSpecification.createSpecification(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range);
         return repository.findAll(spec, page);
@@ -262,6 +266,10 @@ public class ReceivePaymentService {
         return receiptItemRepository.findAll(spec, page);
     }
     
+    public Page<ReceiptTransaction> getTransactions(String method, String receiptNo, TrnxType type, DateRange range, Pageable page) {
+        Specification<ReceiptTransaction> spec = ReceiptSpecification.createSpecification(method, receiptNo, type, range);
+        return transactionRepository.findAll(spec, page);
+    }
 
     private ReceiptTransaction createPaymentTransaction(ReceiptMethod data) {
         ReceiptTransaction trans = new ReceiptTransaction();

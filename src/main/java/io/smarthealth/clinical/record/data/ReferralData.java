@@ -45,8 +45,9 @@ public class ReferralData {
         ReferralData data = new ReferralData();
         if (r.getDoctor() != null) {
             data.setStaffNumber(r.getDoctor().getStaffNumber());
-            data.setDoctorName(r.getDoctor().getFullName());
         }
+        
+        data.setDoctorName(r.getDoctorName());
         data.setDoctorSpeciality(r.getDoctorSpeciality());
         data.setReferralNotes(r.getReferralNotes());
         data.setReferralType(r.getReferralType());

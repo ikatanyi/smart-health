@@ -33,7 +33,7 @@ public class DoctorRequestSpecification {
                 if (activeVisit) {
                     predicates.add(root.get("visit").get("status").in(Arrays.asList(VisitEnum.Status.CheckIn, VisitEnum.Status.Admitted)));
                 } else {
-                    predicates.add(root.get("visit").get("status").in(Arrays.asList(VisitEnum.Status.CheckOut, VisitEnum.Status.Discharged)));
+                    predicates.add(root.get("visit").get("status").in(Arrays.asList(VisitEnum.Status.CheckOut, VisitEnum.Status.Discharged, VisitEnum.Status.Transferred)));
                 }
             }
 

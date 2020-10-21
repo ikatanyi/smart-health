@@ -31,7 +31,7 @@ public class SwaggerConfig {
     @Value("${jwt.client-secret:ccUyb6vS4S8nxfbKPCrN}")
     private String clientSecret;
 
-    @Value("${io.smarthealth.auth-server:http://192.180.4.102:8200}")
+    @Value("${io.smarthealth.auth-server:http://localhost:8200}")
     private String authServer;
 
     @Bean

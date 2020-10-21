@@ -116,6 +116,9 @@ public class SchemeController {
     @PreAuthorize("hasAuthority('view_scheme')")
     public ResponseEntity<?> fetchAllSchemes(
             @RequestParam(required = false) final String term,
+            @RequestParam(value = "smartEnabled", required = false) Boolean smartEnabled, 
+            @RequestParam(value = "withCopay", required = false) Boolean withCopay, 
+
             Pageable pageable) {
         Page<SchemeData> scheme = schemeService.fetchSchemes(term, pageable).map(p
                 -> {
@@ -201,19 +204,23 @@ public class SchemeController {
             //look for scheme config 
             SchemeConfigurations schemeConfig = schemeService.fetchSchemeConfigById(data.getConfigId());
             schemeConfig.setCoPayType(data.getCoPayType());
+            schemeConfig.setCopayEnabled(data.isCopayEnabled());
             schemeConfig.setCoPayValue(data.getCoPayValue());
             schemeConfig.setDiscountMethod(data.getDiscountMethod());
             schemeConfig.setDiscountValue(data.getDiscountValue());
 //            schemeConfig.setScheme(scheme);
             schemeConfig.setSmartEnabled(data.isSmartEnabled());
             schemeConfig.setStatus(data.isStatus());
+            schemeConfig.setCapitationAmount(data.getCapitationAmount());
+            schemeConfig.setCapitationEnabled(data.isCapitationEnabled());
             configSaved = schemeService.updateSchemeConfigurations(schemeConfig);
         }
 
-        Pager<SchemConfigData> pagers = new Pager();
+        Scheme myscheme=configSaved.getScheme();
+        Pager<SchemeData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Scheme parameters have successfully been updated");
-        pagers.setContent(SchemConfigData.map(configSaved));
+        pagers.setContent(SchemeData.map(myscheme));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
