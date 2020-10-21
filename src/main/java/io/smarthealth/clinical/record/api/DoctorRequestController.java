@@ -124,9 +124,25 @@ public class DoctorRequestController {
     @GetMapping("/doctor-request/{id}")
     @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> fetchRequestById(@PathVariable("id") final Long id) {
-        Optional<DoctorRequestData> specimens = requestService.getDocRequestById(id);
+        Optional<DoctorRequestData> specimens = requestService.getDocRequestDataById(id);
         if (specimens != null) {
             return ResponseEntity.ok(specimens);
+        } else {
+            throw APIException.notFound("Request Number {0} not found.", id);
+        }
+    }
+
+    @DeleteMapping("/doctor-request/{id}")
+    @PreAuthorize("hasAuthority('delete_doctorrequest')")
+    public ResponseEntity<?> deleteRequestById(@PathVariable("id") final Long id) {
+        Optional<DoctorRequest> docRequest = requestService.getDocRequestById(id);
+
+        if (docRequest.isPresent()) {
+            if (docRequest.get().getFulfillerStatus().equals(FullFillerStatusType.Fulfilled)) {
+                throw APIException.badRequest("You cannot remove a fulfilled request", "");
+            }
+            requestService.deleteDocRequest(docRequest.get());
+            return ResponseEntity.ok("Successfully deleted");
         } else {
             throw APIException.notFound("Request Number {0} not found.", id);
         }
