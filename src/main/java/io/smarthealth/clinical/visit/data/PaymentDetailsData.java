@@ -1,13 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.clinical.visit.data;
 
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
+import java.math.BigDecimal;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -36,6 +32,8 @@ public class PaymentDetailsData {
     private CoPayType coPayCalcMethod;
     private double coPayValue;
     private VisitEnum.PaymentMethod paymentMethod;
+    private boolean hasCapitation;
+    private BigDecimal capitationAmount = BigDecimal.ZERO;
 
     public static PaymentDetailsData map(PaymentDetails e) {
         PaymentDetailsData d = new PaymentDetailsData();
@@ -60,6 +58,9 @@ public class PaymentDetailsData {
                 d.setPriceBookName(e.getPayer().getPriceBook().getName());
             }
         }
+        d.setHasCapitation(e.isHasCapitation());
+        d.setCapitationAmount(e.getCapitationAmount());
+        
         return d;
     }
 

@@ -79,13 +79,14 @@ public class InvoiceController {
             @RequestParam(value = "awaitingSmart", required = false) Boolean awaitingSmart,
             @RequestParam(value = "amountGreaterThan", required = false) Double amountGreaterThan,
             @RequestParam(value = "amountLessThanOrEqualTo", required = false) Double amountLessThanOrEqualTo,
+            @RequestParam(value = "hasCapitation", required = false) Boolean hasCapitation,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, pageable)
+        Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation, pageable)
                 .map(x -> x.toData());
 
         Pager<List<InvoiceData>> pagers = new Pager();

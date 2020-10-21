@@ -1,4 +1,4 @@
-package io.kelsas.accounting.security.service;
+package io.smarthealth.security.service;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;

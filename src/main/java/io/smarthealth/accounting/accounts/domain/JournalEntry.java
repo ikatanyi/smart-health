@@ -81,9 +81,8 @@ public class JournalEntry extends Auditable {
                 .stream()
                 .filter(x -> x.isCredit())
                 .map(x -> x.getCredit())
-                .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
-
-        return d.equals(c);
+                .reduce(BigDecimal.ZERO, (x, y) -> x.add(y)); 
+        return d.compareTo(c) == 0;
     }
 
     private void addItems(List<JournalEntryItem> items) {

@@ -29,6 +29,4 @@ public interface DispensedDrugsInterface {
     public Double getCost();
     
     public String getOtherReference();
-    
-    
 }

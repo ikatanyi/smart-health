@@ -21,7 +21,7 @@ public class ReceiptTransactionData{
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime datetime;
     private String method;
-    private BigDecimal amount;
+    private BigDecimal amount=BigDecimal.ZERO;
     private String reference;
     private TrnxType type;
     private String currency;

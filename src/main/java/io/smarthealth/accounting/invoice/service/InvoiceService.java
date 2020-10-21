@@ -40,7 +40,6 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
-import io.smarthealth.stock.item.domain.ItemRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -95,20 +94,33 @@ public class InvoiceService {
                             Payer payer = payerService.findPayerByIdWithNotFoundDetection(payerData.getPayerId());
                             Scheme scheme = schemeService.fetchSchemeById(payerData.getSchemeId());
 
+                            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+
                             Integer creditDays = 30;
                             String terms = "Net 30";
                             if (payer.getPaymentTerms() != null) {
                                 creditDays = payer.getPaymentTerms().getCreditDays();
                                 terms = payer.getPaymentTerms().getTermsName();
                             }
+                            //determining the invoice amount to use 
+                            BigDecimal invoiceAmount = payerData.getAmount();
+                            BigDecimal discount = invoiceData.getDiscount();
+                            Boolean isCapitation = Boolean.FALSE;
+                            if (config.isPresent() && config.get().isCapitationEnabled()) {
+                                //if this is a capitation invoice we going to mess this shit up
+                                invoiceAmount = config.get().getCapitationAmount();
+                                discount = BigDecimal.ZERO;
+                                isCapitation=Boolean.TRUE;
+                            }
 
-                            Invoice invoice = new Invoice();
-                            invoice.setAmount(payerData.getAmount());
-                            invoice.setBalance(payerData.getAmount());
+                            Invoice invoice = new Invoice();                    
+                            invoice.setAmount(invoiceAmount);
+                            invoice.setBalance(invoiceAmount);
+                            invoice.setCapitation(isCapitation);
                             invoice.setDate(invoiceData.getDate());
                             invoice.setDueDate(invoiceData.getDate().plusDays(creditDays));
-
-                            invoice.setDiscount(invoiceData.getDiscount());
+                            invoice.setInvoiceAmount(payerData.getAmount());
+                            invoice.setDiscount(discount);
                             invoice.setMemberName(payerData.getMemberName());
                             invoice.setMemberNumber(payerData.getMemberNo());
                             invoice.setNotes(invoiceData.getNotes());
@@ -122,10 +134,12 @@ public class InvoiceService {
                             invoice.setTax(invoiceData.getTaxes());
                             invoice.setTransactionNo(trxId);
                             invoice.setVisit(visit);
-                            Optional<SchemeConfigurations>config = schemeService.fetchSchemeConfigByScheme(scheme);
-                            if(config.isPresent())
-                                if(config.get().isSmartEnabled())
+
+                            if (config.isPresent()) {
+                                if (config.get().isSmartEnabled()) {
                                     invoice.setAwaitingSmart(Boolean.TRUE);
+                                }
+                            }
 
                             if (!invoiceData.getItems().isEmpty()) {
                                 BigDecimal balance = BigDecimal.ZERO;
@@ -147,13 +161,16 @@ public class InvoiceService {
                                             lineItem.setBalance(inv.getAmount());
                                             invoice.addItem(lineItem);
                                         });
-
-                                invoice.setBalance(invoiceData.getItems()
-                                        .stream()
-                                        .map(x -> x.getAmount())
-                                        .reduce(BigDecimal.ZERO, (x, y) -> x.add(y))
-                                );
-                            }                            
+                                if (config.isPresent() && config.get().isCapitationEnabled()) {
+                                    invoice.setBalance(invoiceAmount);
+                                } else {
+                                    invoice.setBalance(invoiceData.getItems()
+                                            .stream()
+                                            .map(x -> x.getAmount())
+                                            .reduce(BigDecimal.ZERO, (x, y) -> x.add(y))
+                                    );
+                                }
+                            }
                             savedInvoices.add(saveInvoice(invoice));
                         }
                 );
@@ -191,9 +208,9 @@ public class InvoiceService {
         getInvoiceByIdOrThrow(id);
         invoiceRepository.updateInvoiceStatus(status, id);
     }
-    
+
     public void updateInvoiceSmartStatus(Long id, Boolean awaitingSmart) {
-        Invoice invoice  = getInvoiceByIdOrThrow(id);
+        Invoice invoice = getInvoiceByIdOrThrow(id);
         invoice.setAwaitingSmart(awaitingSmart);
         invoiceRepository.save(invoice);
     }
@@ -205,9 +222,9 @@ public class InvoiceService {
         return null;
     }
 
-    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, Boolean filterPastDue, Boolean awaitingSmart, Double amountLessThanOrEqualTo, Pageable pageable) {
+    public Page<Invoice> fetchInvoices(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Double amountGreaterThan, Boolean filterPastDue, Boolean awaitingSmart, Double amountLessThanOrEqualTo, Boolean hasCapitation, Pageable pageable) {
 
-        Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo);
+        Specification<Invoice> spec = InvoiceSpecification.createSpecification(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
 //        Page<Invoice> invoices = invoiceRepository.findByItemsVoidedFalse(spec, pageable);
 
@@ -348,15 +365,61 @@ public class InvoiceService {
 //        String creditAcc = creditAccount.getAccount().getIdentifier();
 //        String debitAcc = debitAccount.getIdentifier();
         BigDecimal amount = invoice.getAmount();
-        String narration = "Raise Invoice - " + invoice.getNumber();
-        JournalEntry toSave = new JournalEntry(invoice.getDate(), narration,
-                new JournalEntryItem[]{
-                    new JournalEntryItem(debitAccount, narration, amount, BigDecimal.ZERO),
-                    new JournalEntryItem(creditAccount.getAccount(), narration, BigDecimal.ZERO, amount)
-//                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
-//                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
+        BigDecimal debitAmount = amount;
+        BigDecimal creditAmount = amount;
+        Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(invoice.getScheme());
+        List<JournalEntryItem> capitationJournal = new ArrayList<>();
+        if (config.isPresent() && config.get().isCapitationEnabled()) {
+            BigDecimal capitationAmount = config.get().getCapitationAmount();
+            //capitations export the       3800-7000
+            BigDecimal capitationDiff = (capitationAmount.subtract(invoice.getInvoiceAmount()));
+            switch (capitationDiff.signum()) {
+                case -1: {
+                    //negative - expense
+                    FinancialActivityAccount capitationAccount = activityAccountRepository
+                            .findByFinancialActivity(FinancialActivity.CapitationExpense)
+                            .orElseThrow(() -> APIException.notFound("Capitation Expense Account is Not Mapped"));
+                    //deferrence is what I post here otherwise 
+                    debitAmount = capitationAmount;
+                    creditAmount = invoice.getInvoiceAmount();
+                    
+                    JournalEntryItem capitationExp = new JournalEntryItem(capitationAccount.getAccount(), "Capitation Expense for Invoice No. " + invoice.getNumber(), (capitationDiff.negate()), BigDecimal.ZERO);
+                    capitationJournal.add(capitationExp);
                 }
+                break;
+                case 1: {
+                    FinancialActivityAccount capitationAccount = activityAccountRepository
+                            .findByFinancialActivity(FinancialActivity.CapitationIncome)
+                            .orElseThrow(() -> APIException.notFound("Capitation Income Account is Not Mapped"));
+                    //deferrence is what I post here otherwise 
+                     debitAmount = capitationAmount;
+                    creditAmount = invoice.getInvoiceAmount();
+                    
+                    JournalEntryItem capitationIncomel = new JournalEntryItem(capitationAccount.getAccount(), "Capitation Income  for Invoice No. " + invoice.getNumber(), BigDecimal.ZERO, capitationDiff);
+                    capitationJournal.add(capitationIncomel);
+                }
+                break;
+                default:
+            }
+
+        }
+        String narration = "Raise Invoice - " + invoice.getNumber();
+        capitationJournal.add(new JournalEntryItem(debitAccount, narration, debitAmount, BigDecimal.ZERO));
+        capitationJournal.add(new JournalEntryItem(creditAccount.getAccount(), narration, BigDecimal.ZERO, creditAmount));
+
+        for(JournalEntryItem d : capitationJournal){
+            System.err.println("Account : "+d.getAccount().getName()+" Debit: "+d.getDebit()+" Credit: "+d.getCredit()+" ISDebit: "+d.isDebit());
+            System.err.println("Cred");
+        }
+        JournalEntry toSave = new JournalEntry(invoice.getDate(), narration, capitationJournal
+        //                new JournalEntryItem[]{
+        //                    new JournalEntryItem(debitAccount, narration, debitAmount, BigDecimal.ZERO),
+        //                    new JournalEntryItem(creditAccount.getAccount(), narration, BigDecimal.ZERO, creditAmount)
+        ////                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
+        ////                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
+        //                }
         );
+
         toSave.setTransactionNo(invoice.getTransactionNo());
         toSave.setTransactionType(TransactionType.Invoicing);
         toSave.setStatus(JournalState.PENDING);

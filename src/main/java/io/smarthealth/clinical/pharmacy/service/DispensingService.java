@@ -90,7 +90,7 @@ public class DispensingService {
                         drugs.setTransactionId(drugRequest.getTransactionId());
                         drugs.setQtyIssued(drugData.getQuantity());
                         drugs.setPrice(drugData.getPrice());
-                        drugs.setAmount(drugData.getAmount());
+                        drugs.setAmount((drugData.getPrice() * drugData.getQuantity()));
                         drugs.setUnits(drugData.getUnit());
                         drugs.setDoctorName(drugData.getDoctorName());
                         drugs.setPaid(false);

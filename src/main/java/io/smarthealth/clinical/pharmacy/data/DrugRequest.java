@@ -29,7 +29,7 @@ public class DrugRequest {
     private String transactionId; //Receipt n. or Invoice No
     private String paymentMode;
     private Double balance;
-    private Double Amount;
+    private Double Amount; // this QTY*PRICE
     private Double taxes;
     private Double discount; 
      private Boolean isWalkin; 
