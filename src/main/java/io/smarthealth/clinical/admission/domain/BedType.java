@@ -25,12 +25,11 @@ public class BedType extends Identifiable {
     private String description;
     private Boolean isActive = Boolean.TRUE;
 
-    
 //    @JoinColumn(foreignKey = @ForeignKey(name = "fk_bed_type_bed_charge_id"))
 //    @OneToMany()
     @OneToMany(mappedBy = "bedType", cascade = CascadeType.ALL)
-    private List<BedCharge> bedCharges ;
-    
+    private List<BedCharge> bedCharges;
+
     public void addBedCharge(BedCharge bedCharge) {
         bedCharge.setBedType(this);
         bedCharges.add(bedCharge);
@@ -47,10 +46,12 @@ public class BedType extends Identifiable {
         data.setDescription(this.getDescription());
         data.setName(this.getName());
         data.setActive(this.getIsActive());
-        data.setBedCharges(this.getBedCharges()
-             .stream()
-             .map(x->x.toData())
-             .collect(Collectors.toList()));
+        if (this.getBedCharges() != null) {
+            data.setBedCharges(this.getBedCharges()
+                    .stream()
+                    .map(x -> x.toData())
+                    .collect(Collectors.toList()));
+        }
         return data;
     }
 }
