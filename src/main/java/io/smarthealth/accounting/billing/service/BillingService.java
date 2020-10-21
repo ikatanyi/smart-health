@@ -218,6 +218,8 @@ public class BillingService {
     public PatientBillItem updateBillItem(PatientBillItem item) {
         //determine the request origin and update ti
         cashPaidUpdater.updateRequestStatus(item);
+       //update the doctors payments with this receipts
+//       TODO
         return billItemRepository.save(item);
     }
 
