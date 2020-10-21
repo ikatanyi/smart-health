@@ -120,30 +120,30 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="13" splitType="Stretch">
+		<band height="20" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="64" y="0" width="79" height="12" uuid="c67db78c-e18a-4e91-90d2-5b3d73d213f7"/>
+				<reportElement x="64" y="0" width="79" height="19" uuid="c67db78c-e18a-4e91-90d2-5b3d73d213f7"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{memberName}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd-MM-yyyy" isBlankWhenNull="true">
-				<reportElement x="12" y="0" width="52" height="12" uuid="d2539c45-a4e2-42f0-8ef4-fee0acdab46b"/>
+				<reportElement x="12" y="0" width="52" height="19" uuid="d2539c45-a4e2-42f0-8ef4-fee0acdab46b"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="203" y="0" width="54" height="12" uuid="2d6e050e-2ef4-4dad-92ed-d48c91ec8afb"/>
+				<reportElement x="203" y="0" width="54" height="19" uuid="2d6e050e-2ef4-4dad-92ed-d48c91ec8afb"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{number}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement mode="Transparent" x="423" y="0" width="37" height="12" uuid="b887a395-f535-4f7a-a732-2876f318982c"/>
+				<reportElement mode="Transparent" x="423" y="0" width="37" height="19" uuid="b887a395-f535-4f7a-a732-2876f318982c"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 					<paragraph rightIndent="2"/>
@@ -151,21 +151,21 @@
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="12" height="12" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
+				<reportElement x="0" y="0" width="12" height="19" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="460" y="0" width="53" height="12" uuid="f303dd24-3e1c-4f78-9075-371e9a7e4728"/>
+				<reportElement x="460" y="0" width="53" height="19" uuid="f303dd24-3e1c-4f78-9075-371e9a7e4728"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{balance_1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="315" y="0" width="108" height="12" uuid="ba34e96a-5356-4fa7-afa2-9dfe7fd7a67b"/>
+				<reportElement x="315" y="0" width="108" height="19" uuid="ba34e96a-5356-4fa7-afa2-9dfe7fd7a67b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 					<paragraph leftIndent="5"/>
@@ -173,20 +173,20 @@
 				<textFieldExpression><![CDATA[$F{scheme}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="258" y="0" width="57" height="12" uuid="35da206c-f13d-4615-a010-9a56d1158120"/>
+				<reportElement x="257" y="0" width="58" height="19" uuid="35da206c-f13d-4615-a010-9a56d1158120"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""+$F{dueDate}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="1" y="12" width="512" height="1" forecolor="#9999FF" uuid="0857bc25-5cba-42f9-920c-2039555116dd"/>
+				<reportElement x="1" y="19" width="512" height="1" forecolor="#9999FF" uuid="0857bc25-5cba-42f9-920c-2039555116dd"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="143" y="0" width="60" height="12" uuid="d906b5bd-c7de-4376-8032-07c54dad0219"/>
+				<reportElement x="143" y="0" width="60" height="19" uuid="d906b5bd-c7de-4376-8032-07c54dad0219"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
