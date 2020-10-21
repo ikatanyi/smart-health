@@ -32,7 +32,7 @@ public class DispatchData {
     private List<DispatchedInvoiceData>dispatchInvoiceData=new ArrayList();
     
     @ApiModelProperty(required=false,hidden=true)
-    private List<InvoiceData>invoiceData=new ArrayList();
+    private List<InvoiceData>invoiceData;
     
     public static DispatchData map(Dispatch dispatch){
         DispatchData data = new DispatchData();
