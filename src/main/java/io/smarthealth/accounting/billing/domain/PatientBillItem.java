@@ -115,7 +115,7 @@ public class PatientBillItem extends Auditable {
         data.setDiscount(this.discount);
         data.setTax(this.taxes);
 
-        data.setNetAmount(((toDouble(this.quantity) * toDouble(this.price)) + toDouble(discount)) - toDouble(taxes));
+        data.setNetAmount(((toDouble(this.quantity) * toDouble(this.price)) - toDouble(discount)) + toDouble(taxes));
 
         data.setServicePoint(this.servicePoint!=null?this.servicePoint:"Other");
         data.setServicePointId(this.servicePointId);

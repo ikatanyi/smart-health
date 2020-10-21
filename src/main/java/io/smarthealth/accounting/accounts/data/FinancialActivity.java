@@ -22,7 +22,9 @@ public enum FinancialActivity {
     Discount_Allowed("Discount Allowed", AccountType.EXPENSE),
     Copayment("Copayment", AccountType.REVENUE),
     Patient_Debt("Patient Debt", AccountType.ASSET),
-    DeferredRevenue("Deferred Revenue", AccountType.LIABILITY);
+    DeferredRevenue("Deferred Revenue", AccountType.LIABILITY),
+    CapitationExpense("Capitation Expense", AccountType.EXPENSE),
+    CapitationIncome("Capitation Income", AccountType.REVENUE);
 
     private final String activityName;
     private final AccountType accountType;

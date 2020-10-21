@@ -58,5 +58,6 @@ public class InvoiceData {
     private Long age;
     @ApiModelProperty(hidden=true, required=false)
     private String diagnosis;
-   
+
+     private Boolean capitation=Boolean.FALSE;
 }

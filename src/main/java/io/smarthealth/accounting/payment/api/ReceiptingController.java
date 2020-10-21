@@ -137,6 +137,5 @@ public class ReceiptingController {
         details.setReportName("Payments");
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
-    }
-
+    } 
 }

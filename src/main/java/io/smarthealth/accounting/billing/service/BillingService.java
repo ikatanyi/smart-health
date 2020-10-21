@@ -59,6 +59,8 @@ import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.stores.domain.Store;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -135,10 +137,10 @@ public class BillingService {
                         billItem.setPrice(data.getAmount());
                     }
                     billItem.setQuantity(lineData.getQuantity());
-                    billItem.setAmount(lineData.getAmount());
+                    billItem.setAmount((billItem.getPrice() * billItem.getQuantity()));
                     billItem.setDiscount(lineData.getDiscount());
-                    billItem.setBalance(lineData.getAmount());
-                    
+                    billItem.setBalance((billItem.getAmount()));
+                   
                     billItem.setServicePoint(lineData.getServicePoint());
                     billItem.setServicePointId(lineData.getServicePointId());
                     billItem.setStatus(BillStatus.Draft);
@@ -148,7 +150,7 @@ public class BillingService {
                 .collect(Collectors.toList());
         patientbill.addBillItems(lineItems);
         System.out.println("End of bill items");
-
+  
         PatientBill savedBill = save(patientbill);
         if (savedBill.getPaymentMode().equals("Insurance")) {
             journalService.save(toJournal(savedBill, null));
@@ -461,15 +463,15 @@ public class BillingService {
                             PatientBillItem item = findBillItemById(x.getBillItemId());
                             BigDecimal discount = (x.getDiscount() != null ? x.getDiscount() : BigDecimal.ZERO);
                             BigDecimal subtotal = item.getSubTotal() != null && item.getSubTotal() > 0 ? BigDecimal.valueOf(item.getSubTotal()) : BigDecimal.valueOf(((item.getQuantity() * item.getPrice()) - discount.doubleValue()));
-                            BigDecimal amount=subtotal; // + item.getTaxes();
-                            
+                            BigDecimal amount = subtotal; // + item.getTaxes();
+
                             BigDecimal bal = amount.subtract(x.getAmount());
                             item.setPaid(Boolean.TRUE);
                             item.setStatus(BillStatus.Paid);
                             if (item.getItem().getCategory() == ItemCategory.CoPay) {
                                 item.setAmount((item.getAmount() * -1));
                             }
-                            
+
                             item.setSubTotal(subtotal.doubleValue());
                             item.setPaymentReference(data.getReceiptNo());
                             item.setBalance(bal.doubleValue());

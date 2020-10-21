@@ -7,9 +7,7 @@ package io.smarthealth.accounting.payment.api;
 
 import io.smarthealth.accounting.payment.data.CreatePrepayment;
 import io.smarthealth.accounting.payment.data.PrepaymentData;
-import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.domain.Prepayment;
-import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.service.PrepaymentService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -22,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

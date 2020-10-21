@@ -53,7 +53,7 @@ import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.service.FileStorageService;
 import io.smarthealth.notify.data.NoticeType;
 import io.smarthealth.notify.data.NotificationData;
-import io.smarthealth.notify.domain.Notification;
+import io.smarthealth.notify.domain.Notifications;
 import io.smarthealth.notify.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
