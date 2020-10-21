@@ -145,7 +145,12 @@ public class DoctorRequestService implements DateConverter {
         return doctorRequestRepository.findServiceRequestsByVisit(visit, fullfillerStatus, requestType);
     }
 
-    public Optional<DoctorRequestData> getDocRequestById(Long id) {
+    public Optional<DoctorRequest> getDocRequestById(Long id) {
+        Optional<DoctorRequest> entity = doctorRequestRepository.findById(id);
+        return entity;
+    }
+
+    public Optional<DoctorRequestData> getDocRequestDataById(Long id) {
         Optional<DoctorRequestData> entity = doctorRequestRepository.findById(id).map(p -> DoctorRequestToData(p));
         return entity;
     }
@@ -167,6 +172,10 @@ public class DoctorRequestService implements DateConverter {
             return ResponseEntity.notFound().build();
         }
     }
+    
+    public void deleteDocRequest(DoctorRequest request) {
+       doctorRequestRepository.delete(request);
+    }
 
     public DoctorRequestData DoctorRequestToData(DoctorRequest docRequest) {
         DoctorRequestData docReqData = modelMapper.map(docRequest, DoctorRequestData.class);
@@ -185,7 +194,7 @@ public class DoctorRequestService implements DateConverter {
             requestItem.setItemId(d.getItem().getId());
             requestItem.setItemName(d.getItem().getItemName());
         }
-        
+
         requestItem.setRate(d.getItemRate());
         requestItem.setCostRate(d.getItemCostRate());
 

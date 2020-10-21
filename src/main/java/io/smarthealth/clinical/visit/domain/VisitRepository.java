@@ -63,12 +63,14 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
 
     @Query(value = "SELECT v FROM Visit v WHERE v.patient=:patient AND  v.visitNumber <> :visitNumber ORDER BY v.id DESC")
     Page<Visit> lastVisit(@Param("patient") Patient patient, @Param("visitNumber") String visitNumber, Pageable pageable);
-    
+
+    @Query(value = "SELECT v FROM Visit v WHERE v.patient=:patient  ORDER BY v.id DESC")
+    Page<Visit> lastVisitWithoutCurrentActiveVisit(@Param("patient") Patient patient, Pageable pageable);
+
     @Query(value = "SELECT v FROM Visit v WHERE DATE(v.startDatetime)=:date GROUP BY v.patient.patientNumber, DATE(v.startDatetime)")
     List<Visit> visitAttendance(@Param("date") Date date);
-    
+
     @Query(value = "SELECT v.patient.patientNumber AS patientNumber, v.patient.fullName AS fullName, v.patient.age AS age, v.patient.gender AS gender, p.diagnosis.description AS diagnosis,v.patient.residence AS residence, v.startDatetime  AS date, v.startDatetime AS seen, v.patient.createdBy AS createdBy  from Visit v LEFT JOIN PatientDiagnosis p ON v.id = p.visit.id WHERE v.startDatetime BETWEEN :fromDate AND :toDate GROUP BY v.patient.patientNumber,v.visitNumber")
-    List<Register>patientRegister(@Param("fromDate") LocalDateTime fromDate, @Param("toDate")LocalDateTime toDate);
-     
+    List<Register> patientRegister(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate);
 
 }

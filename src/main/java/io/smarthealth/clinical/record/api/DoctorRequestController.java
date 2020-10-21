@@ -124,9 +124,25 @@ public class DoctorRequestController {
     @GetMapping("/doctor-request/{id}")
     @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> fetchRequestById(@PathVariable("id") final Long id) {
-        Optional<DoctorRequestData> specimens = requestService.getDocRequestById(id);
+        Optional<DoctorRequestData> specimens = requestService.getDocRequestDataById(id);
         if (specimens != null) {
             return ResponseEntity.ok(specimens);
+        } else {
+            throw APIException.notFound("Request Number {0} not found.", id);
+        }
+    }
+
+    @DeleteMapping("/doctor-request/{id}")
+    @PreAuthorize("hasAuthority('delete_doctorrequest')")
+    public ResponseEntity<?> deleteRequestById(@PathVariable("id") final Long id) {
+        Optional<DoctorRequest> docRequest = requestService.getDocRequestById(id);
+
+        if (docRequest.isPresent()) {
+            if (docRequest.get().getFulfillerStatus().equals(FullFillerStatusType.Fulfilled)) {
+                throw APIException.badRequest("You cannot remove a fulfilled request", "");
+            }
+            requestService.deleteDocRequest(docRequest.get());
+            return ResponseEntity.ok("Successfully deleted");
         } else {
             throw APIException.notFound("Request Number {0} not found.", id);
         }
@@ -159,6 +175,7 @@ public class DoctorRequestController {
     }
 
     @GetMapping("/doctor-request/{patientNo}/past")
+    @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> pastDocRequests(
             @PathVariable(value = "patientNo", required = false) final String patientNo,
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
@@ -185,6 +202,7 @@ public class DoctorRequestController {
             for (DoctorRequest docReq : pageList.getContent()) {
                 System.out.println("count " + count);
                 HistoricalDoctorRequestsData waitingRequest = new HistoricalDoctorRequestsData();
+                waitingRequest.setId(docReq.getId());
                 waitingRequest.setPatientName(patient.getFullName());
                 waitingRequest.setPatientNumber(patient.getPatientNumber());
 
