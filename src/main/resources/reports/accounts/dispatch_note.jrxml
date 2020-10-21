@@ -124,7 +124,7 @@
 	<pageFooter>
 		<band height="34">
 			<subreport>
-				<reportElement x="-4" y="18" width="519" height="15" uuid="04794731-d16b-413e-88e0-5d242895aed2"/>
+				<reportElement x="0" y="19" width="515" height="15" uuid="04794731-d16b-413e-88e0-5d242895aed2"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
 			</subreport>
