@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="125"/>
 	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
@@ -307,7 +308,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{requestedBy}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="398" y="0" width="41" height="21" uuid="65b477e9-7b8d-4f40-ac3f-487391a018e9"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
@@ -329,7 +330,7 @@
 				</textElement>
 				<text><![CDATA[Yes]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="492" y="0" width="62" height="21" uuid="79e2aaed-fc87-45c0-a74a-cda85abf850d"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
@@ -337,7 +338,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{validatedBy}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{enteredBy}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="273" y="0" width="34" height="20" forecolor="#339900" uuid="37869801-0b51-49e1-824d-7c9d72a1079f">

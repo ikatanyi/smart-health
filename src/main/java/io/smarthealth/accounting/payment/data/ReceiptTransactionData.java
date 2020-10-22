@@ -11,17 +11,18 @@ import lombok.Data;
  *
  * @author Kelsas
  */
-@Data  
-public class ReceiptTransactionData{
-   private Long id;
-   
-   private String payer;
+@Data
+public class ReceiptTransactionData {
+
+    private Long id;
+
+    private String payer;
     private String description;
-    private String receiptNo; 
+    private String receiptNo;
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime datetime;
     private String method;
-    private BigDecimal amount=BigDecimal.ZERO;
+    private BigDecimal amount = BigDecimal.ZERO;
     private String reference;
     private TrnxType type;
     private String currency;
