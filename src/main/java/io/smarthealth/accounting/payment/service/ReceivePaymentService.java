@@ -14,8 +14,6 @@ import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.cashier.domain.ShiftRepository;
-import io.smarthealth.accounting.payment.data.PayChannel;
-import io.smarthealth.accounting.payment.data.CreatePrepayment;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.accounting.payment.data.ReceiptMethod;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
@@ -56,9 +54,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
 import io.smarthealth.accounting.payment.domain.repository.ReceiptTransactionRepository;
-import io.smarthealth.infrastructure.lang.SystemUtils;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
-import java.time.LocalTime;
 
 /**
  *
@@ -250,7 +246,11 @@ public class ReceivePaymentService {
         receiptItemRepository.saveAll(lists);
         return receipt;
     }
-
+  @Transactional
+    public Receipt receiptAdjustmentMethod(String receiptNo, ReceiptMethod method) {
+        Receipt receipt = getPaymentByReceiptNumber(receiptNo);
+        return null;
+    }
     public Page<Receipt> getPayments(String payee, String receiptNo, String transactionNo, String shiftNo, Long servicePointId, Long cashierId, DateRange range, Pageable page) {
         Specification<Receipt> spec = ReceiptSpecification.createSpecification(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range);
         return repository.findAll(spec, page);

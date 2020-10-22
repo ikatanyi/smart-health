@@ -1,12 +1,13 @@
-package io.smarthealth.audit.domain;
-
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package io.smarthealth.security.domain.repositories;
 
 import io.smarthealth.config.Constants;
-import io.smarthealth.audit.config.AuditEventConverter;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import io.smarthealth.security.config.audit.AuditEventConverter;
+import io.smarthealth.security.domain.PersistentAuditEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.audit.AuditEvent;
@@ -15,14 +16,22 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.*;
+import lombok.extern.slf4j.Slf4j;
+
 /**
- * An implementation of Spring Boot's AuditEventRepository.
+ * An implementation of Spring Boot's {@link AuditEventRepository}.
  */
+@Slf4j
 @Repository
 public class CustomAuditEventRepository implements AuditEventRepository {
 
     private static final String AUTHORIZATION_FAILURE = "AUTHORIZATION_FAILURE";
 
+    /**
+     * Should be the same as in Liquibase migration.
+     */
     protected static final int EVENT_DATA_COLUMN_MAX_LENGTH = 100000;
 
     private final PersistenceAuditEventRepository persistenceAuditEventRepository;
@@ -40,15 +49,15 @@ public class CustomAuditEventRepository implements AuditEventRepository {
 
     @Override
     public List<AuditEvent> find(String principal, Instant after, String type) {
-        
-        Iterable<PersistentAuditEvent> persistentAuditEvents = persistenceAuditEventRepository.findByPrincipalAndAuditEventDateAfterAndAuditEventType(principal, after, type);
-        
+        Iterable<PersistentAuditEvent> persistentAuditEvents =
+            persistenceAuditEventRepository.findByPrincipalAndAuditEventDateAfterAndAuditEventType(principal, after, type);
         return auditEventConverter.convertToAuditEvent(persistentAuditEvents);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void add(AuditEvent event) {
+//        log.info(event.toString());
         if (!AUTHORIZATION_FAILURE.equals(event.getType()) &&
             !Constants.ANONYMOUS_USER.equals(event.getPrincipal())) {
 

@@ -42,17 +42,17 @@ public class SchemeConfigurations extends Auditable {
     private boolean checkMemberShipLimit;
     @Column(columnDefinition = "tinyint(1) default 0")
     private boolean claimSwitching;
-    
+
     @Column(name = "has_capitation")
-    private boolean capitationEnabled;
-    private BigDecimal capitationAmount;
-    
+    private boolean capitationEnabled=false;
+    private BigDecimal capitationAmount=BigDecimal.ZERO;
+
     @Column(name = "has_copay")
-    private boolean copayEnabled;
+    private boolean copayEnabled=false;
     @Enumerated(EnumType.STRING)
     private CoPayType coPayType;
     private double coPayValue;
     private LocalDate copayStartDate;
 
-        private boolean status;
+    private boolean status;
 }
