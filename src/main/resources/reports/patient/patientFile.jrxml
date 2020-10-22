@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientFile" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="7f5d1719-2150-4099-8058-82165eccb7fc">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="2"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -175,43 +175,10 @@
 	<field name="drugsData" class="java.util.List"/>
 	<field name="age" class="java.lang.Integer"/>
 	<field name="employeeData" class="java.util.List"/>
-	<pageHeader>
-		<band height="93" splitType="Stretch">
-			<line>
-				<reportElement positionType="Float" x="1" y="31" width="570" height="1" forecolor="#CC3300" uuid="e798fa4d-52f1-4833-bbcf-472255c0e348"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#333333"/>
-				</graphicElement>
-			</line>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="39" width="65" height="14" forecolor="#000000" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
-				<textElement verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Patient File]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="61" width="79" height="14" forecolor="#000000" backcolor="#9999FF" uuid="b0f4afea-1b92-4545-be36-354aaa2cec14"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[VisitDate :]]></text>
-			</staticText>
-			<textField>
-				<reportElement positionType="Float" x="81" y="61" width="119" height="14" uuid="45f4fe00-03c3-4f12-ae3b-bed97f679481"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{createdOn}]]></textFieldExpression>
-			</textField>
-			<line>
-				<reportElement positionType="Float" x="1" y="92" width="570" height="1" forecolor="#CC3300" uuid="7e277ce6-dea7-4eae-833f-c62ef75773b2"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#333333"/>
-				</graphicElement>
-			</line>
+	<title>
+		<band height="51">
 			<subreport>
-				<reportElement x="-1" y="0" width="573" height="31" uuid="bcc512bb-37ca-4dad-bbdf-b131cc967f1c"/>
+				<reportElement x="1" y="0" width="573" height="31" uuid="bcc512bb-37ca-4dad-bbdf-b131cc967f1c"/>
 				<subreportParameter name="Patient_Data">
 					<subreportParameterExpression><![CDATA[$P{Patient_Data}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -224,26 +191,54 @@
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="48" splitType="Stretch">
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="76" width="79" height="14" forecolor="#000000" backcolor="#9999FF" uuid="f8e4ca63-4897-444f-99d5-a5ae2308baac"/>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="14" width="79" height="14" forecolor="#000000" backcolor="#9999FF" uuid="b0f4afea-1b92-4545-be36-354aaa2cec14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Visit Date :]]></text>
+			</staticText>
+			<textField>
+				<reportElement positionType="Float" x="81" y="14" width="490" height="14" uuid="45f4fe00-03c3-4f12-ae3b-bed97f679481"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[VisitNumber:]]></text>
+				<textFieldExpression><![CDATA[$F{createdOn}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="29" width="79" height="14" forecolor="#000000" backcolor="#9999FF" uuid="f8e4ca63-4897-444f-99d5-a5ae2308baac"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Visit Number:]]></text>
 			</staticText>
-			<textField>
-				<reportElement positionType="Float" x="81" y="75" width="119" height="15" uuid="1f7800dd-999d-423c-8105-5da00db0d4fb"/>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="81" y="28" width="490" height="15" uuid="1f7800dd-999d-423c-8105-5da00db0d4fb"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{visitNumber}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement positionType="Float" x="1" y="54" width="570" height="1" forecolor="#CC3300" uuid="1380fff1-cfb0-4e68-a0ba-88217fe9085b"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#333333"/>
-				</graphicElement>
-			</line>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="-1" y="0" width="573" height="14" forecolor="#000000" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Patient File]]></text>
+			</staticText>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -262,50 +257,44 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="121" splitType="Stretch">
+		<band height="124" splitType="Stretch">
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="11" width="150" height="14" forecolor="#000000" backcolor="#9999FF" uuid="23ad1106-8065-430e-98de-da2f964c1d65"/>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="11" width="264" height="14" forecolor="#000000" backcolor="#9999FF" uuid="23ad1106-8065-430e-98de-da2f964c1d65"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Symptoms]]></text>
+				<text><![CDATA[Symptoms :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="47" width="152" height="14" forecolor="#000000" backcolor="#9999FF" uuid="5642e2ce-5f8e-4226-8776-4bb00ab5ba91"/>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="50" width="266" height="14" forecolor="#000000" backcolor="#9999FF" uuid="5642e2ce-5f8e-4226-8776-4bb00ab5ba91"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Examination Notes :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="82" width="67" height="14" forecolor="#000000" backcolor="#9999FF" uuid="d594ffbd-3f66-44d1-8479-1945f5faf59e"/>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="89" width="181" height="14" forecolor="#000000" backcolor="#9999FF" uuid="d594ffbd-3f66-44d1-8479-1945f5faf59e"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Doctor Notes]]></text>
+				<text><![CDATA[Doctor Notes :]]></text>
 			</staticText>
-			<line>
-				<reportElement positionType="Float" x="2" y="120" width="569" height="1" forecolor="#CC3300" uuid="78443940-e497-4600-8593-625c64c53113"/>
-				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
-				</graphicElement>
-			</line>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="2" y="62" width="287" height="11" isRemoveLineWhenBlank="true" uuid="e734a80d-3b79-4608-867e-a7242e6439d1"/>
+				<reportElement positionType="Float" x="2" y="65" width="287" height="18" isRemoveLineWhenBlank="true" uuid="e734a80d-3b79-4608-867e-a7242e6439d1"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{examinationNotes}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="2" y="24" width="287" height="13" isRemoveLineWhenBlank="true" uuid="05b0a740-0f91-4c41-a628-87e8c1d06ea9"/>
+				<reportElement positionType="Float" x="2" y="24" width="287" height="18" isRemoveLineWhenBlank="true" uuid="05b0a740-0f91-4c41-a628-87e8c1d06ea9"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{chiefComplaint}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="2" y="95" width="287" height="13" isRemoveLineWhenBlank="true" uuid="b1cc5c90-ac41-4796-b515-ef4775a4152b"/>
+				<reportElement x="2" y="102" width="287" height="18" isRemoveLineWhenBlank="true" uuid="b1cc5c90-ac41-4796-b515-ef4775a4152b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -324,18 +313,15 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_procedures_results.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="3" y="1" width="67" height="14" forecolor="#000000" backcolor="#9999FF" uuid="fa173339-1497-4b9a-be5d-6e07c4ef3759"/>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="1" width="570" height="14" forecolor="#000000" backcolor="#9999FF" uuid="fa173339-1497-4b9a-be5d-6e07c4ef3759"/>
+				<box>
+					<topPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Procedures :]]></text>
 			</staticText>
-			<line>
-				<reportElement positionType="Float" x="2" y="47" width="569" height="1" forecolor="#CC3300" uuid="4cce6c86-e7c4-442a-a9dd-2153e32c518b"/>
-				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#666666"/>
-				</graphicElement>
-			</line>
 		</band>
 		<band height="46" splitType="Stretch">
 			<subreport>
@@ -344,9 +330,12 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_prescription.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="0" width="67" height="14" forecolor="#000000" backcolor="#9999FF" uuid="4bbb63d1-7934-4579-98fd-f96a3c3db7d9"/>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="0" width="569" height="14" forecolor="#000000" backcolor="#9999FF" uuid="4bbb63d1-7934-4579-98fd-f96a3c3db7d9"/>
+				<box>
+					<topPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Prescriptions :]]></text>
 			</staticText>
@@ -373,9 +362,12 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="1" y="0" width="67" height="14" forecolor="#000000" backcolor="#9999FF" uuid="45b4b99f-8ae6-40ae-8eb5-0eb63388558c"/>
+				<reportElement positionType="Float" mode="Transparent" x="1" y="0" width="569" height="14" forecolor="#000000" backcolor="#9999FF" uuid="45b4b99f-8ae6-40ae-8eb5-0eb63388558c"/>
+				<box>
+					<topPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Radiology Scans :]]></text>
 			</staticText>
@@ -390,9 +382,12 @@
 				<reportElement x="0" y="40" width="571" height="1" uuid="8d14c93c-f9cf-4d35-af8a-c9b7fd0e03d9"/>
 			</break>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="0" y="0" width="67" height="14" forecolor="#000000" backcolor="#9999FF" uuid="990c1074-9018-4e1a-801b-d6899f2f3eab"/>
+				<reportElement positionType="Float" mode="Transparent" x="0" y="0" width="569" height="14" forecolor="#000000" backcolor="#9999FF" uuid="990c1074-9018-4e1a-801b-d6899f2f3eab"/>
+				<box>
+					<topPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Lab Results :]]></text>
 			</staticText>

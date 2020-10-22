@@ -70,13 +70,13 @@ public class DoctorRequestSpecification {
             }
 
             if (range != null) {
-                System.out.println("range " + range.toString());
                 predicates.add(
                         cb.between(root.get("orderDate"), range.getStartDate(), range.getEndDate())
                 // cb.between(root.get("visit").get("startDatetime"), range.getStartDate(), range.getEndDate())
                 );
             }
 
+            query.orderBy(cb.desc(root.get("orderDate")));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.doctors.domain;
 
+import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.data.DoctorInvoiceData;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -7,15 +8,12 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;

@@ -31,6 +31,7 @@ public class PatientSpecification {
                 final String likeExpression = "%" + term + "%";
                 predicates.add(
                         cb.or(
+                                cb.like(root.get("fullName"), likeExpression),
                                 cb.like(root.get("givenName"), likeExpression),
                                 cb.like(root.get("middleName"), likeExpression),
                                 cb.like(root.get("surname"), likeExpression),

@@ -5,7 +5,10 @@
  */
 package io.smarthealth.clinical.record.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN_DD_MM_YYYY;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
 import lombok.Data;
 
 /**
@@ -25,6 +28,9 @@ public class DoctorRequestItem {
     private PrescriptionData prescriptionData;
 
     private String orderNo;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN_DD_MM_YYYY
+    )
+    private LocalDate orderDate;
     private String requestedByName, requestedByNo, status;
 
 }

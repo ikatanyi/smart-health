@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="payment_transactions_statement" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="22"/>
 	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<parameter name="range" class="java.lang.String"/>
@@ -64,6 +64,9 @@
 				<subreportParameter name="IMAGE_DIR">
 					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
@@ -72,7 +75,7 @@
 	<columnHeader>
 		<band height="59" splitType="Stretch">
 			<staticText>
-				<reportElement x="63" y="46" width="112" height="13" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
+				<reportElement x="93" y="46" width="139" height="13" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -82,7 +85,7 @@
 				<text><![CDATA[Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="11" y="46" width="52" height="13" uuid="20a7e05e-9914-4ca9-8b7c-7d990afaf6a4"/>
+				<reportElement x="11" y="46" width="82" height="13" uuid="20a7e05e-9914-4ca9-8b7c-7d990afaf6a4"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -102,7 +105,7 @@
 				<text><![CDATA[#]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="348" y="46" width="63" height="13" uuid="a0523b95-eda9-4ba5-b86f-b8743862a7df"/>
+				<reportElement x="364" y="46" width="63" height="13" uuid="a0523b95-eda9-4ba5-b86f-b8743862a7df"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -112,7 +115,7 @@
 				<text><![CDATA[Method]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="411" y="46" width="94" height="13" uuid="f8d742ac-25b5-4335-8d56-e4a3e828e5a4"/>
+				<reportElement x="427" y="46" width="78" height="13" uuid="f8d742ac-25b5-4335-8d56-e4a3e828e5a4"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -132,7 +135,7 @@
 				<text><![CDATA[Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="263" y="46" width="85" height="13" uuid="7e5c1a9c-6928-4ac3-aa23-dc32c6e9438e"/>
+				<reportElement x="302" y="46" width="62" height="13" uuid="7e5c1a9c-6928-4ac3-aa23-dc32c6e9438e"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -175,7 +178,7 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="175" y="46" width="88" height="13" uuid="94ab950b-0985-4760-b596-bbeb1394a224"/>
+				<reportElement x="232" y="46" width="70" height="13" uuid="94ab950b-0985-4760-b596-bbeb1394a224"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -199,7 +202,7 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="63" y="2" width="112" height="14" uuid="cc1a1d37-9600-4848-ad5d-9c8e7f855692"/>
+				<reportElement x="93" y="2" width="139" height="14" uuid="cc1a1d37-9600-4848-ad5d-9c8e7f855692"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
@@ -209,7 +212,7 @@
 				<textFieldExpression><![CDATA[$F{payer}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="11" y="2" width="52" height="14" uuid="ad8e3a4f-9f44-47cf-a041-9d9323bdfa3a"/>
+				<reportElement x="11" y="2" width="82" height="14" uuid="ad8e3a4f-9f44-47cf-a041-9d9323bdfa3a"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
@@ -219,7 +222,7 @@
 				<textFieldExpression><![CDATA[$F{datetime}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="348" y="2" width="63" height="14" uuid="ee3b89e9-0da3-4911-b1c7-6f888e04964c"/>
+				<reportElement x="364" y="2" width="63" height="14" uuid="ee3b89e9-0da3-4911-b1c7-6f888e04964c"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
@@ -229,7 +232,7 @@
 				<textFieldExpression><![CDATA[$F{method}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="411" y="2" width="94" height="14" uuid="b8c9ebcd-83c2-4357-beea-6892814754d9"/>
+				<reportElement x="427" y="2" width="78" height="14" uuid="b8c9ebcd-83c2-4357-beea-6892814754d9"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
@@ -249,7 +252,7 @@
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="263" y="2" width="85" height="14" uuid="384700db-e122-4bc9-bb94-4a4031bcaa37"/>
+				<reportElement x="302" y="2" width="62" height="14" uuid="384700db-e122-4bc9-bb94-4a4031bcaa37"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
@@ -259,7 +262,7 @@
 				<textFieldExpression><![CDATA[$F{receiptNo}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="175" y="2" width="88" height="14" uuid="a014ec60-7c03-4db4-9d5d-a688b03b1dbb"/>
+				<reportElement x="232" y="2" width="70" height="14" uuid="a014ec60-7c03-4db4-9d5d-a688b03b1dbb"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>

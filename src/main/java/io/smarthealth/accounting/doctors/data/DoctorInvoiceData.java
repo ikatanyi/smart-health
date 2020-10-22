@@ -25,7 +25,9 @@ public class DoctorInvoiceData  {
     private String staffNumber;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate invoiceDate;
-      private String invoiceNumber;
+    private String invoiceNumber;
+    @ApiModelProperty(required=false,hidden=true)
+    private String referenceNumber;
       
     private String patientNumber;
     private String patientName; 
