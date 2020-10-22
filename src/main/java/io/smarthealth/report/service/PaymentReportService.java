@@ -17,8 +17,8 @@ import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.accounting.payment.data.PettyCashPaymentData;
 import io.smarthealth.accounting.payment.data.SupplierPaymentData;
 import io.smarthealth.accounting.payment.domain.enumeration.PayeeType;
-import io.smarthealth.accounting.payment.service.PaymentService;
-import io.smarthealth.accounting.payment.service.ReceivePaymentService;
+import io.smarthealth.accounting.payment.service.MakePaymentService;
+import io.smarthealth.accounting.payment.service.ReceiptingService;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
@@ -71,7 +71,7 @@ public class PaymentReportService {
 
     private final JasperReportsService reportService;
     private final SupplierService supplierService;
-    private final PaymentService paymentService;
+    private final MakePaymentService paymentService;
     private final LedgerService ledgerService;
     private final CreditNoteService creditNoteService;
 
@@ -80,7 +80,7 @@ public class PaymentReportService {
     private final EmployeeService employeeService;
     private final PettyCashRequestsService pettyCashRequestService;
     private final PayerService payerService;
-    private final ReceivePaymentService receivePaymentService;
+    private final ReceiptingService receivePaymentService;
     private final CashierService cashierService;
 
     public void getPettyCashRequests(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {

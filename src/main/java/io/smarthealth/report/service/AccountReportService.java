@@ -38,7 +38,7 @@ import io.smarthealth.accounting.payment.data.ReceiptTransactionData;
 import io.smarthealth.accounting.payment.data.RemittanceData;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
-import io.smarthealth.accounting.payment.service.ReceivePaymentService;
+import io.smarthealth.accounting.payment.service.ReceiptingService;
 import io.smarthealth.accounting.payment.service.RemittanceService;
 import io.smarthealth.clinical.record.data.PatientTestsData;
 import io.smarthealth.clinical.record.service.DiagnosisService;
@@ -105,7 +105,7 @@ public class AccountReportService {
     private final InvoiceService invoiceService;
     private final VisitService visitService;
     private final PatientService patientService;
-    private final ReceivePaymentService paymentService;
+    private final ReceiptingService paymentService;
     private final AccountService accountService;
     private final ChartOfAccountServices chartOfAccountsService;
     private final PrescriptionService prescriptionService;
@@ -115,7 +115,7 @@ public class AccountReportService {
     private final LedgerService ledgerService;
     private final RemittanceService remittanceService;
     private final AllocationService allocationService;
-    private final ReceivePaymentService receivePaymentService;
+    private final ReceiptingService receivePaymentService;
     private final DispatchService dispatchService;
     private final SchemeService schemeService;
     private final DiagnosisService diagnosisService;
@@ -534,7 +534,7 @@ public class AccountReportService {
         String dateRange = reportParam.getFirst("range");
         InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));
         Boolean awaitingSmart = reportParam.getFirst("awaitingSmart") != null ? Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")) : null;
-        Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : false;
+        Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : null;
         Double amountGreaterThan = null;
         Boolean filterPastDue = null;
         Double amountLessThanOrEqualTo = null;
@@ -636,10 +636,11 @@ public class AccountReportService {
         String shiftNo = reportParam.getFirst("shiftNo");
         Long cashierId = NumberUtils.createLong(reportParam.getFirst("cashierId"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
+          Boolean prepaid = reportParam.getFirst("prepaid") != null ? Boolean.parseBoolean(reportParam.getFirst("prepaid")) : null; 
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
         List<ReportReceiptData> receiptDataArray = new ArrayList();
-        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, Pageable.unpaged())
+        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid,Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
