@@ -6,6 +6,8 @@
 package io.smarthealth.accounting.payment.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.accounting.payment.domain.enumeration.CustomerType;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiveType;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,18 +19,8 @@ import lombok.Data;
  */
 @Data
 public class CreateReceipt {
-
-    public enum Type {
-        Deposit,
-        Payment
-    }
-
-    public enum CustomerType {
-        Patient,
-        Insurance,
-        Others
-    }
-    private Type type;
+ 
+    private ReceiveType type;
 
     private Long customerId;
     private String customer;

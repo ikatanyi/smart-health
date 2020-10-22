@@ -12,9 +12,10 @@ import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.cashier.domain.ShiftRepository;
 import io.smarthealth.accounting.payment.data.PayChannel;
-import io.smarthealth.accounting.payment.data.CreateReceipt; 
+import io.smarthealth.accounting.payment.data.CreateReceipt;
 import io.smarthealth.accounting.payment.domain.PaymentDeposit;
 import io.smarthealth.accounting.payment.domain.Receipt;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiveType;
 import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
 import io.smarthealth.accounting.payment.domain.specification.PrepaymentSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -58,8 +59,7 @@ public class ReceivePaymentService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(CreateReceipt data) {
-        
-        
+
         Patient patient = patientRepository.findByPatientNumber(data.getCustomerNumber())
                 .orElseThrow(() -> APIException.notFound("Patient Number {} Not Found", data.getCustomerNumber()));
 
@@ -90,9 +90,14 @@ public class ReceivePaymentService {
 
         Receipt savedReceipt = repository.save(receipt);
 
-        
-        journalEntryService.save(toJournalPrepayment(savedReceipt, data));
-
+        //TODO payment deposit
+        if (data.getType() == ReceiveType.Deposit) {
+            //create the deposit payment here
+            journalEntryService.save(toJournalPrepayment(savedReceipt, data));
+        }
+        if (data.getType() == ReceiveType.Payment) {
+            //post the amount to the patient control account and the 
+        }
         return savedReceipt;
     }
 
@@ -103,9 +108,10 @@ public class ReceivePaymentService {
     public PaymentDeposit getPaymentOrThrow(Long id) {
         return getPrepayment(id)
                 .orElseThrow(() -> APIException.notFound("Payment with Id {0} Not Found", id));
-    } 
+    }
+
     public Page<PaymentDeposit> getPayments(String customerNumber, String receiptNo, Boolean hasBalance, DateRange range, Pageable page) {
-        Specification<PaymentDeposit> spec = PrepaymentSpecification.createSpecification(customerNumber, receiptNo,hasBalance, range);
+        Specification<PaymentDeposit> spec = PrepaymentSpecification.createSpecification(customerNumber, receiptNo, hasBalance, range);
         return prepaymentRepository.findAll(spec, page);
     }
 
