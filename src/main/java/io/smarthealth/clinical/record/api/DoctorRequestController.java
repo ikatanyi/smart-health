@@ -211,6 +211,7 @@ public class DoctorRequestController {
 
                 waitingRequest.setVisitNumber(v.getVisitNumber());
                 waitingRequest.setVisitNotes(v.getComments());
+                
                 //find line items by request_id
                 List<DoctorRequest> serviceItems = requestService.fetchServiceRequests(docReq.getPatient(), fulfillerStatus, requestType, v);
                 System.out.println("serviceItems " + serviceItems.size());

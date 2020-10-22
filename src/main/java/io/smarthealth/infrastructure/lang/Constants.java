@@ -5,6 +5,8 @@ package io.smarthealth.infrastructure.lang;
  * @author Kelsas
  */
 public class Constants {
+    /** Representing Date with pattern "dd-MM-yyyy" */
+    public static final String DATE_PATTERN_DD_MM_YYYY = "dd-MM-yyyy";
     /** Representing Date with pattern "yyyy-MM-dd" */
     public static final String DATE_PATTERN = "yyyy-MM-dd";
     /** Representing Time with pattern "HH:mm:ss" */
