@@ -297,7 +297,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{testName}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="307" y="0" width="91" height="21" uuid="adfcdddb-95c0-4d5d-834d-ed5a82d03a17"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
