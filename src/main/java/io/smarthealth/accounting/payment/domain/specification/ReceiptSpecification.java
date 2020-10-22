@@ -148,7 +148,7 @@ public class ReceiptSpecification {
             
             if (range != null) {
                 predicates.add(
-                        cb.between(root.get("receipt").get("datetime"), range.getStartDateTime(), range.getEndDateTime())
+                        cb.between(root.get("datetime"), range.getStartDateTime(), range.getEndDateTime())
                 );
             }
 

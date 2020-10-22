@@ -70,14 +70,14 @@
 				<textFieldExpression><![CDATA[$F{entryDateTime}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="69" y="14" width="108" height="15" isRemoveLineWhenBlank="true" uuid="788c4112-84a4-41d8-9826-37c9db2fc205"/>
+				<reportElement positionType="Float" x="69" y="14" width="191" height="15" isRemoveLineWhenBlank="true" uuid="788c4112-84a4-41d8-9826-37c9db2fc205"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{testName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="69" y="29" width="108" height="15" isRemoveLineWhenBlank="true" uuid="7938b1ef-f429-40f4-b9ec-8ec5a854d8ce"/>
+				<reportElement positionType="Float" x="69" y="29" width="191" height="15" isRemoveLineWhenBlank="true" uuid="7938b1ef-f429-40f4-b9ec-8ec5a854d8ce"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
@@ -106,7 +106,7 @@
 				<text><![CDATA[TestName :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="3" y="0" width="174" height="14" isRemoveLineWhenBlank="true" uuid="b9c4940d-f649-428e-9e32-8d7c0b599193"/>
+				<reportElement x="3" y="0" width="257" height="14" isRemoveLineWhenBlank="true" uuid="b9c4940d-f649-428e-9e32-8d7c0b599193"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="true"/>
 					<paragraph leftIndent="5"/>

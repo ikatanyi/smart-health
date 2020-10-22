@@ -963,7 +963,7 @@ public class AccountReportService {
                 .collect(Collectors.toList());
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
-        sortField.setName("receiptNo");
+        sortField.setName("method");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
@@ -972,7 +972,7 @@ public class AccountReportService {
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
-        reportData.setTemplate("/accounts/payment_transactions");
+        reportData.setTemplate("/accounts/Payment_transactions");
         reportData.setReportName("Payment-Transactions-Statement");
         reportService.generateReport(reportData, response);
     }

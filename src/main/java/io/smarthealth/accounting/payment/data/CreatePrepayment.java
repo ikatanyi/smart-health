@@ -6,7 +6,6 @@
 package io.smarthealth.accounting.payment.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,14 +17,18 @@ import lombok.Data;
  */
 @Data
 public class CreatePrepayment {
-
+   public enum Type{
+       Deposit,
+       Receipt
+   }
+   private Type type;
     private String patientNumber;
     private String visitNumber;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate paymentDate;
     private String paymentMethod;
     private String referenceNo;
-    private String memo;
+    private String narration;
     private BigDecimal amount;
     private String currency;
     private String shiftNo;

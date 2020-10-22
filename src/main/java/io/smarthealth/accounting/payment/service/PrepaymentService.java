@@ -18,7 +18,6 @@ import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.domain.repository.PrepaymentRepository;
 import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
 import io.smarthealth.accounting.payment.domain.specification.PrepaymentSpecification;
-import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.lang.SystemUtils;
@@ -39,7 +38,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -80,7 +78,7 @@ public class PrepaymentService {
             receipt.setShift(shift);
         }
         receipt.setTransactionDate(data.getPaymentDate().atTime(LocalTime.now()));
-        receipt.setDescription(data.getMemo());
+        receipt.setDescription(data.getNarration());
 
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String receiptNo = sequenceNumberService.next(1L, Sequences.Receipt.name());
@@ -94,7 +92,7 @@ public class PrepaymentService {
         prepayment.setAmount(data.getAmount());
         prepayment.setBalance(data.getAmount());
         prepayment.setCurrency(data.getCurrency());
-        prepayment.setMemo(data.getMemo());
+        prepayment.setMemo(data.getNarration());
         prepayment.setPatient(patient);
         prepayment.setPaymentDate(data.getPaymentDate());
         prepayment.setPaymentMethod(data.getPaymentMethod());
@@ -131,22 +129,6 @@ public class PrepaymentService {
 
         List<JournalEntryItem> items = new ArrayList<>();
         String descType = "";
-//        switch (data.getCustomerType()) {
-//            case Patient: { 
-//                String narration = SystemUtils.formatCurrency(payment.getAmount()) + " patient deposit for " + payment.getDescription();
-//                items.add(new JournalEntryItem(creditAccount.get().getAccount(), narration, BigDecimal.ZERO, payment.getAmount()));
-//                //create the invoice payments
-//                descType = "Patient Prepayment/deposit"; 
-//            }
-//            break;
-//            case Payer: { 
-//                String narration =  SystemUtils.formatCurrency(payment.getAmount()) + " Payer/Insurance deposit for " + payment.getDescription();
-//                items.add(new JournalEntryItem(creditAccount.get().getAccount(), narration, BigDecimal.ZERO, payment.getAmount()));
-//                descType = "Payer Prepayment/deposit)"; 
-//            }
-//            break;
-//            default:
-//        }
         String liabilityNarration = SystemUtils.formatCurrency(payment.getAmount()) + " patient deposit for " + payment.getDescription();
         items.add(new JournalEntryItem(creditAccount.get().getAccount(), liabilityNarration, BigDecimal.ZERO, payment.getAmount()));
         //create the invoice payments
