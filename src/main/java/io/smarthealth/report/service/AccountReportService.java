@@ -963,7 +963,7 @@ public class AccountReportService {
                 .collect(Collectors.toList());
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
-        sortField.setName("receiptNo");
+        sortField.setName("method");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);

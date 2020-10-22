@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="doctor_invoice_statement" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryNewPage="true" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="134"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
@@ -65,21 +65,21 @@
 		<groupFooter>
 			<band height="16">
 				<staticText>
-					<reportElement x="384" y="0" width="74" height="12" uuid="ea0ae8fe-0e6b-427c-9c11-328986710256"/>
+					<reportElement x="369" y="0" width="75" height="12" uuid="ea0ae8fe-0e6b-427c-9c11-328986710256"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Total :]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="458" y="0" width="33" height="12" uuid="77463331-68be-48a9-8040-620ac9eb6840"/>
+					<reportElement x="444" y="0" width="33" height="12" uuid="77463331-68be-48a9-8040-620ac9eb6840"/>
 					<textElement textAlignment="Right">
 						<font size="8" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{amount_1}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="491" y="0" width="27" height="12" uuid="953797d3-ab83-454f-add8-2d3e9132ba02"/>
+					<reportElement x="477" y="0" width="41" height="12" uuid="953797d3-ab83-454f-add8-2d3e9132ba02"/>
 					<textElement textAlignment="Right">
 						<font size="8" isBold="true"/>
 					</textElement>
@@ -124,10 +124,10 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Doctor]]></text>
+				<text><![CDATA[Bill No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="458" y="34" width="33" height="15" uuid="15258983-34b1-46da-aefb-a9048d0aeacb"/>
+				<reportElement x="444" y="34" width="33" height="15" uuid="15258983-34b1-46da-aefb-a9048d0aeacb"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -141,11 +141,11 @@
 				<text><![CDATA[Patient No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="384" y="34" width="74" height="15" uuid="b14feb82-769e-4d19-a52f-4ff6f1060e14"/>
+				<reportElement x="384" y="34" width="60" height="15" uuid="b14feb82-769e-4d19-a52f-4ff6f1060e14"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[ReferenceNumber]]></text>
+				<text><![CDATA[Reference]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="175" y="34" width="85" height="15" uuid="da14ccac-e456-4316-9fd5-60c9170d71c8"/>
@@ -155,7 +155,7 @@
 				<text><![CDATA[PatientName]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="491" y="34" width="27" height="15" uuid="39a56b9d-4c64-426d-bff4-302e706ebb28"/>
+				<reportElement x="477" y="34" width="41" height="15" uuid="39a56b9d-4c64-426d-bff4-302e706ebb28"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -217,7 +217,7 @@
 				<textFieldExpression><![CDATA[$F{invoiceNumber}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="458" y="0" width="33" height="16" uuid="fb2ca75b-8ae9-40d8-82ab-b6ced39d4647"/>
+				<reportElement x="444" y="0" width="33" height="16" uuid="fb2ca75b-8ae9-40d8-82ab-b6ced39d4647"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -231,7 +231,7 @@
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="384" y="0" width="74" height="16" uuid="4fa51bbb-2419-4490-834d-c6d20a5a7211"/>
+				<reportElement x="384" y="0" width="60" height="16" uuid="4fa51bbb-2419-4490-834d-c6d20a5a7211"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -245,7 +245,7 @@
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="491" y="0" width="27" height="16" uuid="ea160521-7cdc-444d-8d71-33d966c33782"/>
+				<reportElement x="477" y="0" width="41" height="16" uuid="ea160521-7cdc-444d-8d71-33d966c33782"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -262,7 +262,7 @@
 				<reportElement x="518" y="0" width="36" height="16" forecolor="#009900" uuid="9db036af-d1e5-49de-89f2-d1a4244f16f1">
 					<printWhenExpression><![CDATA[$F{paid}.equals( true )]]></printWhenExpression>
 				</reportElement>
-				<textElement verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Paid]]></text>
@@ -271,7 +271,7 @@
 				<reportElement x="518" y="0" width="36" height="16" forecolor="#FF0000" uuid="427e9add-cca5-4100-964c-ee8080917ed4">
 					<printWhenExpression><![CDATA[$F{paid}.equals( false )]]></printWhenExpression>
 				</reportElement>
-				<textElement verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Unpaid]]></text>
