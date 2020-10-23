@@ -207,6 +207,7 @@ public class BatchImportService {
         data.setActive(Boolean.TRUE);
         data.setItemCode(item.getItemCode());
         data.setItemName(item.getItemName());
+        data.setTestName(item.getItemName());
         return data;
     }
 
