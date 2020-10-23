@@ -9,12 +9,17 @@ import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
+import io.smarthealth.accounting.billing.data.PatientReceipt;
+import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.cashier.domain.ShiftRepository;
 import io.smarthealth.accounting.payment.data.PayChannel;
 import io.smarthealth.accounting.payment.data.CreateReceipt;
 import io.smarthealth.accounting.payment.domain.PaymentDeposit;
 import io.smarthealth.accounting.payment.domain.Receipt;
+import io.smarthealth.accounting.payment.domain.enumeration.CustomerType;
 import io.smarthealth.accounting.payment.domain.enumeration.ReceiveType;
 import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
 import io.smarthealth.accounting.payment.domain.specification.PrepaymentSpecification;
@@ -39,6 +44,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.repository.ReceivePaymenttRepository;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.debtor.payer.domain.Payer;
+import io.smarthealth.debtor.payer.domain.PayerRepository;
+import io.smarthealth.stock.stores.domain.Store;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -54,15 +68,14 @@ public class ReceivePaymentService {
     private final ShiftRepository shiftRepository;
     private final ReceiptRepository repository;
     private final BankingService bankingService;
-    private final ReceivePaymenttRepository prepaymentRepository;
+    private final ReceivePaymenttRepository receivePaymenttRepository;
     private final PatientRepository patientRepository;
+    private final PayerRepository payerRepository;
+    private final BillingService billingService;
+    private final ServicePointService servicePointService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(CreateReceipt data) {
-
-        Patient patient = patientRepository.findByPatientNumber(data.getCustomerNumber())
-                .orElseThrow(() -> APIException.notFound("Patient Number {} Not Found", data.getCustomerNumber()));
-
         //get the visit number if any
         Receipt receipt = new Receipt();
         receipt.setPrepayment(Boolean.TRUE);
@@ -92,17 +105,49 @@ public class ReceivePaymentService {
 
         //TODO payment deposit
         if (data.getType() == ReceiveType.Deposit) {
-            //create the deposit payment here
-            journalEntryService.save(toJournalPrepayment(savedReceipt, data));
+            PaymentDeposit deposit = new PaymentDeposit();
+            deposit.setAmount(savedReceipt.getAmount());
+            deposit.setBalance(savedReceipt.getAmount());
+            deposit.setCustomerType(data.getCustomerType());
+            deposit.setDescription(data.getDescription());
+            deposit.setPaymentDate(data.getPaymentDate());
+            deposit.setPaymentMethod(data.getPaymentMethod());
+            deposit.setReceipt(savedReceipt);
+            deposit.setReference(data.getReference());
+            deposit.setTransactionNo(savedReceipt.getTransactionNo());
+            deposit.setType(data.getType());
+
+            if (data.getCustomerType() == CustomerType.Patient) {
+                Patient patient = patientRepository.findByPatientNumber(data.getCustomerNumber())
+                        .orElseThrow(() -> APIException.notFound("Patient Number {} Not Found", data.getCustomerNumber()));
+                deposit.setCustomer(patient.getFullName());
+                deposit.setCustomerId(patient.getId());
+                deposit.setCustomerNumber(patient.getPatientNumber());
+            }
+
+            if (data.getCustomerType() == CustomerType.Insurance) {
+                Payer payer = payerRepository.findById(data.getCustomerId())
+                        .orElseThrow(() -> APIException.notFound("Payer with ID  {} Not Found", data.getCustomerId()));
+                deposit.setCustomer(payer.getPayerName());
+                deposit.setCustomerId(payer.getId());
+                deposit.setCustomerNumber(payer.getPayerCode());
+            }
+
+            receivePaymenttRepository.save(deposit);
+
+            journalEntryService.save(toJournalDeposits(savedReceipt, data));
         }
-        if (data.getType() == ReceiveType.Payment) {
-            //post the amount to the patient control account and the 
+        if (data.getType() == ReceiveType.Payment) { 
+            if (data.getCustomerType() == CustomerType.Patient) { 
+                PatientBill bill = billingService.createReceipt(new PatientReceipt(data.getVisitNumber(), savedReceipt)); 
+                journalEntryService.save(toJournalPayment(bill.getBillItems().get(0)));
+            }
         }
         return savedReceipt;
     }
 
     public Optional<PaymentDeposit> getPrepayment(Long id) {
-        return prepaymentRepository.findById(id);
+        return receivePaymenttRepository.findById(id);
     }
 
     public PaymentDeposit getPaymentOrThrow(Long id) {
@@ -112,10 +157,10 @@ public class ReceivePaymentService {
 
     public Page<PaymentDeposit> getPayments(String customerNumber, String receiptNo, Boolean hasBalance, DateRange range, Pageable page) {
         Specification<PaymentDeposit> spec = PrepaymentSpecification.createSpecification(customerNumber, receiptNo, hasBalance, range);
-        return prepaymentRepository.findAll(spec, page);
+        return receivePaymenttRepository.findAll(spec, page);
     }
 
-    private JournalEntry toJournalPrepayment(Receipt payment, CreateReceipt data) {
+    private JournalEntry toJournalDeposits(Receipt payment, CreateReceipt data) {
         Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.DeferredRevenue);
 
         if (!creditAccount.isPresent()) {
@@ -168,6 +213,31 @@ public class ReceivePaymentService {
         JournalEntry toSave = new JournalEntry(payment.getTransactionDate().toLocalDate(), description, items);
         toSave.setTransactionType(TransactionType.Receipting);
         toSave.setTransactionNo(payment.getTransactionNo());
+        toSave.setStatus(JournalState.PENDING);
+        return toSave;
+    }
+
+    private JournalEntry toJournalPayment(PatientBillItem bill) {
+
+        Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Patient_Control);
+        if (!debitAccount.isPresent()) {
+            throw APIException.badRequest("Patient Control Account is Not Mapped");
+        }
+
+        List<JournalEntryItem> items = new ArrayList<>();
+
+        ServicePoint srv = servicePointService.getServicePointByType(ServicePointType.Inpatient);
+
+        String desc = "Patient Receipt Payment, Receipt No. " + bill.getPaymentReference();
+        Account credit = srv.getIncomeAccount();
+        BigDecimal amount = BigDecimal.valueOf(bill.getAmount()).negate();
+
+        items.add(new JournalEntryItem(debitAccount.get().getAccount(), desc, amount, BigDecimal.ZERO));
+        items.add(new JournalEntryItem(credit, desc, BigDecimal.ZERO, amount));
+
+        JournalEntry toSave = new JournalEntry(bill.getBillingDate(), "Receipt Payment. Receipt No." + bill.getPaymentReference(), items);
+        toSave.setTransactionNo(bill.getTransactionId());
+        toSave.setTransactionType(TransactionType.Receipting);
         toSave.setStatus(JournalState.PENDING);
         return toSave;
     }

@@ -20,5 +20,6 @@ public enum ItemCategory {
     CoPay,
     Dental,
     Admission,
+    Receipt,
     Others
 }

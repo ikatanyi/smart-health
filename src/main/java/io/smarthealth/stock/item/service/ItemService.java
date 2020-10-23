@@ -47,16 +47,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.taxes.domain.TaxRepository;
-import io.smarthealth.clinical.laboratory.data.LabTestData;
-import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
-import io.smarthealth.clinical.procedure.data.ProcedureData;
-import io.smarthealth.clinical.procedure.service.ProcedureService;
-import io.smarthealth.clinical.radiology.data.RadiologyTestData;
-import io.smarthealth.clinical.radiology.domain.enumeration.Gender;
-import io.smarthealth.clinical.radiology.service.RadiologyConfigService;
-import io.smarthealth.infrastructure.imports.data.InventoryStockData;
-import io.smarthealth.stock.inventory.service.InventoryItemService;
-import java.util.ArrayList;
 import org.springframework.transaction.annotation.Propagation;
 
 /**

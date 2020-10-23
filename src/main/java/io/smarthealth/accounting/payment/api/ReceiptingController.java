@@ -3,7 +3,6 @@ package io.smarthealth.accounting.payment.api;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.domain.ShiftStatus;
 import io.smarthealth.accounting.payment.data.CreateReceipt;
-import io.smarthealth.accounting.payment.data.PaymentDepositData;
 import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.accounting.payment.data.ReceiptMethod;
