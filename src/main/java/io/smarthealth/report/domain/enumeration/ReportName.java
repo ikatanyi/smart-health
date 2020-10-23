@@ -77,5 +77,6 @@ public enum ReportName {
         Patient_Dispensed_Drugs,
         Payment_Transactions_Statement,
         Registered_Schemes,
-        Insurance_Diagnosis_Summary
+        Insurance_Diagnosis_Summary,
+        Cashier_Shift_Statement
 }

@@ -28,7 +28,9 @@ import io.smarthealth.accounting.invoice.domain.InvoiceMergeRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceItemSpecification;
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceSpecification;
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
@@ -74,12 +76,14 @@ public class InvoiceService {
     private final SequenceNumberService sequenceNumberService;
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final VisitService visitService;
+    private final PaymentDetailsService paymentDetailsService;
 //    private final TxnService txnService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<Invoice> createInvoice(CreateInvoice invoiceData) {
 
         Visit visit = visitService.findVisitEntityOrThrow(invoiceData.getVisitNumber());
+        Optional<PaymentDetails> paymentDetails = paymentDetailsService.getPaymentDetailsByVist(visit);
 
         String trxId = sequenceNumberService.next(1L, Sequences.Transactions.name());
 
@@ -112,7 +116,8 @@ public class InvoiceService {
                                 discount = BigDecimal.ZERO;
                                 isCapitation=Boolean.TRUE;
                             }
-
+                            
+                           
                             Invoice invoice = new Invoice();                    
                             invoice.setAmount(invoiceAmount);
                             invoice.setBalance(invoiceAmount);
@@ -133,7 +138,10 @@ public class InvoiceService {
                             invoice.setStatus(InvoiceStatus.Draft);
                             invoice.setTax(invoiceData.getTaxes());
                             invoice.setTransactionNo(trxId);
-                            invoice.setVisit(visit);
+                            invoice.setVisit(visit);                            
+                            if(paymentDetails.isPresent()){
+                               invoice.setIdNumber(paymentDetails.get().getIdNo());
+                            }
 
                             if (config.isPresent()) {
                                 if (config.get().isSmartEnabled()) {
