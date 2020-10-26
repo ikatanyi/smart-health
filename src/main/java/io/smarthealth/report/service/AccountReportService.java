@@ -746,10 +746,6 @@ public class AccountReportService {
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
-
-//        receiptData.forEach((receipt) -> {
-//            receiptDataArray.addAll(receipt.getReceiptItems());
-//        });
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("servicePoint");

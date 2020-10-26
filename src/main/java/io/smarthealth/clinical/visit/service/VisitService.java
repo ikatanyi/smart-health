@@ -13,6 +13,7 @@ import io.smarthealth.clinical.record.data.DocResults;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.TatInterface;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.clinical.visit.domain.specification.ReportVisitSpecification;
@@ -138,6 +139,10 @@ public class VisitService {
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
     }
 
+    public Optional<Visit> findVisitById(Long id) {
+        return this.visitRepository.findById(id);
+    }
+    
     public Optional<Visit> findVisit(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber);
     }
@@ -179,7 +184,7 @@ public class VisitService {
         return visitRepository.patientRegister(range.getStartDateTime(), range.getEndDateTime());
     }
 
-    public Page<Visit> fetchVisitsGroupByVisitNumber(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Pageable pageable) {
+    public Page<Visit> fetchVisitsGroupByVisitNumber(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, Boolean runningStatus, DateRange range, final Pageable pageable) {
 // Visit visit = null;
         Employee employee = null;
         ServicePoint servicePoint = null;
@@ -216,6 +221,10 @@ public class VisitService {
             }
         }
         return visitRepository.getPatientResults(visitNumber, patientNumber, type, range, patientName, employee, showResultsRead);
+    }
+    
+    public List<TatInterface> getPatientTat(Long visitId) {
+        return visitRepository.patientTatStatement(visitId);
     }
 
 }

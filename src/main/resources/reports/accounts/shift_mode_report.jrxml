@@ -429,12 +429,6 @@
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
-			<line>
-				<reportElement positionType="Float" x="1" y="33" width="802" height="1" uuid="45fa6f87-eef4-4a94-b37d-00b86ad7ee73"/>
-				<graphicElement>
-					<pen lineWidth="0.15"/>
-				</graphicElement>
-			</line>
 		</band>
 	</title>
 	<columnHeader>
@@ -722,6 +716,12 @@
 				</textElement>
 				<text><![CDATA[Cashier Shift Statement]]></text>
 			</staticText>
+			<line>
+				<reportElement positionType="Float" x="0" y="0" width="802" height="1" uuid="45fa6f87-eef4-4a94-b37d-00b86ad7ee73"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
 		</band>
 	</columnHeader>
 	<detail>

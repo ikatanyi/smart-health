@@ -267,7 +267,7 @@ public class PaymentReportService {
         Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
         String shiftNo = reportParam.getFirst("shiftNo");
         Long cashierId = NumberUtils.createLong(reportParam.getFirst("cashierId"));
-        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
           Boolean prepaid = reportParam.getFirst("prepaid") != null ? Boolean.parseBoolean(reportParam.getFirst("prepaid")) : null; 
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
