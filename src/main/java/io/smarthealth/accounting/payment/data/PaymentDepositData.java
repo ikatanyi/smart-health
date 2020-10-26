@@ -31,8 +31,7 @@ public class PaymentDepositData {
     private String reference;
     private String description;
     private BigDecimal amount;
-    private BigDecimal balance;
-    private String shiftNo;
+    private BigDecimal balance; 
     private String receiptNo;
     private String transactionNo;
 

@@ -3,6 +3,7 @@ package io.smarthealth.administration.servicepoint.data;
 /**
  *
  * @author Kelsas
+    Others
  */
 public enum ServicePointType {
     Triage,

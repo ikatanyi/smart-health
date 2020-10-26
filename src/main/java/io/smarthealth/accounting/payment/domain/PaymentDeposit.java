@@ -16,6 +16,9 @@ import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -41,8 +44,10 @@ public class PaymentDeposit extends Auditable {
     private String reference;
     private String description;
     private BigDecimal amount;
-    private BigDecimal balance;
-    private String shiftNo;
+    private BigDecimal balance; 
+   
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_deposit_receipt_id"))
     private Receipt receipt;
     private String transactionNo;
 
@@ -58,8 +63,7 @@ public class PaymentDeposit extends Auditable {
         data.setReference(this.reference);
         data.setDescription(this.description);
         data.setAmount(this.amount);
-        data.setBalance(this.balance);
-        data.setShiftNo(this.shiftNo);
+        data.setBalance(this.balance); 
         data.setReceiptNo(this.receipt!=null ?  this.receipt.getReceiptNo() : null);
         data.setTransactionNo(this.transactionNo);
 
