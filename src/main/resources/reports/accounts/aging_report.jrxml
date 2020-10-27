@@ -41,7 +41,7 @@
 	<field name="tax" class="java.math.BigDecimal"/>
 	<field name="discount" class="java.math.BigDecimal"/>
 	<field name="visitDate" class="java.lang.Object"/>
-	<field name="age" class="java.lang.Integer"/>
+	<field name="age" class="java.lang.Long"/>
 	<variable name="balance_1" class="java.lang.Double" resetType="Group" resetGroup="payer" calculation="Sum">
 		<variableExpression><![CDATA[$F{balance}.setScale(0, BigDecimal.ROUND_HALF_UP )]]></variableExpression>
 	</variable>
@@ -67,7 +67,7 @@
 		</groupHeader>
 		<groupFooter>
 			<band height="15">
-				<textField isBlankWhenNull="true">
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement x="410" y="0" width="48" height="15" uuid="cbe8338f-d766-4715-bd69-ac0908407c6d"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
@@ -82,10 +82,11 @@
 					</textElement>
 					<text><![CDATA[Total :]]></text>
 				</staticText>
-				<textField isBlankWhenNull="true">
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement x="366" y="0" width="44" height="15" uuid="a464799d-7406-44e9-9ad7-2407dcbd20f4"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
+						<paragraph rightIndent="5"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{amount_1}]]></textFieldExpression>
 				</textField>
@@ -227,14 +228,14 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="12" height="17" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="58" y="0" width="94" height="17" uuid="c67db78c-e18a-4e91-90d2-5b3d73d213f7"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
@@ -247,7 +248,7 @@
 					<pen lineWidth="0.25" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
-			<textField isStretchWithOverflow="true" pattern="#,##0.00">
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="366" y="0" width="44" height="17" uuid="b887a395-f535-4f7a-a732-2876f318982c"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
@@ -255,7 +256,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{amount}.setScale(0, BigDecimal.ROUND_HALF_UP )]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="261" y="0" width="105" height="17" uuid="ba34e96a-5356-4fa7-afa2-9dfe7fd7a67b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
@@ -263,21 +264,21 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{scheme}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="207" y="0" width="53" height="17" uuid="2d6e050e-2ef4-4dad-92ed-d48c91ec8afb"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{number}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="152" y="0" width="55" height="17" uuid="92a92b20-7cc8-473e-9f22-80b3e4191c90"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{memberNumber}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="410" y="0" width="48" height="17" uuid="f303dd24-3e1c-4f78-9075-371e9a7e4728"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="false"/>
@@ -285,7 +286,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{balance}.setScale(0, BigDecimal.ROUND_HALF_UP )]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="458" y="0" width="57" height="17" uuid="98c769cb-3920-44ec-a541-576ec5d84402"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
