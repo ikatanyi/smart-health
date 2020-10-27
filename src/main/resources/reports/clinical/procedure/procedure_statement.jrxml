@@ -133,7 +133,7 @@
 				</textElement>
 				<text><![CDATA[Period :]]></text>
 			</staticText>
-			<textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="33" y="22" width="522" height="13" uuid="1095c570-98bd-4b8d-ad0d-6de711a8d460"/>
 				<box>
 					<bottomPen lineWidth="0.15"/>
@@ -237,7 +237,7 @@
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
@@ -247,7 +247,7 @@
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
@@ -257,7 +257,7 @@
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNo}]]></textFieldExpression>
 			</textField>
@@ -267,7 +267,7 @@
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{procedureName}]]></textFieldExpression>
 			</textField>
@@ -277,7 +277,7 @@
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{medicName}]]></textFieldExpression>
 			</textField>
@@ -287,7 +287,7 @@
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{procedureDate}]]></textFieldExpression>
 			</textField>
@@ -297,7 +297,7 @@
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="7"/>
+					<font size="6"/>
 					<paragraph rightIndent="20"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{testPrice}]]></textFieldExpression>
@@ -310,7 +310,7 @@
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="7" isItalic="true"/>
+					<font size="6" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Paid]]></text>
 			</staticText>
@@ -322,7 +322,7 @@
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="7" isItalic="true"/>
+					<font size="6" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[UnPaid]]></text>
 			</staticText>

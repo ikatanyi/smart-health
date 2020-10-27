@@ -2,11 +2,13 @@ package io.smarthealth.accounting.payment.api;
 
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.domain.ShiftStatus;
+import io.smarthealth.accounting.payment.data.CreateReceipt;
 import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.accounting.payment.data.ReceiptMethod;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
 import io.smarthealth.accounting.payment.domain.Receipt;
+import io.smarthealth.accounting.payment.service.ReceiptingService;
 import io.smarthealth.accounting.payment.service.ReceivePaymentService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -39,10 +41,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/")
 public class ReceiptingController {
 
-    private final ReceivePaymentService service;
+    private final ReceiptingService service;
+    private final ReceivePaymentService receivePaymentService;
 
-    public ReceiptingController(ReceivePaymentService service) {
+    public ReceiptingController(ReceiptingService service, ReceivePaymentService receivePaymentService) {
         this.service = service;
+        this.receivePaymentService = receivePaymentService;
     }
 
     @PostMapping("/receipting")
@@ -50,6 +54,19 @@ public class ReceiptingController {
     public ResponseEntity<?> receivePayment(@Valid @RequestBody ReceivePayment paymentData) {
 
         Receipt payment = service.receivePayment(paymentData);
+        Pager<ReceiptData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Payment successfully Created.");
+        pagers.setContent(payment.toData());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+
+    @PostMapping("/receipting/deposits")
+//    @PreAuthorize("hasAuthority('create_receipt')")
+    public ResponseEntity<Pager<ReceiptData>> createPrepaidReceipt(@Valid @RequestBody CreateReceipt deposit) {
+
+        Receipt payment = receivePaymentService.receivePayment(deposit);
         Pager<ReceiptData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Payment successfully Created.");
@@ -97,13 +114,14 @@ public class ReceiptingController {
             @RequestParam(value = "cashier_id", required = false) final Long cashier,
             @RequestParam(value = "service_point_id", required = false) final Long servicePointId,
             @RequestParam(value = "date_range", required = false) final String dateRange,
+            @RequestParam(value = "prepaid", required = false) final Boolean prepaid,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<ReceiptData> list = service.getPayments(payer, receiptNo, transactionNo, shiftNo, cashier, servicePointId, range, pageable)
+        Page<ReceiptData> list = service.getPayments(payer, receiptNo, transactionNo, shiftNo, cashier, servicePointId, range,prepaid, pageable)
                 .map(x -> x.toData());
 
         Pager<List<ReceiptData>> pagers = new Pager();

@@ -5,7 +5,7 @@ import io.smarthealth.accounting.payment.data.MakePettyCashPayment;
 import io.smarthealth.accounting.payment.data.PaymentData;
 import io.smarthealth.accounting.payment.domain.Payment;
 import io.smarthealth.accounting.payment.domain.enumeration.PayeeType;
-import io.smarthealth.accounting.payment.service.PaymentService;
+import io.smarthealth.accounting.payment.service.MakePaymentService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -36,9 +36,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/")
 public class PaymentController {
 
-    private final PaymentService service;
+    private final MakePaymentService service;
 
-    public PaymentController(PaymentService service) {
+    public PaymentController(MakePaymentService service) {
         this.service = service;
     }
 

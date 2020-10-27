@@ -65,6 +65,7 @@ public class Invoice extends Auditable {
     private String memberNumber;
     private String memberName;
     private String terms;
+    private String idNumber;
 
     @Column(name = "invoice_date")
     private LocalDate date;
@@ -127,7 +128,9 @@ public class Invoice extends Auditable {
             data.setVisitNumber(this.visit.getVisitNumber());
             data.setVisitDate(this.visit.getStartDatetime().toLocalDate());
             data.setAge(ChronoUnit.DAYS.between(this.date, LocalDate.now()));
+            
         }
+        data.setIdNumber(this.idNumber);
         data.setMemberName(this.memberName);
         data.setMemberNumber(this.memberNumber);
         data.setInvoiceDate(this.date);

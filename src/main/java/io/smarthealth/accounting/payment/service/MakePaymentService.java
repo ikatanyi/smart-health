@@ -62,7 +62,7 @@ import org.springframework.data.jpa.domain.Specification;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PaymentService {
+public class MakePaymentService {
 
     private final SequenceNumberService sequenceNumberService;
     private final FinancialActivityAccountRepository activityAccountRepository;
@@ -192,7 +192,7 @@ public class PaymentService {
                     throw APIException.badRequest("Doctors Ledger Account is Not Mapped");
                 }
                 Account acc = debitAccount.get().getAccount();
-                String narration = SystemUtils.formatCurrency(payment.getAmount()) + " for doctor's payment, voucher no. " + payment.getVoucherNo();
+                String narration = "Doctor's Payment Voucher no. " + payment.getVoucherNo();
                 items.add(new JournalEntryItem(acc, narration, payment.getAmount(), BigDecimal.ZERO));
                 //create the invoice payments
                 descType = "Doctor's Payment";
@@ -202,7 +202,7 @@ public class PaymentService {
             case Supplier: {
                 Supplier supplier = getSupplier(payment.getPayeeId());
                 Account acc = supplier.getCreditAccount();
-                String narration = SystemUtils.formatCurrency(payment.getAmount()) + " for supplier's payment, voucher no. " + payment.getVoucherNo();
+                String narration = "Supplier's Payment Voucher no. " + payment.getVoucherNo();
                 items.add(new JournalEntryItem(acc, narration, payment.getAmount(), BigDecimal.ZERO));
                 descType = "Supplier's Payment";
                 creditTax = acc;

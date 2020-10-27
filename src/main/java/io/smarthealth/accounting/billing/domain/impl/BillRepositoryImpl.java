@@ -80,7 +80,7 @@ public class BillRepositoryImpl implements BillRepository {
                 cq.having(cb.lessThanOrEqualTo(cb.sum(root.get("balance")), 0));
             }
         }
-
+        System.err.println("MY QUERY: "+cq.toString());
         List<SummaryBill> result = em.createQuery(cq).getResultList();
 
         if (isWalkin == null) {

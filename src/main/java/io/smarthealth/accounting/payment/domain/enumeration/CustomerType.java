@@ -3,23 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.stock.item.domain.enumeration;
+package io.smarthealth.accounting.payment.domain.enumeration;
 
 /**
  *
  * @author Kelsas
  */
-public enum ItemCategory {
-    DoctorFee,
-    Imaging,
-    Lab,
-    Procedure,
-    Ward,
-    Surgery,
-    Drug,
-    CoPay,
-    Dental,
-    Admission,
-    Receipt,
+public enum CustomerType {
+    Patient,
+    Insurance,
     Others
 }

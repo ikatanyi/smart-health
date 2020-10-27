@@ -27,7 +27,7 @@
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="comments" class="java.lang.String"/>
-	<field name="dispatchDate" class="java.lang.String"/>
+	<field name="dispatchDate" class="java.lang.Object"/>
 	<field name="invoiceData" class="java.util.Collection"/>
 	<pageHeader>
 		<band height="32" splitType="Stretch">
@@ -50,14 +50,14 @@
 	<columnHeader>
 		<band height="70" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="39" width="70" height="12" uuid="2128f471-bc78-4bea-b26b-955f270cde40"/>
+				<reportElement x="0" y="39" width="86" height="12" uuid="2128f471-bc78-4bea-b26b-955f270cde40"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Dispatch No :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="51" width="70" height="11" uuid="6ae293a2-064a-4450-a97d-aa5796c28340"/>
+				<reportElement x="0" y="51" width="86" height="11" uuid="6ae293a2-064a-4450-a97d-aa5796c28340"/>
 				<box>
 					<bottomPen lineWidth="0.15"/>
 				</box>
@@ -77,7 +77,7 @@
 				<text><![CDATA[Dispatch Note]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="70" y="51" width="445" height="11" uuid="96465ea4-b102-411f-a45f-43f5748e2f62"/>
+				<reportElement x="86" y="51" width="429" height="11" uuid="96465ea4-b102-411f-a45f-43f5748e2f62"/>
 				<box>
 					<bottomPen lineWidth="0.15"/>
 				</box>
@@ -87,21 +87,21 @@
 				<textFieldExpression><![CDATA[$F{dispatchDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="27" width="70" height="12" uuid="aa6e53f2-03a3-40b6-a74b-6f2c907f90cb"/>
+				<reportElement x="0" y="27" width="86" height="12" uuid="aa6e53f2-03a3-40b6-a74b-6f2c907f90cb"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Payer :]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="70" y="27" width="223" height="12" uuid="9ea8de09-1c12-4148-aeca-e3b7ab06dcbd"/>
+				<reportElement x="86" y="27" width="207" height="12" uuid="9ea8de09-1c12-4148-aeca-e3b7ab06dcbd"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{payer}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="70" y="39" width="223" height="12" uuid="0f66504c-2c57-4345-9fc6-2eb8a5365c20"/>
+				<reportElement x="86" y="39" width="207" height="12" uuid="0f66504c-2c57-4345-9fc6-2eb8a5365c20"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
