@@ -68,6 +68,7 @@ import io.smarthealth.report.data.accounts.TrialBalanceData;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -362,7 +363,7 @@ public class AccountReportService {
     }
 
     public void getDailyPayment(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
-
+        DecimalFormat df = new DecimalFormat("#");    
         String transactionNo = reportParam.getFirst("transactionNo");
         PaymentMethod paymentMode = PaymentMethodToEnum(reportParam.getFirst("paymentMode"));
         String visitNumber = reportParam.getFirst("visitNumber");
@@ -385,13 +386,13 @@ public class AccountReportService {
             data.setPatientName(bill.getPatientName());
             data.setPaymentMode(bill.getPaymentMethod());
             data.setBalance(bill.getBalance());
-            List<BillItem> items = billService.getAllBillDetails(bill.getVisitNumber());
+            List<BillItem > items = billService.getAllBillDetails(bill.getVisitNumber());
             for (BillItem item : items) {
                 data.setAmount(data.getAmount().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
                 if (item.getStatus() == item.getStatus().Paid) {
                     data.setPaid(data.getPaid().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
                 }
-
+                data.setDiscount(data.getDiscount() + item.getDiscount());
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
                         data.setLab(data.getLab() + item.getAmount());
@@ -543,7 +544,7 @@ public class AccountReportService {
         Map<String, Object> map = reportData.getFilters();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo,hasCapitation, pageable).getContent()
+        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation, pageable).getContent()
                 .stream()
                 .map(x -> x.toData())
                 .collect(Collectors.toList());
@@ -571,7 +572,6 @@ public class AccountReportService {
     }
 
     public void getAgingReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
-
         Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
         Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
         String patientNo = reportParam.getFirst("patientNo");
@@ -579,16 +579,15 @@ public class AccountReportService {
         String dateRange = reportParam.getFirst("dateRange");
         InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));
         Boolean awaitingSmart = reportParam.getFirst("awaitingSmart") != null ? Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")) : null;
-        Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : false;
-        Double amountGreaterThan = null;
+        Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : null;
+        Double amountGreaterThan = 0.0;
         Boolean filterPastDue = null;
         Double amountLessThanOrEqualTo = null;
 
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Pageable pageable = PaginationUtil.createPage(1, 500);
-        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation,pageable).getContent()
+        List<InvoiceData> invoiceData = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation, Pageable.unpaged()).getContent()
                 .stream()
                 .map(x -> x.toData())
                 .collect(Collectors.toList());
@@ -611,7 +610,7 @@ public class AccountReportService {
         reportData.setData(invoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/aging_report");
-        reportData.setReportName("insurance_statement");
+        reportData.setReportName("insurance_aging_statement");
         reportService.generateReport(reportData, response);
     }
 
@@ -636,11 +635,11 @@ public class AccountReportService {
         String shiftNo = reportParam.getFirst("shiftNo");
         Long cashierId = NumberUtils.createLong(reportParam.getFirst("cashierId"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
-          Boolean prepaid = reportParam.getFirst("prepaid") != null ? Boolean.parseBoolean(reportParam.getFirst("prepaid")) : null; 
+        Boolean prepaid = reportParam.getFirst("prepaid") != null ? Boolean.parseBoolean(reportParam.getFirst("prepaid")) : null;
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
         List<ReportReceiptData> receiptDataArray = new ArrayList();
-        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid,Pageable.unpaged())
+        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
@@ -1027,7 +1026,7 @@ public class AccountReportService {
                     InvoiceData data = x.toData();
                     ContentPage<PatientTestsData> d = diagnosisService.fetchDiagnosisByVisit(x.getVisit().getVisitNumber(), Pageable.unpaged());
                     if (d != null) {
-                        if (d.getContents()!=null) {
+                        if (d.getContents() != null) {
                             data.setDiagnosis(d.getContents().get(0).getDescription());
                         }
                     }
@@ -1097,5 +1096,20 @@ public class AccountReportService {
         throw APIException.internalError("Provide a Valid Bill Status");
     }
 
-}
+    public static float round(float value, int scale) {
+        int pow = 10;
+        for (int i = 1; i < scale; i++) {
+            pow *= 10;
+        }
+        float tmp = value * pow;
+        float tmpSub = tmp - (int) tmp;
 
+        return ((float) ((int) (value >= 0
+                ? (tmpSub >= 0.5f ? tmp + 1 : tmp)
+                : (tmpSub >= -0.5f ? tmp : tmp - 1)))) / pow;
+
+        // Below will only handles +ve values
+        // return ( (float) ( (int) ((tmp - (int) tmp) >= 0.5f ? tmp + 1 : tmp) ) ) / pow;
+    }
+
+}

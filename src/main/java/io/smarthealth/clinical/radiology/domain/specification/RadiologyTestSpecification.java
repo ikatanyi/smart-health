@@ -39,7 +39,7 @@ public class RadiologyTestSpecification {
             }
             if (range != null) {
                 predicates.add(
-                        cb.between(root.get("patientScanRegister").get("receivedDate"), range.getStartDate(), range.getStartDate())
+                        cb.between(root.get("patientScanRegister").get("receivedDate"), range.getStartDate(), range.getEndDate())
                 );
             }
             if (search != null) {
