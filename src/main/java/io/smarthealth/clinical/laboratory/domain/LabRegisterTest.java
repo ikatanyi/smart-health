@@ -73,6 +73,8 @@ public class LabRegisterTest extends Identifiable {
     //we can have attachment link here
     private String attachment;
 
+    private String testName;
+
     public LabRegisterTestData toData(Boolean expand) {
         LabRegisterTestData data = new LabRegisterTestData();
         data.setId(this.getId());
@@ -122,6 +124,11 @@ public class LabRegisterTest extends Identifiable {
             }
 
             data.setWithRef(this.labTest.getHasReferenceValue() != null ? this.labTest.getHasReferenceValue() : true);
+        }
+
+        if (this.labTest == null) {
+            data.setTestCode(this.testName);
+            data.setTestName(this.testName);
         }
 
         if (this.parentLabTest != null) {
