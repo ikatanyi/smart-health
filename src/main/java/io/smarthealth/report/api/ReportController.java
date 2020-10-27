@@ -267,6 +267,9 @@ public class ReportController {
             case Insurance_Diagnosis_Summary:
                 reportService.genDiagnosisStatement(queryParams, format, response);
                 break;
+            case Cashier_Shift_Statement:
+                paymentReportService.getCashierShift(queryParams, format, response);
+                break;
             default:
                 break;
         }

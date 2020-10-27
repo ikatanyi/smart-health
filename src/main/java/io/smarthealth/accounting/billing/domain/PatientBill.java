@@ -36,8 +36,8 @@ public class PatientBill extends Auditable {
     private String transactionId; 
     private Double discount =0D; 
     private Double taxes=0D;
-    private Double amount;
-    private Double balance;
+    private Double amount=0D;
+    private Double balance=0D;
     private String reference;
     private String otherDetails;
     private Boolean walkinFlag;

@@ -39,7 +39,7 @@ public class Person extends Auditable {
     @Formula("YEAR(CURDATE()) - YEAR(date_of_birth)")
     private int age;
 
-    @Formula(value = " concat(given_name, ' ', surname) ")
+    @Formula(value = " concat(COALESCE(given_name, ''), ' ', COALESCE(middle_name, ''), ' ', COALESCE(surname, '')) ")
     private String fullName;
 
     @OneToMany(mappedBy = "person")

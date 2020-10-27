@@ -8,6 +8,9 @@ package io.smarthealth.infrastructure.utility.ivorydata;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.domain.enumeration.MaritalStatus;
 import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
+import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,13 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Simon.waweru
  */
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class IvoryHistoricalClinicalDataSindano {
 
@@ -35,15 +39,16 @@ public class IvoryHistoricalClinicalDataSindano {
     Connection conn = null;
     DBConnector connector = new DBConnector();
 
-//    private final PatientService patientService;
+    private final PatientService patientService;
+    private final SequenceNumberService sequenceNumberService;
 //
 //    public IvoryHistoricalClinicalDataSindano(PatientService patientService) {
 //        this.patientService = patientService;
 //    }
-    public static void main(String[] args) {
-        IvoryHistoricalClinicalDataSindano sindano = new IvoryHistoricalClinicalDataSindano();
-        sindano.processData();
-    }
+//    public static void main(String[] args) {
+//        IvoryHistoricalClinicalDataSindano sindano = new IvoryHistoricalClinicalDataSindano();
+//        sindano.processData();
+//    }
 
     public void processData() {
 
@@ -112,9 +117,10 @@ public class IvoryHistoricalClinicalDataSindano {
             System.out.println("Done inserting doctor notes");
             //insertHistoricalPatientDiagnosis(patients, conn);
             System.out.println("Done inserting diagnosis");
-            //insert prescriptions
-            insertPrescriptions(patients, conn);
+//            insertPrescriptions(patients, conn);
             System.out.println("Done inserting prescriptions");
+            insertHistoricalLabResults(patients, conn);
+            System.out.println("Done inserting lab results");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -333,6 +339,76 @@ public class IvoryHistoricalClinicalDataSindano {
                             System.out.println("clinicalNotes " + diagnosis);
                         }
 
+                    }
+                    // pst.executeBatch();
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void insertHistoricalLabResults(List<PatientData> patients, Connection conn) {
+        try {
+            //insert lab results history
+            int deployCount = 0;
+            for (PatientData d : patients) {
+                if (patientAvailable(d.getCurrentPatientNo(), conn)) {
+                    String labRegisterByDate = "SELECT * FROM clinicdb.t_lab WHERE PatientId = '" + d.getPvEntityNo() + "' GROUP BY Date";
+                    pst2 = conn.prepareStatement(labRegisterByDate);
+                    rs = pst2.executeQuery();
+                    while (rs.next()) {
+                        String trnId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+                        String labNo = sequenceNumberService.next(1L, Sequences.LabNumber.name());
+
+                        String labRegister = "INSERT INTO smarthealth.lab_register (created_by, created_on, last_modified_by, last_modified_on, version, is_walkin, lab_number,transaction_id, patient_no,payment_mode,request_datetime,  status, visit_id) VALUES ('system', NOW(), 'system', NOW(), '0', b'0', '" + labNo + "', '" + trnId + "', '" + d.getCurrentPatientNo() + "', 'Cash', '" + rs.getString("Date") + "', 'Complete', (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' ))";
+                        pst = conn.prepareStatement(labRegister);
+                        pst.execute();
+                    }
+
+                    //end of labregister 
+                    //begin of labregistertest 
+                    String QUERY_LAB_TEST = "SELECT * FROM clinicdb.t_lab WHERE PatientId = '" + d.getPvEntityNo() + "' GROUP BY Date,LabRequest";
+                    pst2 = conn.prepareStatement(QUERY_LAB_TEST);
+                    rs = pst2.executeQuery();
+                    while (rs.next()) {
+
+                        String labRegisterTests = "INSERT INTO smarthealth.lab_register_tests (collection_date_time,entry_date_time,is_panel,paid,result_read,status, lab_register_id, test_name,reference_no, visit_id) VALUES ('" + rs.getString("Date") + "', '" + rs.getString("Date") + "',b'0',b'1',b'1','ResultsEntered', (SELECT id FROM smarthealth.lab_register WHERE request_datetime='" + rs.getString("Date") + "' and visit_id = (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' )), '" + rs.getString("LabRequest") + "', (SELECT lab_number FROM smarthealth.lab_register WHERE request_datetime='" + rs.getString("Date") + "' and visit_id = (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' )), (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' ))";
+                        pst = conn.prepareStatement(labRegisterTests);
+                        pst.execute();
+
+                    }
+
+                    //end labregister test
+                    String historicalLabResults = "SELECT * FROM clinicdb.t_lab WHERE PatientId = '" + d.getPvEntityNo() + "'";
+                    pst2 = conn.prepareStatement(historicalLabResults);
+                    rs = pst2.executeQuery();
+                    while (rs.next()) {
+
+                        String labRegisterResults = "";
+                        try {
+
+                            String labRegisterId = "";
+                            String labNumber = "";
+                            String labRegisterQuery = "(SELECT id,lab_number  FROM smarthealth.lab_register WHERE visit_id =(SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' ) and request_datetime = '" + rs.getString("Date") + "' )";
+                            PreparedStatement pst3 = conn.prepareStatement(labRegisterQuery);
+                            ResultSet rs2 = pst3.executeQuery();
+                            if (rs2.next()) {
+                                labRegisterId = rs2.getString("id");
+                                labNumber = rs2.getString("lab_number");
+                            }
+
+                             labRegisterResults = "INSERT INTO smarthealth.lab_register_results (created_by, created_on, last_modified_by, last_modified_on, version,analyte,lab_number,patient_no,result_value,results_date,lab_register_test_id) VALUES ('system', NOW(), 'system', NOW(), '0', '" + rs.getString("LabRequest") + "','" + labNumber + "', '" + d.getCurrentPatientNo() + "', '" + rs.getString("LabResult") + "', '" + rs.getString("Date") + "',(SELECT id FROM smarthealth.lab_register_tests WHERE reference_no ='" + labNumber + "' AND test_name = '" + rs.getString("LabRequest") + "' and visit_id = (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' )))";
+                           
+                            pst = conn.prepareStatement(labRegisterResults);
+                            pst.execute();
+
+                        } catch (Exception e) {
+                             System.out.println("labregister "+labRegisterResults);
+                            e.printStackTrace();
+                        }
+                        deployCount++;
                     }
                     // pst.executeBatch();
                 }

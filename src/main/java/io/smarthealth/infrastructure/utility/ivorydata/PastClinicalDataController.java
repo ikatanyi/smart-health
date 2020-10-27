@@ -7,6 +7,7 @@ package io.smarthealth.infrastructure.utility.ivorydata;
 
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/api")
-public class PatientUpdateController {
+@RequiredArgsConstructor
+public class PastClinicalDataController {
 
 //    @Autowired
     private final IvoryHistoricalClinicalDataSindano ivoryHistoricalClinicalDataSindano;
 
-    public PatientUpdateController(IvoryHistoricalClinicalDataSindano ivoryHistoricalClinicalDataSindano) {
-        this.ivoryHistoricalClinicalDataSindano = ivoryHistoricalClinicalDataSindano;
-    }
-
+//    public PatientUpdateController(IvoryHistoricalClinicalDataSindano ivoryHistoricalClinicalDataSindano) {
+//        this.ivoryHistoricalClinicalDataSindano = ivoryHistoricalClinicalDataSindano;
+//    }
     @PostMapping("/ivory-fix-patient-data")
     public ResponseEntity<?> fixPatientDataIvory() {
         ivoryHistoricalClinicalDataSindano.processData();

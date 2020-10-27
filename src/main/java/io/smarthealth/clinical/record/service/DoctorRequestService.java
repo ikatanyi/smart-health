@@ -203,6 +203,7 @@ public class DoctorRequestService implements DateConverter {
             requestItem.setPrescriptionData(PrescriptionData.map(prescriptionRepository.findPresriptionByRequestId(d.getId())));
         }
         requestItem.setOrderNo(d.getOrderNumber());
+        requestItem.setOrderDate(d.getOrderDate());
         requestItem.setRequestedByName(d.getRequestedBy().getUsername());
         requestItem.setStatus(d.getFulfillerStatus().name());
 

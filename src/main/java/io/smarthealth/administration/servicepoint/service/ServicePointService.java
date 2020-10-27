@@ -33,7 +33,7 @@ public class ServicePointService {
 
     public ServicePointData createPoint(ServicePointData data) {
         ServicePoint point = new ServicePoint();
-        if (data.getServicePointType().equals(ServicePointType.Consultation) || data.getServicePointType().equals(ServicePointType.Triage)|| data.getServicePointType().equals(ServicePointType.InPatient)) {
+        if (data.getServicePointType().equals(ServicePointType.Consultation) || data.getServicePointType().equals(ServicePointType.Triage)|| data.getServicePointType().equals(ServicePointType.Inpatient)) {
             //find if servicepoint type exists
             Optional<ServicePoint> sp = repository.findServicePointByServicePointType(data.getServicePointType());
             if (sp.isPresent()) {

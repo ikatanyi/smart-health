@@ -35,6 +35,7 @@ import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.record.service.ReferralsService;
 import io.smarthealth.clinical.record.service.SickOffNoteService;
 import io.smarthealth.clinical.visit.data.VisitData;
+import io.smarthealth.clinical.visit.domain.TatInterface;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -58,8 +59,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,6 +80,7 @@ import net.sf.jasperreports.engine.design.JRDesignSortField;
 import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang.NumberUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -137,73 +141,63 @@ public class PatientReportServices {
     }
 
     public void getVisit(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws JRException, SQLException, IOException {
+
         String visitNumber = reportParam.getFirst("visitNumber");
         String staffNumber = reportParam.getFirst("staffNumber");
         String servicePointType = reportParam.getFirst("servicePointType");
         String patientNumber = reportParam.getFirst("patientNumber");
-        String patientName = reportParam.getFirst("visitNumber");
-        Boolean runningStatus = Boolean.getBoolean(reportParam.getFirst("runningStatus"));
-        String dateRange = reportParam.getFirst("dateRange");
-        Integer page = Integer.getInteger(reportParam.getFirst("page"));
-        Integer size = Integer.getInteger(reportParam.getFirst("size"));
+        String patientName = reportParam.getFirst("patientName");
+        Boolean runningStatus = BooleanUtils.toBoolean(reportParam.getFirst("runningStatus"));
+        DateRange dateRange = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+
         ReportData reportData = new ReportData();
+        reportData.getFilters().put("range", DateRange.getReportPeriod(dateRange));
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
-        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
-
-        List<Visit> patientvisits = visitService.fetchVisitsGroupByVisitNumber(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, Pageable.unpaged()).getContent();
-
+        List<Visit> visits = visitService.fetchVisitsGroupByVisitNumber(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, dateRange, Pageable.unpaged()).getContent();
         List<reportVisitData> visitArrayList = new ArrayList();
-        for (Visit visit : patientvisits) {
-            List<Visit> visits1 = visitService.fetchVisitByPatientNumberAndVisitNumber(visit.getPatient().getPatientNumber(), visit.getVisitNumber(), Pageable.unpaged()).getContent();
+        for (Visit visit : visits) {
+            reportVisitData data = new reportVisitData();
+            data.setPatientName(visit.getPatient().getFullName());
+            data.setPatientNumber(visit.getPatient().getPatientNumber());
+            data.setVisitNumber(visit.getVisitNumber());
+            data.setStartDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStartDatetime()));
+            data.setStopDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStopDatetime()));
+            data.setDate(visit.getStartDatetime().toLocalDate());
 
-            reportVisitData data = reportVisitData.map(visits1.get(0));
-            data.setDuration(Math.abs(Duration.between(data.getStopDatetime(), data.getStartDatetime()).toMinutes()));
-            for (Visit visit2 : visits1) {
-                Long duration = Duration.between(visit2.getStopDatetime(), visit2.getStartDatetime()).toMinutes();
-                switch (visit2.getServicePoint().getServicePointType()) {
-                    case Consultation:
-                        data.setConsultation(Boolean.TRUE);
-                        data.setConDuration(duration);
+            List<TatInterface> tatInterFaces = visitService.getPatientTat(visit.getId());
+            for (TatInterface interf : tatInterFaces) {
+                switch (interf.getServicePoint()) {
+                    case "Consultation":
+                        data.setConsultation(interf.getTat());
                         break;
-                    case Triage:
-                        data.setTriage(Boolean.TRUE);
-                        data.setTriDuration(duration);
+                    case "Radiology":
+                        data.setRadiology(interf.getTat());
                         break;
-                    case Radiology:
-                        data.setRadiology(Boolean.TRUE);
-                        data.setRadDuration(duration);
+                    case "Laboratory":
+                        data.setLaboratory(interf.getTat());
                         break;
-                    case Laboratory:
-                        data.setLaboratory(Boolean.TRUE);
-                        data.setLabDuration(duration);
+                    case "Pharmacy":
+                        data.setPharmacy(interf.getTat());
                         break;
-                    case Pharmacy:
-                        data.setPharmacy(Boolean.TRUE);
-                        data.setPharmDuration(duration);
-                        break;
-                    case Procedure:
-                        data.setProcedure(Boolean.TRUE);
-                        data.setProcDuration(duration);
+                    case "Procedure":
+                        data.setProcedure(interf.getTat());
                         break;
                     default:
-                        data.setOther(Boolean.TRUE);
-                        data.setOtherDuration(duration);
+                        data.setOther(interf.getTat());
                         break;
                 }
             }
             visitArrayList.add(data);
         }
 
-//        List<JRSortField> sortList = new ArrayList();
-//        reportData.setPatientNumber(patientNumber);
-//        JRDesignSortField sortField = new JRDesignSortField();
-//        sortField.setName("visitNumber");
-//        sortField.setOrder(SortOrderEnum.DESCENDING);
-//        sortField.setType(SortFieldTypeEnum.FIELD);
-//        sortList.add(sortField);
-//        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        List<JRSortField> sortList = new ArrayList();
+        reportData.setPatientNumber(patientNumber);
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("visitNumber");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setData(visitArrayList);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/PatientVisit");

@@ -75,7 +75,7 @@
 				<text><![CDATA[Status]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="407" y="22" width="32" height="11" uuid="c0417d05-52d4-4bcc-85a0-b525f642236e"/>
+				<reportElement x="390" y="22" width="40" height="11" uuid="c0417d05-52d4-4bcc-85a0-b525f642236e"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -86,7 +86,7 @@
 				<text><![CDATA[Copay]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="439" y="22" width="31" height="11" uuid="45378037-4a5e-4a8f-83bf-08e4726571f1"/>
+				<reportElement x="430" y="22" width="40" height="11" uuid="45378037-4a5e-4a8f-83bf-08e4726571f1"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -107,7 +107,7 @@
 				<text><![CDATA[Scheme]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="300" y="22" width="107" height="11" uuid="34cbca87-f125-4a92-8a34-6b9c190fe78b"/>
+				<reportElement x="300" y="22" width="90" height="11" uuid="34cbca87-f125-4a92-8a34-6b9c190fe78b"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -180,7 +180,7 @@
 				<text><![CDATA[Active]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="439" y="0" width="31" height="13" forecolor="#009900" uuid="622b099b-6a8b-4b6f-8eb7-df1eb3cbf86a">
+				<reportElement x="430" y="0" width="40" height="13" forecolor="#009900" uuid="622b099b-6a8b-4b6f-8eb7-df1eb3cbf86a">
 					<printWhenExpression><![CDATA[$F{smartEnabled}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -197,34 +197,34 @@
 					<bottomPen lineWidth="0.1"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{schemeName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="407" y="0" width="32" height="13" uuid="35da206c-f13d-4615-a010-9a56d1158120"/>
+				<reportElement x="390" y="0" width="40" height="13" uuid="35da206c-f13d-4615-a010-9a56d1158120"/>
 				<box>
 					<bottomPen lineWidth="0.1"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="7"/>
 					<paragraph rightIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{coPayValue}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="300" y="0" width="107" height="13" uuid="f303dd24-3e1c-4f78-9075-371e9a7e4728"/>
+				<reportElement x="300" y="0" width="90" height="13" uuid="f303dd24-3e1c-4f78-9075-371e9a7e4728"/>
 				<box>
 					<bottomPen lineWidth="0.1"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="false"/>
+					<font size="7" isBold="false"/>
 					<paragraph rightIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{schemeCover}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="439" y="0" width="31" height="13" forecolor="#FF0033" uuid="3f4f975a-72c4-4e74-9b56-74d952789303">
+				<reportElement x="430" y="0" width="40" height="13" forecolor="#FF0033" uuid="3f4f975a-72c4-4e74-9b56-74d952789303">
 					<printWhenExpression><![CDATA[$F{smartEnabled}.equals( false )]]></printWhenExpression>
 				</reportElement>
 				<box>

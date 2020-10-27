@@ -20,6 +20,7 @@ public enum ItemCategory {
     Drug,
     CoPay,
     Dental,
-    Others,
-    NHIF_Rebate    
+    NHIF_Rebate,
+    Receipt,
+    Others
 }

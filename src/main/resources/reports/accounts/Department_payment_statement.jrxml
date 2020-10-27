@@ -39,10 +39,10 @@
 		<variableExpression><![CDATA[($F{servicePoint}.toUpperCase()).equals("PHARMACY")?$F{amountPaid}:new BigDecimal(0)]]></variableExpression>
 	</variable>
 	<variable name="procedure_2" class="java.lang.Double" calculation="Sum">
-		<variableExpression><![CDATA[($F{servicePoint}.toUpperCase()).equals("PROCEDURE")?$F{amountPaid}:new BigDecimal(0)]]></variableExpression>
+		<variableExpression><![CDATA[(($F{servicePoint}.toUpperCase()).equals("PROCEDURE")||($F{servicePoint}.toUpperCase()).equals("NURSING"))?$F{amountPaid}:new BigDecimal(0)]]></variableExpression>
 	</variable>
 	<variable name="radiology_2" class="java.lang.Double" calculation="Sum">
-		<variableExpression><![CDATA[($F{servicePoint}.toUpperCase()).equals("RADIOLOGY")?$F{amountPaid}:new BigDecimal(0)]]></variableExpression>
+		<variableExpression><![CDATA[(($F{servicePoint}.toUpperCase()).equals("RADIOLOGY")||($F{servicePoint}.toUpperCase()).equals("SCAN"))?$F{amountPaid}:new BigDecimal(0)]]></variableExpression>
 	</variable>
 	<variable name="other_2" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[($F{servicePoint}.toUpperCase()).equals("OTHER")?$F{amountPaid}:new BigDecimal(0)]]></variableExpression>
@@ -173,7 +173,7 @@
 				<text><![CDATA[Receipt No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="25" width="32" height="13" uuid="6ae293a2-064a-4450-a97d-aa5796c28340"/>
+				<reportElement x="1" y="23" width="32" height="13" uuid="6ae293a2-064a-4450-a97d-aa5796c28340"/>
 				<box>
 					<bottomPen lineWidth="0.15"/>
 				</box>
@@ -183,7 +183,7 @@
 				<text><![CDATA[Period :]]></text>
 			</staticText>
 			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
-				<reportElement x="33" y="25" width="503" height="13" isRemoveLineWhenBlank="true" uuid="296dd85b-0679-49de-80e7-b8bed8a46890"/>
+				<reportElement x="33" y="23" width="522" height="13" isRemoveLineWhenBlank="true" uuid="296dd85b-0679-49de-80e7-b8bed8a46890"/>
 				<box>
 					<bottomPen lineWidth="0.15"/>
 				</box>
@@ -193,8 +193,11 @@
 				<textFieldExpression><![CDATA[$P{range}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="10" width="140" height="12" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement x="0" y="0" width="555" height="16" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Department Income Statement]]></text>
@@ -322,84 +325,84 @@
 	<summary>
 		<band height="50">
 			<textField isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="397" y="10" width="35" height="12" uuid="9075e9d1-72d1-4966-9e19-93784e2dd9c6"/>
+				<reportElement isPrintRepeatedValues="false" x="399" y="10" width="35" height="12" uuid="9075e9d1-72d1-4966-9e19-93784e2dd9c6"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{consultation_2}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="342" y="23" width="55" height="12" uuid="db5e6329-302a-4e2d-8b3f-13584e2c035c"/>
+				<reportElement x="344" y="23" width="55" height="12" uuid="db5e6329-302a-4e2d-8b3f-13584e2c035c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Laboratory :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="443" y="23" width="54" height="12" uuid="8db7d2f2-a36c-4e78-841c-1d53bd5f756e"/>
+				<reportElement x="445" y="23" width="54" height="12" uuid="8db7d2f2-a36c-4e78-841c-1d53bd5f756e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Other :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="397" y="36" width="35" height="12" uuid="ff4a830f-aece-4d06-9185-f14841b80fe9"/>
+				<reportElement isPrintRepeatedValues="false" x="399" y="36" width="35" height="12" uuid="ff4a830f-aece-4d06-9185-f14841b80fe9"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{pharmacy_2}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="342" y="36" width="55" height="12" uuid="b39018fb-0f82-4372-b9b0-2147d67a1d3d"/>
+				<reportElement x="344" y="36" width="55" height="12" uuid="b39018fb-0f82-4372-b9b0-2147d67a1d3d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Pharmacy :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="342" y="10" width="55" height="12" uuid="0c29d413-787a-4957-be66-d225f39a4f67"/>
+				<reportElement x="344" y="10" width="55" height="12" uuid="0c29d413-787a-4957-be66-d225f39a4f67"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Consultation]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="443" y="36" width="54" height="12" uuid="9127ebaa-0df2-4442-9394-4f8748d308f0"/>
+				<reportElement x="445" y="36" width="54" height="12" uuid="9127ebaa-0df2-4442-9394-4f8748d308f0"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Procedure :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="397" y="23" width="35" height="12" uuid="3d68d40d-e14a-441f-a9b2-8f95b4fb172e"/>
+				<reportElement isPrintRepeatedValues="false" x="399" y="23" width="35" height="12" uuid="3d68d40d-e14a-441f-a9b2-8f95b4fb172e"/>
 				<textElement textAlignment="Right">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{lab_2}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="443" y="10" width="54" height="12" uuid="d3072167-10a4-45d1-9aea-cd895c368ee8"/>
+				<reportElement x="445" y="10" width="54" height="12" uuid="d3072167-10a4-45d1-9aea-cd895c368ee8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Radiology :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="497" y="36" width="50" height="12" uuid="c1a1e67b-5a5d-4cfc-8574-7cfe0abdb992"/>
+				<reportElement isPrintRepeatedValues="false" x="499" y="36" width="50" height="12" uuid="c1a1e67b-5a5d-4cfc-8574-7cfe0abdb992"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{procedure_2}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="497" y="10" width="50" height="12" uuid="d479a0fc-2f5a-4b38-8adc-a8be0c56633b"/>
+				<reportElement isPrintRepeatedValues="false" x="499" y="10" width="50" height="12" uuid="d479a0fc-2f5a-4b38-8adc-a8be0c56633b"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{radiology_2}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="497" y="23" width="50" height="12" uuid="3aa772fd-4c5d-4cbd-9501-072b5f82349b"/>
+				<reportElement isPrintRepeatedValues="false" x="499" y="23" width="50" height="12" uuid="3aa772fd-4c5d-4cbd-9501-072b5f82349b"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
