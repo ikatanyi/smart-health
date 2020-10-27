@@ -93,10 +93,12 @@ public class DoctorRequestData {
             doctorRequestData.setUrgency(Urgency.valueOf(doctorRequest.getUrgency()));
         }
         doctorRequestData.setRequestId(doctorRequest.getId());
-        doctorRequestData.setItemCode(doctorRequest.getItem().getItemCode());
+        if (doctorRequest.getItem() != null) {
+            doctorRequestData.setItemCode(doctorRequest.getItem().getItemCode());
+            doctorRequestData.setItemName(doctorRequest.getItem().getItemName());
+        }
         doctorRequestData.setItemRate(doctorRequest.getItemRate());
         doctorRequestData.setItemCostRate(doctorRequest.getItemCostRate());
-        doctorRequestData.setItemName(doctorRequest.getItem().getItemName());
         doctorRequestData.setVisitNumber(doctorRequest.getVisitNumber());
         doctorRequestData.setPatientNumber(doctorRequest.getPatientNumber());
         if (doctorRequest.getRequestedBy() != null) {
