@@ -81,6 +81,7 @@ public class PatientProcedureRegisterData {
     public static PatientProcedureRegister map(PatientProcedureRegisterData patientregister) {
         PatientProcedureRegister e = new PatientProcedureRegister();
         e.setAccessNo(patientregister.getAccessionNo());
+        e.setReceivedDate(patientregister.getReceivedDate());
         //e.setAmount(patientregister.getAmount());
         e.setDiscount(patientregister.getDiscount());
         e.setBillingDate(patientregister.getBillingDate());

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="payment_statement" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="91"/>
 	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<parameter name="range" class="java.lang.String"/>
@@ -134,8 +134,8 @@
 		</groupHeader>
 		<groupFooter>
 			<band height="14">
-				<textField pattern="#,##0.00">
-					<reportElement x="412" y="0" width="37" height="13" uuid="c807b95e-7043-426d-84af-dd96b4d023b4"/>
+				<textField pattern=" #,##0.00" isBlankWhenNull="true">
+					<reportElement x="374" y="0" width="37" height="13" uuid="c807b95e-7043-426d-84af-dd96b4d023b4"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
 						<paragraph rightIndent="5"/>
@@ -149,7 +149,7 @@
 					</textElement>
 					<text><![CDATA[Total :]]></text>
 				</staticText>
-				<textField>
+				<textField pattern=" #,##0.00" isBlankWhenNull="true">
 					<reportElement x="204" y="0" width="31" height="13" uuid="672dbd2b-2745-4327-85c4-991227700ede"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
@@ -157,7 +157,7 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$V{lab_1}==null?0.00:$V{lab_1}]]></textFieldExpression>
 				</textField>
-				<textField>
+				<textField pattern=" #,##0.00" isBlankWhenNull="true">
 					<reportElement x="172" y="0" width="33" height="13" uuid="a9681222-31a3-43bb-89ee-86b221ff501d"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
@@ -165,15 +165,15 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$V{consultation_1}==null?0.00:$V{consultation_1}]]></textFieldExpression>
 				</textField>
-				<textField>
-					<reportElement x="373" y="0" width="39" height="13" uuid="3cea2eb6-cc3b-47d1-909e-b54488e06110"/>
+				<textField pattern=" #,##0.00" isBlankWhenNull="true">
+					<reportElement x="335" y="0" width="39" height="13" uuid="3cea2eb6-cc3b-47d1-909e-b54488e06110"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
 						<paragraph rightIndent="5"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{other_1}==null?0.00:$V{other_1}]]></textFieldExpression>
 				</textField>
-				<textField>
+				<textField pattern=" #,##0.00" isBlankWhenNull="true">
 					<reportElement x="234" y="0" width="32" height="13" uuid="9ac9e2de-eda3-419e-919c-492d64063369"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
@@ -181,7 +181,7 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$V{pharmacy_1}==null?0.00:$V{pharmacy_1}]]></textFieldExpression>
 				</textField>
-				<textField>
+				<textField pattern=" #,##0.00" isBlankWhenNull="true">
 					<reportElement x="266" y="0" width="35" height="13" uuid="d858de4a-62fa-4bb6-9c1a-feacb36278b1"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
@@ -189,7 +189,7 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$V{procedure_1}==null?0.00:$V{procedure_1}]]></textFieldExpression>
 				</textField>
-				<textField>
+				<textField pattern=" #,##0.00" isBlankWhenNull="true">
 					<reportElement x="481" y="0" width="41" height="13" uuid="767af2a0-beaf-4804-8ad4-221890cc9340"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
@@ -197,7 +197,7 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$V{paid_1}]]></textFieldExpression>
 				</textField>
-				<textField>
+				<textField pattern=" #,##0.00" isBlankWhenNull="true">
 					<reportElement x="301" y="0" width="34" height="13" uuid="81dfaf91-3d9e-4c93-a49f-83fe411ccc49"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
@@ -205,15 +205,15 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$V{radiology_1}]]></textFieldExpression>
 				</textField>
-				<textField>
-					<reportElement x="335" y="0" width="38" height="13" uuid="65c2022c-59ae-423f-ac9f-dd3543c689d2"/>
+				<textField pattern=" #,##0.00" isBlankWhenNull="true">
+					<reportElement x="411" y="0" width="38" height="13" uuid="65c2022c-59ae-423f-ac9f-dd3543c689d2"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
 						<paragraph rightIndent="5"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{copay_1}]]></textFieldExpression>
 				</textField>
-				<textField>
+				<textField pattern=" #,##0.00" isBlankWhenNull="true">
 					<reportElement x="522" y="0" width="33" height="13" uuid="e5f92b91-5aac-434f-9a13-bab90e75e858"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
@@ -221,7 +221,7 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$V{balance_2}]]></textFieldExpression>
 				</textField>
-				<textField>
+				<textField pattern=" #,##0.00" isBlankWhenNull="true">
 					<reportElement x="449" y="0" width="32" height="13" uuid="9f83cba7-80e0-42e0-ac63-7117d8b588df"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
@@ -356,7 +356,7 @@
 				<text><![CDATA[Proc]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="373" y="41" width="39" height="13" uuid="0de7c8cc-ce03-4fbd-bf07-f49897b2e811"/>
+				<reportElement x="335" y="41" width="39" height="13" uuid="0de7c8cc-ce03-4fbd-bf07-f49897b2e811"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -376,7 +376,7 @@
 				<text><![CDATA[Patient No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="412" y="41" width="37" height="13" uuid="c1d676db-dd35-475a-a424-c8fcb437bf07"/>
+				<reportElement x="374" y="41" width="37" height="13" uuid="c1d676db-dd35-475a-a424-c8fcb437bf07"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -386,7 +386,7 @@
 				<text><![CDATA[Total]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="335" y="41" width="38" height="13" uuid="c7ea2ecc-c983-454c-aeeb-4b22f62cacb4"/>
+				<reportElement x="411" y="41" width="38" height="13" uuid="c7ea2ecc-c983-454c-aeeb-4b22f62cacb4"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -466,7 +466,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{createdOn}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
 				<reportElement x="301" y="0" width="34" height="21" uuid="936f64df-392d-48fb-9b59-2edbe0c14414"/>
 				<box>
 					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
@@ -477,7 +477,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{radiology}==null?0.00:$F{radiology}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
 				<reportElement x="522" y="0" width="33" height="21" uuid="2136bff1-664d-42a7-a490-870721d069fd"/>
 				<box>
 					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
@@ -488,7 +488,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{balance}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
 				<reportElement x="174" y="0" width="30" height="21" uuid="ee3b89e9-0da3-4911-b1c7-6f888e04964c"/>
 				<box>
 					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
@@ -499,7 +499,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consultation}==null?0.00:$F{consultation}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
 				<reportElement x="204" y="0" width="31" height="21" uuid="b8c9ebcd-83c2-4357-beea-6892814754d9"/>
 				<box>
 					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
@@ -510,7 +510,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{lab}==null?0.00:$F{lab}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
 				<reportElement x="234" y="0" width="32" height="21" uuid="04590504-e483-4a1c-8167-9b615d23312b"/>
 				<box>
 					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
@@ -521,7 +521,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{pharmacy}==null?0.00:$F{pharmacy}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
 				<reportElement x="266" y="0" width="35" height="21" uuid="c0c7c309-769e-415e-8600-ebb0f71aa5d1"/>
 				<box>
 					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
@@ -532,8 +532,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{procedure}== null?0.00:$F{procedure}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="373" y="0" width="39" height="21" uuid="75ef6c81-14fa-4961-8e3b-3534b834a03d"/>
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
+				<reportElement x="335" y="0" width="39" height="21" uuid="75ef6c81-14fa-4961-8e3b-3534b834a03d"/>
 				<box>
 					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
 				</box>
@@ -543,7 +543,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{other}== null?0.00:$F{other}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
 				<reportElement x="481" y="0" width="41" height="21" uuid="cd34c42b-616f-4e51-bb4a-aefa2d276f09"/>
 				<box>
 					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
@@ -564,8 +564,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientId}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="412" y="0" width="37" height="21" uuid="d642e43c-8b4c-44df-9a2f-ccc424af7090"/>
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
+				<reportElement x="374" y="0" width="37" height="21" uuid="d642e43c-8b4c-44df-9a2f-ccc424af7090"/>
 				<box>
 					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
 				</box>
@@ -575,8 +575,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="335" y="0" width="38" height="21" uuid="b5b75693-b1c1-4943-ba01-9616c0b0191b"/>
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
+				<reportElement x="411" y="0" width="38" height="21" uuid="b5b75693-b1c1-4943-ba01-9616c0b0191b"/>
 				<box>
 					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
 				</box>
@@ -592,7 +592,7 @@
 					<pen lineWidth="0.15" lineColor="#999999"/>
 				</graphicElement>
 			</line>
-			<textField>
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
 				<reportElement x="449" y="0" width="32" height="21" uuid="03c61e22-c39e-4af7-92ac-cb9c0f030ffe"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
@@ -613,70 +613,70 @@
 	</pageFooter>
 	<lastPageFooter>
 		<band height="69">
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="209" y="10" width="35" height="12" uuid="9075e9d1-72d1-4966-9e19-93784e2dd9c6"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{consultation_2}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="209" y="23" width="35" height="12" uuid="3d68d40d-e14a-441f-a9b2-8f95b4fb172e"/>
 				<textElement textAlignment="Right">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{lab_2}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="209" y="36" width="35" height="12" uuid="ff4a830f-aece-4d06-9185-f14841b80fe9"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{pharmacy_2}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="209" y="49" width="35" height="12" uuid="c1a1e67b-5a5d-4cfc-8574-7cfe0abdb992"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{procedure_2}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="305" y="10" width="34" height="12" uuid="d479a0fc-2f5a-4b38-8adc-a8be0c56633b"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{radiology_2}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="305" y="36" width="33" height="12" uuid="e810d3c0-fecd-4d1f-8cd0-01cdbb17ce2f"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{copay_2}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="305" y="23" width="33" height="12" uuid="3aa772fd-4c5d-4cbd-9501-072b5f82349b"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{other_2}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="515" y="10" width="37" height="12" uuid="d7baa3a9-f11a-4e6b-9cc4-1ec0f6b2d57e"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{amount_2}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="515" y="23" width="37" height="12" uuid="d09084e4-1752-499e-a7a6-4a2508536731"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{paid_2}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="515" y="36" width="37" height="12" uuid="5875bb63-835c-480e-883c-58260e9314f0"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
@@ -767,14 +767,14 @@
 				</textElement>
 				<text><![CDATA[Balance:]]></text>
 			</staticText>
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="397" y="10" width="37" height="12" uuid="25631acf-5eac-45bc-84e8-ade2d74fc6a9"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{total_cash}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="397" y="23" width="37" height="12" uuid="ba6e4da1-b588-4385-b874-0568311293d2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7" isBold="false"/>
@@ -788,7 +788,7 @@
 				</textElement>
 				<text><![CDATA[Discount :]]></text>
 			</staticText>
-			<textField>
+			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement x="397" y="35" width="37" height="12" uuid="6a5b5de9-3231-43ae-87d6-75343eaca9f2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
