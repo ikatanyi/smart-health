@@ -15,6 +15,7 @@ import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,8 @@ public class ItemRestController {
     @PostMapping("/items")
     @PreAuthorize("hasAuthority('create_items')")
     public ResponseEntity<?> createItems(@Valid @RequestBody CreateItem itemData) {
-        if (itemData.getSku() != null && service.findByItemCode(itemData.getSku()).isPresent()) {
+        
+        if (!StringUtils.isBlank(itemData.getSku()) && service.findByItemCode(itemData.getSku()).isPresent()) {
             throw APIException.conflict("Item with code {0} already exists.", itemData.getSku());
         }
 

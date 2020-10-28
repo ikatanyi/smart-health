@@ -492,12 +492,13 @@ public class BillingService {
                             item.setStatus(BillStatus.Paid);
                             if (item.getItem().getCategory() == ItemCategory.CoPay) {
                                 item.setAmount((item.getAmount() * -1));
+                            }else{
+                                 item.setAmount(totalAmount.doubleValue());
                             }
-
 //                            item.setSubTotal(subtotal.doubleValue());
                             item.setPaymentReference(data.getReceiptNo());
                             item.setBalance(balance.doubleValue());
-                            item.setAmount(totalAmount.doubleValue());
+                           
                             item.setDiscount(discount.doubleValue());
 
                             PatientBillItem i = updateBillItem(item);
