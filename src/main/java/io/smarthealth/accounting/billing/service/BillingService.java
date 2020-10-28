@@ -478,20 +478,26 @@ public class BillingService {
                         if (x.getBillItemId() != null) {
                             PatientBillItem item = findBillItemById(x.getBillItemId());
                             BigDecimal discount = (x.getDiscount() != null ? x.getDiscount() : BigDecimal.ZERO);
-                            BigDecimal subtotal = item.getSubTotal() != null && item.getSubTotal() > 0 ? BigDecimal.valueOf(item.getSubTotal()) : BigDecimal.valueOf(((item.getQuantity() * item.getPrice()) - discount.doubleValue()));
-                            BigDecimal amount = subtotal; // + item.getTaxes();
+//                            BigDecimal subtotal = item.getNetAmount() != null && item.getNetAmount() > 0 ? BigDecimal.valueOf(item.getNetAmount()) : BigDecimal.valueOf(((item.getQuantity() * item.getPrice()) - discount.doubleValue()));
+                           
+                            BigDecimal totalAmount =  BigDecimal.valueOf((item.getQuantity() * item.getPrice()));
+                            BigDecimal netAmount = totalAmount.subtract(discount);
+                            BigDecimal balance = netAmount.subtract(x.getAmount());
+                             
+//                            BigDecimal amount = subtotal; // + item.getTaxes();
+//                            BigDecimal amount = BigDecimal.valueOf(((item.getQuantity() * item.getPrice()) - discount.doubleValue()));
 
-                            BigDecimal bal = amount.subtract(x.getAmount());
+//                            BigDecimal bal = amount.subtract(x.getAmount());  //what was paid less the discount
                             item.setPaid(Boolean.TRUE);
                             item.setStatus(BillStatus.Paid);
                             if (item.getItem().getCategory() == ItemCategory.CoPay) {
                                 item.setAmount((item.getAmount() * -1));
                             }
 
-                            item.setSubTotal(subtotal.doubleValue());
+//                            item.setSubTotal(subtotal.doubleValue());
                             item.setPaymentReference(data.getReceiptNo());
-                            item.setBalance(bal.doubleValue());
-                            item.setAmount(amount.doubleValue());
+                            item.setBalance(balance.doubleValue());
+                            item.setAmount(totalAmount.doubleValue());
                             item.setDiscount(discount.doubleValue());
 
                             PatientBillItem i = updateBillItem(item);

@@ -137,7 +137,7 @@ public class PatientBillItem extends Auditable {
     public String toString() {
         return "Patient Bill Item [id=" + getId() + ",patientBill=" + patientBill + " , service point=" +servicePoint+ ", quantity=" +quantity+ ", price=" + price + ", amount=" +amount+ " ]";
     }
-   public Double getSubTotal(){
+   public Double getNetAmount(){
        return ((this.quantity*this.price)-this.discount);
    }
 }

@@ -89,15 +89,14 @@ public class BillRepositoryImpl implements BillRepository {
             }
 
             List<SummaryBill> walkin = getWalkIn(patientNumber, hasBalance,paymentMode,range);
-            result.addAll(walkin);
+//            result.addAll(walkin);
+            result.retainAll(walkin);
             
 //            List<User> sortedUsers = users
 //        .stream()
 //        .sorted(Comparator.comparing(User::getScore))
 //        .collect(Collectors.toList());
            
-                            
-            
         }
         
          List<SummaryBill> sortedBills = result
