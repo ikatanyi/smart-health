@@ -390,7 +390,7 @@ public class AccountReportService {
             for (BillItem item : items) {
                 data.setAmount(data.getAmount().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
                 if (item.getStatus() == item.getStatus().Paid) {
-                    data.setPaid(data.getPaid().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
+                    data.setPaid(data.getPaid().add(NumberUtils.toScaledBigDecimal(item.getAmount()-item.getDiscount())));
                 }
                 data.setDiscount(data.getDiscount() + item.getDiscount());
                 switch (item.getServicePoint().toUpperCase()) {
