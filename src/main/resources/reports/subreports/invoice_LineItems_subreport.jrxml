@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice_LineItems_subreport" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9475d90f-4bc3-492f-b99e-9861c828c69b">
-	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="11"/>
 	<property name="ireport.y" value="0"/>
 	<scriptlet name="Helper" class="io.smarthealth.infrastructure.utility.RoundingHelper"/>
 	<field name="item" class="java.lang.String"/>
@@ -11,14 +11,82 @@
 	<field name="tax" class="java.math.BigDecimal"/>
 	<field name="amount" class="java.math.BigDecimal"/>
 	<field name="servicePoint" class="java.lang.String"/>
+	<field name="date" class="java.lang.Object"/>
 	<variable name="total" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{servicePoint}.equalsIgnoreCase( "copayment" )?$F{amount}.negate():$F{amount}.equals( null )?new BigDecimal(0):$F{amount}.setScale(0,  java.math.RoundingMode.HALF_UP)]]></variableExpression>
 		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
 	</variable>
+	<columnHeader>
+		<band height="16">
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="77" y="0" width="84" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="3f38c91f-561d-49c1-87ac-925b89902337"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[Service Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="486" y="0" width="69" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="77f0eb94-54c5-4385-ad66-12174acf28e7"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="374" y="0" width="112" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="774359b5-0b9a-4338-9438-918141ba8b74"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Unit Price]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="161" y="0" width="148" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="c0123b24-8d07-40a4-9c35-d5e3faf2a1aa"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="309" y="0" width="65" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="5537c53d-a554-4204-93fe-9d6a2ce62ea4"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="77" height="15" uuid="19e9502b-2a20-4755-92f2-4795338a112a"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
 	<detail>
 		<band height="21" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="111" height="20" uuid="c03f057a-dad3-486f-bc76-0692ef26937c"/>
+				<reportElement x="77" y="0" width="84" height="20" uuid="c03f057a-dad3-486f-bc76-0692ef26937c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
 					<paragraph leftIndent="10"/>
@@ -26,7 +94,7 @@
 				<textFieldExpression><![CDATA[$F{servicePoint}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="118" y="0" width="150" height="20" uuid="c8c0fd8d-b5af-4df5-8ca7-8b0e4413f1c8"/>
+				<reportElement x="161" y="0" width="148" height="20" uuid="c8c0fd8d-b5af-4df5-8ca7-8b0e4413f1c8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
 					<paragraph leftIndent="10"/>
@@ -34,28 +102,36 @@
 				<textFieldExpression><![CDATA[$F{item}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0" isBlankWhenNull="true">
-				<reportElement x="268" y="0" width="87" height="20" uuid="f9582ba0-636b-43d7-8827-74fc551fbb2e"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
+				<reportElement x="309" y="0" width="65" height="20" uuid="f9582ba0-636b-43d7-8827-74fc551fbb2e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 					<paragraph rightIndent="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement x="355" y="0" width="96" height="20" uuid="20c53067-d5ae-424e-9714-ed7243ef2d4a"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
+				<reportElement x="374" y="0" width="112" height="20" uuid="20c53067-d5ae-424e-9714-ed7243ef2d4a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 					<paragraph rightIndent="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00;(#,##0.00)">
-				<reportElement x="451" y="0" width="89" height="20" uuid="fb4c66a6-83e6-424a-90b2-39e50c176c59"/>
+				<reportElement x="486" y="0" width="69" height="20" uuid="fb4c66a6-83e6-424a-90b2-39e50c176c59"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
-					<paragraph rightIndent="10"/>
+					<paragraph rightIndent="20"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{servicePoint}.equalsIgnoreCase( "copayment" )?$F{amount}.negate():$F{amount}.equals( null )?new BigDecimal(0):$F{amount}.setScale(0,  java.math.RoundingMode.HALF_UP)]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="77" height="20" uuid="3f59ca63-4680-4d46-85ee-2e10ff9a9ef8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""+$F{date}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

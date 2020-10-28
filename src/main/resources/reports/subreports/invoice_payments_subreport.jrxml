@@ -14,18 +14,19 @@
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField>
-				<reportElement positionType="Float" x="0" y="0" width="122" height="12" uuid="d536f924-9ea1-427e-86a0-b5653b05ac28"/>
+				<reportElement positionType="Float" x="0" y="0" width="127" height="12" uuid="d536f924-9ea1-427e-86a0-b5653b05ac28"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{reportType}.toUpperCase()+" :"]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="124" y="0" width="57" height="12" uuid="9768a507-42d1-472e-aa41-c28076a0553d"/>
+			<textField pattern="#,##0.00;(#,##0.00)">
+				<reportElement x="127" y="0" width="55" height="12" uuid="9768a507-42d1-472e-aa41-c28076a0553d"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph rightIndent="20"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{amount}.setScale(0, RoundingMode.HALF_UP)]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{reportType}.equalsIgnoreCase( "copayment" )?$F{amount}.negate():$F{amount}.equals( null )?new BigDecimal(0):$F{amount}.setScale(0,  java.math.RoundingMode.HALF_UP)]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
