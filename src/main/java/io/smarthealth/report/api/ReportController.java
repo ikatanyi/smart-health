@@ -267,6 +267,9 @@ public class ReportController {
             case Cashier_Shift_Statement:
                 paymentReportService.getCashierShift(queryParams, format, response);
                 break;
+            case Patient_Attendance_Report:
+                patientReportService.getPatientReport(queryParams, format, response);
+                break;
             default:
                 break;
         }

@@ -6,6 +6,7 @@ import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug; 
 import io.smarthealth.clinical.pharmacy.service.DispensingService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.inventory.data.TransData;
@@ -84,12 +85,14 @@ public class DispensingController {
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
             @RequestParam(value = "prescriptionNo", required = false) String prescription,
             @RequestParam(value = "billNumber", required = false) String billNumber, 
+            @RequestParam(value = "dateRange", required = false) String dateRange, 
             @RequestParam(value = "isReturn", required = false) Boolean isReturn,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
+        DateRange range = DateRange.fromIsoString(dateRange);
         Pageable pageable = PaginationUtil.createPage(page, size, Sort.by(Sort.Direction.DESC, "dispensedDate"));
-        Page<DispensedDrugData> list = service.findDispensedDrugs(referenceNumber, visitNumber, patientNumber, prescription, billNumber, isReturn, pageable)
+        Page<DispensedDrugData> list = service.findDispensedDrugs(referenceNumber, visitNumber, patientNumber, prescription, billNumber, isReturn, range, pageable)
                 .map(drug -> drug.toData());
 
         Pager<List<DispensedDrugData>> pagers = new Pager();

@@ -143,9 +143,9 @@ public class DispensingService {
                 .orElseThrow(() -> APIException.notFound("Dispensed Drug with id {0} not found", id));
     }
 
-    public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, Boolean isReturn, Pageable page) {
+    public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, Boolean isReturn, DateRange range, Pageable page) {
       
-        Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo, isReturn);
+        Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo, isReturn, range);
 
         return repository.findAll(spec, page);
 

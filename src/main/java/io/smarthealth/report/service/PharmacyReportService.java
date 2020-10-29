@@ -121,14 +121,16 @@ public class PharmacyReportService {
         String patientNo = reportParam.getFirst("patientNo");
         String prescriptionNo = reportParam.getFirst("prescriptionNo");
         String billNo= reportParam.getFirst("billNo");
+        DateRange range = DateRange.fromIsoString(reportParam.getFirst("dateRange"));
         Boolean isReturn=null;
         reportData.setPatientNumber(patientNo);
-        List<DispensedDrugData> requestData = dispenseService.findDispensedDrugs(transactionNo, visitNo, patientNo, prescriptionNo, billNo, isReturn, Pageable.unpaged())
+        List<DispensedDrugData> requestData = dispenseService.findDispensedDrugs(transactionNo, visitNo, patientNo, prescriptionNo, billNo, isReturn, range,  Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map(drug -> drug.toData())
                 .collect(Collectors.toList());
 
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(requestData);
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/pharmacy/Patient_dispensed_drugs");
