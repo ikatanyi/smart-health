@@ -79,8 +79,8 @@ public class BillRepositoryImpl implements BillRepository {
             } else {
                 cq.having(cb.lessThanOrEqualTo(cb.sum(root.get("balance")), 0));
             }
-        }
-        System.err.println("MY QUERY: "+cq.toString());
+        } 
+        
         List<SummaryBill> result = em.createQuery(cq).getResultList();
 
         if (isWalkin == null) {
@@ -90,14 +90,13 @@ public class BillRepositoryImpl implements BillRepository {
 
             List<SummaryBill> walkin = getWalkIn(patientNumber, hasBalance,paymentMode,range);
             result.addAll(walkin);
+//            result.retainAll(walkin);
             
 //            List<User> sortedUsers = users
 //        .stream()
 //        .sorted(Comparator.comparing(User::getScore))
 //        .collect(Collectors.toList());
            
-                            
-            
         }
         
          List<SummaryBill> sortedBills = result

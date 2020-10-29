@@ -299,7 +299,7 @@ public class ReceiptingService {
                 Double discount = 0D;
                 Double taxes = 0D;
                 for (PatientBillItem b : v) {
-                    subTotal += b.getSubTotal(); //
+                    subTotal += b.getNetAmount(); //
                     discount += b.getDiscount();
                     taxes += b.getTaxes();
                 }

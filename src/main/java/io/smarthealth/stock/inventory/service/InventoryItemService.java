@@ -209,7 +209,8 @@ public class InventoryItemService {
                     entry.setTransactionNumber(trdId);
                     entry.setUnit(item.getUnit());
                     stockEntry.add(entry);
-
+                    // account posting
+                    
                 });
 //        return save(inventory);
         inventoryItemRepository.saveAll(items);
