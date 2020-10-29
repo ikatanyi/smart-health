@@ -267,7 +267,7 @@
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" mode="Transparent" x="2" y="50" width="266" height="14" forecolor="#000000" backcolor="#9999FF" uuid="5642e2ce-5f8e-4226-8776-4bb00ab5ba91"/>
-				<textElement verticalAlignment="Middle">
+				<textElement verticalAlignment="Top">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Examination Notes :]]></text>
@@ -281,8 +281,9 @@
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="2" y="65" width="287" height="18" isRemoveLineWhenBlank="true" uuid="e734a80d-3b79-4608-867e-a7242e6439d1"/>
-				<textElement>
+				<textElement verticalAlignment="Middle">
 					<font size="8"/>
+					<paragraph spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{examinationNotes}]]></textFieldExpression>
 			</textField>
@@ -290,6 +291,7 @@
 				<reportElement positionType="Float" x="2" y="24" width="287" height="18" isRemoveLineWhenBlank="true" uuid="05b0a740-0f91-4c41-a628-87e8c1d06ea9"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
+					<paragraph spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{chiefComplaint}]]></textFieldExpression>
 			</textField>
@@ -297,6 +299,7 @@
 				<reportElement x="2" y="102" width="287" height="18" isRemoveLineWhenBlank="true" uuid="b1cc5c90-ac41-4796-b515-ef4775a4152b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
+					<paragraph spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{historyNotes}]]></textFieldExpression>
 			</textField>

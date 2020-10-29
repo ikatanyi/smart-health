@@ -49,6 +49,7 @@ public class PatientProcedureTestData {
         PatientProcedureTest entity = new PatientProcedureTest();
         entity.setResult(scan.getResults());
         entity.setStatus(scan.getState());
+        entity.setProcedureDate(scan.getProcedureDate());
         return entity;
     }
 }

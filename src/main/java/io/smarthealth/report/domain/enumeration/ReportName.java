@@ -78,5 +78,6 @@ public enum ReportName {
         Payment_Transactions_Statement,
         Registered_Schemes,
         Insurance_Diagnosis_Summary,
-        Cashier_Shift_Statement
+        Cashier_Shift_Statement,
+        Patient_Attendance_Report
 }

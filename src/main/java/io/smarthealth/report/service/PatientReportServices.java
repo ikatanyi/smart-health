@@ -6,6 +6,8 @@
 package io.smarthealth.report.service;
 
 import com.mchange.lang.StringUtils;
+import io.smarthealth.administration.employeespecialization.domain.EmployeeSpecialization;
+import io.smarthealth.administration.employeespecialization.service.EmployeeSpecializationService;
 import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
@@ -35,8 +37,11 @@ import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.record.service.ReferralsService;
 import io.smarthealth.clinical.record.service.SickOffNoteService;
 import io.smarthealth.clinical.visit.data.VisitData;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum.PaymentMethod;
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.TatInterface;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -53,6 +58,7 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.clinical.EmployeeBanner;
 import io.smarthealth.report.data.clinical.OpData;
+import io.smarthealth.report.data.clinical.PatientReportData;
 import io.smarthealth.report.data.clinical.PatientVisitData;
 import io.smarthealth.report.data.clinical.reportVisitData;
 import java.io.IOException;
@@ -102,7 +108,6 @@ public class PatientReportServices {
     private final ProcedureService procedureService;
     private final LaboratoryService labService;
     private final PatientNotesService patientNotesService;
-    private final PharmacyService pharmacyService;
     private final RadiologyService radiologyService;
     private final SickOffNoteService sickOffNoteService;
     private final PrescriptionService prescriptionService;
@@ -110,6 +115,8 @@ public class PatientReportServices {
     private final ReferralsService referralService;
     private final AppointmentService appointmentService;
     private final MohService mohService;
+    private final PaymentDetailsService paymentDetailsService;
+    private final EmployeeSpecializationService specializationService;
 
     private final VisitService visitService;
 
@@ -580,6 +587,61 @@ public class PatientReportServices {
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setTemplate("/patient/patient_register");
         reportData.setReportName("Patient-Register");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getPatientReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        List<PatientReportData> dataArray = new ArrayList();
+        PatientReportData data = null;
+        String visitNumber = reportParam.getFirst("visitNumber");
+        String staffNumber = reportParam.getFirst("staffNumber");
+        String servicePointType = reportParam.getFirst("servicePointType");
+        String patientNumber = reportParam.getFirst("patientNumber");
+        String patientName = reportParam.getFirst("patientName");
+        Boolean runningStatus = BooleanUtils.toBoolean(reportParam.getFirst("runningStatus"));
+        DateRange dateRange = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        List<Visit> visits = visitService.fetchVisitsGroupByVisitNumber(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, dateRange, Pageable.unpaged()).getContent();
+        
+        for (Visit visit : visits) {
+            data = new PatientReportData();
+             if (visit.getPatient().getDateRegistered() == visit.getStartDatetime().toLocalDate())
+                 data.setStatus("New");
+             else
+                 data.setStatus("Revisit");
+             data.setDate(visit.getStartDatetime().toLocalDate());
+             
+             data.setPatientName(visit.getPatient().getFullName());
+             data.setPatientNumber(visit.getPatient().getPatientNumber());
+             data.setPaymentMode(visit.getPaymentMethod());
+             Optional<PaymentDetails> pdetails = paymentDetailsService.getPaymentDetailsByVist(visit);
+             if(pdetails.isPresent()){
+                 data.setInsuranceName(pdetails.get().getPayer().getPayerName());
+                 data.setSchemeName(pdetails.get().getScheme().getSchemeName());
+             }                
+             
+             if(visit.getHealthProvider()!=null){
+                 Optional<EmployeeSpecialization> spec = specializationService.fetchOptionalSpecializationById(NumberUtils.isNumber(visit.getHealthProvider().getSpecialization())?NumberUtils.createLong(visit.getHealthProvider().getSpecialization()):1L);
+                 if(spec.isPresent())
+                    data.setService(spec.get().getSpecialization());
+             }
+             dataArray.add(data);
+        }
+        
+        List<JRSortField> sortList = new ArrayList();
+        reportData.setPatientNumber(patientNumber);
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("service");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        
+        reportData.getFilters().put("range", DateRange.getReportPeriod(dateRange));
+        reportData.setData(dataArray);
+        reportData.setFormat(format);
+        reportData.setTemplate("/patient/PatientAttendanceReport");
+        reportData.setReportName("Patient_Attendance_Report");
         reportService.generateReport(reportData, response);
     }
 
