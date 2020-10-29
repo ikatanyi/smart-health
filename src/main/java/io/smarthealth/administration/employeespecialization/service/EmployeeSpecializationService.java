@@ -10,6 +10,7 @@ import io.smarthealth.administration.employeespecialization.domain.EmployeeSpeci
 import io.smarthealth.administration.employeespecialization.domain.EmployeeSpecializationRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,10 @@ public class EmployeeSpecializationService {
 
     public EmployeeSpecialization fetchSpecializationById(final Long id) {
         return employeeSpecializationRepository.findById(id).orElseThrow(() -> APIException.notFound("Speciailization identified by id {0} is not available ", id));
+    }
+    
+    public Optional<EmployeeSpecialization> fetchOptionalSpecializationById(final Long id) {
+        return employeeSpecializationRepository.findById(id);
     }
 
     public List<EmployeeSpecialization> fetchAllSpecializations() {
