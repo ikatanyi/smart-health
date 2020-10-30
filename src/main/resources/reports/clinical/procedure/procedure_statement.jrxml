@@ -121,7 +121,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Procedure Statement]]></text>
+				<text><![CDATA[Procedure Summary]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="22" width="33" height="13" forecolor="#000000" uuid="050884c3-45c9-4cf5-951e-89882d5bc025"/>

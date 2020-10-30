@@ -93,7 +93,7 @@ public class RadiologyReportService {
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
 
-        reportData.setReportName("Radiology-Statement");
+        reportData.setReportName("Radiology-Studies-Summary");
         reportService.generateReport(reportData, response);
     }    
     

@@ -728,11 +728,11 @@ public class AccountReportService {
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/departmental_mode_report");
-        reportData.setReportName("Departmental-Payment-Stetment");
+        reportData.setReportName("General-Collection-Statement");
         reportService.generateReport(reportData, response);
     }
 
-    public void getDepartmentalPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getServicePointIncomeStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
@@ -762,7 +762,7 @@ public class AccountReportService {
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/Department_payment_statement");
-        reportData.setReportName("Department-Income-Stetment");
+        reportData.setReportName("Service-Point-Income-Statement");
         reportService.generateReport(reportData, response);
     }
 
@@ -916,7 +916,7 @@ public class AccountReportService {
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/Service_statement");
-        reportData.setReportName("Department-Service-Statement");
+        reportData.setReportName("Service-Statement");
         reportService.generateReport(reportData, response);
     }
 
