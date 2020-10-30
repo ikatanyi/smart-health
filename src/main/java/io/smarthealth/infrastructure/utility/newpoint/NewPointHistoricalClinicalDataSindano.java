@@ -54,7 +54,7 @@ public class NewPointHistoricalClinicalDataSindano {
         try {
             msconn = connector.msConnection();
             conn = connector.ConnectToPastDB();
-            String fetchPatientData = "SELECT p.RegID, p.FileNo,FirstName,LastName,ParentsName FROM newpaint_limsoft_db.limpatients AS p ";
+            String fetchPatientData = "SELECT p.RegID, p.FileNo,FirstName,LastName,ParentsName FROM NewPaint_LimSoft_DB.dbo.limpatients AS p ";
             pst = conn.prepareStatement(fetchPatientData);
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -104,9 +104,9 @@ public class NewPointHistoricalClinicalDataSindano {
             }
 //            pst.executeBatch();
 
-//            insertTriage(patients, conn);
+//            insertTriage(patients, conn, msconn);
             System.out.println("Done inserting vitals");
-//            insertDoctorNotes(patients, conn, msconn);
+            insertDoctorNotes(patients, conn, msconn);
             System.out.println("Done inserting doctor notes");
             //insertHistoricalPatientDiagnosis(patients, conn);
             System.out.println("Done inserting diagnosis");
@@ -119,14 +119,14 @@ public class NewPointHistoricalClinicalDataSindano {
         }
     }
 
-    private void insertTriage(List<PatientData> patients, Connection conn) {
+    private void insertTriage(List<PatientData> patients, Connection conn, Connection msconn) {
         try {
             //insert triage history
             for (PatientData d : patients) {
                 if (patientAvailable(d.getCurrentPatientNo(), conn)) {
                     //find equivalent triage data
-                    String triageHistoryNote = "SELECT TransDate,TransDate,BloodPressure,Height,Pulse,Temperature,Weight  FROM newpaint_limsoft_db.limexamination WHERE RegID = '" + d.getPvEntityNo() + "'";
-                    pst2 = conn.prepareStatement(triageHistoryNote);
+                    String triageHistoryNote = "SELECT TransDate,TransDate,BloodPressure,Height,Pulse,Temperature,Weight  FROM NewPaint_LimSoft_DB.dbo.limexamination WHERE RegID = '" + d.getPvEntityNo() + "'";
+                    pst2 = msconn.prepareStatement(triageHistoryNote);
                     rs = pst2.executeQuery();
                     while (rs.next()) {
 
