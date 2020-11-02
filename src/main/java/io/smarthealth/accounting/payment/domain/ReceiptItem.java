@@ -72,8 +72,8 @@ public class ReceiptItem extends Identifiable {
         data.setId(this.getId());
         data.setReceiptNumber(this.getReceipt().getReceiptNo());
         data.setDiscount(this.getDiscount());
-        if(this.getReceipt()!=null){
-            data.setPatientName(this.getReceipt().getPayer());
+        data.setPatientName(this.getReceipt().getPayer());
+        if(this.getReceipt()==null){            
             data.setReferenceNumber(this.getReceipt().getReferenceNumber());
             data.setReceiptNumber(this.getReceipt().getReferenceNumber());
         }

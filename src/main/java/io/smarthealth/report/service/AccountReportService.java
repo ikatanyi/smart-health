@@ -363,7 +363,7 @@ public class AccountReportService {
     }
 
     public void getDailyPayment(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
-        DecimalFormat df = new DecimalFormat("#");    
+        DecimalFormat df = new DecimalFormat("#");
         String transactionNo = reportParam.getFirst("transactionNo");
         PaymentMethod paymentMode = PaymentMethodToEnum(reportParam.getFirst("paymentMode"));
         String visitNumber = reportParam.getFirst("visitNumber");
@@ -386,13 +386,14 @@ public class AccountReportService {
             data.setPatientName(bill.getPatientName());
             data.setPaymentMode(bill.getPaymentMethod());
             data.setBalance(bill.getBalance());
-            List<BillItem > items = billService.getAllBillDetails(bill.getVisitNumber());
+            List<BillItem> items = billService.getAllBillDetails(bill.getVisitNumber());
             for (BillItem item : items) {
                 data.setAmount(data.getAmount().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
                 if (item.getStatus() == item.getStatus().Paid) {
-                    data.setPaid(data.getPaid().add(NumberUtils.toScaledBigDecimal(item.getAmount()-item.getDiscount())));
+                    data.setPaid(data.getPaid().add(NumberUtils.toScaledBigDecimal(item.getAmount() - item.getDiscount())));
                 }
                 data.setDiscount(data.getDiscount() + item.getDiscount());
+                data.setReceiptNo(item.getReference());
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
                         data.setLab(data.getLab() + item.getAmount());
@@ -728,11 +729,11 @@ public class AccountReportService {
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/departmental_mode_report");
-        reportData.setReportName("Departmental-Payment-Stetment");
+        reportData.setReportName("General-Collection-Statement");
         reportService.generateReport(reportData, response);
     }
 
-    public void getDepartmentalPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+    public void getServicePointIncomeStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
@@ -762,7 +763,7 @@ public class AccountReportService {
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/Department_payment_statement");
-        reportData.setReportName("Department-Income-Stetment");
+        reportData.setReportName("Service-Point-Income-Statement");
         reportService.generateReport(reportData, response);
     }
 
@@ -833,14 +834,59 @@ public class AccountReportService {
     public void getDispatchStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
 
         String dispatchNo = reportParam.getFirst("dispatchNo");
-
+        Boolean detailed = BooleanUtils.toBoolean(reportParam.getFirst("detailed"));
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
         DispatchData dispatchData = DispatchData.map(dispatchService.getDispatchByNumberWithFailDetection(dispatchNo));
-
-        reportData.setData(Arrays.asList(dispatchData));
+        if (!detailed) {
+            reportData.setData(Arrays.asList(dispatchData));
+            reportData.setTemplate("/accounts/dispatch_note");
+        } else {
+            List<InsuranceInvoiceData> invoiceData = new ArrayList();
+            for (InvoiceData invoice : dispatchData.getInvoiceData()) {
+                InsuranceInvoiceData data = new InsuranceInvoiceData();
+                data.setAmount(invoice.getAmount());
+                data.setBalance(invoice.getBalance());
+                data.setDiscount(invoice.getDiscount());
+                data.setMemberName(invoice.getMemberName());
+                data.setMemberNumber(invoice.getMemberNumber());
+                data.setPatientId(invoice.getPatientNumber());
+                data.setPatientName(invoice.getPatientName());
+                data.setDueDate(invoice.getDueDate());
+                data.setNumber(invoice.getNumber());
+                data.setPayer(invoice.getPayer());
+                data.setScheme(invoice.getScheme());
+                data.setStatus(invoice.getStatus());
+                data.setDate(invoice.getInvoiceDate());
+                data.setPaid(invoice.getAmount().subtract(invoice.getBalance()));
+                for (InvoiceItemData item : invoice.getInvoiceItems()) {
+                    switch (item.getServicePoint()) {
+                        case "Laboratory":
+                            data.setLab(data.getLab().add(item.getAmount()));
+                            break;
+                        case "Pharmacy":
+                            data.setPharmacy(data.getPharmacy().add(item.getAmount()));
+                            break;
+                        case "Procedure":
+                            data.setProcedure(data.getProcedure().add(item.getAmount()));
+                            break;
+                        case "Radiology":
+                            data.setRadiology(data.getRadiology().add(item.getAmount()));
+                            break;
+                        case "Consultation":
+                            data.setConsultation(data.getConsultation().add(item.getAmount()));
+                            break;
+                        default:
+                            data.setOther(data.getOther() != null ? data.getOther().add(item.getAmount()) : item.getAmount());
+                            break;
+                    }
+                }
+                invoiceData.add(data);
+            }
+            reportData.setData(invoiceData);
+            reportData.setTemplate("/accounts/insurance_invoice_statement");
+        }
         reportData.setFormat(format);
-        reportData.setTemplate("/accounts/dispatch_note");
         reportData.setReportName("Dispatch-Note");
         reportService.generateReport(reportData, response);
     }
@@ -916,7 +962,7 @@ public class AccountReportService {
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/Service_statement");
-        reportData.setReportName("Department-Service-Statement");
+        reportData.setReportName("Service-Statement");
         reportService.generateReport(reportData, response);
     }
 

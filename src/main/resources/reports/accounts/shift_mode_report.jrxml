@@ -714,7 +714,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Cashier Shift Statement]]></text>
+				<text><![CDATA[Cashier Cash Sale Breakdown]]></text>
 			</staticText>
 			<line>
 				<reportElement positionType="Float" x="0" y="0" width="802" height="1" uuid="45fa6f87-eef4-4a94-b37d-00b86ad7ee73"/>
