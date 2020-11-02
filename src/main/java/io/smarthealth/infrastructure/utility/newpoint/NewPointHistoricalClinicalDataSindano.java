@@ -54,7 +54,7 @@ public class NewPointHistoricalClinicalDataSindano {
         try {
             msconn = connector.msConnection();
             conn = connector.ConnectToPastDB();
-            String fetchPatientData = "SELECT p.RegID, p.FileNo,FirstName,LastName,ParentsName FROM NewPaint_LimSoft_DB.dbo.limpatients AS p ";
+            String fetchPatientData = "SELECT p.RegID, p.FileNo,FirstName,LastName,ParentsName FROM limpatients AS p ";
             pst = conn.prepareStatement(fetchPatientData);
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -105,15 +105,15 @@ public class NewPointHistoricalClinicalDataSindano {
 //            pst.executeBatch();
 
 //            insertTriage(patients, conn, msconn);
-            System.out.println("Done inserting vitals");
+//            System.out.println("Done inserting vitals");
             insertDoctorNotes(patients, conn, msconn);
-            System.out.println("Done inserting doctor notes");
+//            System.out.println("Done inserting doctor notes");
             //insertHistoricalPatientDiagnosis(patients, conn);
-            System.out.println("Done inserting diagnosis");
+//            System.out.println("Done inserting diagnosis");
             insertPrescriptions(patients, conn, msconn);
-            System.out.println("Done inserting prescriptions");
-            //insertHistoricalLabResults(patients, conn);
-            System.out.println("Done inserting lab results");
+//            System.out.println("Done inserting prescriptions");
+//            //insertHistoricalLabResults(patients, conn);
+//            System.out.println("Done inserting lab results");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -126,7 +126,7 @@ public class NewPointHistoricalClinicalDataSindano {
                 if (patientAvailable(d.getCurrentPatientNo(), conn)) {
                     //find equivalent triage data
                     String triageHistoryNote = "SELECT TransDate,TransDate,BloodPressure,Height,Pulse,Temperature,Weight  FROM NewPaint_LimSoft_DB.dbo.limexamination WHERE RegID = '" + d.getPvEntityNo() + "'";
-                    pst2 = msconn.prepareStatement(triageHistoryNote);
+                    pst2 = conn.prepareStatement(triageHistoryNote);
                     rs = pst2.executeQuery();
                     while (rs.next()) {
 

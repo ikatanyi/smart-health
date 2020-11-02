@@ -64,8 +64,8 @@ public class DBConnector {
 //            Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 
-//            String dbURL = "jdbc:sqlserver://LP-TECH-4Z0Y\\SQLEXPRESS:1433;database=NewPaint_LimSoft_DB;user=sa;password=Admin@12345";
-            String dbURL = "jdbc:sqlserver://LIMSOFT-SERVER\\Limsoft:1433;database=NewPaint_LimSoft_DB;user=newuser;password=smart123";
+            String dbURL = "jdbc:sqlserver://LP-TECH-4Z0Y\\SQLEXPRESS:1433;database=NewPaint_LimSoft_DB;user=sa;password=Admin@12345";
+//            String dbURL = "jdbc:sqlserver://LIMSOFT-SERVER\\Limsoft:1433;database=NewPaint_LimSoft_DB;user=newuser;password=smart123";
             Connection conn = DriverManager.getConnection(dbURL);
             System.out.println("success");
             return conn;
