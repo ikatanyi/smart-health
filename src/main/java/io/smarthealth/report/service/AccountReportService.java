@@ -393,6 +393,7 @@ public class AccountReportService {
                     data.setPaid(data.getPaid().add(NumberUtils.toScaledBigDecimal(item.getAmount()-item.getDiscount())));
                 }
                 data.setDiscount(data.getDiscount() + item.getDiscount());
+                data.setReceiptNo(item.getReference());
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
                         data.setLab(data.getLab() + item.getAmount());

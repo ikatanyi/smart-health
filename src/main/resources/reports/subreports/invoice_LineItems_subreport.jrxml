@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice_LineItems_subreport" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9475d90f-4bc3-492f-b99e-9861c828c69b">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="11"/>
+	<property name="ireport.x" value="65"/>
 	<property name="ireport.y" value="0"/>
 	<scriptlet name="Helper" class="io.smarthealth.infrastructure.utility.RoundingHelper"/>
+	<parameter name="capitation" class="java.lang.Boolean"/>
+	<parameter name="date" class="java.lang.Object"/>
+	<parameter name="amount" class="java.math.BigDecimal"/>
 	<field name="item" class="java.lang.String"/>
 	<field name="quantity" class="java.lang.Double"/>
 	<field name="price" class="java.math.BigDecimal"/>
@@ -84,7 +87,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="21" splitType="Stretch">
+		<band height="21">
 			<textField>
 				<reportElement x="77" y="0" width="84" height="20" uuid="c03f057a-dad3-486f-bc76-0692ef26937c"/>
 				<textElement verticalAlignment="Middle">
@@ -123,7 +126,9 @@
 					<font size="9"/>
 					<paragraph rightIndent="20"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{servicePoint}.equalsIgnoreCase( "copayment" )?$F{amount}.negate():$F{amount}.equals( null )?new BigDecimal(0):$F{amount}.setScale(0,  java.math.RoundingMode.HALF_UP)]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{servicePoint}.equalsIgnoreCase( "copayment" )?$F{amount}.negate():
+$P{capitation}.equals( true )?new BigDecimal(0):
+$F{amount}.equals( null )?new BigDecimal(0):$F{amount}.setScale(0,  java.math.RoundingMode.HALF_UP)]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="77" height="20" uuid="3f59ca63-4680-4d46-85ee-2e10ff9a9ef8"/>
@@ -135,4 +140,36 @@
 			</textField>
 		</band>
 	</detail>
+	<summary>
+		<band height="20">
+			<printWhenExpression><![CDATA[$P{capitation}.equals( true )]]></printWhenExpression>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="77" height="20" uuid="a4a867c2-1d9c-4c2c-8ba6-f1e580b226e6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""+$P{date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="161" y="0" width="148" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="ebf5a046-b6cd-47d4-895d-c64dcd3528d1"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="9" isBold="false"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[CAPITATION]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement isPrintRepeatedValues="false" x="486" y="0" width="69" height="20" uuid="3e31a485-4116-4962-9daf-38e2c1435550"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+					<paragraph rightIndent="20"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{amount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
 </jasperReport>
