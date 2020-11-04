@@ -8,6 +8,8 @@ package io.smarthealth.clinical.radiology.api;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.radiology.data.RadiologyTestData;
 import io.smarthealth.clinical.radiology.data.ServiceTemplateData;
+import io.smarthealth.clinical.radiology.domain.enumeration.Category;
+import io.smarthealth.clinical.radiology.domain.enumeration.Gender;
 import io.smarthealth.clinical.radiology.service.RadiologyConfigService;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
@@ -176,12 +178,16 @@ public class RadiologyController {
     @GetMapping("/radiology-tests")
     @PreAuthorize("hasAuthority('view_radiology')")
     public ResponseEntity<?> fetchAllRadiology(
+            @RequestParam(value = "confirmed", required = false) Boolean confirmed,
+            @RequestParam(value = "gender", required = false) Gender gender,
+            @RequestParam(value = "category", required = false) Category category,
+            @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "page", required = false) Integer page1,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
 
         Pageable pageable = PaginationUtil.createPage(page1, size);
-        Page<RadiologyTestData> list = radiologyConfigService.findAll(pageable)
+        Page<RadiologyTestData> list = radiologyConfigService.findAll(confirmed, gender, category, name, pageable)
                 .map(x -> x.toData());
         
         Pager<List<RadiologyTestData>> pagers = new Pager();

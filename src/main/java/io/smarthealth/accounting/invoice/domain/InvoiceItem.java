@@ -39,6 +39,7 @@ public class InvoiceItem extends Auditable {
     
     private Boolean voided;
     private String voidedBy;
+    private String remarks;
     private LocalDateTime voidedDatetime;
 
     public InvoiceItemData toData() {
@@ -60,6 +61,7 @@ public class InvoiceItem extends Auditable {
         data.setServicePoint(this.billItem.getServicePoint());
         data.setMemberName(this.invoice.getMemberName());
         data.setMemberNo(this.invoice.getMemberNumber());
+        data.setRemarks(this.getRemarks());
         data.setPayer(this.invoice.getPayer().getPayerName());
         data.setScheme(this.invoice.getScheme().getSchemeName());
         return data;

@@ -1,6 +1,6 @@
 package io.smarthealth.debtor.claim.dispatch.domain.specification;
 
-import io.smarthealth.debtor.claim.allocation.domain.Allocation;
+import io.smarthealth.debtor.claim.dispatch.domain.Dispatch;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 /**
  *
- * @author Kelsas
+ * @author Kennedy.ikatanyi
  */
 public class DispatchSpecification {
 
@@ -16,7 +16,7 @@ public class DispatchSpecification {
         super();
     }
 
-    public static Specification<Allocation> createSpecification(Long payerId, DateRange range) {
+    public static Specification<Dispatch> createSpecification(Long payerId, DateRange range) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
  
@@ -26,7 +26,7 @@ public class DispatchSpecification {
           
              if(range!=null){
                   predicates.add(
-                     cb.between(root.get("dispatchDate"), range.getStartDateTime(), range.getEndDateTime())
+                     cb.between(root.get("dispatchDate"), range.getStartDate(), range.getEndDate())
                   );
               }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

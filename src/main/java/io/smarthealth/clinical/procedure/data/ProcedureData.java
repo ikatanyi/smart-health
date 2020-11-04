@@ -5,6 +5,7 @@ import io.smarthealth.clinical.procedure.domain.enumeration.Gender;
 import io.smarthealth.stock.item.data.SimpleItemData;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class ProcedureData {
     @ApiModelProperty(required = false, hidden = true)
     private BigDecimal costRate;
     
+    
     public static ProcedureData map(Procedure rtd){
         ProcedureData entity = new ProcedureData();
         entity.setId(rtd.getId());
@@ -39,7 +41,7 @@ public class ProcedureData {
            entity.setRate(rtd.getItem().getRate());           
            entity.setCostRate(rtd.getItem().getCostRate());
         }
-        entity.setStatus(rtd.getStatus());        
+        entity.setStatus(rtd.getStatus());  
         return entity;
     }
     
