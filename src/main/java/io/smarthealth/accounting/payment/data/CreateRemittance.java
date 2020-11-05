@@ -5,6 +5,8 @@
  */
 package io.smarthealth.accounting.payment.data;
 
+import io.smarthealth.accounting.payment.domain.enumeration.PayerType;
+import io.smarthealth.accounting.payment.domain.enumeration.RecordType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.Data;
@@ -16,14 +18,17 @@ import lombok.Data;
 @Data
 public class CreateRemittance {
 
-       public enum Type {
+    public enum Type {
         Cash,
         Bank
     }
+  
     private Long payerId;
     private String payerName;
+    private String payerNumber;
     private BigDecimal amount;
     private LocalDate date;
+    private String receivedFrom;
     private String paymentMethod;
     private String taxAccountNumber;
     private String referenceNumber;
@@ -32,7 +37,10 @@ public class CreateRemittance {
     private String notes;
     private BigDecimal bankCharge;
     private PayChannel paymentChannel;
-//    private Type type;
+    private PayerType payerType;
+    private RecordType recordType;
 //    private Long typeId; //{0 - Bank ,1 - Petty Cash, 2 Undeposited Fund }
 //    private String accountNumber;  //if bank 
+
+    //
 }

@@ -37,6 +37,9 @@ public class ReceiptData {
     private String currency;
     private String createdBy;
     private Boolean prepayment;
+    private Boolean voided;
+    private String voidedBy;
+    private LocalDateTime voidedDatetime;
     private List<ReceiptTransactionData> transactions = new ArrayList<>();
     private List<ReceiptItemData> receiptItems = new ArrayList<>();
     

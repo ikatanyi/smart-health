@@ -19,8 +19,8 @@ import io.smarthealth.accounting.payment.data.PayChannel;
 import io.smarthealth.accounting.payment.data.CreateReceipt;
 import io.smarthealth.accounting.payment.domain.PaymentDeposit;
 import io.smarthealth.accounting.payment.domain.Receipt;
-import io.smarthealth.accounting.payment.domain.enumeration.CustomerType;
-import io.smarthealth.accounting.payment.domain.enumeration.ReceiveType;
+import io.smarthealth.accounting.payment.domain.enumeration.PayerType;
+import io.smarthealth.accounting.payment.domain.enumeration.RecordType;
 import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
 import io.smarthealth.accounting.payment.domain.specification.PrepaymentSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -104,7 +104,7 @@ public class ReceivePaymentService {
         Receipt savedReceipt = repository.save(receipt);
 
         //TODO payment deposit
-        if (data.getType() == ReceiveType.Deposit) {
+        if (data.getType() == RecordType.Deposit) {
             PaymentDeposit deposit = new PaymentDeposit();
             deposit.setAmount(savedReceipt.getAmount());
             deposit.setBalance(savedReceipt.getAmount());
@@ -117,7 +117,7 @@ public class ReceivePaymentService {
             deposit.setTransactionNo(savedReceipt.getTransactionNo());
             deposit.setType(data.getType());
 
-            if (data.getCustomerType() == CustomerType.Patient) {
+            if (data.getCustomerType() == PayerType.Patient) {
                 Patient patient = patientRepository.findByPatientNumber(data.getCustomerNumber())
                         .orElseThrow(() -> APIException.notFound("Patient Number {} Not Found", data.getCustomerNumber()));
                 deposit.setCustomer(patient.getFullName());
@@ -125,7 +125,7 @@ public class ReceivePaymentService {
                 deposit.setCustomerNumber(patient.getPatientNumber());
             }
 
-            if (data.getCustomerType() == CustomerType.Insurance) {
+            if (data.getCustomerType() == PayerType.Insurance) {
                 Payer payer = payerRepository.findById(data.getCustomerId())
                         .orElseThrow(() -> APIException.notFound("Payer with ID  {} Not Found", data.getCustomerId()));
                 deposit.setCustomer(payer.getPayerName());
@@ -137,8 +137,8 @@ public class ReceivePaymentService {
 
             journalEntryService.save(toJournalDeposits(savedReceipt, data));
         }
-        if (data.getType() == ReceiveType.Payment) { 
-            if (data.getCustomerType() == CustomerType.Patient) { 
+        if (data.getType() == RecordType.Payment) { 
+            if (data.getCustomerType() == PayerType.Patient) { 
                 PatientBill bill = billingService.createReceipt(new PatientReceipt(data.getVisitNumber(), savedReceipt)); 
                 journalEntryService.save(toJournalPayment(bill.getBillItems().get(0)));
             }
