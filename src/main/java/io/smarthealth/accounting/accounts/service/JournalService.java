@@ -159,7 +159,7 @@ public class JournalService {
                     .map(je -> createJournalItem(je))
                     .collect(Collectors.toList());
 
-            String description = journalEntryEntity.getDescription() != null ? journalEntryEntity.getDescription() : "Journal Reversal - Journal Entry: " + journalEntryEntity.getId();
+            String description = journalEntryEntity.getDescription() != null ? journalEntryEntity.getDescription()+"(Reversed Transaction)" : "Journal Reversal - Journal Entry: " + journalEntryEntity.getId();
             JournalEntry toSave = new JournalEntry(journalReversal.getDate(), description, items);
             toSave.setTransactionType(TransactionType.Journal_Entry_Reversal);
             toSave.setStatus(JournalState.PENDING);

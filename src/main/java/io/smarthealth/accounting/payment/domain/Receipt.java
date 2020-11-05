@@ -111,6 +111,10 @@ public class Receipt extends Auditable {
                 .stream().map(x->x.toData())
                 .collect(Collectors.toList())
         );
+        //ZXC
+        data.setVoided(this.voided);
+        data.setVoidedBy(this.voidedBy);
+        data.setVoidedDatetime(this.voidedDatetime);
         
 
         return data;
