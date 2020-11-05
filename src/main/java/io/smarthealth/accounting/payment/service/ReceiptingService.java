@@ -77,7 +77,7 @@ public class ReceiptingService {
     private final PayerRepository payerRepository;
     private final RemittanceRepository remittanceRepository;
     private final CopaymentService copaymentService;
-    private final ReceiptTransactionRepository transactionRepository; 
+    private final ReceiptTransactionRepository transactionRepository;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(ReceivePayment data) {
@@ -184,6 +184,7 @@ public class ReceiptingService {
     }
 
     public void voidPayment(String receiptNo) {
+        //TODO - capture voiding reason and also reverse the transactions
 
         Receipt payment = getPaymentByReceiptNumber(receiptNo);
         repository.voidPayment(SecurityUtils.getCurrentUserLogin().orElse("system"), payment.getId());
@@ -212,9 +213,15 @@ public class ReceiptingService {
     }
 
     @Transactional
-    public Receipt receiptAdjustmentMethod(String receiptNo, ReceiptMethod method) {
+    public Receipt receiptAdjustmentMethod(String receiptNo, List<ReceiptMethod> method) {
         Receipt receipt = getPaymentByReceiptNumber(receiptNo);
-        return null;
+        transactionRepository.deleteReceiptTransaction(receiptNo);
+        List<ReceiptTransaction> trans = method.stream()
+                .map(data -> createPaymentTransaction(data))
+                .collect(Collectors.toList());
+        receipt.addTransaction(trans);
+        Receipt savedReceipt = repository.save(receipt);
+        return savedReceipt;
     }
 
     public Page<Receipt> getPayments(String payee, String receiptNo, String transactionNo, String shiftNo, Long servicePointId, Long cashierId, DateRange range, Boolean prepaid, Pageable page) {

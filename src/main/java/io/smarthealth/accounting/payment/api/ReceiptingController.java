@@ -98,7 +98,7 @@ public class ReceiptingController {
 
     @PutMapping("/receipting/{receiptNo}/adjust-method")
     @PreAuthorize("hasAuthority('edit_receipt')")
-    public ResponseEntity<?> paymentMethodAdjustment(@PathVariable(value = "receiptNo") String receiptNo, @Valid @RequestBody ReceiptMethod receiptMethod) {
+    public ResponseEntity<?> paymentMethodAdjustment(@PathVariable(value = "receiptNo") String receiptNo, @Valid @RequestBody List<ReceiptMethod> receiptMethod) {
         Receipt receipt = service.receiptAdjustmentMethod(receiptNo, receiptMethod);
         return ResponseEntity.ok(receipt.toData());
     }
