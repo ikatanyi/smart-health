@@ -368,7 +368,7 @@ public class PaymentReportService {
         reportData.setData(receiptDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/shift_mode_report");
-        reportData.setReportName("Cashier-Shift-Statement");
+        reportData.setReportName("Cashier-Cash-Sale-Breakdown");
         reportService.generateReport(reportData, response);
     }
     

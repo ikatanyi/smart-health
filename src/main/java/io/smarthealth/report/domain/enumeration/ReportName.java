@@ -12,8 +12,8 @@ package io.smarthealth.report.domain.enumeration;
 public enum ReportName { 
         Trial_Balance,
         Daily_Income_Statement,
-        Departmental_Payment_Report,
-        Departmental_Income_Statement,
+        General_Collection_Statement,
+        Service_Point_Income_Statement,
         Insurance_Statement,
         Invoice_Statement,
         Invoice,
@@ -21,7 +21,7 @@ public enum ReportName {
         Supplier_Invoice,
         Patient_File ,
         Lab_Report,
-        Procedure_Report,
+        Procedure_Summary,
         Request_Form,
         Prescription,
         Radiology_Report,
@@ -30,7 +30,7 @@ public enum ReportName {
         Prescription_Label,
         Lab_Statement_Summarized,
         Lab_Statement,
-        Radiology_Statement,
+        Radiology_Studies_Summary,
         Patient_List,
         Patient_Visit,
         Patient_Diagnosis,   
@@ -78,5 +78,6 @@ public enum ReportName {
         Payment_Transactions_Statement,
         Registered_Schemes,
         Insurance_Diagnosis_Summary,
-        Cashier_Shift_Statement
+        Cashier_Cash_Sale_Breakdown,
+        Patient_Attendance_Report
 }

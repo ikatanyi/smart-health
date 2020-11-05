@@ -16,7 +16,7 @@ public enum ItemCategory {
     Lab,
     Procedure,
     Ward,
-    Surgery,
+    Surgical,
     Drug,
     CoPay,
     Dental,

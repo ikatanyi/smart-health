@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="department_service_statement" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="160"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="range" class="java.lang.String"/>
 	<parameter name="to" class="java.util.Date"/>
@@ -70,7 +70,10 @@
 		<groupFooter>
 			<band height="14">
 				<staticText>
-					<reportElement x="435" y="0" width="50" height="14" uuid="24dc744f-ee69-4052-a990-6da4153528bb"/>
+					<reportElement x="0" y="0" width="485" height="14" uuid="24dc744f-ee69-4052-a990-6da4153528bb"/>
+					<box>
+						<bottomPen lineWidth="0.25"/>
+					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
 					</textElement>
@@ -107,15 +110,18 @@
 			<band height="18">
 				<staticText>
 					<reportElement x="0" y="4" width="485" height="14" uuid="dfe0a82c-03fb-4762-a15d-fad7abfbcdd1"/>
+					<box>
+						<bottomPen lineWidth="0.15"/>
+					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="7" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Total:]]></text>
+					<text><![CDATA[Sub total:]]></text>
 				</staticText>
 				<textField>
 					<reportElement x="485" y="4" width="65" height="14" uuid="151b4087-51a6-457f-833d-d9f0af720909"/>
 					<box>
-						<bottomPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.15"/>
 					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 					</textElement>
@@ -209,11 +215,14 @@
 				<textFieldExpression><![CDATA[$P{range}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="9" width="140" height="12" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
+				<reportElement x="1" y="9" width="554" height="12" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Departmental Service Statement]]></text>
+				<text><![CDATA[Service Statement]]></text>
 			</staticText>
 			<line>
 				<reportElement positionType="Float" x="0" y="0" width="552" height="1" forecolor="#6666FF" uuid="51c15655-6202-4aed-8e36-9c455d843b8a"/>
@@ -250,57 +259,51 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="14" splitType="Stretch">
-			<textField>
-				<reportElement x="0" y="1" width="11" height="13" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
+		<band height="24" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="0" y="1" width="11" height="22" isRemoveLineWhenBlank="true" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
 				<box>
-					<bottomPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="352" y="64" width="74" height="12" uuid="e566a98a-0963-4651-a879-46a374153425"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="68" y="1" width="103" height="22" isRemoveLineWhenBlank="true" uuid="cc1a1d37-9600-4848-ad5d-9c8e7f855692"/>
 				<box>
-					<bottomPen lineWidth="0.25"/>
-				</box>
-				<box>
-					<bottomPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="11" y="1" width="57" height="13" isRemoveLineWhenBlank="true" uuid="ad8e3a4f-9f44-47cf-a041-9d9323bdfa3a"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="11" y="1" width="57" height="22" isRemoveLineWhenBlank="true" uuid="ad8e3a4f-9f44-47cf-a041-9d9323bdfa3a"/>
 				<box>
-					<bottomPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{transactionDate}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="426" y="64" width="59" height="12" uuid="a25e0130-8bc6-4628-9211-4eac10d503b3"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="270" y="1" width="82" height="22" isRemoveLineWhenBlank="true" uuid="ee3b89e9-0da3-4911-b1c7-6f888e04964c"/>
 				<box>
-					<bottomPen lineWidth="0.25"/>
-				</box>
-				<box>
-					<bottomPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemCode}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="68" y="1" width="103" height="13" isRemoveLineWhenBlank="true" uuid="cc1a1d37-9600-4848-ad5d-9c8e7f855692"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="485" y="1" width="65" height="22" isRemoveLineWhenBlank="true" uuid="04590504-e483-4a1c-8167-9b615d23312b"/>
 				<box>
-					<bottomPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
@@ -308,30 +311,30 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{amountPaid}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="270" y="1" width="82" height="13" isRemoveLineWhenBlank="true" uuid="ee3b89e9-0da3-4911-b1c7-6f888e04964c"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="171" y="1" width="99" height="22" isRemoveLineWhenBlank="true" uuid="384700db-e122-4bc9-bb94-4a4031bcaa37"/>
 				<box>
-					<bottomPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{receiptNumber}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="352" y="1" width="74" height="13" isRemoveLineWhenBlank="true" uuid="dedf27f9-6477-4e77-9bee-1e9d5c9b63ff"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="352" y="1" width="74" height="22" isRemoveLineWhenBlank="true" uuid="dedf27f9-6477-4e77-9bee-1e9d5c9b63ff"/>
 				<box>
-					<bottomPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
 			</textField>
-			<textField pattern="###0" isBlankWhenNull="true">
-				<reportElement x="426" y="1" width="59" height="13" isRemoveLineWhenBlank="true" uuid="8cc7b2e9-ab1e-41b5-a743-1cc99580c5e0"/>
+			<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="true">
+				<reportElement x="426" y="1" width="59" height="22" isRemoveLineWhenBlank="true" uuid="8cc7b2e9-ab1e-41b5-a743-1cc99580c5e0"/>
 				<box>
-					<bottomPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
@@ -339,6 +342,12 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="2" y="23" width="553" height="1" forecolor="#000000" uuid="b6283798-39f6-4598-a6b7-7460521f39e1"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
 		</band>
 	</detail>
 	<pageFooter>

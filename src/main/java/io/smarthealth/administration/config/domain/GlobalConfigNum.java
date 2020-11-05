@@ -27,5 +27,6 @@ public enum GlobalConfigNum {
     PatientPortrait,
     CashierShiftDuration,
     Notifications,
-    DefaultCurrency
+    DefaultCurrency,
+    DiscountMaxPercentage;
 }

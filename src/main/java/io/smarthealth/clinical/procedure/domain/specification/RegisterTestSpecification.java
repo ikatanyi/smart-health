@@ -18,7 +18,7 @@ public class RegisterTestSpecification {
         super();
     }
 
-    public static Specification<PatientProcedureRegister> createSpecification(String PatientNumber,String scanNo, String visitId, ProcedureTestState status, DateRange range) {
+    public static Specification<PatientProcedureTest> createSpecification(String PatientNumber,String scanNo, String visitId, ProcedureTestState status, DateRange range) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
  
@@ -35,7 +35,7 @@ public class RegisterTestSpecification {
                 predicates.add(cb.equal(root.get("status"), status));
              if(range!=null){
                   predicates.add(
-                     cb.between(root.get("receivedDate"), range.getStartDate(), range.getEndDate())
+                     cb.between(root.get("patientProcedureRegister").get("receivedDate"), range.getStartDate(), range.getEndDate())
                   );
               }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

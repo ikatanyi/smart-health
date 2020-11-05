@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.infrastructure.utility.ivorydata;
+package io.smarthealth.infrastructure.utility;
 
-import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.infrastructure.utility.ivorydata.IvoryHistoricalClinicalDataSindano;
+import io.smarthealth.infrastructure.utility.ivorydata.PatientData;
+import io.smarthealth.infrastructure.utility.newpoint.NewPointHistoricalClinicalDataSindano;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,13 +30,26 @@ public class PastClinicalDataController {
 
 //    @Autowired
     private final IvoryHistoricalClinicalDataSindano ivoryHistoricalClinicalDataSindano;
+    private final NewPointHistoricalClinicalDataSindano newPointHistoricalClinicalDataSindano;
 
 //    public PatientUpdateController(IvoryHistoricalClinicalDataSindano ivoryHistoricalClinicalDataSindano) {
 //        this.ivoryHistoricalClinicalDataSindano = ivoryHistoricalClinicalDataSindano;
 //    }
-    @PostMapping("/ivory-fix-patient-data")
+    @PostMapping("/ivory-pastdata")
     public ResponseEntity<?> fixPatientDataIvory() {
         ivoryHistoricalClinicalDataSindano.processData();
+
+        Pager<PatientData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Successfully Created.");
+        pagers.setContent(null);
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
+    @PostMapping("/newpoint-pastdata")
+    public ResponseEntity<?> newPointPastData() {
+        newPointHistoricalClinicalDataSindano.processData();
 
         Pager<PatientData> pagers = new Pager();
         pagers.setCode("0");

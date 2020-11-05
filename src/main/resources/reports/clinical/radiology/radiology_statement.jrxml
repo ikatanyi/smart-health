@@ -18,6 +18,7 @@
 	<parameter name="PatientData" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Footer_Data" class="java.util.List"/>
+	<parameter name="range" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -77,11 +78,8 @@
 			</subreport>
 		</band>
 	</title>
-	<pageHeader>
-		<band height="20"/>
-	</pageHeader>
 	<columnHeader>
-		<band height="38">
+		<band height="48">
 			<staticText>
 				<reportElement x="0" y="0" width="555" height="13" forecolor="#000000" uuid="6e097ebd-188a-427b-9a8e-5da1fb171f98"/>
 				<box>
@@ -90,10 +88,10 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Radiology Tests Statement]]></text>
+				<text><![CDATA[Radiology Studies Summary]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="19" y="26" width="77" height="12" uuid="69314529-a98d-4a99-a730-3b054b0c3de6"/>
+				<reportElement x="110" y="36" width="77" height="12" uuid="69314529-a98d-4a99-a730-3b054b0c3de6"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -103,17 +101,17 @@
 				<text><![CDATA[Patient Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="320" y="27" width="87" height="11" uuid="a632e177-6db8-45e7-9002-3f03c335da7d"/>
+				<reportElement x="423" y="37" width="87" height="11" uuid="a632e177-6db8-45e7-9002-3f03c335da7d"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
-				<text><![CDATA[RequestedBy]]></text>
+				<text><![CDATA[Requested By]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="160" y="27" width="34" height="11" uuid="73fdcc28-03e1-4dc3-b7e2-68ea771e6212"/>
+				<reportElement x="251" y="37" width="46" height="11" uuid="73fdcc28-03e1-4dc3-b7e2-68ea771e6212"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -123,17 +121,17 @@
 				<text><![CDATA[Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="96" y="27" width="64" height="11" uuid="c413311e-33fe-4cf6-8024-74b1b3b30468"/>
+				<reportElement x="187" y="37" width="64" height="11" uuid="c413311e-33fe-4cf6-8024-74b1b3b30468"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
-				<text><![CDATA[PatientNo]]></text>
+				<text><![CDATA[Patient No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="278" y="27" width="42" height="11" uuid="a4050875-50e0-435f-8b7b-ca60b73b91b7"/>
+				<reportElement x="381" y="37" width="42" height="11" uuid="a4050875-50e0-435f-8b7b-ca60b73b91b7"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -143,7 +141,7 @@
 				<text><![CDATA[Paid]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="194" y="27" width="84" height="11" uuid="67756dba-ca97-4e10-9095-d279db544eba"/>
+				<reportElement x="297" y="37" width="84" height="11" uuid="67756dba-ca97-4e10-9095-d279db544eba"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -153,27 +151,27 @@
 				<text><![CDATA[Test]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="407" y="27" width="85" height="11" uuid="26bf880c-0441-4d90-8398-c4966b078d47"/>
+				<reportElement x="510" y="37" width="44" height="11" uuid="26bf880c-0441-4d90-8398-c4966b078d47"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[TestPrice]]></text>
+				<text><![CDATA[Price]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="490" y="27" width="65" height="11" uuid="22c1770b-b435-417e-8703-0d947e62e1bf"/>
+				<reportElement x="19" y="36" width="91" height="12" uuid="22c1770b-b435-417e-8703-0d947e62e1bf"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Entry Date]]></text>
+				<text><![CDATA[Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="26" width="19" height="12" uuid="991b1c23-ff1f-4b1b-9b51-f15579ca9de5"/>
+				<reportElement x="0" y="36" width="19" height="12" uuid="991b1c23-ff1f-4b1b-9b51-f15579ca9de5"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -182,74 +180,81 @@
 				</textElement>
 				<text><![CDATA[#]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="0" y="17" width="555" height="12" uuid="df58c92a-3829-4b5c-82f5-2a5673c549b4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Period :"+$P{range}]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="16" splitType="Stretch">
-			<textField isStretchWithOverflow="true">
-				<reportElement x="0" y="0" width="19" height="15" uuid="28a286f5-96d7-4da6-a69c-c2fff1228a27"/>
+		<band height="20" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="19" height="20" uuid="28a286f5-96d7-4da6-a69c-c2fff1228a27"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="19" y="0" width="77" height="15" uuid="85ed173e-b92d-4939-bd99-a57a71e43dba"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="110" y="0" width="77" height="20" uuid="85ed173e-b92d-4939-bd99-a57a71e43dba"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="96" y="0" width="64" height="15" uuid="7d5cc57c-8607-4bbf-9422-d8fef653804b"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="187" y="0" width="64" height="20" uuid="7d5cc57c-8607-4bbf-9422-d8fef653804b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="160" y="0" width="34" height="15" uuid="27aa4374-c260-45ad-9854-3b0c92f8b7f0"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="251" y="0" width="46" height="20" uuid="27aa4374-c260-45ad-9854-3b0c92f8b7f0"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{testCode}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="194" y="0" width="84" height="15" uuid="1dd9610f-5fb8-433d-b9fe-65dbdeff6f6c"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="297" y="0" width="84" height="20" uuid="1dd9610f-5fb8-433d-b9fe-65dbdeff6f6c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{scanName}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="320" y="0" width="87" height="15" uuid="adfcdddb-95c0-4d5d-834d-ed5a82d03a17"/>
+				<reportElement x="423" y="0" width="87" height="20" uuid="adfcdddb-95c0-4d5d-834d-ed5a82d03a17"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{requestedBy}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="490" y="0" width="65" height="15" uuid="79e2aaed-fc87-45c0-a74a-cda85abf850d"/>
+				<reportElement x="19" y="0" width="91" height="20" uuid="79e2aaed-fc87-45c0-a74a-cda85abf850d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{entryDateTime}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement positionType="Float" x="0" y="15" width="554" height="1" uuid="e8cda4a5-5619-46c8-8a9f-f6f8becd9839"/>
+				<reportElement positionType="Float" x="1" y="19" width="554" height="1" uuid="e8cda4a5-5619-46c8-8a9f-f6f8becd9839"/>
 				<graphicElement>
 					<pen lineWidth="0.15" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="407" y="0" width="83" height="15" uuid="dccc97c9-dba3-4498-8758-3ca559fb7590"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="510" y="0" width="44" height="20" uuid="dccc97c9-dba3-4498-8758-3ca559fb7590"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{testPrice}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="278" y="0" width="42" height="15" forecolor="#FF0000" uuid="1da9dd3a-acf0-4d75-ab91-de4b64ecc990">
+				<reportElement x="381" y="0" width="42" height="20" forecolor="#FF0000" uuid="1da9dd3a-acf0-4d75-ab91-de4b64ecc990">
 					<printWhenExpression><![CDATA[$F{paid}.equals( false )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -258,7 +263,7 @@
 				<text><![CDATA[Unpaid]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="278" y="0" width="42" height="15" forecolor="#009900" uuid="9e7c92d4-6f50-43a9-838a-225a9ac8cd04">
+				<reportElement x="381" y="0" width="42" height="20" forecolor="#009900" uuid="9e7c92d4-6f50-43a9-838a-225a9ac8cd04">
 					<printWhenExpression><![CDATA[$F{paid}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">

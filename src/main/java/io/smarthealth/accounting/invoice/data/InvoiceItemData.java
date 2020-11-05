@@ -42,5 +42,6 @@ public class InvoiceItemData implements Serializable {
       private String payer;
       @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
       private LocalDateTime billingDatetime;
+      private String remarks;
       
 }

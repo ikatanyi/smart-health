@@ -23,6 +23,11 @@ public class ReportMailingJobService {
     @CronTarget(jobName = JobName.EXECUTE_REPORT_MAILING_JOBS)
     public void executeReportMailingJobs() throws JobExecutionException {
         log.info("Mailing report triggered for now at: "+LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+        //get a list of all admitted - discharge
+        //for each patient get bed category
+        //for bed category get the charges - recur
+        //for each create a bill for the patient
+        
     } 
     
 }

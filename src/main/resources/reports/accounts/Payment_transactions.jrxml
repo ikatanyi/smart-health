@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="payment_transactions_statement" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="22"/>
+	<property name="ireport.x" value="145"/>
 	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<parameter name="range" class="java.lang.String"/>
@@ -38,6 +38,7 @@
 					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
+						<paragraph rightIndent="10"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{amount_1}]]></textFieldExpression>
 				</textField>
@@ -75,17 +76,18 @@
 	<columnHeader>
 		<band height="59" splitType="Stretch">
 			<staticText>
-				<reportElement x="93" y="46" width="139" height="13" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
+				<reportElement x="81" y="46" width="151" height="13" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
+					<paragraph leftIndent="4"/>
 				</textElement>
 				<text><![CDATA[Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="11" y="46" width="82" height="13" uuid="20a7e05e-9914-4ca9-8b7c-7d990afaf6a4"/>
+				<reportElement x="11" y="46" width="70" height="13" uuid="20a7e05e-9914-4ca9-8b7c-7d990afaf6a4"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -111,6 +113,7 @@
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
+					<paragraph leftIndent="2"/>
 				</textElement>
 				<text><![CDATA[Method]]></text>
 			</staticText>
@@ -121,6 +124,7 @@
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
+					<paragraph leftIndent="2"/>
 				</textElement>
 				<text><![CDATA[Reference]]></text>
 			</staticText>
@@ -141,6 +145,7 @@
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2"/>
 				</textElement>
 				<text><![CDATA[Receipt No.]]></text>
 			</staticText>
@@ -152,7 +157,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Date Range:]]></text>
+				<text><![CDATA[Period :]]></text>
 			</staticText>
 			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
 				<reportElement x="51" y="25" width="504" height="13" isRemoveLineWhenBlank="true" uuid="296dd85b-0679-49de-80e7-b8bed8a46890"/>
@@ -165,8 +170,11 @@
 				<textFieldExpression><![CDATA[$P{range}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="10" width="140" height="12" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement x="1" y="10" width="554" height="12" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Payment Transactions Statement]]></text>
@@ -184,6 +192,7 @@
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
+					<paragraph leftIndent="2"/>
 				</textElement>
 				<text><![CDATA[Transaction Type]]></text>
 			</staticText>
@@ -202,17 +211,18 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="93" y="2" width="139" height="14" uuid="cc1a1d37-9600-4848-ad5d-9c8e7f855692"/>
+				<reportElement x="81" y="2" width="151" height="14" uuid="cc1a1d37-9600-4848-ad5d-9c8e7f855692"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
+					<paragraph leftIndent="4"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{payer}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="11" y="2" width="82" height="14" uuid="ad8e3a4f-9f44-47cf-a041-9d9323bdfa3a"/>
+				<reportElement x="11" y="2" width="70" height="14" uuid="ad8e3a4f-9f44-47cf-a041-9d9323bdfa3a"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Solid"/>
 				</box>
@@ -228,6 +238,7 @@
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
+					<paragraph leftIndent="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{method}]]></textFieldExpression>
 			</textField>
@@ -238,6 +249,7 @@
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
+					<paragraph leftIndent="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{reference}]]></textFieldExpression>
 			</textField>
@@ -248,6 +260,7 @@
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
+					<paragraph rightIndent="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
@@ -258,6 +271,7 @@
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
+					<paragraph leftIndent="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{receiptNo}]]></textFieldExpression>
 			</textField>
@@ -268,6 +282,7 @@
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
+					<paragraph leftIndent="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{type}]]></textFieldExpression>
 			</textField>

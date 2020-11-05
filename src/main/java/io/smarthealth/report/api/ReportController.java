@@ -81,7 +81,7 @@ public class ReportController {
             case Lab_Report:
                 labReportService.getPatientLabReport(queryParams, format, response);
                 break;
-            case Procedure_Report:
+            case Procedure_Summary:
                 procedureReportService.getPatientProcedureReport(queryParams, format, response);
                 break;
             case Request_Form:
@@ -108,7 +108,7 @@ public class ReportController {
             case Lab_Statement:
                 labReportService.getLabTestStatement(queryParams, format, response);
                 break;
-            case Radiology_Statement:
+            case Radiology_Studies_Summary:
                 radiologyReportService.getRadiologyStatement(queryParams, format, response);
                 break;
             case Patient_List:
@@ -204,11 +204,11 @@ public class ReportController {
             case Appointment_Letter:
                 patientReportService.getAppointmentLetter(queryParams, format, response);
                 break;
-            case Departmental_Payment_Report:
+            case General_Collection_Statement:
                 reportService.getPatientPayments(queryParams, format, response);
                 break;
-            case Departmental_Income_Statement:
-                reportService.getDepartmentalPayments(queryParams, format, response);
+            case Service_Point_Income_Statement:
+                reportService.getServicePointIncomeStatement(queryParams, format, response);
                 break;
             case Goods_Receive_Note:
                 stockReportService.SupplierGRN(queryParams, format, response);
@@ -267,8 +267,11 @@ public class ReportController {
             case Insurance_Diagnosis_Summary:
                 reportService.genDiagnosisStatement(queryParams, format, response);
                 break;
-            case Cashier_Shift_Statement:
+            case Cashier_Cash_Sale_Breakdown:
                 paymentReportService.getCashierShift(queryParams, format, response);
+                break;
+            case Patient_Attendance_Report:
+                patientReportService.getPatientReport(queryParams, format, response);
                 break;
             default:
                 break;
