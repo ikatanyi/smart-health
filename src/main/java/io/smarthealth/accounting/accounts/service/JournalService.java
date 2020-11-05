@@ -83,6 +83,10 @@ public class JournalService {
         return journalRepository.findById(id);
     }
 
+    public Optional<JournalEntry> findJournalByTransactionNo(String transactionNo) {
+        return journalRepository.findByTransactionNo(transactionNo);
+    }
+
     public JournalEntry findJournalIdOrThrow(Long id) {
         return findJournalById(id)
                 .orElseThrow(() -> APIException.notFound("Journal entry {0} not found.", id));
@@ -160,6 +164,12 @@ public class JournalService {
             toSave.setTransactionType(TransactionType.Journal_Entry_Reversal);
             toSave.setStatus(JournalState.PENDING);
 
+            if (journalReversal.getTransactionNo() == null) {
+                toSave.setTransactionNo(sequenceNumberService.next(1L, Sequences.Transactions.name()));
+            } else {
+                toSave.setTransactionNo(journalReversal.getTransactionNo());
+            }
+
             JournalEntry savedJOurnal = save(toSave);
 
             journalEntryEntity.setReversed(true);
@@ -173,14 +183,6 @@ public class JournalService {
     }
 
     private JournalEntryItem createJournalItem(JournalEntryItem je) {
-
-        JournalEntryItem item = null;
-        if (je.isDebit()) {
-            item = new JournalEntryItem(je.getAccount(), je.getDescription() + "(Reversed Transaction)", BigDecimal.ZERO, je.getDebit());
-        }
-        if (je.isCredit()) {
-            item = new JournalEntryItem(je.getAccount(), je.getDescription() + "(Reversed Transaction)", je.getCredit(), BigDecimal.ZERO);
-        }
-        return item;
+        return new JournalEntryItem(je.getAccount(), je.getDescription() + "(Reversed Transaction)", je.getCredit(), je.getDebit());
     }
 }

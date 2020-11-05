@@ -7,15 +7,20 @@ package io.smarthealth.accounting.accounts.domain;
 
 import java.time.LocalDate;
 import javax.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *
  * @author Kelsas
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class JournalReversal {
     @NotEmpty(message = "Journal Date is Required")
     private LocalDate date;
     private String description;
+    private String transactionNo;
 }

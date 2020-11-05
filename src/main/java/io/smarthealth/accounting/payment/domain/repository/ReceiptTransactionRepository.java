@@ -17,8 +17,9 @@ public interface ReceiptTransactionRepository extends JpaRepository<ReceiptTrans
 
     List<ReceiptTransaction> findByReceipt(Receipt receipt);
 
-    @Modifying
-    @Query("DELETE FROM ReceiptTransaction t WHERE  t.receipt.receiptNo = :receiptNo")
-    void deleteReceiptTransaction(@Param("receiptNo") String receiptNo);
+//    @Modifying
+//    @Query("DELETE FROM ReceiptTransaction t WHERE  t.receipt.receiptNo = :receiptNo")
+//    void deleteReceiptTransaction(@Param("receiptNo") String receiptNo);
+    void deleteByReceipt(Receipt receipt);
 
 }
