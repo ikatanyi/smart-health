@@ -205,10 +205,10 @@ public class GeneralClinicalServices {
             }
         }
         Referrals srd = referralsService.createReferrals(rde);
-        if (rd.getReferralType().equals(ReferralType.External)) {
-            visit.setStatus(VisitEnum.Status.Transferred);
-            visitService.createAVisit(visit);
-        }
+//        if (rd.getReferralType().equals(ReferralType.External)) {
+//            visit.setStatus(VisitEnum.Status.Transferred);
+//            visitService.createAVisit(visit);
+//        }
         ReferralData data = ReferralData.map(srd);
         Pager<ReferralData> pagers = new Pager();
         pagers.setCode("0");
