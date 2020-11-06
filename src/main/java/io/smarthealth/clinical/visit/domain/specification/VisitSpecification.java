@@ -56,6 +56,7 @@ public class VisitSpecification {
                         cb.or(
                                 cb.equal(root.get("status"), VisitEnum.Status.Admitted),
                                 cb.equal(root.get("status"), VisitEnum.Status.CheckIn)
+//                                cb.equal(root.get("status"), VisitEnum.Status.Transferred)
                         )
                 );
             }
