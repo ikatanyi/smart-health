@@ -23,10 +23,10 @@
     .pcs-totals {    font-size: 9pt;    color: #000000;    background-color: #ffffff;  }  
     .pcs-notes {    font-size: 8pt;  }  .pcs-terms {    font-size: 8pt;  } 
     .pcs-header-first {background-color: #ffffff;font-size: 9pt;color: #333333;      height: auto;} 
-    .pcs-status { color: ;font-size: 15pt;border: 3px solid ;padding: 3px 8px; }
+    .pcs-status { color: #000000; font-size: 15pt;border: 3px solid ;padding: 3px 8px; }
     .billto-section {     padding-top: 0mm;     padding-left: 0mm;   }   
     .shipto-section {     padding-top: 0mm;     padding-left: 0mm;   } 
-    @page :first { @top-center {content: element(header);}    margin-top: 0.700000in;  }  
+    @page :first { @top-center {content: element(header);};    margin-top: 0.700000in;  }  
     .pcs-template-header {padding: 0 0.400000in 0 0.550000in;    height: 0.700000in;  } 
     .pcs-template-fill-emptydiv {    display: table-cell;    content: " ";    width: 100%;  }/* Additional styles for RTL compat *//* Helper Classes */
     .inline {  display: inline-block;}
@@ -116,11 +116,11 @@
         <table cellpadding="0" cellspacing="0" border="0" class="pcs-itemtable" style="width:100%;margin-top:20px;table-layout:fixed;">    
             <thead>        
                 <tr style="height:32px;">              
-                    <td class="pcs-itemtable-header pcs-itemtable-breakword" id="" style="padding: 5px 0px 5px 5px;width: 5%;text-align: center;">      #    </td>    
-                    <td class="pcs-itemtable-header pcs-itemtable-breakword" id="" style="padding: 5px 10px 5px 20px;width: ;text-align: left;">      Item &amp; Description    </td>    
-                    <td class="pcs-itemtable-header pcs-itemtable-breakword" id="" style="padding: 5px 10px 5px 5px;width: 11%;text-align: right;">      Qty    </td>    
-                    <td class="pcs-itemtable-header pcs-itemtable-breakword" id="" style="padding: 5px 10px 5px 5px;width: 11%;text-align: right;">      Rate    </td>    
-                    <td class="pcs-itemtable-header pcs-itemtable-breakword" id="" style="padding: 5px 10px 5px 5px;width: 15%;text-align: right;">      Amount    </td>        
+                    <td class="pcs-itemtable-header pcs-itemtable-breakword" id="1" style="padding: 5px 0px 5px 5px;width: 5%;text-align: center;">      #    </td>    
+                    <td class="pcs-itemtable-header pcs-itemtable-breakword" id="2" style="padding: 5px 10px 5px 20px;width: 11%; text-align: left;">      Item &amp; Description    </td>    
+                    <td class="pcs-itemtable-header pcs-itemtable-breakword" id="3" style="padding: 5px 10px 5px 5px;width: 11%;text-align: right;">      Qty    </td>    
+                    <td class="pcs-itemtable-header pcs-itemtable-breakword" id="4" style="padding: 5px 10px 5px 5px;width: 11%;text-align: right;">      Rate    </td>    
+                    <td class="pcs-itemtable-header pcs-itemtable-breakword" id="5" style="padding: 5px 10px 5px 5px;width: 15%;text-align: right;">      Amount    </td>        
                 </tr>     
             </thead>     
             <tbody class="itemBody">            
