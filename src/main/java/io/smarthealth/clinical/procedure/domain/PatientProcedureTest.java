@@ -77,6 +77,7 @@ public class PatientProcedureTest extends Identifiable{
                  entity.setProcedureDate(this.getPatientProcedureRegister().getReceivedDate());
             entity.setPatientName(this.getPatientProcedureRegister().getPatientName());
             entity.setPatientNo(this.getPatientProcedureRegister().getPatientNo());
+            entity.setCreatedBy(this.getPatientProcedureRegister().getCreatedBy());
         }
         if(this.getRequest()!=null){
             entity.setRequestedBy(this.getRequest().getRequestedBy().getName());
