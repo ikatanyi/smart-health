@@ -118,7 +118,7 @@
 					<font size="9"/>
 					<paragraph rightIndent="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{capitation}.equals( true )?new BigDecimal(0):$F{price}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00;(#,##0.00)">
 				<reportElement x="486" y="0" width="69" height="20" uuid="fb4c66a6-83e6-424a-90b2-39e50c176c59"/>
@@ -126,8 +126,8 @@
 					<font size="9"/>
 					<paragraph rightIndent="20"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{servicePoint}.equalsIgnoreCase( "copayment" )?$F{amount}.negate():
-$P{capitation}.equals( true )?new BigDecimal(0):
+				<textFieldExpression><![CDATA[$P{capitation}.equals( true )?new BigDecimal(0):
+$F{servicePoint}.equalsIgnoreCase( "copayment" )?$F{amount}.negate():
 $F{amount}.equals( null )?new BigDecimal(0):$F{amount}.setScale(0,  java.math.RoundingMode.HALF_UP)]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">

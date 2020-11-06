@@ -7,8 +7,8 @@ package io.smarthealth.accounting.payment.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.payment.data.PaymentDepositData;
-import io.smarthealth.accounting.payment.domain.enumeration.CustomerType;
-import io.smarthealth.accounting.payment.domain.enumeration.ReceiveType;
+import io.smarthealth.accounting.payment.domain.enumeration.PayerType;
+import io.smarthealth.accounting.payment.domain.enumeration.RecordType;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
@@ -32,9 +32,9 @@ import lombok.Data;
 public class PaymentDeposit extends Auditable {
 
     @Enumerated(EnumType.STRING)
-    private ReceiveType type;
+    private RecordType type;
     @Enumerated(EnumType.STRING)
-    private CustomerType customerType;
+    private PayerType customerType;
     private Long customerId;
     private String customer;
     private String customerNumber;

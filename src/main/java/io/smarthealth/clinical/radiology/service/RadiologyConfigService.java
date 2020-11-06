@@ -11,6 +11,9 @@ import io.smarthealth.clinical.radiology.domain.RadiologyRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyTest;
 import io.smarthealth.clinical.radiology.domain.ServiceTemplate;
 import io.smarthealth.clinical.radiology.domain.ServiceTemplateRepository;
+import io.smarthealth.clinical.radiology.domain.enumeration.Category;
+import io.smarthealth.clinical.radiology.domain.enumeration.Gender;
+import io.smarthealth.clinical.radiology.domain.specification.RadiologyTestSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.imports.service.UploadService;
 import io.smarthealth.stock.item.domain.Item;
@@ -26,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
@@ -135,8 +139,9 @@ public class RadiologyConfigService {
     }
 
     @Transactional
-    public Page<RadiologyTest> findAll(Pageable pgbl) {
-        return radiologyRepository.findAll(pgbl);
+    public Page<RadiologyTest> findAll(Boolean supervisorConfirmation, Gender gender, Category category, String name, Pageable pgbl) {
+        Specification spec = RadiologyTestSpecification.createSpecification(supervisorConfirmation, gender, category, name);
+        return radiologyRepository.findAll(spec, pgbl);
     }
 
     public List<ServiceTemplate> batchTemplateUpload(List<ServiceTemplateData> batchTemplateData) {

@@ -9,8 +9,7 @@ package io.smarthealth.accounting.payment.domain.enumeration;
  *
  * @author Kelsas
  */
-public enum CustomerType {
-    Patient,
-    Insurance,
-    Others
+public enum RecordType {
+    Deposit,
+    Payment
 }
