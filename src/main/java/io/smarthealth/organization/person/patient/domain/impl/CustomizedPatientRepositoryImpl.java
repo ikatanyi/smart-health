@@ -31,7 +31,7 @@ public class CustomizedPatientRepositoryImpl implements CustomizedPatientReposit
 
         org.apache.lucene.search.Query luceneQuery = queryBuilder
                 .keyword()
-                .onFields("givenName", "middleName", "surname", "patientNumber", "primary_contact")
+                .onFields("givenName", "middleName", "surname", "patientNumber")
                 .matching(terms)
                 .createQuery(); 
 

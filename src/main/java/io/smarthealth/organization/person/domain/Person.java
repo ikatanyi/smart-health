@@ -58,8 +58,7 @@ public class Person extends Auditable {
     private List<PersonNextOfKin> nok;
 
 //    @Formula("case when exists (select * from patient p where p.patient_id = person_id) then 1 else 0 end")
-    private boolean isPatient;
-    @Field
+    private boolean isPatient; 
     private String primaryContact;
     private String residence, religion, nationalIdNumber;
 
