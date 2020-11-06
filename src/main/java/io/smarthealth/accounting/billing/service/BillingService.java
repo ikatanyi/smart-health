@@ -657,7 +657,6 @@ public class BillingService {
     // Get Bills
     public List<SummaryBill> getBillTotals(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, VisitEnum.PaymentMethod paymentMode, DateRange range) {
         return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range);
-
     }
 
     public BillDetail getBillDetails(String visitNumber, Pageable pageable) {
