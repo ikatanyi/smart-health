@@ -8,12 +8,17 @@ import javax.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Formula;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.TermVector;
+
 /**
  *
  * @author Kelsas
  */
 @Data
 @Entity
+@Indexed
 @Table(name = "person")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Person extends Auditable {
@@ -21,10 +26,13 @@ public class Person extends Auditable {
     @Column(length = 25)
     private String title;
     @Column(length = 50)
+    @Field(termVector = TermVector.YES)
     private String givenName;
     @Column(length = 50)
+    @Field(termVector = TermVector.YES)
     private String middleName;
     @Column(length = 50)
+    @Field(termVector = TermVector.YES)
     private String surname;
     @Column(length = 1)
     @Enumerated(EnumType.STRING)
@@ -50,9 +58,9 @@ public class Person extends Auditable {
     private List<PersonNextOfKin> nok;
 
 //    @Formula("case when exists (select * from patient p where p.patient_id = person_id) then 1 else 0 end")
-    private boolean isPatient;
-
-    private String primaryContact, residence, religion, nationalIdNumber;
+    private boolean isPatient; 
+    private String primaryContact;
+    private String residence, religion, nationalIdNumber;
 
 //    @OneToMany(mappedBy = "person")
 //    private List<Biometrics> biometrics =new ArrayList<>();
