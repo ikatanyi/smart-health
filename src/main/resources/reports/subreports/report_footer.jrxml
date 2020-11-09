@@ -1,33 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_footer" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="575" leftMargin="10" rightMargin="10" topMargin="0" bottomMargin="0" uuid="f999e9d8-48c8-4d99-8793-0d8624a84a5f">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_footer" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="570" leftMargin="10" rightMargin="15" topMargin="0" bottomMargin="0" uuid="f999e9d8-48c8-4d99-8793-0d8624a84a5f">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<field name="msg" class="java.lang.String"/>
 	<pageFooter>
 		<band height="15">
-			<line>
-				<reportElement x="-3" y="0" width="561" height="1" uuid="0272ffd5-bcce-4f62-adda-2c1045ba7f82"/>
-				<graphicElement>
-					<pen lineWidth="0.15"/>
-				</graphicElement>
-			</line>
 			<textField evaluationTime="Report" isBlankWhenNull="true">
-				<reportElement x="1" y="1" width="421" height="14" uuid="93d35073-b523-4662-acc1-8c0b2decf3e5"/>
+				<reportElement x="0" y="1" width="449" height="14" uuid="93d35073-b523-4662-acc1-8c0b2decf3e5"/>
+				<box>
+					<topPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{msg}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="465" y="1" width="36" height="14" uuid="82aafc75-51f1-417b-b08d-cc266a5e734e"/>
+				<reportElement x="449" y="1" width="36" height="14" uuid="82aafc75-51f1-417b-b08d-cc266a5e734e"/>
+				<box>
+					<topPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Generated:]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="501" y="1" width="72" height="14" uuid="7555f5ad-4c25-46b1-9e41-583102067f3a"/>
+				<reportElement x="485" y="1" width="85" height="14" uuid="7555f5ad-4c25-46b1-9e41-583102067f3a"/>
+				<box>
+					<topPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
