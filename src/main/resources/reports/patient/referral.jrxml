@@ -262,7 +262,7 @@
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="92" splitType="Stretch">
+		<band height="84" splitType="Stretch">
 			<staticText>
 				<reportElement positionType="Float" mode="Transparent" x="2" y="9" width="150" height="14" forecolor="#000000" backcolor="#9999FF" uuid="23ad1106-8065-430e-98de-da2f964c1d65"/>
 				<textElement verticalAlignment="Middle">
@@ -333,9 +333,9 @@
 				<text><![CDATA[Lab Results :]]></text>
 			</staticText>
 		</band>
-		<band height="101">
+		<band height="35">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="2" y="18" width="563" height="14" uuid="d90f3bfd-5256-4467-a6f7-e711b2b54f5b"/>
+				<reportElement x="2" y="18" width="569" height="14" uuid="d90f3bfd-5256-4467-a6f7-e711b2b54f5b"/>
 				<box topPadding="1" bottomPadding="1"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8"/>
@@ -343,7 +343,7 @@
 				<textFieldExpression><![CDATA[$F{referralNotes}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="2" width="572" height="12" uuid="57736586-d6fe-49b8-88d3-7aea3225a11c"/>
+				<reportElement x="1" y="0" width="572" height="12" uuid="57736586-d6fe-49b8-88d3-7aea3225a11c"/>
 				<box>
 					<topPen lineWidth="0.15"/>
 				</box>
@@ -351,19 +351,6 @@
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Reason :]]></text>
-			</staticText>
-			<line>
-				<reportElement positionType="Float" x="336" y="82" width="229" height="1" forecolor="#CC3300" uuid="38549910-acdc-4403-bfe2-f5692a9624e7"/>
-				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
-				</graphicElement>
-			</line>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="-1" y="82" width="569" height="14" forecolor="#000000" backcolor="#9999FF" uuid="5f46b872-912d-46bd-bd5e-4b3a97f0fce8"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[                                                                                                                                                                                    Signature of Referring Physician]]></text>
 			</staticText>
 		</band>
 	</detail>
@@ -377,6 +364,20 @@
 		</band>
 	</pageFooter>
 	<summary>
-		<band splitType="Stretch"/>
+		<band height="48" splitType="Stretch">
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="21" width="569" height="14" forecolor="#000000" backcolor="#9999FF" uuid="5f46b872-912d-46bd-bd5e-4b3a97f0fce8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[                                                                                                                                                                                    Signature of Referring Physician]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="342" y="20" width="229" height="1" forecolor="#CC3300" uuid="38549910-acdc-4403-bfe2-f5692a9624e7"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
+				</graphicElement>
+			</line>
+		</band>
 	</summary>
 </jasperReport>
