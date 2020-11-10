@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="referral" pageWidth="612" pageHeight="795" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="7f5d1719-2150-4099-8058-82165eccb7fc">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="11"/>
+	<property name="ireport.y" value="0"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -181,13 +181,16 @@
 					<pen lineWidth="0.5" lineColor="#333333"/>
 				</graphicElement>
 			</line>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="1" y="39" width="571" height="14" forecolor="#000000" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+			<textField>
+				<reportElement positionType="Float" mode="Transparent" x="1" y="39" width="571" height="14" forecolor="#000000" backcolor="#9999FF" uuid="679434a5-9904-4253-9267-a47cfc6e3bb4"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Referral Form]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[$F{referralType}+" Referral Form"]]></textFieldExpression>
+			</textField>
 			<staticText>
 				<reportElement positionType="Float" mode="Transparent" x="3" y="61" width="64" height="14" forecolor="#000000" backcolor="#9999FF" uuid="b0f4afea-1b92-4545-be36-354aaa2cec14"/>
 				<textElement verticalAlignment="Middle">
@@ -203,9 +206,9 @@
 				<textFieldExpression><![CDATA[$F{referralDate}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement positionType="Float" x="1" y="127" width="570" height="1" forecolor="#CC3300" uuid="7e277ce6-dea7-4eae-833f-c62ef75773b2"/>
+				<reportElement positionType="Float" x="1" y="127" width="570" height="1" forecolor="#000000" uuid="7e277ce6-dea7-4eae-833f-c62ef75773b2"/>
 				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#333333"/>
+					<pen lineWidth="0.15" lineColor="#333333"/>
 				</graphicElement>
 			</line>
 			<subreport>
@@ -237,54 +240,31 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{visitNo}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement positionType="Float" x="1" y="54" width="570" height="1" forecolor="#CC3300" uuid="1380fff1-cfb0-4e68-a0ba-88217fe9085b"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#333333"/>
-				</graphicElement>
-			</line>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="3" y="101" width="143" height="14" forecolor="#000000" backcolor="#9999FF" uuid="ad52767c-f4c9-40fb-ac7c-3c9f83527976"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="-1" y="96" width="290" height="14" isRemoveLineWhenBlank="true" uuid="e3f62d18-6e4a-4c6c-8454-f3fd5633cac4"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Institution/Doctor Transferred To :]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="146" y="101" width="255" height="14" isRemoveLineWhenBlank="true" uuid="e3f62d18-6e4a-4c6c-8454-f3fd5633cac4"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{doctorName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Institution/Doctor Transferred To: "+$F{doctorName}]]></textFieldExpression>
 			</textField>
-		</band>
-	</pageHeader>
-	<columnHeader>
-		<band height="72">
-			<line>
-				<reportElement positionType="Float" x="-1" y="71" width="573" height="1" forecolor="#CC3300" uuid="5f46f972-c1e9-4a16-bea9-62717a522a18"/>
-				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
-				</graphicElement>
-			</line>
 			<subreport>
-				<reportElement x="290" y="15" width="282" height="57" uuid="efaeaba5-2b9b-4a48-9bfe-9bdbe239e0c6"/>
+				<reportElement x="291" y="72" width="281" height="38" uuid="efaeaba5-2b9b-4a48-9bfe-9bdbe239e0c6"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "employee-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="290" y="1" width="90" height="14" forecolor="#000000" backcolor="#9999FF" uuid="f8ffbd6d-2c86-4203-a7e4-4f8f4da9e6c6"/>
+				<reportElement positionType="Float" mode="Transparent" x="291" y="57" width="90" height="14" forecolor="#000000" backcolor="#9999FF" uuid="f8ffbd6d-2c86-4203-a7e4-4f8f4da9e6c6"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Referring Physiscian :]]></text>
 			</staticText>
 		</band>
-	</columnHeader>
+	</pageHeader>
 	<detail>
-		<band height="92" splitType="Stretch">
+		<band height="84" splitType="Stretch">
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="11" width="150" height="14" forecolor="#000000" backcolor="#9999FF" uuid="23ad1106-8065-430e-98de-da2f964c1d65"/>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="9" width="150" height="14" forecolor="#000000" backcolor="#9999FF" uuid="23ad1106-8065-430e-98de-da2f964c1d65"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -298,7 +278,8 @@
 				<text><![CDATA[Examination Notes :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="2" y="62" width="287" height="11" isRemoveLineWhenBlank="true" uuid="e734a80d-3b79-4608-867e-a7242e6439d1"/>
+				<reportElement positionType="Float" x="2" y="62" width="287" height="13" isRemoveLineWhenBlank="true" uuid="e734a80d-3b79-4608-867e-a7242e6439d1"/>
+				<box topPadding="1" bottomPadding="0" rightPadding="0"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -306,90 +287,70 @@
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="2" y="24" width="287" height="13" isRemoveLineWhenBlank="true" uuid="05b0a740-0f91-4c41-a628-87e8c1d06ea9"/>
+				<box topPadding="1" bottomPadding="1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{chiefComplaints}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement positionType="Float" x="290" y="11" width="282" height="62" uuid="67471f2a-899b-48d4-af08-642768966e44"/>
+				<reportElement positionType="Float" x="290" y="11" width="281" height="64" uuid="67471f2a-899b-48d4-af08-642768966e44"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{diagnosis})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_diagnosis.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="46" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" x="1" y="21" width="572" height="21" uuid="d692d663-2b65-496a-bdd8-e08beab882aa"/>
+				<reportElement positionType="Float" x="1" y="15" width="572" height="21" uuid="d692d663-2b65-496a-bdd8-e08beab882aa"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{drugsData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_prescription.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="2" y="0" width="67" height="14" forecolor="#000000" backcolor="#9999FF" uuid="4bbb63d1-7934-4579-98fd-f96a3c3db7d9"/>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="0" width="571" height="14" forecolor="#000000" backcolor="#9999FF" uuid="4bbb63d1-7934-4579-98fd-f96a3c3db7d9"/>
+				<box>
+					<topPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Prescriptions :]]></text>
 			</staticText>
-			<line>
-				<reportElement positionType="Float" x="2" y="45" width="569" height="1" forecolor="#CC3300" uuid="73a0c025-a28f-4ccc-a8ba-6888808ae0a7"/>
-				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#666666"/>
-				</graphicElement>
-			</line>
-			<line>
-				<reportElement positionType="Float" x="3" y="0" width="569" height="1" forecolor="#CC3300" uuid="78443940-e497-4600-8593-625c64c53113"/>
-				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
-				</graphicElement>
-			</line>
 		</band>
 		<band height="41" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" x="1" y="20" width="572" height="19" isRemoveLineWhenBlank="true" uuid="db8849ef-7fe2-4873-88a9-85637f6142c0"/>
+				<reportElement positionType="Float" x="0" y="15" width="572" height="19" isRemoveLineWhenBlank="true" uuid="db8849ef-7fe2-4873-88a9-85637f6142c0"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{labTests})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientLab_report_tests_results_with_ref.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="0" y="0" width="67" height="14" forecolor="#000000" backcolor="#9999FF" uuid="990c1074-9018-4e1a-801b-d6899f2f3eab"/>
+				<reportElement positionType="Float" mode="Transparent" x="0" y="0" width="573" height="14" forecolor="#000000" backcolor="#9999FF" uuid="990c1074-9018-4e1a-801b-d6899f2f3eab"/>
+				<box>
+					<topPen lineWidth="0.15"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Lab Results :]]></text>
 			</staticText>
 		</band>
-		<band height="101">
-			<line>
-				<reportElement positionType="Float" x="-1" y="0" width="569" height="1" forecolor="#CC3300" uuid="837dc02d-771a-4e17-ae8e-229daa888b3e"/>
-				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#666666"/>
-				</graphicElement>
-			</line>
+		<band height="35">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="2" y="24" width="546" height="12" uuid="d90f3bfd-5256-4467-a6f7-e711b2b54f5b"/>
+				<reportElement x="2" y="18" width="569" height="14" uuid="d90f3bfd-5256-4467-a6f7-e711b2b54f5b"/>
+				<box topPadding="1" bottomPadding="1"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{referralNotes}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="5" width="547" height="17" uuid="57736586-d6fe-49b8-88d3-7aea3225a11c"/>
+				<reportElement x="1" y="0" width="572" height="12" uuid="57736586-d6fe-49b8-88d3-7aea3225a11c"/>
+				<box>
+					<topPen lineWidth="0.15"/>
+				</box>
 				<textElement>
-					<font size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Reason :]]></text>
-			</staticText>
-			<line>
-				<reportElement positionType="Float" x="336" y="82" width="229" height="1" forecolor="#CC3300" uuid="38549910-acdc-4403-bfe2-f5692a9624e7"/>
-				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
-				</graphicElement>
-			</line>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="-1" y="82" width="569" height="14" forecolor="#000000" backcolor="#9999FF" uuid="5f46b872-912d-46bd-bd5e-4b3a97f0fce8"/>
-				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[                                                                                                                                                                                    Signature of Referring Physician]]></text>
+				<text><![CDATA[Reason :]]></text>
 			</staticText>
 		</band>
 	</detail>
@@ -403,6 +364,20 @@
 		</band>
 	</pageFooter>
 	<summary>
-		<band splitType="Stretch"/>
+		<band height="48" splitType="Stretch">
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="2" y="21" width="569" height="14" forecolor="#000000" backcolor="#9999FF" uuid="5f46b872-912d-46bd-bd5e-4b3a97f0fce8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[                                                                                                                                                                                    Signature of Referring Physician]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="342" y="20" width="229" height="1" forecolor="#CC3300" uuid="38549910-acdc-4403-bfe2-f5692a9624e7"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
+				</graphicElement>
+			</line>
+		</band>
 	</summary>
 </jasperReport>

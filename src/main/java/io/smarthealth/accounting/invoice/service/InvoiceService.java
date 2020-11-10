@@ -341,6 +341,7 @@ public class InvoiceService {
                             if (invoiceItem.isPresent()) {
                                 InvoiceItem iv = invoiceItem.get();
                                 iv.setVoided(Boolean.TRUE);
+                                iv.setRemarks(x.getRemarks());
                                 iv.setVoidedBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
                                 iv.setVoidedDatetime(LocalDateTime.now());
                                 BigDecimal newAmt = invoice.getAmount().subtract(iv.getBalance());
