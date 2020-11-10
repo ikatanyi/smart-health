@@ -181,7 +181,7 @@ public class ClinicalVisitController {
             pd.setPayer(scheme.getPayer());
             pd.setVisit(visit);
             if (config.isPresent()) {
-                SchemeConfigurations conf=config.get();
+                SchemeConfigurations conf = config.get();
                 pd.setCoPayCalcMethod(conf.getCoPayType());
                 pd.setCoPayValue(conf.getCoPayValue());
                 pd.setHasCapitation(conf.isCapitationEnabled());
@@ -401,7 +401,7 @@ public class ClinicalVisitController {
     public ResponseEntity<List<VisitData>> fetchAllVisits(
             @RequestParam(value = "visitNumber", required = false) final String visitNumber,
             @RequestParam(value = "staffNumber", required = false) final String staffNumber,
-            @RequestParam(value = "servicePointType", required = false) final String servicePointType,
+            @RequestParam(value = "servicePointType", required = false) final ServicePointType servicePointType,
             @RequestParam(value = "patientNumber", required = false) final String patientNumber,
             @RequestParam(value = "patientName", required = false) final String patientName,
             @RequestParam(value = "runningStatus", required = false, defaultValue = "true") final boolean runningStatus,
@@ -411,7 +411,8 @@ public class ClinicalVisitController {
             @RequestParam(value = "username", required = false) final String username,
             @RequestParam(value = "term", required = false) final String queryTerm,
             @RequestParam(value = "pageNo", required = false) final Integer pageNo,
-            @RequestParam(value = "pageSize", required = false) final Integer pageSize
+            @RequestParam(value = "pageSize", required = false) final Integer pageSize,
+            @RequestParam(value = "billPaymentValidation", required = false, defaultValue = "false") final Boolean billPaymentValidationPoint
     ) {
         Pageable pageable = Pageable.unpaged();
 
@@ -419,7 +420,7 @@ public class ClinicalVisitController {
             pageable = PageRequest.of(pageNo, pageSize);
         }
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, username, orderByTriageCategory, queryTerm, pageable).map(v -> convertToVisitData(v));
+        Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, username, orderByTriageCategory, queryTerm,billPaymentValidationPoint, pageable).map(v -> convertToVisitData(v));
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 

@@ -182,14 +182,14 @@ public class DoctorRequestController {
             @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final FullFillerStatusType fulfillerStatus,
             @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "pageSize", required = false) Integer size
+            @RequestParam(value = "pageSize", required = false) Integer size,
+            @RequestParam(value = "billPaymentValidation", required = false, defaultValue = "false") final Boolean billPaymentValidationPoint
     ) {
-        System.out.println("patientNo " + patientNo);
         Pageable pageable = PaginationUtil.createPage(page, size);
         Patient patient = patientService.findPatientOrThrow(patientNo);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         //fetch all visits by patient
-        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, range, null, null, false, null, pageable);
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, range, null, null, false, null, billPaymentValidationPoint, pageable);
         System.out.println("patientVisits " + patientVisits.getContent().size());
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
 
@@ -211,7 +211,7 @@ public class DoctorRequestController {
 
                 waitingRequest.setVisitNumber(v.getVisitNumber());
                 waitingRequest.setVisitNotes(v.getComments());
-                
+
                 //find line items by request_id
                 List<DoctorRequest> serviceItems = requestService.fetchServiceRequests(docReq.getPatient(), fulfillerStatus, requestType, v);
                 System.out.println("serviceItems " + serviceItems.size());
