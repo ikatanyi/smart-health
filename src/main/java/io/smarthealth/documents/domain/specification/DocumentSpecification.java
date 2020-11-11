@@ -1,6 +1,6 @@
 package io.smarthealth.documents.domain.specification;
 
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.documents.domain.Document;
 import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.domain.enumeration.Status;

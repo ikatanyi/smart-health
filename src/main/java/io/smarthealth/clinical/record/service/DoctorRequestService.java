@@ -6,7 +6,7 @@
 package io.smarthealth.clinical.record.service;
 
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.service.PatientQueueService;
@@ -75,7 +75,7 @@ public class DoctorRequestService implements DateConverter {
         for (DoctorRequest docRequest : docReqs) {
             PatientQueue patientQueue = new PatientQueue();
 //            Department department = departmentService.findByServicePointTypeAndloggedFacility(docRequest.getRequestType());      
-            ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(docRequest.getRequestType().name()));
+            ServicePointsss servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(docRequest.getRequestType().name()));
             //check if patient is already queued
             if (patientQueueService.patientIsQueued(servicePoint, docRequest.getPatient())) {
                 continue;

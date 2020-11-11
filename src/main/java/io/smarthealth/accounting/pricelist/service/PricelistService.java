@@ -7,7 +7,7 @@ import io.smarthealth.accounting.pricelist.domain.PriceBookRepository;
 import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.accounting.pricelist.domain.PriceListRepository;
 import io.smarthealth.accounting.pricelist.domain.specification.PriceListSpecification;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.domain.Item;
@@ -70,7 +70,7 @@ public class PricelistService {
 
     private PriceList toPriceList(PriceListData data) {
         Item item = findItem(data.getItemCode());
-        ServicePoint servicePoint = getServicePoint(data.getServicePointId());
+        ServicePointsss servicePoint = getServicePoint(data.getServicePointId());
 
         PriceList priceList = new PriceList();
         priceList.setActive(Boolean.TRUE);
@@ -103,7 +103,7 @@ public class PricelistService {
     public PriceList updatePriceList(Long id, PriceListData data) {
         PriceList toUpdateItem = getPriceList(id);
         Item item = findItem(data.getItemCode());
-        ServicePoint servicePoint = getServicePoint(data.getServicePointId());
+        ServicePointsss servicePoint = getServicePoint(data.getServicePointId());
 
         toUpdateItem.setActive(data.getActive()!=null ? data.getActive() : Boolean.TRUE);
         toUpdateItem.setDefaultPrice(data.getDefaultPrice());
@@ -128,7 +128,7 @@ public class PricelistService {
      * @return 
      */
     public Page<PriceList> getPricelistByLocation(Long servicePointId, Long priceBookId, Pageable page) {
-        ServicePoint servicePoint = getServicePoint(servicePointId);
+        ServicePointsss servicePoint = getServicePoint(servicePointId);
 
         Page<PriceList> prices = repository.findByServicePoint(servicePoint, page);
 
@@ -186,7 +186,7 @@ public class PricelistService {
         return prices;
     }
 
-    public PriceList fetchPriceListByItemAndServicePoint(final Item item, final ServicePoint servicePoint) {
+    public PriceList fetchPriceListByItemAndServicePoint(final Item item, final ServicePointsss servicePoint) {
         return repository.findByItemAndServicePoint(item, servicePoint).orElseThrow(() -> APIException.notFound("Pricelist not found ", ""));
     }
 
@@ -204,7 +204,7 @@ public class PricelistService {
                 .orElseThrow(() -> APIException.notFound("Item with ID {0} not found.", id));
     }
 
-    public ServicePoint getServicePoint(Long id) {
+    public ServicePointsss getServicePoint(Long id) {
         return servicePointRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Service point with id {0} not found", id));
     }

@@ -4,11 +4,9 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
-import io.smarthealth.administration.config.domain.GlobalConfigNum;
-import io.smarthealth.administration.config.domain.GlobalConfiguration;
 import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.laboratory.data.LabRegisterData;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
@@ -53,7 +51,6 @@ import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.service.FileStorageService;
 import io.smarthealth.notify.data.NoticeType;
 import io.smarthealth.notify.data.NotificationData;
-import io.smarthealth.notify.domain.Notifications;
 import io.smarthealth.notify.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
@@ -62,7 +59,6 @@ import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.web.multipart.MultipartFile;
@@ -433,7 +429,7 @@ public class LaboratoryService {
         //get the service point from store
         Visit visit = data.getVisit();// visitRepository.findByVisitNumber(data.getVisitNumber()).orElse(null);
         //find the service point for lab
-        ServicePoint srvpoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
+        ServicePointsss srvpoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
 
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
@@ -518,7 +514,7 @@ public class LaboratoryService {
         return patientbill;
     }
 
-    private PatientBillItem toPatientBill(LabRegisterTest registeredTest, ServicePoint srvpoint, String transId, String paymentMethod, List<LabTest> panels) {
+    private PatientBillItem toPatientBill(LabRegisterTest registeredTest, ServicePointsss srvpoint, String transId, String paymentMethod, List<LabTest> panels) {
         if (registeredTest.getIsPanel() != null && registeredTest.getIsPanel()) {
             if (registeredTest.getParentLabTest() != null && !panels.contains(registeredTest.getParentLabTest())) {
                 LabTest panelTest = registeredTest.getParentLabTest();
@@ -574,7 +570,7 @@ public class LaboratoryService {
     @Transactional
     public DocResponse uploadDocument(Long testId, String name, MultipartFile file) {
 //        LabRegisterTest labRequestTest = getLabRegisterTest(testId);
-        ServicePoint srvpoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
+        ServicePointsss srvpoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
 
         DocumentData data = new DocumentData();
         data.setDocfile(file);

@@ -4,7 +4,7 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
 import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
@@ -176,7 +176,7 @@ public class DispensingService {
     private PatientBill toBill(DrugRequest data, Store store) {
 
         //get the service point from store
-        final ServicePoint srvpoint = store.getServicePoint();
+        final ServicePointsss srvpoint = store.getServicePoint();
         PatientBill patientbill = new PatientBill();
         if (!data.getIsWalkin()) {
             Visit visit = billingService.findVisitEntityOrThrow(data.getVisitNumber());

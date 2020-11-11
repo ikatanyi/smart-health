@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.visit.domain;
 
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.clinical.moh.data.Register;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -32,7 +32,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
 
     Page<Visit> findByPatientAndVisitNumber(final Patient patient, final String visitNumber, Pageable page);
 
-    Page<Visit> findByServicePointAndStatusNot(final ServicePoint servicePoint, final VisitEnum.Status status, Pageable page);
+    Page<Visit> findByServicePointAndStatusNot(final ServicePointsss servicePoint, final VisitEnum.Status status, Pageable page);
 
     Optional<Visit> findByVisitNumber(String visitNumber);
 

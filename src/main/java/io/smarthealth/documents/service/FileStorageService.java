@@ -5,7 +5,7 @@
  */
 package io.smarthealth.documents.service;
 
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.documents.data.DocumentData;
 import io.smarthealth.documents.domain.Document;
@@ -55,7 +55,7 @@ public class FileStorageService {
     public Document documentUpload(DocumentData documentData) {
         Document document = documentData.fromData();
         Optional<Patient> patient = patientService.findByPatientNumber(documentData.getPatientNumber());
-        ServicePoint servicePoint = servicePointService.getServicePoint(documentData.getServicePointId());
+        ServicePointsss servicePoint = servicePointService.getServicePoint(documentData.getServicePointId());
         String docNo = documentData.getDocumentNumber() == null ? sequenceNumberService.next(1L, Sequences.DocumentNumber.name()) : documentData.getDocumentNumber();
         documentData.setDocumentNumber(docNo);
         if (patient.isPresent()) {
@@ -75,7 +75,7 @@ public class FileStorageService {
                 .map((documentData) -> {
                     Document document = documentData.fromData();
                     Patient patient = patientService.findPatientOrThrow(documentData.getPatientNumber());
-                    ServicePoint servicePoint = servicePointService.getServicePoint(documentData.getServicePointId());
+                    ServicePointsss servicePoint = servicePointService.getServicePoint(documentData.getServicePointId());
                     document.setPatient(patient);
                     document.setServicePoint(servicePoint);
                     return document;
@@ -89,7 +89,7 @@ public class FileStorageService {
     public Document UpdateDocument(MultipartFile file, Long id, DocumentData documentData) {
         Document document = getDocumentByIdWithFailDetection(id);
         Patient patient = patientService.findPatientOrThrow(documentData.getPatientNumber());
-        ServicePoint servicePoint = servicePointService.getServicePoint(documentData.getServicePointId());
+        ServicePointsss servicePoint = servicePointService.getServicePoint(documentData.getServicePointId());
         Long size = file.getSize();
         String fileType = file.getContentType();
         document.setSize(size);

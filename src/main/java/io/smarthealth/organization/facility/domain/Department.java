@@ -1,7 +1,7 @@
 package io.smarthealth.organization.facility.domain;
 
 import io.smarthealth.accounting.accounts.domain.Account;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -57,6 +57,6 @@ public class Department extends Identifiable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_dept_service_point_type_id"))
-    private ServicePoint servicePointType;
+    private ServicePointsss servicePointType;
 
 }

@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.queue.domain.specification;
 
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -25,7 +25,7 @@ public class PatientQueueSpecification {
     }
 
     public static Specification<PatientQueue> createSpecification(
-            Visit visit, Employee employee, ServicePoint servicePoint, Patient patient) {
+            Visit visit, Employee employee, ServicePointsss servicePoint, Patient patient) {
 
         return (root, query, cb) -> {
 

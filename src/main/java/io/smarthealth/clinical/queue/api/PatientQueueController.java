@@ -7,7 +7,7 @@ package io.smarthealth.clinical.queue.api;
 
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
@@ -84,7 +84,7 @@ public class PatientQueueController {
         }
         List<PatientQueueData> patientQueue = new ArrayList<>();
 
-        ServicePoint serviceP = servicePointService.getServicePointByType(ServicePointType.valueOf(servicePoint));
+        ServicePointsss serviceP = servicePointService.getServicePointByType(ServicePointType.valueOf(servicePoint));
 
         Page<Visit> page = visitService.findVisitByServicePoint(serviceP, pageable);
         //.map(q -> patientQueueService.convertToPatientQueueData(q));

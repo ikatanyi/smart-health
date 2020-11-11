@@ -45,7 +45,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.payment.domain.repository.ReceivePaymenttRepository;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.PayerRepository;
@@ -226,7 +226,7 @@ public class ReceivePaymentService {
 
         List<JournalEntryItem> items = new ArrayList<>();
 
-        ServicePoint srv = servicePointService.getServicePointByType(ServicePointType.Inpatient);
+        ServicePointsss srv = servicePointService.getServicePointByType(ServicePointType.Inpatient);
 
         String desc = "Patient Receipt Payment, Receipt No. " + bill.getPaymentReference();
         Account credit = srv.getIncomeAccount();

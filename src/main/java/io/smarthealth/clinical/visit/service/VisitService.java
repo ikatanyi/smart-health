@@ -6,7 +6,7 @@
 package io.smarthealth.clinical.visit.service;
 
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.moh.data.Register;
 import io.smarthealth.clinical.record.data.DocResults;
@@ -67,7 +67,7 @@ public class VisitService {
 
     public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Boolean isActiveOnConsultation, final String username, final boolean orderByTriageCategory, final String queryTerm, final Pageable pageable) {
         Employee employee = null;
-        ServicePoint servicePoint = null;
+        ServicePointsss servicePoint = null;
         Patient patient = null;
         User user = null;
         if (staffNumber != null) {
@@ -130,7 +130,7 @@ public class VisitService {
         return visitRepository.findByStatus(status, pageable);
     }
 
-    public Page<Visit> findVisitByServicePoint(final ServicePoint servicePoint, Pageable pageable) {
+    public Page<Visit> findVisitByServicePoint(final ServicePointsss servicePoint, Pageable pageable) {
         return visitRepository.findByServicePointAndStatusNot(servicePoint, VisitEnum.Status.CheckOut, pageable);
     }
 
@@ -187,7 +187,7 @@ public class VisitService {
     public Page<Visit> fetchVisitsGroupByVisitNumber(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, Boolean runningStatus, DateRange range, final Pageable pageable) {
 // Visit visit = null;
         Employee employee = null;
-        ServicePoint servicePoint = null;
+        ServicePointsss servicePoint = null;
         Patient patient = null;
 // if (visitNumber != null) {
 // // visit = this.findVisitEntityOrThrow(visitNumber);

@@ -5,7 +5,7 @@
  */
 package io.smarthealth.organization.facility.api;
 
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -75,7 +75,7 @@ public class DepartmentController {
         }
         if (departmentData.getServicePointId() != null) {
             //fetch service points
-            ServicePoint servicePoint = servicePointService.getServicePoint(departmentData.getServicePointId());
+            ServicePointsss servicePoint = servicePointService.getServicePoint(departmentData.getServicePointId());
             department.setServicePointType(servicePoint);
         }
         if (departmentData.getType() != null && !departmentData.getType().equals("")) {

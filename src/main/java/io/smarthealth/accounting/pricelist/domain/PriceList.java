@@ -1,7 +1,7 @@
 package io.smarthealth.accounting.pricelist.domain;
 
 import io.smarthealth.accounting.pricelist.data.PriceListData;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
@@ -35,7 +35,7 @@ public class PriceList extends Auditable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pricelist_service_point_id"))
-    private ServicePoint servicePoint;
+    private ServicePointsss servicePoint;
 
     private Boolean defaultPrice;
     private BigDecimal sellingRate;
@@ -46,7 +46,7 @@ public class PriceList extends Auditable {
     @Transient
     private BigDecimal priceBookAmount;
 
-    public PriceList(Item item, ServicePoint servicePoint, Double sellingRate) {
+    public PriceList(Item item, ServicePointsss servicePoint, Double sellingRate) {
         this.item = item;
         this.servicePoint = servicePoint;
         this.defaultPrice = Boolean.TRUE;
@@ -78,9 +78,9 @@ public class PriceList extends Auditable {
 
             if (this.hasPriceBook) {
 //                System.out.println("Has Price book " + this.getItem().getId());
-                if (this.item.getItemName().equals("FULL HAEMOGRAM/CBC -Male")) {
-                    System.out.println("setting price book price " + this.priceBookAmount);
-                }
+//                if (this.item.getItemName().equals("FULL HAEMOGRAM/CBC -Male")) {
+//                    System.out.println("setting price book price " + this.priceBookAmount);
+//                }
                 data.setSellingRate(this.priceBookAmount);
             }
         }

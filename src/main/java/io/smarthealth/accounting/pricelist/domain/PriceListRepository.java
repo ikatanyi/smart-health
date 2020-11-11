@@ -1,6 +1,6 @@
 package io.smarthealth.accounting.pricelist.domain;
 
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
 import io.smarthealth.stock.item.domain.Item;
 import java.util.List;
 import java.util.Optional;
@@ -17,11 +17,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PriceListRepository extends JpaRepository<PriceList, Long>, JpaSpecificationExecutor<PriceList> {
 
-    Page<PriceList> findByServicePoint(ServicePoint servicePoint, Pageable page);
+    Page<PriceList> findByServicePoint(ServicePointsss servicePoint, Pageable page);
 
     Page<PriceList> findByItem(Item item, Pageable page);
 
     List<PriceList> findByItem(Item item);
 
-    Optional<PriceList> findByItemAndServicePoint(final Item item, final ServicePoint servicePoint);
+    Optional<PriceList> findByItemAndServicePoint(final Item item, final ServicePointsss servicePoint);
 }
