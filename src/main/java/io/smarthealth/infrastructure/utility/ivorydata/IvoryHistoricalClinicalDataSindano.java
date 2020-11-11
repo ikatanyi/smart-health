@@ -5,7 +5,8 @@
  */
 package io.smarthealth.infrastructure.utility.ivorydata;
 
-import io.smarthealth.organization.person.domain.enumeration.Gender;
+import com.nimbusds.openid.connect.sdk.claims.Gender;
+//import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.domain.enumeration.MaritalStatus;
 import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
 import io.smarthealth.organization.person.patient.service.PatientService;
@@ -399,13 +400,13 @@ public class IvoryHistoricalClinicalDataSindano {
                                 labNumber = rs2.getString("lab_number");
                             }
 
-                             labRegisterResults = "INSERT INTO smarthealth.lab_register_results (created_by, created_on, last_modified_by, last_modified_on, version,analyte,lab_number,patient_no,result_value,results_date,lab_register_test_id) VALUES ('system', NOW(), 'system', NOW(), '0', '" + rs.getString("LabRequest") + "','" + labNumber + "', '" + d.getCurrentPatientNo() + "', '" + rs.getString("LabResult") + "', '" + rs.getString("Date") + "',(SELECT id FROM smarthealth.lab_register_tests WHERE reference_no ='" + labNumber + "' AND test_name = '" + rs.getString("LabRequest") + "' and visit_id = (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' )))";
-                           
+                            labRegisterResults = "INSERT INTO smarthealth.lab_register_results (created_by, created_on, last_modified_by, last_modified_on, version,analyte,lab_number,patient_no,result_value,results_date,lab_register_test_id) VALUES ('system', NOW(), 'system', NOW(), '0', '" + rs.getString("LabRequest") + "','" + labNumber + "', '" + d.getCurrentPatientNo() + "', '" + rs.getString("LabResult") + "', '" + rs.getString("Date") + "',(SELECT id FROM smarthealth.lab_register_tests WHERE reference_no ='" + labNumber + "' AND test_name = '" + rs.getString("LabRequest") + "' and visit_id = (SELECT id FROM smarthealth.patient_visit WHERE visit_number ='" + "VST-".concat(d.getPvEntityNo()) + "' )))";
+
                             pst = conn.prepareStatement(labRegisterResults);
                             pst.execute();
 
                         } catch (Exception e) {
-                             System.out.println("labregister "+labRegisterResults);
+                            System.out.println("labregister " + labRegisterResults);
                             e.printStackTrace();
                         }
                         deployCount++;
@@ -527,7 +528,7 @@ public class IvoryHistoricalClinicalDataSindano {
         patient.setBasicNotes("");
         patient.setBloodType("Unknown");
         patient.setCriticalInformation("");
-        patient.setGender(Gender.O);
+        patient.setGender(data.getGender());
         patient.setGivenName(data.getVFname());
         patient.setMaritalStatus(MaritalStatus.OTHERS);
         patient.setMiddleName(data.getVMname());
