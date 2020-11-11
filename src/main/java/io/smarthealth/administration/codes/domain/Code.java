@@ -13,5 +13,7 @@ public enum Code {
     DoseUnit,
     DrugInstruction,
     LabUnits,
-    InventoryAdjustmentReason
+    InventoryAdjustmentReason,
+    CurfewNote,
+    MedicalNote
 }

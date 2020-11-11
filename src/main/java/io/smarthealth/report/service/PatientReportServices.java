@@ -6,6 +6,9 @@
 package io.smarthealth.report.service;
 
 import com.mchange.lang.StringUtils;
+import io.smarthealth.administration.codes.domain.Code;
+import io.smarthealth.administration.codes.domain.CodeValue;
+import io.smarthealth.administration.codes.service.CodeService;
 import io.smarthealth.administration.employeespecialization.domain.EmployeeSpecialization;
 import io.smarthealth.administration.employeespecialization.service.EmployeeSpecializationService;
 import io.smarthealth.appointment.data.AppointmentData;
@@ -113,6 +116,8 @@ public class PatientReportServices {
     private final MohService mohService;
     private final PaymentDetailsService paymentDetailsService;
     private final EmployeeSpecializationService specializationService;
+    private final CodeService codeService;
+    
 
     private final VisitService visitService;
 
@@ -189,6 +194,7 @@ public class PatientReportServices {
                         data.setOther(interf.getTat());
                         break;
                 }
+                data.setTotal(data.getTotal()+interf.getTotal());
             }
             visitArrayList.add(data);
         }
@@ -325,9 +331,20 @@ public class PatientReportServices {
 
     public void getVisitNote(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        Code type = EnumUtils.getEnum(Code.class, reportParam.getFirst("type"));
         String visitNumber = reportParam.getFirst("visitNumber");
-        VisitData visitData = VisitData.map(visitService.findVisitEntityOrThrow(visitNumber));
-
+        Optional<Visit>visit = visitService.findVisit(visitNumber);
+        VisitData visitData = null;
+        if(visit.isPresent())
+           visitData = VisitData.map(visit.get());         
+        List<CodeValue> codes = codeService.getCodeValues(type);
+        String value = null;
+        if(codes!=null && !codes.isEmpty() ){
+             value = codes.get(0).getCodeValue();
+        }        
+        reportData.getFilters().put("value", value);
+        
+        reportData.getFilters().put("type", type==Code.CurfewNote?"Curfew Note":type==Code.MedicalNote?"Patient Medical Note":"Patient Medical Note");
         reportData.setPatientNumber(visitData.getPatientNumber());
         reportData.setEmployeeId(visitData.getPractitionerCode());
         reportData.setData(Arrays.asList(visitData));

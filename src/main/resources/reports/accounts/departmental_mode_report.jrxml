@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="departmental_mode_report" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="4"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<style name="table">
@@ -364,7 +364,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Scan]]></text>
+				<text><![CDATA[Radiology]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" x="415" y="69" width="45" height="12" uuid="f3ff2e2d-a31f-47c1-99c1-53779c94f25c"/>
@@ -378,7 +378,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Proc.]]></text>
+				<text><![CDATA[Procedure]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" x="460" y="69" width="43" height="12" uuid="0321e60b-4d60-4632-ba88-da3f893211b8"/>
