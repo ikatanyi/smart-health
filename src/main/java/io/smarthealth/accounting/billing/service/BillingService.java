@@ -80,7 +80,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class BillingService {
-    
+
     private final ServicePointService servicePointService;
     private final PatientBillRepository patientBillRepository;
     private final PatientBillItemRepository billItemRepository;
@@ -107,28 +107,28 @@ public class BillingService {
             patientbill.setOtherDetails(data.getPatientName());
             patientbill.setWalkinFlag(Boolean.TRUE);
         }
-        
+
         patientbill.setAmount(data.getAmount());
         patientbill.setDiscount(data.getDiscount());
         patientbill.setBalance(data.getAmount());
-        
+
         patientbill.setBillingDate(data.getBillingDate());
         patientbill.setPaymentMode(data.getPaymentMode());
-        
+
         patientbill.setStatus(BillStatus.Draft);
-        
+
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
-        
+
         patientbill.setBillNumber(bill_no);
         patientbill.setTransactionId(trdId);
-        
+
         List<PatientBillItem> lineItems = data.getBillItems()
                 .stream()
                 .map(lineData -> {
                     Item item = itemService.findItemWithNoFoundDetection(lineData.getItemCode());
                     PatientBillItem billItem = new PatientBillItem();
-                    
+
                     billItem.setBillingDate(lineData.getBillingDate());
                     billItem.setTransactionId(trdId);
                     billItem.setItem(item);
@@ -138,7 +138,7 @@ public class BillingService {
                         billItem.setPrice(data.getAmount());
                     }
                     billItem.setQuantity(lineData.getQuantity());
-                    System.out.println("billItem.getPrice() "+billItem.getPrice());
+                    System.out.println("billItem.getPrice() " + billItem.getPrice());
                     //SIMON UPDATED HERE TO CHECK NULL BECAUSE REFERAL BILL WAS FAILING
                     if (billItem.getPrice() != null) {
                         billItem.setAmount((billItem.getPrice() * billItem.getQuantity()));
@@ -147,7 +147,7 @@ public class BillingService {
                     }
                     billItem.setDiscount(lineData.getDiscount());
                     billItem.setBalance((billItem.getAmount()));
-                    
+
                     billItem.setServicePoint(lineData.getServicePoint());
                     billItem.setServicePointId(lineData.getServicePointId());
                     billItem.setStatus(BillStatus.Draft);
@@ -157,14 +157,14 @@ public class BillingService {
                 .collect(Collectors.toList());
         patientbill.addBillItems(lineItems);
         System.out.println("End of bill items");
-        
+
         PatientBill savedBill = save(patientbill);
         if (savedBill.getPaymentMode().equals("Insurance")) {
             journalService.save(toJournal(savedBill, null));
         }
         return savedBill;
     }
-    
+
     public void createPatientBill(PatientBill bill, Store store) {
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
         bill.setBillNumber(bill_no);
@@ -173,16 +173,16 @@ public class BillingService {
             journalService.save(toJournal(savedBill, store));
         }
     }
-    
+
     public PatientBill save(PatientBill bill) {
         log.debug("START save bill");
         String bill_no = bill.getBillNumber() == null ? sequenceNumberService.next(1L, Sequences.BillNumber.name()) : bill.getBillNumber();
         String trdId = bill.getTransactionId() == null ? sequenceNumberService.next(1L, Sequences.Transactions.name()) : bill.getTransactionId();
         bill.setBillNumber(bill_no);
         bill.setTransactionId(trdId);
-        
+
         PatientBill savedBill = patientBillRepository.saveAndFlush(bill);
-        
+
         if (bill.getWalkinFlag() == null || bill.getWalkinFlag()) {
             return savedBill;
         }
@@ -192,25 +192,25 @@ public class BillingService {
         }
         return savedBill;
     }
-    
+
     public PatientBill update(PatientBill bill) {
         return patientBillRepository.save(bill);
     }
-    
+
     public Optional<PatientBill> findByBillNumber(final String billNumber) {
         return patientBillRepository.findByBillNumber(billNumber);
     }
-    
+
     public PatientBill findOneWithNoFoundDetection(Long id) {
         return patientBillRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bill with Id {0} not found", id));
     }
-    
+
     public PatientBillItem findBillItemById(Long id) {
         return billItemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Bill Item with Id {0} not found", id));
     }
-    
+
     public PatientBillItem findBillItemByPatientBill(String billNumber) {
         Optional<PatientBill> patientBill = findByBillNumber(billNumber);
         if (patientBill.isPresent()) {
@@ -223,7 +223,7 @@ public class BillingService {
         }
         return null;
     }
-    
+
     @Transactional
     public void cancelBillItem(List<PatientBillItem> billItems) {
         billItems.stream()
@@ -232,9 +232,9 @@ public class BillingService {
                     return x;
                 })
                 .forEach(bill -> billItemRepository.save(bill));
-        
+
     }
-    
+
     public PatientBillItem updateBillItem(PatientBillItem item) {
         //determine the request origin and update ti
         cashPaidUpdater.updateRequestStatus(item);
@@ -242,16 +242,16 @@ public class BillingService {
 //       TODO
         return billItemRepository.save(item);
     }
-    
+
     public Item getItemByCode(String code) {
         return itemService.findByItemCodeOrThrow(code);
     }
-    
+
     public Item getItemByBy(Long id) {
         return itemService.findById(id)
                 .orElseThrow(() -> APIException.notFound("Service with Item Id {0} Not Found", id));
     }
-    
+
     public String addPatientBillItems(Long id, List<BillItemData> billItems) {
         PatientBill patientbill = findOneWithNoFoundDetection(id);
         List<PatientBillItem> lineItems = billItems
@@ -259,7 +259,7 @@ public class BillingService {
                 .map(lineData -> {
                     Item item = itemService.findByItemCodeOrThrow(lineData.getItemCode());
                     PatientBillItem billLine = new PatientBillItem();
-                    
+
                     billLine.setBillingDate(lineData.getBillingDate());
                     billLine.setTransactionId(lineData.getTransactionId());
                     billLine.setItem(item);
@@ -271,59 +271,59 @@ public class BillingService {
                     billLine.setServicePoint(lineData.getServicePoint());
                     billLine.setServicePointId(lineData.getServicePointId());
                     billLine.setStatus(BillStatus.Draft);
-                    
+
                     return billLine;
                 })
                 .collect(Collectors.toList());
         patientbill.addBillItems(lineItems);
-        
+
         return patientbill.getBillNumber();
     }
-    
+
     @Deprecated
     public Page<PatientBill> findAllBills(String transactionNo, String visitNo, String patientNo, String paymentMode, String billNo, BillStatus status, DateRange range, Pageable page) {
-        
+
         Specification<PatientBill> spec = BillingSpecification.createSpecification(transactionNo, visitNo, patientNo, paymentMode, billNo, status, range);
-        
+
         return patientBillRepository.findAll(spec, page);
-        
+
     }
-    
+
     public Page<PatientBillItem> getPatientBillItems(String patientNo, String visitNo, String billNumber, String transactionId, Long servicePointId, Boolean hasBalance, BillStatus status, DateRange range, Pageable page) {
         Specification<PatientBillItem> spec = PatientBillSpecification.createSpecification(patientNo, visitNo, billNumber, transactionId, servicePointId, hasBalance, status, range);
-        
+
         Page<PatientBillItem> lists = billItemRepository.findAll(spec, page);
-        
+
         return lists;
     }
-    
+
     public Page<PatientBillItem> getReceiptedBillItems(String visitNo, Pageable page) {
         Visit visit = findVisitEntityOrThrow(visitNo);
         Specification<PatientBillItem> spec = PatientBillSpecification.getReceiptedItems(visitNo, visit.getPaymentMethod());
-        
+
         Page<PatientBillItem> lists = billItemRepository.findAll(spec, page);
-        
+
         return lists;
     }
-    
+
     public Page<SummaryBill> getSummaryBill(String visitNumber, String patientNumber, Boolean hasBalance, DateRange range, Pageable pageable) {
         return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, range, pageable);
     }
-    
+
     public Page<SummaryBill> getWalkinSummaryBill(String patientNumber, Boolean hasBalance, Pageable pageable) {
         return billItemRepository.getWalkinBillSummary(patientNumber, hasBalance, pageable);
     }
-    
+
     public Page<PatientBillItem> getWalkBillItems(String walkIn, Boolean hasBalance, Pageable page) {
         Specification<PatientBillItem> spec = PatientBillSpecification.getWalkinBillItems(walkIn, hasBalance);
         return billItemRepository.findAll(spec, page);
     }
-    
+
     public Visit findVisitEntityOrThrow(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
     }
-    
+
     public List<PatientBillGroup> getPatientBillGroups(BillStatus status) {
         return patientBillRepository.groupBy(status);
     }
@@ -350,14 +350,14 @@ public class BillingService {
             Patient patient = bill.getPatient();
             description = patient.getPatientNumber() + " " + patient.getFullName();
         }
-        
+
         Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Patient_Control);
         if (!debitAccount.isPresent()) {
             throw APIException.badRequest("Patient Control Account is Not Mapped");
         }
 //        String debitAcc = debitAccount.get().getAccount().getIdentifier();
         List<JournalEntryItem> items = new ArrayList<>();
-        
+
         if (!bill.getBillItems().isEmpty()) {
             Map<Long, Double> map = bill.getBillItems()
                     .stream()
@@ -367,15 +367,15 @@ public class BillingService {
                     );
             //then here since we making a revenue
             map.forEach((k, v) -> {
-                
+
                 ServicePoint srv = servicePointService.getServicePoint(k);
                 String desc = srv.getName() + " Patient Billing";
                 Account credit = srv.getIncomeAccount();
                 BigDecimal amount = BigDecimal.valueOf(v);
-                
+
                 items.add(new JournalEntryItem(debitAccount.get().getAccount(), desc, amount, BigDecimal.ZERO));
                 items.add(new JournalEntryItem(credit, desc, BigDecimal.ZERO, amount));
-                
+
             });
             //if inventory expenses this shit!
             if (store != null) {
@@ -399,22 +399,22 @@ public class BillingService {
                         Account debit = srv.getExpenseAccount(); // cost of sales
                         Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
                         BigDecimal amount = BigDecimal.valueOf(v);
-                        
+
                         items.add(new JournalEntryItem(debit, desc, amount, BigDecimal.ZERO));
                         items.add(new JournalEntryItem(credit, desc, BigDecimal.ZERO, amount));
-                        
+
                     });
                 }
             }
         }
-        
+
         JournalEntry toSave = new JournalEntry(bill.getBillingDate(), description, items);
         toSave.setTransactionNo(bill.getTransactionId());
         toSave.setTransactionType(TransactionType.Billing);
         toSave.setStatus(JournalState.PENDING);
         return toSave;
     }
-    
+
     private List<DoctorInvoice> toDoctorInvoice(PatientBill bill) {
         return bill.getBillItems()
                 .stream()
@@ -424,7 +424,7 @@ public class BillingService {
                     }
                     Employee doctor = doctorInvoiceService.getDoctorById(billItem.getMedicId());
                     Optional<DoctorItem> doctorItem = doctorInvoiceService.getDoctorItem(doctor, billItem.getItem());
-                    
+
                     if (doctorItem.isPresent()) {
                         DoctorItem docItem = doctorItem.get();
                         if (docItem.getActive()) {
@@ -450,7 +450,7 @@ public class BillingService {
                 .filter(x -> x != null)
                 .collect(Collectors.toList());
     }
-    
+
     private BigDecimal computeDoctorFee(DoctorItem item) {
         if (item.getIsPercentage()) {
             BigDecimal doctorRate = item.getAmount().divide(BigDecimal.valueOf(100)).multiply(item.getServiceType().getRate());
@@ -474,10 +474,10 @@ public class BillingService {
 //    }
     @Transactional
     public List<PatientBillItem> validatedBilledItem(ReceivePayment data) {
-        
+
         List<PatientBillItem> receiptingBills = new ArrayList<>();
         List<PatientBillItem> toCreate = new ArrayList<>();
-        
+
         if (!data.getBillItems().isEmpty()) {
             data.getBillItems().stream()
                     .forEach(x -> {
@@ -485,7 +485,7 @@ public class BillingService {
                             PatientBillItem item = findBillItemById(x.getBillItemId());
                             BigDecimal discount = (x.getDiscount() != null ? x.getDiscount() : BigDecimal.ZERO);
 //                            BigDecimal subtotal = item.getNetAmount() != null && item.getNetAmount() > 0 ? BigDecimal.valueOf(item.getNetAmount()) : BigDecimal.valueOf(((item.getQuantity() * item.getPrice()) - discount.doubleValue()));
-                            
+
                             BigDecimal totalAmount = BigDecimal.valueOf((item.getQuantity() * item.getPrice()));
                             BigDecimal netAmount = totalAmount.subtract(discount);
                             BigDecimal balance = netAmount.subtract(x.getAmount());
@@ -503,13 +503,13 @@ public class BillingService {
 //                            item.setSubTotal(subtotal.doubleValue());
                             item.setPaymentReference(data.getReceiptNo());
                             item.setBalance(balance.doubleValue());
-                            
+
                             item.setDiscount(discount.doubleValue());
-                            
+
                             PatientBillItem i = updateBillItem(item);
-                            
+
                             receiptingBills.add(i);
-                            
+
                         } else {
                             PatientBillItem item = createReciptItem(x);
                             if (item.getItem().getCategory() == ItemCategory.CoPay) {
@@ -536,34 +536,34 @@ public class BillingService {
             }
             Double amount = toCreate.stream()
                     .collect(Collectors.summingDouble(x -> x.getAmount()));
-            
+
             patientbill.setAmount(amount);
             patientbill.setDiscount(0D);
             patientbill.setBalance(0D);
-            
+
             patientbill.setBillingDate(LocalDate.now());
             patientbill.setPaymentMode("Cash");
-            
+
             patientbill.setStatus(BillStatus.Paid);
-            
+
             String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
-            
+
             patientbill.setBillNumber(bill_no);
             patientbill.setTransactionId(data.getTransactionNo());
             patientbill.addBillItems(toCreate);
-            
+
             PatientBill savedBill = save(patientbill);
-            
+
             receiptingBills.addAll(savedBill.getBillItems());
-            
+
         }
-        
+
         return receiptingBills;
     }
-    
+
     private PatientBillItem createReciptItem(BilledItem billedItem) {
         Item item = getItemByBy(billedItem.getPricelistItemId());
-        
+
         PatientBillItem savedItem = new PatientBillItem();
         savedItem.setPrice(billedItem.getPrice());
         savedItem.setQuantity(billedItem.getQuantity());
@@ -578,10 +578,10 @@ public class BillingService {
         savedItem.setBalance(0D);
         savedItem.setServicePoint(billedItem.getServicePoint());
         savedItem.setServicePointId(billedItem.getServicePointId());
-        
+
         return savedItem;
     }
-    
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createCopay(CopayData data) {
         String visitNumber = data.getVisitNumber();
@@ -590,18 +590,18 @@ public class BillingService {
         Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
                 .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
         Scheme scheme = schemeService.fetchSchemeById(schemeId);
-        
+
         Optional<SchemeConfigurations> schemeConfigs = schemeService.fetchSchemeConfigByScheme(scheme);
         if (schemeConfigs.isPresent()) {
             SchemeConfigurations config = schemeConfigs.get();
-            
+
             BigDecimal copayAmount = BigDecimal.valueOf(config.getCoPayValue());
-            
+
             if (config.getCoPayType() == CoPayType.Percentage) {
                 if (data.getVisitStart()) {
                     return null;
                 }
-                
+
                 BigDecimal currentBill = billItemRepository.getTotalBill(visitNumber);
                 copayAmount = (copayAmount.divide(BigDecimal.valueOf(100))).multiply(currentBill);
             }
@@ -624,15 +624,15 @@ public class BillingService {
                     patientbill.setBillingDate(LocalDate.now());
                     patientbill.setPaymentMode(visit.getPaymentMethod().name());
                     patientbill.setStatus(BillStatus.Draft);
-                    
+
                     String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
                     String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
-                    
+
                     patientbill.setBillNumber(bill_no);
                     patientbill.setTransactionId(trdId);
-                    
+
                     PatientBillItem billItem = new PatientBillItem();
-                    
+
                     billItem.setBillingDate(LocalDate.now());
                     billItem.setTransactionId(trdId);
                     billItem.setItem(item);
@@ -647,12 +647,12 @@ public class BillingService {
                     billItem.setServicePointId(0L);
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setMedicId(null);
-                    
+
                     patientbill.addBillItem(billItem);
-                    
+
                     return save(patientbill);
                 }
-                
+
             }
         }
         return null;
@@ -663,7 +663,7 @@ public class BillingService {
     public List<SummaryBill> getBillTotals(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, VisitEnum.PaymentMethod paymentMode, DateRange range) {
         return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range);
     }
-    
+
     public BillDetail getBillDetails(String visitNumber, Pageable pageable) {
         List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber));
         List<PatientBillItem> walkinItems = billItemRepository.findAll(withWalkinNumber(visitNumber));
@@ -671,11 +671,11 @@ public class BillingService {
             patientItems.addAll(walkinItems);
         }
         BillDetail details = new BillDetail();
-        
+
         List<BillItem> bills = new ArrayList<>();
         List<BillItem> paidBills = new ArrayList<>();
         List<BillPayment> payments = new ArrayList<>();
-        
+
         patientItems.stream()
                 .forEach(x -> {
                     if (x.getBalance() > 0 && (x.getStatus() == BillStatus.Draft)) {
@@ -692,11 +692,11 @@ public class BillingService {
                         System.err.println("Canceled Billed");
                     }
                 });
-        
+
         details.setBills(bills);
         details.setPaidBills(paidBills);
         details.setPayments(payments);
-        
+
         return details;
 
 //        Map<BillPayment.Type, Double> paymentlist = allPayments
@@ -710,7 +710,7 @@ public class BillingService {
 //                     payments.add(new BillPayment(k, visitNumber, v));
 //                });
     }
-    
+
     public List<BillItem> getAllBillDetails(String visitNumber) {
         List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber));
         List<PatientBillItem> walkinItems = billItemRepository.findAll(withWalkinNumber(visitNumber));
@@ -718,14 +718,14 @@ public class BillingService {
             patientItems.addAll(walkinItems);
         }
         BillDetail details = new BillDetail();
-        
+
         List<BillItem> bills = new ArrayList<>();
-        
+
         patientItems.stream()
                 .forEach(x -> {
                     bills.add(x.toBillItem());
                 });
-        
+
         details.setBills(bills);
         return bills;
     }
@@ -741,22 +741,22 @@ public class BillingService {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
-    
+
     private Specification<PatientBillItem> withWalkinNumber(String walkIn) {
         return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
-            
+
             predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), Boolean.TRUE));
-            
+
             if (walkIn != null) {
                 predicates.add(cb.equal(root.get("patientBill").get("reference"), walkIn));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
-    
+
     private JournalEntry toReverseJournal(List<PatientBillItem> bills, Store store) {
-        
+
         System.err.println("Reversing the journal for the patient bills");
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String description = "Patient Billing Reversing";
@@ -766,7 +766,7 @@ public class BillingService {
         }
 //        String debitAcc = debitAccount.get().getAccount().getIdentifier();
         List<JournalEntryItem> items = new ArrayList<>();
-        
+
         if (!bills.isEmpty()) {
             Map<Long, Double> map = bills
                     .stream()
@@ -776,15 +776,15 @@ public class BillingService {
                     );
             //then here since we making a revenue
             map.forEach((k, v) -> {
-                
+
                 ServicePoint srv = servicePointService.getServicePoint(k);
                 String desc = srv.getName() + " Patient Billing Reversal";
                 Account reverseDebit = srv.getIncomeAccount();
                 BigDecimal amount = BigDecimal.valueOf(v);
-                
+
                 items.add(new JournalEntryItem(reverseDebit, desc, amount, BigDecimal.ZERO));
                 items.add(new JournalEntryItem(reverseCredit.get().getAccount(), desc, BigDecimal.ZERO, amount));
-                
+
             });
             //if inventory expenses this shit!
             if (store != null) {
@@ -797,24 +797,24 @@ public class BillingService {
                         );
                 if (!inventory.isEmpty()) {
                     inventory.forEach((k, v) -> {
-                        
+
                         String desc = "Stock Returns ";
                         ServicePoint srv = servicePointService.getServicePoint(k);
                         Account creditExpense = srv.getExpenseAccount(); // cost of sales
                         Account debitInventory = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
                         BigDecimal amount = BigDecimal.valueOf(v);
-                        
+
                         items.add(new JournalEntryItem(debitInventory, desc, amount, BigDecimal.ZERO));
                         items.add(new JournalEntryItem(creditExpense, desc, BigDecimal.ZERO, amount));
 
                         //this should return the stocks 
                     });
                 }
-                
+
             }
-            
+
         }
-        
+
         JournalEntry toSave = new JournalEntry(LocalDate.now(), description, items);
         toSave.setTransactionNo(trdId);
         toSave.setTransactionType(TransactionType.Bill_Reversal);
@@ -825,7 +825,7 @@ public class BillingService {
     //TODO - cancelling of a bill item
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<PatientBillItem> voidBillItem(String visitNumber, List<VoidBillItem> items) {
-        
+
         List<PatientBillItem> toVoidList = items
                 .stream()
                 .map(x -> billItemRepository.findById(x.getBillItemId()).orElse(null))
@@ -837,28 +837,28 @@ public class BillingService {
                     return patientBill;
                 })
                 .collect(Collectors.toList());
-        
+
         List<PatientBillItem> bills = billItemRepository.saveAll(toVoidList);
-        
+
         if (!bills.isEmpty()) {
             PatientBill pb = bills.get(0).getPatientBill();
-            
+
             if (pb.getPaymentMode().equals("Insurance")) {
                 journalService.save(toReverseJournal(bills, null));
             }
         }
         return bills;
     }
-    
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createReceipt(PatientReceipt data) {
         String visitNumber = data.getVisitNumber();
         BigDecimal amount = data.getReceipt().getAmount().negate();
         Double receiptedAmount = amount.doubleValue();
-        
+
         Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
                 .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
-        
+
         Optional<Item> receiptItem = itemService.findFirstByCategory(ItemCategory.Receipt);
         if (receiptItem.isPresent()) {
             Item item = receiptItem.get();
@@ -873,15 +873,15 @@ public class BillingService {
             patientbill.setPaymentMode(visit.getPaymentMethod().name());
             patientbill.setStatus(BillStatus.Paid);
             patientbill.setPaymentMode("Cash");
-            
+
             String trdId = data.getReceipt().getTransactionNo() != null ? data.getReceipt().getTransactionNo() : sequenceNumberService.next(1L, Sequences.Transactions.name());
             String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
-            
+
             patientbill.setBillNumber(bill_no);
             patientbill.setTransactionId(trdId);
-            
+
             PatientBillItem billItem = new PatientBillItem();
-            
+
             billItem.setBillingDate(LocalDate.now());
             billItem.setTransactionId(trdId);
             billItem.setItem(item);
@@ -897,12 +897,12 @@ public class BillingService {
             billItem.setServicePointId(0L);
             billItem.setStatus(BillStatus.Paid);
             billItem.setMedicId(null);
-            
+
             patientbill.addBillItem(billItem);
-            
+
             return save(patientbill);
         }
         return null;
     }
-    
+
 }
