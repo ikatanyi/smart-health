@@ -19,6 +19,7 @@ public interface TatInterface {
     public String getPatientName();
     public LocalDateTime getStart();
     public LocalDateTime getAcknowledged();
+    public Double getTotal();
     public String getTat();
     public Long getVisitId();
 }

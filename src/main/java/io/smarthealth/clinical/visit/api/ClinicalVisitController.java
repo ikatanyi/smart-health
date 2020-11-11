@@ -27,6 +27,7 @@ import io.smarthealth.clinical.record.domain.VitalsRecord;
 import io.smarthealth.clinical.record.service.TriageNotesService;
 import io.smarthealth.clinical.record.service.TriageService;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
+import io.smarthealth.clinical.visit.data.SpecialistChangeAuditData;
 import io.smarthealth.clinical.visit.data.VisitData;
 //import io.smarthealth.clinical.visit.data.enums.TriageCategory;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
@@ -35,6 +36,7 @@ import io.smarthealth.clinical.visit.domain.PaymentDetailAuditRepository;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
+import io.smarthealth.clinical.visit.service.SpecialistChangeAuditService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
@@ -141,6 +143,9 @@ public class ClinicalVisitController {
 
     @Autowired
     private PatientBillRepository patientBillRepository;
+    
+    @Autowired
+    private SpecialistChangeAuditService specialistChangeAuditService;
 
     @PostMapping("/visits")
     @PreAuthorize("hasAuthority('create_visits')")
@@ -374,12 +379,14 @@ public class ClinicalVisitController {
     @ApiOperation(value = "Update patient visit's doctor", response = VisitData.class)
     public @ResponseBody
     ResponseEntity<?> updateVisitPractitioner(
-            @PathVariable("visitNumber") final String visitNumber,
-            @PathVariable("staffNumber") final String staffNumber) {
+            @PathVariable("visitNumber") final String visitNumber,            
+            @PathVariable("staffNumber") final String staffNumber,
+            @RequestParam(value = "reason", required=false ) final String reason            
+            ) {
         Employee employee = employeeService.fetchEmployeeByNumberOrThrow(staffNumber);
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
 
-        updateVisitDoctor(visit, employee);
+        updateVisitDoctor(visit, employee, reason);
 
         visit.setHealthProvider(employee);
 
@@ -688,7 +695,7 @@ public class ClinicalVisitController {
 
         if (vital.getSendTo().equals("specialist")) {
             Employee newDoctorSelected = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());
-            updateVisitDoctor(activeVisit, newDoctorSelected);
+            updateVisitDoctor(activeVisit, newDoctorSelected, "Triage");
 
             patientQueue.setSpecialNotes("Sent from triage");
 
@@ -845,7 +852,12 @@ public class ClinicalVisitController {
         doctorInvoiceService.createDoctorInvoice(data);
     }
 
-    private void updateVisitDoctor(Visit activeVisit, Employee newDoctorSelected) {
+    private void updateVisitDoctor(Visit activeVisit, Employee newDoctorSelected, String reason) {
+        SpecialistChangeAuditData data = new SpecialistChangeAuditData();
+        data.setComments(reason);
+        data.setDate(LocalDateTime.now());
+        data.setVisitNumber(activeVisit.getVisitNumber());        
+        data.setToDoctor(newDoctorSelected.getFullName());
         if (activeVisit.getClinic() == null) {
             throw APIException.badRequest("The service type is not consultation. You cannot specify a specialist for this visit", "");
         }
@@ -853,13 +865,15 @@ public class ClinicalVisitController {
 
         //check if visit already has a doctor
         if (activeVisit.getHealthProvider() != null) {
+            data.setFromDoctor(activeVisit.getHealthProvider().getFullName());
+            
             //update bill with current doctor if there is a difference between the visit activated one and the new one
             if (!newDoctorSelected.equals(activeVisit.getHealthProvider())) {
                 //find doctor invoice with service item and visit
                 Optional<DoctorItem> previousChargeDoctorItem = doctorInvoiceService.getDoctorItem(activeVisit.getHealthProvider(), activeVisit.getClinic().getServiceType());
                 System.out.println("previousChargeDoctorItem.isPresent() " + previousChargeDoctorItem.isPresent());
                 if (previousChargeDoctorItem.isPresent()) {
-
+                    
                     Optional<DoctorInvoice> previousDoctorInvoice = doctorInvoiceService.fetchDoctorInvoiceByVisitDoctorItemAndDoctor(activeVisit, previousChargeDoctorItem.get(), activeVisit.getHealthProvider());
                     if (previousDoctorInvoice.isPresent()) {
                         //update to the new one
@@ -876,9 +890,7 @@ public class ClinicalVisitController {
                         }
                     }
                 }
-//                else {
-//                    System.out.println("previousChargeDoctorItem is absent");
-//                }
+
             }
 //            else {
 //                System.out.println("New Doctor equals to visit's pre-selected doctor");
@@ -889,6 +901,7 @@ public class ClinicalVisitController {
                 createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
             }
         }
+        specialistChangeAuditService.createSpecialistChangeAudit(data);
     }
 
 }

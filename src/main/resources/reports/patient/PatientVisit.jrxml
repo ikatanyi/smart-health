@@ -36,6 +36,7 @@
 	<field name="pharmacy" class="java.lang.String"/>
 	<field name="other" class="java.lang.String"/>
 	<field name="date" class="java.lang.Object"/>
+	<field name="total" class="java.lang.Double"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -60,7 +61,7 @@
 	<pageHeader>
 		<band height="16">
 			<staticText>
-				<reportElement x="0" y="1" width="554" height="14" forecolor="#000000" uuid="1e4df8f4-04f6-4a05-9712-5df91271f8ae"/>
+				<reportElement x="0" y="1" width="555" height="14" forecolor="#000000" uuid="1e4df8f4-04f6-4a05-9712-5df91271f8ae"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -151,7 +152,7 @@
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Stop Time]]></text>
+				<text><![CDATA[Total Time]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="22" width="19" height="11" uuid="af5866cb-5d10-48e5-9199-6e8559e4b0af"/>
@@ -273,7 +274,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{stopDatetime}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="19" height="11" uuid="b2130e1f-e835-4985-ba07-2677977fcc0d"/>
