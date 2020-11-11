@@ -7,7 +7,7 @@ package io.smarthealth.clinical.queue.service;
 
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
@@ -67,7 +67,7 @@ public class PatientQueueService {
 //        }
     }
     
-    public Page<PatientQueue> fetchQueueByDept(final ServicePointsss servicePoint, final boolean status, Pageable pageable) {
+    public Page<PatientQueue> fetchQueueByDept(final ServicePoints servicePoint, final boolean status, Pageable pageable) {
         return patientQueueRepository.findByServicePointAndStatus(servicePoint, status, pageable);
     }
     
@@ -79,7 +79,7 @@ public class PatientQueueService {
         return patientQueueRepository.findById(id).orElseThrow(() -> APIException.notFound("Queue identified by id {0} is not available", id));
     }
 
-    public void Deactivate(ServicePointsss servicePoint) {
+    public void Deactivate(ServicePoints servicePoint) {
         Page<PatientQueue> queueList = patientQueueRepository.findByServicePointAndStatus(servicePoint, true, Pageable.unpaged());
         for(PatientQueue queue : queueList){
             queue.setStatus(false);
@@ -95,7 +95,7 @@ public class PatientQueueService {
     public Page<PatientQueue> fetchQueue(final String visitNumber, final String staffNumber, final String servicePointType, String patientNumber, final Pageable pageable) {
         Visit visit = null;
         Employee employee = null;
-        ServicePointsss servicePoint = null;
+        ServicePoints servicePoint = null;
         Patient patient = null;
         if (visitNumber != null) {
             visit = visitRepository.findByVisitNumber(visitNumber).orElseThrow(() -> APIException.notFound("Visit identified by visit number {0} not found", visitNumber));
@@ -118,7 +118,7 @@ public class PatientQueueService {
         return patientQueueRepository.findByVisit(visit);
     }
     
-    public boolean patientIsQueued(final ServicePointsss servicePoint, final Patient patient) {
+    public boolean patientIsQueued(final ServicePoints servicePoint, final Patient patient) {
         System.out.println("Service point "+servicePoint.getName());
         System.out.println("Patient "+patient.getFullName());
         return patientQueueRepository.findByPatientAndServicePointAndStatus(patient, servicePoint, true).isPresent();

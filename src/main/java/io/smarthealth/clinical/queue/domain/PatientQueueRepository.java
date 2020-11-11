@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.queue.domain;
 
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.util.List;
@@ -24,11 +24,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PatientQueueRepository extends JpaRepository<PatientQueue, Long>, JpaSpecificationExecutor<PatientQueue> {
 
-    public Page<PatientQueue> findByServicePointAndStatus(final ServicePointsss department, final boolean status, final Pageable pageable);
+    public Page<PatientQueue> findByServicePointAndStatus(final ServicePoints department, final boolean status, final Pageable pageable);
 
     public Page<PatientQueue> findByPatient(Patient patient, Pageable pageable);
 
-    Optional<PatientQueue> findByPatientAndServicePointAndStatus(final Patient patient, final ServicePointsss department, final boolean status);
+    Optional<PatientQueue> findByPatientAndServicePointAndStatus(final Patient patient, final ServicePoints department, final boolean status);
 
     // Optional<PatientQueue> findByVisit(Visit visit);
     List<PatientQueue> findByVisit(Visit visit);

@@ -43,6 +43,7 @@ public class PatientProcedureTestData {
     private String medicName;
     private Long medicId;
     private LocalDate procedureDate=LocalDate.now();
+    private String createdBy;
    
 
     public static PatientProcedureTest map(PatientProcedureTestData scan) {

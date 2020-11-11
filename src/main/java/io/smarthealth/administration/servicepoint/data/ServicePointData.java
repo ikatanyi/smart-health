@@ -1,7 +1,7 @@
 package io.smarthealth.administration.servicepoint.data;
  
 import io.smarthealth.accounting.accounts.data.SimpleAccountData;
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -26,7 +26,7 @@ public class ServicePointData {
     public ServicePointData() {
     }
 
-    public static ServicePointData map(ServicePointsss point) {
+    public static ServicePointData map(ServicePoints point) {
         ServicePointData data = new ServicePointData();
         data.setId(point.getId());
         data.setActive(point.getActive());

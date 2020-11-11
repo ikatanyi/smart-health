@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import io.smarthealth.accounting.doctors.domain.DoctorItemRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
@@ -48,7 +49,8 @@ public class DoctorInvoiceService {
     private final SequenceNumberService sequenceNumberService;
     private final JournalService journalService;
     private final FinancialActivityAccountRepository activityAccountRepository;
-    private final VisitService visitService;
+    private final VisitRepository visitRepository;
+//    private final VisitService visitService;
 
     public DoctorInvoice createDoctorInvoice(DoctorInvoiceData data) {
 
@@ -71,7 +73,7 @@ public class DoctorInvoiceService {
         invoice.setTransactionId(trnId);
         invoice.setTransactionType(DoctorInvoice.TransactionType.Credit);
         if (data.getVisitNumber() != null) {
-            Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
+            Visit visit = this.findVisitEntityOrThrow(data.getVisitNumber());
             invoice.setVisit(visit);
         }
 
@@ -79,6 +81,11 @@ public class DoctorInvoiceService {
         DoctorInvoice savedInvoice = save(invoice);
 //        journalService.save(toJournal(savedInvoice));
         return savedInvoice;
+    }
+
+    public Visit findVisitEntityOrThrow(String visitNumber) {
+        return this.visitRepository.findByVisitNumber(visitNumber)
+                .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
     }
 
     public DoctorInvoice save(DoctorInvoice invoice) {

@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.accounting.payment.domain.enumeration;
+package io.smarthealth.organization.person.patient.domain;
+
+import java.util.List;
 
 /**
  *
  * @author Kelsas
  */
-public enum CustomerType {
-    Patient,
-    Insurance,
-    Others
+public interface CustomizedPatientRepository {
+
+    List<Patient> search(String terms, int limit, int offset);
 }

@@ -219,10 +219,10 @@
 			</line>
 			<staticText>
 				<reportElement x="0" y="26" width="555" height="13" uuid="e682a494-5a4c-4795-b1e2-9bc9316621b5"/>
-				<textElement textAlignment="Center">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[Do not substitute. Dispense as prescribed]]></text>
+				<text><![CDATA[GOODS ONCE SOLD CANNOT BE RETURNED]]></text>
 			</staticText>
 			<subreport>
 				<reportElement x="0" y="39" width="555" height="14" uuid="73c131ce-a28d-4a51-856f-f9b851e173af"/>

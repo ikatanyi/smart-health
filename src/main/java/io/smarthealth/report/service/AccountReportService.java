@@ -49,6 +49,7 @@ import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
 import io.smarthealth.debtor.claim.dispatch.data.DispatchData;
+import io.smarthealth.debtor.claim.dispatch.domain.InvoiceAgeSummaryInterface;
 import io.smarthealth.debtor.claim.dispatch.service.DispatchService;
 import io.smarthealth.debtor.scheme.data.SchemConfigData;
 import io.smarthealth.debtor.scheme.service.SchemeService;
@@ -549,19 +550,22 @@ public class AccountReportService {
                 .stream()
                 .map(x -> x.toData())
                 .collect(Collectors.toList());
-
+        
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
-        sortField.setName("visitDate");
-        sortField.setOrder(SortOrderEnum.ASCENDING);
-        sortField.setType(SortFieldTypeEnum.FIELD);
-        sortList.add(sortField);
-
         sortField = new JRDesignSortField();
         sortField.setName("payer");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
+        
+        sortField = new JRDesignSortField();
+        sortField.setName("visitDate");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+
+        
 
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
@@ -612,6 +616,28 @@ public class AccountReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/aging_report");
         reportData.setReportName("insurance_aging_statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getAgingSummary(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+        Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
+        
+        ReportData reportData = new ReportData();
+        Map<String, Object> map = reportData.getFilters();
+        List<InvoiceAgeSummaryInterface> invoiceData = dispatchService.getInvoiceAgingSummary(payer);
+
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("payerName");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.setData(invoiceData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/invoice_aging_summary");
+        reportData.setReportName("invoice_aging_summary");
         reportService.generateReport(reportData, response);
     }
 

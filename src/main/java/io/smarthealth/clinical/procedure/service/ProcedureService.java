@@ -10,7 +10,7 @@ import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
 import io.smarthealth.clinical.procedure.data.ProcedureItemData;
@@ -198,7 +198,7 @@ public class ProcedureService {
     }
 
     private PatientBill toBill(PatientProcedureRegister data) {
-        ServicePointsss servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
+        ServicePoints servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
         PatientBill patientbill = new PatientBill();
         
         

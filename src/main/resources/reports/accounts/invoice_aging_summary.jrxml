@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice_aging_summary" pageWidth="555" pageHeight="802" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="from" class="java.util.Date"/>
+	<parameter name="to" class="java.util.Date"/>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Header_Data" class="java.util.List"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Footer_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="range" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="description" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="amount" class="java.math.BigDecimal"/>
+	<field name="payerName" class="java.lang.String"/>
+	<variable name="amount_1" class="java.math.BigDecimal" resetType="Group" resetGroup="payer" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}.setScale(0, BigDecimal.ROUND_HALF_UP )]]></variableExpression>
+	</variable>
+	<variable name="amount_2" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
+	</variable>
+	<group name="payer">
+		<groupExpression><![CDATA[$F{payerName}]]></groupExpression>
+		<groupHeader>
+			<band height="21">
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="6" width="515" height="15" forecolor="#000000" uuid="9934626e-e5c4-4785-b070-9e1115f4e24f"/>
+					<box>
+						<bottomPen lineWidth="0.15"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph leftIndent="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{payerName}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="15">
+				<staticText>
+					<reportElement x="1" y="0" width="110" height="15" uuid="efe1b987-32f7-4f9b-961c-3a5e44b0dfc6"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total :]]></text>
+				</staticText>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="111" y="0" width="97" height="15" uuid="a464799d-7406-44e9-9ad7-2407dcbd20f4"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+						<paragraph rightIndent="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{amount_1}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="30">
+			<subreport>
+				<reportElement x="0" y="0" width="514" height="30" isRemoveLineWhenBlank="true" uuid="d5663e66-4dfa-428f-81da-2c92b9ffa357"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="25" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="10" width="514" height="14" uuid="a7721001-7164-4d30-941c-5d72834d3517"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Invoice Aging Summary]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="0" y="0" width="514" height="1" forecolor="#6666FF" uuid="5aaf7f29-11c2-4341-a3eb-126e29c896da"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineColor="#000000"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="28" splitType="Stretch">
+			<staticText>
+				<reportElement x="12" y="16" width="99" height="11" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="111" y="16" width="97" height="11" uuid="e13a8d32-7e95-48f9-ad19-5457db79778c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="27" width="514" height="1" forecolor="#6666FF" uuid="14761926-4c06-4d35-ba7c-e283b165fa1a"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineColor="#000000"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="1" y="16" width="11" height="11" uuid="608fb399-6664-40a9-8ecb-9ba4349c5b4e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement x="12" y="0" width="99" height="17" uuid="d2539c45-a4e2-42f0-8ef4-fee0acdab46b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="12" height="17" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="3" y="17" width="512" height="1" forecolor="#9999FF" uuid="0857bc25-5cba-42f9-920c-2039555116dd"/>
+				<graphicElement>
+					<pen lineWidth="0.1" lineStyle="Dashed" lineColor="#000000"/>
+				</graphicElement>
+			</line>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="111" y="0" width="97" height="17" uuid="b887a395-f535-4f7a-a732-2876f318982c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount}.setScale(0, BigDecimal.ROUND_HALF_UP )]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="26">
+			<subreport>
+				<reportElement x="-19" y="0" width="554" height="26" uuid="04794731-d16b-413e-88e0-5d242895aed2"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="32">
+			<textField isBlankWhenNull="true">
+				<reportElement x="321" y="0" width="193" height="32" uuid="fabd763c-9708-4902-b1e4-bfafd54cb95d"/>
+				<box>
+					<pen lineWidth="0.1"/>
+					<topPen lineWidth="0.1"/>
+					<leftPen lineWidth="0.1"/>
+					<bottomPen lineWidth="0.1"/>
+					<rightPen lineWidth="0.1"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["  Statement Total :"+$V{amount_2}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

@@ -9,7 +9,7 @@ package io.smarthealth.accounting.payment.domain.enumeration;
  *
  * @author Kelsas
  */
-public enum ReceiveType {
+public enum RecordType {
     Deposit,
     Payment
 }

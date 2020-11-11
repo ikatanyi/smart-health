@@ -1,7 +1,7 @@
 package io.smarthealth.accounting.pricelist.domain;
 
 import io.smarthealth.accounting.pricelist.data.PriceListData;
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
@@ -35,7 +35,7 @@ public class PriceList extends Auditable {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pricelist_service_point_id"))
-    private ServicePointsss servicePoint;
+    private ServicePoints servicePoint;
 
     private Boolean defaultPrice;
     private BigDecimal sellingRate;
@@ -46,7 +46,7 @@ public class PriceList extends Auditable {
     @Transient
     private BigDecimal priceBookAmount;
 
-    public PriceList(Item item, ServicePointsss servicePoint, Double sellingRate) {
+    public PriceList(Item item, ServicePoints servicePoint, Double sellingRate) {
         this.item = item;
         this.servicePoint = servicePoint;
         this.defaultPrice = Boolean.TRUE;

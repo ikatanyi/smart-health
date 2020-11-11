@@ -7,6 +7,9 @@ package io.smarthealth.infrastructure.imports.service;
 
 import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.accounting.pricelist.service.PricebookService;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.laboratory.data.AnalyteData;
 import io.smarthealth.clinical.laboratory.data.LabTestData;
 import io.smarthealth.clinical.laboratory.service.AnnalyteService;
@@ -22,7 +25,6 @@ import io.smarthealth.debtor.claim.allocation.service.AllocationService;
 import io.smarthealth.debtor.member.data.PayerMemberData;
 import io.smarthealth.debtor.member.domain.PayerMember;
 import io.smarthealth.debtor.member.domain.PayerMemberRepository;
-import io.smarthealth.debtor.member.service.PayerMemberService;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
@@ -38,12 +40,14 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.data.ItemData;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -74,6 +78,7 @@ public class BatchImportService {
     private final ProcedureService procedureService;
     private final RadiologyConfigService radiologyService;
     private final AccountService accountService;
+    private final ServicePointService servicePointService;
 
     public void importData(final TemplateType type, final MultipartFile file) {
 
@@ -181,6 +186,24 @@ public class BatchImportService {
         List<RadiologyTestData> imageArray = new ArrayList();
         List<InventoryStockData> inventoryArray = new ArrayList();
         list.forEach(x -> {
+            ServicePoint p=null;
+            if(x.getStockCategory()==ItemCategory.Lab){
+                p = servicePointService.getServicePointByType(ServicePointType.Laboratory);
+                x.setExpenseTo(Arrays.asList(p.getId()));
+            }
+            if(x.getStockCategory()==ItemCategory.Procedure){
+                p = servicePointService.getServicePointByType(ServicePointType.Procedure);
+                x.setExpenseTo(Arrays.asList(p.getId()));
+            }
+            if(x.getStockCategory()==ItemCategory.Imaging){
+                p = servicePointService.getServicePointByType(ServicePointType.Radiology);
+                x.setExpenseTo(Arrays.asList(p.getId()));
+            }
+             if(x.getStockCategory()==ItemCategory.Drug){
+                p = servicePointService.getServicePointByType(ServicePointType.Pharmacy);
+                x.setExpenseTo(Arrays.asList(p.getId()));
+            }
+            
             ItemData item = itemService.createItem(x);
             if (item.getCategory() == item.getCategory().Lab) {
                 labTestArray.add(createLabTest(item));

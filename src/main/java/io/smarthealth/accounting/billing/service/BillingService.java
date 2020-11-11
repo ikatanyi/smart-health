@@ -44,7 +44,7 @@ import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
 import io.smarthealth.accounting.payment.data.BilledItem;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
@@ -362,7 +362,7 @@ public class BillingService {
             //then here since we making a revenue
             map.forEach((k, v) -> {
 
-                ServicePointsss srv = servicePointService.getServicePoint(k);
+                ServicePoints srv = servicePointService.getServicePoint(k);
                 String desc = srv.getName() + " Patient Billing";
                 Account credit = srv.getIncomeAccount();
                 BigDecimal amount = BigDecimal.valueOf(v);
@@ -389,7 +389,7 @@ public class BillingService {
                         }
                         //TODO                      
                         String desc = "Issuing Stocks to " + pat;
-                        ServicePointsss srv = servicePointService.getServicePoint(k);
+                        ServicePoints srv = servicePointService.getServicePoint(k);
                         Account debit = srv.getExpenseAccount(); // cost of sales
                         Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
                         BigDecimal amount = BigDecimal.valueOf(v);
@@ -657,7 +657,6 @@ public class BillingService {
     // Get Bills
     public List<SummaryBill> getBillTotals(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, VisitEnum.PaymentMethod paymentMode, DateRange range) {
         return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range);
-
     }
 
     public BillDetail getBillDetails(String visitNumber, Pageable pageable) {
@@ -773,7 +772,7 @@ public class BillingService {
             //then here since we making a revenue
             map.forEach((k, v) -> {
 
-                ServicePointsss srv = servicePointService.getServicePoint(k);
+                ServicePoints srv = servicePointService.getServicePoint(k);
                 String desc = srv.getName() + " Patient Billing Reversal";
                 Account reverseDebit = srv.getIncomeAccount();
                 BigDecimal amount = BigDecimal.valueOf(v);
@@ -795,7 +794,7 @@ public class BillingService {
                     inventory.forEach((k, v) -> {
 
                         String desc = "Stock Returns ";
-                        ServicePointsss srv = servicePointService.getServicePoint(k);
+                        ServicePoints srv = servicePointService.getServicePoint(k);
                         Account creditExpense = srv.getExpenseAccount(); // cost of sales
                         Account debitInventory = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
                         BigDecimal amount = BigDecimal.valueOf(v);

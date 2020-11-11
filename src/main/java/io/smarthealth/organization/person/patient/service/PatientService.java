@@ -8,7 +8,7 @@ package io.smarthealth.organization.person.patient.service;
 import io.smarthealth.administration.config.domain.GlobalConfiguration;
 import io.smarthealth.administration.config.domain.GlobalConfigurationRepository;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
 import io.smarthealth.clinical.queue.domain.PatientQueueRepository;
@@ -336,7 +336,7 @@ public class PatientService {
                 savedPatient.setIdentifications(patientIdentifiersList);
             }*/
 
-        } 
+        }
         if (patient.getVisitType() != null) {
             String visitid = sequenceNumberService.next(1L, Sequences.Visit.name());
             Visit visit = new Visit();
@@ -349,7 +349,7 @@ public class PatientService {
             //generate visit number
 //            visit.setVisitNumber(sequenceService.nextNumber(SequenceType.VisitNumber));
 
-            ServicePointsss servicePoint = null;
+            ServicePoints servicePoint = null;
             if (patient.getVisitType().equals("OPD_VISIT")) {
                 //find service point by service type
                 servicePoint = servicePointService.getServicePointByType(ServicePointType.Triage);
@@ -526,5 +526,9 @@ public class PatientService {
                 && !contentType.contains(MediaType.IMAGE_PNG_VALUE)) {
             throw APIException.badRequest("Only content type {0} and {1} allowed", MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE);
         }
+    }
+
+    public List<Patient> search(String term, int offset, int limit) {
+        return patientRepository.search(term, limit, offset);
     }
 }

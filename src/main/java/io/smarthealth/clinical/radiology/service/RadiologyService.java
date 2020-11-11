@@ -5,7 +5,7 @@ import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
@@ -21,7 +21,7 @@ import io.smarthealth.clinical.radiology.domain.RadiologyTest;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyRegisterSpecification;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyResultSpecification;
-import io.smarthealth.clinical.radiology.domain.specification.RadiologyTestSpecification;
+import io.smarthealth.clinical.radiology.domain.specification.PatientScanTestSpecification;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
@@ -160,7 +160,7 @@ public class RadiologyService {
 
     private PatientBill toBill(PatientScanRegister data) {
         //get the service point from store
-        ServicePointsss servicePoint = servicePointService.getServicePointByType(ServicePointType.Radiology);
+        ServicePoints servicePoint = servicePointService.getServicePointByType(ServicePointType.Radiology);
         PatientBill patientbill = new PatientBill();
 
         if (!data.getIsWalkin()) {
@@ -269,7 +269,7 @@ public class RadiologyService {
         PatientScanTest radiologyTest = findPatientRadiologyTestByIdWithNotFoundDetection(id);
 
         if (file != null) {
-            ServicePointsss servPoint = servicePoint.getServicePointByType(ServicePointType.Radiology);
+            ServicePoints servPoint = servicePoint.getServicePointByType(ServicePointType.Radiology);
             DocumentData documentData = new DocumentData();
             documentData.setDocumentNumber(radiologyTest.getPatientScanRegister().getAccessNo());
             documentData.setDocumentType(DocumentType.Scan);
@@ -293,7 +293,7 @@ public class RadiologyService {
     }
 
     public Page<PatientScanTest> findAllTests(String PatientNumber, String search, String scanNo, ScanTestState status, String visitId, DateRange range, Boolean isWalkin, Pageable pgbl) {
-        Specification spec = RadiologyTestSpecification.createSpecification(PatientNumber, scanNo, visitId, isWalkin, status, range, search);
+        Specification spec = PatientScanTestSpecification.createSpecification(PatientNumber, scanNo, visitId, isWalkin, status, range, search);
         return pscanRepository.findAll(spec, pgbl);
     }
 

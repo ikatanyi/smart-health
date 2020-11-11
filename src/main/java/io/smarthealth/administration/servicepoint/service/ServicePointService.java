@@ -4,7 +4,7 @@ import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.Objects;
 import org.springframework.data.domain.Page;
@@ -32,10 +32,10 @@ public class ServicePointService {
     }
 
     public ServicePointData createPoint(ServicePointData data) {
-        ServicePointsss point = new ServicePointsss();
+        ServicePoints point = new ServicePoints();
         if (data.getServicePointType().equals(ServicePointType.Consultation) || data.getServicePointType().equals(ServicePointType.Triage)) {
             //find if servicepoint type exists
-            Optional<ServicePointsss> sp = repository.findServicePointByServicePointType(data.getServicePointType());
+            Optional<ServicePoints> sp = repository.findServicePointByServicePointType(data.getServicePointType());
             if (sp.isPresent()) {
                 throw APIException.conflict("Service point type {0} has already been registered", data.getServicePointType().name());
             }
@@ -58,39 +58,39 @@ public class ServicePointService {
             point.setIncomeAccount(acc);
         }
 
-        ServicePointsss savedPoint = repository.save(point);
+        ServicePoints savedPoint = repository.save(point);
         return savedPoint.toData();
     }
 
-    public ServicePointsss getServicePoint(Long id) {
+    public ServicePoints getServicePoint(Long id) {
         return repository
                 .findById(id)
                 .orElseThrow(() -> APIException.notFound("Service point with id {0} not found", id));
     }
 
-    public List<ServicePointsss> getServiceLocationsByType(final ServicePointType servicePointType) {
+    public List<ServicePoints> getServiceLocationsByType(final ServicePointType servicePointType) {
         return repository.findByServicePointType(servicePointType);//.orElseThrow(() -> APIException.notFound("Service point identified by  {0} not found", servicePointType.name()));
     }
 
-    public List<ServicePointsss> getServiceLocations(final ServicePointType servicePointType) {
+    public List<ServicePoints> getServiceLocations(final ServicePointType servicePointType) {
         return repository
                 .findByServicePointType(servicePointType);
     }
 
-    public ServicePointsss getServicePointByType(final ServicePointType servicePointType) {
+    public ServicePoints getServicePointByType(final ServicePointType servicePointType) {
         return repository.findByServicePointType(servicePointType).get(0);//.orElseThrow(() -> APIException.notFound("Service point identified by  {0} not found", servicePointType.name()));
     }
 
 //    public Optional<ServicePoint> getServicePoint(final ServicePointType servicePointType) {
 //        return repository.findByServicePointType(servicePointType).get(0);
 //    }
-    public Page<ServicePointsss> listServicePoints(ServicePointType servicePointType, String pointType, Pageable page) {
-        Specification<ServicePointsss> spec = ServicePointSpecification.createSpecification(servicePointType, pointType);
+    public Page<ServicePoints> listServicePoints(ServicePointType servicePointType, String pointType, Pageable page) {
+        Specification<ServicePoints> spec = ServicePointSpecification.createSpecification(servicePointType, pointType);
         return repository.findAll(spec, page);
     }
 
     public ServicePointData updateServicePoint(Long id, ServicePointData data) {
-        ServicePointsss point = getServicePoint(id);
+        ServicePoints point = getServicePoint(id);
         if (!Objects.equals(point.getActive(), data.getActive())) {
             point.setActive(data.getActive());
         }
@@ -100,7 +100,7 @@ public class ServicePointService {
         if (!point.getDescription().equals(data.getDescription())) {
             point.setDescription(data.getDescription());
         }
-        ServicePointsss savedPoint = repository.save(point);
+        ServicePoints savedPoint = repository.save(point);
 
         return savedPoint.toData();
     }

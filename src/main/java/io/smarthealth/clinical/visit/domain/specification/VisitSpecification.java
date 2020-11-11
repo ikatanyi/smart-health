@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.visit.domain.specification;
 
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -26,7 +26,7 @@ public class VisitSpecification {
         super();
     }
 
-    public static Specification<Visit> createSpecification(String visitNumber, Employee employee, ServicePointsss servicePoint, Patient patient, String patientName, boolean visitIsRunning, DateRange dateRange, final Boolean isActiveOnConsultation, final boolean orderByTriageCategory, final String queryTerm) {
+    public static Specification<Visit> createSpecification(String visitNumber, Employee employee, ServicePoints servicePoint, Patient patient, String patientName, boolean visitIsRunning, DateRange dateRange, final Boolean isActiveOnConsultation, final boolean orderByTriageCategory, final String queryTerm) {
 
         return (root, query, cb) -> {
 
@@ -56,6 +56,7 @@ public class VisitSpecification {
                         cb.or(
                                 cb.equal(root.get("status"), VisitEnum.Status.Admitted),
                                 cb.equal(root.get("status"), VisitEnum.Status.CheckIn)
+//                                cb.equal(root.get("status"), VisitEnum.Status.Transferred)
                         )
                 );
             }

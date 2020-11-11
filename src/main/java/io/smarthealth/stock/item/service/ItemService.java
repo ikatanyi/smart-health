@@ -3,7 +3,7 @@ package io.smarthealth.stock.item.service;
 import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.accounting.taxes.domain.Tax;
 import io.smarthealth.administration.servicepoint.data.SimpleServicePoint;
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -107,11 +107,11 @@ public class ItemService {
             item.setRoute(createItem.getDrugRoute());
             item.setStrength(createItem.getDrugStrength());
         }
-        if (!createItem.getExpenseTo().isEmpty()) {
+        if (!createItem.getExpenseTo().isEmpty()) {            
             createItem.getExpenseTo()
                     .stream()
                     .forEach(x -> {
-                        Optional<ServicePointsss> sp = servicePointRepository.findById(x);
+                        Optional<ServicePoints> sp = servicePointRepository.findById(x);
                         if (sp.isPresent()) {
                             PriceList price = new PriceList();
                             price.setServicePoint(sp.get());

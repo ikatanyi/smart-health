@@ -15,14 +15,14 @@ import org.springframework.stereotype.Repository;
  * @author Kelsas
  */
 @Repository
-public interface ServicePointRepository extends JpaRepository<ServicePointsss, Long>, JpaSpecificationExecutor<ServicePointsss> {
+public interface ServicePointRepository extends JpaRepository<ServicePoints, Long>, JpaSpecificationExecutor<ServicePoints> {
 
 //    Optional<ServicePoint> findByServicePointType(final ServicePointType servicePointType);
     @Query("SELECT sp FROM ServicePoint sp WHERE sp.servicePointType=:servicePointType")
-    Optional<ServicePointsss> findServicePointByServicePointType(final ServicePointType servicePointType);
+    Optional<ServicePoints> findServicePointByServicePointType(final ServicePointType servicePointType);
 
-    List<ServicePointsss> findByServicePointType(final ServicePointType servicePointType);
+    List<ServicePoints> findByServicePointType(final ServicePointType servicePointType);
 
-    Page<ServicePointsss> findByPointType(String type, Pageable page);
+    Page<ServicePoints> findByPointType(String type, Pageable page);
 
 }

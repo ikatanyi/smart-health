@@ -6,6 +6,7 @@ import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
 import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
 import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
+import io.smarthealth.accounting.accounts.domain.JournalReversal;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
@@ -26,7 +27,7 @@ import io.smarthealth.accounting.payment.domain.Remittance;
 import io.smarthealth.accounting.payment.domain.repository.RemittanceRepository;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.accounting.payment.domain.specification.ReceiptSpecification;
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.PayerRepository;
@@ -77,7 +78,7 @@ public class ReceiptingService {
     private final PayerRepository payerRepository;
     private final RemittanceRepository remittanceRepository;
     private final CopaymentService copaymentService;
-    private final ReceiptTransactionRepository transactionRepository; 
+    private final ReceiptTransactionRepository transactionRepository;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Receipt receivePayment(ReceivePayment data) {
@@ -183,10 +184,15 @@ public class ReceiptingService {
         return receiptItemRepository.findTotalByCashierShift(shiftNo, cashierId);
     }
 
-    public void voidPayment(String receiptNo) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void voidPayment(String receiptNo) { 
+        Receipt receipt = getPaymentByReceiptNumber(receiptNo);
 
-        Receipt payment = getPaymentByReceiptNumber(receiptNo);
-        repository.voidPayment(SecurityUtils.getCurrentUserLogin().orElse("system"), payment.getId());
+        repository.voidPayment(SecurityUtils.getCurrentUserLogin().orElse("system"), receipt.getId());
+        Optional<JournalEntry> journalEntry = journalEntryService.findJournalByTransactionNo(receipt.getTransactionNo());
+        if (journalEntry.isPresent()) {
+            journalEntryService.reverseJournal(journalEntry.get().getId(), new JournalReversal(receipt.getTransactionDate().toLocalDate(), "Receipt Cancelation - Receipt No. " + receipt.getTransactionNo(), null));
+        }
     }
 
     @Transactional
@@ -212,9 +218,16 @@ public class ReceiptingService {
     }
 
     @Transactional
-    public Receipt receiptAdjustmentMethod(String receiptNo, ReceiptMethod method) {
+    public Receipt receiptAdjustmentMethod(String receiptNo, List<ReceiptMethod> method) {
         Receipt receipt = getPaymentByReceiptNumber(receiptNo);
-        return null;
+        receipt.getTransactions().forEach(x -> transactionRepository.delete(x));
+
+        List<ReceiptTransaction> trans = method.stream()
+                .map(data -> createPaymentTransaction(data))
+                .collect(Collectors.toList());
+        receipt.addTransaction(trans);
+        Receipt savedReceipt = repository.save(receipt);
+        return savedReceipt;
     }
 
     public Page<Receipt> getPayments(String payee, String receiptNo, String transactionNo, String shiftNo, Long servicePointId, Long cashierId, DateRange range, Boolean prepaid, Pageable page) {
@@ -291,7 +304,7 @@ public class ReceiptingService {
             //then here since we making a revenue
             map.forEach((k, v) -> {
                 //revenue
-                ServicePointsss srv = servicePointService.getServicePoint(k);
+                ServicePoints srv = servicePointService.getServicePoint(k);
                 String narration = "Receipting for " + srv.getName();
                 Account credit = srv.getIncomeAccount();//account receivable full amount
 //                BigDecimal amount = BigDecimal.valueOf(v);
@@ -332,7 +345,7 @@ public class ReceiptingService {
             if (!inventory.isEmpty()) {
                 inventory.forEach((k, v) -> {
                     //revenue
-                    ServicePointsss srv = servicePointService.getServicePoint(k);
+                    ServicePoints srv = servicePointService.getServicePoint(k);
                     String narration = "Expensing Inventory for " + srv.getName();
                     Account debit = srv.getExpenseAccount();//store.getInventoryAccount();// srv.getExpenseAccount();// cost of sales
                     Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account

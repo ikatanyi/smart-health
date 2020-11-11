@@ -57,6 +57,14 @@ public class InvoiceController {
         Invoice trans = service.getInvoiceByIdOrThrow(id);
         return ResponseEntity.ok(trans.toData());
     }
+    
+    @PutMapping("/invoices/{id}/")
+    @PreAuthorize("hasAuthority('create_invoices')")
+    public ResponseEntity<?> updateInvoice(@PathVariable(value = "id") Long id, @Valid @RequestBody InvoiceData invoiceData) {
+
+        Invoice trans =service.updateInvoice(id, invoiceData);
+        return ResponseEntity.ok(trans.toData());
+    }
 
     @PostMapping("/invoices/{invoiceNumber}/add-items")
     @PreAuthorize("hasAuthority('create_invoices')")

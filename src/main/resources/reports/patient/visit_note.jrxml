@@ -223,9 +223,9 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="34" splitType="Stretch">
+		<band height="26" splitType="Stretch">
 			<textField>
-				<reportElement x="1" y="11" width="493" height="13" uuid="8ce185a3-47e6-47d9-9860-a81d8d65468d"/>
+				<reportElement x="1" y="8" width="493" height="13" uuid="8ce185a3-47e6-47d9-9860-a81d8d65468d"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
@@ -234,15 +234,25 @@
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="28" splitType="Stretch">
+		<band height="58" splitType="Stretch">
 			<subreport>
-				<reportElement x="1" y="0" width="572" height="28" uuid="36683fba-4efa-4f0f-b114-81290ac93992"/>
+				<reportElement x="1" y="29" width="572" height="28" uuid="36683fba-4efa-4f0f-b114-81290ac93992"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
 			</subreport>
+			<staticText>
+				<reportElement x="2" y="11" width="184" height="13" uuid="3fa87797-8fd8-45b4-a905-d33b61308fd3"/>
+				<textElement verticalAlignment="Bottom" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Authorised Signature.]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="2" y="10" width="219" height="1" forecolor="#CC3300" uuid="2151a35a-79c3-40fa-8c2e-ee6877435666"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Solid" lineColor="#333333"/>
+				</graphicElement>
+			</line>
 		</band>
 	</pageFooter>
-	<summary>
-		<band splitType="Stretch"/>
-	</summary>
 </jasperReport>

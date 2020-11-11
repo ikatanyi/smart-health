@@ -5,8 +5,10 @@
  */
 package io.smarthealth.clinical.visit.service;
 
+import io.smarthealth.accounting.billing.data.nue.BillItem;
+import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.moh.data.Register;
 import io.smarthealth.clinical.record.data.DocResults;
@@ -26,13 +28,17 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -52,6 +58,7 @@ public class VisitService {
     private final ServicePointService servicePointService;
     private final PatientRepository patientRepository;
     private final EmployeeService employeeService;
+    private final BillingService billingService;
 
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
         Patient patient = findPatientOrThrow(patientNumber);
@@ -65,16 +72,17 @@ public class VisitService {
         return visits;
     }
 
-    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Boolean isActiveOnConsultation, final String username, final boolean orderByTriageCategory, final String queryTerm, final Pageable pageable) {
+    public Page<Visit> fetchAllVisits(final String visitNumber, final String staffNumber, final ServicePointType servicePointType, final String patientNumber, final String patientName, boolean runningStatus, DateRange range, final Boolean isActiveOnConsultation, final String username, final boolean orderByTriageCategory, final String queryTerm, final Boolean billPaymentValidation, final Pageable pageable) {
         Employee employee = null;
-        ServicePointsss servicePoint = null;
+        ServicePoints servicePoint = null;
         Patient patient = null;
         User user = null;
         if (staffNumber != null) {
             employee = employeeService.fetchEmployeeByNumberOrThrow(staffNumber);
         }
         if (servicePointType != null) {
-            servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(servicePointType));
+//            servicePoint = servicePointService.getServicePointByType(ServicePointType.valueOf(servicePointType));
+            servicePoint = servicePointService.getServicePointByType(servicePointType);
         }
         if (patientNumber != null) {
             patient = findPatientOrThrow(patientNumber);
@@ -90,9 +98,41 @@ public class VisitService {
             }
         }
 
+        if (billPaymentValidation != null) {
+            if (billPaymentValidation && servicePoint == null) {
+                throw APIException.badRequest("Please specify service point to validate service point bill payment", "");
+            }
+        }
+
         Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visitNumber, employee, servicePoint, patient, patientName, runningStatus, range, isActiveOnConsultation, orderByTriageCategory, queryTerm);
         Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
-        return visits;
+//        List<Visit> visitList = visits.getContent();//new ArrayList<>(Arrays.asList());
+        List visitList = Arrays.asList(visits.getContent());
+
+        List<Visit> visitData = new ArrayList<>(visits.getContent());
+//        visitData = visits.getContent();
+        if (billPaymentValidation) {
+            for (Visit v : visits.getContent()) {
+//fetchPatientBillItems by visit number
+                List<BillItem> items = billingService.getAllBillDetails(v.getVisitNumber());
+                //items.forEach(System.out::println);
+
+                for (BillItem bi : items) {
+                    //if item equals "DoctorFee" && item.amount > 0
+                    if (bi.getItemCategory().equals(ItemCategory.DoctorFee) && !bi.getPaid() && servicePointType.equals(ServicePointType.Consultation)) {
+                        // visitData.add(v);
+                        visitData.remove(v);
+//                        visitList.remove(v);
+                        System.out.println("tally count");
+                        break;
+                    }
+                }
+            }
+        }
+
+        Page<Visit> newVisitsPage = new PageImpl<>(visitData, pageable, visitData.size());
+
+        return newVisitsPage;
     }
 
     //@Transactional
@@ -130,7 +170,7 @@ public class VisitService {
         return visitRepository.findByStatus(status, pageable);
     }
 
-    public Page<Visit> findVisitByServicePoint(final ServicePointsss servicePoint, Pageable pageable) {
+    public Page<Visit> findVisitByServicePoint(final ServicePoints servicePoint, Pageable pageable) {
         return visitRepository.findByServicePointAndStatusNot(servicePoint, VisitEnum.Status.CheckOut, pageable);
     }
 
@@ -142,7 +182,7 @@ public class VisitService {
     public Optional<Visit> findVisitById(Long id) {
         return this.visitRepository.findById(id);
     }
-    
+
     public Optional<Visit> findVisit(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber);
     }
@@ -187,7 +227,7 @@ public class VisitService {
     public Page<Visit> fetchVisitsGroupByVisitNumber(final String visitNumber, final String staffNumber, final String servicePointType, final String patientNumber, final String patientName, Boolean runningStatus, DateRange range, final Pageable pageable) {
 // Visit visit = null;
         Employee employee = null;
-        ServicePointsss servicePoint = null;
+        ServicePoints servicePoint = null;
         Patient patient = null;
 // if (visitNumber != null) {
 // // visit = this.findVisitEntityOrThrow(visitNumber);
@@ -222,7 +262,7 @@ public class VisitService {
         }
         return visitRepository.getPatientResults(visitNumber, patientNumber, type, range, patientName, employee, showResultsRead);
     }
-    
+
     public List<TatInterface> getPatientTat(Long visitId) {
         return visitRepository.patientTatStatement(visitId);
     }

@@ -5,6 +5,9 @@ import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
 import java.util.List;
 import javax.persistence.*;
 import lombok.Data;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.TermVector;
 
 /**
  * The Patient
@@ -13,6 +16,7 @@ import lombok.Data;
  */
 @Entity
 @Data
+@Indexed
 @Table(name = "patient")
 public class Patient extends Person {
 
@@ -22,6 +26,7 @@ public class Patient extends Person {
      */
 //    @NaturalId
     @Column(length = 50, unique = true)
+    @Field(termVector = TermVector.YES)
     private String patientNumber;   //HLC-PAT-2019-00002  | UHID-PT-2019-00002 
 
     @Column(length = 50)

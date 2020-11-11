@@ -6,7 +6,7 @@
 package io.smarthealth.clinical.pharmacy.api;
 
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePointsss;
+import io.smarthealth.administration.servicepoint.domain.ServicePoints;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
 import io.smarthealth.clinical.pharmacy.service.PharmacyService;
@@ -123,7 +123,7 @@ public class PharmacyController {
         PatientQueue patientQueue = new PatientQueue();
 
         //Department department = departmentService.findByServicePointTypeAndfacility("Pharmacy", facility);
-        ServicePointsss servicePoint = servicePointService.getServicePointByType(ServicePointType.Pharmacy);
+        ServicePoints servicePoint = servicePointService.getServicePointByType(ServicePointType.Pharmacy);
 
         patientQueue.setServicePoint(servicePoint);
         patientQueue.setPatient(visit.getPatient());

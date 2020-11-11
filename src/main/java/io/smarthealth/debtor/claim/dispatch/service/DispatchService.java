@@ -9,6 +9,7 @@ import io.smarthealth.debtor.claim.dispatch.data.DispatchData;
 import io.smarthealth.debtor.claim.dispatch.data.DispatchedInvoiceData;
 import io.smarthealth.debtor.claim.dispatch.domain.Dispatch;
 import io.smarthealth.debtor.claim.dispatch.domain.DispatchRepository;
+import io.smarthealth.debtor.claim.dispatch.domain.InvoiceAgeSummaryInterface;
 import io.smarthealth.debtor.claim.dispatch.domain.specification.DispatchSpecification;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.service.PayerService;
@@ -120,5 +121,9 @@ public class DispatchService {
         }
         data.setDispatchDate(LocalDate.from(dispatch.getCreatedOn().atZone(ZoneId.systemDefault())));
         return data;
+    }
+    
+    public List<InvoiceAgeSummaryInterface> getInvoiceAgingSummary(Long payerId) {
+        return dispatchRepository.getInvoiceAgeSummary(payerId);
     }
 }
