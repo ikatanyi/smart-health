@@ -1,6 +1,6 @@
 package io.smarthealth.documents.domain;
 
-import io.smarthealth.administration.servicepoint.domain.ServicePoints;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.documents.data.DocResponse;
 import io.smarthealth.documents.data.DocumentData;
 import io.smarthealth.documents.domain.enumeration.DocumentType;
@@ -32,7 +32,7 @@ public class Document extends Auditable {
     private Patient patient;
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_document_service_point_id"))
-    private ServicePoints servicePoint;
+    private ServicePoint servicePoint;
     @Enumerated(EnumType.STRING)
     private DocumentType documentType;
     private String documentNumber;

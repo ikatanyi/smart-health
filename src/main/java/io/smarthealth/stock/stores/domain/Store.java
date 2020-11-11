@@ -2,7 +2,7 @@ package io.smarthealth.stock.stores.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.accounts.domain.Account;
-import io.smarthealth.administration.servicepoint.domain.ServicePoints;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.*;
 import lombok.Data;
@@ -27,7 +27,7 @@ public class Store extends Identifiable {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_service_point_id"))
-    private ServicePoints servicePoint;
+    private ServicePoint servicePoint;
 
     @JsonIgnore
     @ManyToOne

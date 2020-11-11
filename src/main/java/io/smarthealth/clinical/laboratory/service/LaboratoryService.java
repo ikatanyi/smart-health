@@ -6,7 +6,7 @@ import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePoints;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.laboratory.data.LabRegisterData;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
@@ -429,7 +429,7 @@ public class LaboratoryService {
         //get the service point from store
         Visit visit = data.getVisit();// visitRepository.findByVisitNumber(data.getVisitNumber()).orElse(null);
         //find the service point for lab
-        ServicePoints srvpoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
+        ServicePoint srvpoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
 
         PatientBill patientbill = new PatientBill();
         patientbill.setVisit(visit);
@@ -514,7 +514,7 @@ public class LaboratoryService {
         return patientbill;
     }
 
-    private PatientBillItem toPatientBill(LabRegisterTest registeredTest, ServicePoints srvpoint, String transId, String paymentMethod, List<LabTest> panels) {
+    private PatientBillItem toPatientBill(LabRegisterTest registeredTest, ServicePoint srvpoint, String transId, String paymentMethod, List<LabTest> panels) {
         if (registeredTest.getIsPanel() != null && registeredTest.getIsPanel()) {
             if (registeredTest.getParentLabTest() != null && !panels.contains(registeredTest.getParentLabTest())) {
                 LabTest panelTest = registeredTest.getParentLabTest();
@@ -570,7 +570,7 @@ public class LaboratoryService {
     @Transactional
     public DocResponse uploadDocument(Long testId, String name, MultipartFile file) {
 //        LabRegisterTest labRequestTest = getLabRegisterTest(testId);
-        ServicePoints srvpoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
+        ServicePoint srvpoint = servicePointService.getServicePointByType(ServicePointType.Laboratory);
 
         DocumentData data = new DocumentData();
         data.setDocfile(file);

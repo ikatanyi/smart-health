@@ -3,7 +3,7 @@ package io.smarthealth.stock.stores.service;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.IncomeExpenseData;
 import io.smarthealth.accounting.accounts.service.AccountService;
-import io.smarthealth.administration.servicepoint.domain.ServicePoints;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.stores.data.StoreData;
@@ -43,7 +43,7 @@ public class StoreService {
         toSave.setStoreName(data.getStoreName());
         toSave.setPatientStore(data.isPatientStore());
         if (data.getServicePointId() != null) {
-            ServicePoints srv = servicePointService.getServicePoint(data.getServicePointId());
+            ServicePoint srv = servicePointService.getServicePoint(data.getServicePointId());
             toSave.setServicePoint(srv);
         }
 
@@ -73,7 +73,7 @@ public class StoreService {
         toSave.setStoreName(data.getStoreName());
         toSave.setPatientStore(data.isPatientStore());
         if (data.getServicePointId() != null) {
-            ServicePoints srv = servicePointService.getServicePoint(data.getServicePointId());
+            ServicePoint srv = servicePointService.getServicePoint(data.getServicePointId());
             toSave.setServicePoint(srv);
         }
 

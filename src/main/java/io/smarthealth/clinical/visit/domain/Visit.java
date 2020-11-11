@@ -1,7 +1,7 @@
 package io.smarthealth.clinical.visit.domain;
 
 import io.smarthealth.accounting.doctors.domain.DoctorClinicItems;
-import io.smarthealth.administration.servicepoint.domain.ServicePoints;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 //import io.smarthealth.clinical.visit.data.enums.TriageCategory;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -31,7 +31,7 @@ public class Visit extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY/*, optional = false*/)
     @JoinColumn(name = "service_point_id", foreignKey = @ForeignKey(name = "fk_visit_service_point"))
-    private ServicePoints servicePoint;
+    private ServicePoint servicePoint;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "health_provider", foreignKey = @ForeignKey(name = "fk_visit_health_provider"))

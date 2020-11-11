@@ -13,7 +13,7 @@ import io.smarthealth.accounting.doctors.service.DoctorItemService;
 import io.smarthealth.accounting.pricelist.domain.PriceList;
 import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePoints;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.record.data.ReferralData;
 import io.smarthealth.clinical.record.data.SickOffNoteData;
@@ -171,7 +171,7 @@ public class GeneralClinicalServices {
             //create bill for the referred doctor
             //find consultation service by doctor selected
             if (rd.getDoctorServiceId() != null) {
-                ServicePoints sp = servicePointService.getServicePointByType(ServicePointType.Consultation);
+                ServicePoint sp = servicePointService.getServicePointByType(ServicePointType.Consultation);
                 DoctorItem docService = doctorItemService.getDoctorItem(rd.getDoctorServiceId());
                 PriceList pricelist = pricelistService.fetchPriceListByItemAndServicePoint(docService.getServiceType(), sp);
                 List<BillItemData> billItems = new ArrayList<>();

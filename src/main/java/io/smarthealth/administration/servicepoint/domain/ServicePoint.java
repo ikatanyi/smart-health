@@ -16,7 +16,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "service_points")
-public class ServicePoints extends Identifiable {
+public class ServicePoint extends Identifiable {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

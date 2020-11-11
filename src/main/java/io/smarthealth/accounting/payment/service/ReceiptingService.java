@@ -27,7 +27,7 @@ import io.smarthealth.accounting.payment.domain.Remittance;
 import io.smarthealth.accounting.payment.domain.repository.RemittanceRepository;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.accounting.payment.domain.specification.ReceiptSpecification;
-import io.smarthealth.administration.servicepoint.domain.ServicePoints;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.PayerRepository;
@@ -304,7 +304,7 @@ public class ReceiptingService {
             //then here since we making a revenue
             map.forEach((k, v) -> {
                 //revenue
-                ServicePoints srv = servicePointService.getServicePoint(k);
+                ServicePoint srv = servicePointService.getServicePoint(k);
                 String narration = "Receipting for " + srv.getName();
                 Account credit = srv.getIncomeAccount();//account receivable full amount
 //                BigDecimal amount = BigDecimal.valueOf(v);
@@ -345,7 +345,7 @@ public class ReceiptingService {
             if (!inventory.isEmpty()) {
                 inventory.forEach((k, v) -> {
                     //revenue
-                    ServicePoints srv = servicePointService.getServicePoint(k);
+                    ServicePoint srv = servicePointService.getServicePoint(k);
                     String narration = "Expensing Inventory for " + srv.getName();
                     Account debit = srv.getExpenseAccount();//store.getInventoryAccount();// srv.getExpenseAccount();// cost of sales
                     Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account

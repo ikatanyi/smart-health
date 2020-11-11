@@ -15,7 +15,7 @@ import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
 import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePoints;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
 import io.smarthealth.clinical.queue.domain.PatientQueue;
@@ -160,7 +160,7 @@ public class ClinicalVisitController {
             employee = employeeService.fetchEmployeeByNumberOrThrow(visitData.getPractitionerCode());
             visit.setHealthProvider(employee);
         }
-        ServicePoints servicePoint = servicePointService.getServicePoint(visitData.getLocationIdentity());
+        ServicePoint servicePoint = servicePointService.getServicePoint(visitData.getLocationIdentity());
 
         //generate visit number
         String visitNo = sequenceNumberService.next(1L, Sequences.Visit.name());
@@ -205,7 +205,7 @@ public class ClinicalVisitController {
         patientQueueService.createPatientQueue(patientQueue);
         //create bill if consultation
         if (!visit.getServiceType().equals(VisitEnum.ServiceType.Other)) {
-            ServicePoints sp = servicePointService.getServicePointByType(ServicePointType.Consultation);
+            ServicePoint sp = servicePointService.getServicePointByType(ServicePointType.Consultation);
             if (sp == null) {
                 throw APIException.notFound("Consultation service point not found", "");
             }
@@ -671,7 +671,7 @@ public class ClinicalVisitController {
         patientQueue.setVisit(activeVisit);
 
         if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
-            ServicePoints servicePoint = servicePointService.getServicePointByType(ServicePointType.Consultation);
+            ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Consultation);
             patientQueue.setServicePoint(servicePoint);
             activeVisit.setServicePoint(servicePoint);
         }
@@ -693,7 +693,7 @@ public class ClinicalVisitController {
             patientQueue.setSpecialNotes("Sent from triage");
 
             if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
-                ServicePoints servicePoint = servicePointService.getServicePointByType(ServicePointType.Consultation);
+                ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Consultation);
                 patientQueue.setServicePoint(servicePoint);
                 activeVisit.setServicePoint(servicePoint);
             } else {
@@ -706,7 +706,7 @@ public class ClinicalVisitController {
 //                activeVisit.setIsActiveOnConsultation(Boolean.TRUE);
 //            }
         } else if (vital.getSendTo().equals("Service Point")) {
-            ServicePoints servicePoint = servicePointService.getServicePoint(vital.getServicePointIdentifier());
+            ServicePoint servicePoint = servicePointService.getServicePoint(vital.getServicePointIdentifier());
             if (servicePoint.getServicePointType().equals(ServicePointType.Triage)) {
                 throw APIException.conflict("Please select another service point. Patient is already on {0}", ServicePointType.Triage.name());
             }

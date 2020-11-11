@@ -14,7 +14,7 @@ import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceItem;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
-import io.smarthealth.administration.servicepoint.domain.ServicePoints;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.debtor.claim.creditNote.data.CreditNoteData;
 import io.smarthealth.debtor.claim.creditNote.data.CreditNoteItemData;
@@ -162,7 +162,7 @@ public class CreditNoteService {
         }
         BigDecimal amountToDebit = BigDecimal.ZERO;
         for (CreditNoteItem item : creditNote.getItems()) {
-            ServicePoints servicepoint = servicePointService.getServicePoint(item.getInvoiceItem().getBillItem().getServicePointId());
+            ServicePoint servicepoint = servicePointService.getServicePoint(item.getInvoiceItem().getBillItem().getServicePointId());
             BigDecimal amount = BigDecimal.valueOf(item.getInvoiceItem().getBillItem().getAmount());
             amountToDebit = amountToDebit.add(amount);
             journalEntries.add(new JournalEntryItem(servicepoint.getIncomeAccount(), narration, amount, BigDecimal.ZERO));

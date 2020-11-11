@@ -5,7 +5,7 @@ import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePoints;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
@@ -160,7 +160,7 @@ public class RadiologyService {
 
     private PatientBill toBill(PatientScanRegister data) {
         //get the service point from store
-        ServicePoints servicePoint = servicePointService.getServicePointByType(ServicePointType.Radiology);
+        ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Radiology);
         PatientBill patientbill = new PatientBill();
 
         if (!data.getIsWalkin()) {
@@ -269,7 +269,7 @@ public class RadiologyService {
         PatientScanTest radiologyTest = findPatientRadiologyTestByIdWithNotFoundDetection(id);
 
         if (file != null) {
-            ServicePoints servPoint = servicePoint.getServicePointByType(ServicePointType.Radiology);
+            ServicePoint servPoint = servicePoint.getServicePointByType(ServicePointType.Radiology);
             DocumentData documentData = new DocumentData();
             documentData.setDocumentNumber(radiologyTest.getPatientScanRegister().getAccessNo());
             documentData.setDocumentType(DocumentType.Scan);

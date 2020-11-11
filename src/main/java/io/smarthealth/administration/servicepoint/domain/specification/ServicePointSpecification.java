@@ -1,7 +1,7 @@
 package io.smarthealth.administration.servicepoint.domain.specification;
 
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
-import io.smarthealth.administration.servicepoint.domain.ServicePoints;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,7 +12,7 @@ public class ServicePointSpecification {
         super();
     }
 
-    public static Specification<ServicePoints> createSpecification(ServicePointType servicePointType, String pointType) {
+    public static Specification<ServicePoint> createSpecification(ServicePointType servicePointType, String pointType) {
 
         return (root, query, cb) -> {
 
