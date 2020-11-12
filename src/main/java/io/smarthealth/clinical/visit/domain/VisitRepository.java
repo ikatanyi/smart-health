@@ -73,35 +73,35 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
     List<Register> patientRegister(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate);
     
     
-@Query(value = "SELECT r.order_date as date, r.patient_id, CONCAT_WS(' ',p.given_name,p.middle_name,p.surname) AS patientName,  'Laboratory' AS ServicePoint, r.visit_id AS VisitId, r.created_on AS Start, l.created_on AS Acknowledged, TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on) AS total, IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),'AWAITING')  AS TAT" +
+@Query(value = "SELECT r.order_date as date, r.patient_id, CONCAT_WS(' ',p.given_name,p.middle_name,p.surname) AS patientName,  'Laboratory' AS ServicePoint, r.visit_id AS VisitId, r.created_on AS Start, l.created_on AS Acknowledged, IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),0.0) AS total, IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),'AWAITING')  AS TAT" +
 " FROM patient_doctor_request r " +
 " LEFT JOIN lab_register l ON r.visit_id=l.visit_id" +
 " LEFT JOIN person p ON r.patient_id=p.id" +
 " WHERE r.visit_id= :visitId AND request_type='Laboratory'" +
 " GROUP BY ServicePoint" +
 " UNION" +
-" SELECT r.order_date as date, r.patient_id, CONCAT_WS(' ',p.given_name,p.middle_name,p.surname) AS patientName, 'Procedure' AS ServicePoint,r.visit_id AS VisitId, r.created_on AS Start, l.created_on AS Acknowledged,TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on) AS total, IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),'AWAITING')  AS TAT" +
+" SELECT r.order_date as date, r.patient_id, CONCAT_WS(' ',p.given_name,p.middle_name,p.surname) AS patientName, 'Procedure' AS ServicePoint,r.visit_id AS VisitId, r.created_on AS Start, l.created_on AS Acknowledged,IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),0.0) AS total, IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),'AWAITING')  AS TAT" +
 " FROM patient_doctor_request r " +
 " LEFT JOIN patient_procedure_register l ON r.visit_id=l.visit_id" +
 " LEFT JOIN person p ON r.patient_id=p.id" +
 " WHERE r.visit_id= :visitId AND request_type='Procedure'" +
 " GROUP BY ServicePoint" +
 " UNION " +
-" SELECT r.order_date as date, r.patient_id,CONCAT_WS(' ',p.given_name,p.middle_name,p.surname) AS patientName,'Pharmacy' AS ServicePoint,r.visit_id AS VisitId, r.created_on AS Start, l.created_on AS Acknowledged,TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on) AS total, IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),'AWAITING')  AS TAT" +
+" SELECT r.order_date as date, r.patient_id,CONCAT_WS(' ',p.given_name,p.middle_name,p.surname) AS patientName,'Pharmacy' AS ServicePoint,r.visit_id AS VisitId, r.created_on AS Start, l.created_on AS Acknowledged,IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),0.0) AS total, IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),'AWAITING')  AS TAT" +
 " FROM patient_doctor_request r " +
 " LEFT JOIN pharmacy_dispensed_drugs l ON r.visit_id=l.visit_id" +
 " LEFT JOIN person p ON r.patient_id=p.id" +
 " WHERE r.visit_id= :visitId AND request_type='Pharmacy'" +
 " GROUP BY ServicePoint" +
 " UNION " +
-" SELECT r.order_date as date, r.patient_id,CONCAT_WS(' ',p.given_name,p.middle_name,p.surname) AS patientName,'Radiology' AS ServicePoint,r.visit_id AS VisitId, r.created_on AS Start, l.created_on AS Acknowledged, TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on) AS total, IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),'AWAITING')  AS TAT" +
+" SELECT r.order_date as date, r.patient_id,CONCAT_WS(' ',p.given_name,p.middle_name,p.surname) AS patientName,'Radiology' AS ServicePoint,r.visit_id AS VisitId, r.created_on AS Start, l.created_on AS Acknowledged, IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),0.0) AS total, IFNULL(TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on),'AWAITING')  AS TAT" +
 " FROM patient_doctor_request r " +
 " LEFT JOIN patient_scan_register l ON r.visit_id=l.visit_id" +
 " LEFT JOIN person p ON r.patient_id=p.id" +
 " WHERE r.visit_id= :visitId AND request_type='Radiology'" +
 " GROUP BY ServicePoint,r.visit_id" +
 " UNION " +
-" SELECT n.date_recorded as date, v.patient_id,CONCAT_WS(' ',p.given_name,p.middle_name,p.surname) AS patientName, 'Consultation' AS ServicePoint,v.id AS VisitId,  v.created_on AS Start, n.created_on AS Acknowledged, TIMESTAMPDIFF(MINUTE,r.created_on,l.created_on) AS total, IFNULL(TIMESTAMPDIFF(MINUTE,v.created_on,n.created_on),'AWAITING') AS TAT FROM patient_visit v " +
+" SELECT n.date_recorded as date, v.patient_id,CONCAT_WS(' ',p.given_name,p.middle_name,p.surname) AS patientName, 'Consultation' AS ServicePoint,v.id AS VisitId,  v.created_on AS Start, n.created_on AS Acknowledged, IFNULL(TIMESTAMPDIFF(MINUTE,v.created_on,n.created_on),0.0) AS total, IFNULL(TIMESTAMPDIFF(MINUTE,v.created_on,n.created_on),'AWAITING') AS TAT FROM patient_visit v " +
 " LEFT JOIN patient_clinical_notes n ON v.id=n.visit_id " +
 " LEFT JOIN person p ON n.patient_id=p.id" +
 " WHERE n.visit_id= :visitId" +

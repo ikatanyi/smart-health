@@ -163,7 +163,7 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="referralType" class="java.lang.String"/>
+	<field name="referralType" class="java.lang.Object"/>
 	<field name="staffNumber" class="java.lang.String"/>
 	<field name="doctorName" class="java.lang.String"/>
 	<field name="doctorSpeciality" class="java.lang.String"/>
@@ -245,10 +245,10 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Institution/Doctor Transferred To: "+$F{doctorName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Institution/Doctor Transferred To: "+$F{doctorName}.equals( null )?"":$F{doctorName}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="291" y="72" width="281" height="38" uuid="efaeaba5-2b9b-4a48-9bfe-9bdbe239e0c6"/>
+				<reportElement positionType="Float" x="291" y="72" width="281" height="38" uuid="efaeaba5-2b9b-4a48-9bfe-9bdbe239e0c6"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "employee-banner.jasper"]]></subreportExpression>
 			</subreport>
