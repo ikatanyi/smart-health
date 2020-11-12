@@ -5,6 +5,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;
+import io.smarthealth.stock.purchase.data.PurchaseOrderItemData;
 import io.smarthealth.stock.purchase.domain.HtmlData;
 import io.smarthealth.stock.purchase.domain.PurchaseOrder;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
@@ -96,4 +97,40 @@ public class PurchaseOrderController {
 
         return ResponseEntity.ok(pagers);
     }
+    
+    @PutMapping("/purchaseorders/{id}")
+    @PreAuthorize("hasAuthority('create_purchaseorders')")
+    public PurchaseOrderData updatePurchaseOrder(@PathVariable(value = "id") Long code, @Valid @RequestBody PurchaseOrderData orderData) {
+        return service.updatePurchaseOrder(code,orderData).toData();
+    }
+    
+    @DeleteMapping("/purchaseorders-item/{id}")
+    @PreAuthorize("hasAuthority('create_purchaseorders')")
+    public ResponseEntity<?> removePurchaseOrderItem(@PathVariable(value = "id") Long id) {
+         service.removePurchaseOrderItem(id);
+         return ResponseEntity.accepted().build();
+    }
+    
+    @DeleteMapping("/purchaseorders/{id}")
+    @PreAuthorize("hasAuthority('create_purchaseorders')")
+    public ResponseEntity<?> removePurchaseOrder(@PathVariable(value = "id") Long id, @RequestParam(value = "remarks", required = false) String remarks) {
+         service.cancelPurchaseOrder(id,remarks);
+         return ResponseEntity.accepted().build();
+    }
+    
+    @PostMapping("/purchaseorders/{id}/order-item")
+    @PreAuthorize("hasAuthority('create_purchaseorders')")
+    public ResponseEntity<?> addPurchaseOrderItem(@PathVariable(value = "id") Long id, @Valid @RequestBody PurchaseOrderItemData orderData) {
+
+        PurchaseOrderItemData result = PurchaseOrderItemData.map(service.addPurchaseOrderItem(id,orderData));
+
+        Pager<PurchaseOrderItemData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Purchase Order created successful");
+        pagers.setContent(result);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+
+    }
+    
 }
