@@ -171,7 +171,7 @@ public class PurchaseService {
         PurchaseOrder order = findOneWithNoFoundDetection(id);
         order.setStatus(PurchaseOrderStatus.Canceled);
         order.setRemarks(remarks);
-        orderRepository.delete(order);
+        orderRepository.save(order);
     }
     
 

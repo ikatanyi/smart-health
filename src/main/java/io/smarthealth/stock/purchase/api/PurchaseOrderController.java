@@ -53,9 +53,9 @@ public class PurchaseOrderController {
 
     }
 
-    @GetMapping("/purchaseorders/{id}")
+    @GetMapping("/purchaseorders/{orderNo}")
     @PreAuthorize("hasAuthority('view_purchaseorders')")
-    public PurchaseOrderData getPurchaseOrder(@PathVariable(value = "id") String code) {
+    public PurchaseOrderData getPurchaseOrder(@PathVariable(value = "orderNo") String code) {
         return service.findByOrderNumberOrThrow(code).toData();
     }
 
@@ -111,7 +111,7 @@ public class PurchaseOrderController {
          return ResponseEntity.accepted().build();
     }
     
-    @DeleteMapping("/purchaseorders/{id}")
+    @PutMapping("/purchaseorders/{id}/cancel")
     @PreAuthorize("hasAuthority('create_purchaseorders')")
     public ResponseEntity<?> removePurchaseOrder(@PathVariable(value = "id") Long id, @RequestParam(value = "remarks", required = false) String remarks) {
          service.cancelPurchaseOrder(id,remarks);
