@@ -272,7 +272,10 @@ public class ReportController {
                 break;
             case Invoice_Aging_Summary:
                 reportService.getAgingSummary(queryParams, format, response);
-                break;       
+                break;  
+            case Purchase_Order_Statement:
+                stockReportService.getPurchaseOrderStatement(queryParams, format, response);
+                break;
             default:
                 break;
         }

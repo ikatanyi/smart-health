@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="purchase_order_subreport" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a6e4d06c-28ec-47ed-a1ac-2ed0457fff61">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="51"/>
 	<property name="ireport.y" value="0"/>
 	<field name="itemId" class="java.lang.Long"/>
 	<field name="item" class="java.lang.String"/>
@@ -40,7 +40,7 @@
 				<text><![CDATA[Item Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="147" y="1" width="217" height="13" uuid="74d92829-78a2-4b16-8396-e25fa227b544"/>
+				<reportElement positionType="Float" x="142" y="1" width="222" height="13" uuid="74d92829-78a2-4b16-8396-e25fa227b544"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
@@ -65,8 +65,8 @@
 				<textFieldExpression><![CDATA[$F{itemCode}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="233" y="0" width="125" height="14" uuid="bfad8931-007d-4ae8-a7b7-9d2cdec72096"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement x="142" y="0" width="216" height="14" uuid="bfad8931-007d-4ae8-a7b7-9d2cdec72096"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{item}]]></textFieldExpression>

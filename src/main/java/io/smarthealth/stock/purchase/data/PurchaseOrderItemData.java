@@ -6,7 +6,9 @@
 package io.smarthealth.stock.purchase.data;
 
 import io.smarthealth.stock.purchase.domain.PurchaseOrderItem;
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import lombok.Data;
 
 /**
@@ -24,6 +26,14 @@ public class PurchaseOrderItemData {
     private double receivedQuantity;
     private BigDecimal price; //this can be linked to the pricelist and be defined in the values that
     private BigDecimal amount;
+    @ApiModelProperty(hidden=true)
+    private String supplier;
+    @ApiModelProperty(hidden=true)
+    private String orderNumber;
+    @ApiModelProperty(hidden=true)
+    private LocalDate orderDate;
+    @ApiModelProperty(hidden=true)
+    private Double balance;
 
     public static PurchaseOrderItemData map(PurchaseOrderItem orderItem) {
         PurchaseOrderItemData data = new PurchaseOrderItemData();
@@ -31,7 +41,15 @@ public class PurchaseOrderItemData {
             data.setItemId(orderItem.getItem().getId());
             data.setItemCode(orderItem.getItem().getItemCode());
             data.setItem(orderItem.getItem().getItemName());
+            
         }
+        if(orderItem.getPurchaseOrder()!=null){
+            data.setOrderNumber(orderItem.getPurchaseOrder().getOrderNumber());
+            data.setOrderDate(orderItem.getPurchaseOrder().getTransactionDate());
+            if(orderItem.getPurchaseOrder().getSupplier()!=null)
+               data.setSupplier(orderItem.getPurchaseOrder().getSupplier().getSupplierName());
+        }
+        data.setBalance(orderItem.getQuantity()-orderItem.getReceivedQuantity());
         data.setPurchaseOrderId(orderItem.getId());
         data.setQuantity(orderItem.getQuantity());
         data.setReceivedQuantity(orderItem.getReceivedQuantity());
