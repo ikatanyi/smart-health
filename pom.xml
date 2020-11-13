@@ -9,11 +9,12 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     
+    
     <groupId>io.smarthealth</groupId>
     <artifactId>smart-health</artifactId>
     <version>1.0.0</version>
     <name>smart-health-v2</name>
-    <description>Healthcare Management System </description>
+    <description>Healthcare Management System (HMIS) </description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -38,7 +39,11 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
-        
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-search-orm</artifactId>
+            <version>5.11.5.Final</version>
+        </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -88,11 +93,16 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency> 
-        <dependency> 
+        <!--        <dependency> 
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <type>jar</type>
-        </dependency> 
+        </dependency> -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -231,6 +241,10 @@
             <artifactId>spring-security-oauth2-jose</artifactId>
             <type>jar</type>
         </dependency>  
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

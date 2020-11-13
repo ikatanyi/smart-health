@@ -273,6 +273,9 @@ public class ReportController {
             case Patient_Attendance_Report:
                 patientReportService.getPatientReport(queryParams, format, response);
                 break;
+            case Invoice_Aging_Summary:
+                reportService.getAgingSummary(queryParams, format, response);
+                break;       
             default:
                 break;
         }

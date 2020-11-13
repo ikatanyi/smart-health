@@ -143,7 +143,13 @@ public class BillingService {
                         billItem.setPrice(data.getAmount());
                     }
                     billItem.setQuantity(lineData.getQuantity());
-                    billItem.setAmount((billItem.getPrice() * billItem.getQuantity()));
+                    System.out.println("billItem.getPrice() " + billItem.getPrice());
+                    //SIMON UPDATED HERE TO CHECK NULL BECAUSE REFERAL BILL WAS FAILING
+                    if (billItem.getPrice() != null) {
+                        billItem.setAmount((billItem.getPrice() * billItem.getQuantity()));
+                    } else {
+                        billItem.setAmount(lineData.getAmount());
+                    }
                     billItem.setDiscount(lineData.getDiscount());
                     billItem.setBalance((billItem.getAmount()));
 
@@ -484,26 +490,25 @@ public class BillingService {
                             PatientBillItem item = findBillItemById(x.getBillItemId());
                             BigDecimal discount = (x.getDiscount() != null ? x.getDiscount() : BigDecimal.ZERO);
 //                            BigDecimal subtotal = item.getNetAmount() != null && item.getNetAmount() > 0 ? BigDecimal.valueOf(item.getNetAmount()) : BigDecimal.valueOf(((item.getQuantity() * item.getPrice()) - discount.doubleValue()));
-                           
-                            BigDecimal totalAmount =  BigDecimal.valueOf((item.getQuantity() * item.getPrice()));
+
+                            BigDecimal totalAmount = BigDecimal.valueOf((item.getQuantity() * item.getPrice()));
                             BigDecimal netAmount = totalAmount.subtract(discount);
                             BigDecimal balance = netAmount.subtract(x.getAmount());
-                             
+
 //                            BigDecimal amount = subtotal; // + item.getTaxes();
 //                            BigDecimal amount = BigDecimal.valueOf(((item.getQuantity() * item.getPrice()) - discount.doubleValue()));
-
 //                            BigDecimal bal = amount.subtract(x.getAmount());  //what was paid less the discount
                             item.setPaid(Boolean.TRUE);
                             item.setStatus(BillStatus.Paid);
                             if (item.getItem().getCategory() == ItemCategory.CoPay) {
                                 item.setAmount((item.getAmount() * -1));
-                            }else{
-                                 item.setAmount(totalAmount.doubleValue());
+                            } else {
+                                item.setAmount(totalAmount.doubleValue());
                             }
 //                            item.setSubTotal(subtotal.doubleValue());
                             item.setPaymentReference(data.getReceiptNo());
                             item.setBalance(balance.doubleValue());
-                           
+
                             item.setDiscount(discount.doubleValue());
 
                             PatientBillItem i = updateBillItem(item);
@@ -662,7 +667,6 @@ public class BillingService {
     // Get Bills
     public List<SummaryBill> getBillTotals(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, VisitEnum.PaymentMethod paymentMode, DateRange range) {
         return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range);
-
     }
 
     public BillDetail getBillDetails(String visitNumber, Pageable pageable) {

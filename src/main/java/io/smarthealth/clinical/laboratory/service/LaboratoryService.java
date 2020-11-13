@@ -599,8 +599,7 @@ public class LaboratoryService {
                         if (req != null) {
                             //
                             if (req.getRequestedBy() != null) {
-                                notificationEventPublisher.publishUserNotificationEvent(
-                                        NotificationData.builder()
+                                notificationEventPublisher.publishUserNotificationEvent(NotificationData.builder()
                                                 .datetime(LocalDateTime.now())
                                                 .description(description)
                                                 .isRead(false)

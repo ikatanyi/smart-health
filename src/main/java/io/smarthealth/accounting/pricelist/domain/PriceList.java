@@ -78,9 +78,9 @@ public class PriceList extends Auditable {
 
             if (this.hasPriceBook) {
 //                System.out.println("Has Price book " + this.getItem().getId());
-                if (this.item.getItemName().equals("FULL HAEMOGRAM/CBC -Male")) {
-                    System.out.println("setting price book price " + this.priceBookAmount);
-                }
+//                if (this.item.getItemName().equals("FULL HAEMOGRAM/CBC -Male")) {
+//                    System.out.println("setting price book price " + this.priceBookAmount);
+//                }
                 data.setSellingRate(this.priceBookAmount);
             }
         }

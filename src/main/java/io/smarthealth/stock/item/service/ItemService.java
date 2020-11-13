@@ -107,7 +107,7 @@ public class ItemService {
             item.setRoute(createItem.getDrugRoute());
             item.setStrength(createItem.getDrugStrength());
         }
-        if (!createItem.getExpenseTo().isEmpty()) {
+        if (!createItem.getExpenseTo().isEmpty()) {            
             createItem.getExpenseTo()
                     .stream()
                     .forEach(x -> {

@@ -336,7 +336,7 @@ public class PatientService {
                 savedPatient.setIdentifications(patientIdentifiersList);
             }*/
 
-        } 
+        }
         if (patient.getVisitType() != null) {
             String visitid = sequenceNumberService.next(1L, Sequences.Visit.name());
             Visit visit = new Visit();
@@ -526,5 +526,9 @@ public class PatientService {
                 && !contentType.contains(MediaType.IMAGE_PNG_VALUE)) {
             throw APIException.badRequest("Only content type {0} and {1} allowed", MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE);
         }
+    }
+
+    public List<Patient> search(String term, int offset, int limit) {
+        return patientRepository.search(term, limit, offset);
     }
 }

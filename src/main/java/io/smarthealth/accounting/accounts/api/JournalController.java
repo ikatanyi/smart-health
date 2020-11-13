@@ -2,6 +2,7 @@ package io.smarthealth.accounting.accounts.api;
 
 import io.smarthealth.accounting.accounts.data.JournalEntryData;
 import io.smarthealth.accounting.accounts.domain.JournalEntry;
+import io.smarthealth.accounting.accounts.domain.JournalReversal;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
@@ -16,7 +17,7 @@ import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity; 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,9 +32,9 @@ public class JournalController {
         this.journalService = journalService;
     }
     //CRUD
- 
+
     @PostMapping
-    @ResponseBody 
+    @ResponseBody
     @PreAuthorize("hasAuthority('create_journal')")
     public ResponseEntity<?> createJournalEntry(@RequestBody @Valid final JournalEntryData journalEntry) {
 
@@ -66,10 +67,10 @@ public class JournalController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        
+
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<JournalEntryData> list = journalService.findJournals(transactionNo, type, status, range, pageable);
-         
+
         Pager<List<JournalEntryData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -83,7 +84,7 @@ public class JournalController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
- 
+
     @GetMapping("/{id}")
     @ResponseBody
     @PreAuthorize("hasAuthority('view_journal')")
@@ -91,5 +92,13 @@ public class JournalController {
         JournalEntry optionalJournalEntry = journalService.findJournalIdOrThrow(id);
         return ResponseEntity.ok(optionalJournalEntry.toData());
     }
-    
+
+    @PostMapping("/{id}/reverse")
+    @ResponseBody
+    @PreAuthorize("hasAuthority('view_journal')")
+    ResponseEntity<JournalEntryData> reverseJournalEntry(@PathVariable("id") Long id, @RequestBody @Valid JournalReversal journalReversal) {
+        JournalEntry optionalJournalEntry = journalService.reverseJournal(id, journalReversal);
+        return ResponseEntity.ok(optionalJournalEntry.toData());
+    }
+
 }

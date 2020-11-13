@@ -6,6 +6,7 @@ import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
 import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
 import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
+import io.smarthealth.accounting.accounts.domain.JournalReversal;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
@@ -183,11 +184,15 @@ public class ReceiptingService {
         return receiptItemRepository.findTotalByCashierShift(shiftNo, cashierId);
     }
 
-    public void voidPayment(String receiptNo) {
-        //TODO - capture voiding reason and also reverse the transactions
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void voidPayment(String receiptNo) { 
+        Receipt receipt = getPaymentByReceiptNumber(receiptNo);
 
-        Receipt payment = getPaymentByReceiptNumber(receiptNo);
-        repository.voidPayment(SecurityUtils.getCurrentUserLogin().orElse("system"), payment.getId());
+        repository.voidPayment(SecurityUtils.getCurrentUserLogin().orElse("system"), receipt.getId());
+        Optional<JournalEntry> journalEntry = journalEntryService.findJournalByTransactionNo(receipt.getTransactionNo());
+        if (journalEntry.isPresent()) {
+            journalEntryService.reverseJournal(journalEntry.get().getId(), new JournalReversal(receipt.getTransactionDate().toLocalDate(), "Receipt Cancelation - Receipt No. " + receipt.getTransactionNo(), null));
+        }
     }
 
     @Transactional
@@ -215,7 +220,8 @@ public class ReceiptingService {
     @Transactional
     public Receipt receiptAdjustmentMethod(String receiptNo, List<ReceiptMethod> method) {
         Receipt receipt = getPaymentByReceiptNumber(receiptNo);
-        transactionRepository.deleteReceiptTransaction(receiptNo);
+        receipt.getTransactions().forEach(x -> transactionRepository.delete(x));
+
         List<ReceiptTransaction> trans = method.stream()
                 .map(data -> createPaymentTransaction(data))
                 .collect(Collectors.toList());
