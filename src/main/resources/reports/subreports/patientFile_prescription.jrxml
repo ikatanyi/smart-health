@@ -101,7 +101,7 @@
 					<pen lineWidth="0.15" lineColor="#666666"/>
 				</graphicElement>
 			</line>
-			<textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="429" y="0" width="122" height="11" uuid="705cd081-5a84-4cb3-aab2-bd1e49502915"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>

@@ -194,7 +194,7 @@ public class PatientReportServices {
                         data.setOther(interf.getTat());
                         break;
                 }
-                data.setTotal(data.getTotal()+interf.getTotal());
+                data.setTotal(data.getTotal()+NumberUtils.createDouble(String.valueOf(interf.getTotal())));
             }
             visitArrayList.add(data);
         }

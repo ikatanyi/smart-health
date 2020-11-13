@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrugRepository;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrugsInterface;
 import io.smarthealth.clinical.pharmacy.domain.specification.DispensingSpecification;
-import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
@@ -30,7 +29,6 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.notify.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -64,7 +62,6 @@ public class DispensingService {
     private final VisitService visitService;
     private final DoctorsRequestRepository doctorRequestRepository;
     private final WalkingService walkingService;
-    private final NotificationEventPublisher notificationEventPublisher;
 
     private void dispenseItem(Store store, DrugRequest drugRequest) {
 

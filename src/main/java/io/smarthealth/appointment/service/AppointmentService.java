@@ -91,7 +91,7 @@ public class AppointmentService {
             msgData = new TextMessageData();
             msgData.setReceiverId(practitioner.get().getStaffNumber());
             msgData.setReceiverType(ReceiverType.employee);
-            msgData.setMessage("Dear Doctor, You Have a scheduled Appoinment with "+patient.get().getFullName()+" on"+entity.getAppointmentDate()+" at"+entity.getStartTime());
+            msgData.setMessage("Dear Doctor,"+practitioner.get().getFullName()+" You Have a scheduled Appoinment with "+patient.get().getFullName()+" on "+entity.getAppointmentDate()+" at"+entity.getStartTime());
             dataList.add(msgData);
         }        
         if (patient.isPresent()) {
