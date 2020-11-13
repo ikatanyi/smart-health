@@ -5,7 +5,6 @@
  */
 package io.smarthealth.infrastructure.utility.ivorydata;
 
-import com.nimbusds.openid.connect.sdk.claims.Gender;
 //import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.domain.enumeration.MaritalStatus;
 import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
