@@ -13,5 +13,6 @@ public enum PettyCashStatus {
     Pending,
     Approved,
     Declined,
-    PartiallyApproved
+    PartiallyApproved,
+    Paid
 }

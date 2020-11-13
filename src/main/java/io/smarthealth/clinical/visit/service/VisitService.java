@@ -7,12 +7,13 @@ package io.smarthealth.clinical.visit.service;
 
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.administration.config.domain.GlobalConfiguration;
+import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.moh.data.Register;
 import io.smarthealth.clinical.record.data.DocResults;
-import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.TatInterface;
@@ -27,10 +28,7 @@ import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.security.domain.User;
-import io.smarthealth.security.service.UserService;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -59,6 +57,7 @@ public class VisitService {
     private final PatientRepository patientRepository;
     private final EmployeeService employeeService;
     private final BillingService billingService;
+    private final ConfigService configService;
 
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
         Patient patient = findPatientOrThrow(patientNumber);
@@ -213,7 +212,12 @@ public class VisitService {
     }
 
     public List<Visit> fetchAllVisitsSurpassed24hrs() {
-        return visitRepository.visitsPast24hours();
+        Optional<GlobalConfiguration> conf = configService.findByName("AutomaticVisitCheckOutTime");
+        int hours = 24;
+        if (conf.isPresent()) {
+            hours = Integer.valueOf(conf.get().getValue());
+        }
+        return visitRepository.visitsPast24hours(hours);
     }
 
     public List<Visit> fetchVisitAttendance(Date date) {
