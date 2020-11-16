@@ -4,7 +4,7 @@ import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.organization.person.data.AddressData;
+import io.smarthealth.organization.person.data.AddressDatas;
 import io.smarthealth.organization.person.data.ContactData;
 import io.smarthealth.organization.person.data.PersonNextOfKinData;
 import io.smarthealth.organization.person.data.PortraitData;
@@ -221,7 +221,7 @@ public class PatientController {
     ResponseEntity<PatientData> updatePatientAddress(
             @PathVariable("patientid") final String patientNumber,
             @PathVariable("addressid") final Long addressid,
-            @RequestBody final AddressData addressData) {
+            @RequestBody final AddressDatas addressData) {
         final PersonAddress address;
         Patient patient = patientService.findPatientOrThrow(patientNumber);
         if (this.personService.addressExists(addressid)) {

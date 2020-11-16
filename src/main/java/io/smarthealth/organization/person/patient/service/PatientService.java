@@ -18,7 +18,7 @@ import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.service.FacilityService;
-import io.smarthealth.organization.person.data.AddressData;
+import io.smarthealth.organization.person.data.AddressDatas;
 import io.smarthealth.organization.person.data.ContactData;
 import io.smarthealth.organization.person.data.PersonNextOfKinData;
 import io.smarthealth.organization.person.data.PortraitData;
@@ -144,7 +144,7 @@ public class PatientService {
                     if (personAddressEntity != null) {
                         patient.setAddress(personAddressEntity
                                 .stream()
-                                .map(AddressData::map)
+                                .map(AddressDatas::map)
                                 .collect(Collectors.toList())
                         );
                     }
@@ -303,7 +303,7 @@ public class PatientService {
             personAddressRepository.saveAll(patient.getAddress()
                     .stream()
                     .map(address -> {
-                        final PersonAddress addressDetailEntity = AddressData.map(address);
+                        final PersonAddress addressDetailEntity = AddressDatas.map(address);
                         addresses.add(addressDetailEntity);
                         addressDetailEntity.setPerson(savedPatient);
                         return addressDetailEntity;
@@ -435,10 +435,10 @@ public class PatientService {
         try {
             PatientData patientData = modelMapper.map(patient, PatientData.class);
             if (patient.getAddresses() != null) {
-                List<AddressData> addresses = new ArrayList<>();
+                List<AddressDatas> addresses = new ArrayList<>();
 
                 patient.getAddresses().forEach((address) -> {
-                    AddressData addressData = modelMapper.map(address, AddressData.class);
+                    AddressDatas addressData = modelMapper.map(address, AddressDatas.class);
                     addresses.add(addressData);
                 });
                 patientData.setAddress(addresses);
