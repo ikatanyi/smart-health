@@ -55,6 +55,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
             "/**/*.html",
             "/**/*.css",
             "/**/*.js", 
+            "/api/v1/smartpayments/**",
             "/api/auth/user/resetPassword/**",
             "/v2/api-docs/**", "/configuration/ui/**", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html/**", "/webjars/**"
     };
