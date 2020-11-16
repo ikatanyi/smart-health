@@ -15,9 +15,11 @@ import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;
+import io.smarthealth.stock.purchase.data.PurchaseOrderItemData;
 import io.smarthealth.stock.purchase.domain.HtmlData;
 import io.smarthealth.stock.purchase.domain.PurchaseOrder;
 import io.smarthealth.stock.purchase.domain.PurchaseOrderItem;
+import io.smarthealth.stock.purchase.domain.PurchaseOrderItemRepository;
 import io.smarthealth.stock.purchase.domain.PurchaseOrderRepository;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.purchase.domain.specification.PurchaseOrderSpecification;
@@ -55,6 +57,7 @@ import org.thymeleaf.context.Context;
 public class PurchaseService {
 
     private final PurchaseOrderRepository orderRepository;
+    private final PurchaseOrderItemRepository orderItemRepository;
     private final SupplierService supplierService;
     private final AdminService adminService;
     private final PricebookService pricebookService;
@@ -113,6 +116,65 @@ public class PurchaseService {
         return orderRepository.save(order).toData();
     }
 
+    @Transactional
+    public PurchaseOrder updatePurchaseOrder(Long id, PurchaseOrderData data) {
+
+        PurchaseOrder order = findOneWithNoFoundDetection(id);
+        Supplier supplier = supplierService.getSupplierOrThrow(data.getSupplierId());
+        order.setSupplier(supplier);
+        if (data.getAddressId() != null) {
+            Address address = adminService.getAddress(data.getAddressId()).get();
+            order.setAddress(address);
+        }
+
+        if (data.getContactId() != null) {
+            Contact contact = adminService.getContact(data.getContactId()).get();
+            order.setContact(contact);
+        }
+//        order.setOrderNumber(UUID.randomUUID().toString()); //this sh
+        if (data.getPriceListId() != null) {
+            PriceBook priceList = pricebookService.getPricebook(data.getPriceListId()).get();
+            order.setPriceList(priceList);
+        }
+        order.setRequiredDate(data.getRequiredDate());
+        order.setStatus(PurchaseOrderStatus.Draft);
+        order.setReceived(Boolean.FALSE);
+        order.setBilled(Boolean.FALSE);
+        if (data.getStoreId() != null) {
+            Store store = storeService.getStore(data.getStoreId()).get();
+            order.setStore(store);
+        }
+        order.setTransactionDate(data.getTransactionDate());
+        //then we need to save this
+        return orderRepository.save(order);
+    }
+
+    public void removePurchaseOrderItem(Long id) {
+        PurchaseOrderItem item = findPurchaseOrderItemWithNoFoundDetection(id);
+        orderItemRepository.delete(item);
+    }
+
+    public PurchaseOrderItem addPurchaseOrderItem(Long purchaseOrderId, PurchaseOrderItemData orderItem) {
+        PurchaseOrder order = findOneWithNoFoundDetection(purchaseOrderId);
+        PurchaseOrderItem item = new PurchaseOrderItem();
+        Item i = itemService.findById(orderItem.getItemId()).get();
+        item.setItem(i);
+        item.setPrice(orderItem.getPrice());
+        item.setQuantity(orderItem.getQuantity());
+        item.setAmount(orderItem.getAmount());
+        order.addOrderItem(item);
+        PurchaseOrder savedOrder = orderRepository.save(order);
+        return savedOrder.getPurchaseOrderLines().get(savedOrder.getPurchaseOrderLines().size()-1);
+    }
+    
+    public void cancelPurchaseOrder(Long id, String remarks) {
+        PurchaseOrder order = findOneWithNoFoundDetection(id);
+        order.setStatus(PurchaseOrderStatus.Canceled);
+        order.setRemarks(remarks);
+        orderRepository.save(order);
+    }
+    
+
     public Optional<PurchaseOrder> findByOrderNumber(final String orderNo) {
         return orderRepository.findByOrderNumber(orderNo);
     }
@@ -125,6 +187,11 @@ public class PurchaseService {
     public PurchaseOrder findOneWithNoFoundDetection(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Purchase Order with Id {0} not found", id));
+    }
+
+    public PurchaseOrderItem findPurchaseOrderItemWithNoFoundDetection(Long id) {
+        return orderItemRepository.findById(id)
+                .orElseThrow(() -> APIException.notFound("Purchase Order Item with Id {0} not found", id));
     }
 
     public Page<PurchaseOrder> getPurchaseOrders(Long supplierId, List<PurchaseOrderStatus> status, String search, DateRange range, Pageable page) {

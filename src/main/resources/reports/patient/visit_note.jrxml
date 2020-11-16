@@ -157,6 +157,8 @@
 	<parameter name="Header_Data" class="java.util.List"/>
 	<parameter name="Patient_Data" class="java.util.List"/>
 	<parameter name="Employee_Data" class="java.util.List"/>
+	<parameter name="value" class="java.lang.String"/>
+	<parameter name="type" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -178,13 +180,13 @@
 					<pen lineWidth="0.5" lineColor="#333333"/>
 				</graphicElement>
 			</line>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="1" y="44" width="570" height="14" forecolor="#000000" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+			<textField>
+				<reportElement positionType="Float" mode="Transparent" x="1" y="44" width="570" height="14" forecolor="#000000" backcolor="#9999FF" uuid="1d41161f-4d34-4c7c-9c79-89b0995fea73"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Patient Medical Note]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[$P{type}]]></textFieldExpression>
+			</textField>
 			<subreport>
 				<reportElement x="-1" y="0" width="573" height="31" uuid="bcc512bb-37ca-4dad-bbdf-b131cc967f1c"/>
 				<subreportParameter name="Patient_Data">
@@ -202,15 +204,15 @@
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="57">
+		<band height="27">
 			<line>
-				<reportElement positionType="Float" x="-1" y="56" width="573" height="1" forecolor="#CC3300" uuid="5f46f972-c1e9-4a16-bea9-62717a522a18"/>
+				<reportElement positionType="Float" x="0" y="26" width="573" height="1" forecolor="#CC3300" uuid="5f46f972-c1e9-4a16-bea9-62717a522a18"/>
 				<graphicElement>
 					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#333333"/>
 				</graphicElement>
 			</line>
 			<subreport>
-				<reportElement x="1" y="0" width="292" height="57" uuid="efaeaba5-2b9b-4a48-9bfe-9bdbe239e0c6"/>
+				<reportElement x="1" y="0" width="291" height="24" uuid="efaeaba5-2b9b-4a48-9bfe-9bdbe239e0c6"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "employee-banner.jasper"]]></subreportExpression>
 			</subreport>
@@ -222,17 +224,6 @@
 			</line>
 		</band>
 	</columnHeader>
-	<detail>
-		<band height="26" splitType="Stretch">
-			<textField>
-				<reportElement x="1" y="8" width="493" height="13" uuid="8ce185a3-47e6-47d9-9860-a81d8d65468d"/>
-				<textElement>
-					<font size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA["The above named Patient visited our facility and was seen by the stated physician at "+$F{startDatetime}]]></textFieldExpression>
-			</textField>
-		</band>
-	</detail>
 	<pageFooter>
 		<band height="58" splitType="Stretch">
 			<subreport>
@@ -255,4 +246,17 @@
 			</line>
 		</band>
 	</pageFooter>
+	<summary>
+		<band height="50">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="1" y="3" width="570" height="18" uuid="8ce185a3-47e6-47d9-9860-a81d8d65468d"/>
+				<box topPadding="1" bottomPadding="1"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{type}.equals( "MedicalNote" )?"The above named Patient visited our facility and was seen by the stated physician at "+$F{startDatetime}
+:$P{value}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
 </jasperReport>

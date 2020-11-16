@@ -7,6 +7,8 @@ package io.smarthealth.clinical.record.api;
 
 //import io.smarthealth.auth.domain.User;
 //import io.smarthealth.auth.service.UserService;
+import io.smarthealth.administration.config.domain.GlobalConfiguration;
+import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
@@ -84,6 +86,7 @@ public class ConsultationController {
     private final SickOffNoteService sickOffNoteService;
     private final LaboratoryService laboratoryService;
     private final RadiologyService radiologyService;
+    private final ConfigService configService;
 
 
     /* Patient Notes */
@@ -91,6 +94,7 @@ public class ConsultationController {
     @PreAuthorize("hasAuthority('create_consultation')")
     public @ResponseBody
     ResponseEntity<?> savePatientNotes(Authentication authentication, @Valid @RequestBody PatientNotesData patientNotesData) {
+        patientNotesService.ValidateConsultationFields(patientNotesData);
         Visit visit = visitService.findVisitEntityOrThrow(patientNotesData.getVisitNumber());
         User user = userService.findUserByUsernameOrEmail(authentication.getName())
                 .orElseThrow(() -> APIException.notFound("Employee login account provided is not valid"));
@@ -101,12 +105,15 @@ public class ConsultationController {
         patientNotes.setHealthProvider(user);
         patientNotes.setPatient(patient);
         patientNotes.setDateRecorded(LocalDateTime.now());
+        
+        
 
         //check if notes already exists by visit
         Optional<PatientNotes> patientNoteExisting = patientNotesService.fetchPatientNotesByVisit(visit);
         PatientNotes pns = new PatientNotes();
         if (patientNoteExisting.isPresent()) {
             PatientNotes npn = patientNoteExisting.get();
+            
             //update note
             npn.setChiefComplaint(patientNotesData.getChiefComplaint());
             npn.setExaminationNotes(patientNotesData.getExaminationNotes());
@@ -232,7 +239,7 @@ public class ConsultationController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Patient patient = patientService.findPatientOrThrow(patientNo);
         List<HistoricalDiagnosisData> list = new ArrayList<>();
-        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, false, null, pageable);
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, false, null,false, pageable);
         for (Visit v : patientVisits) {
             HistoricalDiagnosisData dd = new HistoricalDiagnosisData();
             dd.setPatientName(patient.getFullName());

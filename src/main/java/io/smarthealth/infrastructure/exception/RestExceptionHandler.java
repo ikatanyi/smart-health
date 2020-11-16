@@ -13,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -239,7 +242,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 //        apiError.setDebugMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
+    //org.springframework.security.authentication.InternalAuthenticationServiceException
 
+     
+    
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
         return new ResponseEntity<>(apiError, apiError.getHttpStatus());
     }

@@ -4,8 +4,6 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
-import io.smarthealth.administration.config.domain.GlobalConfigNum;
-import io.smarthealth.administration.config.domain.GlobalConfiguration;
 import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
@@ -53,7 +51,6 @@ import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.service.FileStorageService;
 import io.smarthealth.notify.data.NoticeType;
 import io.smarthealth.notify.data.NotificationData;
-import io.smarthealth.notify.domain.Notifications;
 import io.smarthealth.notify.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
@@ -62,7 +59,6 @@ import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.web.multipart.MultipartFile;
@@ -416,7 +412,7 @@ public class LaboratoryService {
     }
 
     public List<LabRegisterTest> getTestsResultsByVisit(String visitNo, String labNumber) {
-        if (labNumber != null) {
+        if (labNumber != null&&!labNumber.equals("")) {
             return testRepository.findTestsByVisitAndLabNo(visitNo, labNumber);
         }
         return testRepository.findTestsByVisitNumber(visitNo);
@@ -603,8 +599,7 @@ public class LaboratoryService {
                         if (req != null) {
                             //
                             if (req.getRequestedBy() != null) {
-                                notificationEventPublisher.publishUserNotificationEvent(
-                                        NotificationData.builder()
+                                notificationEventPublisher.publishUserNotificationEvent(NotificationData.builder()
                                                 .datetime(LocalDateTime.now())
                                                 .description(description)
                                                 .isRead(false)

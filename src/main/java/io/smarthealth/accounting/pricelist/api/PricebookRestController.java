@@ -2,7 +2,6 @@ package io.smarthealth.accounting.pricelist.api;
 
 import io.smarthealth.accounting.pricelist.data.PriceBookData;
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
-import io.smarthealth.accounting.pricelist.domain.PriceBookItem;
 import io.smarthealth.accounting.pricelist.domain.enumeration.PriceCategory;
 import io.smarthealth.accounting.pricelist.domain.enumeration.PriceType;
 import io.smarthealth.accounting.pricelist.service.PricebookService;
@@ -115,16 +114,14 @@ public class PricebookRestController {
 
     @GetMapping("/pricebooks/{id}/items")
 //    @PreAuthorize("hasAuthority('edit_pricebook')")
-    public ResponseEntity<?> getPricebookItem(@PathVariable(value = "id") Long id) {
-        List<PriceBookItemData> result = service.getPriceBookItems(id).stream()
-                .map(x -> x.toData())
-                .collect(Collectors.toList());
+    public ResponseEntity<?> getPricebookItem(@PathVariable(value = "id") Long id,
+            @RequestParam(value = "q", required = false) final String term,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size
+    ) {
 
-        Pager<List<PriceBookItemData>> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Pricebook updated successful");
-        pagers.setContent(result);
-
+        Pageable pageable = PaginationUtil.createPage(page, size);
+        Pager<PriceBookItemData> result = service.getPriceBookItems(id, term, pageable);
         return ResponseEntity.ok(result);
     }
 
@@ -138,7 +135,7 @@ public class PricebookRestController {
     @DeleteMapping("/pricebooks/{id}/items/{itemId}")
     @PreAuthorize("hasAuthority('edit_pricebook')")
     public ResponseEntity<?> deletePricebookItems(@PathVariable(value = "id") Long id, @PathVariable(value = "itemId") Long itemId) {
-        service.deletePriceItem(id,itemId);
+        service.deletePriceItem(id, itemId);
         Pager<PriceBookData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Pricebook updated successful");

@@ -33,6 +33,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
+    
 
     private final NotificationEventPublisher notificationEventPublisher;
     private final NotificationRepository notificationRepository;

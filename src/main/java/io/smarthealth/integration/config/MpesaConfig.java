@@ -33,7 +33,7 @@ public class MpesaConfig {
     }
 
     @Bean
-    protected OAuth2RestTemplate restTemplate(OAuth2ProtectedResourceDetails resourceDetails) {
+    protected OAuth2RestTemplate oauth2restTemplate(OAuth2ProtectedResourceDetails resourceDetails) {
         AccessTokenRequest accessTokenRequest = new DefaultAccessTokenRequest();
         
         return new OAuth2RestTemplate(resourceDetails, new DefaultOAuth2ClientContext(accessTokenRequest));

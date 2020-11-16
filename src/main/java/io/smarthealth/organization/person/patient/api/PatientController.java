@@ -103,27 +103,29 @@ public class PatientController {
     @PreAuthorize("hasAuthority('view_patients')")
     public ResponseEntity<?> fetchAllPatients(
             //@RequestParam(required = false) MultiValueMap<String, String> queryParams,
-            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "results", required = false) Integer size,
             @RequestParam(value = "term", required = false) final String term,
             @RequestParam(value = "dateRange", required = false) final String dateRange,
             UriComponentsBuilder uriBuilder) {
         //Pageable pageable = Pageable.unpaged();
         Pageable pageable = null;
-        if (page == null) {
-            page = 0;
-        }
-        if (size == null) {
-            size = 10;
-        }
+//        if (page == null) {
+//            page = 0;
+//        }
+//        if (size == null) {
+//            size = 10;
+//        }
 //        if (page == null && size == null) {
 //            pageable = PageRequest.of(0, 200, Sort.by("id").descending());
 //        }
 
-//        if (page != null && size != null) {
-//            pageable = PageRequest.of(page, size, Sort.by("id").descending());
-//        }
-        pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        if (page != null && size != null) {
+            pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        } else {
+            pageable = Pageable.unpaged();
+        }
+        // pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<PatientData> pageResult = patientService.fetchAllPatients(term, dateRange, pageable).map(p -> patientService.convertToPatientData(p));
         Pager<List<PatientData>> pagers = new Pager();
         pagers.setCode("0");

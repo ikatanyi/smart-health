@@ -25,7 +25,6 @@ import io.smarthealth.debtor.claim.allocation.service.AllocationService;
 import io.smarthealth.debtor.member.data.PayerMemberData;
 import io.smarthealth.debtor.member.domain.PayerMember;
 import io.smarthealth.debtor.member.domain.PayerMemberRepository;
-import io.smarthealth.debtor.member.service.PayerMemberService;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.service.PayerService;
