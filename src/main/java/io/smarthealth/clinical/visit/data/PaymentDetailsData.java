@@ -34,7 +34,8 @@ public class PaymentDetailsData {
     private VisitEnum.PaymentMethod paymentMethod;
     private boolean hasCapitation;
     private BigDecimal capitationAmount = BigDecimal.ZERO;
-
+    private double runningLimit;
+    
     public static PaymentDetailsData map(PaymentDetails e) {
         PaymentDetailsData d = new PaymentDetailsData();
         d.setComments(e.getComments());
@@ -60,10 +61,10 @@ public class PaymentDetailsData {
         }
         d.setHasCapitation(e.isHasCapitation());
         d.setCapitationAmount(e.getCapitationAmount());
-        
+        d.setRunningLimit(e.getRunningLimit());
         return d;
     }
-
+    
     public static PaymentDetails map(PaymentDetailsData d) {
         PaymentDetails e = new PaymentDetails();
         e.setComments(d.getComments());

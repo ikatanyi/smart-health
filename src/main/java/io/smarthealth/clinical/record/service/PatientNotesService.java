@@ -132,19 +132,19 @@ public class PatientNotesService {
                 switch (config.get().getName()) {
                     case "ChiefComplaints":
                         if (config.get().getValue().equals("1") && data.getChiefComplaint() == null)
-                            throw APIException.badRequest("Make sure Chief Complaints is populated");                        
+                            throw APIException.badRequest("Chief complaints is required");                        
                         break;
                     case "ExaminationNotes":
                         if (config.get().getValue().equals("1") && data.getExaminationNotes() == null)
-                            throw APIException.badRequest("Make sure Examination Notes is populated");
+                            throw APIException.badRequest("Examination is required");
                          break;
                     case "SocialNotes":
                         if (config.get().getValue().equals("1") && data.getSocialHistory() == null)
-                            throw APIException.badRequest("Make sure Social Notes is populated");
+                            throw APIException.badRequest("Social notes is required");
                         break;
                     case "HistoryNotes":
                         if (config.get().getValue().equals("1") && data.getHistoryNotes() == null) 
-                            throw APIException.badRequest("Make sure History Notes is populated");
+                            throw APIException.badRequest("History notes is required");
                          break;
                 }
             }

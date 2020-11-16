@@ -99,19 +99,20 @@ public class PricelistService {
         return repository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Pricelist with ID {0} Not Found"));
     }
-@Transactional
+
+    @Transactional
     public PriceList updatePriceList(Long id, PriceListData data) {
         PriceList toUpdateItem = getPriceList(id);
         Item item = findItem(data.getItemCode());
         ServicePoint servicePoint = getServicePoint(data.getServicePointId());
 
-        toUpdateItem.setActive(data.getActive()!=null ? data.getActive() : Boolean.TRUE);
+        toUpdateItem.setActive(data.getActive() != null ? data.getActive() : Boolean.TRUE);
         toUpdateItem.setDefaultPrice(data.getDefaultPrice());
         toUpdateItem.setEffectiveDate(data.getEffectiveDate());
         toUpdateItem.setItem(item);
         toUpdateItem.setSellingRate(data.getSellingRate());
         toUpdateItem.setServicePoint(servicePoint);
-       return  repository.save(toUpdateItem);
+        return repository.save(toUpdateItem);
 //        return save(toUpdateItem);
     }
 
@@ -122,10 +123,11 @@ public class PricelistService {
 
     /**
      * Get PriceList by Location and optional filter of price book
+     *
      * @param servicePointId
      * @param priceBookId
      * @param page
-     * @return 
+     * @return
      */
     public Page<PriceList> getPricelistByLocation(Long servicePointId, Long priceBookId, Pageable page) {
         ServicePoint servicePoint = getServicePoint(servicePointId);
@@ -141,12 +143,7 @@ public class PricelistService {
                     return prices.map(pb -> book.toPriceBookRate(pb));
                 } else {
                     prices.map(pbi -> {
-//                        ghh;
-                        System.out.println("URimmmmmmmmmmmuuuu ");
-                        System.out.println("book " + book.getName());
-                        System.out.println("book " + pbi.getItem().getItemName());
                         PriceBookItem i = findPriceItem(book, pbi.getItem());
-                        System.err.println("finding i " + i);
                         if (i != null) {
                             return i.toPriceBookItemRate(pbi);
                         }
@@ -174,7 +171,6 @@ public class PricelistService {
                 } else {
                     prices.map(pbi -> {
                         PriceBookItem i = findPriceItem(book, pbi.getItem());
-                        System.err.println("finding i " + i);
                         if (i != null) {
                             return i.toPriceBookItemRate(pbi);
                         }
@@ -199,7 +195,8 @@ public class PricelistService {
         return itemRepository.findByItemCode(itemCode)
                 .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", itemCode));
     }
-     private Item findItemBy(Long id) {
+
+    private Item findItemBy(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Item with ID {0} not found.", id));
     }
@@ -220,12 +217,12 @@ public class PricelistService {
     /**
      * Search Item PriceList (item, servicePointId, priceBookId, pageable
      */
+    
     public Page<PriceList> searchPriceList(String searchItem, Long servicePointId, Long priceBookId, Pageable page) {
 
         Specification<PriceList> searchSpec = PriceListSpecification.searchSpecification(searchItem, servicePointId);
 
         Page<PriceList> prices = repository.findAll(searchSpec, page);
-        System.out.println("Line 209 ");
         if (priceBookId != null) {
             Optional<PriceBook> priceBook = priceBookRepository.findById(priceBookId);
             if (priceBook.isPresent()) {
@@ -235,7 +232,6 @@ public class PricelistService {
                 } else {
                     prices.map(pbi -> {
                         PriceBookItem i = findPriceItem(book, pbi.getItem());
-                        System.err.println("finding i " + i);
                         if (i != null) {
                             return i.toPriceBookItemRate(pbi);
                         }
@@ -259,7 +255,6 @@ public class PricelistService {
                 }
             } else {
                 PriceBookItem i = findPriceItem(book, item);
-                System.err.println("finding i " + i);
                 if (i != null) {
                     return i.getAmount().doubleValue();
                 } else {

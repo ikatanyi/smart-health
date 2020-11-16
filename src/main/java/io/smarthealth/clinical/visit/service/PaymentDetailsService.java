@@ -33,10 +33,14 @@ public class PaymentDetailsService {
         return paymentDetailsRepository.findByVisit(visit).orElseThrow(() -> APIException.notFound("Visit payment details identified by visit number {0} not available", visit.getVisitNumber()));
     }
 
+    public Optional<PaymentDetails> fetchPaymentDetailsByVisitWithoutNotFoundDetection(Visit visit) {
+        return paymentDetailsRepository.findByVisit(visit);
+    }
+
     public Optional<PaymentDetails> getPaymentDetailsByVist(Visit visit) {
         return paymentDetailsRepository.findByVisit(visit);
     }
-    
+
     public Optional<PaymentDetails> getLastPaymentDetailsByPatient(Patient patient) {
         return paymentDetailsRepository.findFirstByPatientOrderByIdDesc(patient);
     }
