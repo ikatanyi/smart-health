@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.pricelist.domain.specification;
 
 import io.smarthealth.accounting.pricelist.domain.PriceBook;
+import io.smarthealth.accounting.pricelist.domain.PriceBookItem;
 import io.smarthealth.accounting.pricelist.domain.enumeration.PriceCategory;
 import io.smarthealth.accounting.pricelist.domain.enumeration.PriceType;
 import java.util.ArrayList;
@@ -34,4 +35,25 @@ public class PriceBookSpecification {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
+
+    public static Specification<PriceBookItem> createPriceBookItemSpecification(Long priceBookId, String term) {
+        return (root, query, cb) -> {
+            final ArrayList<Predicate> predicates = new ArrayList<>();
+
+            if (priceBookId != null) {
+                predicates.add(cb.equal(root.get("priceBook").get("id"), priceBookId));
+            }
+            if (term != null) {
+                final String likeExpression = "%" + term + "%";
+                predicates.add(
+                        cb.or(
+                                cb.like(root.get("item").get("itemName"), likeExpression),
+                                cb.like(root.get("item").get("itemCode"), likeExpression)
+                        )
+                );
+            }
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
+
 }

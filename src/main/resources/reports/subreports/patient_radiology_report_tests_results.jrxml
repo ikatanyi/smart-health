@@ -3,7 +3,6 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<field name="testName" class="java.lang.String"/>
 	<field name="templateNotes" class="java.lang.String"/>
 	<field name="comments" class="java.lang.String"/>
 	<field name="status" class="java.lang.Object"/>

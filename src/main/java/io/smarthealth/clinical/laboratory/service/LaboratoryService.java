@@ -412,7 +412,7 @@ public class LaboratoryService {
     }
 
     public List<LabRegisterTest> getTestsResultsByVisit(String visitNo, String labNumber) {
-        if (labNumber != null) {
+        if (labNumber != null&&!labNumber.equals("")) {
             return testRepository.findTestsByVisitAndLabNo(visitNo, labNumber);
         }
         return testRepository.findTestsByVisitNumber(visitNo);

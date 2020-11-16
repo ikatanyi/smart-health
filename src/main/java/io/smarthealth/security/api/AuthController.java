@@ -165,6 +165,7 @@ public class AuthController {
             user.setRoles(userRoles);
         }
         user.setUsername(data.getUsername());
+        user.setEnabled(data.isEnabled());
         User savedUser = userRepository.save(user);
         return ResponseEntity.ok(savedUser.toData());
     }

@@ -375,6 +375,7 @@ public class PatientReportServices {
 
         final String patientNumber = reportParam.getFirst("patientNumber");
         final String visitNumber = reportParam.getFirst("visitNumber");
+        final Boolean showHeader = BooleanUtils.toBoolean(reportParam.getFirst("showHeader"));
         List<PatientVisitData> visitData = new ArrayList();
         PatientData patient = patientService.convertToPatientData(patientService.findPatientOrThrow(patientNumber));
 
@@ -409,7 +410,7 @@ public class PatientReportServices {
                     .map((proc) -> proc.toData())
                     .collect(Collectors.toList());
 
-            List<LabRegisterTestData> labTests = labService.getTestsResultsByVisit(visit.getVisitNumber(), "")
+            List<LabRegisterTestData> labTests = labService.getTestsResultsByVisit(visit.getVisitNumber(), null)
                     .stream()
                     .map((test) -> test.toData(Boolean.TRUE))
                     .collect(Collectors.toList());
@@ -443,6 +444,7 @@ public class PatientReportServices {
             pVisitData.setCreatedOn(String.valueOf(visit.getCreatedOn()));
             pVisitData.getLabTests().addAll(labTests);
             pVisitData.getProcedures().addAll(procedures);
+            
             pVisitData.getRadiologyTests().addAll(scanData);
             pVisitData.getDrugsData().addAll(pharmacyData);
             pVisitData.getDiagnosis().addAll(diagnosisData);
@@ -456,6 +458,7 @@ public class PatientReportServices {
 
         List<JRSortField> sortList = new ArrayList();
         ReportData reportData = new ReportData();
+        reportData.getFilters().put("showHeader", showHeader);
         reportData.setPatientNumber(patientNumber);
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("visitNumber");
