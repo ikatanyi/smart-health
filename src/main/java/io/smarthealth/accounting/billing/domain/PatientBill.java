@@ -100,6 +100,6 @@ public class PatientBill extends Auditable {
     }
     @Override
     public String toString() {
-        return "Patient Bill[id=" + getId() + ", patient=" + patient + " , bill number=" +billNumber+ ", payment mode=" +paymentMode+ ", transaction id=" + transactionId + ", amount=" +amount+ ",  ]";
+        return "Patient Bill[id=" + getId() + ", patient=" + patient + " , bill number=" +billNumber+ ", payment mode=" +paymentMode+ ", transaction id=" + transactionId + ", amount=" +amount+ ", visit="+visit.getId()+"  ]";
     }
 }

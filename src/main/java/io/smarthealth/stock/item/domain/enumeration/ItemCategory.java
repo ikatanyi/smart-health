@@ -21,5 +21,6 @@ public enum ItemCategory {
     Dental,
     Admission,
     Receipt,
+    Opticals,
     Others
 }

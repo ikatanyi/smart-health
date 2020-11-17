@@ -47,7 +47,9 @@ import io.smarthealth.accounting.payment.data.ReceivePayment;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
+import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
@@ -60,8 +62,6 @@ import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.stores.domain.Store;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -92,13 +92,15 @@ public class BillingService {
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final DoctorInvoiceService doctorInvoiceService;
     private final CashPaidUpdater cashPaidUpdater;
+    private final PaymentDetailsService paymentDetailsService;
 
     //Create service bill
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createPatientBill(BillData data) {
         PatientBill patientbill = new PatientBill();
+        Visit visit = null;
         if (!data.getWalkinFlag()) {
-            Visit visit = findVisitEntityOrThrow(data.getVisitNumber());
+            visit = findVisitEntityOrThrow(data.getVisitNumber());
             patientbill.setVisit(visit);
             patientbill.setPatient(visit.getPatient());
             patientbill.setWalkinFlag(Boolean.FALSE);
@@ -160,6 +162,7 @@ public class BillingService {
 
         PatientBill savedBill = save(patientbill);
         if (savedBill.getPaymentMode().equals("Insurance")) {
+
             journalService.save(toJournal(savedBill, null));
         }
         return savedBill;
@@ -176,6 +179,25 @@ public class BillingService {
 
     public PatientBill save(PatientBill bill) {
         log.debug("START save bill");
+        double amountToBill = 0.00;
+        for (PatientBillItem b : bill.getBillItems()) {
+            amountToBill = amountToBill + b.getAmount();
+        }
+
+        log.debug("START validate limit amount");
+        Optional<PaymentDetails> pd = null;
+        if (bill.getVisit() != null) {
+            pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
+            if (pd.isPresent() && pd.get().isLimitEnabled()) {
+                if (pd.get().getRunningLimit() < amountToBill) {
+                    throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount (" + pd.get().getRunningLimit() + ") ", "");
+                    //TODO: create receipt and set amount to the difference of amountToBill vs 
+                }
+            }
+        }
+
+        log.debug("END validate limit amount");
+
         String bill_no = bill.getBillNumber() == null ? sequenceNumberService.next(1L, Sequences.BillNumber.name()) : bill.getBillNumber();
         String trdId = bill.getTransactionId() == null ? sequenceNumberService.next(1L, Sequences.Transactions.name()) : bill.getTransactionId();
         bill.setBillNumber(bill_no);
@@ -190,6 +212,13 @@ public class BillingService {
         if (doctorInvoices.size() > 0) {
             doctorInvoices.forEach(inv -> doctorInvoiceService.save(inv));
         }
+        //reduce limit amount
+        if (pd != null && pd.isPresent()) {
+            PaymentDetails pdd = pd.get();
+            pdd.setRunningLimit((pdd.getRunningLimit() - amountToBill));
+            paymentDetailsService.createPaymentDetails(pdd);
+        }
+
         return savedBill;
     }
 

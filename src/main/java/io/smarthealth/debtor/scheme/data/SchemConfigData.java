@@ -19,64 +19,70 @@ import lombok.Data;
  */
 @Data
 public class SchemConfigData {
-
+    
     private DiscountType discountMethod;
     private double discountValue;
-
+    
     private boolean copayEnabled;
     private CoPayType coPayType;
     private double coPayValue;
     private LocalDate copayStartDate;
-
+    
     private boolean status;
     private boolean smartEnabled;
     private Long configId;
-
+    
     private String schemeCover;
     private boolean checkMemberShipLimit;
     private boolean hasClaimSwithing;
-
+    
     private boolean capitationEnabled;
     private BigDecimal capitationAmount;
-
+    
     @ApiModelProperty(hidden = true)
     private String schemeName;
     @ApiModelProperty(hidden = true)
     private String payerName;
-
+    
+    private boolean limitEnabled;
+    private BigDecimal limitAmount;
+    
     public static SchemConfigData map(SchemeConfigurations config) {
         SchemConfigData scd = new SchemConfigData();
-
+        
         scd.setConfigId(config.getId());
-
+        
         scd.setCopayEnabled(config.isCopayEnabled());
         scd.setCoPayType(config.getCoPayType());
         scd.setCoPayValue(config.getCoPayValue());
         scd.setCopayStartDate(config.getCopayStartDate());
-
+        
         scd.setDiscountMethod(config.getDiscountMethod());
         scd.setDiscountValue(config.getDiscountValue());
         scd.setStatus(config.isStatus());
 //        scd.setSchemeId(config.getId());
         scd.setSmartEnabled(config.isSmartEnabled());
-
+        
         scd.setSchemeCover(config.getSchemeCover());
         scd.setCheckMemberShipLimit(config.isCheckMemberShipLimit());
         scd.setHasClaimSwithing(config.isClaimSwitching());
-
+        
         scd.setCapitationAmount(config.getCapitationAmount());
         scd.setCapitationEnabled(config.isCapitationEnabled());
-
+        
+        scd.setLimitAmount(config.getLimitAmount());
+        scd.setLimitEnabled(config.isLimitEnabled());
+        
         if (config.getScheme() != null) {
             scd.setSchemeName(config.getScheme().getSchemeName());
             if (config.getScheme().getPayer() != null) {
                 scd.setPayerName(config.getScheme().getPayer().getPayerName());
             }
         }
-
+        
         return scd;
     }
-
+    
     public static SchemeConfigurations map(SchemConfigData schemeData) {
         SchemeConfigurations sc = new SchemeConfigurations();
         sc.setCopayEnabled(schemeData.isCopayEnabled());
@@ -86,14 +92,16 @@ public class SchemConfigData {
         sc.setDiscountValue(schemeData.getDiscountValue());
         sc.setSmartEnabled(schemeData.isSmartEnabled());
         sc.setStatus(schemeData.isStatus());
-
+        
         sc.setSchemeCover(schemeData.getSchemeCover());
         sc.setCheckMemberShipLimit(schemeData.isCheckMemberShipLimit());
 //        sc.setHasClaimSwitching(schemeData.isHasClaimSwithing());
 
         sc.setCapitationEnabled(schemeData.isCapitationEnabled());
         sc.setCapitationAmount(schemeData.getCapitationAmount());
-
+        sc.setLimitEnabled(schemeData.isLimitEnabled());
+        sc.setLimitAmount(schemeData.getLimitAmount());
+        
         return sc;
     }
 }

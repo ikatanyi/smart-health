@@ -63,8 +63,13 @@ public class PaymentDetails extends Auditable {
     @Enumerated(EnumType.STRING)
     private CoPayType coPayCalcMethod;
     private double coPayValue;
-    
     private boolean hasCapitation;
     private BigDecimal capitationAmount = BigDecimal.ZERO;
+    private double runningLimit;
+    private boolean limitEnabled = true;
 
+    @Override
+    public String toString() {
+        return "[ runningLimit=" + runningLimit + ", limitAmount=" + limitAmount + "]";
+    }
 }

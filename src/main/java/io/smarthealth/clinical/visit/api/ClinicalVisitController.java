@@ -192,6 +192,7 @@ public class ClinicalVisitController {
                 pd.setHasCapitation(conf.isCapitationEnabled());
                 pd.setCapitationAmount(conf.getCapitationAmount());
             }
+            pd.setRunningLimit(visitData.getPayment().getLimitAmount());
             pd.setPatient(patient);
             paymentDetailsService.createPaymentDetails(pd);
             //create bill for copay

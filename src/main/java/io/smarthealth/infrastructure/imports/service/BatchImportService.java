@@ -222,6 +222,7 @@ public class BatchImportService {
         labService.createTest(labTestArray);
         procedureService.createProcedureTest(procArray);
         radiologyService.createRadiologyTest(imageArray);
+        //TODO: There should be a condition before updating stock 
         inventoryItemService.uploadInventoryItems(inventoryArray);
     }
 

@@ -3,6 +3,7 @@ package io.smarthealth.clinical.visit.data;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -34,6 +35,10 @@ public class PaymentDetailsData {
     private VisitEnum.PaymentMethod paymentMethod;
     private boolean hasCapitation;
     private BigDecimal capitationAmount = BigDecimal.ZERO;
+    private double runningLimit;
+
+    @ApiModelProperty(hidden = false)
+    private boolean limitEnabled;
 
     public static PaymentDetailsData map(PaymentDetails e) {
         PaymentDetailsData d = new PaymentDetailsData();
@@ -60,7 +65,8 @@ public class PaymentDetailsData {
         }
         d.setHasCapitation(e.isHasCapitation());
         d.setCapitationAmount(e.getCapitationAmount());
-        
+        d.setRunningLimit(e.getRunningLimit());
+        d.setLimitEnabled(e.isLimitEnabled());
         return d;
     }
 
