@@ -60,6 +60,7 @@ public class LabReportService {
         String patientNumber = reportParam.getFirst("patientNumber");
         String search = reportParam.getFirst("search");
         String dateRange = reportParam.getFirst("dateRange");
+         Boolean isWalkin = reportParam.getFirst("iswalkin")!=null?Boolean.parseBoolean(reportParam.getFirst("iswalkin")):null;
         List<LabTestStatus> status = Arrays.asList(statusToEnum(reportParam.getFirst("status")));
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));

@@ -18,5 +18,7 @@ public enum MovementType {
          */
         Dispensed,
         
-        Opening_Balance
+        Opening_Balance,
+        
+        Returns
 }

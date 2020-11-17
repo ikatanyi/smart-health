@@ -8,6 +8,7 @@ package io.smarthealth.clinical.pharmacy.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.pharmacy.domain.enumeration.TransactionType;
 import io.smarthealth.infrastructure.lang.Constants;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.EnumType;
