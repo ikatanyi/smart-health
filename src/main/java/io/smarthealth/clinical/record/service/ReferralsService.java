@@ -40,7 +40,11 @@ public class ReferralsService {
     public Referrals fetchReferalByVisitOrThrowIfNotFound(final Visit visit) {
         return referralsRepository.findByVisit(visit).orElseThrow(() -> APIException.notFound("Referral details identifed by visit number {0} was not found", visit.getVisitNumber()));
     }
-    
+
+    public Referrals fetchLatestReferalByVisit(final Visit visit) {
+        return referralsRepository.findFirstByVisitOrderByIdDesc(visit).orElseThrow(() -> APIException.notFound("Referral details identifed by visit number {0} was not found", visit.getVisitNumber()));
+    }
+
     public Referrals fetchReferalByIdOrThrowIfNotFound(final Long id) {
         return referralsRepository.findById(id).orElseThrow(() -> APIException.notFound("Referral details identifed by id {0} was not found", id));
     }
