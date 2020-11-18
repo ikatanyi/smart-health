@@ -11,7 +11,6 @@ import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
-import io.smarthealth.security.domain.User;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -42,7 +41,12 @@ public class VisitSpecification {
             }
 
             if (employee != null) {
-                predicates.add(cb.equal(root.get("healthProvider"), employee));
+                predicates.add(
+                        cb.or(
+                                cb.equal(root.get("healthProvider"), employee),
+                                cb.isNull(root.get("healthProvider"))
+                        )
+                );
             }
             if (servicePoint != null) {
                 predicates.add(cb.equal(root.get("servicePoint"), servicePoint));
@@ -56,7 +60,7 @@ public class VisitSpecification {
                         cb.or(
                                 cb.equal(root.get("status"), VisitEnum.Status.Admitted),
                                 cb.equal(root.get("status"), VisitEnum.Status.CheckIn)
-//                                cb.equal(root.get("status"), VisitEnum.Status.Transferred)
+                        //                                cb.equal(root.get("status"), VisitEnum.Status.Transferred)
                         )
                 );
             }

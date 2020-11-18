@@ -29,9 +29,9 @@ import org.springframework.data.jpa.domain.Specification;
 import io.smarthealth.accounting.doctors.domain.DoctorItemRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
-import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 /**
@@ -124,6 +124,23 @@ public class DoctorInvoiceService {
         toUpdateItem.setPaymentMode(data.getPaymentMode());
 
         return save(toUpdateItem);
+    }
+
+    public void createDoctorInvoice(Visit visit, Employee newDoctorSelected, DoctorItem doctorItem) {
+        DoctorInvoiceData data = new DoctorInvoiceData();
+        data.setAmount(doctorItem.getAmount());
+        data.setBalance(doctorItem.getAmount());
+        data.setDoctorId(newDoctorSelected.getId());
+        data.setDoctorName(newDoctorSelected.getFullName());
+        data.setInvoiceDate(LocalDate.now());
+        data.setPaid(Boolean.FALSE);
+        data.setPatientName(visit.getPatient().getFullName());
+        data.setPatientNumber(visit.getPatient().getPatientNumber());
+        data.setStaffNumber(newDoctorSelected.getStaffNumber());
+        data.setVisitNumber(visit.getVisitNumber());
+        data.setServiceId(doctorItem.getId());
+        data.setPaymentMode(visit.getPaymentMethod().name());
+        createDoctorInvoice(data);
     }
 
     public Page<DoctorInvoice> getDoctorInvoices(Long doctorId, String serviceItem, Boolean paid, String paymentMode, String patientNo, String invoiceNumber, String transactionId, DateRange range, Pageable page) {
