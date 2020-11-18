@@ -50,6 +50,7 @@ public class DoctorRequest extends Auditable {
     private FullFillerStatusType fulfillerStatus;  //this is the va
     private String fulfillerComment;
     private Boolean drug;
+    private Boolean voided=Boolean.FALSE;
 
     @Transient
     private String patientNumber;

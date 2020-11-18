@@ -7,6 +7,7 @@ package io.smarthealth.clinical.pharmacy.data;
 
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 /**

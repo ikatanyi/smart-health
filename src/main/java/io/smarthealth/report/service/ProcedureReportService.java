@@ -52,6 +52,7 @@ public class ProcedureReportService {
         String PatientNumber= reportParam.getFirst("PatientNumber");
         String scanNo=reportParam.getFirst("scanNo"); 
         String visitNumber=reportParam.getFirst("visitNumber");
+        Boolean isWalkin = reportParam.getFirst("iswalkin")!=null?Boolean.parseBoolean(reportParam.getFirst("iswalkin")):null;
         ProcedureTestState status=statusToEnum(reportParam.getFirst("status"));
         String dateRange=reportParam.getFirst("range");
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);

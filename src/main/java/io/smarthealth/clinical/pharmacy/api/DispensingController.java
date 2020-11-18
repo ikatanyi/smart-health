@@ -1,5 +1,7 @@
 package io.smarthealth.clinical.pharmacy.api;
 
+import io.smarthealth.administration.codes.data.CodeValueData;
+import io.smarthealth.administration.codes.domain.CodeValue;
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData; 
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
 import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
@@ -23,6 +25,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -75,6 +78,13 @@ public class DispensingController {
     public DispensedDrugData getDispensedDrug(@PathVariable(value = "id") Long code) {
         DispensedDrug bill = service.findDispensedDrugOrThrow(code);
         return bill.toData();
+    }
+    
+    @PutMapping("/pharmacybilling/{requestId}/status")
+    @PreAuthorize("hasAuthority('edit_dispense')")
+    public ResponseEntity<?> updatePatientDrug(@PathVariable(value = "requestId") Long id) {
+        Boolean status = service.UpdateFullfillerStatus(id);
+        return ResponseEntity.ok(status);
     }
 
     @GetMapping("/pharmacybilling")

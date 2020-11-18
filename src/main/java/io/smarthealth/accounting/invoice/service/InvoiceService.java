@@ -17,6 +17,7 @@ import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.CreateInvoice;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceEditData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.data.InvoiceMergeData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
@@ -250,62 +251,24 @@ public class InvoiceService {
                 .orElseThrow(() -> APIException.notFound("InvoiceItem with ID {0} not found.", id));
     }
 
-    public Invoice updateInvoice(Long id, InvoiceData data) {
+    public Invoice updateInvoice(Long id, InvoiceEditData data) {
         Invoice invoice = getInvoiceByIdOrThrow(id);
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(data.getPayerId());
         Scheme scheme = schemeService.fetchSchemeById(data.getSchemeId());
-        Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
         
 
         Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
 
-        Integer creditDays = 30;
-        String terms = "Net 30";
-        if (payer.getPaymentTerms() != null) {
-            creditDays = payer.getPaymentTerms().getCreditDays();
-            terms = payer.getPaymentTerms().getTermsName();
-        }
         //determining the invoice amount to use 
-        BigDecimal invoiceAmount = data.getAmount();
-        BigDecimal discount = data.getDiscount();
-        Boolean isCapitation = Boolean.FALSE;
-        if (config.isPresent() && config.get().isCapitationEnabled()) {
-            //if this is a capitation invoice we going to mess this shit up
-            invoiceAmount = config.get().getCapitationAmount();
-            discount = BigDecimal.ZERO;
-            isCapitation = Boolean.TRUE;
-        }
-        
-        Optional<PaymentDetails> paymentDetails = paymentDetailsService.getPaymentDetailsByVist(visit);
-        if(paymentDetails.isPresent()){
-            invoice.setMemberNumber(paymentDetails.get().getIdNo());
-            invoice.setMemberName(paymentDetails.get().getMemberName());            
-        }           
-        invoice.setCapitation(isCapitation);
-        invoice.setAmount(invoiceAmount);
-        invoice.setBalance(invoiceAmount);
-        invoice.setDate(data.getInvoiceDate());
-        invoice.setDiscount(data.getDiscount());        
+       
+        invoice.setMemberNumber(data.getMemberNumber());
+        invoice.setMemberName(data.getMemberName());         
         invoice.setNotes(data.getNotes());
-        invoice.setPaid(Boolean.FALSE);
-        invoice.setPatient(visit.getPatient());
         invoice.setPayer(payer);
-        invoice.setTerms(terms);
         invoice.setScheme(scheme);
-        invoice.setStatus(InvoiceStatus.Draft);
-//        invoice.setTax(data.getTaxes());
-//        invoice.setTransactionNo(trxId);
-        invoice.setVisit(visit);
         return invoiceRepository.save(invoice);
     }
-//    public Invoice verifyInvoice(Long id, Boolean isVerified) {
-//        Invoice invoice = findInvoiceOrThrowException(id);
-//        invoice.setIsVerified(isVerified);
-//        return invoiceRepository.save(invoice);
-//    }
-//    public Invoice findByInvoiceNumberOrThrow(String invoiceNumber) {
-//        return invoiceRepository.findByNumber(invoiceNumber).orElseThrow(() -> APIException.notFound("Invoice with invoice number {0} not found.", invoiceNumber));
-//    }
+
 
     @Transactional
     public InvoiceMerge mergeInvoice(InvoiceMergeData data) {
