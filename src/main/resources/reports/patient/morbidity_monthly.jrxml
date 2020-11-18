@@ -19,45 +19,45 @@
 		<![CDATA[]]>
 	</queryString>
 	<field name="occurrences" class="java.lang.Integer"/>
-	<field name="day_1" class="java.lang.Integer"/>
-	<field name="day_2" class="java.lang.Integer"/>
-	<field name="day_3" class="java.lang.Integer"/>
-	<field name="day_4" class="java.lang.Integer"/>
-	<field name="day_5" class="java.lang.Integer"/>
-	<field name="day_6" class="java.lang.Integer"/>
-	<field name="day_7" class="java.lang.Integer"/>
-	<field name="day_8" class="java.lang.Integer"/>
-	<field name="day_9" class="java.lang.Integer"/>
-	<field name="day_10" class="java.lang.Integer"/>
-	<field name="day_11" class="java.lang.Integer"/>
-	<field name="day_12" class="java.lang.Integer"/>
-	<field name="day_13" class="java.lang.Integer"/>
-	<field name="day_14" class="java.lang.Integer"/>
-	<field name="day_15" class="java.lang.Integer"/>
-	<field name="day_16" class="java.lang.Integer"/>
-	<field name="day_17" class="java.lang.Integer"/>
-	<field name="day_18" class="java.lang.Integer"/>
-	<field name="day_19" class="java.lang.Integer"/>
-	<field name="day_20" class="java.lang.Integer"/>
-	<field name="day_21" class="java.lang.Integer"/>
-	<field name="day_22" class="java.lang.Integer"/>
-	<field name="day_23" class="java.lang.Integer"/>
-	<field name="day_24" class="java.lang.Integer"/>
-	<field name="day_25" class="java.lang.Integer"/>
-	<field name="day_26" class="java.lang.Integer"/>
-	<field name="day_27" class="java.lang.Integer"/>
-	<field name="day_28" class="java.lang.Integer"/>
-	<field name="day_29" class="java.lang.Integer"/>
-	<field name="day_30" class="java.lang.Integer"/>
-	<field name="day_31" class="java.lang.Integer"/>
+	<field name="day1" class="java.lang.Integer"/>
+	<field name="day2" class="java.lang.Integer"/>
+	<field name="day3" class="java.lang.Integer"/>
+	<field name="day4" class="java.lang.Integer"/>
+	<field name="day5" class="java.lang.Integer"/>
+	<field name="day6" class="java.lang.Integer"/>
+	<field name="day7" class="java.lang.Integer"/>
+	<field name="day8" class="java.lang.Integer"/>
+	<field name="day9" class="java.lang.Integer"/>
+	<field name="day10" class="java.lang.Integer"/>
+	<field name="day11" class="java.lang.Integer"/>
+	<field name="day12" class="java.lang.Integer"/>
+	<field name="day13" class="java.lang.Integer"/>
+	<field name="day14" class="java.lang.Integer"/>
+	<field name="day15" class="java.lang.Integer"/>
+	<field name="day16" class="java.lang.Integer"/>
+	<field name="day17" class="java.lang.Integer"/>
+	<field name="day18" class="java.lang.Integer"/>
+	<field name="day19" class="java.lang.Integer"/>
+	<field name="day20" class="java.lang.Integer"/>
+	<field name="day21" class="java.lang.Integer"/>
+	<field name="day22" class="java.lang.Integer"/>
+	<field name="day23" class="java.lang.Integer"/>
+	<field name="day24" class="java.lang.Integer"/>
+	<field name="day25" class="java.lang.Integer"/>
+	<field name="day26" class="java.lang.Integer"/>
+	<field name="day27" class="java.lang.Integer"/>
+	<field name="day28" class="java.lang.Integer"/>
+	<field name="day29" class="java.lang.Integer"/>
+	<field name="day30" class="java.lang.Integer"/>
+	<field name="day31" class="java.lang.Integer"/>
 	<field name="disease" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="m_ICD10" class="java.lang.String"/>
+	<field name="code" class="java.lang.String"/>
 	<variable name="total" class="java.lang.Integer" resetType="Column">
-		<variableExpression><![CDATA[$F{day_1}+$F{day_2}+$F{day_3}+$F{day_4}+$F{day_5}+$F{day_6}+$F{day_7}+$F{day_8}+$F{day_9}+$F{day_10}
-+$F{day_11}+$F{day_12}+$F{day_13}+$F{day_14}+$F{day_15}+$F{day_16}+$F{day_17}+$F{day_18}+$F{day_19}+$F{day_20}
-+$F{day_21}+$F{day_22}+$F{day_23}+$F{day_24}+$F{day_25}+$F{day_26}+$F{day_27}+$F{day_28}+$F{day_29}+$F{day_30}+$F{day_31}]]></variableExpression>
+		<variableExpression><![CDATA[$F{day1}+$F{day2}+$F{day3}+$F{day4}+$F{day5}+$F{day6}+$F{day7}+$F{day8}+$F{day9}+$F{day10}
++$F{day11}+$F{day12}+$F{day13}+$F{day14}+$F{day15}+$F{day16}+$F{day17}+$F{day18}+$F{day19}+$F{day20}
++$F{day21}+$F{day22}+$F{day23}+$F{day24}+$F{day25}+$F{day26}+$F{day27}+$F{day28}+$F{day29}+$F{day30}+$F{day31}]]></variableExpression>
 	</variable>
 	<group name="date">
 		<groupExpression><![CDATA[]]></groupExpression>
@@ -592,7 +592,7 @@
 					<font size="8" isBold="true"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[  "MONTH:"+$P{month}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["MONTH:"+$P{month}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement positionType="Float" x="604" y="43" width="90" height="14" uuid="2ef565ca-c2f8-45d3-a135-2cef241d6976"/>
@@ -607,7 +607,7 @@
 					<font size="8" isBold="true"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[ "YEAR:"+$P{year}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["YEAR:"+$P{year}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement positionType="Float" x="694" y="43" width="108" height="14" uuid="8e5c3c91-14bf-43aa-9938-b8efa7c5545d"/>
@@ -1120,7 +1120,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_17}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day17}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="475" y="-1" width="20" height="12" uuid="cced3ce5-a43e-41d9-9c0b-a3db53343b4c"/>
@@ -1134,7 +1134,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_19}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day19}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="228" y="-1" width="21" height="12" uuid="1abb00f3-9dad-4611-97bd-b899c7d25cd2"/>
@@ -1148,7 +1148,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_7}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day7}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="585" y="-1" width="21" height="12" uuid="f19d88ef-321f-41aa-8f8c-161a69ffac58"/>
@@ -1162,7 +1162,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_24}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day24}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="16" y="-1" width="93" height="12" uuid="da918d84-a6ba-4d19-9260-0fe9127384e1"/>
@@ -1190,7 +1190,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_12}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day12}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="372" y="-1" width="19" height="12" uuid="dcb60170-9f7b-4c69-98e8-bfe79eeb1622"/>
@@ -1204,7 +1204,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_14}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day14}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="411" y="-1" width="22" height="12" uuid="675f9dd7-f8c5-4a52-b950-d44b5124a422"/>
@@ -1218,7 +1218,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_16}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day16}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="454" y="-1" width="21" height="12" uuid="684b35f3-8135-437e-8d53-dc608f0c375b"/>
@@ -1232,7 +1232,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_18}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day18}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="494" y="-1" width="25" height="12" uuid="acf87038-d835-4839-b9c7-7d0ecd351044"/>
@@ -1246,7 +1246,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_20}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day20}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="540" y="-1" width="23" height="12" uuid="5f2afd82-e64d-4d5b-8234-ac6d13402bc7"/>
@@ -1260,7 +1260,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_22}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day22}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="270" y="-1" width="21" height="12" uuid="1886fe6a-85c6-47ca-9be4-6ed47a382d77"/>
@@ -1274,7 +1274,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_9}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day9}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="626" y="-1" width="23" height="12" uuid="b5cf7ec0-8f68-4653-9e0c-bf67fd5459b0"/>
@@ -1288,7 +1288,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_26}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day26}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="311" y="-1" width="20" height="12" uuid="79789997-17c7-412e-b736-038f9bc2c9c6"/>
@@ -1302,7 +1302,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_11}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day11}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="673" y="-1" width="22" height="12" uuid="54838306-332d-4223-822f-0a5ee75bdcb3"/>
@@ -1316,7 +1316,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_28}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day28}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="352" y="-1" width="20" height="12" uuid="a06213b6-837c-4bcb-af7e-acd2edfc59e0"/>
@@ -1330,7 +1330,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_13}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day13}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="719" y="-1" width="22" height="12" uuid="a928ab28-9c40-48e7-8301-ba17a14f1a08"/>
@@ -1344,7 +1344,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_30}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day30}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="391" y="-1" width="20" height="12" uuid="36df42c6-d4d0-4f90-b95a-9c9e973ac673"/>
@@ -1358,7 +1358,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_15}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day15}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="109" y="-1" width="22" height="12" uuid="bb3fb60d-ff96-41fb-9c19-c6d9f5a54a4d"/>
@@ -1372,7 +1372,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day1}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="131" y="-1" width="18" height="12" uuid="8bb3a268-6b80-4b81-bca7-efdbd58cfe98"/>
@@ -1386,7 +1386,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_2}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day2}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="149" y="-1" width="23" height="12" uuid="91b56389-d457-4b14-a183-dff028b829bf"/>
@@ -1400,7 +1400,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_3}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day3}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="171" y="-1" width="19" height="12" uuid="78c4f244-5a63-4b06-8542-e98abb8abb08"/>
@@ -1414,7 +1414,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_4}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day4}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="190" y="-1" width="18" height="12" uuid="a2c740af-f050-4bbc-bf20-605336faf907"/>
@@ -1428,7 +1428,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_5}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day5}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="208" y="-1" width="20" height="12" uuid="a89f063b-7f7d-489a-b9f1-1545d6fff464"/>
@@ -1442,7 +1442,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_6}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day6}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="741" y="-1" width="22" height="12" uuid="d637d116-e8ff-4812-b816-738b802766c6"/>
@@ -1456,7 +1456,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_31}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day31}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="291" y="-1" width="20" height="12" uuid="e8dc4afa-5674-416a-bf0e-3ecb585f77d7"/>
@@ -1470,7 +1470,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_10}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day10}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="249" y="-1" width="21" height="12" uuid="708aa490-c273-4206-a9c1-9aa618bbf79f"/>
@@ -1484,7 +1484,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_8}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day8}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="519" y="-1" width="21" height="12" uuid="bf11cdd0-bca8-44aa-aab9-bedd6426b753"/>
@@ -1498,7 +1498,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_21}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day21}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="563" y="-1" width="22" height="12" uuid="6bbb98de-287e-4a65-88bb-c0ce99dd13ca"/>
@@ -1512,7 +1512,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_23}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day23}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="606" y="-1" width="20" height="12" uuid="1836b549-ad42-426b-855b-bb6000629723"/>
@@ -1526,7 +1526,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_25}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day25}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="649" y="-1" width="24" height="12" uuid="126e0ac5-34e3-42d0-a9b6-620f56fc237f"/>
@@ -1540,7 +1540,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_27}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day27}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="695" y="-1" width="24" height="12" uuid="4118ddd5-ed2d-4110-8dfc-d7e889da5267"/>
@@ -1554,7 +1554,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{day_29}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{day29}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="763" y="0" width="39" height="11" uuid="c1e4592b-dc2e-48dd-8218-194549d98090"/>
@@ -1581,33 +1581,4 @@
 			</subreport>
 		</band>
 	</pageFooter>
-	<summary>
-		<band height="138">
-			<barChart>
-				<chart>
-					<reportElement x="1" y="5" width="539" height="133" uuid="b92e3827-7da8-4eca-ae20-fb3cb9ed5534"/>
-					<chartTitle/>
-					<chartSubtitle/>
-					<chartLegend/>
-				</chart>
-				<categoryDataset>
-					<categorySeries>
-						<seriesExpression><![CDATA["Disease"]]></seriesExpression>
-						<categoryExpression><![CDATA[$F{disease}]]></categoryExpression>
-						<valueExpression><![CDATA[$V{total}]]></valueExpression>
-					</categorySeries>
-				</categoryDataset>
-				<barPlot>
-					<plot/>
-					<itemLabel/>
-					<categoryAxisFormat>
-						<axisFormat/>
-					</categoryAxisFormat>
-					<valueAxisFormat>
-						<axisFormat/>
-					</valueAxisFormat>
-				</barPlot>
-			</barChart>
-		</band>
-	</summary>
 </jasperReport>

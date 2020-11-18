@@ -153,6 +153,22 @@ public class DispensingService {
 
     }
 
+    public boolean UpdateFullfillerStatus(Long id) {
+        try {
+//            fulfillDocRequest(id);
+            DoctorRequest req = doctorRequestRepository.findById(id).orElse(null);
+            if (req != null) {
+                req.setVoided(Boolean.TRUE);
+                req.setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                doctorRequestRepository.save(req);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw APIException.internalError("Error deleting Patient drugs with id " + id, e.getMessage());
+        }
+    }
+
     public List<DispensedDrug> returnItems(String visitNumber, List<ReturnedDrugData> returnedDrugs) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
@@ -162,8 +178,7 @@ public class DispensingService {
                     .stream()
                     .forEach(drugData -> {
                         StockEntry stock = new StockEntry();
-                        
-                        
+
                         DispensedDrug drugs = findDispensedDrugOrThrow(drugData.getDrugId());
                         DispensedDrug drug1 = ObjectUtils.clone(drugs);
                         drug1.setAmount(-1 * (drugData.getQuantity()) * (drugs.getPrice()));
@@ -173,7 +188,7 @@ public class DispensingService {
                         drug1.setReturnReason(drugData.getReason());
                         drug1.setId(null);
                         returnedArray.add(drug1);
-                        
+
                         stock.setAmount(NumberUtils.toScaledBigDecimal(drugs.getAmount()));
                         stock.setDeliveryNumber(drugs.getOtherReference());
                         stock.setQuantity(drugs.getQtyIssued());

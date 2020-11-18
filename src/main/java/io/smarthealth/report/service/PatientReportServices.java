@@ -482,10 +482,9 @@ public class PatientReportServices {
         if (visit.getHealthProvider() != null) {
             reportData.getFilters().put("practionerName", visit.getHealthProvider().getFullName());
         }
-
-        List<SickOffNoteData> requestData = Arrays.asList(SickOffNoteData.map(sickOffNoteService.fetchSickNoteByVisitWithNotFoundThrow(visit)));
+        SickOffNoteData requestData = SickOffNoteData.map(sickOffNoteService.fetchSickNoteByVisitWithNotFoundThrow(visit));
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
-        reportData.setData(requestData);
+        reportData.setData(Arrays.asList(requestData));
         reportData.setFormat(format);
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         if (visit.getHealthProvider() != null) {

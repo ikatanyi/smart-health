@@ -66,6 +66,8 @@ public class DoctorRequestData {
     private PatientData patientData;
     @ApiModelProperty(required = false, hidden = true)
     private LocalDateTime createdOn;
+    @ApiModelProperty(required = false, hidden = true)
+    private Boolean voided;
 
     @ApiModelProperty(required = false, hidden = true)
 
@@ -90,6 +92,7 @@ public class DoctorRequestData {
         doctorRequestData.setFulfillerStatus(doctorRequest.getFulfillerStatus());
         doctorRequestData.setNotes(doctorRequest.getNotes());
         doctorRequestData.setOrderDate(doctorRequest.getOrderDate());
+        doctorRequestData.setVoided(doctorRequest.getVoided());
 //        doctorRequestData.setCreatedOn(doctorRequest.getCreatedOn());
 
         doctorRequestData.setOrderNumber(doctorRequest.getOrderNumber());
