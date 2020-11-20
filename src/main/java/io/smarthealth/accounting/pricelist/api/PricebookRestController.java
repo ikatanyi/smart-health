@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import io.smarthealth.accounting.pricelist.data.BulkPriceUpdate;
 
 /**
  *
@@ -142,5 +143,11 @@ public class PricebookRestController {
         pagers.setContent(null);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+    @PutMapping("/pricebooks/items/batch-update")
+//    @PreAuthorize("hasAuthority('edit_pricebook')")
+    public ResponseEntity<?> batchUpdatePricebookItem( @Valid @RequestBody BulkPriceUpdate bulks) {
+        service.batchUpdatePriceItem(bulks);
+        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "Item Successfully Updated"));
     }
 }

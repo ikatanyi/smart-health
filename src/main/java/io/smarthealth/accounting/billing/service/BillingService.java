@@ -188,10 +188,10 @@ public class BillingService {
         Optional<PaymentDetails> pd = null;
         if (bill.getVisit() != null) {
             pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
-            if (pd.isPresent()) {
-                System.out.println("pd.get().getRunningLimit() "+pd.get().getRunningLimit());
+            if (pd.isPresent() && pd.get().isLimitEnabled()) {
                 if (pd.get().getRunningLimit() < amountToBill) {
-                    throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount ("+pd.get().getRunningLimit()+") ", "");
+                    throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount (" + pd.get().getRunningLimit() + ") ", "");
+                    //TODO: create receipt and set amount to the difference of amountToBill vs 
                 }
             }
         }
@@ -228,6 +228,14 @@ public class BillingService {
 
     public Optional<PatientBill> findByBillNumber(final String billNumber) {
         return patientBillRepository.findByBillNumber(billNumber);
+    }
+    
+     public List<PatientBill> findByVisit(final String visitNumber) {
+         Optional<Visit> visit = visitRepository.findByVisitNumber(visitNumber);
+         if(visit.isPresent())
+            return patientBillRepository.findByVisit(visit.get());
+         else
+             return null;
     }
 
     public PatientBill findOneWithNoFoundDetection(Long id) {

@@ -5,15 +5,15 @@
  */
 package io.smarthealth.administration.config.domain;
 
-import io.smarthealth.infrastructure.domain.Identifiable;
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "c_external_service_properties")
-public class ExternalServicesProperties extends Identifiable {
+@Table(name = "app_external_service_properties")
+public class ExternalServicesProperties implements Serializable  {
 
     @EmbeddedId
     ExternalServicePropertiesPK externalServicePropertiesPK;

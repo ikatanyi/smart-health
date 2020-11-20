@@ -6,7 +6,6 @@ import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
 import io.smarthealth.accounting.billing.service.BillingService;
-import io.smarthealth.accounting.doctors.data.DoctorInvoiceData;
 import io.smarthealth.accounting.doctors.domain.DoctorClinicItems;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorItem;
@@ -143,7 +142,7 @@ public class ClinicalVisitController {
 
     @Autowired
     private PatientBillRepository patientBillRepository;
-    
+
     @Autowired
     private SpecialistChangeAuditService specialistChangeAuditService;
 
@@ -380,10 +379,10 @@ public class ClinicalVisitController {
     @ApiOperation(value = "Update patient visit's doctor", response = VisitData.class)
     public @ResponseBody
     ResponseEntity<?> updateVisitPractitioner(
-            @PathVariable("visitNumber") final String visitNumber,            
+            @PathVariable("visitNumber") final String visitNumber,
             @PathVariable("staffNumber") final String staffNumber,
-            @RequestParam(value = "reason", required=false ) final String reason            
-            ) {
+            @RequestParam(value = "reason", required = false) final String reason
+    ) {
         Employee employee = employeeService.fetchEmployeeByNumberOrThrow(staffNumber);
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
 
@@ -428,7 +427,7 @@ public class ClinicalVisitController {
             pageable = PageRequest.of(pageNo, pageSize);
         }
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, username, orderByTriageCategory, queryTerm,billPaymentValidationPoint, pageable).map(v -> convertToVisitData(v));
+        Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, username, orderByTriageCategory, queryTerm, billPaymentValidationPoint, pageable).map(v -> convertToVisitData(v));
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 
@@ -836,28 +835,11 @@ public class ClinicalVisitController {
         return modelMapper.map(vitalsRecord, VitalRecordData.class);
     }
 
-    private void createDoctorInvoice(Visit visit, Employee newDoctorSelected, DoctorItem doctorItem) {
-        DoctorInvoiceData data = new DoctorInvoiceData();
-        data.setAmount(doctorItem.getAmount());
-        data.setBalance(doctorItem.getAmount());
-        data.setDoctorId(newDoctorSelected.getId());
-        data.setDoctorName(newDoctorSelected.getFullName());
-        data.setInvoiceDate(LocalDate.now());
-        data.setPaid(Boolean.FALSE);
-        data.setPatientName(visit.getPatient().getFullName());
-        data.setPatientNumber(visit.getPatient().getPatientNumber());
-        data.setStaffNumber(newDoctorSelected.getStaffNumber());
-        data.setVisitNumber(visit.getVisitNumber());
-        data.setServiceId(doctorItem.getId());
-        data.setPaymentMode(visit.getPaymentMethod().name());
-        doctorInvoiceService.createDoctorInvoice(data);
-    }
-
     private void updateVisitDoctor(Visit activeVisit, Employee newDoctorSelected, String reason) {
         SpecialistChangeAuditData data = new SpecialistChangeAuditData();
         data.setComments(reason);
         data.setDate(LocalDateTime.now());
-        data.setVisitNumber(activeVisit.getVisitNumber());        
+        data.setVisitNumber(activeVisit.getVisitNumber());
         data.setToDoctor(newDoctorSelected.getFullName());
         if (activeVisit.getClinic() == null) {
             throw APIException.badRequest("The service type is not consultation. You cannot specify a specialist for this visit", "");
@@ -867,14 +849,14 @@ public class ClinicalVisitController {
         //check if visit already has a doctor
         if (activeVisit.getHealthProvider() != null) {
             data.setFromDoctor(activeVisit.getHealthProvider().getFullName());
-            
+
             //update bill with current doctor if there is a difference between the visit activated one and the new one
             if (!newDoctorSelected.equals(activeVisit.getHealthProvider())) {
                 //find doctor invoice with service item and visit
                 Optional<DoctorItem> previousChargeDoctorItem = doctorInvoiceService.getDoctorItem(activeVisit.getHealthProvider(), activeVisit.getClinic().getServiceType());
                 System.out.println("previousChargeDoctorItem.isPresent() " + previousChargeDoctorItem.isPresent());
                 if (previousChargeDoctorItem.isPresent()) {
-                    
+
                     Optional<DoctorInvoice> previousDoctorInvoice = doctorInvoiceService.fetchDoctorInvoiceByVisitDoctorItemAndDoctor(activeVisit, previousChargeDoctorItem.get(), activeVisit.getHealthProvider());
                     if (previousDoctorInvoice.isPresent()) {
                         //update to the new one
@@ -882,12 +864,12 @@ public class ClinicalVisitController {
                         doctorInvoiceService.removeDoctorInvoice(doctorInvoice);
                         //create a new doctor invoice
                         if (newChargeableDoctorItem.isPresent()) {
-                            createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
+                            doctorInvoiceService.createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
                         }
                     } else {
                         //create new doctor invoice
                         if (newChargeableDoctorItem.isPresent()) {
-                            createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
+                            doctorInvoiceService.createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
                         }
                     }
                 }
@@ -899,7 +881,7 @@ public class ClinicalVisitController {
         } else {
             //create  new doctor invoice
             if (newChargeableDoctorItem.isPresent()) {
-                createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
+                doctorInvoiceService.createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
             }
         }
         specialistChangeAuditService.createSpecialistChangeAudit(data);

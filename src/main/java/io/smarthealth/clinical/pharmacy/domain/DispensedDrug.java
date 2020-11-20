@@ -12,17 +12,15 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table; 
+import javax.persistence.Table;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author Kelsas
  */
+@Entity
 @Data
-@Entity 
-@EqualsAndHashCode(callSuper = false)
 @Table(name = "pharmacy_dispensed_drugs")
 public class DispensedDrug extends Auditable implements Cloneable {
 
@@ -55,9 +53,12 @@ public class DispensedDrug extends Auditable implements Cloneable {
     private Boolean collected;
     private String dispensedBy;
     private String collectedBy;
+
     private Boolean isReturn;
     private String returnReason;
     private LocalDate returnDate;
+    private Double returnedQuantity;
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharm_dispensed_drugs_store_id"))
     private Store store;
@@ -65,6 +66,7 @@ public class DispensedDrug extends Auditable implements Cloneable {
     private String otherReference;
     private Boolean walkinFlag = Boolean.FALSE;
     private String batchNumber;
+    private String deliveryNumber;
 
 //    @Enumerated(EnumType.STRING)
     public DispensedDrugData toData() {
@@ -104,6 +106,11 @@ public class DispensedDrug extends Auditable implements Cloneable {
         data.setOtherReference(this.otherReference);
         data.setWalkinFlag(this.walkinFlag);
         data.setBatchNumber(this.batchNumber);
+        Double returnedQty = this.returnedQuantity != null ? this.returnedQuantity : 0D;
+        data.setReturnedQuantity(returnedQty);
+        data.setQtyBalance(this.qtyIssued - returnedQty);
+        data.setReturnReason(this.returnReason);
+
         return data;
     }
 

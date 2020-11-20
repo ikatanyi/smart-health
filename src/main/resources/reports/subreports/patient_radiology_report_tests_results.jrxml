@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patient_radiolgy_report_results" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="abc9aa62-cf0d-4d7f-add0-517739b1f226">
-	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<field name="templateNotes" class="java.lang.String"/>
@@ -31,18 +31,18 @@
 				<textFieldExpression><![CDATA[$F{templateNotes}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="2" y="8" width="70" height="13" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
+				<reportElement x="2" y="8" width="539" height="13" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Result :]]></text>
+				<text><![CDATA[Report]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="2" y="44" width="70" height="13" uuid="0cba2f73-babc-42a6-9ebc-072229ea1b81"/>
+				<reportElement positionType="Float" x="2" y="44" width="539" height="13" uuid="0cba2f73-babc-42a6-9ebc-072229ea1b81"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Comments :]]></text>
+				<text><![CDATA[Conclusion]]></text>
 			</staticText>
 		</band>
 	</detail>

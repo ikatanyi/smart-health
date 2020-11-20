@@ -7,6 +7,7 @@ import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
@@ -63,6 +64,10 @@ public class DoctorRequestData {
     private Boolean drug;
     @ApiModelProperty(required = false, hidden = true)
     private PatientData patientData;
+    @ApiModelProperty(required = false, hidden = true)
+    private LocalDateTime createdOn;
+    @ApiModelProperty(required = false, hidden = true)
+    private Boolean voided;
 
     @ApiModelProperty(required = false, hidden = true)
 
@@ -87,6 +92,9 @@ public class DoctorRequestData {
         doctorRequestData.setFulfillerStatus(doctorRequest.getFulfillerStatus());
         doctorRequestData.setNotes(doctorRequest.getNotes());
         doctorRequestData.setOrderDate(doctorRequest.getOrderDate());
+        doctorRequestData.setVoided(doctorRequest.getVoided());
+//        doctorRequestData.setCreatedOn(doctorRequest.getCreatedOn());
+
         doctorRequestData.setOrderNumber(doctorRequest.getOrderNumber());
         doctorRequestData.setRequestType(doctorRequest.getRequestType());
         if (doctorRequest.getUrgency() != null) {

@@ -25,4 +25,5 @@ public class RolePermissionsData {
         this.disabled = disabled;
         this.permissionUsageData = permissionUsageData;
     }
+    
 }
