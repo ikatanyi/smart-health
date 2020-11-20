@@ -68,8 +68,14 @@ public class PaymentDetails extends Auditable {
     private boolean hasCapitation;
     private BigDecimal capitationAmount = BigDecimal.ZERO;
     private double runningLimit;
+    
+    @Column(columnDefinition = "tinyint(1) default 1")
     private Boolean limitEnabled = Boolean.TRUE;
+    
+    @Column(columnDefinition = "tinyint(1) default 0")
     private Boolean excessAmountEnabled = Boolean.FALSE;
+    
+    @Column(columnDefinition = "tinyint(1) default 0")
     private Boolean limitReached = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
