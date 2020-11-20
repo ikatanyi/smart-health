@@ -36,13 +36,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
-			<textField pattern="h.mm.ss a">
-				<reportElement x="508" y="1" width="62" height="14" uuid="7bd5211d-0c80-403e-b513-6374f2328f65"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
 		</band>
 	</pageFooter>
 </jasperReport>

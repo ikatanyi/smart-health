@@ -5,6 +5,7 @@ import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
+import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.domain.DoctorClinicItems;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
@@ -52,6 +53,8 @@ import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.security.domain.User;
+import io.smarthealth.security.service.UserService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
@@ -75,6 +78,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -145,6 +149,8 @@ public class ClinicalVisitController {
 
     @Autowired
     private SpecialistChangeAuditService specialistChangeAuditService;
+    @Autowired
+    UserService service;
 
     @PostMapping("/visits")
     @PreAuthorize("hasAuthority('create_visits')")
@@ -462,6 +468,28 @@ public class ClinicalVisitController {
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
+    @PutMapping("/visits/{visitNo}/limit-amount")
+    @PreAuthorize("hasAuthority('edit_visits')")
+    public ResponseEntity<?> updateLimitAmount(@PathVariable("visitNo") String visitNo, @Valid @RequestBody PaymentDetailsData data, Authentication authentication) {
+//find visit details by visitNo
+        String username = authentication.getName();
+        User user = service.findUserByUsernameOrEmail(username)
+                .orElseThrow(() -> APIException.badRequest("User not found"));
+        Optional<PaymentDetails> pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(visitService.findVisitEntityOrThrow(visitNo));
+        if (pd.isPresent()) {
+            PaymentDetails pdd = pd.get();
+            pdd.setExcessAmountAuthorisedBy(user);
+            pdd.setExcessAmountEnabled(data.getExcessAmountEnabled());
+            pdd.setExcessAmountPayMode(data.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance) ? BillPayMode.Credit : BillPayMode.Cash);
+            if (data.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
+//update excess card details
+
+            }
+            paymentDetailsService.createPaymentDetails(pdd);
+        }
+        return ResponseEntity.ok(true);
+    }
+
     @PutMapping("/visits/{visitNo}/payment-mode")
     @PreAuthorize("hasAuthority('edit_visits')")
     public ResponseEntity<?> updatePaymentMode(@PathVariable("visitNo") String visitNo, @Valid @RequestBody PaymentDetailsData data) {
@@ -505,7 +533,11 @@ public class ClinicalVisitController {
             }
             Scheme scheme = schemeService.fetchSchemeById(data.getSchemeId());
             Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
-            PaymentDetails pd = new PaymentDetails();
+            PaymentDetails pd =null;
+            if (currentPaymentDetail.isPresent())                
+               pd = currentPaymentDetail.get();
+            else
+               pd = new PaymentDetails();
             pd.setComments(data.getComments());
             pd.setPolicyNo(data.getPolicyNo());
             pd.setMemberName(data.getMemberName());

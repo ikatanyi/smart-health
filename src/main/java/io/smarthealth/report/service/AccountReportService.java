@@ -452,8 +452,8 @@ public class AccountReportService {
         Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
         String patientNo = reportParam.getFirst("patientNo");
         String invoiceNo = reportParam.getFirst("invoiceNo");
-        Boolean awaitingSmart = reportParam.getFirst("awaitingSmart") != null ? Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")) : false;
-        Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : false;
+        Boolean awaitingSmart = reportParam.getFirst("awaitingSmart") != null ? Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")) : null;
+        Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : null;
         DateRange dateRange = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         String invoiceStatus = reportParam.getFirst("invoiceStatus");
         Double amountGreaterThan = 0.0;
@@ -765,7 +765,7 @@ public class AccountReportService {
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         String receiptNo = reportParam.getFirst("receiptNo");
         String itemCode = reportParam.getFirst("itemCode");
-        Boolean voided = reportParam.getFirst("cancelled") == null ? Boolean.parseBoolean(reportParam.getFirst("cancelled")) : null;
+        Boolean voided = reportParam.getFirst("cancelled") != null ? Boolean.parseBoolean(reportParam.getFirst("cancelled")) : null;
         String patientNo = reportParam.getFirst("patientNo");
         //"RCT-00009"
         List<ReceiptItemData> receiptDataArray = receivePaymentService.getVoidedItems(servicePointId, patientNo, itemCode, voided, range, Pageable.unpaged())

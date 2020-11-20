@@ -26,7 +26,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{amount}.round( new MathContext(0, RoundingMode.HALF_UP) )]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

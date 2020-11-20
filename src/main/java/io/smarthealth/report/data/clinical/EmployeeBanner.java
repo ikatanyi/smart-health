@@ -14,33 +14,35 @@ import lombok.Data;
  */
 @Data
 public class EmployeeBanner {
+
     private String gender;
     private String employeeCategory;
-    private String staffNumber;    
-    private String departmentName; 
-    private String departmentCode; 
+    private String staffNumber;
+    private String departmentName;
+    private String departmentCode;
     private String email;
     private String status;
     private String address;
     private String mobile;
     private String phoneNumber;
-    private String fullName;    
-    
-    
-    public static EmployeeBanner map(EmployeeData data){
+    private String fullName;
+
+    public static EmployeeBanner map(EmployeeData data) {
         EmployeeBanner employee = new EmployeeBanner();
-        if(data.getAddress()!=null){
-            employee.setAddress(data.getAddress().get(0).getPostalCode()+","+data.getAddress().get(0).getCounty()+","+data.getAddress().get(0).getCountry()+", "+data.getAddress().get(0).getTown());
+        if (data.getAddress() != null) {
+            employee.setAddress(data.getAddress().get(0).getPostalCode() + "," + data.getAddress().get(0).getCounty() + "," + data.getAddress().get(0).getCountry() + ", " + data.getAddress().get(0).getTown());
         }
         employee.setDepartmentCode(data.getDepartmentCode());
         employee.setDepartmentName(data.getDepartmentName());
         employee.setEmail(data.getEmail());
-        employee.setEmployeeCategory(data.getEmployeeCategory().name());
+        if (data.getEmployeeCategory() != null) {
+            employee.setEmployeeCategory(data.getEmployeeCategory().name());
+        }
         employee.setStaffNumber(data.getStaffNumber());
-        if(data.getContact()!=null){
+        if (data.getContact() != null) {
             employee.setEmail(data.getContact().get(0).getEmail());
             employee.setPhoneNumber(data.getContact().get(0).getMobile());
-        }        
+        }
         employee.setFullName(data.getFullName());
         employee.setGender(data.getGender().name());
         employee.setStatus(data.getStatus());

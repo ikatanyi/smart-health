@@ -33,14 +33,14 @@
 	<columnHeader>
 		<band height="17" splitType="Stretch">
 			<staticText>
-				<reportElement x="17" y="1" width="36" height="16" uuid="4f0e2840-62e3-4292-b438-2c4e198dac8f"/>
+				<reportElement x="16" y="1" width="38" height="16" uuid="4f0e2840-62e3-4292-b438-2c4e198dac8f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Certainty]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="54" y="1" width="33" height="16" uuid="b2f02710-e238-4776-84c9-c0449c233bcc"/>
+				<reportElement x="54" y="1" width="34" height="16" uuid="b2f02710-e238-4776-84c9-c0449c233bcc"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -77,28 +77,28 @@
 	</columnHeader>
 	<detail>
 		<band height="19" splitType="Stretch">
-			<textField>
-				<reportElement x="17" y="0" width="36" height="16" uuid="6615e84a-db3e-4c56-afc5-becef3d742c9"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="16" y="0" width="38" height="16" uuid="6615e84a-db3e-4c56-afc5-becef3d742c9"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{certainty}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="54" y="0" width="33" height="16" uuid="6569cf4e-d5c5-4fa1-95b8-ce9919350b9a"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="54" y="0" width="34" height="16" uuid="6569cf4e-d5c5-4fa1-95b8-ce9919350b9a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{code}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isStretchWithOverflow="true">
 				<reportElement x="88" y="0" width="109" height="16" uuid="d92add6b-f242-41a6-8dd2-9c4260eb09a5"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isStretchWithOverflow="true">
 				<reportElement x="197" y="0" width="80" height="16" uuid="b338a71f-44fb-4828-a8ca-2b012b7f697d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>

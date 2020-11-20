@@ -22,7 +22,7 @@ public class PriceListSpecification {
     public static Specification<PriceList> searchSpecification(String queryItem, Long servicePointId) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
-
+             predicates.add(cb.greaterThan(root.get("sellingRate"), 0));
              if (servicePointId != null) {
                 predicates.add(cb.equal(root.get("servicePoint").get("id"), servicePointId));
             }
@@ -43,7 +43,7 @@ public class PriceListSpecification {
     public static Specification<PriceList> createSpecification(String queryItem, Long servicePointId, Boolean defaultPrice, List<ItemCategory> category, ItemType itemType) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
-
+            predicates.add(cb.greaterThan(root.get("sellingRate"), 0));
             if (queryItem != null) {
                 final String likeExpression = "%" + queryItem + "%";
                 predicates.add(

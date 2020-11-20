@@ -143,6 +143,12 @@ public class InventoryItemService {
         Item item = itemService.findByItemCodeOrThrow(itemCode);
         return inventoryItemRepository.findItemCount(item);
     }
+    
+    public Double getItemCountByItemAndStore(String itemCode, Long storeId) {
+        Item item = itemService.findByItemCodeOrThrow(itemCode);
+        Store store = storeService.getStoreWithNoFoundDetection(storeId);
+        return inventoryItemRepository.findItemCountByItemAndStore(item,store);
+    }
 
     public InventoryItem getInventoryItemOrThrow(Long itemId, Long storeId) {
         return getInventoryItem(storeId, itemId)
