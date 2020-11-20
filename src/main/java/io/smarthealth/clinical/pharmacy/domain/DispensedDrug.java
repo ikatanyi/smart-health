@@ -12,15 +12,17 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.Table; 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author Kelsas
  */
-@Entity
 @Data
+@Entity 
+@EqualsAndHashCode(callSuper = false)
 @Table(name = "pharmacy_dispensed_drugs")
 public class DispensedDrug extends Auditable implements Cloneable {
 

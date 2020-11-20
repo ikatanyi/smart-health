@@ -1,6 +1,6 @@
 package io.smarthealth.accounting.accounts.service;
-
-import io.smarthealth.accounting.accounts.data.ActivityAccount;
+  
+import io.smarthealth.accounting.accounts.data.ActivityAccounts;
 import io.smarthealth.accounting.accounts.data.FinancialActivity;
 import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
@@ -28,7 +28,7 @@ public class FinancialActivityAccountService {
         this.accountServices = accountServices;
     }
 
-    public FinancialActivityAccount createMapping(ActivityAccount activityAccount) {
+    public FinancialActivityAccount createMapping(ActivityAccounts activityAccount) {
 
         Optional<FinancialActivityAccount> fac = repository.findByFinancialActivity(activityAccount.getActivity());
         if (fac.isPresent()) {
@@ -42,13 +42,13 @@ public class FinancialActivityAccountService {
         return repository.save(new FinancialActivityAccount(activity, account));
     }
 
-    public Page<ActivityAccount> getAllFinancialMapping(Pageable page) {
+    public Page<ActivityAccounts> getAllFinancialMapping(Pageable page) {
         return repository.findAll(page)
-                .map(acc -> ActivityAccount.map(acc));
+                .map(acc -> ActivityAccounts.map(acc));
 
     }
 
-    public FinancialActivityAccount updateFinancialActivity(Long id, ActivityAccount activity) {
+    public FinancialActivityAccount updateFinancialActivity(Long id, ActivityAccounts activity) {
         FinancialActivityAccount fa = getActivityById(id);
         Account account = accountServices.findByAccountNumber(activity.getAccountIdentifier())
                 .orElseThrow(() -> APIException.notFound("Account {0} Not Found", activity.getAccountIdentifier()));

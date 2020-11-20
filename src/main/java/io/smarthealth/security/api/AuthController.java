@@ -2,13 +2,11 @@ package io.smarthealth.security.api;
 
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.mail.EmailData;
-import io.smarthealth.infrastructure.mail.MailService;
+import io.smarthealth.notification.data.EmailData;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.infrastructure.utility.PassayPassword;
-import io.smarthealth.notify.data.NotificationResponse;
-import io.smarthealth.security.config.CurrentUser;
+import io.smarthealth.notification.data.NotificationResponse;
 import io.smarthealth.security.data.ApiResponse;
 import io.smarthealth.security.data.PasswordData;
 import io.smarthealth.security.data.PermissionData;
@@ -49,6 +47,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import io.smarthealth.notification.service.EmailerService;
 
 /**
  *
@@ -64,7 +63,7 @@ public class AuthController {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
-    private final MailService mailSender;
+    private final EmailerService mailSender;
 
     @PostMapping("/users")
     @PreAuthorize("hasAuthority('create_users')")

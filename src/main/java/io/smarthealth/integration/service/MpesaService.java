@@ -26,7 +26,8 @@ public class MpesaService {
 
     @Transactional
     public String initiateStkPush(String phoneNumber, BigDecimal amount) {
-        MpesaRequest request = new MpesaRequest()
+        
+        MpesaRequest request = new MpesaRequest() 
                 .BusinessShortCode(mpesaConfiguration.getShortCode())
                 .Password(mpesaConfiguration.getPassword())
                 .Timestamp(mpesaConfiguration.getTimestamp())

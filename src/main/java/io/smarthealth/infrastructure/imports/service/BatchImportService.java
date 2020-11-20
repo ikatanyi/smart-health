@@ -129,9 +129,7 @@ public class BatchImportService {
                     break;
                 case LabTests:
                     List<LabTestData> labTestData = toPojoUtil.toPojo(LabTestData.class, inputFilestream);
-                    for (LabTestData d : labTestData) {
-                        System.out.println("DDDDDDD " + d.toString());
-                    }
+                    
                     labConfigService.createTest(labTestData);
                     break;
                 case LabTestsFixer:

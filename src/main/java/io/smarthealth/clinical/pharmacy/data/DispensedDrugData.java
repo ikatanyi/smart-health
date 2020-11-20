@@ -11,14 +11,14 @@ import io.smarthealth.infrastructure.lang.Constants;
 import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.Enumerated; 
 import lombok.Data;
 
 /**
  *
  * @author Kelsas
  */
-@Data
+ @Data
 public class DispensedDrugData implements Serializable {
 
     private Long id;

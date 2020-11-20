@@ -5,13 +5,13 @@ import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.List; 
 import lombok.Data;
 
 /**
  *
  * @author Kelsas
- */
+ */ 
 @Data
 public class CreateItem {
 
@@ -37,8 +37,7 @@ public class CreateItem {
     private Double reorderLevel;
     private Double orderQuantity;
     private List<Long> expenseTo = new ArrayList<>();
-    private String uom;
-    //for import of drugs
+    private String uom; 
     @ApiModelProperty(hidden=true)
     private Double available;
     
