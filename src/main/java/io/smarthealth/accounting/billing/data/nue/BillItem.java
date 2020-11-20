@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.billing.data.nue;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
@@ -38,4 +39,7 @@ public class BillItem {
     
     @Enumerated(EnumType.STRING)
     private BillStatus status;
+    
+     @Enumerated(EnumType.STRING)
+    private BillPayMode billPayMode;
 }

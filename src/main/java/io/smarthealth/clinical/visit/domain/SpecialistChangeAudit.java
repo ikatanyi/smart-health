@@ -7,19 +7,10 @@ package io.smarthealth.clinical.visit.domain;
  */
 
 
-import io.smarthealth.debtor.claim.dispatch.domain.*;
-import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.clinical.visit.data.SpecialistChangeAuditData;
-import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.infrastructure.domain.Auditable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
 
