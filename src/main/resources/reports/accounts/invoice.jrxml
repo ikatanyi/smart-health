@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="4aae1193-a82d-4555-b88f-e537201ac06a">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="38"/>
+	<property name="ireport.y" value="196"/>
 	<style name="headerStyles" mode="Opaque" forecolor="#0000FF" backcolor="#FF0033"/>
 	<scriptlet name="Helper" class="io.smarthealth.infrastructure.utility.RoundingHelper"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
@@ -16,6 +16,7 @@
 	</parameter>
 	<parameter name="Header_Data" class="java.util.List"/>
 	<parameter name="Footer_Data" class="java.util.List"/>
+	<parameter name="showCapitationItem" class="java.lang.Boolean"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -111,7 +112,7 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="176">
+		<band height="180">
 			<staticText>
 				<reportElement positionType="Float" mode="Transparent" x="336" y="131" width="78" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
 				<textElement verticalAlignment="Middle">
@@ -180,7 +181,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{memberName}.toUpperCase()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{patientName}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="415" y="115" width="140" height="13" uuid="357516ad-e8d0-4046-9359-0e36ab26475a"/>
@@ -241,6 +242,9 @@
 				</subreportParameter>
 				<subreportParameter name="capitation">
 					<subreportParameterExpression><![CDATA[$F{capitation}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="showCapitationItem">
+					<subreportParameterExpression><![CDATA[$P{showCapitationItem}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{invoiceItems})]]></dataSourceExpression>
 				<returnValue subreportVariable="total" toVariable="total"/>
@@ -303,7 +307,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{capitation}.equals( true )?$F{amount}:$V{total}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{total}]]></textFieldExpression>
 			</textField>
 			<textField pattern=" #,##0.00" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="486" y="37" width="57" height="14" uuid="c932f3de-d592-4733-bd3b-cf904407985f"/>

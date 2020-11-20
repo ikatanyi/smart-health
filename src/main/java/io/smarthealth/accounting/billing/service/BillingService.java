@@ -389,6 +389,10 @@ public class BillingService {
 
         return lists;
     }
+    
+    public List<PatientBillItem> getPatientBillItem(String transactionNo) {
+        return billItemRepository.findByTransactionId(transactionNo);
+    }
 
     public Page<PatientBillItem> getReceiptedBillItems(String visitNo, Pageable page) {
         Visit visit = findVisitEntityOrThrow(visitNo);
