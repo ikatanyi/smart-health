@@ -28,4 +28,5 @@ public interface PatientBillItemRepository extends JpaRepository<PatientBillItem
     List<PatientBillItem> getVisitBillsByStatus(@Param("status") BillStatus status, @Param("visitNo") String visitNo);
     
     Optional<PatientBillItem>findByPatientBill(PatientBill patientBill);
+    List<PatientBillItem> findByTransactionId(String transactionId);
 }

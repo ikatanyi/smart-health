@@ -23,7 +23,10 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, Lo
     Page<InventoryItem> findByItem(Item item, Pageable page);
     
     @Query(value = "select SUM(availableStock) as cnt from InventoryItem v where v.item=:item group by v.item")
-    Double findItemCount(@Param("item")Item item);        
+    Double findItemCount(@Param("item")Item item); 
+    
+    @Query(value = "select SUM(availableStock) as cnt from InventoryItem v where v.item=:item AND v.store=:store group by v.item")
+    Double findItemCountByItemAndStore(@Param("item")Item item, Store store); 
 
     Page<InventoryItem> findByStore(Store store, Pageable page);
 

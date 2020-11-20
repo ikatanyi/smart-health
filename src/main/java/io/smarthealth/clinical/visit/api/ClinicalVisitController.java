@@ -505,7 +505,11 @@ public class ClinicalVisitController {
             }
             Scheme scheme = schemeService.fetchSchemeById(data.getSchemeId());
             Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
-            PaymentDetails pd = new PaymentDetails();
+            PaymentDetails pd =null;
+            if (currentPaymentDetail.isPresent())                
+               pd = currentPaymentDetail.get();
+            else
+               pd = new PaymentDetails();
             pd.setComments(data.getComments());
             pd.setPolicyNo(data.getPolicyNo());
             pd.setMemberName(data.getMemberName());
