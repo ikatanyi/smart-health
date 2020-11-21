@@ -209,8 +209,8 @@ public class DispensingService {
                         stock.setTransactionNumber(trdId);
                         stock.setUnit(drug1.getUnits());
                         inventoryService.doStockEntry(InventoryEvent.Type.Increase, stock, drug1.getStore(), drug1.getDrug(), drugData.getQuantity());
-
-                        drugs.setReturnedQuantity(drugData.getQuantity());
+ 
+                        drugs.setReturnedQuantity((drugs.getReturnedQuantity()+drugData.getQuantity()));
                         drugs.setReturnReason(drugData.getReason());
                         drugs.setReturnDate(drugData.getReturnDate() != null ? drugData.getReturnDate() : LocalDate.now());
 

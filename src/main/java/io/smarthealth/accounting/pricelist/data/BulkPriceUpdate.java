@@ -19,5 +19,5 @@ public class BulkPriceUpdate {
     private String itemCode;
     private String itemName;
     private BigDecimal amount;
-    private int[] pricebooks;
+    private Long[] pricebooks;
 }

@@ -140,8 +140,9 @@ public class PricebookService {
 
     @Transactional
     public void batchUpdatePriceItem(BulkPriceUpdate updateData) {
+        
 
-        for (long p : updateData.getPricebooks()) {
+        for (Long p : updateData.getPricebooks()) {
             Optional<PriceBook> book = getPricebook(p);
             if (book.isPresent()) {
                 Item toSaveItem = itemService.findItemEntityOrThrow(updateData.getItemId());
