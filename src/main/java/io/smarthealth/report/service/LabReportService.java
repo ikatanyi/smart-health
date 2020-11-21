@@ -5,6 +5,8 @@
  */
 package io.smarthealth.report.service;
 
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.laboratory.data.LabRegisterData;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
@@ -22,6 +24,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +49,7 @@ import org.springframework.util.MultiValueMap;
 public class LabReportService {
 
     private final JasperReportsService reportService;
-    private final PatientService patientService;
+    private final BillingService billingService;
     private final LaboratoryService labService;
 
     private final VisitService visitService;
@@ -60,6 +63,7 @@ public class LabReportService {
         String patientNumber = reportParam.getFirst("patientNumber");
         String search = reportParam.getFirst("search");
         String dateRange = reportParam.getFirst("dateRange");
+        Boolean isWalkin = reportParam.getFirst("iswalkin") != null ? Boolean.parseBoolean(reportParam.getFirst("iswalkin")) : null;
         List<LabTestStatus> status = Arrays.asList(statusToEnum(reportParam.getFirst("status")));
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));
@@ -89,7 +93,7 @@ public class LabReportService {
         String orderNumber = reportParam.getFirst("orderNumber");
         String patientNumber = reportParam.getFirst("patientNumber");
         String search = reportParam.getFirst("search");
-        String dateRange = reportParam.getFirst("dateRange");        
+        String dateRange = reportParam.getFirst("dateRange");
         LabTestStatus status = labService.LabTestStatusToEnum(reportParam.getFirst("status"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));
@@ -97,7 +101,21 @@ public class LabReportService {
         List<LabRegisterTestData> patientData = labService.getLabRegisterTest(labNumber, orderNumber, visitNumber, patientNumber, status, range, search, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map((register) -> register.toData(expand))
+                .map((register) -> {
+                    LabRegisterTestData data = register.toData(expand);
+                    List<PatientBillItem> billItem = billingService.getPatientBillItem(data.getReferenceNo());
+                    if(!billItem.isEmpty()){
+                        data.setReferenceNo(billItem.get(0).getPaymentReference());
+                        billItem.stream().map((item) -> {
+                            if(data.getPaymentMode().equalsIgnoreCase("Cash"))
+                                data.setTotalCash(+item.getAmount());
+                            return item;
+                        }).filter((item) -> (data.getPaymentMode().equalsIgnoreCase("Insurance"))).forEachOrdered((item) -> {
+                            data.setTotalInsurance(+item.getAmount());
+                        });
+                    }
+                    return data;
+                })
                 .collect(Collectors.toList());
         reportData.setData(patientData);
         reportData.setFormat(format);

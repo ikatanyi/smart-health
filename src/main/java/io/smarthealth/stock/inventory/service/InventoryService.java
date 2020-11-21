@@ -131,7 +131,7 @@ public class InventoryService {
         return trdId;
     }
 
-    private void doStockEntry(InventoryEvent.Type type, StockEntry stock, Store store, Item item, Double qty) {
+    public void doStockEntry(InventoryEvent.Type type, StockEntry stock, Store store, Item item, Double qty) {
         stockEntryRepository.save(stock);
         inventoryEventSender.process(new InventoryEvent(type, store, item, qty));
     }

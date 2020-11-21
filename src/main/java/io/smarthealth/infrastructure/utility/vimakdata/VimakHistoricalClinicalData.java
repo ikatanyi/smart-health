@@ -5,8 +5,29 @@
  */
 package io.smarthealth.infrastructure.utility.vimakdata;
 
+import io.smarthealth.accounting.accounts.service.JournalService;
+import io.smarthealth.accounting.billing.data.BillData;
+import io.smarthealth.accounting.billing.data.BillItemData;
+import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.invoice.domain.Invoice;
+import io.smarthealth.accounting.invoice.domain.InvoiceItem;
+import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
+import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
+import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.clinical.visit.data.VisitData;
+import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.debtor.payer.domain.Payer;
+import io.smarthealth.debtor.payer.domain.Scheme;
+import io.smarthealth.debtor.payer.service.PayerService;
+import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.organization.person.patient.data.PatientData;
+import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.service.ItemService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,6 +37,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Statement;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,16 +46,25 @@ import org.springframework.stereotype.Component;
  * @author Simon.waweru
  */
 @Component
+@RequiredArgsConstructor
 public class VimakHistoricalClinicalData {
 
     ResultSet rs = null;
     PreparedStatement pst = null;
     PreparedStatement pst2 = null;
     DBConnector connector = new DBConnector();
+    private final JournalService journalService;
+    private final PayerService payerService;
+    private final SchemeService schemeService;
+    private final PatientService patientService;
+    private final ItemService itemService;
+    private final BillingService billingService;
+    private final VisitService visitService;
+    private final InvoiceRepository invoiceRepository;
 
     public static void main(String[] args) {
-        VimakHistoricalClinicalData sindano = new VimakHistoricalClinicalData();
-        sindano.insertDoctorNotes();
+//        VimakHistoricalClinicalData sindano = new VimakHistoricalClinicalData();
+//        sindano.insertDoctorNotes();
     }
 
     private void processData() {
@@ -232,6 +264,62 @@ public class VimakHistoricalClinicalData {
         }
     }
 
+    private void uploadInvoices() throws Exception {
+        try {
+            PatientData data = null;
+            ResultSet rs = null;
+            Connection conn = connector.ConnectToPastDB();
+            Connection connection = connector.ConnectToCurrentDB();            
+            InvoiceItem invoiceItem =null;
+            List<Invoice> invoiceArray = new ArrayList();
+            String historicalClinicalNotes = "SELECT *  FROM clinic_web.ac.debtors";
+            pst2 = conn.prepareStatement(historicalClinicalNotes);
+            rs = pst2.executeQuery();
+            while (rs.next()) {
+                Invoice invoice = new Invoice();
+                Patient patient = patientService.findPatientOrThrow("patient_id");
+                Payer payer = payerService.fetchByPayerCode(rs.getString("payer"));
+                Scheme scheme = schemeService.fetchSchemeByCode(rs.getString("scheme_code"));
+                
+                invoice.setAmount(rs.getBigDecimal("debit"));
+                invoice.setBalance(rs.getBigDecimal("balance"));
+                invoice.setDate(rs.getDate("billing_date").toLocalDate());
+                invoice.setDueDate(rs.getDate("billing_date").toLocalDate());
+                invoice.setInvoiceAmount(NumberUtils.toScaledBigDecimal(rs.getDouble("debit")));
+                invoice.setMemberName(patient.getFullName());
+                invoice.setMemberNumber(rs.getString("patient_id"));
+                invoice.setNumber(rs.getString("invoice_no"));
+                invoice.setPaid(true);
+                invoice.setPatient(patient);
+                invoice.setPayer(payer);
+                invoice.setScheme(scheme);
+                invoice.setStatus(InvoiceStatus.Sent);
+                List<InvoiceItem> invoiceItems = new ArrayList();     
+                String visitNumber=null;
+                List<PatientBill>patientBills = billingService.findByVisit(rs.getString("receipt_no"));
+                for(PatientBill bill:patientBills){
+                    InvoiceItem item=new InvoiceItem();
+                    item.setBalance(NumberUtils.toScaledBigDecimal(bill.getBalance()));
+                    item.setBillItem(item.getBillItem());
+                    item.setRemarks("");
+                    invoiceItems.add(item);
+                    visitNumber=bill.getVisit().getVisitNumber();
+                }
+                Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+                invoice.setVisit(visit);
+                invoice.addItems(invoiceItems);
+                invoiceArray.add(invoice);
+            }
+            invoiceRepository.saveAll(invoiceArray);
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Error validating patient number", e);
+        }
+    }    
+    
+    
+
     private Long getUser(String userId) throws Exception {
         try {
             VisitData data = null;
@@ -252,6 +340,100 @@ public class VimakHistoricalClinicalData {
             throw new Exception("Error validating visit number", e);
         }
     }
+    
+    private BillItemData getBillItem(String serviceCode) throws Exception {
+        try {
+            ResultSet rs = null;
+            Long id = null;
+            BillItemData data = new BillItemData();
+            Connection connection = connector.ConnectToCurrentDB();
+            //check if exists
+            String qry = "SELECT * FROM clinic_web.dt_bill_details WHERE service_code = '" + serviceCode + "'";
+            pst = connection.prepareStatement(qry);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                data.setAmount(rs.getDouble(""));
+                data.setBalance(0.0);
+                data.setBillingDate(rs.getDate("date").toLocalDate());
+                data.setDiscount(rs.getDouble(""));
+                Item item = itemService.findByItemCodeOrThrow(serviceCode);
+                data.setItem(item.getItemName());
+                data.setItemCategory(item.getCategory());
+                data.setMedicId(null);
+                data.setPatientNumber(rs.getString("customer_id"));
+                data.setPrice(rs.getDouble(""));
+                data.setQuantity(rs.getDouble("units"));
+                data.setAmount(rs.getDouble("cost"));
+            }
+            connection.close();
+            return data;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Error validating visit number", e);
+        }
+    }
+    
+    private void createBills() throws Exception {
+        try {
+            List<BillItemData> data = new ArrayList();
+            ResultSet rs = null;
+            Connection connection = connector.ConnectToCurrentDB();
+             List<InvoiceItem> items = new ArrayList();
+            String qry = "SELECT * FROM `clinic_web`.`dt_billing` WHERE credit=0.0";
+            pst = connection.prepareStatement(qry);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                BillData billData=new BillData();
+                billData.setAmount(rs.getDouble("debit"));
+                billData.setBalance(rs.getDouble("edited_value"));
+                billData.setBillingDate(rs.getDate("date").toLocalDate());
+                billData.setDiscount(rs.getDouble("discount"));
+                Patient patient = patientService.findPatientOrThrow(rs.getString("customer_id"));
+                billData.setPatientName(patient.getFullName());
+                billData.setPatientNumber(rs.getString("customer_id"));
+                billData.setPaymentMode(rs.getString(""));
+                billData.setStatus(BillStatus.Paid);
+                billData.setVisitNumber(rs.getString("visit_id"));
+                billData.setWalkinFlag(Boolean.FALSE);
+                BillItemData billItemData = getBillItem(rs.getString("id"));
+                billItemData.setBillNumber(rs.getString("receipt_no"));
+                data.add(billItemData);
+                billData.setBillItems(data);
+                billingService.createPatientBill(billData);
+            }
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Error validating visit number", e);
+        }
+    }
+    
+//    private List<InvoiceItem> getInvoiceItems(String invoiceNumber) throws Exception {
+//        try {
+//            VisitData data = null;
+//            ResultSet rs = null;
+//            Long id = null;
+//            Connection connection = connector.ConnectToCurrentDB();
+//             List<InvoiceItem> items = new ArrayList();
+//            String validPatientNo = "SELECT * FROM clinic_web.hp_patient_card WHERE invoice_no = '" + invoiceNumber + "'";
+//            pst = connection.prepareStatement(validPatientNo);
+//            rs = pst.executeQuery();
+//            while (rs.next()) {
+//                 billingService.findByBillNumber(invoiceNumber)
+//                InvoiceItem invoiceItem=new InvoiceItem();
+//                invoiceItem.setBalance();
+//                invoiceItem.s
+//                id = rs.getLong("id");
+//            }
+//            connection.close();
+//            return id;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new Exception("Error validating visit number", e);
+//        }
+//    }
+    
+    
 
 //    private void printMissingPatients(List<PatientData> data, Connection connection) {
 //        try {

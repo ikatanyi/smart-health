@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="credit_note" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="651"/>
+	<property name="ireport.y" value="67"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
@@ -73,7 +73,7 @@
 					</graphicElement>
 				</line>
 				<line>
-					<reportElement x="418" y="242" width="1" height="510" uuid="530a76d4-9b68-4c6c-8d17-5630a94192b6"/>
+					<reportElement x="418" y="232" width="1" height="510" uuid="530a76d4-9b68-4c6c-8d17-5630a94192b6"/>
 					<graphicElement>
 						<pen lineWidth="0.25"/>
 					</graphicElement>

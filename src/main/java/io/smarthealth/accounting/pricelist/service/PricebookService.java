@@ -21,7 +21,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.pricelist.domain.PriceListDTO;
+import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
+import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.item.data.ItemSimpleData;
 import java.util.ArrayList;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,7 +127,7 @@ public class PricebookService {
 
         PriceBookItem priceBookItem = book.getPriceBookItems()
                 .stream()
-                .filter(x -> Objects.equal(x.getItem(), item.getItemId()))
+                .filter(x -> Objects.equal(x.getItem().getId(), item.getItemId()))
                 .findAny()
                 .orElse(null);
         if (priceBookItem == null) {
@@ -141,9 +143,27 @@ public class PricebookService {
         priceBookRepository.deleteBookItem(book.getId(), itemId);
     }
 
-    public List<PriceBookItem> getPriceBookItems(Long priceBookId) {
+    public Pager<PriceBookItemData> getPriceBookItems(Long priceBookId, String term, Pageable page) {
+        
         PriceBook book = getPricebookWithNotFoundExeption(priceBookId);
-        return book.getPriceBookItems();
+
+        List<PriceBookItemData> list;
+
+        if (term != null) {
+            String queryTerm = term.toLowerCase();
+            
+            list = book.getPriceBookItems()
+                    .stream()
+                    .filter(p -> (p.getItem().getItemName().toLowerCase().contains(queryTerm)) || (p.getItem().getItemCode().toLowerCase().contains(queryTerm)))
+                    .map(x -> x.toData())
+                    .collect(Collectors.toList());
+        } else {
+            list = book.getPriceBookItems().stream()
+                    .map(x -> x.toData())
+                    .collect(Collectors.toList());
+        }
+
+        return (Pager<PriceBookItemData>) PaginationUtil.paginateList(list, "", "", page);
     }
 
     public Optional<PriceBook> getPricebook(Long id) {

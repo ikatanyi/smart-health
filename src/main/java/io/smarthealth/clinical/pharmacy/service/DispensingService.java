@@ -33,12 +33,16 @@ import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
+import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
+import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.item.domain.ItemRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -77,7 +81,7 @@ public class DispensingService {
             drugRequest.getDrugItems()
                     .stream()
                     .forEach(drugData -> {
-                        System.err.println("Dispensed Drugs: "+drugData);
+                        System.err.println("Dispensed Drugs: " + drugData);
                         DispensedDrug drugs = new DispensedDrug();
                         Item item = billingService.getItemByCode(drugData.getItemCode());
                         drugs.setPatient(patient);
@@ -99,6 +103,7 @@ public class DispensingService {
                         drugs.setOtherReference(drugRequest.getPatientNumber() + " " + drugRequest.getPatientName());
                         drugs.setWalkinFlag(drugRequest.getIsWalkin());
                         drugs.setBatchNumber(drugData.getBatchNumber());
+                        drugs.setDeliveryNumber(drugData.getBatchNumber());
 
                         DispensedDrug savedDrug = repository.saveAndFlush(drugs);
                         doStockEntries(savedDrug.getId());
@@ -112,7 +117,7 @@ public class DispensingService {
         Store store = storeService.getStoreWithNoFoundDetection(drugRequest.getStoreId());
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         drugRequest.setTransactionId(trdId);
-        
+
         //
         if (drugRequest.getIsWalkin() && drugRequest.getPatientNumber() == null) {
             WalkIn w = createWalking(drugRequest.getPatientName());
@@ -122,7 +127,7 @@ public class DispensingService {
 
         billingService.save(toBill(drugRequest, store));
 
-        dispenseItem(store, drugRequest); 
+        dispenseItem(store, drugRequest);
         return trdId;
     }
 
@@ -141,20 +146,39 @@ public class DispensingService {
     }
 
     public Page<DispensedDrug> findDispensedDrugs(String transactionNo, String visitNo, String patientNo, String prescriptionNo, String billNo, Boolean isReturn, DateRange range, Pageable page) {
-      
+
         Specification<DispensedDrug> spec = DispensingSpecification.createSpecification(transactionNo, visitNo, patientNo, prescriptionNo, billNo, isReturn, range);
 
         return repository.findAll(spec, page);
 
     }
 
+    public boolean UpdateFullfillerStatus(Long id) {
+        try {
+//            fulfillDocRequest(id);
+            DoctorRequest req = doctorRequestRepository.findById(id).orElse(null);
+            if (req != null) {
+                req.setVoided(Boolean.TRUE);
+                req.setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                doctorRequestRepository.save(req);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw APIException.internalError("Error deleting Patient drugs with id " + id, e.getMessage());
+        }
+    }
+
     public List<DispensedDrug> returnItems(String visitNumber, List<ReturnedDrugData> returnedDrugs) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         List<DispensedDrug> returnedArray = new ArrayList();
         if (!returnedDrugs.isEmpty()) {
             returnedDrugs
                     .stream()
                     .forEach(drugData -> {
+                        StockEntry stock = new StockEntry();
+
                         DispensedDrug drugs = findDispensedDrugOrThrow(drugData.getDrugId());
                         DispensedDrug drug1 = ObjectUtils.clone(drugs);
                         drug1.setAmount(-1 * (drugData.getQuantity()) * (drugs.getPrice()));
@@ -164,9 +188,24 @@ public class DispensingService {
                         drug1.setReturnReason(drugData.getReason());
                         drug1.setId(null);
                         returnedArray.add(drug1);
+
+                        stock.setAmount(NumberUtils.toScaledBigDecimal(drugs.getAmount()));
+                        stock.setDeliveryNumber(drugs.getOtherReference());
+                        stock.setQuantity(drugs.getQtyIssued());
+                        stock.setItem(drugs.getDrug());
+                        stock.setMoveType(MovementType.Returns);
+                        stock.setPrice(NumberUtils.createBigDecimal(String.valueOf(drugs.getAmount())));
+                        stock.setPurpose(MovementPurpose.Returns);
+                        stock.setReferenceNumber(drugs.getOtherReference());
+                        stock.setStore(drugs.getStore());
+                        stock.setTransactionDate(LocalDate.now());
+                        stock.setTransactionNumber(trdId);
+                        stock.setUnit(drugs.getUnits());
+                        inventoryService.doStockEntry(InventoryEvent.Type.Increase, stock, drugs.getStore(), drugs.getDrug(), drugs.getQtyIssued());
                     });
 
         }
+
         return repository.saveAll(returnedArray);
     }
 
@@ -216,7 +255,7 @@ public class DispensingService {
                     billItem.setPaid(data.getPaymentMode() != null ? data.getPaymentMode().equals("Insurance") : false);
 //                    billItem.setServicePoint(lineData.getServicePoint());
 //                    billItem.setServicePointId(lineData.getServicePointId());
-                    billItem.setStatus(BillStatus.Draft); 
+                    billItem.setStatus(BillStatus.Draft);
                     return billItem;
                 })
                 .collect(Collectors.toList());
@@ -233,8 +272,8 @@ public class DispensingService {
         return itemRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", id));
     }
-    
-    public List<DispensedDrugsInterface>dispensedDrugs(DateRange range){
+
+    public List<DispensedDrugsInterface> dispensedDrugs(DateRange range) {
         return repository.dispensedDrugs(range.getStartDate(), range.getEndDate());
     }
 

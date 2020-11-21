@@ -102,6 +102,12 @@ public class InventoryItemController {
     public Double getInventoryItemCount(@PathVariable(value = "itemCode") String itemCode) {
         return service.getItemCount(itemCode);
     }
+    
+    @GetMapping("/inventoryItem/{itemCode}/store/{storeId}/item-count")
+    @PreAuthorize("hasAuthority('view_inventoryItem')")
+    public Double getInventoryItemCountByStore(@PathVariable(value = "itemCode") String itemCode, @PathVariable(value = "storeId") Long storeId) {
+        return service.getItemCount(itemCode);
+    }
 
 //    @GetMapping("/inventory-balances")
 //    public ResponseEntity<?> getAllItemsBalance(

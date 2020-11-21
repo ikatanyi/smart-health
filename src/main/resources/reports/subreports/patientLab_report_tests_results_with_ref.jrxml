@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientLab_report_tests_results_with_ref" pageWidth="555" pageHeight="802" columnWidth="545" leftMargin="5" rightMargin="5" topMargin="0" bottomMargin="0" uuid="abc9aa62-cf0d-4d7f-add0-517739b1f226">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="118"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<field name="analyte" class="java.lang.String"/>
 	<field name="units" class="java.lang.String"/>
@@ -12,7 +12,7 @@
 	<columnHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="6" width="98" height="13" uuid="040f1ddd-8ead-4542-bd87-a998dc9de8c8"/>
+				<reportElement x="0" y="6" width="117" height="13" uuid="040f1ddd-8ead-4542-bd87-a998dc9de8c8"/>
 				<box>
 					<bottomPen lineWidth="0.15"/>
 				</box>
@@ -22,7 +22,7 @@
 				<text><![CDATA[Analyte]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="98" y="6" width="178" height="13" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
+				<reportElement x="117" y="6" width="111" height="13" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
 				<box>
 					<bottomPen lineWidth="0.15"/>
 				</box>
@@ -42,7 +42,7 @@
 				<text><![CDATA[Comments]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="276" y="6" width="76" height="13" uuid="833fc735-bf1a-41b8-888d-f0b569e3d4e7"/>
+				<reportElement x="228" y="6" width="124" height="13" uuid="833fc735-bf1a-41b8-888d-f0b569e3d4e7"/>
 				<box>
 					<bottomPen lineWidth="0.15"/>
 				</box>
@@ -66,7 +66,7 @@
 	<detail>
 		<band height="23" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="98" height="22" uuid="0a442664-0b75-4eeb-9498-a8cff730778b"/>
+				<reportElement x="0" y="0" width="117" height="22" uuid="0a442664-0b75-4eeb-9498-a8cff730778b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -80,14 +80,14 @@
 				<textFieldExpression><![CDATA[$F{comments}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="98" y="0" width="178" height="22" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
+				<reportElement x="117" y="0" width="111" height="22" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{resultValue}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="276" y="0" width="76" height="22" uuid="0ef49a3c-f671-4dad-8fc0-5a2da1fc0a80"/>
+				<reportElement x="228" y="0" width="124" height="22" uuid="0ef49a3c-f671-4dad-8fc0-5a2da1fc0a80"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>

@@ -63,6 +63,7 @@ public class DispensedDrug extends Auditable implements Cloneable {
     private String otherReference;
     private Boolean walkinFlag = Boolean.FALSE;
     private String batchNumber;
+    private String deliveryNumber;
 
 //    @Enumerated(EnumType.STRING)
     public DispensedDrugData toData() {

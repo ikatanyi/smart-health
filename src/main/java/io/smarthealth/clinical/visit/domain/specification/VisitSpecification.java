@@ -43,7 +43,12 @@ public class VisitSpecification {
                 predicates.add(cb.equal(root.get("visitNumber"), visitNumber));
             }
             if (employee != null) {
-                predicates.add(cb.equal(root.get("healthProvider"), employee));
+                predicates.add(
+                        cb.or(
+                                cb.equal(root.get("healthProvider"), employee),
+                                cb.isNull(root.get("healthProvider"))
+                        )
+                );
             }
             if (servicePoint != null) {
                 predicates.add(cb.equal(root.get("servicePoint"), servicePoint));
@@ -57,7 +62,7 @@ public class VisitSpecification {
                         cb.or(
                                 cb.equal(root.get("status"), VisitEnum.Status.Admitted),
                                 cb.equal(root.get("status"), VisitEnum.Status.CheckIn)
-//                                cb.equal(root.get("status"), VisitEnum.Status.Transferred)
+                        //                                cb.equal(root.get("status"), VisitEnum.Status.Transferred)
                         )
                 );
             }

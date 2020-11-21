@@ -156,6 +156,7 @@ public class PricesController {
             @RequestParam(value = "item") String item,
             @RequestParam(value = "pricebook_id", required = false) Long priceBookId,
             @RequestParam(value = "servicepoint_id", required = false) Long servicePointId,
+            @RequestParam(value = "visitId", required = false) Long visitId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 

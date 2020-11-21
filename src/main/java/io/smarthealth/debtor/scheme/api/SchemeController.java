@@ -116,9 +116,8 @@ public class SchemeController {
     @PreAuthorize("hasAuthority('view_scheme')")
     public ResponseEntity<?> fetchAllSchemes(
             @RequestParam(required = false) final String term,
-            @RequestParam(value = "smartEnabled", required = false) Boolean smartEnabled, 
-            @RequestParam(value = "withCopay", required = false) Boolean withCopay, 
-
+            @RequestParam(value = "smartEnabled", required = false) Boolean smartEnabled,
+            @RequestParam(value = "withCopay", required = false) Boolean withCopay,
             Pageable pageable) {
         Page<SchemeData> scheme = schemeService.fetchSchemes(term, pageable).map(p
                 -> {
@@ -213,10 +212,13 @@ public class SchemeController {
             schemeConfig.setStatus(data.isStatus());
             schemeConfig.setCapitationAmount(data.getCapitationAmount());
             schemeConfig.setCapitationEnabled(data.isCapitationEnabled());
+            schemeConfig.setLimitEnabled(data.isLimitEnabled());
+            schemeConfig.setLimitAmount(data.getLimitAmount());
+
             configSaved = schemeService.updateSchemeConfigurations(schemeConfig);
         }
 
-        Scheme myscheme=configSaved.getScheme();
+        Scheme myscheme = configSaved.getScheme();
         Pager<SchemeData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Scheme parameters have successfully been updated");

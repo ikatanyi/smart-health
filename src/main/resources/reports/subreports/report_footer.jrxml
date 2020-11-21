@@ -17,7 +17,7 @@
 				<textFieldExpression><![CDATA[$F{msg}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="449" y="1" width="36" height="14" uuid="82aafc75-51f1-417b-b08d-cc266a5e734e"/>
+				<reportElement x="387" y="1" width="36" height="14" uuid="82aafc75-51f1-417b-b08d-cc266a5e734e"/>
 				<box>
 					<topPen lineWidth="0.15"/>
 				</box>
@@ -26,8 +26,8 @@
 				</textElement>
 				<text><![CDATA[Generated:]]></text>
 			</staticText>
-			<textField pattern="dd/MM/yyyy">
-				<reportElement x="485" y="1" width="85" height="14" uuid="7555f5ad-4c25-46b1-9e41-583102067f3a"/>
+			<textField pattern="dd/MM/yyyy HH:mm:ss" isBlankWhenNull="false">
+				<reportElement x="423" y="1" width="85" height="14" uuid="7555f5ad-4c25-46b1-9e41-583102067f3a"/>
 				<box>
 					<topPen lineWidth="0.15"/>
 				</box>

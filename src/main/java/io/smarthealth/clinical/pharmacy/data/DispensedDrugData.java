@@ -8,6 +8,7 @@ package io.smarthealth.clinical.pharmacy.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.pharmacy.domain.enumeration.TransactionType;
 import io.smarthealth.infrastructure.lang.Constants;
+import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.EnumType;
@@ -50,6 +51,7 @@ public class DispensedDrugData implements Serializable {
     private String otherReference;
     private Boolean walkinFlag=Boolean.FALSE;
     private String batchNumber;
+    private Boolean voided;
    
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
