@@ -35,7 +35,8 @@ public class EmployeeBanner {
         employee.setDepartmentCode(data.getDepartmentCode());
         employee.setDepartmentName(data.getDepartmentName());
         employee.setEmail(data.getEmail());
-        employee.setEmployeeCategory(data.getEmployeeCategory().name());
+        if(data.getEmployeeCategory()!=null)
+           employee.setEmployeeCategory(data.getEmployeeCategory().name());
         employee.setStaffNumber(data.getStaffNumber());
         if(data.getContact()!=null){
             employee.setEmail(data.getContact().get(0).getEmail());

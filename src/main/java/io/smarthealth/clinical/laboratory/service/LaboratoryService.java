@@ -84,6 +84,7 @@ public class LaboratoryService {
     private final NotificationEventPublisher notificationEventPublisher;
     private final FileStorageService fileService;
     private final ConfigService configurationService;
+    private final LabConfigurationService labConfigService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public LabRegister createLabRegister(LabRegisterData data) {
@@ -416,6 +417,14 @@ public class LaboratoryService {
             return testRepository.findTestsByVisitAndLabNo(visitNo, labNumber);
         }
         return testRepository.findTestsByVisitNumber(visitNo);
+    }
+    
+    public List<LabRegisterTest> getLabTests(LabTest test) {
+            return testRepository.findByLabTest(test);
+    }
+    
+    public List<LabRegisterTest> getTestsByDate(DateRange range) {
+            return testRepository.findTestsByDateRange(range.getStartDateTime(),range.getEndDateTime());
     }
 
     private WalkIn createWalking(String patientName) {

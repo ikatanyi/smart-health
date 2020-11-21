@@ -186,15 +186,15 @@ public class BillingService {
 
         log.debug("START validate limit amount");
         Optional<PaymentDetails> pd = null;
-        if (bill.getVisit() != null) {
-            pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
-            if (pd.isPresent() && pd.get().isLimitEnabled()) {
-                if (pd.get().getRunningLimit() < amountToBill) {
-                    throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount (" + pd.get().getRunningLimit() + ") ", "");
-                    //TODO: create receipt and set amount to the difference of amountToBill vs 
-                }
-            }
-        }
+//        if (bill.getVisit() != null) {
+//            pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
+//            if (pd.isPresent() && pd.get().isLimitEnabled()) {
+//                if (pd.get().getRunningLimit() < amountToBill) {
+//                    throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount (" + pd.get().getRunningLimit() + ") ", "");
+//                    //TODO: create receipt and set amount to the difference of amountToBill vs 
+//                }
+//            }
+//        }
 
         log.debug("END validate limit amount");
 
