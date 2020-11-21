@@ -2,21 +2,26 @@ package io.smarthealth.administration.config.service;
 
 import io.smarthealth.administration.config.data.ExternalServicesData;
 import io.smarthealth.administration.config.data.ExternalServicesPropertiesData;
+import io.smarthealth.administration.config.domain.ExternalServiceRepository;
 import io.smarthealth.administration.config.domain.ExternalServicesProperties;
 import io.smarthealth.administration.config.domain.ExternalServicesPropertiesRepository;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.administration.config.domain.ExternalService;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ExternalServicesConfigurationService {
 
     private final ExternalServicesPropertiesRepository repository;
+    private final  ExternalServiceRepository externalServiceRepository;
 
-    public ExternalServicesConfigurationService(ExternalServicesPropertiesRepository repository) {
-        this.repository = repository;
-    }
+     
 
     public ExternalServicesProperties findOneByIdAndName(Long id, String name, String externalServiceName) {
         final ExternalServicesProperties externalServicesProperties = this.repository.findOneByExternalServicePropertiesPK(name, id);
@@ -33,7 +38,11 @@ public class ExternalServicesConfigurationService {
     }
 
     public ExternalServicesData getExternalServiceDetailsByServiceName(String serviceName) {
-        return null;
+        Optional<ExternalService> es = externalServiceRepository.findByName(serviceName);
+        if(es.isPresent()){
+            return ExternalServicesData.of(es.get());
+        }
+        return new ExternalServicesData(1L, "");
     }
 
     public ExternalServicesProperties updateExternalServicesProperties(String externalServiceName, ExternalServicesPropertiesData data) {

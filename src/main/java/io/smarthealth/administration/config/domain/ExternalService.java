@@ -10,14 +10,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import lombok.Data;
 
 /**
  *
  * @author Kelsas
  */
+@Data
 @Entity
 @Table(name = "app_external_service", uniqueConstraints = { @UniqueConstraint(columnNames = { "name" }, name = "name_UNIQUE") })
 public class ExternalService extends Identifiable{
     @Column(name = "name", length = 50)
+    
     private String name;
 }

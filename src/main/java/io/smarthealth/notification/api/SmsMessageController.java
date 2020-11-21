@@ -38,7 +38,7 @@ public class SmsMessageController {
 
 
     @Transactional
-    @PostMapping("/text-message")
+    @PostMapping("/sms")
     @ResponseBody
     public ResponseEntity<?> doNotify(@RequestBody @Valid SmsMessageData data) {
         SmsMessageData textMessageData = textMessageService.createTextMessage(data).toData();
@@ -46,7 +46,7 @@ public class SmsMessageController {
     }
 
 
-    @GetMapping("/text-message")
+    @GetMapping("/sms")
     public ResponseEntity getAllTextMessages(
             @RequestParam(value = "name", required = false) final String name,
             @RequestParam(value = "status", required = false) final String status,
@@ -64,7 +64,7 @@ public class SmsMessageController {
         return ResponseEntity.ok(PaginationUtil.toPager(lists, "User TextMessages"));
     }
 
-    @GetMapping("/text-message/{id}")
+    @GetMapping("/sms/{id}")
     public ResponseEntity getMessage(@PathVariable("id") Long id) {
         SmsMessage msg = textMessageService.getTextMessage(id)
                 .orElseThrow(() -> APIException.notFound("TextMessage doesn't exist"));

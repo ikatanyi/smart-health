@@ -5,6 +5,7 @@
  */
 package io.smarthealth.administration.config.data;
 
+import io.smarthealth.administration.config.domain.ExternalService;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,11 +16,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ExternalServicesData {
+
     private final Long id;
     private final String name;
+ 
 
     public ExternalServicesData(final Long id, final String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public static ExternalServicesData of(ExternalService externalService) {
+        return new ExternalServicesData(externalService.getId(), externalService.getName());
     }
 }
