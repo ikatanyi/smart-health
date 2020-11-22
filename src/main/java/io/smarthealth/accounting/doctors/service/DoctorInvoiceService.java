@@ -33,6 +33,7 @@ import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -104,12 +105,12 @@ public class DoctorInvoiceService {
         //TODO: Adjust journals
         return savedInvoice;
     }
-
-    public void removeDoctorInvoice(DoctorInvoice doctorInvoice) {
-        System.out.println("To Remove Doctor Invoice " + doctorInvoice.getInvoiceNumber());
+   @Transactional
+    public void removeDoctorInvoice(DoctorInvoice doctorInvoice) { 
         repository.delete(doctorInvoice);
         //Adjust journals
         reverseJournal(doctorInvoice);
+        
     }
 
     public DoctorInvoice updateDoctorInvoice(Long id, DoctorInvoiceData data) {
@@ -212,7 +213,7 @@ public class DoctorInvoiceService {
                 }
         );
         toSave.setTransactionNo(invoice.getTransactionId());
-        toSave.setTransactionType(TransactionType.Invoicing);
+        toSave.setTransactionType(TransactionType.Bill_Reversal);
         toSave.setStatus(JournalState.PENDING);
         return toSave;
     }

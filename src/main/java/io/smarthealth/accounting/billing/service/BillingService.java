@@ -233,6 +233,7 @@ public class BillingService {
                         System.out.println("Line 233");
                         System.out.println("payDetails.getLimitReached() " + payDetails.getLimitReached());
                         System.out.println("itemCount " + itemCount);
+                        //TODO consider adding global configuration to able this feature or disable
                         throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed \nrunning limit amount (" + payDetails.getRunningLimit() + "). \nRemove one or more items from the bill count", "");
                     }
 
@@ -325,7 +326,10 @@ public class BillingService {
                     return x;
                 })
                 .forEach(bill -> billItemRepository.save(bill));
-
+      //TODO be able to reverse the doctors fee 
+    }
+    public void cancelItem(Long billId){
+        
     }
 
     public PatientBillItem updateBillItem(PatientBillItem item) {
@@ -424,7 +428,7 @@ public class BillingService {
     public List<PatientBillGroup> getPatientBillGroups(BillStatus status) {
         return patientBillRepository.groupBy(status);
     }
-
+ 
 //    @Deprecated
 //    public Page<PatientBillItem> getPatientBillItemByVisit(String visitNumber, Pageable page) {
 //        Visit visit = findVisitEntityOrThrow(visitNumber);
