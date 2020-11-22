@@ -129,15 +129,23 @@ public class InventoryItemService {
         return inventoryItemRepository.findById(inventoryId);
     }
 
-    public Double getItemCount(String itemCode) {
-        Item item = itemService.findByItemCodeOrThrow(itemCode);
-        return inventoryItemRepository.findItemCount(item);
+    public Integer getItemCount(String itemCode) {
+        Optional<Item> item = itemService.findByItemCode(itemCode);
+        if (item.isPresent()) {
+            return inventoryItemRepository.findItemCount(item.get());
+        } else {
+            return 0;
+        }
     }
-    
-    public Double getItemCountByItemAndStore(String itemCode, Long storeId) {
-        Item item = itemService.findByItemCodeOrThrow(itemCode);
-        Store store = storeService.getStoreWithNoFoundDetection(storeId);
-        return inventoryItemRepository.findItemCountByItemAndStore(item,store);
+
+    public Integer getItemCountByItemAndStore(String itemCode, Long storeId) {
+        Optional<Item> item = itemService.findByItemCode(itemCode);
+        if (item.isPresent()) {
+            Store store = storeService.getStoreWithNoFoundDetection(storeId);
+            return inventoryItemRepository.findItemCountByItemAndStore(item.get(), store);
+        } else {
+            return 0;
+        }
     }
 
     public InventoryItem getInventoryItemOrThrow(Long itemId, Long storeId) {
@@ -216,7 +224,7 @@ public class InventoryItemService {
                     entry.setUnit(item.getUnit());
                     stockEntry.add(entry);
                     // account posting
-                    
+
                 });
 //        return save(inventory);
         inventoryItemRepository.saveAll(items);
