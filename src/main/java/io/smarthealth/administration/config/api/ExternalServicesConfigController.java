@@ -5,7 +5,6 @@
  */
 package io.smarthealth.administration.config.api;
 
-import io.smarthealth.administration.config.data.ExternalServicesData;
 import io.smarthealth.administration.config.data.ExternalServicesPropertiesData;
 import io.smarthealth.administration.config.service.ExternalServicesConfigurationService;
 import io.swagger.annotations.Api;
@@ -41,6 +40,7 @@ public class ExternalServicesConfigController {
 
     @PutMapping("{servicename}")
     public List<ExternalServicesPropertiesData> updateExternalServiceProperties(@PathVariable("servicename") final String serviceName, List<ExternalServicesPropertiesData> data) {
+        
         return data;
     }
 }

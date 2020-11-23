@@ -101,13 +101,14 @@ public class BillingV2Controller {
             @RequestParam(value = "isWalkin", required = false) Boolean isWakin,
             @RequestParam(value = "paymentMode", required = false) VisitEnum.PaymentMethod paymentMode,
             @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        List<SummaryBill> list = service.getBillTotals(visitNumber, patientNumber, hasBalance, isWakin, paymentMode, range);
+        List<SummaryBill> list = service.getBillTotals(visitNumber, patientNumber, hasBalance, isWakin, paymentMode, range, includeCanceled);
 
         int start = (int) pageable.getOffset();
         int end = (start + pageable.getPageSize()) > list.size() ? list.size() : (start + pageable.getPageSize());
@@ -132,11 +133,12 @@ public class BillingV2Controller {
     @PreAuthorize("hasAuthority('view_billV2')")
     public ResponseEntity<?> getBillDetails(
             @PathVariable(value = "visitNumber") String visitNumber,
+             @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        BillDetail details = service.getBillDetails(visitNumber, pageable);
+        BillDetail details = service.getBillDetails(visitNumber, includeCanceled, pageable);
 
 //        Pager<List<SummaryBill>> pagers = new Pager();
 //        pagers.setCode("0");
