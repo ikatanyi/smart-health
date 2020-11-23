@@ -2,9 +2,9 @@ package io.smarthealth.organization.facility.service;
 
 import io.smarthealth.administration.employeespecialization.data.enums.EmployeeCategory.Category;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.mail.EmailData;
+import io.smarthealth.notification.data.EmailData;
+import io.smarthealth.notification.service.EmailerService;
 import io.smarthealth.infrastructure.utility.PassayPassword;
-import io.smarthealth.messaging.MessageNotificationService;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
@@ -13,7 +13,6 @@ import io.smarthealth.organization.facility.domain.EmployeeRepository;
 import io.smarthealth.organization.person.domain.PersonContact;
 import io.smarthealth.organization.person.patient.service.PersonContactService;
 import io.smarthealth.security.domain.Role;
-import io.smarthealth.security.domain.RoleName;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -25,13 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 /**
  *
@@ -64,12 +60,12 @@ public class EmployeeService {
     PersonContactService personContactService;
 
     @Autowired
-    MessageNotificationService notificationService;
+    EmailerService mailService;
 
     @Transactional
     public Employee createFacilityEmployee(Employee employee, PersonContact personContact, boolean createUserAccount, String[] roles) {
         //verify if exists
-           
+
         if (employeeRepository.existsByStaffNumber(employee.getStaffNumber())) {
             throw APIException.conflict("Staff identified by number {0} already exists ", employee.getStaffNumber());
         }
@@ -108,7 +104,7 @@ public class EmployeeService {
             employeeRepository.save(savedEmployee);
 //.concat(" / ").concat(" ").concat(user.getUsername()
             //send welcome message to the new system user
-            notificationService.sendEmailNotification(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + userSaved.getUsername() + "<br/> password : " + password)));
+            mailService.send(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + userSaved.getUsername() + "<br/> password : " + password)));
         }
         return savedEmployee;
     }
@@ -140,12 +136,13 @@ public class EmployeeService {
         return employeeRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Employee with ID not found", id));
     }
-    
+
     public Employee findEmployeeById(Long id) {
-        if(id!=null)
-           return employeeRepository.findById(id).orElseThrow(() -> APIException.notFound("Employee with ID not found", id));
-        else
+        if (id != null) {
+            return employeeRepository.findById(id).orElseThrow(() -> APIException.notFound("Employee with ID not found", id));
+        } else {
             return null;
+        }
     }
 
     public Employee fetchEmployeeByAccountUsername(final String username) {
@@ -185,7 +182,8 @@ public class EmployeeService {
         }
         return employeeData;
     }
-  boolean containsWhitespace(String str) {
+
+    boolean containsWhitespace(String str) {
         return str.matches(".*\\s.*");
     }
 }

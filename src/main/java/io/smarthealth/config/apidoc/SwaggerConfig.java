@@ -70,7 +70,7 @@ public class SwaggerConfig {
 //                .tokenRequestEndpoint(
 //                        new TokenRequestEndpoint(AUTH_SERVER + "/authorize", CLIENT_ID, CLIENT_SECRET))
 //                .build();
-        GrantType grantType = new ResourceOwnerPasswordCredentialsGrant(authServer + "/oauth/token");
+        GrantType grantType = new ResourceOwnerPasswordCredentialsGrant("/oauth/token");
         SecurityScheme oauth = new OAuthBuilder().name("spring_oauth")
                 .grantTypes(Arrays.asList(grantType))
                 .scopes(Arrays.asList(scopes()))

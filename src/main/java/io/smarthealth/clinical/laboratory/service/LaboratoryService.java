@@ -45,13 +45,16 @@ import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
+import io.smarthealth.clinical.visit.service.PaymentDetailsService;
+import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.documents.data.DocResponse;
 import io.smarthealth.documents.data.DocumentData;
 import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.service.FileStorageService;
-import io.smarthealth.notify.data.NoticeType;
-import io.smarthealth.notify.data.NotificationData;
-import io.smarthealth.notify.service.NotificationEventPublisher;
+import io.smarthealth.notification.data.NoticeType;
+import io.smarthealth.notification.data.NotificationData;
+import io.smarthealth.notification.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
@@ -59,6 +62,7 @@ import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,7 +77,9 @@ public class LaboratoryService {
 
     private final LabRegisterRepository repository;
     private final LabTestRepository labTestRepository;
-    private final VisitRepository visitRepository;
+//    private final VisitRepository visitRepository;
+    private final VisitService visitService;
+    private final PaymentDetailsService paymentDetailsService;
     private final LabRegisterTestRepository testRepository;
     private final SequenceNumberService sequenceNumberService;
     private final LabResultRepository labResultRepository;
@@ -300,11 +306,21 @@ public class LaboratoryService {
         request.setOrderNumber(data.getOrderNumber());
         request.setIsWalkin(data.getIsWalkin());
         request.setPaymentMode(data.getPaymentMode());
+
         if (!data.getIsWalkin()) {
             Visit visit = getPatientVisit(data.getVisitNumber());
             request.setVisit(visit);
             request.setRequestedBy(data.getRequestedBy());
             request.setPatientNo(visit.getPatient().getPatientNumber());
+
+            Optional<PaymentDetails> visitPayDetails = paymentDetailsService.getPaymentDetailsByVist(visit);
+            if (visitPayDetails.isPresent()) {
+                PaymentDetails pd = visitPayDetails.get();
+                if (pd.getLimitReached()) {
+                    request.setPaymentMode("Cash");
+                }
+            }
+
         } else {
             WalkIn w = createWalking(data.getPatientName());
             request.setRequestedBy(data.getPatientName());
@@ -312,6 +328,7 @@ public class LaboratoryService {
             request.setPaymentMode("Cash");
         }
         String method = request.getPaymentMode();
+        System.out.println("method "+method);
 
         request.setRequestDatetime(data.getRequestDatetime());
         request.setStatus(LabTestStatus.AwaitingSpecimen);
@@ -345,7 +362,6 @@ public class LaboratoryService {
         test.setLabTest(labTest);
 
         test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
-
         test.setVoided(Boolean.FALSE);
         test.setValidated(Boolean.FALSE);
         test.setRequestId(data.getRequestId());
@@ -369,7 +385,8 @@ public class LaboratoryService {
                         test.setCollected(Boolean.FALSE);
                         test.setEntered(Boolean.FALSE);
                         test.setLabTest(x);
-//                        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
+                        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
+
                         test.setPaid(Boolean.TRUE);
                         test.setVoided(Boolean.FALSE);
                         test.setValidated(Boolean.FALSE);
@@ -395,8 +412,7 @@ public class LaboratoryService {
     }
 
     private Visit getPatientVisit(String visitNo) {
-        return visitRepository.findByVisitNumber(visitNo)
-                .orElseThrow(() -> APIException.notFound("Visit with Id {0} Not Found", visitNo));
+        return visitService.findVisitEntityOrThrow(visitNo);
     }
 
     public LabRegisterTest getLabRegisterTest(Long id) {
@@ -413,7 +429,7 @@ public class LaboratoryService {
     }
 
     public List<LabRegisterTest> getTestsResultsByVisit(String visitNo, String labNumber) {
-        if (labNumber != null&&!labNumber.equals("")) {
+        if (labNumber != null && !labNumber.equals("")) {
             return testRepository.findTestsByVisitAndLabNo(visitNo, labNumber);
         }
         return testRepository.findTestsByVisitNumber(visitNo);
@@ -435,6 +451,7 @@ public class LaboratoryService {
     }
 
     private PatientBill toBill(/*LabRegisterData*/LabRegister data) {
+
         //get the service point from store
         Visit visit = data.getVisit();// visitRepository.findByVisitNumber(data.getVisitNumber()).orElse(null);
         //find the service point for lab
@@ -546,7 +563,18 @@ public class LaboratoryService {
         billItem.setQuantity(1d);
         billItem.setAmount(registeredTest.getPrice().doubleValue());
         billItem.setDiscount(0.00);
-        billItem.setPaid(paymentMethod != null ? paymentMethod.equals("Insurance") : false);
+        //check limit amount not the global payment method during visit activation
+        Optional<PaymentDetails> visitPayDetails = paymentDetailsService.getPaymentDetailsByVist(registeredTest.getLabRegister().getVisit());
+        if (visitPayDetails.isPresent()) {
+            PaymentDetails pd = visitPayDetails.get();
+            if (pd.getLimitReached()) {
+                billItem.setPaid(false);
+            } else {
+                billItem.setPaid(paymentMethod != null ? paymentMethod.equals("Insurance") : false);
+            }
+        } else {
+            billItem.setPaid(paymentMethod != null ? paymentMethod.equals("Insurance") : false);
+        }
         billItem.setBalance(registeredTest.getPrice().doubleValue());
         billItem.setServicePoint(srvpoint.getName());
         billItem.setServicePointId(srvpoint.getId());
@@ -595,7 +623,7 @@ public class LaboratoryService {
     }
 
     private void doNotifyUser(List<LabRegisterTest> testToNotify) {
-       
+
         //TODO
         testToNotify.stream()
                 .forEach(x -> {
@@ -609,13 +637,13 @@ public class LaboratoryService {
                             //
                             if (req.getRequestedBy() != null) {
                                 notificationEventPublisher.publishUserNotificationEvent(NotificationData.builder()
-                                                .datetime(LocalDateTime.now())
-                                                .description(description)
-                                                .isRead(false)
-                                                .noticeType(NoticeType.LaboratoryResults)
-                                                .username(req.getRequestedBy().getUsername())
-                                                .reference(reference)
-                                                .build()
+                                        .datetime(LocalDateTime.now())
+                                        .description(description)
+                                        .isRead(false)
+                                        .noticeType(NoticeType.LaboratoryResults)
+                                        .username(req.getRequestedBy().getUsername())
+                                        .reference(reference)
+                                        .build()
                                 );
                             }
                         }

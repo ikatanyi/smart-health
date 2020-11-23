@@ -1,6 +1,6 @@
 package io.smarthealth.accounting.accounts.api;
-
-import io.smarthealth.accounting.accounts.data.ActivityAccount;
+ 
+import io.smarthealth.accounting.accounts.data.ActivityAccounts;
 import io.smarthealth.accounting.accounts.data.FinancialActivityData;
 import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
 import io.smarthealth.accounting.accounts.service.FinancialActivityAccountService;
@@ -38,7 +38,7 @@ public class FinancialActivityAccountController {
 
     @PostMapping("/financialactivityaccounts")
     @PreAuthorize("hasAuthority('create_financialActivityAccounts')")    
-    public ResponseEntity<?> createAccountMapping(@Valid @RequestBody ActivityAccount activityAccount) {
+    public ResponseEntity<?> createAccountMapping(@Valid @RequestBody ActivityAccounts activityAccount) {
         FinancialActivityAccount result = service.createMapping(activityAccount);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/financialactivityaccounts/{id}")
@@ -55,7 +55,7 @@ public class FinancialActivityAccountController {
 
     @PutMapping("/financialactivityaccounts/{id}")
     @PreAuthorize("hasAuthority('edit_financialActivityAccounts')") 
-    public FinancialActivityAccount getActivityMappedByAccounts(@PathVariable(value = "id") Long identifier, @Valid @RequestBody ActivityAccount activityAccount) {
+    public FinancialActivityAccount getActivityMappedByAccounts(@PathVariable(value = "id") Long identifier, @Valid @RequestBody ActivityAccounts activityAccount) {
         return service.updateFinancialActivity(identifier, activityAccount);
     }
 
@@ -67,9 +67,9 @@ public class FinancialActivityAccountController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<ActivityAccount> list = service.getAllFinancialMapping(pageable);
+        Page<ActivityAccounts> list = service.getAllFinancialMapping(pageable);
 
-        Pager<List<ActivityAccount>> pagers = new Pager();
+        Pager<List<ActivityAccounts>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list.getContent());

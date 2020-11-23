@@ -5,6 +5,7 @@ import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
+import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.domain.DoctorClinicItems;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
@@ -52,6 +53,8 @@ import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.security.domain.User;
+import io.smarthealth.security.service.UserService;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
@@ -63,6 +66,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -75,6 +79,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -145,6 +151,8 @@ public class ClinicalVisitController {
 
     @Autowired
     private SpecialistChangeAuditService specialistChangeAuditService;
+    @Autowired
+    UserService service;
 
     @PostMapping("/visits")
     @PreAuthorize("hasAuthority('create_visits')")
@@ -210,64 +218,8 @@ public class ClinicalVisitController {
         patientQueueService.createPatientQueue(patientQueue);
         //create bill if consultation
         if (!visit.getServiceType().equals(VisitEnum.ServiceType.Other)) {
-            ServicePoint sp = servicePointService.getServicePointByType(ServicePointType.Consultation);
-            if (sp == null) {
-                throw APIException.notFound("Consultation service point not found", "");
-            }
-
-            if (visit.getServicePoint().getServicePointType().equals(ServicePointType.Consultation)) {
-                visit.setIsActiveOnConsultation(Boolean.TRUE);
-            } else {
-                visit.setIsActiveOnConsultation(Boolean.FALSE);
-            }
-            DoctorClinicItems clinic = clinicService.fetchClinicById(visitData.getItemToBill());
-            visit.setClinic(clinic);
-            //PriceList pricelist = pricelistService.fetchPriceListByItemAndPriceBook(clinic.getServiceType(), null);
-            PriceBook pb = null;
-            //find pricebook
-            if (visit.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
-                try {
-                    pb = scheme.getPayer().getPriceBook();
-                } catch (Exception e) {
-                    System.out.println("Null pointer possibility caught while looking up for pricebook from the payer ");
-                }
-            }
-
-            //TODO: use pricelist not item service i.e fetchPriceListByItemAndPriceBook
-            Item item = visit.getServiceType().equals(VisitEnum.ServiceType.Consultation) ? clinic.getServiceType() : clinic.getHasReviewCost() ? clinic.getReviewService() : null;
-            if (item != null) {
-                double sellimgPrice = pricelistService.fetchPriceAmountByItemAndPriceBook(item, pb);
-                List<BillItemData> billItems = new ArrayList<>();
-                BillItemData itemData = new BillItemData();
-                itemData.setAmount(sellimgPrice);
-                itemData.setBalance(sellimgPrice);
-                itemData.setBillingDate(LocalDate.now());
-                itemData.setPrice(sellimgPrice);
-                itemData.setItem(item.getItemName());
-                itemData.setItemCode(item.getItemCode());
-                if (employee != null) {
-                    itemData.setMedicId(employee.getId());
-                    itemData.setMedicName(employee.getFullName());
-                }
-                itemData.setQuantity(1.0);
-                itemData.setServicePoint(sp.getName());
-                itemData.setServicePointId(sp.getId());
-                billItems.add(itemData);
-
-                BillData data = new BillData();
-                data.setWalkinFlag(false);
-                data.setBillItems(billItems);
-                data.setAmount(sellimgPrice);
-                data.setBalance(sellimgPrice);
-                data.setBillingDate(LocalDate.now());
-                data.setDiscount(0.00);
-                data.setPatientName(patient.getFullName());
-                data.setPatientNumber(patient.getPatientNumber());
-                data.setPaymentMode(visit.getPaymentMethod().name());
-                data.setVisitNumber(visit.getVisitNumber());
-
-                billingService.createPatientBill(data);
-            }
+            Long schemeId = scheme != null ? scheme.getId() : null;
+            createConsultationBill(visit, visitData.getItemToBill(), employee, schemeId);
         }
         //update visit
         visit = visitService.createAVisit(visit);
@@ -279,6 +231,68 @@ public class ClinicalVisitController {
                 .buildAndExpand(visit.getVisitNumber()).toUri();
 
         return ResponseEntity.created(location).body(ApiResponse.successMessage("Visit was activated successfully", HttpStatus.CREATED, visitDat));
+    }
+
+    private void createConsultationBill(Visit visit, Long clinicId, Employee doctor, Long schemeId) throws APIException {
+        ServicePoint sp = servicePointService.getServicePointByType(ServicePointType.Consultation);
+        Patient patient = visit.getPatient();
+        if (sp == null) {
+            throw APIException.notFound("Consultation service point not found");
+        }
+
+        if (visit.getServicePoint().getServicePointType().equals(ServicePointType.Consultation)) {
+            visit.setIsActiveOnConsultation(Boolean.TRUE);
+        } else {
+            visit.setIsActiveOnConsultation(Boolean.FALSE);
+        }
+        DoctorClinicItems clinic = clinicService.fetchClinicById(clinicId);
+        visit.setClinic(clinic);
+        //PriceList pricelist = pricelistService.fetchPriceListByItemAndPriceBook(clinic.getServiceType(), null);
+        PriceBook pb = null;
+        //find pricebook
+        if (visit.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
+            //get the scheme
+            if (schemeId != null) {
+                Scheme scheme = schemeService.fetchSchemeById(schemeId);
+                pb = Optional.of(scheme.getPayer().getPriceBook()).orElse(null);
+            }
+        }
+
+        //TODO: use pricelist not item service i.e fetchPriceListByItemAndPriceBook
+        Item item = visit.getServiceType().equals(VisitEnum.ServiceType.Consultation) ? clinic.getServiceType() : clinic.getHasReviewCost() ? clinic.getReviewService() : null;
+        if (item != null) {
+            double sellimgPrice = pricelistService.fetchPriceAmountByItemAndPriceBook(item, pb);
+            List<BillItemData> billItems = new ArrayList<>();
+            BillItemData itemData = new BillItemData();
+            itemData.setAmount(sellimgPrice);
+            itemData.setBalance(sellimgPrice);
+            itemData.setBillingDate(LocalDate.now());
+            itemData.setPrice(sellimgPrice);
+            itemData.setItem(item.getItemName());
+            itemData.setItemCode(item.getItemCode());
+            if (doctor != null) {
+                itemData.setMedicId(doctor.getId());
+                itemData.setMedicName(doctor.getFullName());
+            }
+            itemData.setQuantity(1.0);
+            itemData.setServicePoint(sp.getName());
+            itemData.setServicePointId(sp.getId());
+            billItems.add(itemData);
+
+            BillData data = new BillData();
+            data.setWalkinFlag(false);
+            data.setBillItems(billItems);
+            data.setAmount(sellimgPrice);
+            data.setBalance(sellimgPrice);
+            data.setBillingDate(LocalDate.now());
+            data.setDiscount(0.00);
+            data.setPatientName(patient.getFullName());
+            data.setPatientNumber(patient.getPatientNumber());
+            data.setPaymentMode(visit.getPaymentMethod().name());
+            data.setVisitNumber(visit.getVisitNumber());
+
+            billingService.createPatientBill(data);
+        }
     }
 
     @PutMapping("/visits/{visitNumber}")
@@ -376,17 +390,18 @@ public class ClinicalVisitController {
 
     @PutMapping("/visits/{visitNumber}/doctor/{staffNumber}")
     @PreAuthorize("hasAuthority('edit_visits')")
-    @ApiOperation(value = "Update patient visit's doctor", response = VisitData.class)
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public @ResponseBody
     ResponseEntity<?> updateVisitPractitioner(
             @PathVariable("visitNumber") final String visitNumber,
             @PathVariable("staffNumber") final String staffNumber,
-            @RequestParam(value = "reason", required = false) final String reason
+            @RequestParam(value = "reason", required = false) final String reason,
+            @RequestParam(value = "clinic_id", required = false) final Long clinicId
     ) {
         Employee employee = employeeService.fetchEmployeeByNumberOrThrow(staffNumber);
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
 
-        updateVisitDoctor(visit, employee, reason);
+        updateVisitDoctor(visit, employee, reason, clinicId);
 
         visit.setHealthProvider(employee);
 
@@ -462,6 +477,28 @@ public class ClinicalVisitController {
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
+    @PutMapping("/visits/{visitNo}/limit-amount")
+    @PreAuthorize("hasAuthority('edit_visits')")
+    public ResponseEntity<?> updateLimitAmount(@PathVariable("visitNo") String visitNo, @Valid @RequestBody PaymentDetailsData data, Authentication authentication) {
+//find visit details by visitNo
+        String username = authentication.getName();
+        User user = service.findUserByUsernameOrEmail(username)
+                .orElseThrow(() -> APIException.badRequest("User not found"));
+        Optional<PaymentDetails> pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(visitService.findVisitEntityOrThrow(visitNo));
+        if (pd.isPresent()) {
+            PaymentDetails pdd = pd.get();
+            pdd.setExcessAmountAuthorisedBy(user);
+            pdd.setExcessAmountEnabled(data.getExcessAmountEnabled());
+            pdd.setExcessAmountPayMode(data.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance) ? BillPayMode.Credit : BillPayMode.Cash);
+            if (data.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
+//update excess card details
+
+            }
+            paymentDetailsService.createPaymentDetails(pdd);
+        }
+        return ResponseEntity.ok(true);
+    }
+
     @PutMapping("/visits/{visitNo}/payment-mode")
     @PreAuthorize("hasAuthority('edit_visits')")
     public ResponseEntity<?> updatePaymentMode(@PathVariable("visitNo") String visitNo, @Valid @RequestBody PaymentDetailsData data) {
@@ -505,11 +542,12 @@ public class ClinicalVisitController {
             }
             Scheme scheme = schemeService.fetchSchemeById(data.getSchemeId());
             Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
-            PaymentDetails pd =null;
-            if (currentPaymentDetail.isPresent())                
-               pd = currentPaymentDetail.get();
-            else
-               pd = new PaymentDetails();
+            PaymentDetails pd = null;
+            if (currentPaymentDetail.isPresent()) {
+                pd = currentPaymentDetail.get();
+            } else {
+                pd = new PaymentDetails();
+            }
             pd.setComments(data.getComments());
             pd.setPolicyNo(data.getPolicyNo());
             pd.setMemberName(data.getMemberName());
@@ -663,7 +701,7 @@ public class ClinicalVisitController {
 
     @PostMapping("/patient/{patientNo}/vitals")
     @PreAuthorize("hasAuthority('create_visits')")
-    //@ApiOperation(value = "", response = VitalRecordData.class)
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public @ResponseBody
     ResponseEntity<VitalRecordData> addVitalRecordByPatient(@PathVariable("patientNo") String patientNo,
             @RequestBody
@@ -699,7 +737,7 @@ public class ClinicalVisitController {
 
         if (vital.getSendTo().equals("specialist")) {
             Employee newDoctorSelected = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());
-            updateVisitDoctor(activeVisit, newDoctorSelected, "Triage");
+            updateVisitDoctor(activeVisit, newDoctorSelected, "Triage", activeVisit.getClinic().getId());
 
             patientQueue.setSpecialNotes("Sent from triage");
 
@@ -838,57 +876,52 @@ public class ClinicalVisitController {
     private VitalRecordData convertToVitalsData(VitalsRecord vitalsRecord) {
         return modelMapper.map(vitalsRecord, VitalRecordData.class);
     }
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    private void updateVisitDoctor(Visit activeVisit, Employee newDoctorSelected, String reason, Long clinicId) {
 
-    private void updateVisitDoctor(Visit activeVisit, Employee newDoctorSelected, String reason) {
+        DoctorClinicItems newClinic = clinicService.fetchClinicById(clinicId);
+
+        Optional<DoctorInvoice> currentDoctorInvoice = getCurrentDoctorInvoice(activeVisit);
+
+        // we reverse the already invoiced doctor fee for the visit
+        if (currentDoctorInvoice.isPresent()) {
+            doctorInvoiceService.removeDoctorInvoice(currentDoctorInvoice.get());
+        }
+        //if clinic was changed cancel the bill and create new bill and invoice the doctor
+        if (!Objects.equals(newClinic.getId(), activeVisit.getClinic().getId())) {
+
+            if (currentDoctorInvoice.isPresent()) {
+                billingService.cancelItem(currentDoctorInvoice.get().getBillItemId());
+            }
+            Optional<PaymentDetails> pd = paymentDetailsService.getPaymentDetailsByVist(activeVisit);
+            Long schemeId = null;
+            if (pd.isPresent()) {
+                schemeId = pd.get().getScheme().getId();
+            }
+
+            createConsultationBill(activeVisit, clinicId, newDoctorSelected, schemeId);
+        } else {
+            //otherwise we just create a new doctors iivnoice using the existing bill
+            Optional<DoctorItem> newChargeableDoctorItem = doctorInvoiceService.getDoctorItem(newDoctorSelected, activeVisit.getClinic().getServiceType());
+            doctorInvoiceService.createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
+        }
+
+        //log the audit for the changes
         SpecialistChangeAuditData data = new SpecialistChangeAuditData();
         data.setComments(reason);
         data.setDate(LocalDateTime.now());
         data.setVisitNumber(activeVisit.getVisitNumber());
         data.setToDoctor(newDoctorSelected.getFullName());
-        if (activeVisit.getClinic() == null) {
-            throw APIException.badRequest("The service type is not consultation. You cannot specify a specialist for this visit", "");
-        }
-        Optional<DoctorItem> newChargeableDoctorItem = doctorInvoiceService.getDoctorItem(newDoctorSelected, activeVisit.getClinic().getServiceType());
-
-        //check if visit already has a doctor
-        if (activeVisit.getHealthProvider() != null) {
-            data.setFromDoctor(activeVisit.getHealthProvider().getFullName());
-
-            //update bill with current doctor if there is a difference between the visit activated one and the new one
-            if (!newDoctorSelected.equals(activeVisit.getHealthProvider())) {
-                //find doctor invoice with service item and visit
-                Optional<DoctorItem> previousChargeDoctorItem = doctorInvoiceService.getDoctorItem(activeVisit.getHealthProvider(), activeVisit.getClinic().getServiceType());
-                System.out.println("previousChargeDoctorItem.isPresent() " + previousChargeDoctorItem.isPresent());
-                if (previousChargeDoctorItem.isPresent()) {
-
-                    Optional<DoctorInvoice> previousDoctorInvoice = doctorInvoiceService.fetchDoctorInvoiceByVisitDoctorItemAndDoctor(activeVisit, previousChargeDoctorItem.get(), activeVisit.getHealthProvider());
-                    if (previousDoctorInvoice.isPresent()) {
-                        //update to the new one
-                        DoctorInvoice doctorInvoice = previousDoctorInvoice.get();
-                        doctorInvoiceService.removeDoctorInvoice(doctorInvoice);
-                        //create a new doctor invoice
-                        if (newChargeableDoctorItem.isPresent()) {
-                            doctorInvoiceService.createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
-                        }
-                    } else {
-                        //create new doctor invoice
-                        if (newChargeableDoctorItem.isPresent()) {
-                            doctorInvoiceService.createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
-                        }
-                    }
-                }
-
-            }
-//            else {
-//                System.out.println("New Doctor equals to visit's pre-selected doctor");
-//            }
-        } else {
-            //create  new doctor invoice
-            if (newChargeableDoctorItem.isPresent()) {
-                doctorInvoiceService.createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
-            }
-        }
+        data.setFromDoctor(activeVisit.getHealthProvider() != null ? activeVisit.getHealthProvider().getFullName() : "");
         specialistChangeAuditService.createSpecialistChangeAudit(data);
     }
 
+    private Optional<DoctorInvoice> getCurrentDoctorInvoice(Visit visit) {
+        Optional<DoctorItem> currentChargeDoctorItem = doctorInvoiceService.getDoctorItem(visit.getHealthProvider(), visit.getClinic().getServiceType());
+
+        if (currentChargeDoctorItem.isPresent()) {
+            return doctorInvoiceService.fetchDoctorInvoiceByVisitDoctorItemAndDoctor(visit, currentChargeDoctorItem.get(), visit.getHealthProvider());
+        }
+        return Optional.empty();
+    }
 }

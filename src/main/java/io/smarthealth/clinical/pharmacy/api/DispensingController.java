@@ -1,7 +1,5 @@
 package io.smarthealth.clinical.pharmacy.api;
 
-import io.smarthealth.administration.codes.data.CodeValueData;
-import io.smarthealth.administration.codes.domain.CodeValue;
 import io.smarthealth.clinical.pharmacy.data.DispensedDrugData; 
 import io.smarthealth.clinical.pharmacy.data.DrugRequest;
 import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;

@@ -1,7 +1,7 @@
 package io.smarthealth.infrastructure.jobs.annotation;
 
 
-import io.smarthealth.infrastructure.jobs.service.JobName;
+import io.smarthealth.infrastructure.jobs.domain.JobName;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;

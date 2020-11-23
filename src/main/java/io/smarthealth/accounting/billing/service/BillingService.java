@@ -38,12 +38,14 @@ import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
 import lombok.RequiredArgsConstructor;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
+import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecification;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
 import io.smarthealth.accounting.payment.data.BilledItem;
 import io.smarthealth.accounting.payment.data.ReceivePayment;
+import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
@@ -69,6 +71,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,6 +96,7 @@ public class BillingService {
     private final DoctorInvoiceService doctorInvoiceService;
     private final CashPaidUpdater cashPaidUpdater;
     private final PaymentDetailsService paymentDetailsService;
+    private final PricelistService pricelistService;
 
     //Create service bill
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -179,22 +183,69 @@ public class BillingService {
 
     public PatientBill save(PatientBill bill) {
         log.debug("START save bill");
+        Optional<PaymentDetails> pd = null;
+        if (bill.getVisit() != null) {
+            pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
+        }
         double amountToBill = 0.00;
+        int itemCount = 0;
         for (PatientBillItem b : bill.getBillItems()) {
             amountToBill = amountToBill + b.getAmount();
+            itemCount++;
+            //Billing paymode added to accomodate exclusions and other functionalities
+            b.setBillPayMode(bill.getVisit().getPaymentMethod().name().equals("Insurance") ? BillPayMode.Credit : BillPayMode.Cash);
+            if (bill.getVisit().getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance) && pd.isPresent()) {
+                b.setScheme(pd.get().getScheme());
+            }
         }
 
         log.debug("START validate limit amount");
-        Optional<PaymentDetails> pd = null;
-//        if (bill.getVisit() != null) {
-//            pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
-//            if (pd.isPresent() && pd.get().isLimitEnabled()) {
-//                if (pd.get().getRunningLimit() < amountToBill) {
-//                    throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount (" + pd.get().getRunningLimit() + ") ", "");
-//                    //TODO: create receipt and set amount to the difference of amountToBill vs 
-//                }
-//            }
-//        }
+
+        if (bill.getVisit() != null) {
+            pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
+            if (pd.isPresent() && pd.get().getLimitEnabled()) {
+                PaymentDetails payDetails = pd.get();
+                if (payDetails.getRunningLimit() < amountToBill && !payDetails.getExcessAmountEnabled()) {
+                    throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount (" + payDetails.getRunningLimit() + ") ", "");
+                }
+                if (payDetails.getRunningLimit() < amountToBill && payDetails.getExcessAmountEnabled()) {
+                    //check if
+                    if (payDetails.getLimitReached()) {
+                        //proceed to accept excess entry
+                        //TODO: register to keep log of the excess amounts with correct pricebook
+                        for (PatientBillItem b : bill.getBillItems()) {
+                            BigDecimal defaultPrice = b.getItem().getRate(); //default cash selling price
+                            if (payDetails.getExcessAmountPayMode().equals(BillPayMode.Cash)) {
+                                b.setAmount(NumberUtils.createDouble(defaultPrice.toString()));
+                                b.setBillPayMode(BillPayMode.Cash);
+                            } else {
+                                try {
+                                    pricelistService.fetchPriceAmountByItemAndPriceBook(b.getItem(), payDetails.getExcessAmountPayer().getPriceBook());
+                                    b.setBillPayMode(BillPayMode.Credit);
+                                    b.setScheme(payDetails.getExcessAmountScheme());
+                                } catch (Exception e) {
+                                    b.setAmount(NumberUtils.createDouble(defaultPrice.toString()));
+                                }
+                            }
+                        }
+                    }
+                   if (!payDetails.getLimitReached() && itemCount > 0) {
+                        System.out.println("Line 233");
+                        System.out.println("payDetails.getLimitReached() " + payDetails.getLimitReached());
+                        System.out.println("itemCount " + itemCount);
+                        //TODO consider adding global configuration to able this feature or disable
+                        throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed \nrunning limit amount (" + payDetails.getRunningLimit() + "). \nRemove one or more items from the bill count", "");
+                    }
+
+                }
+            }
+            if (pd.isPresent()) {
+                //update payment details
+                if (amountToBill > pd.get().getLimitAmount()) {
+
+                }
+            }
+        }
 
         log.debug("END validate limit amount");
 
@@ -215,7 +266,12 @@ public class BillingService {
         //reduce limit amount
         if (pd != null && pd.isPresent()) {
             PaymentDetails pdd = pd.get();
-            pdd.setRunningLimit((pdd.getRunningLimit() - amountToBill));
+            double newRunningLimit = (pdd.getRunningLimit() - amountToBill);
+            pdd.setRunningLimit(newRunningLimit);
+
+            if (newRunningLimit <= amountToBill) {
+                pdd.setLimitReached(Boolean.TRUE);
+            }
             paymentDetailsService.createPaymentDetails(pdd);
         }
 
@@ -229,13 +285,14 @@ public class BillingService {
     public Optional<PatientBill> findByBillNumber(final String billNumber) {
         return patientBillRepository.findByBillNumber(billNumber);
     }
-    
-     public List<PatientBill> findByVisit(final String visitNumber) {
-         Optional<Visit> visit = visitRepository.findByVisitNumber(visitNumber);
-         if(visit.isPresent())
+
+    public List<PatientBill> findByVisit(final String visitNumber) {
+        Optional<Visit> visit = visitRepository.findByVisitNumber(visitNumber);
+        if (visit.isPresent()) {
             return patientBillRepository.findByVisit(visit.get());
-         else
-             return null;
+        } else {
+            return null;
+        }
     }
 
     public PatientBill findOneWithNoFoundDetection(Long id) {
@@ -269,7 +326,10 @@ public class BillingService {
                     return x;
                 })
                 .forEach(bill -> billItemRepository.save(bill));
-
+      //TODO be able to reverse the doctors fee 
+    }
+    public void cancelItem(Long billId){
+        
     }
 
     public PatientBillItem updateBillItem(PatientBillItem item) {
@@ -368,7 +428,7 @@ public class BillingService {
     public List<PatientBillGroup> getPatientBillGroups(BillStatus status) {
         return patientBillRepository.groupBy(status);
     }
-
+ 
 //    @Deprecated
 //    public Page<PatientBillItem> getPatientBillItemByVisit(String visitNumber, Pageable page) {
 //        Visit visit = findVisitEntityOrThrow(visitNumber);

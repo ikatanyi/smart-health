@@ -7,15 +7,15 @@ import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.Enumerated; 
 import lombok.Data;
 
 /**
  *
- * @author Kelsas
+ * @author K
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true) 
 public final class PatientData extends PersonData {
 
     @ApiModelProperty(required = false, hidden = true)

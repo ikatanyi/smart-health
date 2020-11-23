@@ -1,6 +1,6 @@
 package io.smarthealth.infrastructure.jobs.annotation;
 
-import io.smarthealth.infrastructure.jobs.service.JobName;
+import io.smarthealth.infrastructure.jobs.domain.JobName;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

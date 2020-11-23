@@ -1,5 +1,6 @@
 package io.smarthealth.clinical.visit.data;
 
+import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
@@ -40,6 +41,12 @@ public class PaymentDetailsData {
     @ApiModelProperty(hidden = false)
     private boolean limitEnabled;
 
+    @Enumerated(EnumType.STRING)
+    private BillPayMode excessAmountPayMode;
+
+    private Boolean excessAmountEnabled;
+    
+
     public static PaymentDetailsData map(PaymentDetails e) {
         PaymentDetailsData d = new PaymentDetailsData();
         d.setComments(e.getComments());
@@ -66,7 +73,7 @@ public class PaymentDetailsData {
         d.setHasCapitation(e.isHasCapitation());
         d.setCapitationAmount(e.getCapitationAmount());
         d.setRunningLimit(e.getRunningLimit());
-        d.setLimitEnabled(e.isLimitEnabled());
+        d.setLimitEnabled(e.getLimitEnabled());
         return d;
     }
 

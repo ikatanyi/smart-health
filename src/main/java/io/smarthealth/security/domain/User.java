@@ -1,6 +1,7 @@
 package io.smarthealth.security.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.security.data.UserData;
 import java.time.LocalDateTime;
@@ -52,6 +53,8 @@ public class User extends Identifiable implements UserDetails {
             inverseJoinColumns = {
                 @JoinColumn(name = "role_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_auth_user_roles_id"))})
     private Set<Role> roles;
+    @OneToMany(mappedBy = "excessAmountAuthorisedBy")
+    private List<PaymentDetails> paymentDetailss;
 
     public User() {
         this.enabled = true;

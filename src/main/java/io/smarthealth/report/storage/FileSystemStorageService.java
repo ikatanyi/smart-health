@@ -14,11 +14,13 @@ import org.springframework.util.FileSystemUtils;
  * @author Kennedy.ikatanyi
  *
  */
+ 
 @Slf4j
 @Component
 public class FileSystemStorageService implements StorageService {
 
     private final Path rootLocation;
+    
     private final ApplicationProperties properties;
 
     public FileSystemStorageService(ApplicationProperties properties) throws IOException {

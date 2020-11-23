@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -23,12 +24,14 @@ public class MpesaService {
         this.mpesaConfiguration = mpesaConfiguration;
     }
 
+    @Transactional
     public String initiateStkPush(String phoneNumber, BigDecimal amount) {
-        MpesaRequest request = new MpesaRequest()
+        
+        MpesaRequest request = new MpesaRequest() 
                 .BusinessShortCode(mpesaConfiguration.getShortCode())
                 .Password(mpesaConfiguration.getPassword())
                 .Timestamp(mpesaConfiguration.getTimestamp())
-                .TransactionType("CustomerBuyGoodsOnline")
+                .TransactionType(mpesaConfiguration.getTransactionType())
                 .Amount(amount.toPlainString())
                 .PartyA(phoneNumber)
                 .PartyB(mpesaConfiguration.getShortCode())
