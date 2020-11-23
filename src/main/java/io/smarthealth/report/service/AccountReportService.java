@@ -374,11 +374,13 @@ public class AccountReportService {
         String patientNumber = reportParam.getFirst("patientNo");
         Boolean hasBalance = reportParam.getFirst("hasbalance") != null ? Boolean.valueOf(reportParam.getFirst("hasbalance")) : null;
         Boolean isWalkin = reportParam.getFirst("isWakin") != null ? Boolean.valueOf(reportParam.getFirst("isWakin")) : null;
+        Boolean includeCanceled = reportParam.getFirst("includeCanceled") != null ? Boolean.valueOf(reportParam.getFirst("includeCanceled")) : Boolean.FALSE;
+        
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
 
         List<DailyBillingData> billData = new ArrayList();
         ReportData reportData = new ReportData();
-        List<SummaryBill> bills = billService.getBillTotals(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range);
+        List<SummaryBill> bills = billService.getBillTotals(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range, includeCanceled);
         for (SummaryBill bill : bills) {
             DailyBillingData data = new DailyBillingData();
 
@@ -390,7 +392,7 @@ public class AccountReportService {
             data.setPatientName(bill.getPatientName());
             data.setPaymentMode(bill.getPaymentMethod());
             data.setBalance(bill.getBalance());
-            List<BillItem> items = billService.getAllBillDetails(bill.getVisitNumber());
+            List<BillItem> items = billService.getAllBillDetails(bill.getVisitNumber(), includeCanceled);
             for (BillItem item : items) {
                 data.setAmount(data.getAmount().add(NumberUtils.toScaledBigDecimal(item.getAmount())));
                 if (item.getStatus() == item.getStatus().Paid) {
@@ -854,7 +856,8 @@ public class AccountReportService {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-        BillDetail data = billService.getBillDetails(visitNumber, Pageable.unpaged());
+         Boolean includeCanceled = reportParam.getFirst("includeCanceled") != null ? Boolean.valueOf(reportParam.getFirst("includeCanceled")) : Boolean.FALSE;
+        BillDetail data = billService.getBillDetails(visitNumber,includeCanceled, Pageable.unpaged());
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         reportData.setData(data.getBills());
         reportData.setFormat(format);

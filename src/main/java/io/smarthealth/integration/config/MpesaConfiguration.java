@@ -24,4 +24,5 @@ public class MpesaConfiguration {
         String originalString = shortCode.concat(passKey).concat(timestamp);
         return Base64.getEncoder().encodeToString(originalString.getBytes());
     }
+    
 }

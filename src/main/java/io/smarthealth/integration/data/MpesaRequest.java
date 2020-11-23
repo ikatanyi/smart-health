@@ -1,17 +1,13 @@
 package io.smarthealth.integration.data;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.ToString;
-import lombok.experimental.Accessors;
 
 /**
  *
  * @author Kelsas
  */
-@Accessors(fluent = true, chain = true)
-@Getter
-@Setter
+@Data 
 @ToString
 public class MpesaRequest {
 
