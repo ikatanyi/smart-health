@@ -30,6 +30,8 @@ import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
+import io.smarthealth.accounting.invoice.domain.Invoice;
+import io.smarthealth.accounting.invoice.domain.InvoiceItem;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.ReceiptData;
@@ -76,6 +78,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -452,6 +455,7 @@ public class AccountReportService {
         Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
         String patientNo = reportParam.getFirst("patientNo");
         String invoiceNo = reportParam.getFirst("invoiceNo");
+        Boolean excess = reportParam.getFirst("excess") != null ? Boolean.parseBoolean(reportParam.getFirst("excess")) : null;
         Boolean awaitingSmart = reportParam.getFirst("awaitingSmart") != null ? Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")) : null;
         Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : null;
         DateRange dateRange = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
@@ -466,7 +470,11 @@ public class AccountReportService {
 
         List<InvoiceData> invoices = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, dateRange, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation, Pageable.unpaged()).getContent()
                 .stream()
-                .map((invoice) -> invoice.toData())
+                .map((invoice) -> {
+                    InvoiceData data = invoice.toData();
+//                    
+                    return data;
+                })
                 .collect(Collectors.toList());
 
         for (InvoiceData invoice : invoices) {
@@ -550,7 +558,7 @@ public class AccountReportService {
                 .stream()
                 .map(x -> x.toData())
                 .collect(Collectors.toList());
-        
+
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField = new JRDesignSortField();
@@ -558,14 +566,12 @@ public class AccountReportService {
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         sortField = new JRDesignSortField();
         sortField.setName("visitDate");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-
-        
 
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
@@ -618,10 +624,10 @@ public class AccountReportService {
         reportData.setReportName("insurance_aging_statement");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getAgingSummary(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
         Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
-        
+
         ReportData reportData = new ReportData();
         Map<String, Object> map = reportData.getFilters();
         List<InvoiceAgeSummaryInterface> invoiceData = dispatchService.getInvoiceAgingSummary(payer);
@@ -1125,6 +1131,78 @@ public class AccountReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/accounts/insurance_diagnosis_summary");
         reportData.setReportName("Insurance_Diagnosis_Summary");
+        reportService.generateReport(reportData, response);
+    }
+
+    public void genInvoiceBalancingReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
+
+        Long payer = NumberUtils.createLong(reportParam.getFirst("payerId"));
+        Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
+        String patientNo = reportParam.getFirst("patientNo");
+        String invoiceNo = reportParam.getFirst("invoiceNo");
+        String dateRange = reportParam.getFirst("dateRange");
+        InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));
+        String excess = reportParam.getFirst("excess");
+        Boolean awaitingSmart = reportParam.getFirst("awaitingSmart") != null ? Boolean.parseBoolean(reportParam.getFirst("awaitingSmart")) : null;
+        Boolean hasCapitation = reportParam.getFirst("hasCapitation") != null ? Boolean.parseBoolean(reportParam.getFirst("hasCapitation")) : null;
+        Double amountGreaterThan = null;
+        Boolean filterPastDue = null;
+        Double amountLessThanOrEqualTo = null;
+
+        ReportData reportData = new ReportData();
+        Map<String, Object> map = reportData.getFilters();
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Pageable pageable = PaginationUtil.createPage(1, 500);
+        List<InvoiceData> list1 = new ArrayList();
+        List<InvoiceData> list = invoiceService.fetchInvoices(payer, scheme, invoiceNo, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation, pageable).getContent()
+                .stream()
+                .map(x -> (x.toData()))
+                .collect(Collectors.toList());
+
+        list.stream().map((data) -> {
+            BigDecimal total = BigDecimal.ZERO;
+            for (InvoiceItemData item : data.getInvoiceItems()) {
+                total = total.add(item.getAmount());
+            }
+            data.setTotal(data.getTotal().add(total));
+            return data;
+        }).map((data) -> {
+            data.setExcess(data.getAmount().subtract(data.getTotal()));
+            return data;
+        }).forEachOrdered((data) -> {
+            if (excess != null) {
+                if (excess.equalsIgnoreCase("More") && data.getExcess().compareTo(BigDecimal.ZERO) > 0) {
+                    list1.add(data);
+                }
+                if (excess.equalsIgnoreCase("Less") && data.getExcess().compareTo(BigDecimal.ZERO) < 0) {
+                    list1.add(data);
+                }
+                
+            }else{
+                list1.add(data);
+            }
+        });
+
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField = new JRDesignSortField();
+        sortField.setName("payer");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+
+        sortField = new JRDesignSortField();
+        sortField.setName("visitDate");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.setData(list1);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/invoice_balancing_statement");
+        reportData.setReportName("Invoice_Balancing_Statement");
         reportService.generateReport(reportData, response);
     }
 
