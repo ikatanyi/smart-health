@@ -81,5 +81,7 @@ public enum ReportName {
         Cashier_Cash_Sale_Breakdown,
         Patient_Attendance_Report,
         Invoice_Aging_Summary,
-        Purchase_Order_Statement
+        Purchase_Order_Statement,
+        Moh706_Lab_Report,
+        Invoice_Balancing_Statement
 }

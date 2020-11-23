@@ -192,10 +192,12 @@ public class BillingService {
         for (PatientBillItem b : bill.getBillItems()) {
             amountToBill = amountToBill + b.getAmount();
             itemCount++;
-            //Billing paymode added to accomodate exclusions and other functionalities
-            b.setBillPayMode(bill.getVisit().getPaymentMethod().name().equals("Insurance") ? BillPayMode.Credit : BillPayMode.Cash);
-            if (bill.getVisit().getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance) && pd.isPresent()) {
-                b.setScheme(pd.get().getScheme());
+            if (bill.getVisit() != null) {
+                //Billing paymode added to accomodate exclusions and other functionalities
+                b.setBillPayMode(bill.getVisit().getPaymentMethod().name().equals("Insurance") ? BillPayMode.Credit : BillPayMode.Cash);
+                if (bill.getVisit().getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance) && pd.isPresent()) {
+                    b.setScheme(pd.get().getScheme());
+                }
             }
         }
 

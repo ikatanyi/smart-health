@@ -34,6 +34,7 @@ public class PurchaseOrderItemData {
     private LocalDate orderDate;
     @ApiModelProperty(hidden=true)
     private Double balance;
+    private Integer available;
 
     public static PurchaseOrderItemData map(PurchaseOrderItem orderItem) {
         PurchaseOrderItemData data = new PurchaseOrderItemData();

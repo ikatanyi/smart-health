@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientFile" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="7f5d1719-2150-4099-8058-82165eccb7fc">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientFile" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="7f5d1719-2150-4099-8058-82165eccb7fc">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="264"/>
+	<property name="ireport.y" value="0"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -178,7 +178,7 @@
 	<field name="drugsData" class="java.util.List"/>
 	<field name="age" class="java.lang.Integer"/>
 	<field name="employeeData" class="java.util.List"/>
-	<group name="visit Group" isStartNewPage="true">
+	<group name="visit Group">
 		<groupExpression><![CDATA[$F{visitNumber}]]></groupExpression>
 		<groupHeader>
 			<band height="56">
@@ -221,11 +221,21 @@
 					<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{employeeData})]]></dataSourceExpression>
 					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "employee-banner.jasper"]]></subreportExpression>
 				</subreport>
+				<staticText>
+					<reportElement positionType="Float" mode="Transparent" x="-1" y="-15" width="574" height="14" forecolor="#000000" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
+					<box>
+						<bottomPen lineWidth="0.15"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Patient File]]></text>
+				</staticText>
 			</band>
 		</groupHeader>
 	</group>
 	<title>
-		<band height="38">
+		<band height="59">
 			<printWhenExpression><![CDATA[$P{showHeader}.equals( true )]]></printWhenExpression>
 			<subreport>
 				<reportElement x="0" y="0" width="572" height="31" uuid="bcc512bb-37ca-4dad-bbdf-b131cc967f1c"/>
@@ -243,23 +253,6 @@
 			</subreport>
 		</band>
 	</title>
-	<pageHeader>
-		<band height="37" splitType="Stretch"/>
-	</pageHeader>
-	<columnHeader>
-		<band height="15">
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="0" y="0" width="572" height="14" forecolor="#000000" backcolor="#9999FF" uuid="62608530-f09e-43a5-8d3f-ae6e29bb5f30"/>
-				<box>
-					<bottomPen lineWidth="0.15"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Patient File]]></text>
-			</staticText>
-		</band>
-	</columnHeader>
 	<detail>
 		<band height="126" splitType="Stretch">
 			<staticText>

@@ -6,6 +6,7 @@
 package io.smarthealth.report.service;
 
 import com.mchange.lang.StringUtils;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.administration.codes.domain.Code;
 import io.smarthealth.administration.codes.domain.CodeValue;
 import io.smarthealth.administration.codes.service.CodeService;
@@ -15,6 +16,8 @@ import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
+import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
+import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.clinical.moh.data.MonthlyMobidity;
 import io.smarthealth.clinical.moh.data.Register;
@@ -58,6 +61,7 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.clinical.EmployeeBanner;
+import io.smarthealth.report.data.clinical.Moh706LabData;
 import io.smarthealth.report.data.clinical.OpData;
 import io.smarthealth.report.data.clinical.PatientReportData;
 import io.smarthealth.report.data.clinical.PatientVisitData;
@@ -117,6 +121,7 @@ public class PatientReportServices {
     private final PaymentDetailsService paymentDetailsService;
     private final EmployeeSpecializationService specializationService;
     private final CodeService codeService;
+    private final LaboratoryService laboratoryService;
 
     private final VisitService visitService;
 
@@ -597,6 +602,52 @@ public class PatientReportServices {
         reportData.setFormat(format);
         reportData.setTemplate("/patient/rpt_OP_Statement");
         reportData.setReportName("out-patient-summary");
+        reportService.generateReport(reportData, response);
+    }
+
+    public void getMoh706LabReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String dateRange = reportParam.getFirst("dateRange");
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        List<Moh706LabData> Moh706LabDataArray = labService.getTestsByDate(range)
+                .stream()
+                .map((register) -> {
+                    Moh706LabData values = new Moh706LabData();    
+                    
+                    Integer age = 0;
+                    Integer total = 0;
+                    Gender gender = null;
+                    List<LabRegisterTest> tests = labService.getLabTests(register.getLabTest());
+                    for (LabRegisterTest test : tests) {
+                        String patientNo = test.getLabRegister().getPatientNo();
+                        values.setTestName(test.getLabTest().getTestName());
+                        Optional<PatientData> patient = patientService.fetchPatientByPatientNumber(patientNo);
+                        if (patient.isPresent()) {
+                            age = patient.get().getAge();
+                            gender = patient.get().getGender();
+                        }
+                        if (age < 5) {
+                            values.setUnder5(values.getUnder5()+1);
+                        } else {
+                            values.setOver5(values.getOver5()+1);
+                        }
+                        if (gender == Gender.M) {
+                            values.setMale(values.getMale()+1);
+                        } else {
+                            values.setFemale(values.getFemale()+1);
+                        } 
+                        values.setTotal(values.getTotal()+1);
+                    }
+                   
+                    return values;
+                })
+                .collect(Collectors.toList());
+
+        reportData.setData(Moh706LabDataArray);
+        reportData.setFormat(format);
+        reportData.setTemplate("/patient/moh706_lab_report");
+        reportData.setReportName("moh706_lab_report");
         reportService.generateReport(reportData, response);
     }
 

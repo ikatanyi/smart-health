@@ -76,6 +76,7 @@ public class StockReportService {
     private final PurchaseService purchaseService;
     private final InventoryService inventoryService;
     private final ItemService itemService;
+    private final InventoryItemService inventoryItemService;
 
     public void getSuppliers(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -122,6 +123,10 @@ public class StockReportService {
 
         PurchaseOrderData purchaseOrderData = purchaseService.findByOrderNumberOrThrow(orderNo).toData();
 
+        for(PurchaseOrderItemData item: purchaseOrderData.getPurchaseOrderItems()){
+            Integer count = inventoryItemService.getItemCount(item.getitemCode());
+            item.setAvailable(count);
+        }
         reportData.getFilters().put("category", "Supplier");
         Optional<Supplier> supplier = supplierService.getSupplierById(purchaseOrderData.getSupplierId());
         if (supplier.isPresent()) {
