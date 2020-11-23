@@ -279,6 +279,12 @@ public class ReportController {
             case Purchase_Order_Statement:
                 stockReportService.getPurchaseOrderStatement(queryParams, format, response);
                 break;
+            case Moh706_Lab_Report:
+                patientReportService.getMoh706LabReport(queryParams, format, response);
+                break;
+            case Invoice_Balancing_Statement:
+                reportService.genInvoiceBalancingReport(queryParams, format, response);
+                break;
             default:
                 break;
         }

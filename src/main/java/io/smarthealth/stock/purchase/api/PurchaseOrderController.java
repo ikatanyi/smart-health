@@ -62,6 +62,7 @@ public class PurchaseOrderController {
     @GetMapping("/purchaseorders/{id}/html")
     @PreAuthorize("hasAuthority('view_purchaseorders')")
     public ResponseEntity<?> getPurchaseOrderHtml(@PathVariable(value = "id") String code) {
+        System.out.println("Iddddddddddddddddddddddd");
         HtmlData data = service.purchaseOrderHtml(code);
         return ResponseEntity.ok(data);
     }

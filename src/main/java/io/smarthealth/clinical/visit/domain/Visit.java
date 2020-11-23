@@ -1,21 +1,20 @@
 package io.smarthealth.clinical.visit.domain;
 
 import io.smarthealth.accounting.doctors.domain.DoctorClinicItems;
-import io.smarthealth.administration.servicepoint.domain.ServicePoint;
-//import io.smarthealth.clinical.visit.data.enums.TriageCategory;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint; 
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDateTime;
-import javax.persistence.*;
+import javax.persistence.*; 
 import lombok.Data;
 
 /**
  * Patient CheckIn
  *
  * @author Kelsas
- */
+ */ 
 @Data
 @Entity
 @Table(name = "patient_visit")

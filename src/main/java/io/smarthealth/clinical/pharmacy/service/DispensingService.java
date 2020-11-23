@@ -68,7 +68,7 @@ public class DispensingService {
     private final WalkingService walkingService;
 
     private void dispenseItem(Store store, DrugRequest drugRequest) {
-
+        Visit visit = visitService.findVisit(drugRequest.getVisitNumber()).orElse(null);
 //        Store store = storeService.getStoreWithNoFoundDetection(patientDrugs.getStoreId());
         if (!drugRequest.getDrugItems().isEmpty()) {
             Patient thePatient = null;
@@ -81,7 +81,6 @@ public class DispensingService {
             drugRequest.getDrugItems()
                     .stream()
                     .forEach(drugData -> {
-                        System.err.println("Dispensed Drugs: " + drugData);
                         DispensedDrug drugs = new DispensedDrug();
                         Item item = billingService.getItemByCode(drugData.getItemCode());
                         drugs.setPatient(patient);
@@ -96,6 +95,7 @@ public class DispensingService {
                         drugs.setDoctorName(drugData.getDoctorName());
                         drugs.setPaid(false);
                         drugs.setIsReturn(Boolean.FALSE);
+                        drugs.setReturnedQuantity(0D);
                         drugs.setCollected(true);
                         drugs.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
                         drugs.setCollectedBy("");
@@ -104,6 +104,7 @@ public class DispensingService {
                         drugs.setWalkinFlag(drugRequest.getIsWalkin());
                         drugs.setBatchNumber(drugData.getBatchNumber());
                         drugs.setDeliveryNumber(drugData.getBatchNumber());
+                        drugs.setVisit(visit);
 
                         DispensedDrug savedDrug = repository.saveAndFlush(drugs);
                         doStockEntries(savedDrug.getId());
@@ -114,6 +115,7 @@ public class DispensingService {
 
     @Transactional
     public String dispense(DrugRequest drugRequest) {
+//        Visit visit = visitService.findVisitEntityOrThrow(drugRequest.getVisitNumber());
         Store store = storeService.getStoreWithNoFoundDetection(drugRequest.getStoreId());
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         drugRequest.setTransactionId(trdId);
@@ -180,28 +182,39 @@ public class DispensingService {
                         StockEntry stock = new StockEntry();
 
                         DispensedDrug drugs = findDispensedDrugOrThrow(drugData.getDrugId());
+
                         DispensedDrug drug1 = ObjectUtils.clone(drugs);
                         drug1.setAmount(-1 * (drugData.getQuantity()) * (drugs.getPrice()));
                         drug1.setQtyIssued(-1 * (drugData.getQuantity()));
-                        drug1.setCollectedBy("");
+                        drug1.setCollectedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
+                        drug1.setIsReturn(Boolean.TRUE);
                         drug1.setReturnDate(LocalDate.now());
                         drug1.setReturnReason(drugData.getReason());
                         drug1.setId(null);
+                        drug1.setDispensedBy(SecurityUtils.getCurrentUserLogin().orElse(""));
+                        drug1.setVisit(visit);
+
                         returnedArray.add(drug1);
 
-                        stock.setAmount(NumberUtils.toScaledBigDecimal(drugs.getAmount()));
-                        stock.setDeliveryNumber(drugs.getOtherReference());
-                        stock.setQuantity(drugs.getQtyIssued());
-                        stock.setItem(drugs.getDrug());
+                        stock.setAmount(NumberUtils.toScaledBigDecimal((drugData.getQuantity()) * (drugs.getPrice())));
+                        stock.setDeliveryNumber(drug1.getOtherReference());
+                        stock.setQuantity(drugData.getQuantity());
+                        stock.setItem(drug1.getDrug());
                         stock.setMoveType(MovementType.Returns);
-                        stock.setPrice(NumberUtils.createBigDecimal(String.valueOf(drugs.getAmount())));
+                        stock.setPrice(NumberUtils.createBigDecimal(String.valueOf(drug1.getAmount())));
                         stock.setPurpose(MovementPurpose.Returns);
-                        stock.setReferenceNumber(drugs.getOtherReference());
-                        stock.setStore(drugs.getStore());
+                        stock.setReferenceNumber(drug1.getOtherReference());
+                        stock.setStore(drug1.getStore());
                         stock.setTransactionDate(LocalDate.now());
                         stock.setTransactionNumber(trdId);
-                        stock.setUnit(drugs.getUnits());
-                        inventoryService.doStockEntry(InventoryEvent.Type.Increase, stock, drugs.getStore(), drugs.getDrug(), drugs.getQtyIssued());
+                        stock.setUnit(drug1.getUnits());
+                        inventoryService.doStockEntry(InventoryEvent.Type.Increase, stock, drug1.getStore(), drug1.getDrug(), drugData.getQuantity());
+ 
+                        drugs.setReturnedQuantity((drugs.getReturnedQuantity()+drugData.getQuantity()));
+                        drugs.setReturnReason(drugData.getReason());
+                        drugs.setReturnDate(drugData.getReturnDate() != null ? drugData.getReturnDate() : LocalDate.now());
+
+                        repository.save(drugs);
                     });
 
         }

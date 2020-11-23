@@ -5,6 +5,7 @@
  */
 package io.smarthealth.infrastructure.jobs.service;
 
+import io.smarthealth.infrastructure.jobs.domain.JobName;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;

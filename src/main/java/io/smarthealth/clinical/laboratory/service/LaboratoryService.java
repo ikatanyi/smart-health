@@ -4,6 +4,7 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -51,9 +52,9 @@ import io.smarthealth.documents.data.DocResponse;
 import io.smarthealth.documents.data.DocumentData;
 import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.service.FileStorageService;
-import io.smarthealth.notify.data.NoticeType;
-import io.smarthealth.notify.data.NotificationData;
-import io.smarthealth.notify.service.NotificationEventPublisher;
+import io.smarthealth.notification.data.NoticeType;
+import io.smarthealth.notification.data.NotificationData;
+import io.smarthealth.notification.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
@@ -88,6 +89,8 @@ public class LaboratoryService {
     private final DoctorsRequestRepository doctorRequestRepository;
     private final NotificationEventPublisher notificationEventPublisher;
     private final FileStorageService fileService;
+    private final ConfigService configurationService;
+    private final LabConfigurationService labConfigService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public LabRegister createLabRegister(LabRegisterData data) {
@@ -430,6 +433,14 @@ public class LaboratoryService {
             return testRepository.findTestsByVisitAndLabNo(visitNo, labNumber);
         }
         return testRepository.findTestsByVisitNumber(visitNo);
+    }
+    
+    public List<LabRegisterTest> getLabTests(LabTest test) {
+            return testRepository.findByLabTest(test);
+    }
+    
+    public List<LabRegisterTest> getTestsByDate(DateRange range) {
+            return testRepository.findTestsByDateRange(range.getStartDateTime(),range.getEndDateTime());
     }
 
     private WalkIn createWalking(String patientName) {

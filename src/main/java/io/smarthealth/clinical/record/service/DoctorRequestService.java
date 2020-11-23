@@ -126,6 +126,13 @@ public class DoctorRequestService implements DateConverter {
         return docReqs;
     }
 
+    public Page<DoctorRequest> getDoctorOrderRequests(String visitNumber, String patientNumber, RequestType requestType, FullFillerStatusType fulfillerStatus, DateRange range, Pageable pageable) {
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, null, null, null, range);
+
+        Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
+        return docReqs;
+    }
+
 //    public Page<DoctorRequest> fetchDoctorRequestLine(final String fulfillerStatus, final RequestType requestType, Pageable pageable) {
 //        
 //        return doctorRequestRepository.findRequestLine(fulfillerStatus, requestType, pageable);
@@ -171,9 +178,9 @@ public class DoctorRequestService implements DateConverter {
             return ResponseEntity.notFound().build();
         }
     }
-    
+
     public void deleteDocRequest(DoctorRequest request) {
-       doctorRequestRepository.delete(request);
+        doctorRequestRepository.delete(request);
     }
 
     public DoctorRequestData DoctorRequestToData(DoctorRequest docRequest) {

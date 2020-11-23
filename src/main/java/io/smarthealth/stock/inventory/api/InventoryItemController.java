@@ -99,14 +99,14 @@ public class InventoryItemController {
     
     @GetMapping("/inventoryItem/{itemCode}/item-count")
     @PreAuthorize("hasAuthority('view_inventoryItem')")
-    public Double getInventoryItemCount(@PathVariable(value = "itemCode") String itemCode) {
+    public Integer getInventoryItemCount(@PathVariable(value = "itemCode") String itemCode) {
         return service.getItemCount(itemCode);
     }
     
     @GetMapping("/inventoryItem/{itemCode}/store/{storeId}/item-count")
     @PreAuthorize("hasAuthority('view_inventoryItem')")
-    public Double getInventoryItemCountByStore(@PathVariable(value = "itemCode") String itemCode, @PathVariable(value = "storeId") Long storeId) {
-        return service.getItemCount(itemCode);
+    public Integer getInventoryItemCountByStore(@PathVariable(value = "itemCode") String itemCode, @PathVariable(value = "storeId") Long storeId) {
+        return service.getItemCountByItemAndStore(itemCode,storeId);
     }
 
 //    @GetMapping("/inventory-balances")

@@ -1,12 +1,9 @@
 package io.smarthealth.infrastructure.common;
 
-import io.smarthealth.infrastructure.mail.MailService;
-import io.smarthealth.infrastructure.mail.MockMailSender;
-import io.smarthealth.infrastructure.mail.SmtpMailSender;
+import io.smarthealth.notification.service.SmtpMailSender;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,6 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
+import io.smarthealth.notification.service.EmailerService;
+import io.smarthealth.notification.service.MockMailSender;
+import org.thymeleaf.TemplateEngine;
 
 /**
  *
@@ -32,9 +32,9 @@ public class ApplicationAutoConfig {
      * @return
      */
     @Bean
-    @ConditionalOnMissingBean(MailService.class)
+    @ConditionalOnMissingBean(EmailerService.class)
     @ConditionalOnProperty(name = "spring.mail.host", havingValue = "foo", matchIfMissing = true)
-    public MailService<?> mockMailSender() {
+    public EmailerService<?> mockMailSender() {
         log.info("Configuring MockMailSender");
         return new MockMailSender();
     }
@@ -43,15 +43,20 @@ public class ApplicationAutoConfig {
      * Configures an SmtpMailSender when the property
      * <code>spring.mail.host</code> is defined.
      *
+     * @param mailSender
+     * @param textTemplateEngine
+     * @param htmlTemplateEngine
+     * @param fileTemplateEngine
      * @param javaMailSender
+     * @param templateEngine
      * @return
      */
     @Bean
-    @ConditionalOnMissingBean(MailService.class)
+    @ConditionalOnMissingBean(EmailerService.class)
     @ConditionalOnProperty("spring.mail.host")
-    public MailService<?> smtpMailSender(JavaMailSender javaMailSender) {
+    public EmailerService<?> smtpMailSender(JavaMailSender mailSender, TemplateEngine textTemplateEngine, TemplateEngine htmlTemplateEngine, TemplateEngine fileTemplateEngine) {
         log.info("Configuring SmtpMailSender");
-        return new SmtpMailSender(javaMailSender);
+        return new SmtpMailSender(mailSender, textTemplateEngine, htmlTemplateEngine, fileTemplateEngine);
     }
 
     /**

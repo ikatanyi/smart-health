@@ -4,13 +4,11 @@ package io.smarthealth.integration.config;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@Getter
-@Setter
+@Data
 @Component
 @ConfigurationProperties("safaricom")
 public class MpesaConfiguration {
@@ -26,4 +24,5 @@ public class MpesaConfiguration {
         String originalString = shortCode.concat(passKey).concat(timestamp);
         return Base64.getEncoder().encodeToString(originalString.getBytes());
     }
+    
 }

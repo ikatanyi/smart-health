@@ -6,13 +6,13 @@
 package io.smarthealth.accounting.doctors.data;
 
 import io.smarthealth.accounting.doctors.domain.DoctorClinicItems;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull; 
 import lombok.Data;
 
 /**
  *
  * @author Simon.waweru
- */
+ */ 
 @Data
 public class DoctorClinicData {
 

@@ -2,9 +2,9 @@ package io.smarthealth.organization.facility.service;
 
 import io.smarthealth.administration.employeespecialization.data.enums.EmployeeCategory.Category;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.infrastructure.mail.EmailData;
+import io.smarthealth.notification.data.EmailData;
+import io.smarthealth.notification.service.EmailerService;
 import io.smarthealth.infrastructure.utility.PassayPassword;
-import io.smarthealth.messaging.MessageNotificationService;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
@@ -60,12 +60,12 @@ public class EmployeeService {
     PersonContactService personContactService;
 
     @Autowired
-    MessageNotificationService notificationService;
+    EmailerService mailService;
 
     @Transactional
     public Employee createFacilityEmployee(Employee employee, PersonContact personContact, boolean createUserAccount, String[] roles) {
         //verify if exists
-           
+
         if (employeeRepository.existsByStaffNumber(employee.getStaffNumber())) {
             throw APIException.conflict("Staff identified by number {0} already exists ", employee.getStaffNumber());
         }
@@ -104,7 +104,7 @@ public class EmployeeService {
             employeeRepository.save(savedEmployee);
 //.concat(" / ").concat(" ").concat(user.getUsername()
             //send welcome message to the new system user
-            notificationService.sendEmailNotification(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + userSaved.getUsername() + "<br/> password : " + password)));
+            mailService.send(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + userSaved.getUsername() + "<br/> password : " + password)));
         }
         return savedEmployee;
     }
@@ -136,12 +136,13 @@ public class EmployeeService {
         return employeeRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Employee with ID not found", id));
     }
-    
+
     public Employee findEmployeeById(Long id) {
-        if(id!=null)
-           return employeeRepository.findById(id).orElseThrow(() -> APIException.notFound("Employee with ID not found", id));
-        else
+        if (id != null) {
+            return employeeRepository.findById(id).orElseThrow(() -> APIException.notFound("Employee with ID not found", id));
+        } else {
             return null;
+        }
     }
    public Optional<Employee> findByEmployeeID(Long id){
        return employeeRepository.findById(id);
@@ -183,7 +184,8 @@ public class EmployeeService {
         }
         return employeeData;
     }
-  boolean containsWhitespace(String str) {
+
+    boolean containsWhitespace(String str) {
         return str.matches(".*\\s.*");
     }
 }
