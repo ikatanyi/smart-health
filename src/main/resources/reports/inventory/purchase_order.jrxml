@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="credit_note" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="67"/>
+	<property name="ireport.y" value="27"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
@@ -100,7 +100,7 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="22">
+		<band height="83">
 			<staticText>
 				<reportElement x="471" y="5" width="82" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#FFFFFF" uuid="6c8e763a-74c0-43d0-b9da-7f9b63374b0c"/>
 				<textElement verticalAlignment="Middle" markup="none">
@@ -114,82 +114,78 @@
 					<pen lineWidth="0.25" lineStyle="Solid"/>
 				</graphicElement>
 			</line>
-		</band>
-	</pageHeader>
-	<columnHeader>
-		<band height="61">
 			<subreport>
-				<reportElement x="1" y="2" width="307" height="48" uuid="9f408f77-6458-4591-935a-77d74f77e4d6">
-					<printWhenExpression><![CDATA[$P{category}.equals( "Supplier" )]]></printWhenExpression>
-				</reportElement>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Supplier_Data})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "supplier_banner.jasper"]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement x="2" y="2" width="306" height="48" uuid="5fe0f837-f4cd-4acc-b3d0-ebf331b3d270">
+				<reportElement x="2" y="23" width="306" height="48" uuid="5fe0f837-f4cd-4acc-b3d0-ebf331b3d270">
 					<printWhenExpression><![CDATA[$P{category}.equals( "Doctor" )||$P{category}.equals( "pettycash" )]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "employee-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement x="429" y="3" width="30" height="11" forecolor="#000000" uuid="095ac6f1-d0c2-4c9f-abd1-4352b0524693"/>
+				<reportElement x="427" y="23" width="30" height="11" forecolor="#000000" uuid="095ac6f1-d0c2-4c9f-abd1-4352b0524693"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[No.      :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="429" y="14" width="30" height="11" forecolor="#000000" uuid="d0412594-8251-4c56-942c-b296933195fa"/>
+				<reportElement x="427" y="34" width="30" height="11" forecolor="#000000" uuid="d0412594-8251-4c56-942c-b296933195fa"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Date    :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="461" y="3" width="94" height="11" uuid="10e3334d-744e-4f07-898b-bfe8722f12b0"/>
+				<reportElement x="459" y="23" width="94" height="11" uuid="10e3334d-744e-4f07-898b-bfe8722f12b0"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{orderNumber}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="461" y="14" width="94" height="11" uuid="bcf8e7ca-cd13-4ec3-bc8d-12e2e5962f7c"/>
+				<reportElement x="459" y="34" width="94" height="11" uuid="bcf8e7ca-cd13-4ec3-bc8d-12e2e5962f7c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{transactionDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="429" y="26" width="30" height="11" forecolor="#000000" uuid="38b1b31d-2ece-4308-8cbf-3bd76903ef9b"/>
+				<reportElement x="427" y="46" width="30" height="11" forecolor="#000000" uuid="38b1b31d-2ece-4308-8cbf-3bd76903ef9b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Staff    :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="429" y="37" width="30" height="11" forecolor="#000000" uuid="11c3a51b-eb95-4a88-a362-38b17349aa8a"/>
+				<reportElement x="427" y="57" width="30" height="11" forecolor="#000000" uuid="11c3a51b-eb95-4a88-a362-38b17349aa8a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Terms :]]></text>
 			</staticText>
 			<subreport>
-				<reportElement x="2" y="2" width="306" height="46" uuid="4ca39bff-3bf3-4aa1-acea-331048756366">
+				<reportElement x="2" y="23" width="306" height="48" uuid="4ca39bff-3bf3-4aa1-acea-331048756366">
 					<printWhenExpression><![CDATA[$P{category}.equals( "Payer" )]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Payer_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "payer-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="461" y="26" width="93" height="11" uuid="32e31834-d65d-4bc2-a1c9-20fa266e5f67"/>
+				<reportElement x="459" y="46" width="93" height="11" uuid="32e31834-d65d-4bc2-a1c9-20fa266e5f67"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{createdBy}]]></textFieldExpression>
 			</textField>
+			<subreport>
+				<reportElement x="2" y="23" width="306" height="48" uuid="9f408f77-6458-4591-935a-77d74f77e4d6">
+					<printWhenExpression><![CDATA[$P{category}.equals( "Supplier" )]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Supplier_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "supplier_banner.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
-	</columnHeader>
+	</pageHeader>
 	<detail>
 		<band height="13" splitType="Stretch">
 			<subreport>
