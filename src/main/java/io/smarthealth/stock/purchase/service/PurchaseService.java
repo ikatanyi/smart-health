@@ -12,6 +12,7 @@ import io.smarthealth.infrastructure.reports.service.JasperReportsService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;
@@ -66,6 +67,7 @@ public class PurchaseService {
     private final SequenceNumberService sequenceNumberService;
     private final TemplateEngine htmlTemplateEngine;
     private final JasperReportsService reportsService;
+    private final InventoryItemService inventoryItemService;
 
     @Transactional
     public PurchaseOrderData createPurchaseOrder(PurchaseOrderData data) {
@@ -164,16 +166,15 @@ public class PurchaseService {
         item.setAmount(orderItem.getAmount());
         order.addOrderItem(item);
         PurchaseOrder savedOrder = orderRepository.save(order);
-        return savedOrder.getPurchaseOrderLines().get(savedOrder.getPurchaseOrderLines().size()-1);
+        return savedOrder.getPurchaseOrderLines().get(savedOrder.getPurchaseOrderLines().size() - 1);
     }
-    
+
     public void cancelPurchaseOrder(Long id, String remarks) {
         PurchaseOrder order = findOneWithNoFoundDetection(id);
         order.setStatus(PurchaseOrderStatus.Canceled);
         order.setRemarks(remarks);
         orderRepository.save(order);
     }
-    
 
     public Optional<PurchaseOrder> findByOrderNumber(final String orderNo) {
         return orderRepository.findByOrderNumber(orderNo);
@@ -228,8 +229,15 @@ public class PurchaseService {
 
     //TODO generate the html version for the report 
     public HtmlData purchaseOrderHtml(String orderNo) {
+        System.out.println("hhhhhhhhhhhhhhhhhhhhhhhhhhh");
         ReportData reportData = new ReportData();
+        System.out.println("Order No    "+orderNo);
         PurchaseOrderData purchaseOrderData = findByOrderNumberOrThrow(orderNo).toData();
+        for (PurchaseOrderItemData item : purchaseOrderData.getPurchaseOrderItems()) {
+            Integer count = inventoryItemService.getItemCount(item.getItemCode());
+            item.setAvailable(count);
+            System.out.println("Count " + count);
+        }
 
         reportData.getFilters().put("category", "Supplier");
         Optional<Supplier> supplier = supplierService.getSupplierById(purchaseOrderData.getSupplierId());

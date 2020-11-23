@@ -119,10 +119,11 @@ public class StockReportService {
         String orderNo = reportParam.getFirst("orderNo");
 
         PurchaseOrderData purchaseOrderData = purchaseService.findByOrderNumberOrThrow(orderNo).toData();
-
+        System.out.println("purchaseOrderData.getPurchaseOrderItems() "+purchaseOrderData.getPurchaseOrderItems().size());
         for(PurchaseOrderItemData item: purchaseOrderData.getPurchaseOrderItems()){
             Integer count = inventoryItemService.getItemCount(item.getItemCode());
             item.setAvailable(count);
+            System.out.println("Count "+count);
         }
         reportData.getFilters().put("category", "Supplier");
         Optional<Supplier> supplier = supplierService.getSupplierById(purchaseOrderData.getSupplierId());
