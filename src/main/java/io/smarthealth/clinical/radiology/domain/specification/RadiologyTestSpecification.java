@@ -2,6 +2,9 @@ package io.smarthealth.clinical.radiology.domain.specification;
 
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
 import io.smarthealth.clinical.radiology.domain.RadiologyResult;
+import io.smarthealth.clinical.radiology.domain.RadiologyTest;
+import io.smarthealth.clinical.radiology.domain.enumeration.Category;
+import io.smarthealth.clinical.radiology.domain.enumeration.Gender;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
@@ -18,37 +21,24 @@ public class RadiologyTestSpecification {
         super();
     }
 
-    public static Specification<PatientScanTest> createSpecification(String PatientNumber, String scanNo, String visitNumber, Boolean isWalkin, ScanTestState status, DateRange range, String search) {
+    public static Specification<RadiologyTest> createSpecification(Boolean supervisorConfirmation, Gender gender, Category category, String name) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
-            if (PatientNumber != null) {
-                predicates.add(cb.equal(root.get("patientScanRegister").get("patientNo"), PatientNumber));
+            if (supervisorConfirmation != null) {
+                predicates.add(cb.equal(root.get("supervisorConfirmation"), supervisorConfirmation));
             }
-            if (scanNo != null) {
-                predicates.add(cb.equal(root.get("patientScanRegister").get("accessNo"), scanNo));
+            if (gender != null) {
+                predicates.add(cb.equal(root.get("gender"), gender));
             }
-            if (visitNumber != null) {
-                predicates.add(cb.equal(root.get("patientScanRegister").get("visit").get("visitNumber"), visitNumber));
+            if (category != null) {
+                predicates.add(cb.equal(root.get("category"), category));
             }
-            if (isWalkin != null) {
-                predicates.add(cb.equal(root.get("patientScanRegister").get("isWalkin"), isWalkin));
-            }
-            if (status != null) {
-                predicates.add(cb.equal(root.get("status"), status));
-            }
-            if (range != null) {
-                predicates.add(
-                        cb.between(root.get("patientScanRegister").get("receivedDate"), range.getStartDate(), range.getStartDate())
-                );
-            }
-            if (search != null) {
-                final String likeExpression = "%" + search + "%";
+            if (name != null) {
+                final String likeExpression = "%" + name + "%";
                 predicates.add(
                         cb.or(
-                                cb.like(root.get("patientScanRegister").get("patientNo"), likeExpression),
-                                cb.like(root.get("patientScanRegister").get("patientName"), likeExpression), //
-                                cb.like(root.get("patientScanRegister").get("accessNo"), likeExpression)
+                                cb.like(root.get("scanName"), likeExpression)
                         )
                 );
             }

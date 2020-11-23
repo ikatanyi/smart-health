@@ -18,6 +18,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
@@ -41,6 +44,13 @@ public class JournalEntry extends Auditable {
     @Enumerated(EnumType.STRING)
     private JournalState status;
 
+    @Column(name = "reversed", nullable = false)
+    private boolean reversed = false;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reversal_id")
+    private JournalEntry reversalJournalEntry;
+    
     @OneToMany(mappedBy = "journalEntry", cascade = CascadeType.ALL)
     private List<JournalEntryItem> items = new ArrayList<>();
 
@@ -81,9 +91,8 @@ public class JournalEntry extends Auditable {
                 .stream()
                 .filter(x -> x.isCredit())
                 .map(x -> x.getCredit())
-                .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
-
-        return d.equals(c);
+                .reduce(BigDecimal.ZERO, (x, y) -> x.add(y)); 
+        return d.compareTo(c) == 0;
     }
 
     private void addItems(List<JournalEntryItem> items) {

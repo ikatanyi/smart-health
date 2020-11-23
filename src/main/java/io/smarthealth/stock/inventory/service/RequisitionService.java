@@ -51,7 +51,7 @@ public class RequisitionService {
         data.setRequestionNumber(reqNo);
         data.setStatus(RequisitionStatus.Draft);
         data.setType(requisition.getRequisitionType());
-        data.setRequestedBy(requisition.getRequestedBy()!=null ? requisition.getRequestedBy() : SecurityUtils.getCurrentUserLogin().get());
+        data.setRequestedBy(requisition.getRequestedBy() != null ? requisition.getRequestedBy() : SecurityUtils.getCurrentUserLogin().get());
         data.setTerms(requisition.getTerms());
 
         if (requisition.getRequistionLines() != null) {
@@ -90,5 +90,9 @@ public class RequisitionService {
             return requisitionRepository.findByStatus(state, page);
         }
         return requisitionRepository.findAll(page);
+    }
+
+    public Requisition saveRequisition(Requisition r) {
+        return requisitionRepository.save(r);
     }
 }

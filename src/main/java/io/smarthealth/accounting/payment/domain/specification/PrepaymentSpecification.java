@@ -1,9 +1,6 @@
 package io.smarthealth.accounting.payment.domain.specification;
 
-import io.smarthealth.accounting.payment.domain.Copayment;
-import io.smarthealth.accounting.payment.domain.Prepayment;
-import io.smarthealth.accounting.payment.domain.Receipt;
-import io.smarthealth.accounting.payment.domain.ReceiptItem;
+import io.smarthealth.accounting.payment.domain.PaymentDeposit;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -16,14 +13,14 @@ public class PrepaymentSpecification {
         super();
     }
 
-    public static Specification<Prepayment> createSpecification(String patientNumber, String receiptNo, Boolean hasBalance, DateRange range) {
+    public static Specification<PaymentDeposit> createSpecification(String customerNumber, String receiptNo, Boolean hasBalance, DateRange range) {
 
         return (root, query, cb) -> {
 
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
-            if (patientNumber != null) {
-                predicates.add(cb.like(root.get("patient").get("patientNumber"), patientNumber));
+            if (customerNumber != null) {
+                predicates.add(cb.like(root.get("customerNumber"), customerNumber));
             }
             if (receiptNo != null) {
                 predicates.add(cb.equal(root.get("receipt").get("receiptNo"), receiptNo));

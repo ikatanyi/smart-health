@@ -21,7 +21,7 @@ import io.smarthealth.clinical.radiology.domain.RadiologyTest;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyRegisterSpecification;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyResultSpecification;
-import io.smarthealth.clinical.radiology.domain.specification.RadiologyTestSpecification;
+import io.smarthealth.clinical.radiology.domain.specification.PatientScanTestSpecification;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
@@ -33,7 +33,7 @@ import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.service.FileStorageService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.notify.service.NotificationEventPublisher;
+import io.smarthealth.notification.service.NotificationEventPublisher;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -293,7 +293,7 @@ public class RadiologyService {
     }
 
     public Page<PatientScanTest> findAllTests(String PatientNumber, String search, String scanNo, ScanTestState status, String visitId, DateRange range, Boolean isWalkin, Pageable pgbl) {
-        Specification spec = RadiologyTestSpecification.createSpecification(PatientNumber, scanNo, visitId, isWalkin, status, range, search);
+        Specification spec = PatientScanTestSpecification.createSpecification(PatientNumber, scanNo, visitId, isWalkin, status, range, search);
         return pscanRepository.findAll(spec, pgbl);
     }
 

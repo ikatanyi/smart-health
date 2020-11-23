@@ -35,13 +35,13 @@ public class BedTypeService {
     public BedType createBedType(BedTypeData data) {
         BedType bedType = data.map();
         List<BedCharge> bedCharges = new ArrayList();
-        for (BedChargeData charge : data.getBedCharges()) {
-            BedCharge bedCharge = charge.map();
-            Item item = itemService.findItemEntityOrThrow(charge.getItemId());
-            bedCharge.setItem(item);
-            bedCharges.add(bedCharge);
-        }
-        bedType.addBedCharges(bedCharges);
+//        for (BedChargeData charge : data.getBedCharges()) {
+//            BedCharge bedCharge = charge.map();
+//            Item item = itemService.findItemEntityOrThrow(charge.getItemId());
+//            bedCharge.setItem(item);
+//            bedCharges.add(bedCharge);
+//        }
+//        bedType.addBedCharges(bedCharges);
         if (fetchBedTypeByName(data.getName()).isPresent()) {
             throw APIException.conflict("BedType {0} already exists.", data.getName());
         }

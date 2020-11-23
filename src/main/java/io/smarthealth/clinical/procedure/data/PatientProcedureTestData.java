@@ -43,12 +43,14 @@ public class PatientProcedureTestData {
     private String medicName;
     private Long medicId;
     private LocalDate procedureDate=LocalDate.now();
+    private String createdBy;
    
 
     public static PatientProcedureTest map(PatientProcedureTestData scan) {
         PatientProcedureTest entity = new PatientProcedureTest();
         entity.setResult(scan.getResults());
         entity.setStatus(scan.getState());
+        entity.setProcedureDate(scan.getProcedureDate());
         return entity;
     }
 }

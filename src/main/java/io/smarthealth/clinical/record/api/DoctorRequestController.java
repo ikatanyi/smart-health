@@ -15,7 +15,7 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.notify.service.NotificationEventPublisher;
+import io.smarthealth.notification.service.NotificationEventPublisher;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;
@@ -42,6 +42,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import io.smarthealth.clinical.record.data.OrdersRequest;
 
 /**
  *
@@ -124,9 +125,25 @@ public class DoctorRequestController {
     @GetMapping("/doctor-request/{id}")
     @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> fetchRequestById(@PathVariable("id") final Long id) {
-        Optional<DoctorRequestData> specimens = requestService.getDocRequestById(id);
+        Optional<DoctorRequestData> specimens = requestService.getDocRequestDataById(id);
         if (specimens != null) {
             return ResponseEntity.ok(specimens);
+        } else {
+            throw APIException.notFound("Request Number {0} not found.", id);
+        }
+    }
+
+    @DeleteMapping("/doctor-request/{id}")
+    @PreAuthorize("hasAuthority('delete_doctorrequest')")
+    public ResponseEntity<?> deleteRequestById(@PathVariable("id") final Long id) {
+        Optional<DoctorRequest> docRequest = requestService.getDocRequestById(id);
+
+        if (docRequest.isPresent()) {
+            if (docRequest.get().getFulfillerStatus().equals(FullFillerStatusType.Fulfilled)) {
+                throw APIException.badRequest("You cannot remove a fulfilled request", "");
+            }
+            requestService.deleteDocRequest(docRequest.get());
+            return ResponseEntity.ok("Successfully deleted");
         } else {
             throw APIException.notFound("Request Number {0} not found.", id);
         }
@@ -159,26 +176,34 @@ public class DoctorRequestController {
     }
 
     @GetMapping("/doctor-request/{patientNo}/past")
+    @PreAuthorize("hasAuthority('view_doctorrequest')")
     public ResponseEntity<?> pastDocRequests(
             @PathVariable(value = "patientNo", required = false) final String patientNo,
             @RequestParam(value = "requestType", required = false) final RequestType requestType,
             @RequestParam(value = "fulfillerStatus", required = false, defaultValue = "Unfulfilled") final FullFillerStatusType fulfillerStatus,
             @RequestParam(value = "dateRange", required = false) final String dateRange,
             @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "pageSize", required = false) Integer size
+            @RequestParam(value = "pageSize", required = false) Integer size,
+            @RequestParam(value = "billPaymentValidation", required = false, defaultValue = "false") final Boolean billPaymentValidationPoint
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Patient patient = patientService.findPatientOrThrow(patientNo);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         //fetch all visits by patient
-        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, range, null, null, false, null, pageable);
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, range, null, null, false, null, billPaymentValidationPoint, pageable);
+        System.out.println("patientVisits " + patientVisits.getContent().size());
         List<HistoricalDoctorRequestsData> doctorRequestsData = new ArrayList<>();
 
         for (Visit v : patientVisits.getContent()) {
+            System.out.println("Visit number " + v.getVisitNumber());
+            System.out.println("Patient number " + patientNo);
             Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(v.getVisitNumber(), patientNo, requestType, fulfillerStatus, "patient", pageable, null, null, null);
-
+            System.out.println("pageList " + pageList.getContent().size());
+            int count = 0;
             for (DoctorRequest docReq : pageList.getContent()) {
+                System.out.println("count " + count);
                 HistoricalDoctorRequestsData waitingRequest = new HistoricalDoctorRequestsData();
+                waitingRequest.setId(docReq.getId());
                 waitingRequest.setPatientName(patient.getFullName());
                 waitingRequest.setPatientNumber(patient.getPatientNumber());
 
@@ -187,14 +212,17 @@ public class DoctorRequestController {
 
                 waitingRequest.setVisitNumber(v.getVisitNumber());
                 waitingRequest.setVisitNotes(v.getComments());
+
                 //find line items by request_id
                 List<DoctorRequest> serviceItems = requestService.fetchServiceRequests(docReq.getPatient(), fulfillerStatus, requestType, v);
+                System.out.println("serviceItems " + serviceItems.size());
                 List<DoctorRequestItem> requestItems = new ArrayList<>();
                 for (DoctorRequest r : serviceItems) {
                     requestItems.add(requestService.toData(r));
                 }
                 waitingRequest.setItem(requestItems);
                 doctorRequestsData.add(waitingRequest);
+                count++;
             }
 
         }
@@ -312,4 +340,24 @@ public class DoctorRequestController {
         return requestService.deleteById(id);
     }
 
+    @GetMapping("/doctor-request/list")
+    @PreAuthorize("hasAuthority('view_doctorrequest')")
+    public ResponseEntity<  Pager<OrdersRequest>> getDoctorsOrders(
+            @RequestParam(value = "visitNumber", required = false) final String visitNumber,
+            @RequestParam(value = "patientNumber", required = false) final String patientNumber,
+            @RequestParam(value = "requestType", required = false) final RequestType requestType,
+            @RequestParam(value = "fulfillerStatus", required = false) final FullFillerStatusType fulfillerStatus,
+            @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size
+    ) {
+        Pageable pageable = PaginationUtil.createPage(page, size);
+
+        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        Page<OrdersRequest> list = requestService.getDoctorOrderRequests(visitNumber, patientNumber, requestType, fulfillerStatus, range, pageable)
+                .map(OrdersRequest::of); 
+        
+        return ResponseEntity.ok((Pager<OrdersRequest>) PaginationUtil.toPager(list, "Doctors Requests"));
+    }
 }

@@ -16,6 +16,7 @@ import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
 import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.organization.person.patient.data.PatientData;
+import io.smarthealth.report.service.StockReportService;
 import io.smarthealth.stock.item.data.CreateItem;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -23,11 +24,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 
 /**
  *
@@ -39,6 +42,7 @@ public class BatchTemplateService {
 
     private final ImportService importService;
     private final AccountReportService accReportService;
+    private final StockReportService stockReportService;
 
     public void generateTemplate(TemplateType type, HttpServletResponse response) throws IOException, JRException, SQLException {
         List list = new ArrayList();
@@ -85,8 +89,7 @@ public class BatchTemplateService {
                 componentClass = PayerMemberData.class;
                 break;
             case InventoryStock:
-                fileName = "Inventory Stock";
-                componentClass = InventoryStockData.class;
+                stockReportService.InventoryStock(null, ExportFormat.XLSX, response);
                 break;
             case PriceBookItems:
                 fileName = "Price Book Service Setup";
@@ -102,6 +105,7 @@ public class BatchTemplateService {
 //        map.put(1, getFieldDescriptions(componentClass));
         if(type!=TemplateType.Account_Balances)
            importService.exportExcel(type.name(), fileName, map, componentClass, response);
+        
     }
 
     private List<String> getFieldDescriptions(Class<?> componentClass) {

@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="4aae1193-a82d-4555-b88f-e537201ac06a">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="169"/>
+	<property name="ireport.y" value="196"/>
 	<style name="headerStyles" mode="Opaque" forecolor="#0000FF" backcolor="#FF0033"/>
 	<scriptlet name="Helper" class="io.smarthealth.infrastructure.utility.RoundingHelper"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
@@ -16,6 +16,7 @@
 	</parameter>
 	<parameter name="Header_Data" class="java.util.List"/>
 	<parameter name="Footer_Data" class="java.util.List"/>
+	<parameter name="showCapitationItem" class="java.lang.Boolean"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -44,6 +45,7 @@
 	<field name="createdBy" class="java.lang.String"/>
 	<field name="status" class="java.lang.Object"/>
 	<field name="state" class="java.lang.String"/>
+	<field name="capitation" class="java.lang.Boolean"/>
 	<variable name="Price_1" class="java.lang.Double" resetType="Column" calculation="Sum">
 		<variableExpression><![CDATA[]]></variableExpression>
 		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
@@ -61,27 +63,27 @@
 	<background>
 		<band height="802" splitType="Stretch">
 			<rectangle>
-				<reportElement positionType="Float" x="336" y="196" width="38" height="394" uuid="2b2ba01b-2092-43cb-bf71-1ee54687c6de"/>
-				<graphicElement>
-					<pen lineWidth="0.25"/>
-				</graphicElement>
-			</rectangle>
-			<rectangle>
-				<reportElement positionType="Float" x="0" y="196" width="555" height="394" uuid="b9b5dded-29a4-4d35-a875-33a71d3dccf7"/>
+				<reportElement positionType="Float" x="0" y="202" width="555" height="388" uuid="b9b5dded-29a4-4d35-a875-33a71d3dccf7"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement positionType="Float" x="374" y="196" width="112" height="394" uuid="af8d1e24-1fa8-47db-a1d2-92df869657f6"/>
+				<reportElement positionType="Float" x="374" y="202" width="112" height="388" uuid="af8d1e24-1fa8-47db-a1d2-92df869657f6"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement positionType="Float" x="96" y="196" width="213" height="394" uuid="f6019854-c37a-42ad-b153-6d62aeb4b492"/>
+				<reportElement positionType="Float" x="161" y="202" width="148" height="388" uuid="f6019854-c37a-42ad-b153-6d62aeb4b492"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineColor="#000000"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement positionType="Float" x="77" y="202" width="84" height="388" uuid="2b2ba01b-2092-43cb-bf71-1ee54687c6de"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
 				</graphicElement>
 			</rectangle>
 			<image onErrorType="Blank">
@@ -110,7 +112,7 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="172">
+		<band height="180">
 			<staticText>
 				<reportElement positionType="Float" mode="Transparent" x="336" y="131" width="78" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
 				<textElement verticalAlignment="Middle">
@@ -179,7 +181,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{memberName}.toUpperCase()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{patientName}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="415" y="115" width="140" height="13" uuid="357516ad-e8d0-4046-9359-0e36ab26475a"/>
@@ -228,56 +230,22 @@
 			</subreport>
 		</band>
 	</pageHeader>
-	<columnHeader>
-		<band height="22" splitType="Stretch">
-			<line>
-				<reportElement positionType="Float" x="2" y="21" width="552" height="1" uuid="a8d391fc-b056-4f7b-bfe1-83fc2135609e"/>
-				<graphicElement>
-					<pen lineWidth="0.15" lineColor="#333333"/>
-				</graphicElement>
-			</line>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="0" y="4" width="96" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="3f38c91f-561d-49c1-87ac-925b89902337"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Trebuchet MS" size="10" isBold="true"/>
-					<paragraph leftIndent="10"/>
-				</textElement>
-				<text><![CDATA[Service Type]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="96" y="4" width="213" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="c0123b24-8d07-40a4-9c35-d5e3faf2a1aa"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Trebuchet MS" size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Description]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="374" y="4" width="112" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="774359b5-0b9a-4338-9438-918141ba8b74"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Trebuchet MS" size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Unit Price]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="486" y="4" width="69" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="77f0eb94-54c5-4385-ad66-12174acf28e7"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Trebuchet MS" size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Total]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="309" y="4" width="65" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="5537c53d-a554-4204-93fe-9d6a2ce62ea4"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Trebuchet MS" size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Qty]]></text>
-			</staticText>
-		</band>
-	</columnHeader>
 	<detail>
 		<band height="11" splitType="Stretch">
 			<subreport>
 				<reportElement x="0" y="0" width="555" height="11" uuid="4fb7f8d0-65c0-4be1-86ff-bd6d8d263878"/>
+				<subreportParameter name="date">
+					<subreportParameterExpression><![CDATA[$F{visitDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="amount">
+					<subreportParameterExpression><![CDATA[$F{amount}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="capitation">
+					<subreportParameterExpression><![CDATA[$F{capitation}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="showCapitationItem">
+					<subreportParameterExpression><![CDATA[$P{showCapitationItem}]]></subreportParameterExpression>
+				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{invoiceItems})]]></dataSourceExpression>
 				<returnValue subreportVariable="total" toVariable="total"/>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "invoice_LineItems_subreport.jasper"]]></subreportExpression>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="item_statement" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="31"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
@@ -106,14 +106,14 @@
 				<text><![CDATA[#]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="34" y="19" width="75" height="15" uuid="c98df0e6-e4db-45dc-a260-28bfb050ccc1"/>
+				<reportElement x="23" y="19" width="65" height="15" uuid="c98df0e6-e4db-45dc-a260-28bfb050ccc1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Item Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="419" y="19" width="50" height="15" uuid="39a56b9d-4c64-426d-bff4-302e706ebb28"/>
+				<reportElement x="441" y="19" width="63" height="15" uuid="39a56b9d-4c64-426d-bff4-302e706ebb28"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -126,35 +126,35 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="116" y="19" width="66" height="15" uuid="29f991f3-ba06-4270-bdf5-d4bd6ec208b2"/>
+				<reportElement x="88" y="19" width="150" height="15" uuid="29f991f3-ba06-4270-bdf5-d4bd6ec208b2"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Item Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="259" y="19" width="32" height="15" uuid="b14feb82-769e-4d19-a52f-4ff6f1060e14"/>
+				<reportElement x="295" y="19" width="32" height="15" uuid="b14feb82-769e-4d19-a52f-4ff6f1060e14"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Unit]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="482" y="19" width="50" height="15" uuid="ee7c6a30-18ef-4201-b3d0-5c824b930210"/>
+				<reportElement x="504" y="19" width="50" height="15" uuid="ee7c6a30-18ef-4201-b3d0-5c824b930210"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Cost Rate]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="305" y="19" width="104" height="15" uuid="06053154-8f01-4e1d-8d2f-0886708db10f"/>
+				<reportElement x="327" y="19" width="114" height="15" uuid="06053154-8f01-4e1d-8d2f-0886708db10f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="195" y="19" width="46" height="15" uuid="51fcf232-65c6-4baf-ba45-fa401c3cc9cb"/>
+				<reportElement x="238" y="19" width="57" height="15" uuid="51fcf232-65c6-4baf-ba45-fa401c3cc9cb"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -164,37 +164,37 @@
 	</columnHeader>
 	<detail>
 		<band height="13" splitType="Stretch">
-			<textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="2" y="0" width="21" height="12" uuid="ff6dfe07-064f-46e8-91cb-2a06b137dab2"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="34" y="0" width="75" height="12" uuid="cd5a298b-885b-4c89-9fa0-8b866cd0f4d9"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="23" y="0" width="65" height="12" uuid="cd5a298b-885b-4c89-9fa0-8b866cd0f4d9"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemCode}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="259" y="0" width="32" height="12" isRemoveLineWhenBlank="true" uuid="2498ce6b-e469-4c8a-8424-6e46a1aedf33"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="295" y="0" width="32" height="12" isRemoveLineWhenBlank="true" uuid="2498ce6b-e469-4c8a-8424-6e46a1aedf33"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{unit}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="482" y="0" width="50" height="12" isRemoveLineWhenBlank="true" uuid="ea160521-7cdc-444d-8d71-33d966c33782"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="504" y="0" width="50" height="12" isRemoveLineWhenBlank="true" uuid="ea160521-7cdc-444d-8d71-33d966c33782"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 					<paragraph rightIndent="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{costRate}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="116" y="0" width="66" height="13" isRemoveLineWhenBlank="true" uuid="e0ad7c0b-4560-4d9c-b762-eb9917ecf4d3"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="88" y="0" width="150" height="13" isRemoveLineWhenBlank="true" uuid="e0ad7c0b-4560-4d9c-b762-eb9917ecf4d3"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -206,23 +206,23 @@
 					<pen lineWidth="0.15" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
-			<textField isBlankWhenNull="true">
-				<reportElement x="419" y="1" width="50" height="12" isRemoveLineWhenBlank="true" uuid="4fa51bbb-2419-4490-834d-c6d20a5a7211"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="441" y="1" width="63" height="12" isRemoveLineWhenBlank="true" uuid="4fa51bbb-2419-4490-834d-c6d20a5a7211"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 					<paragraph rightIndent="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{rate}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="305" y="1" width="104" height="12" isRemoveLineWhenBlank="true" uuid="fab7dc4b-0a68-4954-ac8d-8d60131de327"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="327" y="1" width="114" height="12" isRemoveLineWhenBlank="true" uuid="fab7dc4b-0a68-4954-ac8d-8d60131de327"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="195" y="0" width="46" height="12" isRemoveLineWhenBlank="true" uuid="f67af662-6a5e-4133-b49b-2a7fe1090ca2"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="238" y="0" width="57" height="12" isRemoveLineWhenBlank="true" uuid="f67af662-6a5e-4133-b49b-2a7fe1090ca2"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>

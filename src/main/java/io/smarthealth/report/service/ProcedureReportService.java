@@ -8,9 +8,7 @@ package io.smarthealth.report.service;
 import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.smarthealth.clinical.procedure.service.ProcedureService;
-import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
-import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
@@ -54,6 +52,7 @@ public class ProcedureReportService {
         String PatientNumber= reportParam.getFirst("PatientNumber");
         String scanNo=reportParam.getFirst("scanNo"); 
         String visitNumber=reportParam.getFirst("visitNumber");
+        Boolean isWalkin = reportParam.getFirst("iswalkin")!=null?Boolean.parseBoolean(reportParam.getFirst("iswalkin")):null;
         ProcedureTestState status=statusToEnum(reportParam.getFirst("status"));
         String dateRange=reportParam.getFirst("range");
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
@@ -69,7 +68,7 @@ public class ProcedureReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        reportData.getFilters().put("range", reportParam.getFirst("range"));
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setData(procTests);
         reportData.setFormat(format);
         reportData.setTemplate("/clinical/procedure/procedure_statement");

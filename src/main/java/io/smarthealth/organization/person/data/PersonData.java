@@ -42,12 +42,13 @@ public class PersonData {
     @Enumerated(EnumType.STRING)
     @Column(length = 25)
     private MaritalStatus maritalStatus;
-    private List<AddressData> address;
+    private List<AddressDatas> address;
     private List<ContactData> contact;
     private List<PersonNextOfKinData> nok;
     private String fullName;
     private LocalDate createdOn;
-    private LocalDate dateRegistered;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
+    private LocalDate dateRegistered=LocalDate.now();
     private String phone;
     private String addressLine;
 
@@ -67,7 +68,7 @@ public class PersonData {
         if (personDTO.getAddress() != null) {           
             person.setAddresses(
                     personDTO.getAddress().stream()
-                            .map(AddressData::map)
+                            .map(AddressDatas::map)
                             .collect(Collectors.toList())
             );
         }
@@ -97,7 +98,7 @@ public class PersonData {
             
             persondto.setAddress(
                     person.getAddresses().stream()
-                            .map(AddressData::map)
+                            .map(AddressDatas::map)
                             .collect(Collectors.toList())
             );
         }

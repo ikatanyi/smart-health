@@ -6,7 +6,6 @@ import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import javax.persistence.*;
 import lombok.Data;
-import lombok.ToString;
 
 /**
  *

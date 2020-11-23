@@ -73,6 +73,8 @@ public class LabRegisterTest extends Identifiable {
     //we can have attachment link here
     private String attachment;
 
+    private String testName;
+
     public LabRegisterTestData toData(Boolean expand) {
         LabRegisterTestData data = new LabRegisterTestData();
         data.setId(this.getId());
@@ -84,10 +86,12 @@ public class LabRegisterTest extends Identifiable {
         data.setEntered(this.entered);
         data.setEnteredBy(this.enteredBy);
         data.setEntryDateTime(this.entryDateTime);
+        
 
         data.setValidated(this.validated);
         data.setValidatedBy(this.validatedBy);
         data.setValidationDateTime(this.validationDateTime);
+        data.setPaymentMode(this.getLabRegister().getPaymentMode());
 
         data.setTestPrice(this.price);
         if (this.labRegister != null) {
@@ -96,18 +100,20 @@ public class LabRegisterTest extends Identifiable {
             data.setRequestedBy(this.labRegister.getRequestedBy());
             data.setLabNumber(this.labRegister.getLabNumber());
             data.setPatientNumber(this.labRegister.getPatientNo());
+            data.setReferenceNo(this.labRegister.getTransactionId());
 
             if (this.labRegister.getVisit() != null) {
                 data.setPatientName(this.labRegister.getVisit().getPatient().getGivenName());
                 data.setDOB(this.labRegister.getVisit().getPatient().getDateOfBirth());
                 data.setGender(this.labRegister.getVisit().getPatient().getGender());
+                data.setIsWalkin(this.labRegister.getIsWalkin());
             }
         }
 
         data.setPaid(this.paid);
-        data.setReferenceNo(this.referenceNo);
+//        data.setReferenceNo(this.referenceNo);
         data.setRequestId(this.requestId);
-
+        
         data.setSpecimen(this.specimen);
         data.setStatus(this.status);
         data.setIsPanel(this.isPanel);
@@ -122,6 +128,11 @@ public class LabRegisterTest extends Identifiable {
             }
 
             data.setWithRef(this.labTest.getHasReferenceValue() != null ? this.labTest.getHasReferenceValue() : true);
+        }
+
+        if (this.labTest == null) {
+            data.setTestCode(this.testName);
+            data.setTestName(this.testName);
         }
 
         if (this.parentLabTest != null) {

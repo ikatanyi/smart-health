@@ -4,6 +4,7 @@ import io.smarthealth.security.service.CustomTokenEnhancer;
 import io.smarthealth.security.service.CustomUserDetailsService;
 import java.util.Arrays;
 import javax.sql.DataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -97,7 +98,7 @@ public class OAuthConfiguration extends AuthorizationServerConfigurerAdapter {
                 .authenticationManager(authenticationManager)
                 .userDetailsService(userDetailsService)
                 .authorizationCodeServices(authorizationCodeServices())
-                .reuseRefreshTokens(false);
+                .reuseRefreshTokens(false); 
     }
 
     @Bean

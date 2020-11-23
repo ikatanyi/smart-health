@@ -7,6 +7,7 @@ import io.smarthealth.debtor.claim.dispatch.domain.Dispatch;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +38,10 @@ public class DispatchData {
     public static DispatchData map(Dispatch dispatch){
         DispatchData data = new DispatchData();
         data.setComments(dispatch.getComments());
-        data.setDispatchDate(dispatch.getDispatchDate());
+        if(dispatch.getDispatchDate()!=null)
+            data.setDispatchDate(dispatch.getDispatchDate());
+        else
+            data.setDispatchDate(LocalDate.from(dispatch.getCreatedOn().atZone(ZoneId.systemDefault())));
         data.setDispatchNo(dispatch.getDispatchNo());
         if(dispatch.getPayer()!=null){
             data.setPayer(dispatch.getPayer().getPayerName());
@@ -54,6 +58,7 @@ public class DispatchData {
     
     public static Dispatch map(DispatchData data){
         Dispatch dispatch = new Dispatch();
+        dispatch.setDispatchDate(data.getDispatchDate());
         dispatch.setComments(data.getComments());
         return dispatch;
     }

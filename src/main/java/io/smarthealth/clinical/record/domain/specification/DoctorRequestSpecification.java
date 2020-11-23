@@ -33,7 +33,7 @@ public class DoctorRequestSpecification {
                 if (activeVisit) {
                     predicates.add(root.get("visit").get("status").in(Arrays.asList(VisitEnum.Status.CheckIn, VisitEnum.Status.Admitted)));
                 } else {
-                    predicates.add(root.get("visit").get("status").in(Arrays.asList(VisitEnum.Status.CheckOut, VisitEnum.Status.Discharged)));
+                    predicates.add(root.get("visit").get("status").in(Arrays.asList(VisitEnum.Status.CheckOut, VisitEnum.Status.Discharged, VisitEnum.Status.Transferred)));
                 }
             }
 
@@ -70,13 +70,13 @@ public class DoctorRequestSpecification {
             }
 
             if (range != null) {
-                System.out.println("range " + range.toString());
                 predicates.add(
                         cb.between(root.get("orderDate"), range.getStartDate(), range.getEndDate())
                 // cb.between(root.get("visit").get("startDatetime"), range.getStartDate(), range.getEndDate())
                 );
             }
 
+            query.orderBy(cb.desc(root.get("orderDate")));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

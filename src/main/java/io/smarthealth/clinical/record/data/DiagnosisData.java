@@ -57,8 +57,8 @@ public class DiagnosisData {
     public DiagnosisData() {
     }
 
-    @JsonFormat( pattern = DATE_TIME_PATTERN)
-    private LocalDateTime recorded = LocalDateTime.now();
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
+    private LocalDateTime dateRecorded = LocalDateTime.now();
 
     public static PatientDiagnosis map(DiagnosisData diagnosis) {
         PatientDiagnosis entity = new PatientDiagnosis();
@@ -69,6 +69,7 @@ public class DiagnosisData {
         entity.setCertainty(diagnosis.getCertainty() != null ? diagnosis.getCertainty().name() : null);
         entity.setDiagnosisOrder(diagnosis.getDiagnosisOrder() != null ? diagnosis.getDiagnosisOrder().name() : null);
         entity.setNotes(diagnosis.getNotes());
+        entity.setDateRecorded(diagnosis.getDateRecorded());
         return entity;
     }
 
@@ -85,6 +86,7 @@ public class DiagnosisData {
         diagnos.setDiagnosisOrder(Order.valueOf(entity.getDiagnosisOrder()));
         diagnos.setNotes(entity.getNotes());
         diagnos.setCondition(entity.getIsCondition());
+        diagnos.setDateRecorded(entity.getDateRecorded());
         return diagnos;
     }
 

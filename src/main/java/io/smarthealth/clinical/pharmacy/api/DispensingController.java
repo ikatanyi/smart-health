@@ -6,6 +6,7 @@ import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
 import io.smarthealth.clinical.pharmacy.domain.DispensedDrug; 
 import io.smarthealth.clinical.pharmacy.service.DispensingService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.inventory.data.TransData;
@@ -22,6 +23,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -75,6 +77,13 @@ public class DispensingController {
         DispensedDrug bill = service.findDispensedDrugOrThrow(code);
         return bill.toData();
     }
+    
+    @PutMapping("/pharmacybilling/{requestId}/status")
+    @PreAuthorize("hasAuthority('edit_dispense')")
+    public ResponseEntity<?> updatePatientDrug(@PathVariable(value = "requestId") Long id) {
+        Boolean status = service.UpdateFullfillerStatus(id);
+        return ResponseEntity.ok(status);
+    }
 
     @GetMapping("/pharmacybilling")
     @PreAuthorize("hasAuthority('view_dispense')")
@@ -84,12 +93,14 @@ public class DispensingController {
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
             @RequestParam(value = "prescriptionNo", required = false) String prescription,
             @RequestParam(value = "billNumber", required = false) String billNumber, 
+            @RequestParam(value = "dateRange", required = false) String dateRange, 
             @RequestParam(value = "isReturn", required = false) Boolean isReturn,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
+        DateRange range = DateRange.fromIsoString(dateRange);
         Pageable pageable = PaginationUtil.createPage(page, size, Sort.by(Sort.Direction.DESC, "dispensedDate"));
-        Page<DispensedDrugData> list = service.findDispensedDrugs(referenceNumber, visitNumber, patientNumber, prescription, billNumber, isReturn, pageable)
+        Page<DispensedDrugData> list = service.findDispensedDrugs(referenceNumber, visitNumber, patientNumber, prescription, billNumber, isReturn, range, pageable)
                 .map(drug -> drug.toData());
 
         Pager<List<DispensedDrugData>> pagers = new Pager();

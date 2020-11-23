@@ -9,6 +9,7 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.debtor.scheme.domain.enumeration.DiscountType;
 import io.smarthealth.infrastructure.domain.Auditable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,26 +29,34 @@ import lombok.Data;
 @Data
 public class SchemeConfigurations extends Auditable {
 
-    @Enumerated(EnumType.STRING)
-    private DiscountType discountMethod;
-
-    private double discountValue;
-    @Enumerated(EnumType.STRING)
-    private CoPayType coPayType;
-    private double coPayValue;
-    private boolean status;
-    private boolean smartEnabled;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_scheme_configurations_scheme_id"), unique = true)
     private Scheme scheme;
+    @Enumerated(EnumType.STRING)
+    private DiscountType discountMethod;
+    private double discountValue;
 
-    private LocalDate copayStartDate;
+    private boolean smartEnabled;
     private String schemeCover;
-
     @Column(columnDefinition = "tinyint(1) default 0")
     private boolean checkMemberShipLimit;
     @Column(columnDefinition = "tinyint(1) default 0")
     private boolean claimSwitching;
+
+    @Column(name = "has_capitation")
+    private boolean capitationEnabled = false;
+    private BigDecimal capitationAmount = BigDecimal.ZERO;
+
+    private boolean limitEnabled = false;
+    private BigDecimal limitAmount = BigDecimal.ZERO;
+
+    @Column(name = "has_copay")
+    private boolean copayEnabled = false;
+    @Enumerated(EnumType.STRING)
+    private CoPayType coPayType;
+    private double coPayValue;
+    private LocalDate copayStartDate;
+
+    private boolean status;
 
 }

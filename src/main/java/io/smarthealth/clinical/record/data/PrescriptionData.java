@@ -44,7 +44,6 @@ public class PrescriptionData extends DoctorRequestData {
     private String itemType;
     @ApiModelProperty(required = false, hidden = true)
     private String physician;
-    
 
     @ApiModelProperty(required = false, hidden = true)
     private Long id;
@@ -72,6 +71,10 @@ public class PrescriptionData extends DoctorRequestData {
         }
         if (p.getItem() != null) {
             pd.setItemType(p.getItem().getDrugForm());
+            pd.setItemCode(p.getItem().getItemCode());
+            pd.setItemName(p.getItem().getItemName());
+        }else{
+            pd.setItemName(p.getBrandName());
         }
         //pd.set
         /*
@@ -94,15 +97,15 @@ public class PrescriptionData extends DoctorRequestData {
             pd.setUrgency(Urgency.valueOf(p.getUrgency()));
         }
 
-        if(p.getVisit()!=null){
-            if(p.getVisit().getHealthProvider()!=null)
-                 pd.setPhysician(p.getVisit().getHealthProvider().getFullName());
+        if (p.getVisit() != null) {
+            if (p.getVisit().getHealthProvider() != null) {
+                pd.setPhysician(p.getVisit().getHealthProvider().getFullName());
+            }
         }
         pd.setVisitNumber(p.getVisitNumber());
         pd.setPrescriptionNo(p.getOrderNumber());
         pd.setPrescriptionId(p.getId());
-        pd.setItemCode(p.getItem().getItemCode());
-        pd.setItemName(p.getItem().getItemName());
+
         return pd;
     }
 

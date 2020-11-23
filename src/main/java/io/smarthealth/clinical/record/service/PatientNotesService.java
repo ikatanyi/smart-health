@@ -5,16 +5,20 @@
  */
 package io.smarthealth.clinical.record.service;
 
+import io.smarthealth.administration.config.domain.GlobalConfiguration;
+import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.clinical.record.data.PatientNotesData;
 import io.smarthealth.clinical.record.domain.PatientNotes;
 import io.smarthealth.clinical.record.domain.PatientNotesRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.domain.PersonRepository;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.organization.person.service.PersonService;
+import java.util.List;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -30,24 +34,27 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class PatientNotesService {
-    
+
     @Autowired
     PatientNotesRepository patientNotesRepository;
-    
+
     @Autowired
     PatientService patientService;
-    
+
     @Autowired
     EmployeeService employeeService;
-    
+
     @Autowired
     PersonService personService;
-    
+
     @Autowired
     PersonRepository personRepository;
-    
+
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    private ConfigService configService;
 
     /*
     
@@ -88,14 +95,19 @@ public class PatientNotesService {
     public Optional<PatientNotes> fetchPatientNotesByVisit(Visit visit) {
         return patientNotesRepository.findByVisit(visit);
     }
-    
+
+    //e. Read patient notes by visit
+    public Page<PatientNotes> fetchAllPatientNotesByVisit(Visit visit, Pageable pgbl) {
+        return patientNotesRepository.findByVisit(visit, pgbl);
+    }
+
     public PatientNotes convertDataToEntity(PatientNotesData patientNotesData) {
         modelMapper.getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.STRICT);
         PatientNotes patientNotes = modelMapper.map(patientNotesData, PatientNotes.class);
         return patientNotes;
     }
-    
+
     public PatientNotesData convertEntityToData(PatientNotes patientNotes) {
         PatientNotesData patientNotesData = new PatientNotesData();//modelMapper.map(patientNotes, PatientNotesData.class);
         patientNotesData.setChiefComplaint(patientNotes.getChiefComplaint());
@@ -110,5 +122,35 @@ public class PatientNotesService {
         patientNotesData.setVisitStartDate(patientNotes.getVisit().getStartDatetime());
         return patientNotesData;
     }
-    
+
+    public Boolean ValidateConsultationFields(PatientNotesData data) {
+        Boolean status = true;
+        String[] configs = {"ChiefComplaints", "ExaminationNotes", "SocialNotes", "HistoryNotes"};
+        for (int i = 0; i < configs.length; i++) {
+            Optional<GlobalConfiguration> config = configService.findByName(configs[i]);
+            if (config.isPresent()) {
+                switch (config.get().getName()) {
+                    case "ChiefComplaints":
+                        if (config.get().getValue().equals("1") && data.getChiefComplaint() == null)
+                            throw APIException.badRequest("Chief complaints is required");                        
+                        break;
+                    case "ExaminationNotes":
+                        if (config.get().getValue().equals("1") && data.getExaminationNotes() == null)
+                            throw APIException.badRequest("Examination is required");
+                         break;
+                    case "SocialNotes":
+                        if (config.get().getValue().equals("1") && data.getSocialHistory() == null)
+                            throw APIException.badRequest("Social notes is required");
+                        break;
+                    case "HistoryNotes":
+                        if (config.get().getValue().equals("1") && data.getHistoryNotes() == null) 
+                            throw APIException.badRequest("History notes is required");
+                         break;
+                }
+            }
+
+        };           
+        return status;
+    }
+
 }

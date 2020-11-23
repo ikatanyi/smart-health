@@ -3,6 +3,7 @@ package io.smarthealth.administration.servicepoint.data;
 /**
  *
  * @author Kelsas
+    Others
  */
 public enum ServicePointType {
     Triage,
@@ -11,6 +12,6 @@ public enum ServicePointType {
     Pharmacy,
     Radiology,
     Procedure,
-    InPatient,
+    Inpatient,
     Others
 }

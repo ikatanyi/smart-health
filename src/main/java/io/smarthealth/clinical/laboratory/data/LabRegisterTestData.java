@@ -46,6 +46,7 @@ public class LabRegisterTestData {
 
     private Boolean paid; //  test paid
     private String referenceNo; //payment reference
+    private String paymentMode;
 
     private Boolean entered; //results entered 
     private String enteredBy;
@@ -76,4 +77,10 @@ public class LabRegisterTestData {
     private Boolean withRef;
     private Boolean isPanel;
     private String parentTest;
+    @ApiModelProperty(required = false, hidden = true)
+    private Double totalCash = 0.0;
+    @ApiModelProperty(required = false, hidden = true)
+    private Double totalInsurance = 0.0;
+    @ApiModelProperty(required = false, hidden = true)
+    private Boolean isWalkin;
 }

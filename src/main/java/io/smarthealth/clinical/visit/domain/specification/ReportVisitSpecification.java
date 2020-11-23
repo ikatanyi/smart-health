@@ -25,7 +25,7 @@ public class ReportVisitSpecification {
         super();
     }
 
-    public static Specification<Visit> createSpecification(String visitNumber, Employee employee, ServicePoint servicePoint, Patient patient, String patientName, boolean visitIsRunning, DateRange dateRange) {
+    public static Specification<Visit> createSpecification(String visitNumber, Employee employee, ServicePoint servicePoint, Patient patient, String patientName, Boolean visitIsRunning, DateRange dateRange) {
 
         return (root, query, cb) -> {
 

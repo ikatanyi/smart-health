@@ -43,4 +43,9 @@ public interface LabRegisterTestRepository extends JpaRepository<LabRegisterTest
     @Modifying
     @Query("UPDATE LabRegisterTest r SET r.attachment =:attachment WHERE r.id=:id")
     int addAttachment(@Param("attachment") String attachment, @Param("id") Long id);
+    
+    List<LabRegisterTest> findByLabTest(@Param("labtest")LabTest labtest);
+    
+    @Query("SELECT t FROM LabRegisterTest t WHERE t.entryDateTime BETWEEN :frmdt AND :todt GROUP BY t.labTest")
+    List<LabRegisterTest> findTestsByDateRange(@Param("frmdt") LocalDateTime from, @Param("todt") LocalDateTime todt);
 }

@@ -5,7 +5,10 @@
  */
 package io.smarthealth.infrastructure.utility.ivorydata;
 
+import io.smarthealth.organization.person.domain.enumeration.Gender;
 import java.util.Date;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -24,4 +27,6 @@ public class PatientData {
     private String vFileNo;
     private Date dDor;
     private String currentPatientNo;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 }

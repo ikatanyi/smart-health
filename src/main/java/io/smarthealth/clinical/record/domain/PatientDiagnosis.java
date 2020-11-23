@@ -1,4 +1,4 @@
-package io.smarthealth.clinical.record.domain;
+ package io.smarthealth.clinical.record.domain;
 
 import io.smarthealth.clinical.admission.data.DischargeDiagnosis;
 import java.time.LocalDateTime;
@@ -54,4 +54,4 @@ public class PatientDiagnosis extends ClinicalRecord {
         data.setDoneBy(done);
         return data;
     }
-}
+} 

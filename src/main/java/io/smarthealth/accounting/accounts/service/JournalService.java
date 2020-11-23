@@ -5,6 +5,7 @@ import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.accounting.accounts.domain.JournalRepository;
+import io.smarthealth.accounting.accounts.domain.JournalReversal;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.domain.specification.JournalSpecification;
@@ -35,7 +36,7 @@ public class JournalService {
     private final AccountService accountService;
     private final SequenceNumberService sequenceNumberService;
 
-    @Transactional 
+    @Transactional
     public JournalEntry createJournal(JournalEntryData data) {
 
         List<JournalEntryItem> items = data.getDebtors()
@@ -68,7 +69,6 @@ public class JournalService {
 
     public JournalEntry save(JournalEntry journal) {
         JournalEntry je = journalRepository.save(journal);
-        System.err.println(je.getAmount());
         bookJournalEntry(je.getId());
         return je;
     }
@@ -81,6 +81,10 @@ public class JournalService {
 
     public Optional<JournalEntry> findJournalById(Long id) {
         return journalRepository.findById(id);
+    }
+
+    public Optional<JournalEntry> findJournalByTransactionNo(String transactionNo) {
+        return journalRepository.findByTransactionNo(transactionNo);
     }
 
     public JournalEntry findJournalIdOrThrow(Long id) {
@@ -102,7 +106,6 @@ public class JournalService {
                 .stream()
                 .forEach(je -> {
                     final Account accountEntity = je.getAccount();// accountService.findByAccountNumberOrThrow(je.getAccountNumber());
-                    System.err.println(accountEntity);
                     final BigDecimal amount;
                     switch (accountEntity.getType()) {
                         case ASSET:
@@ -146,4 +149,40 @@ public class JournalService {
         }
     }
 
+    public JournalEntry reverseJournal(Long journalId, JournalReversal journalReversal) {
+        final Optional<JournalEntry> optionalJournalEntry = findJournalById(journalId);
+        if (optionalJournalEntry.isPresent()) {
+            JournalEntry journalEntryEntity = optionalJournalEntry.get();
+
+            List<JournalEntryItem> items = journalEntryEntity.getItems()
+                    .stream()
+                    .map(je -> createJournalItem(je))
+                    .collect(Collectors.toList());
+
+            String description = journalEntryEntity.getDescription() != null ? journalEntryEntity.getDescription()+"(Reversed Transaction)" : "Journal Reversal - Journal Entry: " + journalEntryEntity.getId();
+            JournalEntry toSave = new JournalEntry(journalReversal.getDate(), description, items);
+            toSave.setTransactionType(TransactionType.Journal_Entry_Reversal);
+            toSave.setStatus(JournalState.PENDING);
+
+            if (journalReversal.getTransactionNo() == null) {
+                toSave.setTransactionNo(sequenceNumberService.next(1L, Sequences.Transactions.name()));
+            } else {
+                toSave.setTransactionNo(journalReversal.getTransactionNo());
+            }
+
+            JournalEntry savedJOurnal = save(toSave);
+
+            journalEntryEntity.setReversed(true);
+            journalEntryEntity.setReversalJournalEntry(savedJOurnal);
+            journalRepository.save(journalEntryEntity);
+
+            return savedJOurnal;
+        }
+
+        return null;
+    }
+
+    private JournalEntryItem createJournalItem(JournalEntryItem je) {
+        return new JournalEntryItem(je.getAccount(), je.getDescription() + "(Reversed Transaction)", je.getCredit(), je.getDebit());
+    }
 }

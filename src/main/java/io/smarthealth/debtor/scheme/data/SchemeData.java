@@ -1,10 +1,7 @@
 package io.smarthealth.debtor.scheme.data;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.domain.Scheme.SchemeType;
-import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
-import io.smarthealth.debtor.scheme.domain.enumeration.DiscountType;
 import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;

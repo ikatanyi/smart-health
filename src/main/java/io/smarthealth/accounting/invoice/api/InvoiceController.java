@@ -3,6 +3,7 @@ package io.smarthealth.accounting.invoice.api;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.invoice.data.CreateInvoice;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceEditData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
@@ -57,6 +58,14 @@ public class InvoiceController {
         Invoice trans = service.getInvoiceByIdOrThrow(id);
         return ResponseEntity.ok(trans.toData());
     }
+    
+    @PutMapping("/invoices/{id}")
+    @PreAuthorize("hasAuthority('create_invoices')")
+    public ResponseEntity<?> updateInvoice(@PathVariable(value = "id") Long id, @Valid @RequestBody InvoiceEditData invoiceData) {
+
+        Invoice trans =service.updateInvoice(id, invoiceData);
+        return ResponseEntity.ok(trans.toData());
+    }
 
     @PostMapping("/invoices/{invoiceNumber}/add-items")
     @PreAuthorize("hasAuthority('create_invoices')")
@@ -79,13 +88,14 @@ public class InvoiceController {
             @RequestParam(value = "awaitingSmart", required = false) Boolean awaitingSmart,
             @RequestParam(value = "amountGreaterThan", required = false) Double amountGreaterThan,
             @RequestParam(value = "amountLessThanOrEqualTo", required = false) Double amountLessThanOrEqualTo,
+            @RequestParam(value = "hasCapitation", required = false) Boolean hasCapitation,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, pageable)
+        Page<InvoiceData> list = service.fetchInvoices(payer, scheme, invoice, status, patientNo, range, amountGreaterThan, filterPastDue, awaitingSmart, amountLessThanOrEqualTo, hasCapitation, pageable)
                 .map(x -> x.toData());
 
         Pager<List<InvoiceData>> pagers = new Pager();

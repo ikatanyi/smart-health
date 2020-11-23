@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="request_form" pageWidth="595" pageHeight="425" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Key" uuid="9ef051fc-7a45-4737-84cd-a3c577095002">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="request_form" pageWidth="595" pageHeight="420" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Key" uuid="9ef051fc-7a45-4737-84cd-a3c577095002">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -82,9 +82,9 @@
 		</groupFooter>
 	</group>
 	<title>
-		<band height="49">
+		<band height="48">
 			<subreport>
-				<reportElement x="0" y="1" width="555" height="46" isRemoveLineWhenBlank="true" uuid="adfc9a30-3824-4d61-94f1-3e899ffa0ccc"/>
+				<reportElement x="0" y="0" width="555" height="47" isRemoveLineWhenBlank="true" uuid="adfc9a30-3824-4d61-94f1-3e899ffa0ccc"/>
 				<subreportParameter name="Patient_Data">
 					<subreportParameterExpression><![CDATA[$P{Patient_Data}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -98,7 +98,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<line>
-				<reportElement positionType="Float" x="1" y="48" width="554" height="1" uuid="c7ed67e7-b231-4316-b7a0-4d26d13c7758"/>
+				<reportElement positionType="Float" x="1" y="47" width="554" height="1" uuid="c7ed67e7-b231-4316-b7a0-4d26d13c7758"/>
 				<graphicElement>
 					<pen lineWidth="0.15" lineColor="#666666"/>
 				</graphicElement>
@@ -132,26 +132,18 @@
 				<text><![CDATA[Service]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="191" y="25" width="262" height="12" forecolor="#000000" uuid="00bd2919-53f6-49f1-8679-45d9c56a166f"/>
+				<reportElement positionType="Float" x="191" y="25" width="351" height="12" forecolor="#000000" uuid="00bd2919-53f6-49f1-8679-45d9c56a166f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Comments]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="417" y="1" width="61" height="12" forecolor="#000000" uuid="1d76b575-d4d5-4416-ba96-a1387e0be9e9"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="322" y="1" width="231" height="12" uuid="502ddc78-d224-4f46-8571-3761b542748a"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
-					<paragraph leftIndent="5"/>
 				</textElement>
-				<text><![CDATA[Order Date :]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="479" y="1" width="74" height="12" uuid="502ddc78-d224-4f46-8571-3761b542748a"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{orderDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Order Date :"+$F{orderDate}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement positionType="Float" x="-1" y="37" width="556" height="1" uuid="501a2ac4-d39c-4f36-8f94-fc7d1fcf84ef"/>
@@ -177,7 +169,7 @@
 				</graphicElement>
 			</line>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="191" y="0" width="302" height="13" uuid="de4cf38b-4ed4-4e16-881e-d236affd7e09"/>
+				<reportElement x="191" y="0" width="351" height="13" uuid="de4cf38b-4ed4-4e16-881e-d236affd7e09"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
@@ -185,7 +177,4 @@
 			</textField>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="19"/>
-	</columnFooter>
 </jasperReport>

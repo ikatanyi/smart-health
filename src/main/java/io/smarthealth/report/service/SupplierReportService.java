@@ -5,6 +5,8 @@
  */
 package io.smarthealth.report.service;
 
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.data.DoctorInvoiceData;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
@@ -51,7 +53,7 @@ public class SupplierReportService {
     private final PatientService patientService;
     private final RadiologyService scanService;
     private final InventoryService inventoryService;
-    
+    private final BillingService billService;
     private final SupplierService supplierService;
     private final DoctorInvoiceService doctorInvoiceService;
     private final PurchaseInvoiceService purchaseInvoiceService;
@@ -86,8 +88,16 @@ public class SupplierReportService {
                 .stream()
                 .map((supplier) -> supplier.toData())
                 .collect(Collectors.toList());
+        
          
-         
+        List<JRSortField> sortList = new ArrayList();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("doctorName");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList); 
+        
         reportData.setData(patientData);
         reportData.setFormat(format);
         reportData.setTemplate("/supplier/supplierList");
@@ -110,10 +120,16 @@ public class SupplierReportService {
          List<DoctorInvoiceData> doctorInvoiceData = doctorInvoiceService.getDoctorInvoices(doctorId, serviceItem, paid, paymentMode, patientNo, invoiceNumber, transactionId, range, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map((invoice) -> invoice.toData())
+                .map((invoice) ->{ 
+                    DoctorInvoiceData data = invoice.toData();
+                    PatientBillItem item = billService.findBillItemByPatientBill(invoice.getInvoiceNumber());
+                    if(item!=null)
+                        data.setReferenceNumber(item.getPaymentReference());
+                    return data;
+                })
                 .collect(Collectors.toList());
         
-         List<JRSortField> sortList = new ArrayList();
+        List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("doctorName");
         sortField.setOrder(SortOrderEnum.ASCENDING);
@@ -159,10 +175,6 @@ public class SupplierReportService {
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("supplier");
-        sortField.setOrder(SortOrderEnum.ASCENDING);
-        sortField.setType(SortFieldTypeEnum.FIELD);
-        sortList.add(sortField);
-        sortField.setName("invoiceDate");
         sortField.setOrder(SortOrderEnum.ASCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);

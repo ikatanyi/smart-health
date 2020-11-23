@@ -81,7 +81,7 @@ public class ReportController {
             case Lab_Report:
                 labReportService.getPatientLabReport(queryParams, format, response);
                 break;
-            case Procedure_Report:
+            case Procedure_Summary:
                 procedureReportService.getPatientProcedureReport(queryParams, format, response);
                 break;
             case Request_Form:
@@ -108,7 +108,7 @@ public class ReportController {
             case Lab_Statement:
                 labReportService.getLabTestStatement(queryParams, format, response);
                 break;
-            case Radiology_Statement:
+            case Radiology_Studies_Summary:
                 radiologyReportService.getRadiologyStatement(queryParams, format, response);
                 break;
             case Patient_List:
@@ -204,11 +204,11 @@ public class ReportController {
             case Appointment_Letter:
                 patientReportService.getAppointmentLetter(queryParams, format, response);
                 break;
-            case Departmental_Payment_Report:
+            case General_Collection_Statement:
                 reportService.getPatientPayments(queryParams, format, response);
                 break;
-            case Departmental_Income_Statement:
-                reportService.getDepartmentalPayments(queryParams, format, response);
+            case Service_Point_Income_Statement:
+                reportService.getServicePointIncomeStatement(queryParams, format, response);
                 break;
             case Goods_Receive_Note:
                 stockReportService.SupplierGRN(queryParams, format, response);
@@ -258,23 +258,32 @@ public class ReportController {
             case Stock_Purchase_Report:
                 stockReportService.StockPurchase(queryParams, format, response);
                 break;
-            case Admitted_Patients:
-                admissionReportService.getAdmittedPatients(queryParams, format, response);
+            case Payment_Transactions_Statement:
+                reportService.getPaymentTransactions(queryParams, format, response);
                 break;
-            case Registered_Wards:
-                admissionReportService.getWards(queryParams, format, response);
+            case Registered_Schemes:
+                reportService.getSchemeConfig(queryParams, format, response);
+                break;    
+            case Insurance_Diagnosis_Summary:
+                reportService.genDiagnosisStatement(queryParams, format, response);
                 break;
-            case Room_Report:
-                admissionReportService.getRooms(queryParams, format, response);
+            case Cashier_Cash_Sale_Breakdown:
+                paymentReportService.getCashierShift(queryParams, format, response);
                 break;
-            case Bed_Report:
-                admissionReportService.getBeds(queryParams, format, response);
+            case Patient_Attendance_Report:
+                patientReportService.getPatientReport(queryParams, format, response);
                 break;
-            case Discharged_Patients:
-                admissionReportService.getDischarges(queryParams, format, response);
+            case Invoice_Aging_Summary:
+                reportService.getAgingSummary(queryParams, format, response);
+                break;  
+            case Purchase_Order_Statement:
+                stockReportService.getPurchaseOrderStatement(queryParams, format, response);
                 break;
-            case Discharge_Slip:
-                admissionReportService.getDischargeSlip(queryParams, format, response);
+            case Moh706_Lab_Report:
+                patientReportService.getMoh706LabReport(queryParams, format, response);
+                break;
+            case Invoice_Balancing_Statement:
+                reportService.genInvoiceBalancingReport(queryParams, format, response);
                 break;
             case Discharge_Summary:
                 admissionReportService.getDischargeSummary(queryParams, format, response);

@@ -10,6 +10,7 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.payer.domain.SchemeRepository;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurationsRepository;
+import io.smarthealth.debtor.scheme.domain.specification.SchemeConfigSpecification;
 import io.smarthealth.debtor.scheme.domain.specification.SchemeSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.util.Optional;
@@ -75,6 +76,11 @@ public class SchemeService {
 
     public SchemeConfigurations fetchSchemeConfigBySchemeWithNotAvailableDetection(Scheme scheme) {
         return configurationsRepository.findByScheme(scheme).orElseThrow(() -> APIException.notFound("Scheme configuration identified by scheme no {0} not available ", scheme.getSchemeName()));
+    }
+    
+     public Page<SchemeConfigurations> fetchSchemesConfig(final Long payerId, final String term, Boolean withCopay, Boolean smartEnabled, Pageable page) {
+        Specification<SchemeConfigurations> spec = SchemeConfigSpecification.createSchemeSpecification(payerId, term, withCopay,smartEnabled);
+        return configurationsRepository.findAll(spec, page);
     }
 
     public boolean SchemeConfigBySchemeExists(Scheme scheme) {

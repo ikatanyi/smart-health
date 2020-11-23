@@ -163,10 +163,14 @@ public class GeneralClinicalServices {
         Referrals rde = ReferralData.map(rd);
         rde.setVisit(visit);
         rde.setPatient(visit.getPatient());
+        rde.setDoctorName(rd.getDoctorName());
         if (rd.getReferralType().equals(ReferralType.Internal)) {
-            Employee employee = employeeService.fetchEmployeeByNumberOrThrow(rd.getStaffNumber());
-            rde.setDoctor(employee);
-            rde.setDoctorName(employee.getFullName());
+            Employee employee = null;
+            if (rd.getStaffNumber() != null) {
+                employee = employeeService.fetchEmployeeByNumberOrThrow(rd.getStaffNumber());
+                rde.setDoctor(employee);
+                rde.setDoctorName(employee.getFullName());
+            }
             //create bill for the referred doctor
             //find consultation service by doctor selected
             if (rd.getDoctorServiceId() != null) {
@@ -204,10 +208,10 @@ public class GeneralClinicalServices {
             }
         }
         Referrals srd = referralsService.createReferrals(rde);
-        if (rd.getReferralType().equals(ReferralType.External)) {
-            visit.setStatus(VisitEnum.Status.Transferred);
-            visitService.createAVisit(visit);
-        }
+//        if (rd.getReferralType().equals(ReferralType.External)) {
+//            visit.setStatus(VisitEnum.Status.Transferred);
+//            visitService.createAVisit(visit);
+//        }
         ReferralData data = ReferralData.map(srd);
         Pager<ReferralData> pagers = new Pager();
         pagers.setCode("0");

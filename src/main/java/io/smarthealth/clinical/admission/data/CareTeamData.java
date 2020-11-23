@@ -35,6 +35,7 @@ public class CareTeamData {
     private Boolean voided;
     //void reason
     private String reason;
+    private Boolean isActive = Boolean.TRUE;
 
     public static CareTeamData map(CareTeam ct) {
         CareTeamData d = new CareTeamData();
@@ -50,6 +51,7 @@ public class CareTeamData {
         d.setReason(ct.getReason());
         d.setRole(ct.getCareRole());
         d.setId(ct.getId());
+        d.setIsActive(ct.getIsActive());
         return d;
     }
 
@@ -59,6 +61,7 @@ public class CareTeamData {
         e.setDateAssigned(d.getDateAssigned());
         e.setVoided(d.getVoided());
         e.setReason(d.getReason());
+        e.setVoided(Boolean.FALSE);
         return e;
     }
 }

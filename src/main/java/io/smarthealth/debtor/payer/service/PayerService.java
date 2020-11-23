@@ -80,6 +80,11 @@ public class PayerService {
     public Payer updatePayer(Payer payer) {
         return payerRepository.save(payer);
     }
+    
+     public Payer fetchByPayerCode(String payerCode) {
+        return payerRepository.findByPayerCode(payerCode)
+                .orElseThrow(() -> APIException.notFound("Payer with code {0} Not Found", payerCode));
+    }
 
     public boolean removePayer(Payer payer) {
         payerRepository.deleteById(payer.getId());

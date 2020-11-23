@@ -1,11 +1,7 @@
 package io.smarthealth.administration.codes.data;
 
 import io.smarthealth.administration.codes.domain.Code;
-import io.smarthealth.administration.codes.domain.CodeValue;
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 

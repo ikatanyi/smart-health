@@ -16,10 +16,12 @@ public enum ItemCategory {
     Lab,
     Procedure,
     Ward,
-    Surgery,
+    Surgical,
     Drug,
     CoPay,
     Dental,
-    Others,
-    NHIF_Rebate    
+    NHIF_Rebate,
+    Receipt,
+    Opticals,
+    Others
 }

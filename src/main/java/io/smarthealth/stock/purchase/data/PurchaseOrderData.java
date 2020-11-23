@@ -38,6 +38,7 @@ public class PurchaseOrderData {
     private String priceList;
     private PurchaseOrderStatus status;
     private String createdBy;
+    private String remarks;
     private List<PurchaseOrderItemData> purchaseOrderItems;
     @JsonIgnore
     private boolean showItems;

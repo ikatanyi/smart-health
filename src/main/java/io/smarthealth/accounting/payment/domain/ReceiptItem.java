@@ -7,7 +7,6 @@ package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
-import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -71,11 +70,11 @@ public class ReceiptItem extends Identifiable {
         ReceiptItemData data = new ReceiptItemData();
         data.setId(this.getId());
         data.setReceiptNumber(this.getReceipt().getReceiptNo());
-        data.setPaymentMode(this.getReceipt().getPaymentMethod());
-        if(this.getReceipt()!=null){
-            data.setPatientName(this.getReceipt().getPayer());
-            data.setReferenceNumber(this.getReceipt().getReceiptNo());
-            data.setReceiptNumber(this.getReceipt().getReceiptNo());
+        data.setDiscount(this.getDiscount());
+        data.setPatientName(this.getReceipt().getPayer());
+        if(this.getReceipt()==null){            
+            data.setReferenceNumber(this.getReceipt().getReferenceNumber());
+            data.setReceiptNumber(this.getReceipt().getReferenceNumber());
         }
         if(item!=null){
             data.setItemName(this.getItem().getItem().getItemName());

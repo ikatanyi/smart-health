@@ -28,6 +28,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -64,6 +65,7 @@ public class Invoice extends Auditable {
     private String memberNumber;
     private String memberName;
     private String terms;
+    private String idNumber;
 
     @Column(name = "invoice_date")
     private LocalDate date;
@@ -79,7 +81,11 @@ public class Invoice extends Auditable {
     private InvoiceStatus status;
     private String notes;
     private Boolean awaitingSmart = Boolean.FALSE;
-
+    @Column(name = "is_capitation_invoice")
+   private Boolean capitation=Boolean.FALSE;
+    @Transient
+    private BigDecimal invoiceAmount; //temporarly holding for orginal invoice amount
+    
     @Where(clause = "voided = false")
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     private List<InvoiceItem> items = new ArrayList<>();
@@ -122,7 +128,9 @@ public class Invoice extends Auditable {
             data.setVisitNumber(this.visit.getVisitNumber());
             data.setVisitDate(this.visit.getStartDatetime().toLocalDate());
             data.setAge(ChronoUnit.DAYS.between(this.date, LocalDate.now()));
+            
         }
+        data.setIdNumber(this.idNumber);
         data.setMemberName(this.memberName);
         data.setMemberNumber(this.memberNumber);
         data.setInvoiceDate(this.date);
@@ -152,6 +160,7 @@ public class Invoice extends Auditable {
                         })
                         .collect(Collectors.toList())
         );
+        data.setCapitation(this.capitation);
         
 
         return data;

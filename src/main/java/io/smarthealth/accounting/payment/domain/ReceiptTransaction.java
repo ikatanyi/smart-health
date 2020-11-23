@@ -16,6 +16,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,7 +30,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "acc_receipt_transaction")
+@Table(name = "acc_receipt_transaction") 
 public class ReceiptTransaction extends Identifiable {
 
     @ManyToOne
@@ -44,6 +45,7 @@ public class ReceiptTransaction extends Identifiable {
     private TrnxType type; //Payment Type AUTHORIZE PURCHASE REFUNDS CREDIT
     private String currency;
 
+    
     public ReceiptTransactionData toData() {
         ReceiptTransactionData data = new ReceiptTransactionData();
         data.setId(this.getId());
@@ -62,4 +64,6 @@ public class ReceiptTransaction extends Identifiable {
 
         return data;
     }
+    
+    
 }

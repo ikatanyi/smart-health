@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author Simon.waweru
  */
 @Repository
-public interface PatientRepository extends JpaRepository<Patient, Long>, JpaSpecificationExecutor<Patient> {
+public interface PatientRepository extends JpaRepository<Patient, Long>, JpaSpecificationExecutor<Patient>, CustomizedPatientRepository {
 
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN 'true' ELSE 'false' END FROM Patient c WHERE c.patientNumber = :patientNumber")
     Boolean existsByPatientNumber(@Param("patientNumber") final String patientNumber);

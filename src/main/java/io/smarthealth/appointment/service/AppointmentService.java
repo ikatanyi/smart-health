@@ -10,6 +10,9 @@ import io.smarthealth.appointment.domain.specification.AppointmentSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.ContentPage;
+import io.smarthealth.notification.data.SmsMessageData;
+import io.smarthealth.notification.domain.enumeration.ReceiverType;
+import io.smarthealth.notification.service.SmsMessagingService;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.domain.PersonRepository;
@@ -18,7 +21,9 @@ import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -33,6 +38,7 @@ import org.springframework.stereotype.Service;
  * @author Simon.waweru
  */
 @Service
+@RequiredArgsConstructor
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
@@ -41,22 +47,10 @@ public class AppointmentService {
     private final AppointmentTypeService appointmentTypeService;
     private final EmployeeService employeeService;
     private final ItemService itemService;
+    private final SmsMessagingService messagingService;
 
     @Autowired
     ModelMapper modelMapper;
-
-    public AppointmentService(AppointmentRepository appointmentRepository,
-            PersonRepository personRepository,
-            PatientRepository patientRepository,
-            EmployeeService employeeService,
-            AppointmentTypeService appointmentTypeService, ItemService itemService) {
-        this.appointmentRepository = appointmentRepository;
-        this.personRepository = personRepository;
-        this.patientRepository = patientRepository;
-        this.employeeService = employeeService;
-        this.appointmentTypeService = appointmentTypeService;
-        this.itemService = itemService;
-    }
 
     public ContentPage<AppointmentData> fetchAppointmentsByPatient(final String patientNumber, final Pageable pageable) {
         //Validate if Patient exists
@@ -81,7 +75,9 @@ public class AppointmentService {
     public Appointment createAppointment(AppointmentData appointment) {
         modelMapper.getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.STRICT);
-
+        List<SmsMessageData>dataList = new ArrayList();
+        SmsMessageData msgData = new SmsMessageData();
+        
         AppointmentType appointmentType = appointmentTypeService.fetchAppointmentTypeWithNoFoundDetection(appointment.getAppointmentTypeId());
         Appointment entity = modelMapper.map(appointment, Appointment.class);
         //Verify patient number
@@ -92,7 +88,20 @@ public class AppointmentService {
         Optional<Employee> practitioner = employeeService.findEmployeeByStaffNumber(appointment.getPractitionerCode());
         if (practitioner.isPresent()) {
             entity.setPractitioner(practitioner.get());
+            msgData = new SmsMessageData();
+            msgData.setReceiverId(practitioner.get().getStaffNumber());
+            msgData.setReceiverType(ReceiverType.employee);
+            msgData.setMessage("Dear Doctor,"+practitioner.get().getFullName()+" You Have a scheduled Appoinment with "+patient.get().getFullName()+" on "+entity.getAppointmentDate()+" at"+entity.getStartTime());
+            dataList.add(msgData);
+        }        
+        if (patient.isPresent()) {
+            msgData = new SmsMessageData();
+            msgData.setReceiverId(patient.get().getPatientNumber());
+            msgData.setReceiverType(ReceiverType.patient);
+            msgData.setMessage("Dear "+patient.get().getFullName()+", You Have a scheduled Appoinment with "+(practitioner.isPresent()?practitioner.get().getFullName():"")+" on"+entity.getAppointmentDate()+" at"+entity.getStartTime());
+            dataList.add(msgData);
         }
+        
         Optional<Item> service = itemService.findByItemCode(appointment.getProcedureCode());
         if (service.isPresent()) {
             entity.setService(service.get());
@@ -101,6 +110,8 @@ public class AppointmentService {
         entity.setAppointmentType(appointmentType);
 
         Appointment savedAppointment = appointmentRepository.save(entity);
+        messagingService.createBatchTextMessage(dataList);
+        
         return savedAppointment;
 
     }
@@ -160,16 +171,12 @@ public class AppointmentService {
         appointment.setStatus(StatusType.Rescheduled);
 
         appointmentRepository.save(appointment);
-
-//        newAppointment.setId(null);
         Appointment newAppointment = new Appointment();
 
         newAppointment.setAllDay(appointment.getAllDay());
         newAppointment.setAppointmentDate(appointment.getAppointmentDate());
-//        app.setAppointmentNo();
         newAppointment.setAppointmentType(newAppointment.getAppointmentType());
         newAppointment.setComments(appointment.getComments());
-//        app.setDepartment(appointment.getD);
         newAppointment.setEndTime(appointment.getEndTime());
         newAppointment.setFirstName(appointment.getFirstName());
         newAppointment.setGender(appointment.getGender());

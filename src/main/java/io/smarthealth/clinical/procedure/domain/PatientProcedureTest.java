@@ -26,6 +26,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
+import org.apache.commons.lang3.EnumUtils;
 
 @Data
 @Entity
@@ -72,8 +73,11 @@ public class PatientProcedureTest extends Identifiable{
             entity.setMedicName(this.getMedic().getFullName());
         }
         if(this.getPatientProcedureRegister()!=null){
+            if(this.getProcedureDate()==null)
+                 entity.setProcedureDate(this.getPatientProcedureRegister().getReceivedDate());
             entity.setPatientName(this.getPatientProcedureRegister().getPatientName());
             entity.setPatientNo(this.getPatientProcedureRegister().getPatientNo());
+            entity.setCreatedBy(this.getPatientProcedureRegister().getCreatedBy());
         }
         if(this.getRequest()!=null){
             entity.setRequestedBy(this.getRequest().getRequestedBy().getName());

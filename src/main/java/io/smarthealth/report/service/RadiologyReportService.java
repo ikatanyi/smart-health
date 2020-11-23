@@ -64,7 +64,7 @@ public class RadiologyReportService {
         String search = reportParam.getFirst("search");
         ScanTestState status = statusToEnum(reportParam.getFirst("status"));
         Boolean summary = Boolean.parseBoolean(reportParam.getFirst("summarized"));
-        Boolean isWalkin = Boolean.parseBoolean(reportParam.getFirst("iswalkin"));
+        Boolean isWalkin = reportParam.getFirst("iswalkin")!=null?Boolean.parseBoolean(reportParam.getFirst("iswalkin")):null;
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         
          List<PatientScanTestData> patientData = scanService.findAllTests(patientNumber, search, scanNo, status, visitId, range, isWalkin, Pageable.unpaged())
@@ -93,7 +93,7 @@ public class RadiologyReportService {
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
 
-        reportData.setReportName("Radiology-Statement");
+        reportData.setReportName("Radiology-Studies-Summary");
         reportService.generateReport(reportData, response);
     }    
     

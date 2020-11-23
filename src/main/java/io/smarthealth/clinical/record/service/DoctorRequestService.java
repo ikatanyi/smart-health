@@ -126,6 +126,13 @@ public class DoctorRequestService implements DateConverter {
         return docReqs;
     }
 
+    public Page<DoctorRequest> getDoctorOrderRequests(String visitNumber, String patientNumber, RequestType requestType, FullFillerStatusType fulfillerStatus, DateRange range, Pageable pageable) {
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, null, null, null, range);
+
+        Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
+        return docReqs;
+    }
+
 //    public Page<DoctorRequest> fetchDoctorRequestLine(final String fulfillerStatus, final RequestType requestType, Pageable pageable) {
 //        
 //        return doctorRequestRepository.findRequestLine(fulfillerStatus, requestType, pageable);
@@ -144,7 +151,12 @@ public class DoctorRequestService implements DateConverter {
         return doctorRequestRepository.findServiceRequestsByVisit(visit, fullfillerStatus, requestType);
     }
 
-    public Optional<DoctorRequestData> getDocRequestById(Long id) {
+    public Optional<DoctorRequest> getDocRequestById(Long id) {
+        Optional<DoctorRequest> entity = doctorRequestRepository.findById(id);
+        return entity;
+    }
+
+    public Optional<DoctorRequestData> getDocRequestDataById(Long id) {
         Optional<DoctorRequestData> entity = doctorRequestRepository.findById(id).map(p -> DoctorRequestToData(p));
         return entity;
     }
@@ -167,6 +179,10 @@ public class DoctorRequestService implements DateConverter {
         }
     }
 
+    public void deleteDocRequest(DoctorRequest request) {
+        doctorRequestRepository.delete(request);
+    }
+
     public DoctorRequestData DoctorRequestToData(DoctorRequest docRequest) {
         DoctorRequestData docReqData = modelMapper.map(docRequest, DoctorRequestData.class);
         return docReqData;
@@ -179,16 +195,21 @@ public class DoctorRequestService implements DateConverter {
 
     public DoctorRequestItem toData(DoctorRequest d) {
         DoctorRequestItem requestItem = new DoctorRequestItem();
-        requestItem.setCode(d.getItem().getItemCode());
-        requestItem.setItemId(d.getItem().getId());
+        if (d.getItem() != null) {
+            requestItem.setCode(d.getItem().getItemCode());
+            requestItem.setItemId(d.getItem().getId());
+            requestItem.setItemName(d.getItem().getItemName());
+        }
+
         requestItem.setRate(d.getItemRate());
         requestItem.setCostRate(d.getItemCostRate());
-        requestItem.setItemName(d.getItem().getItemName());
+
         requestItem.setRequestItemId(d.getId());
         if (d.getRequestType().equals(DoctorRequestData.RequestType.Pharmacy)) {
             requestItem.setPrescriptionData(PrescriptionData.map(prescriptionRepository.findPresriptionByRequestId(d.getId())));
         }
         requestItem.setOrderNo(d.getOrderNumber());
+        requestItem.setOrderDate(d.getOrderDate());
         requestItem.setRequestedByName(d.getRequestedBy().getUsername());
         requestItem.setStatus(d.getFulfillerStatus().name());
 
@@ -204,7 +225,7 @@ public class DoctorRequestService implements DateConverter {
     public Pager<?> getUnfilledDoctorRequests(RequestType requestType) {
         Pageable pageable = PageRequest.of(0, 50);
         Page<DoctorRequest> pageList = doctorRequestRepository.findAll(DoctorRequestSpecification.unfullfilledRequests(requestType), pageable);
-       
+
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
 
         pageList.getContent().stream().map((docReq) -> {
@@ -245,5 +266,5 @@ public class DoctorRequestService implements DateConverter {
 
         return pagers;
     }
- 
+
 }

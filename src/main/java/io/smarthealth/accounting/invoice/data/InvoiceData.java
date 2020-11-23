@@ -1,10 +1,7 @@
 package io.smarthealth.accounting.invoice.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
-import io.smarthealth.accounting.payment.data.CopaymentData;
-import io.smarthealth.accounting.payment.domain.Copayment;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
@@ -56,5 +53,15 @@ public class InvoiceData {
     private Boolean awaitingSmart;
     @ApiModelProperty(hidden=true, required=false)
     private Long age;
-   
+    @ApiModelProperty(hidden=true, required=false)
+    private String diagnosis;
+    @ApiModelProperty(hidden=true, required=false)
+    private String idNumber;
+    @ApiModelProperty(hidden=true, required=false)
+    private BigDecimal total= BigDecimal.ZERO;
+    
+    @ApiModelProperty(hidden=true, required=false)
+    private BigDecimal excess = BigDecimal.ZERO;
+
+     private Boolean capitation=Boolean.FALSE;
 }

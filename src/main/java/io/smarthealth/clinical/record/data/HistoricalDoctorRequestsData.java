@@ -22,6 +22,7 @@ import lombok.Data;
 @Data
 public class HistoricalDoctorRequestsData {
 
+    private Long id;
     private String patientNumber;
     private String patientName;
     private String visitNumber;

@@ -1,13 +1,12 @@
 package io.smarthealth.security.data;
 
 import java.util.Collection;
-import lombok.Data;
 
 /**
  *
  * @author Kelsas
  */
-@Data
+//@Data
 public class RolePermissionsData {
 
     private final Long id;
@@ -25,4 +24,25 @@ public class RolePermissionsData {
         this.disabled = disabled;
         this.permissionUsageData = permissionUsageData;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public Collection<PermissionData> getPermissionUsageData() {
+        return permissionUsageData;
+    }
+    
 }

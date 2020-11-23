@@ -5,15 +5,23 @@
  */
 package io.smarthealth.report.service;
 
+import com.mchange.lang.StringUtils;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.administration.codes.domain.Code;
+import io.smarthealth.administration.codes.domain.CodeValue;
+import io.smarthealth.administration.codes.service.CodeService;
+import io.smarthealth.administration.employeespecialization.domain.EmployeeSpecialization;
+import io.smarthealth.administration.employeespecialization.service.EmployeeSpecializationService;
 import io.smarthealth.appointment.data.AppointmentData;
 import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
+import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
+import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.clinical.moh.data.MonthlyMobidity;
 import io.smarthealth.clinical.moh.data.Register;
 import io.smarthealth.clinical.moh.service.MohService;
-import io.smarthealth.clinical.pharmacy.service.PharmacyService;
 import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.service.ProcedureService;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
@@ -34,7 +42,10 @@ import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.record.service.ReferralsService;
 import io.smarthealth.clinical.record.service.SickOffNoteService;
 import io.smarthealth.clinical.visit.data.VisitData;
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
+import io.smarthealth.clinical.visit.domain.TatInterface;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -50,15 +61,17 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.clinical.EmployeeBanner;
+import io.smarthealth.report.data.clinical.Moh706LabData;
 import io.smarthealth.report.data.clinical.OpData;
+import io.smarthealth.report.data.clinical.PatientReportData;
 import io.smarthealth.report.data.clinical.PatientVisitData;
 import io.smarthealth.report.data.clinical.reportVisitData;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,7 +89,9 @@ import net.sf.jasperreports.engine.design.JRDesignSortField;
 import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
 import net.sf.jasperreports.engine.type.SortOrderEnum;
 import org.apache.commons.lang.NumberUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -96,7 +111,6 @@ public class PatientReportServices {
     private final ProcedureService procedureService;
     private final LaboratoryService labService;
     private final PatientNotesService patientNotesService;
-    private final PharmacyService pharmacyService;
     private final RadiologyService radiologyService;
     private final SickOffNoteService sickOffNoteService;
     private final PrescriptionService prescriptionService;
@@ -104,6 +118,10 @@ public class PatientReportServices {
     private final ReferralsService referralService;
     private final AppointmentService appointmentService;
     private final MohService mohService;
+    private final PaymentDetailsService paymentDetailsService;
+    private final EmployeeSpecializationService specializationService;
+    private final CodeService codeService;
+    private final LaboratoryService laboratoryService;
 
     private final VisitService visitService;
 
@@ -135,74 +153,64 @@ public class PatientReportServices {
     }
 
     public void getVisit(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws JRException, SQLException, IOException {
+
         String visitNumber = reportParam.getFirst("visitNumber");
         String staffNumber = reportParam.getFirst("staffNumber");
         String servicePointType = reportParam.getFirst("servicePointType");
         String patientNumber = reportParam.getFirst("patientNumber");
-        String patientName = reportParam.getFirst("visitNumber");
-        Boolean runningStatus = Boolean.getBoolean(reportParam.getFirst("runningStatus"));
-        String dateRange = reportParam.getFirst("dateRange");
-        Integer page = Integer.getInteger(reportParam.getFirst("page"));
-        Integer size = Integer.getInteger(reportParam.getFirst("size"));
+        String patientName = reportParam.getFirst("patientName");
+        Boolean runningStatus = BooleanUtils.toBoolean(reportParam.getFirst("runningStatus"));
+        DateRange dateRange = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+
         ReportData reportData = new ReportData();
+        reportData.getFilters().put("range", DateRange.getReportPeriod(dateRange));
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
-        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
-
-        List<Visit> patientvisits = visitService.fetchVisitsGroupByVisitNumber(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, Pageable.unpaged()).getContent();
-
+        List<Visit> visits = visitService.fetchVisitsGroupByVisitNumber(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, dateRange, Pageable.unpaged()).getContent();
         List<reportVisitData> visitArrayList = new ArrayList();
-        for (Visit visit : patientvisits) {
-            List<Visit> visits1 = visitService.fetchVisitByPatientNumberAndVisitNumber(visit.getPatient().getPatientNumber(), visit.getVisitNumber(), Pageable.unpaged()).getContent();
-    
-            reportVisitData data = reportVisitData.map(visits1.get(0));
-            data.setDuration(Math.abs(Duration.between(data.getStopDatetime(), data.getStartDatetime()).toMinutes()));
-            for (Visit visit2 : visits1) {
-                Long duration = Duration.between(visit2.getStopDatetime(), visit2.getStartDatetime()).toMinutes();
-                switch (visit2.getServicePoint().getServicePointType()) {                    
-                    case Consultation:
-                        data.setConsultation(Boolean.TRUE);
-                        data.setConDuration(duration);
+        for (Visit visit : visits) {
+            reportVisitData data = new reportVisitData();
+            data.setPatientName(visit.getPatient().getFullName());
+            data.setPatientNumber(visit.getPatient().getPatientNumber());
+            data.setVisitNumber(visit.getVisitNumber());
+            data.setStartDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStartDatetime()));
+            data.setStopDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStopDatetime()));
+            data.setDate(visit.getStartDatetime().toLocalDate());
+
+            List<TatInterface> tatInterFaces = visitService.getPatientTat(visit.getId());
+            for (TatInterface interf : tatInterFaces) {
+                switch (interf.getServicePoint()) {
+                    case "Consultation":
+                        data.setConsultation(interf.getTat());
                         break;
-                    case Triage:
-                        data.setTriage(Boolean.TRUE);
-                        data.setTriDuration(duration);
+                    case "Radiology":
+                        data.setRadiology(interf.getTat());
                         break;
-                    case Radiology:
-                        data.setRadiology(Boolean.TRUE);
-                        data.setRadDuration(duration);
+                    case "Laboratory":
+                        data.setLaboratory(interf.getTat());
                         break;
-                    case Laboratory:
-                        data.setLaboratory(Boolean.TRUE);
-                        data.setLabDuration(duration);
+                    case "Pharmacy":
+                        data.setPharmacy(interf.getTat());
                         break;
-                    case Pharmacy:
-                        data.setPharmacy(Boolean.TRUE);
-                        data.setPharmDuration(duration);
-                        break;
-                    case Procedure:
-                        data.setProcedure(Boolean.TRUE);
-                        data.setProcDuration(duration);
+                    case "Procedure":
+                        data.setProcedure(interf.getTat());
                         break;
                     default:
-                        data.setOther(Boolean.TRUE);
-                        data.setOtherDuration(duration);
+                        data.setOther(interf.getTat());
                         break;
                 }
+                data.setTotal(data.getTotal() + NumberUtils.createDouble(String.valueOf(interf.getTotal())));
             }
             visitArrayList.add(data);
         }
 
-//        List<JRSortField> sortList = new ArrayList();
-//        reportData.setPatientNumber(patientNumber);
-//        JRDesignSortField sortField = new JRDesignSortField();
-//        sortField.setName("visitNumber");
-//        sortField.setOrder(SortOrderEnum.DESCENDING);
-//        sortField.setType(SortFieldTypeEnum.FIELD);
-//        sortList.add(sortField);
-//        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-
+        List<JRSortField> sortList = new ArrayList();
+        reportData.setPatientNumber(patientNumber);
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("visitNumber");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setData(visitArrayList);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/PatientVisit");
@@ -213,7 +221,7 @@ public class PatientReportServices {
     public void getDiagnosis(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws JRException, SQLException, IOException {
         String visitNumber = reportParam.getFirst("visitNumber");
         String patientNumber = reportParam.getFirst("patientNumber");
-        Gender gender = genderToEnum(reportParam.getFirst("gender"));
+        Gender gender = EnumUtils.getEnumIgnoreCase(Gender.class, reportParam.getFirst("gender"));
         String dateRange = reportParam.getFirst("dateRange");
         Integer page = Integer.getInteger(reportParam.getFirst("page"));
         Integer size = Integer.getInteger(reportParam.getFirst("size"));
@@ -230,6 +238,7 @@ public class PatientReportServices {
                 .map((diagnosis) -> PatientTestsData.map(diagnosis))
                 .collect(Collectors.toList());
         reportData.setData(diagnosisData);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setFormat(format);
         reportData.setTemplate("/patient/diagnosis_report");
         reportData.setReportName("Diagnosis-Report");
@@ -261,8 +270,14 @@ public class PatientReportServices {
 
     public void getReferralForm(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        Long id = NumberUtils.createLong(reportParam.getFirst("id"));
-        Referrals referral = referralService.fetchReferalByIdOrThrowIfNotFound(id);
+        Referrals referral = null;
+        if (reportParam.getFirst("id") != null) {
+            Long id = NumberUtils.createLong(reportParam.getFirst("id"));
+            referral = referralService.fetchReferalByIdOrThrowIfNotFound(id);
+        } else {
+            Visit visit = visitService.findVisitEntityOrThrow(reportParam.getFirst("visitNumber"));
+            referral = referralService.fetchLatestReferalByVisit(visit);
+        }
         ReferralData referralData = ReferralData.map(referral);
 
         Visit visit = referral.getVisit();
@@ -326,9 +341,21 @@ public class PatientReportServices {
 
     public void getVisitNote(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        Code type = EnumUtils.getEnum(Code.class, reportParam.getFirst("type"));
         String visitNumber = reportParam.getFirst("visitNumber");
-        VisitData visitData = VisitData.map(visitService.findVisitEntityOrThrow(visitNumber));
+        Optional<Visit> visit = visitService.findVisit(visitNumber);
+        VisitData visitData = null;
+        if (visit.isPresent()) {
+            visitData = VisitData.map(visit.get());
+        }
+        List<CodeValue> codes = codeService.getCodeValues(type);
+        String value = null;
+        if (codes != null && !codes.isEmpty()) {
+            value = codes.get(0).getCodeValue();
+        }
+        reportData.getFilters().put("value", value);
 
+        reportData.getFilters().put("type", type == Code.CurfewNote ? "Curfew Note" : type == Code.MedicalNote ? "Patient Medical Note" : "Patient Medical Note");
         reportData.setPatientNumber(visitData.getPatientNumber());
         reportData.setEmployeeId(visitData.getPractitionerCode());
         reportData.setData(Arrays.asList(visitData));
@@ -359,6 +386,7 @@ public class PatientReportServices {
 
         final String patientNumber = reportParam.getFirst("patientNumber");
         final String visitNumber = reportParam.getFirst("visitNumber");
+        final Boolean showHeader = BooleanUtils.toBoolean(reportParam.getFirst("showHeader"));
         List<PatientVisitData> visitData = new ArrayList();
         PatientData patient = patientService.convertToPatientData(patientService.findPatientOrThrow(patientNumber));
 
@@ -393,20 +421,25 @@ public class PatientReportServices {
                     .map((proc) -> proc.toData())
                     .collect(Collectors.toList());
 
-            List<LabRegisterTestData> labTests = labService.getTestsResultsByVisit(visit.getVisitNumber(), "")
+            List<LabRegisterTestData> labTests = labService.getTestsResultsByVisit(visit.getVisitNumber(), null)
                     .stream()
                     .map((test) -> test.toData(Boolean.TRUE))
                     .collect(Collectors.toList());
 
-            Optional<PatientNotes> patientNotes = patientNotesService.fetchPatientNotesByVisit(visit);
-            if (patientNotes.isPresent()) {
-                PatientNotes notes = patientNotes.get();
-                pVisitData.setBriefNotes(notes.getBriefNotes());
-                pVisitData.setChiefComplaint(notes.getChiefComplaint());
-                pVisitData.setExaminationNotes(notes.getExaminationNotes());
-                pVisitData.setHistoryNotes(notes.getHistoryNotes());
+            Page<PatientNotes> patientNotes = patientNotesService.fetchAllPatientNotesByVisit(visit, Pageable.unpaged());
 
-            }
+            patientNotes.stream().map((notes) -> {
+                pVisitData.setBriefNotes(StringUtils.nonNullOrBlank(pVisitData.getBriefNotes()) + "," + StringUtils.nonNullOrBlank(notes.getBriefNotes()));
+                return notes;
+            }).map((notes) -> {
+                pVisitData.setChiefComplaint(StringUtils.nonNullOrBlank(pVisitData.getChiefComplaint()) + "," + StringUtils.nonNullOrBlank(notes.getChiefComplaint()));
+                return notes;
+            }).map((notes) -> {
+                pVisitData.setExaminationNotes(StringUtils.nonNullOrBlank(pVisitData.getExaminationNotes()) + "," + StringUtils.nonNullOrBlank(notes.getExaminationNotes()));
+                return notes;
+            }).forEachOrdered((notes) -> {
+                pVisitData.setHistoryNotes(StringUtils.nonNullOrBlank(pVisitData.getHistoryNotes()) + "," + StringUtils.nonNullOrBlank(notes.getHistoryNotes()));
+            });
 
             List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(visit, Pageable.unpaged())
                     .stream()
@@ -422,6 +455,7 @@ public class PatientReportServices {
             pVisitData.setCreatedOn(String.valueOf(visit.getCreatedOn()));
             pVisitData.getLabTests().addAll(labTests);
             pVisitData.getProcedures().addAll(procedures);
+
             pVisitData.getRadiologyTests().addAll(scanData);
             pVisitData.getDrugsData().addAll(pharmacyData);
             pVisitData.getDiagnosis().addAll(diagnosisData);
@@ -435,6 +469,7 @@ public class PatientReportServices {
 
         List<JRSortField> sortList = new ArrayList();
         ReportData reportData = new ReportData();
+        reportData.getFilters().put("showHeader", showHeader);
         reportData.setPatientNumber(patientNumber);
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("visitNumber");
@@ -458,10 +493,9 @@ public class PatientReportServices {
         if (visit.getHealthProvider() != null) {
             reportData.getFilters().put("practionerName", visit.getHealthProvider().getFullName());
         }
-
-        List<SickOffNoteData> requestData = Arrays.asList(SickOffNoteData.map(sickOffNoteService.fetchSickNoteByVisitWithNotFoundThrow(visit)));
+        SickOffNoteData requestData = SickOffNoteData.map(sickOffNoteService.fetchSickNoteByVisitWithNotFoundThrow(visit));
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
-        reportData.setData(requestData);
+        reportData.setData(Arrays.asList(requestData));
         reportData.setFormat(format);
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         if (visit.getHealthProvider() != null) {
@@ -474,16 +508,17 @@ public class PatientReportServices {
 
     public void getMorbidityReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        System.out.println(reportParam.getFirst("dateRange"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         String term = reportParam.getFirst("term");
-        List<MonthlyMobidity> requestData = mohService.getMonthlyMobidity(range,term);
+        List<MonthlyMobidity> requestData = mohService.getMonthlyMobidity(range, term);
         reportData.setData(requestData);
         reportData.setFormat(format);
-        
+
         LocalDate ld = range.getStartDate();
         Month month = ld.getMonth();
         Integer year = ld.getYear();
-        
+
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.getFilters().put("year", year);
         reportData.getFilters().put("month", month.getDisplayName(TextStyle.FULL, Locale.ENGLISH));
@@ -495,7 +530,7 @@ public class PatientReportServices {
 
     public void getMohOPAttendanceReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        List<OpData>dataArray = new ArrayList();
+        List<OpData> dataArray = new ArrayList();
         OpData data = null;
         String[] groups = {"Under 1 Year", "1-4 Years", "5-14 Years", "15-24 Years", "25-34 Years", "35-44  Years", "45-49 Years", "50-54 Years", "55-64 Years", "Over 65 Years", "  All Ages  "};
         for (String group : groups) {
@@ -569,7 +604,53 @@ public class PatientReportServices {
         reportData.setReportName("out-patient-summary");
         reportService.generateReport(reportData, response);
     }
-    
+
+    public void getMoh706LabReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String dateRange = reportParam.getFirst("dateRange");
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+
+        List<Moh706LabData> Moh706LabDataArray = labService.getTestsByDate(range)
+                .stream()
+                .map((register) -> {
+                    Moh706LabData values = new Moh706LabData();    
+                    
+                    Integer age = 0;
+                    Integer total = 0;
+                    Gender gender = null;
+                    List<LabRegisterTest> tests = labService.getLabTests(register.getLabTest());
+                    for (LabRegisterTest test : tests) {
+                        String patientNo = test.getLabRegister().getPatientNo();
+                        values.setTestName(test.getLabTest().getTestName());
+                        Optional<PatientData> patient = patientService.fetchPatientByPatientNumber(patientNo);
+                        if (patient.isPresent()) {
+                            age = patient.get().getAge();
+                            gender = patient.get().getGender();
+                        }
+                        if (age < 5) {
+                            values.setUnder5(values.getUnder5()+1);
+                        } else {
+                            values.setOver5(values.getOver5()+1);
+                        }
+                        if (gender == Gender.M) {
+                            values.setMale(values.getMale()+1);
+                        } else {
+                            values.setFemale(values.getFemale()+1);
+                        } 
+                        values.setTotal(values.getTotal()+1);
+                    }
+                   
+                    return values;
+                })
+                .collect(Collectors.toList());
+
+        reportData.setData(Moh706LabDataArray);
+        reportData.setFormat(format);
+        reportData.setTemplate("/patient/moh706_lab_report");
+        reportData.setReportName("moh706_lab_report");
+        reportService.generateReport(reportData, response);
+    }
+
     public void getPatientRegisterReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         DateRange range = DateRange.fromIsoString(reportParam.getFirst("dateRange"));
@@ -579,6 +660,63 @@ public class PatientReportServices {
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setTemplate("/patient/patient_register");
         reportData.setReportName("Patient-Register");
+        reportService.generateReport(reportData, response);
+    }
+
+    public void getPatientReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        List<PatientReportData> dataArray = new ArrayList();
+        PatientReportData data = null;
+        String visitNumber = reportParam.getFirst("visitNumber");
+        String staffNumber = reportParam.getFirst("staffNumber");
+        String servicePointType = reportParam.getFirst("servicePointType");
+        String patientNumber = reportParam.getFirst("patientNumber");
+        String patientName = reportParam.getFirst("patientName");
+        Boolean runningStatus = BooleanUtils.toBoolean(reportParam.getFirst("runningStatus"));
+        DateRange dateRange = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        List<Visit> visits = visitService.fetchVisitsGroupByVisitNumber(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, dateRange, Pageable.unpaged()).getContent();
+
+        for (Visit visit : visits) {
+            data = new PatientReportData();
+            if (visit.getPatient().getDateRegistered() == visit.getStartDatetime().toLocalDate()) {
+                data.setStatus("New");
+            } else {
+                data.setStatus("Revisit");
+            }
+            data.setDate(visit.getStartDatetime().toLocalDate());
+
+            data.setPatientName(visit.getPatient().getFullName());
+            data.setPatientNumber(visit.getPatient().getPatientNumber());
+            data.setPaymentMode(visit.getPaymentMethod());
+            Optional<PaymentDetails> pdetails = paymentDetailsService.getPaymentDetailsByVist(visit);
+            if (pdetails.isPresent()) {
+                data.setInsuranceName(pdetails.get().getPayer().getPayerName());
+                data.setSchemeName(pdetails.get().getScheme().getSchemeName());
+            }
+
+            if (visit.getHealthProvider() != null) {
+                Optional<EmployeeSpecialization> spec = specializationService.fetchOptionalSpecializationById(NumberUtils.isNumber(visit.getHealthProvider().getSpecialization()) ? NumberUtils.createLong(visit.getHealthProvider().getSpecialization()) : 1L);
+                if (spec.isPresent()) {
+                    data.setService(spec.get().getSpecialization());
+                }
+            }
+            dataArray.add(data);
+        }
+
+        List<JRSortField> sortList = new ArrayList();
+        reportData.setPatientNumber(patientNumber);
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("service");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+
+        reportData.getFilters().put("range", DateRange.getReportPeriod(dateRange));
+        reportData.setData(dataArray);
+        reportData.setFormat(format);
+        reportData.setTemplate("/patient/PatientAttendanceReport");
+        reportData.setReportName("Patient_Attendance_Report");
         reportService.generateReport(reportData, response);
     }
 

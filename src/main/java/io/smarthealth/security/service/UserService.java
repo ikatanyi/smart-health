@@ -1,8 +1,8 @@
 package io.smarthealth.security.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.notify.domain.Notification;
-import io.smarthealth.notify.domain.NotificationRepository;
+import io.smarthealth.notification.domain.Notifications;
+import io.smarthealth.notification.domain.NotificationRepository;
 import io.smarthealth.security.domain.PasswordResetToken;
 import io.smarthealth.security.domain.PasswordTokenRepository;
 import io.smarthealth.security.domain.Role;
@@ -122,7 +122,7 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> APIException.notFound("User with id {0} Not Found", id));
     }
 
-    public List<Notification> getUserNotification(User user) {
+    public List<Notifications> getUserNotification(User user) {
         if (user == null) {
             return new ArrayList<>();
         }

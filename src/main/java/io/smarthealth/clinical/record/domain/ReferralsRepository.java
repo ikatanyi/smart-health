@@ -17,6 +17,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ReferralsRepository extends JpaRepository<Referrals, Long>, JpaSpecificationExecutor<Referrals> {
-    
+
     Optional<Referrals> findByVisit(final Visit visit);
+
+    Optional<Referrals> findFirstByVisitOrderByIdDesc(final Visit visit);
+
 }

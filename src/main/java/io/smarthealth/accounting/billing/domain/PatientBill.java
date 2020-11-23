@@ -2,7 +2,6 @@ package io.smarthealth.accounting.billing.domain;
 
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
-import io.smarthealth.accounting.billing.data.nue.Bills;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -33,15 +32,14 @@ public class PatientBill extends Auditable {
     private LocalDate billingDate;
     private String billNumber; //can also be an invoice
     private String paymentMode;
-    private String transactionId; 
-    private Double discount =0D; 
-    private Double taxes=0D;
-    private Double amount;
-    private Double balance;
+    private String transactionId;
+    private Double discount = 0D;
+    private Double taxes = 0D;
+    private Double amount = 0D;
+    private Double balance = 0D;
     private String reference;
     private String otherDetails;
     private Boolean walkinFlag;
-    
 
     @Enumerated(EnumType.STRING)
     private BillStatus status;
@@ -72,7 +70,7 @@ public class PatientBill extends Auditable {
         BillData data = new BillData();
         data.setId(this.getId());
         data.setBillNumber(this.getBillNumber());
-        data.setBillingDate(this.getBillingDate()); 
+        data.setBillingDate(this.getBillingDate());
         data.setTransactionId(this.getTransactionId());
         data.setAmount(this.getAmount());
         data.setDiscount(this.getDiscount());
@@ -98,8 +96,9 @@ public class PatientBill extends Auditable {
 
         return data;
     }
+
     @Override
     public String toString() {
-        return "Patient Bill[id=" + getId() + ", patient=" + patient + " , bill number=" +billNumber+ ", payment mode=" +paymentMode+ ", transaction id=" + transactionId + ", amount=" +amount+ ",  ]";
+        return "Patient Bill[id=" + getId() + ", patient=" + patient + " , bill number=" + billNumber + ", payment mode=" + paymentMode + ", transaction id=" + transactionId + ", amount=" + amount + ", visit=" + visit.getId() + "  ]";
     }
 }

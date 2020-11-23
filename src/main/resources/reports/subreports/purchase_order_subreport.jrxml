@@ -9,7 +9,7 @@
 	<field name="itemCode" class="java.lang.String"/>
 	<field name="quantity" class="java.lang.Double"/>
 	<field name="price" class="java.math.BigDecimal"/>
-	<field name="available" class="java.lang.Double"/>
+	<field name="available" class="java.lang.Integer"/>
 	<columnHeader>
 		<band height="20">
 			<staticText>
@@ -34,14 +34,14 @@
 				<text><![CDATA[Unit Price]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="16" y="1" width="90" height="13" uuid="2e5075df-cc8e-47b5-a096-a92171021316"/>
+				<reportElement positionType="Float" x="16" y="1" width="99" height="12" uuid="2e5075df-cc8e-47b5-a096-a92171021316"/>
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Item Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="106" y="1" width="171" height="13" uuid="74d92829-78a2-4b16-8396-e25fa227b544"/>
+				<reportElement positionType="Float" x="115" y="1" width="178" height="12" uuid="74d92829-78a2-4b16-8396-e25fa227b544"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
@@ -55,8 +55,8 @@
 				<text><![CDATA[Quantity]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="277" y="1" width="82" height="13" uuid="cb627071-05dc-4a23-b88e-255659eff978"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement positionType="Float" x="293" y="1" width="66" height="13" uuid="3726b30c-4491-4f83-9c97-043d27276f56"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Available]]></text>
@@ -66,7 +66,7 @@
 	<detail>
 		<band height="14" splitType="Stretch">
 			<textField>
-				<reportElement x="16" y="0" width="90" height="14" uuid="55f20761-7288-4638-9b8e-29424b2dc4b7"/>
+				<reportElement x="16" y="0" width="99" height="14" uuid="55f20761-7288-4638-9b8e-29424b2dc4b7"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 					<paragraph leftIndent="42"/>
@@ -74,7 +74,7 @@
 				<textFieldExpression><![CDATA[$F{itemCode}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="106" y="0" width="171" height="14" uuid="bfad8931-007d-4ae8-a7b7-9d2cdec72096"/>
+				<reportElement x="115" y="0" width="178" height="14" uuid="bfad8931-007d-4ae8-a7b7-9d2cdec72096"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -109,7 +109,7 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="277" y="0" width="82" height="14" uuid="706b9979-de3f-4dc3-98da-4cb884c33b7d"/>
+				<reportElement x="293" y="0" width="66" height="14" uuid="a3356cf0-df89-421a-b730-8a655a76c2d9"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>

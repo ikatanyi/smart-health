@@ -2,8 +2,10 @@ package io.smarthealth.accounting.billing.domain;
 
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -25,4 +27,12 @@ public interface PatientBillItemRepository extends JpaRepository<PatientBillItem
 //    Page<BillSummary> billSummaryByVisit(@Param("visit") String visitNumber, Pageable page);
   @Query(value = "SELECT p FROM PatientBillItem p WHERE p.status=:status AND p.patientBill.visit.visitNumber=:visitNo")
     List<PatientBillItem> getVisitBillsByStatus(@Param("status") BillStatus status, @Param("visitNo") String visitNo);
+    
+    Optional<PatientBillItem>findByPatientBill(PatientBill patientBill);
+    
+    List<PatientBillItem> findByTransactionId(String transactionId);
+    
+    @Modifying
+    @Query(value = "UPDATE PatientBillItem p SET p.status = 'Canceled' WHERE p.id = :id")
+    int cancelPatientBill(@Param("id") Long id );
 }

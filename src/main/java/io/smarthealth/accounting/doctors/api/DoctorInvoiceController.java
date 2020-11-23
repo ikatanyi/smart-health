@@ -1,5 +1,7 @@
 package io.smarthealth.accounting.doctors.api;
 
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.data.DoctorInvoiceData;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
@@ -10,6 +12,7 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -32,13 +35,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Api
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class DoctorInvoiceController {
 
     private final DoctorInvoiceService doctorService;
-
-    public DoctorInvoiceController(DoctorInvoiceService doctorService) {
-        this.doctorService = doctorService;
-    }
+    private final BillingService billService;
 
     @PostMapping("/doctor-invoices")
     @PreAuthorize("hasAuthority('create_doctorInvoices')") 
@@ -50,7 +51,6 @@ public class DoctorInvoiceController {
         pagers.setCode("0");
         pagers.setMessage("Invoice Successfully Created.");
         pagers.setContent(item.toData());
-
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -58,14 +58,22 @@ public class DoctorInvoiceController {
     @PreAuthorize("hasAuthority('view_doctorInvoices')") 
     public ResponseEntity<?> getDoctorInvoice(@PathVariable(value = "id") Long id) {
         DoctorInvoice item = doctorService.getDoctorInvoice(id);
-        return ResponseEntity.ok(item.toData());
+        DoctorInvoiceData invoiceData = item.toData();
+        PatientBillItem billItem = billService.findBillItemByPatientBill(item.getInvoiceNumber());
+                    if(billItem!=null)
+                        invoiceData.setReferenceNumber(billItem.getPaymentReference());
+        return ResponseEntity.ok(invoiceData);
     }
 
     @PutMapping("/doctor-invoices/{id}")
     @PreAuthorize("hasAuthority('edit_doctorInvoices')") 
     public ResponseEntity<?> updateDoctorInvoice(@PathVariable(value = "id") Long id, @Valid @RequestBody DoctorInvoiceData data) {
         DoctorInvoice item = doctorService.updateDoctorInvoice(id, data);
-        return ResponseEntity.ok(item.toData());
+        DoctorInvoiceData invoiceData = item.toData();
+        PatientBillItem billItem = billService.findBillItemByPatientBill(item.getInvoiceNumber());
+                    if(billItem!=null)
+                        invoiceData.setReferenceNumber(billItem.getPaymentReference());
+        return ResponseEntity.ok(invoiceData);
     }
 
     @DeleteMapping("/doctor-invoices/{id}")
@@ -91,7 +99,13 @@ public class DoctorInvoiceController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<DoctorInvoiceData> list = doctorService.getDoctorInvoices(doctorId, serviceItem, paid, paymentMode, patientNo, invoiceNumber, transactionId, range, pageable)
-                .map(x -> x.toData());
+                .map(x -> { 
+                    DoctorInvoiceData data = x.toData();
+                    PatientBillItem item = billService.findBillItemByPatientBill(x.getInvoiceNumber());
+                    if(item!=null)
+                        data.setReferenceNumber(item.getPaymentReference());
+                    return data;
+                });
 
         Pager<List<DoctorInvoiceData>> pagers = new Pager();
         pagers.setCode("0");

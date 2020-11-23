@@ -3,7 +3,9 @@ package io.smarthealth.accounting.billing.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
+import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
@@ -31,16 +33,23 @@ public class PatientBillItem extends Auditable {
     private LocalDate billingDate;
     private String transactionId;
     private Double quantity;
-    private Double price; 
-    private Double discount = 0.0; 
+    private Double price;
+    private Double discount = 0.0;
     @Transient
-    private Double subTotal=0.0; // (qty*price)-discount
+    private Double subTotal = 0.0; // (qty*price)-discount
     private Double taxes = 0.0;
     private Double amount = 0.0; // subtotal + tax %
     private Double balance = 0.0;
     private String servicePoint;
     private Long servicePointId;
     private Boolean paid;
+
+    @Enumerated(EnumType.STRING)
+    private BillPayMode billPayMode;//Cash/Insurance
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_item_scheme_id"))
+    private Scheme scheme;
 
     @Enumerated(EnumType.STRING)
     private BillStatus status;
@@ -95,6 +104,7 @@ public class PatientBillItem extends Auditable {
             data.setPatientNumber(this.getPatientBill().getReference());
         }
         data.setWalkinFlag(this.getPatientBill().getWalkinFlag());
+        data.setBillPayMode(this.getBillPayMode().name());
         return data;
     }
 
@@ -115,14 +125,15 @@ public class PatientBillItem extends Auditable {
         data.setDiscount(this.discount);
         data.setTax(this.taxes);
 
-        data.setNetAmount(((toDouble(this.quantity) * toDouble(this.price)) + toDouble(discount)) - toDouble(taxes));
+        data.setNetAmount(((toDouble(this.quantity) * toDouble(this.price)) - toDouble(discount)) + toDouble(taxes));
 
-        data.setServicePoint(this.servicePoint!=null?this.servicePoint:"Other");
+        data.setServicePoint(this.servicePoint != null ? this.servicePoint : "Other");
         data.setServicePointId(this.servicePointId);
         data.setPaid(this.paid);
         data.setTransactionId(this.transactionId);
         data.setReference(this.paymentReference);
         data.setStatus(this.status);
+        data.setBillPayMode(this.getBillPayMode());
         return data;
     }
 
@@ -132,12 +143,13 @@ public class PatientBillItem extends Auditable {
         }
         return val;
     }
-    
-      @Override
+
+    @Override
     public String toString() {
-        return "Patient Bill Item [id=" + getId() + ",patientBill=" + patientBill + " , service point=" +servicePoint+ ", quantity=" +quantity+ ", price=" + price + ", amount=" +amount+ " ]";
+        return "Patient Bill Item [id=" + getId() + ",patientBill=" + patientBill + " , service point=" + servicePoint + ", quantity=" + quantity + ", price=" + price + ", amount=" + amount + " ]";
     }
-   public Double getSubTotal(){
-       return ((this.quantity*this.price)-this.discount);
-   }
+
+    public Double getNetAmount() {
+        return ((this.quantity * this.price) - this.discount);
+    }
 }
