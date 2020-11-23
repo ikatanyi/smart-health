@@ -124,7 +124,6 @@ public class StockReportService {
             reportData.getFilters().put("Supplier_Data", Arrays.asList(supplier.get().toData()));
 
         }
-
         reportData.getFilters().put("amountInWords", EnglishNumberToWords.convert(purchaseOrderData.getPurchaseAmount()).toUpperCase());
         reportData.setData(Arrays.asList(purchaseOrderData));
         reportData.setFormat(format);
