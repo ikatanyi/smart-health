@@ -8,8 +8,10 @@ package io.smarthealth.report.service;
 import io.smarthealth.clinical.admission.data.AdmissionData;
 import io.smarthealth.clinical.admission.data.BedData;
 import io.smarthealth.clinical.admission.data.CareTeamData;
+import io.smarthealth.clinical.admission.data.DischargeData;
 import io.smarthealth.clinical.admission.data.RoomData;
 import io.smarthealth.clinical.admission.data.WardData;
+import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.admission.domain.Bed;
 import io.smarthealth.clinical.admission.domain.CareTeamRole;
 import io.smarthealth.clinical.admission.domain.DischargeSummary;
@@ -156,6 +158,19 @@ public class AdmissionReportService {
         reportData.setFormat(format);
         reportData.setTemplate("/admission/discharge_report");
         reportData.setReportName("discharge_report");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getDischargeSummary(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String visitNumber = reportParam.getFirst("visitNumber");
+        Admission adm = admissionService.findAdmissionByNumber(visitNumber);
+        DischargeData discharges = dischargeService.getDischargeByNumber(adm.getAdmissionNo()).toData();
+
+        reportData.setData(Arrays.asList(discharges));
+        reportData.setFormat(format);
+        reportData.setTemplate("/admission/discharge_summary");
+        reportData.setReportName("discharge_summary");
         reportService.generateReport(reportData, response);
     }
     

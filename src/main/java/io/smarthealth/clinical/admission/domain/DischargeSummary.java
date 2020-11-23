@@ -56,6 +56,12 @@ public class DischargeSummary extends Auditable {
         data.setOutcome(this.outcome);
         data.setPatientName(this.patient.getFullName());
         data.setPatientNumber(this.patient.getPatientNumber());
+        if(this.getAdmission()!=null){
+            if(this.getAdmission().getBed()!=null)
+               data.setBed(this.getAdmission().getBed().getName());
+            if(this.getAdmission().getWard()!=null)
+               data.setWard(this.getAdmission().getWard().getName());
+        }
         return data;
     }
 }
