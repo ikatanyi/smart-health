@@ -5,6 +5,7 @@
  */
 package io.smarthealth.clinical.admission.domain.repository;
 
+import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.admission.domain.DischargeSummary;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  */
 public interface DischargeSummaryRepository extends JpaRepository<DischargeSummary, Long>, JpaSpecificationExecutor<DischargeSummary> {
     Optional<DischargeSummary>findByDischargeNo(String dischargNo);
+    Optional<DischargeSummary>findByAdmission(Admission admission);
 }

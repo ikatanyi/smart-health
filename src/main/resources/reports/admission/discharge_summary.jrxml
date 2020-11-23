@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="discharge_slip" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="123"/>
+	<property name="ireport.x" value="99"/>
+	<property name="ireport.y" value="11"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
@@ -19,9 +19,10 @@
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Footer_Data" class="java.util.List"/>
 	<parameter name="range" class="java.lang.String"/>
-	<parameter name="drugsData" class="java.util.List"/>
+	<parameter name="labTests" class="java.util.List"/>
 	<parameter name="procedures" class="java.util.List"/>
-	<parameter name="radiologyTests" class="java.util.List"/>
+	<parameter name="scanData" class="java.util.List"/>
+	<parameter name="pharmacyData" class="java.util.List"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -39,14 +40,13 @@
 	<field name="instructions" class="java.lang.String"/>
 	<field name="outcome" class="java.lang.String"/>
 	<field name="dischargeMethod" class="java.lang.String"/>
-	<field name="discharged" class="java.lang.Boolean"/>
 	<field name="dischargeDate" class="java.lang.Object"/>
 	<field name="dischargedBy" class="java.lang.String"/>
 	<field name="dischargeNo" class="java.lang.String"/>
 	<field name="doctor" class="java.lang.String"/>
 	<field name="residence" class="java.lang.String"/>
 	<field name="reviewDate" class="java.lang.Object"/>
-	<field name="bedNo" class="java.lang.String"/>
+	<field name="bed" class="java.lang.String"/>
 	<field name="ward" class="java.lang.String"/>
 	<variable name="PatientCount" class="java.lang.Integer" calculation="Count">
 		<variableExpression><![CDATA[]]></variableExpression>
@@ -393,7 +393,7 @@
 					<font size="8"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{bedNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{bed}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="322" y="65" width="83" height="12" uuid="7bf1f202-e61e-4bca-9543-a19b593b125f"/>
@@ -489,7 +489,7 @@
 			</textField>
 			<subreport>
 				<reportElement positionType="Float" x="0" y="243" width="555" height="21" uuid="a93178df-d943-4d5c-8531-fe6279f1db21"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{drugsData})]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{pharmacyData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_prescription.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
@@ -502,7 +502,7 @@
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{radiologyTests})]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{scanData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_radiology_report_tests.jasper"]]></subreportExpression>
 			</subreport>
 		</band>

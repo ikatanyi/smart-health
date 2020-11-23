@@ -7,7 +7,6 @@ package io.smarthealth.report.data;
 
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

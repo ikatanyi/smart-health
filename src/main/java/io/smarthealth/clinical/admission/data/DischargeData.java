@@ -35,5 +35,6 @@ public class DischargeData {
     private LocalDate reviewDate;
     private String ward;
     private String bed;
+    private String residence;
 
 }

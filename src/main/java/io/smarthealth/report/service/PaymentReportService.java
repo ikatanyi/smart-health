@@ -5,9 +5,7 @@
  */
 package io.smarthealth.report.service;
 
-import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.service.LedgerService;
-import io.smarthealth.accounting.cashier.data.CashierData;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.data.ShiftPayment;
 import io.smarthealth.accounting.cashier.service.CashierService;
@@ -40,7 +38,6 @@ import io.smarthealth.supplier.service.SupplierService;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

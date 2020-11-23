@@ -83,5 +83,6 @@ public enum ReportName {
         Discharge_Slip,
         Registered_Wards,
         Room_Report,
-        Bed_Report
+        Bed_Report,
+        Discharge_Summary
 }

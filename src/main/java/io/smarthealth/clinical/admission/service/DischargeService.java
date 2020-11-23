@@ -93,6 +93,11 @@ public class DischargeService {
 
             return admission;
     }
+    
+    public DischargeSummary getDischargeByAdmission(Admission admission){
+            return repository.findByAdmission(admission).orElseThrow(() -> APIException.notFound("DischargeSummary with Admission Number {0} not found", admission.getAdmissionNo()));
+
+    }
 @Transactional
     public DischargeSummary updateDischarge(Long id, DischargeData data) {
         DischargeSummary discharge = getDischargeById(id);

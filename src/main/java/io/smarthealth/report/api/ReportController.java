@@ -276,6 +276,9 @@ public class ReportController {
             case Discharge_Slip:
                 admissionReportService.getDischargeSlip(queryParams, format, response);
                 break;
+            case Discharge_Summary:
+                admissionReportService.getDischargeSummary(queryParams, format, response);
+                break;
             default:
                 break;
         }

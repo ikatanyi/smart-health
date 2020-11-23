@@ -22,6 +22,14 @@ import io.smarthealth.clinical.admission.service.CareTeamService;
 import io.smarthealth.clinical.admission.service.DischargeService;
 import io.smarthealth.clinical.admission.service.RoomService;
 import io.smarthealth.clinical.admission.service.WardService;
+import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
+import io.smarthealth.clinical.laboratory.service.LaboratoryService;
+import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
+import io.smarthealth.clinical.procedure.service.ProcedureService;
+import io.smarthealth.clinical.radiology.data.PatientScanTestData;
+import io.smarthealth.clinical.radiology.service.RadiologyService;
+import io.smarthealth.clinical.record.data.PrescriptionData;
+import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -59,6 +67,10 @@ public class AdmissionReportService {
     private final WardService wardService;
     private final CareTeamService careTeamService;
     private final DischargeService dischargeService;
+    private final RadiologyService radiologyService;
+    private final ProcedureService procedureService;
+    private final LaboratoryService labService;
+    private final PrescriptionService prescriptionService;
 
     private final VisitService visitService;
 
@@ -165,8 +177,32 @@ public class AdmissionReportService {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
         Admission adm = admissionService.findAdmissionByNumber(visitNumber);
-        DischargeData discharges = dischargeService.getDischargeByNumber(adm.getAdmissionNo()).toData();
+        DischargeData discharges = dischargeService.getDischargeByAdmission(adm).toData();
 
+        List<PatientScanTestData> scanData = radiologyService.getPatientScansTestByVisit(visitNumber)
+                    .stream()
+                    .map((scan) -> scan.toData())
+                    .collect(Collectors.toList());
+
+            List<PatientProcedureTestData> procedures = procedureService.findProcedureResultsByVisit(adm)
+                    .stream()
+                    .map((proc) -> proc.toData())
+                    .collect(Collectors.toList());
+
+            List<LabRegisterTestData> labTests = labService.getTestsResultsByVisit(visitNumber, "")
+                    .stream()
+                    .map((test) -> test.toData(Boolean.TRUE))
+                    .collect(Collectors.toList());
+            List<PrescriptionData> pharmacyData = prescriptionService.fetchAllPrescriptionsByVisit(adm, Pageable.unpaged()).getContent()
+                .stream()
+                .map((presc) -> PrescriptionData.map(presc))
+                .collect(Collectors.toList());
+
+        reportData.getFilters().put("pharmacyData", pharmacyData);
+        reportData.getFilters().put("labTests", labTests);
+        reportData.getFilters().put("procedures", procedures);
+        reportData.getFilters().put("scanData", scanData);
+        
         reportData.setData(Arrays.asList(discharges));
         reportData.setFormat(format);
         reportData.setTemplate("/admission/discharge_summary");
