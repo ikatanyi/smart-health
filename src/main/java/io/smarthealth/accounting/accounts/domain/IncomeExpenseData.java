@@ -2,13 +2,13 @@ package io.smarthealth.accounting.accounts.domain;
 
 import io.smarthealth.accounting.accounts.data.SimpleAccountData;
 import java.io.Serializable;
-import java.util.List;
+import java.util.List; 
 import lombok.Data;
 
 /**
  *
  * @author Kelsas
- */
+ */ 
 @Data
 public class IncomeExpenseData implements Serializable {
 

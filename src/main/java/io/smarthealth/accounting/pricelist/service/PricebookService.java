@@ -27,6 +27,7 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.item.data.ItemSimpleData;
 import java.util.ArrayList;
 import org.springframework.transaction.annotation.Transactional;
+import io.smarthealth.accounting.pricelist.data.BulkPriceUpdate;
 
 /**
  *
@@ -138,20 +139,42 @@ public class PricebookService {
     }
 
     @Transactional
+    public void batchUpdatePriceItem(BulkPriceUpdate updateData) {
+
+        for (long p : updateData.getPricebooks()) {
+            Optional<PriceBook> book = getPricebook(p);
+            if (book.isPresent()) {
+                Item toSaveItem = itemService.findItemEntityOrThrow(updateData.getItemId());
+
+                PriceBookItem priceBookItem = book.get().getPriceBookItems()
+                        .stream()
+                        .filter(x -> Objects.equal(x.getItem().getId(), updateData.getItemId()))
+                        .findAny()
+                        .orElse(null);
+                if (priceBookItem == null) {
+                    priceBookRepository.addPriceBookItem(updateData.getAmount(), book.get().getId(), toSaveItem.getId());
+                } else {
+                    priceBookRepository.updateBookItem(updateData.getAmount(), book.get().getId(), priceBookItem.getItem().getId());
+                }
+            }
+        };
+    }
+
+    @Transactional
     public void deletePriceItem(Long id, Long itemId) {
         PriceBook book = getPricebookWithNotFoundExeption(id);
         priceBookRepository.deleteBookItem(book.getId(), itemId);
     }
 
     public Pager<PriceBookItemData> getPriceBookItems(Long priceBookId, String term, Pageable page) {
-        
+
         PriceBook book = getPricebookWithNotFoundExeption(priceBookId);
 
         List<PriceBookItemData> list;
 
         if (term != null) {
             String queryTerm = term.toLowerCase();
-            
+
             list = book.getPriceBookItems()
                     .stream()
                     .filter(p -> (p.getItem().getItemName().toLowerCase().contains(queryTerm)) || (p.getItem().getItemCode().toLowerCase().contains(queryTerm)))

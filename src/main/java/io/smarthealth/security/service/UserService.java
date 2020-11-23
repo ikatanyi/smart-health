@@ -1,8 +1,8 @@
 package io.smarthealth.security.service;
 
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.notify.domain.Notifications;
-import io.smarthealth.notify.domain.NotificationRepository;
+import io.smarthealth.notification.domain.Notifications;
+import io.smarthealth.notification.domain.NotificationRepository;
 import io.smarthealth.security.domain.PasswordResetToken;
 import io.smarthealth.security.domain.PasswordTokenRepository;
 import io.smarthealth.security.domain.Role;

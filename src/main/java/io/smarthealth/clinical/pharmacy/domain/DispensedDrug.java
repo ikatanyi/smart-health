@@ -53,9 +53,12 @@ public class DispensedDrug extends Auditable implements Cloneable {
     private Boolean collected;
     private String dispensedBy;
     private String collectedBy;
+
     private Boolean isReturn;
     private String returnReason;
     private LocalDate returnDate;
+    private Double returnedQuantity;
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_pharm_dispensed_drugs_store_id"))
     private Store store;
@@ -103,6 +106,11 @@ public class DispensedDrug extends Auditable implements Cloneable {
         data.setOtherReference(this.otherReference);
         data.setWalkinFlag(this.walkinFlag);
         data.setBatchNumber(this.batchNumber);
+        Double returnedQty = this.returnedQuantity != null ? this.returnedQuantity : 0D;
+        data.setReturnedQuantity(returnedQty);
+        data.setQtyBalance(this.qtyIssued - returnedQty);
+        data.setReturnReason(this.returnReason);
+
         return data;
     }
 

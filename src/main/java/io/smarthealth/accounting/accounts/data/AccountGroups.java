@@ -6,13 +6,8 @@
 package io.smarthealth.accounting.accounts.data;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.List; 
 import lombok.Data;
-
-/**
- *
- * @author Kelsas
- */
 @Data
 public class AccountGroups {
     

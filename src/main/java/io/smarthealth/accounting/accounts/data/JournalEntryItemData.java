@@ -2,13 +2,13 @@ package io.smarthealth.accounting.accounts.data;
 
 import io.smarthealth.accounting.accounts.domain.*;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDate; 
 import lombok.Data;
 
 /**
  *
  * @author Kelsas
- */
+ */ 
 @Data
 public class JournalEntryItemData {
 

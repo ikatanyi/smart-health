@@ -10,9 +10,9 @@ import io.smarthealth.appointment.domain.specification.AppointmentSpecification;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.ContentPage;
-import io.smarthealth.notify.data.TextMessageData;
-import io.smarthealth.notify.domain.enumeration.ReceiverType;
-import io.smarthealth.notify.service.MessagingService;
+import io.smarthealth.notification.data.SmsMessageData;
+import io.smarthealth.notification.domain.enumeration.ReceiverType;
+import io.smarthealth.notification.service.SmsMessagingService;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.domain.PersonRepository;
@@ -47,7 +47,7 @@ public class AppointmentService {
     private final AppointmentTypeService appointmentTypeService;
     private final EmployeeService employeeService;
     private final ItemService itemService;
-    private final MessagingService messagingService;
+    private final SmsMessagingService messagingService;
 
     @Autowired
     ModelMapper modelMapper;
@@ -75,8 +75,8 @@ public class AppointmentService {
     public Appointment createAppointment(AppointmentData appointment) {
         modelMapper.getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.STRICT);
-        List<TextMessageData>dataList = new ArrayList();
-        TextMessageData msgData = new TextMessageData();
+        List<SmsMessageData>dataList = new ArrayList();
+        SmsMessageData msgData = new SmsMessageData();
         
         AppointmentType appointmentType = appointmentTypeService.fetchAppointmentTypeWithNoFoundDetection(appointment.getAppointmentTypeId());
         Appointment entity = modelMapper.map(appointment, Appointment.class);
@@ -88,14 +88,14 @@ public class AppointmentService {
         Optional<Employee> practitioner = employeeService.findEmployeeByStaffNumber(appointment.getPractitionerCode());
         if (practitioner.isPresent()) {
             entity.setPractitioner(practitioner.get());
-            msgData = new TextMessageData();
+            msgData = new SmsMessageData();
             msgData.setReceiverId(practitioner.get().getStaffNumber());
             msgData.setReceiverType(ReceiverType.employee);
             msgData.setMessage("Dear Doctor,"+practitioner.get().getFullName()+" You Have a scheduled Appoinment with "+patient.get().getFullName()+" on "+entity.getAppointmentDate()+" at"+entity.getStartTime());
             dataList.add(msgData);
         }        
         if (patient.isPresent()) {
-            msgData = new TextMessageData();
+            msgData = new SmsMessageData();
             msgData.setReceiverId(patient.get().getPatientNumber());
             msgData.setReceiverType(ReceiverType.patient);
             msgData.setMessage("Dear "+patient.get().getFullName()+", You Have a scheduled Appoinment with "+(practitioner.isPresent()?practitioner.get().getFullName():"")+" on"+entity.getAppointmentDate()+" at"+entity.getStartTime());

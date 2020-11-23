@@ -10,7 +10,6 @@ import io.smarthealth.administration.employeespecialization.data.enums.EmployeeC
 import io.smarthealth.administration.employeespecialization.domain.EmployeeSpecialization;
 import io.smarthealth.administration.employeespecialization.service.EmployeeSpecializationService;
 import io.smarthealth.infrastructure.common.ApiResponse;
-import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
