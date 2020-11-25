@@ -8,7 +8,6 @@ package io.smarthealth.clinical.admission.api;
 import io.smarthealth.clinical.admission.data.AdmissionData;
 import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.admission.service.AdmissionService;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -105,7 +104,7 @@ public class AdmissionController {
 
         return ResponseEntity.ok(pagers);
     }
-    
+
     @PutMapping("/admission/{id}")
 //    @PreAuthorize("hasAuthority('create_admission')")
     public ResponseEntity<?> updateAdmission(@PathVariable("id") Long id, @Valid @RequestBody AdmissionData admissionData) {
@@ -119,7 +118,5 @@ public class AdmissionController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-    
-    
 
 }

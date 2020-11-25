@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="credit_note" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="447"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
@@ -41,56 +41,7 @@
 	</variable>
 	<background>
 		<band height="802">
-			<elementGroup>
-				<rectangle>
-					<reportElement x="1" y="232" width="551" height="520" uuid="c0074d42-7fb4-47ab-9a53-497407758d32"/>
-					<graphicElement>
-						<pen lineWidth="0.25"/>
-					</graphicElement>
-				</rectangle>
-				<rectangle>
-					<reportElement x="1" y="252" width="551" height="470" uuid="327551d3-35ac-4494-abe3-edb7da463b75"/>
-					<graphicElement>
-						<pen lineWidth="0.25"/>
-					</graphicElement>
-				</rectangle>
-				<line>
-					<reportElement x="17" y="232" width="1" height="490" uuid="8029a0d6-2796-4821-a852-365236218b66"/>
-					<graphicElement>
-						<pen lineWidth="0.25"/>
-					</graphicElement>
-				</line>
-				<line>
-					<reportElement x="116" y="232" width="1" height="490" uuid="e10101d9-0a63-48b5-b329-e6c453d3c65d"/>
-					<graphicElement>
-						<pen lineWidth="0.25"/>
-					</graphicElement>
-				</line>
-				<line>
-					<reportElement x="490" y="232" width="1" height="490" uuid="00945496-2e18-4698-89aa-6ba56922a52c"/>
-					<graphicElement>
-						<pen lineWidth="0.25"/>
-					</graphicElement>
-				</line>
-				<line>
-					<reportElement x="427" y="232" width="1" height="510" uuid="530a76d4-9b68-4c6c-8d17-5630a94192b6"/>
-					<graphicElement>
-						<pen lineWidth="0.25"/>
-					</graphicElement>
-				</line>
-				<line>
-					<reportElement x="360" y="232" width="1" height="490" uuid="ed5d7ed4-ea0a-44a5-8998-3c2a33360c31"/>
-					<graphicElement>
-						<pen lineWidth="0.25"/>
-					</graphicElement>
-				</line>
-				<line>
-					<reportElement x="294" y="232" width="1" height="490" uuid="31ed9536-e93e-406d-a2ae-dfea3a04cbb0"/>
-					<graphicElement>
-						<pen lineWidth="0.25"/>
-					</graphicElement>
-				</line>
-			</elementGroup>
+			<elementGroup/>
 		</band>
 	</background>
 	<title>

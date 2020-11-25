@@ -5,9 +5,8 @@ import io.smarthealth.organization.person.data.PersonData;
 import io.smarthealth.organization.person.data.PortraitData;
 import io.smarthealth.organization.person.patient.data.enums.PatientStatus;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.List;
 import javax.persistence.EnumType;
-import javax.persistence.Enumerated; 
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -15,7 +14,7 @@ import lombok.Data;
  * @author K
  */
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true) 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class PatientData extends PersonData {
 
     @ApiModelProperty(required = false, hidden = true)
@@ -35,4 +34,5 @@ public final class PatientData extends PersonData {
     private Integer age;
     private String visitType;
     private PortraitData portraitData;
+    private String inpatientNumber;
 }

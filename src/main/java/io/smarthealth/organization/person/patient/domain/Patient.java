@@ -44,5 +44,6 @@ public class Patient extends Person {
 //    private Boolean isAlive = true;
     private String criticalInformation;
     private String basicNotes;
+    private String inpatientNumber;
 
 }

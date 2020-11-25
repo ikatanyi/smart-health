@@ -29,12 +29,13 @@ public class PatientSpecification {
             }
             if (term != null) {
                 final String likeExpression = "%" + term + "%";
+                System.out.println("likeExpression "+likeExpression);
                 predicates.add(
                         cb.or(
-//                                cb.like(root.get("fullName"), likeExpression),
-                                cb.like(root.get("givenName"), likeExpression),
-                                cb.like(root.get("middleName"), likeExpression),
-                                cb.like(root.get("surname"), likeExpression),
+                                cb.like(root.get("fullName"), likeExpression),
+                                //cb.like(root.get("givenName"), likeExpression),
+                                //cb.like(root.get("middleName"), likeExpression),
+                                //cb.like(root.get("surname"), likeExpression),
                                 cb.like(root.get("patientNumber"), likeExpression),
                                 cb.like(root.get("primaryContact"), likeExpression)
                         )

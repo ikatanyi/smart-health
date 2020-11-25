@@ -84,7 +84,7 @@ public class WardController {
     }
     
     @PutMapping("/ward/{id}")
-    @PreAuthorize("hasAuthority('create_ward')")
+//    @PreAuthorize("hasAuthority('create_ward')")
     public ResponseEntity<?> updateWard(@PathVariable("id") Long id, @Valid @RequestBody WardData wardData) {
         
         WardData result = service.updateWard(id,wardData).toData();

@@ -43,7 +43,7 @@ public class RoomController {
     @GetMapping("/room")
 //    @PreAuthorize("hasAuthority('view_room')")
     public ResponseEntity<?> getAllRooms(
-            @RequestParam(value = "active", required = false, defaultValue = "false") final boolean active,
+            @RequestParam(value = "active", required = false, defaultValue = "true") final boolean active,
             @RequestParam(value = "name", required = false) final String name,
             @RequestParam(value = "type", required = false) final Type type,  
             @RequestParam(value = "ward_id", required = false) final Long wardId,          
@@ -88,7 +88,7 @@ public class RoomController {
     }
     
     @PutMapping("/room/{id}")
-    @PreAuthorize("hasAuthority('create_room')")
+//    @PreAuthorize("hasAuthority('create_room')")
     public ResponseEntity<?> updateRoom(@PathVariable("id") Long id, @Valid @RequestBody RoomData roomData) {
         
         RoomData result = service.updateRoom(id,roomData).toData();

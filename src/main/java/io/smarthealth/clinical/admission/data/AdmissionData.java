@@ -35,7 +35,7 @@ public class AdmissionData {
     private Integer age;
     @ApiModelProperty(hidden = true)
     private Gender gender;
-    
+
     private String admittingReason;
 
     private VisitEnum.PaymentMethod paymentMethod;
@@ -68,12 +68,13 @@ public class AdmissionData {
     @ApiModelProperty(example = "CheckIn,CheckOut,Admitted,Transferred, Discharged, Booked")
     private VisitEnum.Status status;
     private List<CareTeamData> careTeam = new ArrayList<>();
-    
-    private List<EmergencyContactData>emergencyContactData = new ArrayList();
+
+    private List<EmergencyContactData> emergencyContactData = new ArrayList();
 
     private String narration;
 
     private PaymentDetailsData paymentDetailsData;
+    private String inpatientNumber;
 
     public static AdmissionData map(Admission adm) {
         AdmissionData d = new AdmissionData();
