@@ -234,6 +234,11 @@
             <artifactId>mssql-jdbc</artifactId>
             <version>6.1.0.jre8</version>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>2.4.10</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -247,6 +252,9 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <executable>true</executable>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>jasper</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
                 </configuration>
                 <executions>
                     <execution>
@@ -256,7 +264,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+           
         </plugins>
     </build>
     

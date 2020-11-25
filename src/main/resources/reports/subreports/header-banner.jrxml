@@ -94,7 +94,7 @@
 				<textFieldExpression><![CDATA[$F{orgWebsite}]]></textFieldExpression>
 			</textField>
 			<image hAlign="Left" isUsingCache="true" isLazy="true" onErrorType="Blank">
-				<reportElement style="headerStyle" x="0" y="2" width="234" height="58" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
+				<reportElement style="headerStyle" x="0" y="3" width="234" height="58" uuid="cf110f5b-c6b7-4ee6-8dc8-f45f7cdc0b32"/>
 				<imageExpression><![CDATA[$F{IMAGE}]]></imageExpression>
 			</image>
 			<subreport isUsingCache="false">
