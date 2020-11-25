@@ -19,7 +19,7 @@ import io.smarthealth.accounting.invoice.data.CreateInvoice;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceEditData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
-import io.smarthealth.accounting.invoice.data.InvoiceMergeData;
+import io.smarthealth.accounting.invoice.data.MergeInvoice;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceItem;
@@ -163,7 +163,6 @@ public class InvoiceService {
                                     item.setBalance(0D);
                                     PatientBillItem updatedItem = billingService.updateBillItem(item);
                                     lineItem.setBillItem(updatedItem);
-
 //                                            lineItem.setBalance(inv.getAmount().doubleValue() > 0 ? inv.getAmount() : BigDecimal.ZERO);
                                     lineItem.setBalance(inv.getAmount());
                                     invoice.addItem(lineItem);
@@ -255,39 +254,35 @@ public class InvoiceService {
         Invoice invoice = getInvoiceByIdOrThrow(id);
         Payer payer = payerService.findPayerByIdWithNotFoundDetection(data.getPayerId());
         Scheme scheme = schemeService.fetchSchemeById(data.getSchemeId());
-        
 
-        Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
-
+//        Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
         //determining the invoice amount to use 
-       
         invoice.setMemberNumber(data.getMemberNumber());
-        invoice.setMemberName(data.getMemberName());         
+        invoice.setMemberName(data.getMemberName());
         invoice.setNotes(data.getNotes());
         invoice.setPayer(payer);
         invoice.setScheme(scheme);
         return invoiceRepository.save(invoice);
     }
 
-
-    @Transactional
-    public InvoiceMerge mergeInvoice(InvoiceMergeData data) {
-        InvoiceMerge invoiceMerge = InvoiceMergeData.map(data);
-
-        Invoice fromInvoice = getInvoiceByNumberOrThrow(data.getFromInvoiceNumber());
-        Invoice toInvoice = getInvoiceByNumberOrThrow(data.getToInvoiceNumber());
-
-        fromInvoice.getItems().stream().map((lineItem) -> {
-            lineItem.setInvoice(toInvoice);
-            return lineItem;
-        }).forEachOrdered((lineItem) -> {
-            toInvoice.getItems().add(lineItem);
-        });
-
-        invoiceRepository.save(toInvoice);
-        invoiceRepository.deleteById(fromInvoice.getId());
-        return invoiceMergeRepository.save(invoiceMerge);
-    }
+//    @Transactional
+//    public InvoiceMerge mergedInvoiceProcee(InvoiceMergeData data) {
+//        InvoiceMerge invoiceMerge = InvoiceMergeData.map(data);
+//
+//        Invoice fromInvoice = getInvoiceByNumberOrThrow(data.getFromInvoiceNumber());
+//        Invoice toInvoice = getInvoiceByNumberOrThrow(data.getToInvoiceNumber());
+//
+//        fromInvoice.getItems().stream().map((lineItem) -> {
+//            lineItem.setInvoice(toInvoice);
+//            return lineItem;
+//        }).forEachOrdered((lineItem) -> {
+//            toInvoice.getItems().add(lineItem);
+//        });
+//
+//        invoiceRepository.save(toInvoice);
+//        invoiceRepository.deleteById(fromInvoice.getId());
+//        return invoiceMergeRepository.save(invoiceMerge);
+//    }
 
     //TODO cancelling of the invoice
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -401,18 +396,7 @@ public class InvoiceService {
         capitationJournal.add(new JournalEntryItem(debitAccount, narration, debitAmount, BigDecimal.ZERO));
         capitationJournal.add(new JournalEntryItem(creditAccount.getAccount(), narration, BigDecimal.ZERO, creditAmount));
 
-        for (JournalEntryItem d : capitationJournal) {
-            System.err.println("Account : " + d.getAccount().getName() + " Debit: " + d.getDebit() + " Credit: " + d.getCredit() + " ISDebit: " + d.isDebit());
-            System.err.println("Cred");
-        }
-        JournalEntry toSave = new JournalEntry(invoice.getDate(), narration, capitationJournal
-        //                new JournalEntryItem[]{
-        //                    new JournalEntryItem(debitAccount, narration, debitAmount, BigDecimal.ZERO),
-        //                    new JournalEntryItem(creditAccount.getAccount(), narration, BigDecimal.ZERO, creditAmount)
-        ////                    new JournalEntryItem(narration, debitAcc, JournalEntryItem.Type.DEBIT, amount),
-        ////                    new JournalEntryItem(narration, creditAcc, JournalEntryItem.Type.CREDIT, amount)
-        //                }
-        );
+        JournalEntry toSave = new JournalEntry(invoice.getDate(), narration, capitationJournal);
 
         toSave.setTransactionNo(invoice.getTransactionNo());
         toSave.setTransactionType(TransactionType.Invoicing);
@@ -455,52 +439,6 @@ public class InvoiceService {
         Double amount = invoiceItems.stream()
                 .map(x -> x.getAmount())
                 .reduce(0D, (x, y) -> x + y);
-//
-//        PatientBill patientbill = new PatientBill();
-//        patientbill.setVisit(invoice.getVisit());
-//        patientbill.setPatient(invoice.getPatient());
-//        patientbill.setWalkinFlag(Boolean.FALSE);
-//
-//        patientbill.setAmount(amount);
-//        patientbill.setDiscount(0D);
-//        patientbill.setBalance(0D);
-//        patientbill.setBillingDate(invoice.getDate());
-//        patientbill.setPaymentMode(invoice.getVisit().getPaymentMethod().name());
-//
-//        patientbill.setStatus(BillStatus.Paid);
-//
-//        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
-//        String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
-//
-//        patientbill.setBillNumber(bill_no);
-//        patientbill.setTransactionId(trdId);
-//
-//        List<PatientBillItem> lineItems = invoiceItems
-//                .stream()
-//                .map(lineData -> {
-//                    Item item = itemRepository.findById(lineData.getItemId()).orElseThrow(() -> APIException.notFound("Item with ID {0} Not Found.", lineData.getItemId()));
-//                    PatientBillItem billItem = new PatientBillItem();
-//
-//                    billItem.setBillingDate(lineData.getBillingDate());
-//                    billItem.setTransactionId(trdId);
-//                    billItem.setItem(item);
-//                    billItem.setPaid(Boolean.TRUE);
-//                    billItem.setPrice(lineData.getPrice());
-//                    if (item.getCategory().equals(ItemCategory.CoPay)) {
-//                        billItem.setPrice(lineData.getAmount());
-//                    }
-//                    billItem.setQuantity(lineData.getQuantity());
-//                    billItem.setAmount(lineData.getAmount());
-//                    billItem.setDiscount(lineData.getDiscount());
-//                    billItem.setBalance(lineData.getAmount());
-//                    billItem.setServicePoint(lineData.getServicePoint());
-//                    billItem.setServicePointId(lineData.getServicePointId());
-//                    billItem.setStatus(BillStatus.Draft);
-//                    billItem.setMedicId(lineData.getMedicId());
-//                    return billItem;
-//                })
-//                .collect(Collectors.toList());
-//        patientbill.addBillItems(lineItems);
 
         BillData billdata = new BillData();
         billdata.setVisitNumber(invoice.getVisit().getVisitNumber());
@@ -564,5 +502,53 @@ public class InvoiceService {
 
         journalService.save(toSave);
         return savedInvoice;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Invoice mergeInvoice(MergeInvoice mergeInvoice) {
+        //check if any of the invoice is dispatched
+        Invoice invoice = getInvoiceByNumberOrThrow(mergeInvoice.getInvoiceNo());
+        if (invoice.getStatus() == InvoiceStatus.Sent) {
+            throw APIException.badRequest("Invoice {0} is already dispatched to payer, Merging is not possible", mergeInvoice.getInvoiceNo());
+        }
+        Invoice toInvoice = getInvoiceByNumberOrThrow(mergeInvoice.getInvoiceToMerge());
+
+        if (toInvoice.getStatus() == InvoiceStatus.Sent) {
+            throw APIException.badRequest("Invoice {0} is already dispatched to payer, Merging is not possible", mergeInvoice.getInvoiceToMerge());
+        }
+
+        toInvoice.getItems().stream()
+                .map(x -> {
+                    x.setInvoice(invoice);
+                    return x;
+                })
+                .forEachOrdered(inv -> {
+                    invoice.getItems().add(inv);
+                });
+        //updatet the bills
+        billingService.updatePaymentReference(toInvoice.getNumber(), invoice.getNumber());
+        //delete the old invoice
+        invoiceRepository.deleteById(toInvoice.getId());
+        //audi log the changes
+        //String fromInvoiceNumber, String toInvoiceNumber, BigDecimal originalInvoiceAmount, BigDecimal newInvoiceAmount, String reasonForMerge
+       
+        Double amount = invoice.getItems().stream()
+                .map(x -> {
+                    return x.getBillItem().getAmount();
+                })
+                .reduce(0D, (x, y) -> x + y);
+
+        Double balance = invoice.getItems().stream()
+                .map(x -> {
+                    return x.getBillItem().getBalance();
+                })
+                .reduce(0D, (x, y) -> x + y);
+       BigDecimal originalAmount =invoice.getAmount();
+        invoice.setAmount(BigDecimal.valueOf(amount));
+        invoice.setBalance(BigDecimal.valueOf(balance));
+        
+        invoiceMergeRepository.save(new InvoiceMerge(toInvoice.getNumber(), invoice.getNumber(), originalAmount, invoice.getAmount(), mergeInvoice.getReason()));
+
+        return invoiceRepository.save(invoice);
     }
 }
