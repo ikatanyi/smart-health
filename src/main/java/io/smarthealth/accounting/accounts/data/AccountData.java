@@ -30,7 +30,7 @@ public final class AccountData {
         account.setIdentifier(accountEntity.getIdentifier());
         account.setName(accountEntity.getName());
         account.setType(accountEntity.getType());
-        
+
         if (accountEntity.getLedger() != null) {
             account.setLedger(accountEntity.getLedger().getIdentifier());
             account.setAccountType(accountEntity.getLedger().getName());

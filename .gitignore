@@ -42,3 +42,4 @@ build/
 /nb-configuration.xml
 /JavaApplication/nbproject/private/
 /JavaApplication2/nbproject/private/
+io.**

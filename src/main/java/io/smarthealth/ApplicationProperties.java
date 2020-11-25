@@ -11,7 +11,7 @@ import org.springframework.validation.annotation.Validated;
  *
  * @author Kelsas
  */ 
- 
+  
 @Data
 @Validated
 @Configuration

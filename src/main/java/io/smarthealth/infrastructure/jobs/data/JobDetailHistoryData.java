@@ -7,7 +7,6 @@ package io.smarthealth.infrastructure.jobs.data;
 
 import java.time.LocalDateTime;
 import lombok.Data;
-
 /**
  *
  * @author Kelsas
