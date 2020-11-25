@@ -1,5 +1,6 @@
 package io.smarthealth.organization.person.patient.domain;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,5 +31,9 @@ public interface PatientRepository extends JpaRepository<Patient, Long>, JpaSpec
 
     @Query(value = "SELECT max(id) FROM Patient")
     public Integer maxId();
+    
+    //Testing this to easy dependency on JPA - Kelsas 2020-11-24 19:13
+     @Query("select p from Patient p where p.givenName like lower(concat('%', ?1,'%')) or p.middleName like lower(concat('%', ?1,'%')) or p.surname like lower(concat('%', ?1,'%')) or p.patientNumber like lower(concat('%', ?1,'%'))")
+    List<Patient> search(String searchValue);
 
 }

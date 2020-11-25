@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import net.sf.jasperreports.engine.JRException;
@@ -407,4 +408,15 @@ public class PatientController {
         String contentType = null;
         patientService.exportPatientPdfFile(response);
     }
+
+    @GetMapping("/patients/tafuta")
+    public @ResponseBody
+    ResponseEntity<List<PatientData>> tafutaPatient(@RequestParam("q") final String term) {
+        List<PatientData> patient = this.patientService.tafuta(term).stream()
+                .map(p -> patientService.convertToPatientData(p))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(patient);
+    }
+
 }

@@ -531,4 +531,9 @@ public class PatientService {
     public List<Patient> search(String term, int offset, int limit) {
         return patientRepository.search(term, limit, offset);
     }
+
+    public List<Patient> tafuta(String term) {
+        return patientRepository.search(term);
+    }
+
 }
