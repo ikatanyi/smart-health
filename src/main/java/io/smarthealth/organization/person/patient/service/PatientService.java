@@ -76,7 +76,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PatientService {
 
-
     private final PatientRepository patientRepository;
     private final PersonContactRepository personContactRepository;
     private final PersonAddressRepository personAddressRepository;
@@ -168,7 +167,6 @@ public class PatientService {
 //                        }
 //                        patient.setIdentifiers(ids);
 //                    }
-
                     patient.setFullName((patient.getGivenName() != null ? patient.getGivenName() : "") + " " + (patient.getMiddleName() != null ? patient.getMiddleName() : "").concat(" ").concat(patient.getSurname() != null ? patient.getSurname() : " "));
                     return patient;
                 });
@@ -435,6 +433,7 @@ public class PatientService {
     public PatientData convertToPatientData(Patient patient) {
         try {
             PatientData patientData = modelMapper.map(patient, PatientData.class);
+            patientData.setInpatientNumber(patient.getInpatientNumber());
             if (patient.getAddresses() != null) {
                 List<AddressDatas> addresses = new ArrayList<>();
 
@@ -463,7 +462,6 @@ public class PatientService {
 
             final List<PatientIdentifier> patientIdentifiers = this.patientIdentifierService.fetchPatientIdentifiers(patient);
 
-            
 //            if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
 //                List<PersonIdentifierData> ids = new ArrayList<>();
 //                for (PatientIdentifier id : patientIdentifiers) {
@@ -490,6 +488,7 @@ public class PatientService {
             }
 
             patientData.setFullName((patient.getGivenName() != null ? patient.getGivenName() : "") + " " + (patient.getMiddleName() != null ? patient.getMiddleName() : "").concat(" ").concat(patient.getSurname() != null ? patient.getSurname() : " "));
+//            patientData.setInpatientNumber(patient.getInpatientNumber());
             if (patient.getDateOfBirth() != null) {
                 patientData.setAge(patient.getAge());
             }
@@ -531,5 +530,9 @@ public class PatientService {
 
     public List<Patient> search(String term, int offset, int limit) {
         return patientRepository.search(term, limit, offset);
+    }
+
+    public Patient savePatient(Patient p) {
+        return patientRepository.save(p);
     }
 }

@@ -88,7 +88,7 @@ public class RoomController {
     }
     
     @PutMapping("/room/{id}")
-    @PreAuthorize("hasAuthority('create_room')")
+//    @PreAuthorize("hasAuthority('create_room')")
     public ResponseEntity<?> updateRoom(@PathVariable("id") Long id, @Valid @RequestBody RoomData roomData) {
         
         RoomData result = service.updateRoom(id,roomData).toData();

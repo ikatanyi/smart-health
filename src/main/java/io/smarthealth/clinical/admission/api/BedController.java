@@ -87,7 +87,7 @@ public class BedController {
     }
     
     @PutMapping("/bed/{id}")
-    @PreAuthorize("hasAuthority('create_bed')")
+//    @PreAuthorize("hasAuthority('create_bed')")
     public ResponseEntity<?> updateBed(@PathVariable("id") Long id, @Valid @RequestBody BedData bedData) {
         
         BedData result = service.updateBed(id,bedData).toData();

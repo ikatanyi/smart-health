@@ -6,13 +6,8 @@
 package io.smarthealth.report.data.clinical;
 
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
-import io.smarthealth.clinical.laboratory.data.LabResultData;
-import io.smarthealth.clinical.pharmacy.data.PatientDrugsData;
-import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
 import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
-import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
-import io.smarthealth.clinical.radiology.data.RadiologyResultData;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.PrescriptionData;
 import java.util.ArrayList;

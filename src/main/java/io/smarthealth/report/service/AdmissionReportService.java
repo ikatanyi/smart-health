@@ -77,15 +77,15 @@ public class AdmissionReportService {
     public void getAdmittedPatients(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String admissionNo = reportParam.getFirst("admissionNo");
-        Long wardId =  NumberUtils.createLong(reportParam.getFirst("wardId"));
-        Long roomId =  NumberUtils.createLong(reportParam.getFirst("roomId"));
-        Long bedId =  NumberUtils.createLong(reportParam.getFirst("bedId"));
+        Long wardId = NumberUtils.createLong(reportParam.getFirst("wardId"));
+        Long roomId = NumberUtils.createLong(reportParam.getFirst("roomId"));
+        Long bedId = NumberUtils.createLong(reportParam.getFirst("bedId"));
         String term = reportParam.getFirst("term");
         Boolean discharged = Boolean.getBoolean(reportParam.getFirst("discharged"));
         Boolean active = Boolean.getBoolean(reportParam.getFirst("active"));
         DateRange dateRange = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         Status status = EnumUtils.getEnumIgnoreCase(Status.class, reportParam.getFirst("status"));
-        List<AdmissionData> admissionData =  admissionService.fetchAdmissions(admissionNo, wardId, roomId, bedId, term, discharged, active, status, dateRange, Pageable.unpaged())
+        List<AdmissionData> admissionData = admissionService.fetchAdmissions(admissionNo, wardId, roomId, bedId, term, discharged, active, status, dateRange, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((adm) -> AdmissionData.map(adm))
@@ -103,13 +103,13 @@ public class AdmissionReportService {
         ReportData reportData = new ReportData();
         String name = reportParam.getFirst("name");
         String term = reportParam.getFirst("term");
-        Long roomId =  NumberUtils.createLong(reportParam.getFirst("roomId"));
+        Long roomId = NumberUtils.createLong(reportParam.getFirst("roomId"));
         Bed.Status status = EnumUtils.getEnumIgnoreCase(Bed.Status.class, reportParam.getFirst("status"));
         Boolean active = Boolean.getBoolean(reportParam.getFirst("active"));
-        List<BedData> bedData = bedService.fetchBeds(name, status,  active,  roomId, term, Pageable.unpaged())
+        List<BedData> bedData = bedService.fetchBeds(name, status, active, roomId, term, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map((b) ->b.toData())
+                .map((b) -> b.toData())
                 .collect(Collectors.toList());
 
         reportData.setData(bedData);
@@ -123,13 +123,13 @@ public class AdmissionReportService {
         ReportData reportData = new ReportData();
         String name = reportParam.getFirst("name");
         String term = reportParam.getFirst("term");
-        Long wardId =  NumberUtils.createLong(reportParam.getFirst("wardId"));
+        Long wardId = NumberUtils.createLong(reportParam.getFirst("wardId"));
         Type type = EnumUtils.getEnumIgnoreCase(Type.class, reportParam.getFirst("type"));
         Boolean active = Boolean.getBoolean(reportParam.getFirst("active"));
         List<RoomData> bedData = roomService.fetchRooms(name, type, active, wardId, term, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map((b) ->b.toData())
+                .map((b) -> b.toData())
                 .collect(Collectors.toList());
 
         reportData.setData(bedData);
@@ -147,7 +147,7 @@ public class AdmissionReportService {
         List<WardData> bedData = wardService.fetchWards(name, active, term, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map((b) ->b.toData())
+                .map((b) -> b.toData())
                 .collect(Collectors.toList());
 
         reportData.setData(bedData);
@@ -156,14 +156,14 @@ public class AdmissionReportService {
         reportData.setReportName("ward-list");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getDischarges(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String admissionNo = reportParam.getFirst("admissionNo");
         String patientNo = reportParam.getFirst("patientNo");
         String term = reportParam.getFirst("term");
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
-        
+
         List<DischargeSummary> discharges = dischargeService.getDischarges(admissionNo, patientNo, term, range, Pageable.unpaged()).getContent();
 
         reportData.setData(discharges);
@@ -172,7 +172,7 @@ public class AdmissionReportService {
         reportData.setReportName("discharge_report");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getDischargeSummary(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
@@ -180,20 +180,20 @@ public class AdmissionReportService {
         DischargeData discharges = dischargeService.getDischargeByAdmission(adm).toData();
 
         List<PatientScanTestData> scanData = radiologyService.getPatientScansTestByVisit(visitNumber)
-                    .stream()
-                    .map((scan) -> scan.toData())
-                    .collect(Collectors.toList());
+                .stream()
+                .map((scan) -> scan.toData())
+                .collect(Collectors.toList());
 
-            List<PatientProcedureTestData> procedures = procedureService.findProcedureResultsByVisit(adm)
-                    .stream()
-                    .map((proc) -> proc.toData())
-                    .collect(Collectors.toList());
+        List<PatientProcedureTestData> procedures = procedureService.findProcedureResultsByVisit(adm)
+                .stream()
+                .map((proc) -> proc.toData())
+                .collect(Collectors.toList());
 
-            List<LabRegisterTestData> labTests = labService.getTestsResultsByVisit(visitNumber, "")
-                    .stream()
-                    .map((test) -> test.toData(Boolean.TRUE))
-                    .collect(Collectors.toList());
-            List<PrescriptionData> pharmacyData = prescriptionService.fetchAllPrescriptionsByVisit(adm, Pageable.unpaged()).getContent()
+        List<LabRegisterTestData> labTests = labService.getTestsResultsByVisit(visitNumber, "")
+                .stream()
+                .map((test) -> test.toData(Boolean.TRUE))
+                .collect(Collectors.toList());
+        List<PrescriptionData> pharmacyData = prescriptionService.fetchAllPrescriptionsByVisit(adm, Pageable.unpaged()).getContent()
                 .stream()
                 .map((presc) -> PrescriptionData.map(presc))
                 .collect(Collectors.toList());
@@ -202,18 +202,18 @@ public class AdmissionReportService {
         reportData.getFilters().put("labTests", labTests);
         reportData.getFilters().put("procedures", procedures);
         reportData.getFilters().put("scanData", scanData);
-        
+
         reportData.setData(Arrays.asList(discharges));
         reportData.setFormat(format);
         reportData.setTemplate("/admission/discharge_summary");
         reportData.setReportName("discharge_summary");
         reportService.generateReport(reportData, response);
     }
-    
+
     public void getDischargeSlip(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String dischargeNo = reportParam.getFirst("dischargeNo");
-        
+
         DischargeSummary discharges = dischargeService.getDischargeByNumber(dischargeNo);
 
         reportData.setData(Arrays.asList(discharges));
@@ -233,7 +233,7 @@ public class AdmissionReportService {
         List<CareTeamData> careTeamData = careTeamService.getCareTeams(patientNo, admissionNo, role, active, voided, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map((b) ->CareTeamData.map(b))
+                .map((b) -> CareTeamData.map(b))
                 .collect(Collectors.toList());
 
         reportData.setData(careTeamData);

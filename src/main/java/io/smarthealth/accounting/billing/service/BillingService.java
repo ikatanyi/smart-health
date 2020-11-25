@@ -136,7 +136,7 @@ public class BillingService {
                     Item item = itemService.findItemWithNoFoundDetection(lineData.getItemCode());
                     PatientBillItem billItem = new PatientBillItem();
 
-                    billItem.setBillingDate(lineData.getBillingDate());
+                    billItem.setBillingDate(data.getBillingDate());
                     billItem.setTransactionId(trdId);
                     billItem.setItem(item);
                     billItem.setPaid(data.getPaymentMode().equals("Insurance"));

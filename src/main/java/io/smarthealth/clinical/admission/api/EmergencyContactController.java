@@ -83,7 +83,7 @@ public class EmergencyContactController {
     }
     
     @PutMapping("/contact/{id}")
-    @PreAuthorize("hasAuthority('create_contact')")
+//    @PreAuthorize("hasAuthority('create_contact')")
     public ResponseEntity<?> updateEmergencyContact(@PathVariable("id") Long id, @Valid @RequestBody EmergencyContactData contactData) {
         
         EmergencyContactData result = service.updateEmergencyContact(id,contactData).toData();
