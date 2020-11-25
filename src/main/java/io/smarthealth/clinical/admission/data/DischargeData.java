@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.admission.domain.DischargeSummary;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -31,5 +32,9 @@ public class DischargeData {
     private String diagnosis;
     private String instructions;
     private String outcome;
+    private LocalDate reviewDate;
+    private String ward;
+    private String bed;
+    private String residence;
 
 }

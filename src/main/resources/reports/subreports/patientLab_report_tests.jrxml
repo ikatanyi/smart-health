@@ -116,7 +116,7 @@
 			<line>
 				<reportElement x="3" y="47" width="550" height="1" uuid="1500034b-0d7a-4462-ac23-ff5726d34036"/>
 				<graphicElement>
-					<pen lineWidth="0.15" lineColor="#6666FF"/>
+					<pen lineWidth="0.1" lineColor="#000000"/>
 				</graphicElement>
 			</line>
 		</band>

@@ -63,31 +63,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 @Api(value = "General Clinical Services", description = "Operations pertaining to patient general services in a health facility")
 public class GeneralClinicalServices {
-    
+
     @Autowired
     VisitService visitService;
-    
+
     @Autowired
     PatientService patientService;
-    
+
     @Autowired
     SickOffNoteService sickOffNoteService;
-    
+
     @Autowired
     ReferralsService referralsService;
-    
+
     @Autowired
     EmployeeService employeeService;
-    
+
     @Autowired
     BillingService billingService;
-    
+
     @Autowired
     PricelistService pricelistService;
-    
+
     @Autowired
     ServicePointService servicePointService;
-    
+
     @Autowired
     DoctorItemService doctorItemService;
 
@@ -113,7 +113,7 @@ public class GeneralClinicalServices {
         pagers.setContent(data);
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-    
+
     @PostMapping("/visits/{visitNo}/sick-off")
     @PreAuthorize("hasAuthority('create_clinicalservice')")
     public @ResponseBody
@@ -126,7 +126,7 @@ public class GeneralClinicalServices {
         pagers.setContent(note);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
-    
+
     @GetMapping("/patients/{patientNo}/sick-off")
     @PreAuthorize("hasAuthority('view_clinicalservice')")
     public @ResponseBody
@@ -165,9 +165,12 @@ public class GeneralClinicalServices {
         rde.setPatient(visit.getPatient());
         rde.setDoctorName(rd.getDoctorName());
         if (rd.getReferralType().equals(ReferralType.Internal)) {
-            Employee employee = employeeService.fetchEmployeeByNumberOrThrow(rd.getStaffNumber());
-            rde.setDoctor(employee);
-            rde.setDoctorName(employee.getFullName());
+            Employee employee = null;
+            if (rd.getStaffNumber() != null) {
+                employee = employeeService.fetchEmployeeByNumberOrThrow(rd.getStaffNumber());
+                rde.setDoctor(employee);
+                rde.setDoctorName(employee.getFullName());
+            }
             //create bill for the referred doctor
             //find consultation service by doctor selected
             if (rd.getDoctorServiceId() != null) {
@@ -189,7 +192,7 @@ public class GeneralClinicalServices {
                 itemData.setServicePoint(visit.getServicePoint().getName());
                 itemData.setServicePointId(visit.getServicePoint().getId());
                 billItems.add(itemData);
-                
+
                 BillData data = new BillData();
                 data.setBillItems(billItems);
                 data.setAmount(pricelist.getSellingRate().doubleValue());
@@ -205,10 +208,10 @@ public class GeneralClinicalServices {
             }
         }
         Referrals srd = referralsService.createReferrals(rde);
-        if (rd.getReferralType().equals(ReferralType.External)) {
-            visit.setStatus(VisitEnum.Status.Transferred);
-            visitService.createAVisit(visit);
-        }
+//        if (rd.getReferralType().equals(ReferralType.External)) {
+//            visit.setStatus(VisitEnum.Status.Transferred);
+//            visitService.createAVisit(visit);
+//        }
         ReferralData data = ReferralData.map(srd);
         Pager<ReferralData> pagers = new Pager();
         pagers.setCode("0");
@@ -216,7 +219,7 @@ public class GeneralClinicalServices {
         pagers.setContent(data);
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-    
+
     @GetMapping("/visits/{visitNo}/referrals")
     @PreAuthorize("hasAuthority('view_clinicalservice')")
     public @ResponseBody
@@ -229,7 +232,7 @@ public class GeneralClinicalServices {
         pagers.setContent(note);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
-    
+
     @GetMapping("/visits/requested-practioners")
     @PreAuthorize("hasAuthority('view_clinicalservice')")
     public @ResponseBody
@@ -259,7 +262,7 @@ public class GeneralClinicalServices {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pagers);
     }
-    
+
     @GetMapping("/referrals")
     @PreAuthorize("hasAuthority('view_clinicalservice')")
     public @ResponseBody
@@ -274,7 +277,7 @@ public class GeneralClinicalServices {
             pageable = PageRequest.of(pageNo, pageSize);
         }
         Page<ReferralData> page = referralsService.fetchReferrals(visitNo, patientNo, pageable).map((r) -> ReferralData.map(r));
-        
+
         Pager< List< ReferralData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -288,5 +291,5 @@ public class GeneralClinicalServices {
         pagers.setPageDetails(details);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
-    
+
 }

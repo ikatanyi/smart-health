@@ -40,7 +40,7 @@ public class DispensingSpecification {
                 predicates.add(cb.equal(root.get("billNumber"), billNo));
             }
             if (isReturn != null) {
-                predicates.add(cb.equal(root.get("is_return"), isReturn));
+                predicates.add(cb.equal(root.get("isReturn"), isReturn));
             }
               if(range!=null){
                   predicates.add(

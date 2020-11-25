@@ -42,6 +42,7 @@ public class AdmissionSpecification {
                 );
             }
             if(active!=null){
+                 System.out.println("Active "+active);
                 if(active==true){
                     predicates.add(cb.notEqual(root.get("status"), VisitEnum.Status.CheckOut));
                 }
@@ -50,7 +51,9 @@ public class AdmissionSpecification {
                 }
                 
             }
+            
             if(status!=null){
+                System.out.println("Status "+status);
                 predicates.add(cb.equal(root.get("status"), status));
             }
             if (term != null) {

@@ -5,10 +5,10 @@ import io.smarthealth.accounting.accounts.domain.AccountState;
 import io.smarthealth.accounting.accounts.domain.AccountType;
 import java.math.BigDecimal;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;   
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-
+ 
 @Data
 public final class AccountData {
 

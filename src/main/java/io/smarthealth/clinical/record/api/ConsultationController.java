@@ -7,6 +7,8 @@ package io.smarthealth.clinical.record.api;
 
 //import io.smarthealth.auth.domain.User;
 //import io.smarthealth.auth.service.UserService;
+import io.smarthealth.accounting.doctors.domain.DoctorItem;
+import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.clinical.queue.data.PatientQueueData;
@@ -34,6 +36,8 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;
@@ -66,21 +70,16 @@ import org.springframework.web.bind.annotation.*;
 public class ConsultationController {
 
     private final PatientNotesService patientNotesService;
-
     private final PatientService patientService;
-
     private final VisitService visitService;
-
-//    private final EmployeeService employeeService;
-
     private final UserService userService;
     private final DiseaseService diseaseService;
-
     private final DiagnosisService diagnosisService;
-//    private final DepartmentService departmentService;
-//    private final SickOffNoteService sickOffNoteService;
+
     private final LaboratoryService laboratoryService;
     private final RadiologyService radiologyService;
+    private final DoctorInvoiceService doctorInvoiceService;
+    private final EmployeeService employeeService;
 
 
     /* Patient Notes */
@@ -88,12 +87,13 @@ public class ConsultationController {
     @PreAuthorize("hasAuthority('create_consultation')")
     public @ResponseBody
     ResponseEntity<?> savePatientNotes(Authentication authentication, @Valid @RequestBody PatientNotesData patientNotesData) {
+        patientNotesService.ValidateConsultationFields(patientNotesData);
         Visit visit = visitService.findVisitEntityOrThrow(patientNotesData.getVisitNumber());
         User user = userService.findUserByUsernameOrEmail(authentication.getName())
                 .orElseThrow(() -> APIException.notFound("Employee login account provided is not valid"));
         Patient patient = patientService.findPatientOrThrow(patientNotesData.getPatientNumber());
         PatientNotes patientNotes = patientNotesService.convertDataToEntity(patientNotesData);
-//        Employee healthProvider = employeeService.fetchEmployeeByUser(user);
+
         patientNotes.setVisit(visit);
         patientNotes.setHealthProvider(user);
         patientNotes.setPatient(patient);
@@ -104,6 +104,7 @@ public class ConsultationController {
         PatientNotes pns = new PatientNotes();
         if (patientNoteExisting.isPresent()) {
             PatientNotes npn = patientNoteExisting.get();
+
             //update note
             npn.setChiefComplaint(patientNotesData.getChiefComplaint());
             npn.setExaminationNotes(patientNotesData.getExaminationNotes());
@@ -114,6 +115,14 @@ public class ConsultationController {
 
         } else {
             pns = patientNotesService.createPatientNote(patientNotes);
+            Optional<Employee> healthProvider = employeeService.fetchEmployeeByUserWithoutFoundDetection(user);
+            //create doctor invoice if doctor was not specified during visit activation
+            if (visit.getHealthProvider() == null) {
+                if (healthProvider.isPresent()) {
+                    Optional<DoctorItem> chargeableDoctorItem = doctorInvoiceService.getDoctorItem(healthProvider.get(), visit.getClinic().getServiceType());
+                    doctorInvoiceService.createDoctorInvoice(visit, healthProvider.get(), chargeableDoctorItem.get());
+                }
+            }
         }
         PatientNotesData savedData = patientNotesService.convertEntityToData(pns);
         //update consultation queue
@@ -229,7 +238,7 @@ public class ConsultationController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Patient patient = patientService.findPatientOrThrow(patientNo);
         List<HistoricalDiagnosisData> list = new ArrayList<>();
-        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, false, null, pageable);
+        Page<Visit> patientVisits = visitService.fetchAllVisits(null, null, null, patientNo, null, false, null, null, null, false, null, false, pageable);
         for (Visit v : patientVisits) {
             HistoricalDiagnosisData dd = new HistoricalDiagnosisData();
             dd.setPatientName(patient.getFullName());
@@ -284,7 +293,7 @@ public class ConsultationController {
             patientDiagnosis.setVisit(visit);
             patientDiagnosis.setPatient(patient);
             patientDiagnosises.add(patientDiagnosis);
-            
+
         }
 
         List<PatientDiagnosis> savedDiagnosisList = diagnosisService.createListOfPatientDiagnosis(patientDiagnosises);

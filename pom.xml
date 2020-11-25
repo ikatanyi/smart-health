@@ -7,13 +7,12 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.2.4.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
-    </parent>
-    
+    </parent>    
     <groupId>io.smarthealth</groupId>
     <artifactId>smart-health</artifactId>
     <version>1.0.0</version>
     <name>smart-health-v2</name>
-    <description>Healthcare Management System </description>
+    <description>Healthcare Management System (HMIS) </description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -39,6 +38,11 @@
             <optional>true</optional>
         </dependency>
         
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-search-orm</artifactId>
+            <version>5.11.5.Final</version>
+        </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -71,7 +75,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
@@ -87,12 +90,15 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-        </dependency> 
-        <dependency> 
+        </dependency>  
+        
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <type>jar</type>
-        </dependency> 
+            <version>1.18.16</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -109,14 +115,9 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.12.2</version>
+            <version>6.16.0</version>
         </dependency>
 
-        <!--        <dependency>
-            <groupId>org.eclipse.jdt.core.compiler</groupId>
-            <artifactId>ecj</artifactId>
-            <version>4.5</version>
-        </dependency>-->
         <dependency>
             <groupId>org.passay</groupId>
             <artifactId>passay</artifactId>
@@ -162,12 +163,6 @@
             <artifactId>spring-security-oauth2-autoconfigure</artifactId>
             <version>2.2.4.RELEASE</version>
         </dependency>
-		
-        <!--        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-jwt</artifactId>
-            <version>1.1.0.RELEASE</version>
-        </dependency>-->
         
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -205,8 +200,7 @@
             <groupId>org.apache.xmlgraphics</groupId> 
             <artifactId>batik-bridge</artifactId> 
             <version>1.11</version> 
-        </dependency> 
-        
+        </dependency>  
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -231,6 +225,15 @@
             <artifactId>spring-security-oauth2-jose</artifactId>
             <type>jar</type>
         </dependency>  
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>6.1.0.jre8</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -294,5 +297,4 @@
         </plugins>
         <finalName>${project.artifactId}-${project.version}.${buildNumber}</finalName>
     </build>-->
-       
 </project>

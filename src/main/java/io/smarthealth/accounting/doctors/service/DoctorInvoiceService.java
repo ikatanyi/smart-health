@@ -28,10 +28,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import io.smarthealth.accounting.doctors.domain.DoctorItemRepository;
 import io.smarthealth.clinical.visit.domain.Visit;
-import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -48,7 +50,8 @@ public class DoctorInvoiceService {
     private final SequenceNumberService sequenceNumberService;
     private final JournalService journalService;
     private final FinancialActivityAccountRepository activityAccountRepository;
-    private final VisitService visitService;
+    private final VisitRepository visitRepository;
+//    private final VisitService visitService;
 
     public DoctorInvoice createDoctorInvoice(DoctorInvoiceData data) {
 
@@ -71,7 +74,7 @@ public class DoctorInvoiceService {
         invoice.setTransactionId(trnId);
         invoice.setTransactionType(DoctorInvoice.TransactionType.Credit);
         if (data.getVisitNumber() != null) {
-            Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
+            Visit visit = this.findVisitEntityOrThrow(data.getVisitNumber());
             invoice.setVisit(visit);
         }
 
@@ -79,6 +82,11 @@ public class DoctorInvoiceService {
         DoctorInvoice savedInvoice = save(invoice);
 //        journalService.save(toJournal(savedInvoice));
         return savedInvoice;
+    }
+
+    public Visit findVisitEntityOrThrow(String visitNumber) {
+        return this.visitRepository.findByVisitNumber(visitNumber)
+                .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
     }
 
     public DoctorInvoice save(DoctorInvoice invoice) {
@@ -97,12 +105,12 @@ public class DoctorInvoiceService {
         //TODO: Adjust journals
         return savedInvoice;
     }
-
-    public void removeDoctorInvoice(DoctorInvoice doctorInvoice) {
-        System.out.println("To Remove Doctor Invoice " + doctorInvoice.getInvoiceNumber());
+   @Transactional
+    public void removeDoctorInvoice(DoctorInvoice doctorInvoice) { 
         repository.delete(doctorInvoice);
         //Adjust journals
         reverseJournal(doctorInvoice);
+        
     }
 
     public DoctorInvoice updateDoctorInvoice(Long id, DoctorInvoiceData data) {
@@ -117,6 +125,23 @@ public class DoctorInvoiceService {
         toUpdateItem.setPaymentMode(data.getPaymentMode());
 
         return save(toUpdateItem);
+    }
+
+    public void createDoctorInvoice(Visit visit, Employee newDoctorSelected, DoctorItem doctorItem) {
+        DoctorInvoiceData data = new DoctorInvoiceData();
+        data.setAmount(doctorItem.getAmount());
+        data.setBalance(doctorItem.getAmount());
+        data.setDoctorId(newDoctorSelected.getId());
+        data.setDoctorName(newDoctorSelected.getFullName());
+        data.setInvoiceDate(LocalDate.now());
+        data.setPaid(Boolean.FALSE);
+        data.setPatientName(visit.getPatient().getFullName());
+        data.setPatientNumber(visit.getPatient().getPatientNumber());
+        data.setStaffNumber(newDoctorSelected.getStaffNumber());
+        data.setVisitNumber(visit.getVisitNumber());
+        data.setServiceId(doctorItem.getId());
+        data.setPaymentMode(visit.getPaymentMethod().name());
+        createDoctorInvoice(data);
     }
 
     public Page<DoctorInvoice> getDoctorInvoices(Long doctorId, String serviceItem, Boolean paid, String paymentMode, String patientNo, String invoiceNumber, String transactionId, DateRange range, Pageable page) {
@@ -188,7 +213,7 @@ public class DoctorInvoiceService {
                 }
         );
         toSave.setTransactionNo(invoice.getTransactionId());
-        toSave.setTransactionType(TransactionType.Invoicing);
+        toSave.setTransactionType(TransactionType.Bill_Reversal);
         toSave.setStatus(JournalState.PENDING);
         return toSave;
     }

@@ -120,8 +120,14 @@ public class DoctorRequestService implements DateConverter {
     }
 
     public Page<DoctorRequest> fetchAllDoctorRequests(final String visitNumber, final String patientNumber, final RequestType requestType, final FullFillerStatusType fulfillerStatus, final String groupBy, Pageable pageable, Boolean activeVisit, final String term, DateRange range) {
-        System.out.println("fulfillerStatus " + fulfillerStatus);
         Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, groupBy, activeVisit, term, range);
+
+        Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
+        return docReqs;
+    }
+
+    public Page<DoctorRequest> getDoctorOrderRequests(String visitNumber, String patientNumber, RequestType requestType, FullFillerStatusType fulfillerStatus, DateRange range, Pageable pageable) {
+        Specification<DoctorRequest> spec = DoctorRequestSpecification.createSpecification(visitNumber, patientNumber, requestType, fulfillerStatus, null, null, null, range);
 
         Page<DoctorRequest> docReqs = doctorRequestRepository.findAll(spec, pageable);
         return docReqs;
@@ -172,9 +178,9 @@ public class DoctorRequestService implements DateConverter {
             return ResponseEntity.notFound().build();
         }
     }
-    
+
     public void deleteDocRequest(DoctorRequest request) {
-       doctorRequestRepository.delete(request);
+        doctorRequestRepository.delete(request);
     }
 
     public DoctorRequestData DoctorRequestToData(DoctorRequest docRequest) {

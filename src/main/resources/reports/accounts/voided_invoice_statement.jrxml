@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="insurance_statement" pageWidth="555" pageHeight="802" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="62"/>
 	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<parameter name="from" class="java.util.Date"/>
@@ -57,7 +57,7 @@
 		<groupFooter>
 			<band height="15">
 				<staticText>
-					<reportElement x="0" y="0" width="466" height="15" uuid="efe1b987-32f7-4f9b-961c-3a5e44b0dfc6"/>
+					<reportElement x="0" y="0" width="483" height="15" uuid="efe1b987-32f7-4f9b-961c-3a5e44b0dfc6"/>
 					<box>
 						<bottomPen lineWidth="0.15"/>
 					</box>
@@ -244,9 +244,6 @@
 		<band height="22" splitType="Stretch">
 			<textField isStretchWithOverflow="true" pattern="dd-MM-yyyy" isBlankWhenNull="true">
 				<reportElement x="12" y="0" width="46" height="22" uuid="d2539c45-a4e2-42f0-8ef4-fee0acdab46b"/>
-				<box>
-					<bottomPen lineWidth="0.1"/>
-				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -254,9 +251,6 @@
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="0" y="0" width="12" height="22" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
-				<box>
-					<bottomPen lineWidth="0.1"/>
-				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -264,9 +258,6 @@
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="58" y="0" width="95" height="22" uuid="c67db78c-e18a-4e91-90d2-5b3d73d213f7"/>
-				<box>
-					<bottomPen lineWidth="0.1"/>
-				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -280,9 +271,6 @@
 			</line>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00">
 				<reportElement mode="Transparent" x="483" y="0" width="32" height="22" uuid="b887a395-f535-4f7a-a732-2876f318982c"/>
-				<box>
-					<bottomPen lineWidth="0.1"/>
-				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 					<paragraph rightIndent="5"/>
@@ -291,9 +279,6 @@
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="431" y="0" width="22" height="22" uuid="ba34e96a-5356-4fa7-afa2-9dfe7fd7a67b"/>
-				<box>
-					<bottomPen lineWidth="0.1"/>
-				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 					<paragraph leftIndent="5" rightIndent="10"/>
@@ -302,9 +287,6 @@
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="202" y="0" width="46" height="22" uuid="2d6e050e-2ef4-4dad-92ed-d48c91ec8afb"/>
-				<box>
-					<bottomPen lineWidth="0.1"/>
-				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -312,9 +294,6 @@
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="153" y="0" width="49" height="22" uuid="92a92b20-7cc8-473e-9f22-80b3e4191c90"/>
-				<box>
-					<bottomPen lineWidth="0.1"/>
-				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -322,9 +301,6 @@
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="248" y="0" width="98" height="22" forecolor="#000000" uuid="9934626e-e5c4-4785-b070-9e1115f4e24f"/>
-				<box>
-					<bottomPen lineWidth="0.1"/>
-				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="false"/>
 					<paragraph leftIndent="5"/>
@@ -333,9 +309,6 @@
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="453" y="0" width="30" height="22" uuid="8d2a388a-870d-4180-a436-9023aac8e373"/>
-				<box>
-					<bottomPen lineWidth="0.1"/>
-				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 					<paragraph rightIndent="10"/>

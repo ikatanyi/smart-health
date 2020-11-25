@@ -22,5 +22,6 @@ public enum ItemCategory {
     Dental,
     NHIF_Rebate,
     Receipt,
+    Opticals,
     Others
 }

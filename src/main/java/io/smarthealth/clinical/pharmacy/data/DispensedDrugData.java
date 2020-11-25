@@ -38,7 +38,7 @@ public class DispensedDrugData implements Serializable {
     private Double qtyIssued;
     private Double price;
     private Double cost;
-    private Double amount; 
+    private Double amount;
     private String units;
     private String instructions;
     private String doctorName;
@@ -46,11 +46,16 @@ public class DispensedDrugData implements Serializable {
     private Boolean collected;
     private String dispensedBy;
     private String collectedBy;
-    private Boolean isReturn=false;
+    private Boolean isReturn = false;
+    private String returnReason;
+    private LocalDate returnDate;
+    private Double returnedQuantity;
+     private Double qtyBalance;
     private String otherReference;
-    private Boolean walkinFlag=Boolean.FALSE;
+    private Boolean walkinFlag = Boolean.FALSE;
     private String batchNumber;
-   
+    private Boolean voided;
+
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 

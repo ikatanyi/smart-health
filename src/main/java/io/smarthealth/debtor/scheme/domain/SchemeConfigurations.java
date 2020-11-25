@@ -44,15 +44,19 @@ public class SchemeConfigurations extends Auditable {
     private boolean claimSwitching;
 
     @Column(name = "has_capitation")
-    private boolean capitationEnabled=false;
-    private BigDecimal capitationAmount=BigDecimal.ZERO;
+    private boolean capitationEnabled = false;
+    private BigDecimal capitationAmount = BigDecimal.ZERO;
+
+    private boolean limitEnabled = false;
+    private BigDecimal limitAmount = BigDecimal.ZERO;
 
     @Column(name = "has_copay")
-    private boolean copayEnabled=false;
+    private boolean copayEnabled = false;
     @Enumerated(EnumType.STRING)
     private CoPayType coPayType;
     private double coPayValue;
     private LocalDate copayStartDate;
 
     private boolean status;
+
 }

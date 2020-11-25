@@ -15,20 +15,21 @@ import io.smarthealth.stock.inventory.data.ExpiryStock;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.StockAdjustmentData;
 import io.smarthealth.stock.inventory.data.StockEntryData;
-import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.service.InventoryAdjustmentService;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.stock.inventory.service.InventoryService;
 import io.smarthealth.stock.item.data.ItemData;
-import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
 import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
 import io.smarthealth.stock.purchase.data.PurchaseOrderData;
+import io.smarthealth.stock.purchase.data.PurchaseOrderItemData;
+import io.smarthealth.stock.purchase.domain.PurchaseOrderItem;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
+import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.purchase.service.PurchaseInvoiceService;
 import io.smarthealth.stock.purchase.service.PurchaseService;
 import io.smarthealth.supplier.data.SupplierData;
@@ -118,19 +119,52 @@ public class StockReportService {
         String orderNo = reportParam.getFirst("orderNo");
 
         PurchaseOrderData purchaseOrderData = purchaseService.findByOrderNumberOrThrow(orderNo).toData();
-
+        System.out.println("purchaseOrderData.getPurchaseOrderItems() "+purchaseOrderData.getPurchaseOrderItems().size());
+        for(PurchaseOrderItemData item: purchaseOrderData.getPurchaseOrderItems()){
+            Integer count = inventoryItemService.getItemCount(item.getItemCode());
+            item.setAvailable(count);
+            System.out.println("Count "+count);
+        }
         reportData.getFilters().put("category", "Supplier");
         Optional<Supplier> supplier = supplierService.getSupplierById(purchaseOrderData.getSupplierId());
         if (supplier.isPresent()) {
             reportData.getFilters().put("Supplier_Data", Arrays.asList(supplier.get().toData()));
 
         }
-
         reportData.getFilters().put("amountInWords", EnglishNumberToWords.convert(purchaseOrderData.getPurchaseAmount()).toUpperCase());
         reportData.setData(Arrays.asList(purchaseOrderData));
         reportData.setFormat(format);
         reportData.setTemplate("/inventory/purchase_order");
         reportData.setReportName("Purchase-Order" + orderNo);
+        reportService.generateReport(reportData, response);
+    }
+
+    public void getPurchaseOrderStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        Long supplierId = NumberUtils.createLong(reportParam.getFirst("supplierId"));
+        String status = reportParam.getFirst("status");
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        if (status == null) {
+            status = "PartialReceived";
+        }
+        PurchaseOrderStatus status1 = EnumUtils.getEnum(PurchaseOrderStatus.class, status);
+        List<PurchaseOrderItemData> orderItemData = new ArrayList();
+        List<PurchaseOrderData> purchaseOrderData = purchaseService.getPurchaseOrders(supplierId, Arrays.asList(status1), "", range, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map((x) -> {
+                    for(PurchaseOrderItem item:x.getPurchaseOrderLines()){
+                        PurchaseOrderItemData data=PurchaseOrderItemData.map(item);
+                        orderItemData.add(data);
+                    }
+                    return x.toData();
+                })
+                .collect(Collectors.toList());
+        reportData.setData(orderItemData);
+        reportData.setFormat(format);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.setTemplate("/inventory/purchase_order_statement");
+        reportData.setReportName("Purchase-Order-Statement");
         reportService.generateReport(reportData, response);
     }
 
@@ -165,7 +199,7 @@ public class StockReportService {
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
-        
+
         reportData.setData(purchaseInvoiceData);
         reportData.setFormat(format);
         reportData.setTemplate("/inventory/receive_order");

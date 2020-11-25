@@ -17,6 +17,7 @@ import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.CreateInvoice;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceEditData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.data.InvoiceMergeData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
@@ -92,94 +93,93 @@ public class InvoiceService {
         invoiceData.getPayers()
                 .stream()
                 .forEach(payerData -> {
-                            String invoiceNo = sequenceNumberService.next(1L, Sequences.Invoice.name());
+                    String invoiceNo = sequenceNumberService.next(1L, Sequences.Invoice.name());
 
-                            Payer payer = payerService.findPayerByIdWithNotFoundDetection(payerData.getPayerId());
-                            Scheme scheme = schemeService.fetchSchemeById(payerData.getSchemeId());
+                    Payer payer = payerService.findPayerByIdWithNotFoundDetection(payerData.getPayerId());
+                    Scheme scheme = schemeService.fetchSchemeById(payerData.getSchemeId());
 
-                            Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+                    Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
 
-                            Integer creditDays = 30;
-                            String terms = "Net 30";
-                            if (payer.getPaymentTerms() != null) {
-                                creditDays = payer.getPaymentTerms().getCreditDays();
-                                terms = payer.getPaymentTerms().getTermsName();
-                            }
-                            //determining the invoice amount to use 
-                            BigDecimal invoiceAmount = payerData.getAmount();
-                            BigDecimal discount = invoiceData.getDiscount();
-                            Boolean isCapitation = Boolean.FALSE;
-                            if (config.isPresent() && config.get().isCapitationEnabled()) {
-                                //if this is a capitation invoice we going to mess this shit up
-                                invoiceAmount = config.get().getCapitationAmount();
-                                discount = BigDecimal.ZERO;
-                                isCapitation=Boolean.TRUE;
-                            }
-                            
-                           
-                            Invoice invoice = new Invoice();                    
-                            invoice.setAmount(invoiceAmount);
-                            invoice.setBalance(invoiceAmount);
-                            invoice.setCapitation(isCapitation);
-                            invoice.setDate(invoiceData.getDate());
-                            invoice.setDueDate(invoiceData.getDate().plusDays(creditDays));
-                            invoice.setInvoiceAmount(payerData.getAmount());
-                            invoice.setDiscount(discount);
-                            invoice.setMemberName(payerData.getMemberName());
-                            invoice.setMemberNumber(payerData.getMemberNo());
-                            invoice.setNotes(invoiceData.getNotes());
-                            invoice.setNumber(invoiceNo);
-                            invoice.setPaid(Boolean.FALSE);
-                            invoice.setPatient(visit.getPatient());
-                            invoice.setPayer(payer);
-                            invoice.setTerms(terms);
-                            invoice.setScheme(scheme);
-                            invoice.setStatus(InvoiceStatus.Draft);
-                            invoice.setTax(invoiceData.getTaxes());
-                            invoice.setTransactionNo(trxId);
-                            invoice.setVisit(visit);                            
-                            if(paymentDetails.isPresent()){
-                               invoice.setIdNumber(paymentDetails.get().getIdNo());
-                            }
+                    Integer creditDays = 30;
+                    String terms = "Net 30";
+                    if (payer.getPaymentTerms() != null) {
+                        creditDays = payer.getPaymentTerms().getCreditDays();
+                        terms = payer.getPaymentTerms().getTermsName();
+                    }
+                    //determining the invoice amount to use 
+                    BigDecimal invoiceAmount = payerData.getAmount();
+                    BigDecimal discount = invoiceData.getDiscount();
+                    Boolean isCapitation = Boolean.FALSE;
+                    if (config.isPresent() && config.get().isCapitationEnabled()) {
+                        //if this is a capitation invoice we going to mess this shit up
+                        invoiceAmount = config.get().getCapitationAmount();
+                        discount = BigDecimal.ZERO;
+                        isCapitation = Boolean.TRUE;
+                    }
 
-                            if (config.isPresent()) {
-                                if (config.get().isSmartEnabled()) {
-                                    invoice.setAwaitingSmart(Boolean.TRUE);
-                                }
-                            }
+                    Invoice invoice = new Invoice();
+                    invoice.setAmount(invoiceAmount);
+                    invoice.setBalance(invoiceAmount);
+                    invoice.setCapitation(isCapitation);
+                    invoice.setDate(invoiceData.getDate());
+                    invoice.setDueDate(invoiceData.getDate().plusDays(creditDays));
+                    invoice.setInvoiceAmount(payerData.getAmount());
+                    invoice.setDiscount(discount);
+                    invoice.setMemberName(payerData.getMemberName());
+                    invoice.setMemberNumber(payerData.getMemberNo());
+                    invoice.setNotes(invoiceData.getNotes());
+                    invoice.setNumber(invoiceNo);
+                    invoice.setPaid(Boolean.FALSE);
+                    invoice.setPatient(visit.getPatient());
+                    invoice.setPayer(payer);
+                    invoice.setTerms(terms);
+                    invoice.setScheme(scheme);
+                    invoice.setStatus(InvoiceStatus.Draft);
+                    invoice.setTax(invoiceData.getTaxes());
+                    invoice.setTransactionNo(trxId);
+                    invoice.setVisit(visit);
+                    if (paymentDetails.isPresent()) {
+                        invoice.setIdNumber(paymentDetails.get().getIdNo());
+                    }
 
-                            if (!invoiceData.getItems().isEmpty()) {
-                                BigDecimal balance = BigDecimal.ZERO;
-                                invoiceData.getItems()
-                                        .stream()
-                                        .forEach(inv -> {
+                    if (config.isPresent()) {
+                        if (config.get().isSmartEnabled()) {
+                            invoice.setAwaitingSmart(Boolean.TRUE);
+                        }
+                    }
 
-                                            InvoiceItem lineItem = new InvoiceItem();
-                                            PatientBillItem item = billingService.findBillItemById(inv.getBillItemId());
-                                            BigDecimal bal = BigDecimal.valueOf(item.getAmount()).subtract(inv.getAmount());
-                                            item.setPaid(Boolean.TRUE);
-                                            item.setStatus(BillStatus.Paid);
-                                            item.setPaymentReference(invoiceNo);
-                                            item.setBalance(0D);
-                                            PatientBillItem updatedItem = billingService.updateBillItem(item);
-                                            lineItem.setBillItem(updatedItem);
+                    if (!invoiceData.getItems().isEmpty()) {
+                        BigDecimal balance = BigDecimal.ZERO;
+                        invoiceData.getItems()
+                                .stream()
+                                .forEach(inv -> {
+
+                                    InvoiceItem lineItem = new InvoiceItem();
+                                    PatientBillItem item = billingService.findBillItemById(inv.getBillItemId());
+                                    BigDecimal bal = BigDecimal.valueOf(item.getAmount()).subtract(inv.getAmount());
+                                    item.setPaid(Boolean.TRUE);
+                                    item.setStatus(BillStatus.Paid);
+                                    item.setPaymentReference(invoiceNo);
+                                    item.setBalance(0D);
+                                    PatientBillItem updatedItem = billingService.updateBillItem(item);
+                                    lineItem.setBillItem(updatedItem);
 
 //                                            lineItem.setBalance(inv.getAmount().doubleValue() > 0 ? inv.getAmount() : BigDecimal.ZERO);
-                                            lineItem.setBalance(inv.getAmount());
-                                            invoice.addItem(lineItem);
-                                        });
-                                if (config.isPresent() && config.get().isCapitationEnabled()) {
-                                    invoice.setBalance(invoiceAmount);
-                                } else {
-                                    invoice.setBalance(invoiceData.getItems()
-                                            .stream()
-                                            .map(x -> x.getAmount())
-                                            .reduce(BigDecimal.ZERO, (x, y) -> x.add(y))
-                                    );
-                                }
-                            }
-                            savedInvoices.add(saveInvoice(invoice));
+                                    lineItem.setBalance(inv.getAmount());
+                                    invoice.addItem(lineItem);
+                                });
+                        if (config.isPresent() && config.get().isCapitationEnabled()) {
+                            invoice.setBalance(invoiceAmount);
+                        } else {
+                            invoice.setBalance(invoiceData.getItems()
+                                    .stream()
+                                    .map(x -> x.getAmount())
+                                    .reduce(BigDecimal.ZERO, (x, y) -> x.add(y))
+                            );
                         }
+                    }
+                    savedInvoices.add(saveInvoice(invoice));
+                }
                 );
 
         return savedInvoices;
@@ -251,39 +251,25 @@ public class InvoiceService {
                 .orElseThrow(() -> APIException.notFound("InvoiceItem with ID {0} not found.", id));
     }
 
-//    public Invoice updateInvoice(Long id, InvoiceData data) {
-//        Invoice invoice = findInvoiceOrThrowException(id);
-//        Payer payer = payerService.findPayerByIdWithNotFoundDetection(payerData.getPayerId());
-//        Scheme scheme = schemeService.fetchSchemeById(payerData.getSchemeId());
-//
-//        invoice.setAmount(payerData.getAmount());
-//        invoice.setBalance(payerData.getAmount());
-//        invoice.setDate(invoiceData.getDate());
-//        invoice.setBalance(payerData.getAmount());
-//        invoice.setDiscount(invoiceData.getDiscount());
-//        invoice.setMemberName(payerData.getMemberName());
-//        invoice.setMemberNumber(payerData.getMemberNo());
-//        invoice.setNotes(invoiceData.getNotes());
-//        invoice.setNumber(invoiceNo);
-//        invoice.setPaid(Boolean.FALSE);
-//        invoice.setPatient(visit.getPatient());
-//        invoice.setPayer(payer);
-//        invoice.setTerms(terms);
-//        invoice.setScheme(scheme);
-//        invoice.setStatus(InvoiceStatus.Draft);
-//        invoice.setTax(invoiceData.getTaxes());
-//        invoice.setTransactionNo(trxId);
-//        invoice.setVisit(visit);
-//        return invoiceRepository.save(invoice);
-//    }
-//    public Invoice verifyInvoice(Long id, Boolean isVerified) {
-//        Invoice invoice = findInvoiceOrThrowException(id);
-//        invoice.setIsVerified(isVerified);
-//        return invoiceRepository.save(invoice);
-//    }
-//    public Invoice findByInvoiceNumberOrThrow(String invoiceNumber) {
-//        return invoiceRepository.findByNumber(invoiceNumber).orElseThrow(() -> APIException.notFound("Invoice with invoice number {0} not found.", invoiceNumber));
-//    }
+    public Invoice updateInvoice(Long id, InvoiceEditData data) {
+        Invoice invoice = getInvoiceByIdOrThrow(id);
+        Payer payer = payerService.findPayerByIdWithNotFoundDetection(data.getPayerId());
+        Scheme scheme = schemeService.fetchSchemeById(data.getSchemeId());
+        
+
+        Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
+
+        //determining the invoice amount to use 
+       
+        invoice.setMemberNumber(data.getMemberNumber());
+        invoice.setMemberName(data.getMemberName());         
+        invoice.setNotes(data.getNotes());
+        invoice.setPayer(payer);
+        invoice.setScheme(scheme);
+        return invoiceRepository.save(invoice);
+    }
+
+
     @Transactional
     public InvoiceMerge mergeInvoice(InvoiceMergeData data) {
         InvoiceMerge invoiceMerge = InvoiceMergeData.map(data);
@@ -318,6 +304,7 @@ public class InvoiceService {
                             if (invoiceItem.isPresent()) {
                                 InvoiceItem iv = invoiceItem.get();
                                 iv.setVoided(Boolean.TRUE);
+                                iv.setRemarks(x.getRemarks());
                                 iv.setVoidedBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
                                 iv.setVoidedDatetime(LocalDateTime.now());
                                 BigDecimal newAmt = invoice.getAmount().subtract(iv.getBalance());
@@ -389,7 +376,7 @@ public class InvoiceService {
                     //deferrence is what I post here otherwise 
                     debitAmount = capitationAmount;
                     creditAmount = invoice.getInvoiceAmount();
-                    
+
                     JournalEntryItem capitationExp = new JournalEntryItem(capitationAccount.getAccount(), "Capitation Expense for Invoice No. " + invoice.getNumber(), (capitationDiff.negate()), BigDecimal.ZERO);
                     capitationJournal.add(capitationExp);
                 }
@@ -399,9 +386,9 @@ public class InvoiceService {
                             .findByFinancialActivity(FinancialActivity.CapitationIncome)
                             .orElseThrow(() -> APIException.notFound("Capitation Income Account is Not Mapped"));
                     //deferrence is what I post here otherwise 
-                     debitAmount = capitationAmount;
+                    debitAmount = capitationAmount;
                     creditAmount = invoice.getInvoiceAmount();
-                    
+
                     JournalEntryItem capitationIncomel = new JournalEntryItem(capitationAccount.getAccount(), "Capitation Income  for Invoice No. " + invoice.getNumber(), BigDecimal.ZERO, capitationDiff);
                     capitationJournal.add(capitationIncomel);
                 }
@@ -414,8 +401,8 @@ public class InvoiceService {
         capitationJournal.add(new JournalEntryItem(debitAccount, narration, debitAmount, BigDecimal.ZERO));
         capitationJournal.add(new JournalEntryItem(creditAccount.getAccount(), narration, BigDecimal.ZERO, creditAmount));
 
-        for(JournalEntryItem d : capitationJournal){
-            System.err.println("Account : "+d.getAccount().getName()+" Debit: "+d.getDebit()+" Credit: "+d.getCredit()+" ISDebit: "+d.isDebit());
+        for (JournalEntryItem d : capitationJournal) {
+            System.err.println("Account : " + d.getAccount().getName() + " Debit: " + d.getDebit() + " Credit: " + d.getCredit() + " ISDebit: " + d.isDebit());
             System.err.println("Cred");
         }
         JournalEntry toSave = new JournalEntry(invoice.getDate(), narration, capitationJournal

@@ -13,6 +13,7 @@ import io.smarthealth.stock.inventory.data.CreateStockEntry;
 import io.smarthealth.stock.inventory.data.StockEntryData;
 import io.smarthealth.stock.inventory.data.StockMovement;
 import io.smarthealth.stock.inventory.data.SupplierStockEntry;
+import io.smarthealth.stock.inventory.domain.Requisition;
 import io.smarthealth.stock.inventory.domain.StockEntry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import io.smarthealth.stock.inventory.domain.StockEntryRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.domain.enumeration.PurchaseType;
+import io.smarthealth.stock.inventory.domain.enumeration.RequisitionStatus;
 import io.smarthealth.stock.inventory.domain.specification.StockEntrySpecification;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
 import io.smarthealth.stock.item.domain.Item;
@@ -34,6 +36,7 @@ import io.smarthealth.stock.stores.service.StoreService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -59,6 +62,7 @@ public class InventoryService {
 
     private final SequenceNumberService sequenceNumberService;
     private final JournalService journalService;
+    private final RequisitionService requisitionService;
 
     @Transactional
     public String createStockEntry(CreateStockEntry stockData) {
@@ -114,10 +118,18 @@ public class InventoryService {
                             receivingStock.setTransactionNumber(trdId);
                             receivingStock.setUnit(st.getUnit());
                             doStockEntry(InventoryEvent.Type.Increase, receivingStock, destinationStore, item, qty.doubleValue());
+
                         }
 
                     });
-
+            //update requisition status
+            //find requisition by request number
+            Optional<Requisition> requisition = requisitionService.findByRequsitionNumber(stockData.getReferenceNumber());
+            if (requisition.isPresent()) {
+                Requisition r = requisition.get();
+                r.setStatus(RequisitionStatus.Processed);
+                requisitionService.saveRequisition(r);
+            }
         }
 
         if (stockData.getMovementPurpose() == MovementPurpose.Issue) {
@@ -131,7 +143,7 @@ public class InventoryService {
         return trdId;
     }
 
-    private void doStockEntry(InventoryEvent.Type type, StockEntry stock, Store store, Item item, Double qty) {
+    public void doStockEntry(InventoryEvent.Type type, StockEntry stock, Store store, Item item, Double qty) {
         stockEntryRepository.save(stock);
         inventoryEventSender.process(new InventoryEvent(type, store, item, qty));
     }
@@ -261,7 +273,7 @@ public class InventoryService {
                     });
         }
     }
-    
+
     private InventoryEvent.Type getEvent(MovementType type) {
         return type == MovementType.Dispensed ? InventoryEvent.Type.Decrease : InventoryEvent.Type.Increase;
     }
@@ -291,11 +303,11 @@ public class InventoryService {
 
         return stockEntryRepository.getStockEntriesByItem(itemId);
     }
-    
-    public List<StockEntryData>findByReferenceNumber(String referenceNumber){
+
+    public List<StockEntryData> findByReferenceNumber(String referenceNumber) {
         return stockEntryRepository.findByReferenceNumber(referenceNumber)
                 .stream()
-                .map((entry)->entry.toData())
+                .map((entry) -> entry.toData())
                 .collect(Collectors.toList());
     }
 

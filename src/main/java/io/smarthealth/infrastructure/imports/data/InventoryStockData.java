@@ -16,6 +16,6 @@ import lombok.Data;
 public class InventoryStockData {
 
     private String itemCode;
-    private Double stockCount;
+    private Double stockCount = 0.0;
     private Long storeId;
 }

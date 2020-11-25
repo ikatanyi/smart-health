@@ -57,6 +57,11 @@ public class InvoiceData {
     private String diagnosis;
     @ApiModelProperty(hidden=true, required=false)
     private String idNumber;
+    @ApiModelProperty(hidden=true, required=false)
+    private BigDecimal total= BigDecimal.ZERO;
+    
+    @ApiModelProperty(hidden=true, required=false)
+    private BigDecimal excess = BigDecimal.ZERO;
 
      private Boolean capitation=Boolean.FALSE;
 }

@@ -2,7 +2,6 @@ package io.smarthealth.clinical.admission.domain.specification;
 
 import io.smarthealth.clinical.admission.domain.Room;
 import io.smarthealth.clinical.admission.domain.Room.Type;
-import io.smarthealth.clinical.admission.domain.Ward;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,7 +22,7 @@ public class RoomSpecification {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
             if (!active) {
-                predicates.add(cb.equal(root.get("isActive"), true));
+                predicates.add(cb.equal(root.get("isActive"), active));
             }
             if (name!=null) {
                 predicates.add(cb.equal(root.get("name"), name));

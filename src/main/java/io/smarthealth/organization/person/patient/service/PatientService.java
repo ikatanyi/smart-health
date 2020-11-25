@@ -18,7 +18,7 @@ import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.organization.facility.service.FacilityService;
-import io.smarthealth.organization.person.data.AddressData;
+import io.smarthealth.organization.person.data.AddressDatas;
 import io.smarthealth.organization.person.data.ContactData;
 import io.smarthealth.organization.person.data.PersonNextOfKinData;
 import io.smarthealth.organization.person.data.PortraitData;
@@ -75,6 +75,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class PatientService {
+
 
     private final PatientRepository patientRepository;
     private final PersonContactRepository personContactRepository;
@@ -144,7 +145,7 @@ public class PatientService {
                     if (personAddressEntity != null) {
                         patient.setAddress(personAddressEntity
                                 .stream()
-                                .map(AddressData::map)
+                                .map(AddressDatas::map)
                                 .collect(Collectors.toList())
                         );
                     }
@@ -160,13 +161,13 @@ public class PatientService {
 
                     final List<PatientIdentifier> patientIdentifiers = this.patientIdentifierService.fetchPatientIdentifiers(patientEntity);
 
-                    if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
-                        List<PersonIdentifierData> ids = new ArrayList<>();
-                        for (PatientIdentifier id : patientIdentifiers) {
-                            ids.add(patientIdentifierService.convertIdentifierEntityToData(id));
-                        }
-                        patient.setIdentifiers(ids);
-                    }
+//                    if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
+//                        List<PersonIdentifierData> ids = new ArrayList<>();
+//                        for (PatientIdentifier id : patientIdentifiers) {
+//                            ids.add(patientIdentifierService.convertIdentifierEntityToData(id));
+//                        }
+//                        patient.setIdentifiers(ids);
+//                    }
 
                     patient.setFullName((patient.getGivenName() != null ? patient.getGivenName() : "") + " " + (patient.getMiddleName() != null ? patient.getMiddleName() : "").concat(" ").concat(patient.getSurname() != null ? patient.getSurname() : " "));
                     return patient;
@@ -303,7 +304,7 @@ public class PatientService {
             personAddressRepository.saveAll(patient.getAddress()
                     .stream()
                     .map(address -> {
-                        final PersonAddress addressDetailEntity = AddressData.map(address);
+                        final PersonAddress addressDetailEntity = AddressDatas.map(address);
                         addresses.add(addressDetailEntity);
                         addressDetailEntity.setPerson(savedPatient);
                         return addressDetailEntity;
@@ -312,31 +313,31 @@ public class PatientService {
             );
             savedPatient.setAddresses(addresses);
         }
-        //save patient identifier
-        if (patient.getIdentifiers() != null) {
-            // List<PatientIdentifier> patientIdentifiersList = new ArrayList<>();
-            List<PatientIdentifier> values = patient.getIdentifiers()
-                    .stream()
-                    .map(identity -> {
-                        if (identity.getIdType().equals("")) {
-                            return null;
-                        }
-                        if (identity.getIdType().equals("-Select-")) {
-                            return null;
-                        }
-                        final PatientIdentifier patientIdentifier = patientIdentifierService.convertIdentifierDataToEntity(identity) /*modelMapper.map(identity, PatientIdentifier.class)*/;
-                        //patientIdentifiersList.add(patientIdentifier);
-                        patientIdentifier.setPatient(savedPatient);
-                        return patientIdentifier;
-                    }).filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-            patientIdentifierRepository.saveAll(values);
-            /*
-            if (!patientIdentifiersList.isEmpty()) {
-                savedPatient.setIdentifications(patientIdentifiersList);
-            }*/
-
-        } 
+//        //save patient identifier
+//        if (patient.getIdentifiers() != null) {
+//            // List<PatientIdentifier> patientIdentifiersList = new ArrayList<>();
+//            List<PatientIdentifier> values = patient.getIdentifiers()
+//                    .stream()
+//                    .map(identity -> {
+//                        if (identity.getIdType().equals("")) {
+//                            return null;
+//                        }
+//                        if (identity.getIdType().equals("-Select-")) {
+//                            return null;
+//                        }
+//                        final PatientIdentifier patientIdentifier = patientIdentifierService.convertIdentifierDataToEntity(identity) /*modelMapper.map(identity, PatientIdentifier.class)*/;
+//                        //patientIdentifiersList.add(patientIdentifier);
+//                        patientIdentifier.setPatient(savedPatient);
+//                        return patientIdentifier;
+//                    }).filter(Objects::nonNull)
+//                    .collect(Collectors.toList());
+//            patientIdentifierRepository.saveAll(values);
+//            /*
+//            if (!patientIdentifiersList.isEmpty()) {
+//                savedPatient.setIdentifications(patientIdentifiersList);
+//            }*/
+//
+//        }
         if (patient.getVisitType() != null) {
             String visitid = sequenceNumberService.next(1L, Sequences.Visit.name());
             Visit visit = new Visit();
@@ -435,10 +436,10 @@ public class PatientService {
         try {
             PatientData patientData = modelMapper.map(patient, PatientData.class);
             if (patient.getAddresses() != null) {
-                List<AddressData> addresses = new ArrayList<>();
+                List<AddressDatas> addresses = new ArrayList<>();
 
                 patient.getAddresses().forEach((address) -> {
-                    AddressData addressData = modelMapper.map(address, AddressData.class);
+                    AddressDatas addressData = modelMapper.map(address, AddressDatas.class);
                     addresses.add(addressData);
                 });
                 patientData.setAddress(addresses);
@@ -462,14 +463,14 @@ public class PatientService {
 
             final List<PatientIdentifier> patientIdentifiers = this.patientIdentifierService.fetchPatientIdentifiers(patient);
 
-            if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
-                List<PersonIdentifierData> ids = new ArrayList<>();
-                for (PatientIdentifier id : patientIdentifiers) {
-                    ids.add(patientIdentifierService.convertIdentifierEntityToData(id));
-                }
-                patientData.setIdentifiers(ids);
-            }
-
+            
+//            if (patientIdentifiers != null && !patientIdentifiers.isEmpty()) {
+//                List<PersonIdentifierData> ids = new ArrayList<>();
+//                for (PatientIdentifier id : patientIdentifiers) {
+//                    ids.add(patientIdentifierService.convertIdentifierEntityToData(id));
+//                }
+//                patientData.setIdentifiers(ids);
+//            }
             //fetch portrait
             Optional<Portrait> portrait = portraitRepository.findByPerson(patient);
             if (portrait.isPresent()) {
@@ -526,5 +527,9 @@ public class PatientService {
                 && !contentType.contains(MediaType.IMAGE_PNG_VALUE)) {
             throw APIException.badRequest("Only content type {0} and {1} allowed", MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE);
         }
+    }
+
+    public List<Patient> search(String term, int offset, int limit) {
+        return patientRepository.search(term, limit, offset);
     }
 }

@@ -2,7 +2,6 @@ package io.smarthealth.clinical.admission.service;
 
 import io.smarthealth.clinical.admission.data.BedChargeData;
 import io.smarthealth.clinical.admission.data.BedTypeData;
-import io.smarthealth.clinical.admission.data.ChargeData;
 import io.smarthealth.clinical.admission.domain.BedCharge;
 import io.smarthealth.clinical.admission.domain.BedType;
 import io.smarthealth.clinical.admission.domain.repository.BedChargeRepository;

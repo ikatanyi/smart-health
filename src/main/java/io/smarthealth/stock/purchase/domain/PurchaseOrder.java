@@ -31,7 +31,7 @@ public class PurchaseOrder extends Auditable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_purch_order_supplier_id"))
     private Supplier supplier;
-     private Boolean received;
+    private Boolean received;
     private Boolean billed;
     private LocalDate transactionDate;
     private LocalDate requiredDate;
@@ -52,6 +52,8 @@ public class PurchaseOrder extends Auditable {
     //payment details that can be defined here that contains the terms and conditions for this and the rest will have to made
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL)
     private List<PurchaseOrderItem> purchaseOrderLines;
+    
+    private String remarks;
 
     public PurchaseOrder() {
     }
@@ -91,6 +93,7 @@ public class PurchaseOrder extends Auditable {
         PurchaseOrderData data = new PurchaseOrderData();
         data.setId(this.getId());
         data.setOrderNumber(this.getOrderNumber());
+        data.setRemarks(this.getRemarks());
         if (this.getSupplier() != null) {
             data.setSupplierId(this.getSupplier().getId());
             data.setSupplierName(this.getSupplier().getSupplierName());

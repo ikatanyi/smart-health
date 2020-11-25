@@ -5,11 +5,13 @@
  */
 package io.smarthealth.clinical.visit.domain;
 
+import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import io.smarthealth.security.domain.User;
 import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -63,8 +65,38 @@ public class PaymentDetails extends Auditable {
     @Enumerated(EnumType.STRING)
     private CoPayType coPayCalcMethod;
     private double coPayValue;
-    
     private boolean hasCapitation;
     private BigDecimal capitationAmount = BigDecimal.ZERO;
+    private double runningLimit;
+    
+    @Column(columnDefinition = "tinyint(1) default 1")
+    private Boolean limitEnabled = Boolean.TRUE;
+    
+    @Column(columnDefinition = "tinyint(1) default 0")
+    private Boolean excessAmountEnabled = Boolean.FALSE;
+    
+    @Column(columnDefinition = "tinyint(1) default 0")
+    private Boolean limitReached = Boolean.FALSE;
 
+    @Enumerated(EnumType.STRING)
+    private BillPayMode excessAmountPayMode;//Cash/Credit
+
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_payment_details_user_id"))
+    @ManyToOne
+    private User excessAmountAuthorisedBy;
+
+    private double accumulatedExcessAmount;
+
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_payment_details_excess_amount_payer_id"))
+    @ManyToOne
+    private Payer excessAmountPayer;
+
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_payment_details_excess_amount_scheme"))
+    @ManyToOne
+    private Scheme excessAmountScheme;
+
+    @Override
+    public String toString() {
+        return "[ runningLimit=" + runningLimit + ", limitAmount=" + limitAmount + "]";
+    }
 }

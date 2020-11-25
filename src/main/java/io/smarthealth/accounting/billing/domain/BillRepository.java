@@ -17,8 +17,8 @@ import java.util.List;
  */
 public interface BillRepository {
     
-    List<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin,VisitEnum.PaymentMethod paymentMode, DateRange range);
+    List<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin,VisitEnum.PaymentMethod paymentMode, DateRange range, Boolean includeCanceled);
     
-    BigDecimal getBillTotal(String visitNumber);
+    BigDecimal getBillTotal(String visitNumber, Boolean includeCanceled);
     
 }

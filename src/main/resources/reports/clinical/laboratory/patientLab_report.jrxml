@@ -180,6 +180,9 @@
 			</line>
 			<staticText>
 				<reportElement x="1" y="0" width="553" height="18" uuid="48ee5463-c19a-4f34-8b19-898a3142d7ab"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>

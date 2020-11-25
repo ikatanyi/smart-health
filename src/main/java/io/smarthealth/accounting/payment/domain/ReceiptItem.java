@@ -7,7 +7,6 @@ package io.smarthealth.accounting.payment.domain;
 
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
-import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

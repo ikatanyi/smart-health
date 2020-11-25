@@ -5,9 +5,7 @@
  */
 package io.smarthealth.report.service;
 
-import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.service.LedgerService;
-import io.smarthealth.accounting.cashier.data.CashierData;
 import io.smarthealth.accounting.cashier.data.CashierShift;
 import io.smarthealth.accounting.cashier.data.ShiftPayment;
 import io.smarthealth.accounting.cashier.service.CashierService;
@@ -25,6 +23,8 @@ import io.smarthealth.accounting.payment.service.ReceiptingService;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
+import io.smarthealth.administration.config.domain.GlobalConfiguration;
+import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.claim.creditNote.data.CreditNoteData;
 import io.smarthealth.debtor.claim.creditNote.service.CreditNoteService;
@@ -44,7 +44,6 @@ import io.smarthealth.supplier.service.SupplierService;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -86,6 +85,7 @@ public class PaymentReportService {
     private final PayerService payerService;
     private final ReceiptingService receivePaymentService;
     private final CashierService cashierService;
+    private final ConfigService configService;
 
     public void getPettyCashRequests(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
         String requestNo = reportParam.getFirst("requestNo");
@@ -140,8 +140,10 @@ public class PaymentReportService {
     public void getInvoice(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
         String invoiceNo = reportParam.getFirst("invoiceNo");
-        ReportData reportData = new ReportData();
-
+        ReportData reportData = new ReportData();        
+        GlobalConfiguration config = configService.getByNameOrThrow("CapitationItemAmountDisplay");
+        Boolean showCapitationItem = config.getValue().equals("1");
+        reportData.getFilters().put("showCapitationItem", showCapitationItem);
         InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
         reportData.setData(Arrays.asList(invoiceData));
         reportData.setTemplate("/accounts/invoice");

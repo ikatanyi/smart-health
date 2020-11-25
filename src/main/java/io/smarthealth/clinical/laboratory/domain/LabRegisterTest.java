@@ -86,10 +86,12 @@ public class LabRegisterTest extends Identifiable {
         data.setEntered(this.entered);
         data.setEnteredBy(this.enteredBy);
         data.setEntryDateTime(this.entryDateTime);
+        
 
         data.setValidated(this.validated);
         data.setValidatedBy(this.validatedBy);
         data.setValidationDateTime(this.validationDateTime);
+        data.setPaymentMode(this.getLabRegister().getPaymentMode());
 
         data.setTestPrice(this.price);
         if (this.labRegister != null) {
@@ -98,18 +100,20 @@ public class LabRegisterTest extends Identifiable {
             data.setRequestedBy(this.labRegister.getRequestedBy());
             data.setLabNumber(this.labRegister.getLabNumber());
             data.setPatientNumber(this.labRegister.getPatientNo());
+            data.setReferenceNo(this.labRegister.getTransactionId());
 
             if (this.labRegister.getVisit() != null) {
                 data.setPatientName(this.labRegister.getVisit().getPatient().getGivenName());
                 data.setDOB(this.labRegister.getVisit().getPatient().getDateOfBirth());
                 data.setGender(this.labRegister.getVisit().getPatient().getGender());
+                data.setIsWalkin(this.labRegister.getIsWalkin());
             }
         }
 
         data.setPaid(this.paid);
-        data.setReferenceNo(this.referenceNo);
+//        data.setReferenceNo(this.referenceNo);
         data.setRequestId(this.requestId);
-
+        
         data.setSpecimen(this.specimen);
         data.setStatus(this.status);
         data.setIsPanel(this.isPanel);

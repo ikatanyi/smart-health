@@ -273,6 +273,21 @@ public class ReportController {
             case Patient_Attendance_Report:
                 patientReportService.getPatientReport(queryParams, format, response);
                 break;
+            case Invoice_Aging_Summary:
+                reportService.getAgingSummary(queryParams, format, response);
+                break;  
+            case Purchase_Order_Statement:
+                stockReportService.getPurchaseOrderStatement(queryParams, format, response);
+                break;
+            case Moh706_Lab_Report:
+                patientReportService.getMoh706LabReport(queryParams, format, response);
+                break;
+            case Invoice_Balancing_Statement:
+                reportService.genInvoiceBalancingReport(queryParams, format, response);
+                break;
+            case Discharge_Summary:
+                admissionReportService.getDischargeSummary(queryParams, format, response);
+                break;
             default:
                 break;
         }

@@ -3,6 +3,7 @@ package io.smarthealth.accounting.invoice.api;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.invoice.data.CreateInvoice;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
+import io.smarthealth.accounting.invoice.data.InvoiceEditData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
@@ -55,6 +56,14 @@ public class InvoiceController {
     @PreAuthorize("hasAuthority('view_invoices')")
     public ResponseEntity<?> getInvoice(@PathVariable(value = "id") Long id) {
         Invoice trans = service.getInvoiceByIdOrThrow(id);
+        return ResponseEntity.ok(trans.toData());
+    }
+    
+    @PutMapping("/invoices/{id}")
+    @PreAuthorize("hasAuthority('create_invoices')")
+    public ResponseEntity<?> updateInvoice(@PathVariable(value = "id") Long id, @Valid @RequestBody InvoiceEditData invoiceData) {
+
+        Invoice trans =service.updateInvoice(id, invoiceData);
         return ResponseEntity.ok(trans.toData());
     }
 

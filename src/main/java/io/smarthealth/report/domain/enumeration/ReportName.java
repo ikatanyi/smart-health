@@ -79,5 +79,10 @@ public enum ReportName {
         Registered_Schemes,
         Insurance_Diagnosis_Summary,
         Cashier_Cash_Sale_Breakdown,
-        Patient_Attendance_Report
+        Patient_Attendance_Report,
+        Invoice_Aging_Summary,
+        Purchase_Order_Statement,
+        Moh706_Lab_Report,
+        Invoice_Balancing_Statement,
+        Discharge_Summary
 }
