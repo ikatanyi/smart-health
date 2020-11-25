@@ -1070,5 +1070,8 @@ public class BillingService {
         }
         return null;
     }
-
+     @Transactional
+   public void updatePaymentReference(String oldReference, String newReference){
+       billItemRepository.updatePaymentReference(newReference,oldReference);
+   }
 }

@@ -535,4 +535,8 @@ public class PatientService {
     public Patient savePatient(Patient p) {
         return patientRepository.save(p);
     }
+    public List<Patient> tafuta(String term) {
+        return patientRepository.search(term);
+    }
+
 }

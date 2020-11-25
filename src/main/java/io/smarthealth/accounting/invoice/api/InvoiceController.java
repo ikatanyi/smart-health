@@ -5,6 +5,7 @@ import io.smarthealth.accounting.invoice.data.CreateInvoice;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceEditData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
+import io.smarthealth.accounting.invoice.data.MergeInvoice;
 import io.smarthealth.accounting.invoice.domain.Invoice;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
@@ -58,12 +59,12 @@ public class InvoiceController {
         Invoice trans = service.getInvoiceByIdOrThrow(id);
         return ResponseEntity.ok(trans.toData());
     }
-    
+
     @PutMapping("/invoices/{id}")
     @PreAuthorize("hasAuthority('create_invoices')")
     public ResponseEntity<?> updateInvoice(@PathVariable(value = "id") Long id, @Valid @RequestBody InvoiceEditData invoiceData) {
 
-        Invoice trans =service.updateInvoice(id, invoiceData);
+        Invoice trans = service.updateInvoice(id, invoiceData);
         return ResponseEntity.ok(trans.toData());
     }
 
@@ -131,7 +132,7 @@ public class InvoiceController {
 
         return ResponseEntity.ok(invoice != null ? invoice.toData() : new InvoiceData());
     }
-    
+
     @PutMapping("/invoices/{id}/update-smart-status")
     @PreAuthorize("hasAuthority('create_invoices')")
     public ResponseEntity<?> updateInvoiceSmartStatus(@PathVariable(value = "id") Long id, @RequestParam(value = "awaitingSmart", required = true) Boolean status) {
@@ -139,8 +140,16 @@ public class InvoiceController {
         service.updateInvoiceSmartStatus(id, status);
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
+
     //TODO
     /*
       Provide mpesa integrations, credit cards,
      */
+
+    @PostMapping("/invoices/merge")
+    public ResponseEntity<?> mergeInvoice(@Valid @RequestBody MergeInvoice mergeInvoice) {
+        Invoice invoice = service.mergeInvoice(mergeInvoice);
+
+        return ResponseEntity.ok(invoice != null ? invoice.toData() : new InvoiceData());
+    }
 }

@@ -29,7 +29,7 @@
 	<field name="code" class="java.lang.String"/>
 	<field name="description" class="java.lang.String"/>
 	<field name="certainty" class="java.lang.String"/>
-	<field name="dateRecorded" class="java.lang.Object"/>
+	<field name="recorded" class="java.lang.Object"/>
 	<field name="doctor" class="java.lang.String"/>
 	<field name="patientName" class="java.lang.String"/>
 	<variable name="PatientCount" class="java.lang.Integer" calculation="Count">
@@ -175,7 +175,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dateRecorded}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{recorded}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="151" y="-1" width="97" height="12" uuid="3c105f01-5c48-4446-a091-7fd820d516e9"/>

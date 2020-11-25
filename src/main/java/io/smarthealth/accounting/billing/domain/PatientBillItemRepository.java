@@ -25,14 +25,18 @@ public interface PatientBillItemRepository extends JpaRepository<PatientBillItem
 //
 //    @Query("SELECT b.patientBill.billingDate as date, b.patientBill.visit.visitNumber as visitNumber, b.patientBill.patient.patientNumber as patientNumber, b.patientBill.patient.fullName as patientName, SUM(b.amount) as amount, SUM(b.balance) as balance, b.patientBill.visit.paymentMethod as paymentMethod, 'False' as walkin FROM PatientBillItem b WHERE b.patientBill.visit.visitNumber =:visit GROUP BY 2,3")
 //    Page<BillSummary> billSummaryByVisit(@Param("visit") String visitNumber, Pageable page);
-  @Query(value = "SELECT p FROM PatientBillItem p WHERE p.status=:status AND p.patientBill.visit.visitNumber=:visitNo")
+    @Query(value = "SELECT p FROM PatientBillItem p WHERE p.status=:status AND p.patientBill.visit.visitNumber=:visitNo")
     List<PatientBillItem> getVisitBillsByStatus(@Param("status") BillStatus status, @Param("visitNo") String visitNo);
-    
-    Optional<PatientBillItem>findByPatientBill(PatientBill patientBill);
-    
+
+    Optional<PatientBillItem> findByPatientBill(PatientBill patientBill);
+
     List<PatientBillItem> findByTransactionId(String transactionId);
-    
+
     @Modifying
     @Query(value = "UPDATE PatientBillItem p SET p.status = 'Canceled' WHERE p.id = :id")
-    int cancelPatientBill(@Param("id") Long id );
+    int cancelPatientBill(@Param("id") Long id);
+
+    @Modifying
+    @Query(value = "UPDATE PatientBillItem p SET p.paymentReference =:newRef WHERE p.paymentReference=:oldRef ")
+    int updatePaymentReference(@Param("newRef") String newRef, @Param("oldRef") String oldRef);
 }
