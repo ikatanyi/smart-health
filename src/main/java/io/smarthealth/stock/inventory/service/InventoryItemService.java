@@ -224,7 +224,7 @@ public class InventoryItemService {
 //                    if(NumberUtils.toDouble(item.getRate())==null){
 //                        System.out.println("item.getItemName()");
 //                    }
-                    System.out.println(i++ +"========="+item.getItemName());
+//                    System.out.println(i++ +"========="+item.getItemName());
                     
                     items.add(inventory);
                     StockEntry entry = new StockEntry();
