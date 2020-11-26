@@ -528,7 +528,11 @@ public class InvoiceService {
         //updatet the bills
         billingService.updatePaymentReference(toInvoice.getNumber(), invoice.getNumber());
         //delete the old invoice
-        invoiceRepository.deleteById(toInvoice.getId());
+//        invoiceRepository.deleteById(toInvoice.getId()); 
+        toInvoice.setStatus(InvoiceStatus.Voided);
+        toInvoice.setAmount(BigDecimal.ZERO);
+        toInvoice.setBalance(BigDecimal.ZERO);
+        invoiceRepository.save(toInvoice);
         //audi log the changes
         //String fromInvoiceNumber, String toInvoiceNumber, BigDecimal originalInvoiceAmount, BigDecimal newInvoiceAmount, String reasonForMerge
        
@@ -545,7 +549,7 @@ public class InvoiceService {
                 .reduce(0D, (x, y) -> x + y);
        BigDecimal originalAmount =invoice.getAmount();
         invoice.setAmount(BigDecimal.valueOf(amount));
-        invoice.setBalance(BigDecimal.valueOf(balance));
+        invoice.setBalance(BigDecimal.valueOf(amount));
         
         invoiceMergeRepository.save(new InvoiceMerge(toInvoice.getNumber(), invoice.getNumber(), originalAmount, invoice.getAmount(), mergeInvoice.getReason()));
 
