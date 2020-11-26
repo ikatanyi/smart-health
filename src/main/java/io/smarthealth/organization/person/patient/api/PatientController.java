@@ -455,6 +455,8 @@ public class PatientController {
         pagers.setContent(patientIdentifierService.convertIdentifierEntityToData(savedPi));
 
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
+	}
+	
     @GetMapping("/patients/tafuta")
     public @ResponseBody
     ResponseEntity<List<PatientData>> tafutaPatient(@RequestParam("q") final String term) {
