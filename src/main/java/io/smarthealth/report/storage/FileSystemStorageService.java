@@ -24,9 +24,6 @@ public class FileSystemStorageService implements StorageService {
     
     private final ApplicationProperties properties;
     
-    private final JdbcTemplate jdbcTemplate;
-    
-
     public FileSystemStorageService(ApplicationProperties properties) throws IOException {
         this.properties = properties;
         this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath());
