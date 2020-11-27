@@ -118,7 +118,7 @@ public class VisitService {
 
                 for (BillItem bi : items) {
                     //if item equals "DoctorFee" && item.amount > 0
-                    if (bi.getItemCategory().equals(ItemCategory.DoctorFee) && !bi.getPaid() && servicePointType.equals(ServicePointType.Consultation)) {
+                    if (bi.getItemCategory().equals(ItemCategory.DoctorFee) && !bi.getPaid() && servicePointType.equals(ServicePointType.Consultation) && bi.getAmount()>0) {
                         // visitData.add(v);
                         visitData.remove(v);
 //                        visitList.remove(v);
