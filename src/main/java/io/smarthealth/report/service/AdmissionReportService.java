@@ -30,6 +30,7 @@ import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
 import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.PrescriptionData;
+import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -72,6 +73,7 @@ public class AdmissionReportService {
     private final ProcedureService procedureService;
     private final LaboratoryService labService;
     private final PrescriptionService prescriptionService;
+     private final DiagnosisService diagnosisService;
 
     private final VisitService visitService;
 
