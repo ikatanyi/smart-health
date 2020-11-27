@@ -7,7 +7,6 @@ import io.smarthealth.clinical.admission.domain.DischargeSummary;
 import io.smarthealth.clinical.admission.domain.repository.AdmissionRepository;
 import io.smarthealth.clinical.admission.domain.repository.DischargeSummaryRepository;
 import io.smarthealth.clinical.admission.domain.specification.DischargeSummarySpecification;
-import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.domain.Diagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosisRepository;
@@ -17,7 +16,6 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,6 +84,9 @@ public class DischargeService {
     }
     
     public Admission getAdmission(String admissionNo) {
+        if(admissionNo == null){
+            return null;
+        }
         Admission admission = admissionRepository.findByAdmissionNo(admissionNo)
                 .orElseThrow(() -> APIException.notFound("Admission with  Number {} Not Found", admissionNo));
         

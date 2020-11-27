@@ -13,5 +13,8 @@ public enum ServicePointType {
     Radiology,
     Procedure,
     Inpatient,
+    Theatre,
+    Optical,
+    Dental,
     Others
 }

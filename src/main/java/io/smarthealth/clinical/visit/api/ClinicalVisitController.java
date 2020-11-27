@@ -796,7 +796,7 @@ public class ClinicalVisitController {
         visitService.createAVisit(activeVisit);
         patientQueueService.createPatientQueue(patientQueue);
 //        VitalRecordData vr = modelMapper.map(activeVisit, VitalRecordData.class);
-        VitalRecordData vr = triageService.convertToVitalsData(vitalR);
+        VitalRecordData vr = VitalRecordData.map(vitalR); // triageService.convertToVitalsData(vitalR);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/patient/{patientNo}/vitals/{id}")

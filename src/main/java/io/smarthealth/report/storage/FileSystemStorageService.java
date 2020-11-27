@@ -22,7 +22,7 @@ public class FileSystemStorageService implements StorageService {
     private final Path rootLocation;
     
     private final ApplicationProperties properties;
-
+    
     public FileSystemStorageService(ApplicationProperties properties) throws IOException {
         this.properties = properties;
         this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath());

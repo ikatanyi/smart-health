@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -206,6 +207,7 @@ public class InventoryItemService {
     public void uploadInventoryItems(List<InventoryStockData> itemData) {
         List<InventoryItem> items = new ArrayList<>();
         List<StockEntry> stockEntry = new ArrayList<>();
+        int i=0;
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         itemData.stream()
                 .forEach(x -> {
@@ -219,10 +221,15 @@ public class InventoryItemService {
 //                    }
 
                     final String referenceNo = sequenceNumberService.next(1L, Sequences.StockTransferNumber.name());
-
+//                    if(NumberUtils.toDouble(item.getRate())==null){
+//                        System.out.println("item.getItemName()");
+//                    }
+//                    System.out.println(i++ +"========="+item.getItemName());
+                    
                     items.add(inventory);
                     StockEntry entry = new StockEntry();
-                    entry.setAmount(BigDecimal.valueOf(x.getStockCount()).multiply(item.getRate()));
+                    
+                    entry.setAmount(BigDecimal.valueOf(x.getStockCount()*NumberUtils.toDouble(item.getRate())));
                     entry.setItem(item);
                     entry.setMoveType(MovementType.Opening_Balance);
                     entry.setPrice(item.getRate());
