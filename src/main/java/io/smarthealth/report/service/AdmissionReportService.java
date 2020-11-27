@@ -199,7 +199,7 @@ public class AdmissionReportService {
                 .map((presc) -> PrescriptionData.map(presc))
                 .collect(Collectors.toList());
         
-        List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(visit, Pageable.unpaged())
+        List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(adm, Pageable.unpaged())
                 .stream()
                 .map((diag) -> DiagnosisData.map(diag))
                 .collect(Collectors.toList());
