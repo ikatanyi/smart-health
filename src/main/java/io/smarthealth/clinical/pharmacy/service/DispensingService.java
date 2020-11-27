@@ -105,6 +105,7 @@ public class DispensingService {
                         drugs.setBatchNumber(drugData.getBatchNumber());
                         drugs.setDeliveryNumber(drugData.getBatchNumber());
                         drugs.setVisit(visit);
+                        drugs.setBillNumber(drugRequest.getBillNumber());
 
                         DispensedDrug savedDrug = repository.saveAndFlush(drugs);
                         doStockEntries(savedDrug.getId());
@@ -127,7 +128,9 @@ public class DispensingService {
             drugRequest.setPaymentMode("Cash");
         }
 
-        billingService.save(toBill(drugRequest, store));
+        PatientBill savedBill = billingService.save(toBill(drugRequest, store));
+
+        drugRequest.setBillNumber(savedBill.getBillNumber());
 
         dispenseItem(store, drugRequest);
         return trdId;
@@ -172,6 +175,9 @@ public class DispensingService {
     }
 
     public List<DispensedDrug> returnItems(String visitNumber, List<ReturnedDrugData> returnedDrugs) {
+        System.err.println("Retugint the ites, ..... ");
+        returnedDrugs.forEach(x -> System.out.println("daddy ... "+x.getDrugId()));
+        
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         List<DispensedDrug> returnedArray = new ArrayList();
@@ -209,8 +215,8 @@ public class DispensingService {
                         stock.setTransactionNumber(trdId);
                         stock.setUnit(drug1.getUnits());
                         inventoryService.doStockEntry(InventoryEvent.Type.Increase, stock, drug1.getStore(), drug1.getDrug(), drugData.getQuantity());
- 
-                        drugs.setReturnedQuantity((drugs.getReturnedQuantity()+drugData.getQuantity()));
+
+                        drugs.setReturnedQuantity((drugs.getReturnedQuantity() + drugData.getQuantity()));
                         drugs.setReturnReason(drugData.getReason());
                         drugs.setReturnDate(drugData.getReturnDate() != null ? drugData.getReturnDate() : LocalDate.now());
 
@@ -306,5 +312,9 @@ public class DispensingService {
         w.setFirstName(patientName);
         w.setSurname("WI");
         return walkingService.createWalking(w);
+    }
+
+    public List<DispensedDrug> findDispensedDrugs(Long drugId, String visitNo, LocalDate date, String transNo) {
+        return repository.findDispensedDrug(drugId, visitNo, date, transNo);
     }
 }
