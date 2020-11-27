@@ -12,7 +12,7 @@ import org.springframework.validation.annotation.Validated;
  * @author Kelsas
  */ 
   
-@Data
+ 
 @Validated
 @Configuration
 @ConfigurationProperties(prefix = "io.smarthealth")
@@ -38,4 +38,62 @@ public class ApplicationProperties {
     private String templateUploadDir;
     
     private String integServer;
+
+    public Resource getStorageLocation() {
+        return storageLocation;
+    }
+
+    public void setStorageLocation(Resource storageLocation) {
+        this.storageLocation = storageLocation;
+    }
+
+    public Resource getReportLocation() {
+        return reportLocation;
+    }
+
+    public void setReportLocation(Resource reportLocation) {
+        this.reportLocation = reportLocation;
+    }
+
+    public Resource getAuthServer() {
+        return authServer;
+    }
+
+    public void setAuthServer(Resource authServer) {
+        this.authServer = authServer;
+    }
+
+    public String getReportLoc() {
+        return reportLoc;
+    }
+
+    public void setReportLoc(String reportLoc) {
+        this.reportLoc = reportLoc;
+    }
+
+    public String getDocUploadDir() {
+        return docUploadDir;
+    }
+
+    public void setDocUploadDir(String docUploadDir) {
+        this.docUploadDir = docUploadDir;
+    }
+
+    public String getTemplateUploadDir() {
+        return templateUploadDir;
+    }
+
+    public void setTemplateUploadDir(String templateUploadDir) {
+        this.templateUploadDir = templateUploadDir;
+    }
+
+    public String getIntegServer() {
+        return integServer;
+    }
+
+    public void setIntegServer(String integServer) {
+        this.integServer = integServer;
+    }
+    
+    
 }

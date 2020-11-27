@@ -119,7 +119,7 @@ public class VitalsController {
     ) {
         //Sort.by(Sort.Direction.ASC, "dateRecorded")
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "dateRecorded"));
-        Page<VitalRecordData> page = triageService.fetchVitalRecordsByPatient(patientNumber, paging).map(v -> triageService.convertToVitalsData(v));
+        Page<VitalRecordData> page = triageService.fetchVitalRecordsByPatient(patientNumber, paging).map(v ->  VitalRecordData.map(v)); //triageService.convertToVitalsData(v)
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }

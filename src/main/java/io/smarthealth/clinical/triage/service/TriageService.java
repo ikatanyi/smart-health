@@ -150,7 +150,7 @@ public class TriageService {
     }
 
     public VitalRecordData convertToVitalsData(VitalsRecord vitalsRecord) {
-        return modelMapper.map(vitalsRecord, VitalRecordData.class);
+        return VitalRecordData.map(vitalsRecord); //modelMapper.map(vitalsRecord, VitalRecordData.class);
     }
 
 }
