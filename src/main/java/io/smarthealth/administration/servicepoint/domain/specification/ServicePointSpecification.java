@@ -22,6 +22,7 @@ public class ServicePointSpecification {
                 predicates.add(cb.equal(root.get("pointType"), pointType));
             }
             if (servicePointType != null) {
+                
                 predicates.add(cb.equal(root.get("servicePointType"), servicePointType));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
