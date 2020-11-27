@@ -28,6 +28,7 @@ import io.smarthealth.clinical.procedure.data.PatientProcedureTestData;
 import io.smarthealth.clinical.procedure.service.ProcedureService;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
+import io.smarthealth.clinical.record.data.DiagnosisData;
 import io.smarthealth.clinical.record.data.PrescriptionData;
 import io.smarthealth.clinical.record.service.PrescriptionService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
@@ -197,8 +198,14 @@ public class AdmissionReportService {
                 .stream()
                 .map((presc) -> PrescriptionData.map(presc))
                 .collect(Collectors.toList());
+        
+        List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(visit, Pageable.unpaged())
+                .stream()
+                .map((diag) -> DiagnosisData.map(diag))
+                .collect(Collectors.toList());
 
         reportData.getFilters().put("pharmacyData", pharmacyData);
+        reportData.getFilters().put("diagnosis", diagnosisData);
         reportData.getFilters().put("labTests", labTests);
         reportData.getFilters().put("procedures", procedures);
         reportData.getFilters().put("scanData", scanData);
