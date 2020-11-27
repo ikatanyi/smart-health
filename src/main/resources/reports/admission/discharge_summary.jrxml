@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="discharge_slip" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="276"/>
+	<property name="ireport.y" value="104"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
@@ -496,7 +496,7 @@
 				<text><![CDATA[NOTES ON DISCHARGE :]]></text>
 			</staticText>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="99" width="555" height="19" isRemoveLineWhenBlank="true" uuid="5f82560d-8326-4b65-8c71-96d457e0611f"/>
+				<reportElement positionType="Float" x="1" y="99" width="554" height="19" isRemoveLineWhenBlank="true" uuid="5f82560d-8326-4b65-8c71-96d457e0611f"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -504,7 +504,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_radiology_report_tests.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="74" width="555" height="16" isRemoveLineWhenBlank="true" uuid="9ad2a79e-42f5-4e65-81c0-ff7f9414e601"/>
+				<reportElement positionType="Float" x="1" y="74" width="554" height="16" isRemoveLineWhenBlank="true" uuid="9ad2a79e-42f5-4e65-81c0-ff7f9414e601"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -516,7 +516,7 @@
 	<columnFooter>
 		<band height="16">
 			<subreport>
-				<reportElement x="0" y="0" width="554" height="16" uuid="401c8037-56d1-43ab-80bf-e3c776bbb549"/>
+				<reportElement x="1" y="0" width="553" height="16" uuid="401c8037-56d1-43ab-80bf-e3c776bbb549"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
 			</subreport>
