@@ -84,6 +84,9 @@ public class DischargeService {
     }
     
     public Admission getAdmission(String admissionNo) {
+        if(admissionNo == null){
+            return null;
+        }
         Admission admission = admissionRepository.findByAdmissionNo(admissionNo)
                 .orElseThrow(() -> APIException.notFound("Admission with  Number {} Not Found", admissionNo));
         
