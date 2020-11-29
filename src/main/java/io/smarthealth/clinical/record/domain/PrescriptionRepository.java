@@ -19,7 +19,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
 
     Page<Prescription> findByVisit(final Visit visit, final Pageable pageable);
-    Page<Prescription> findByVisitAndOnDischarge(final Visit visit, Boolean onDischarge, final Pageable pageable);
+    Page<Prescription> findByVisitAndOnDischarge(final Visit visit, boolean onDischarge, final Pageable pageable);
 
     @Query("SELECT p FROM Prescription p WHERE p.id=:id")
     Prescription findPresriptionByRequestId(final Long id);
