@@ -196,7 +196,7 @@ public class AdmissionReportService {
                 .stream()
                 .map((test) -> test.toData(Boolean.TRUE))
                 .collect(Collectors.toList());
-        List<PrescriptionData> pharmacyData = prescriptionService.fetchAllPrescriptionsByVisit(adm, Pageable.unpaged()).getContent()
+        List<PrescriptionData> pharmacyData = prescriptionService.fetchAllPrescriptionsByVisitAndDischarge(adm, true, Pageable.unpaged()).getContent()
                 .stream()
                 .map((presc) -> PrescriptionData.map(presc))
                 .collect(Collectors.toList());

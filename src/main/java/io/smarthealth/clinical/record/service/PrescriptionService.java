@@ -46,4 +46,8 @@ public class PrescriptionService {
     public Page<Prescription> fetchAllPrescriptionsByVisit(final Visit visit, final Pageable pageable){
        return  prescriptionRepository.findByVisit(visit, pageable);
     }
+    
+    public Page<Prescription> fetchAllPrescriptionsByVisitAndDischarge(final Visit visit, Boolean discharged, final Pageable pageable){
+       return  prescriptionRepository.findByVisitAndOnDischarge(visit, discharged, pageable);
+    }
 }
