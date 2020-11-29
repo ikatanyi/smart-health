@@ -35,7 +35,7 @@ public class PrescriptionData extends DoctorRequestData {
     private Integer numRefills;//number of installments
     private Double issuedQuantity;//number of issued quantity
     private LocalDate prescriptionDate;
-
+    private Boolean onDischarge = Boolean.FALSE;
     @ApiModelProperty(required = false, hidden = true)
     private String patientName;
     @ApiModelProperty(required = false, hidden = true)
@@ -73,7 +73,7 @@ public class PrescriptionData extends DoctorRequestData {
             pd.setItemType(p.getItem().getDrugForm());
             pd.setItemCode(p.getItem().getItemCode());
             pd.setItemName(p.getItem().getItemName());
-        }else{
+        } else {
             pd.setItemName(p.getBrandName());
         }
         //pd.set

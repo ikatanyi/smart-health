@@ -10,12 +10,19 @@ import io.smarthealth.clinical.admission.domain.DischargeSummary;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
  * @author Kelsas
  */
 public interface DischargeSummaryRepository extends JpaRepository<DischargeSummary, Long>, JpaSpecificationExecutor<DischargeSummary> {
-    Optional<DischargeSummary>findByDischargeNo(String dischargNo);
-    Optional<DischargeSummary>findByAdmission(Admission admission);
+
+    Optional<DischargeSummary> findByDischargeNo(String dischargNo);
+
+    Optional<DischargeSummary> findByAdmission(Admission admission);
+    
+    @Query("SELECT d FROM DischargeSummary d WHERE d.admission.visitNumber =:visitNo")
+    Optional<DischargeSummary> findDischargeByVisitNo(@Param("visitNo") String visitNo);
 }
