@@ -1,13 +1,15 @@
 package io.smarthealth.integration.data;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
  *
  * @author Kelsas
  */
-@Data 
+@Getter
+@Setter 
 @ToString
 public class MpesaRequest {
 

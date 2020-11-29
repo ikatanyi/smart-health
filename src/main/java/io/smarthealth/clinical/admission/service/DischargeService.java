@@ -74,6 +74,13 @@ public class DischargeService {
             throw APIException.badRequest("Please provide dischrage id ", "");
         }
     }
+    public DischargeSummary getDischargeByVisit(String admissionNo) {
+        if (admissionNo == null) {
+          throw APIException.badRequest("Admission Number is Required");
+        }  
+            return repository.findDischargeByVisitNo(admissionNo).orElse(null);
+        
+    }
     
     public DischargeSummary getDischargeByNumber(String admissionNo) {
         if (admissionNo != null) {

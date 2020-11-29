@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -22,7 +23,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "patient_discharge")
+@Table(name = "patient_discharge") 
 public class DischargeSummary extends Auditable {
 
     @ManyToOne

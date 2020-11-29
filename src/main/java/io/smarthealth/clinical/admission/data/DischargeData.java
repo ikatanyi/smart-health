@@ -1,9 +1,7 @@
 package io.smarthealth.clinical.admission.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.clinical.admission.domain.DischargeSummary;
 import io.smarthealth.infrastructure.lang.Constants;
-import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;

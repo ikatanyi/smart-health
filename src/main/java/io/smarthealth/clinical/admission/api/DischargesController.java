@@ -12,6 +12,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.swagger.annotations.Api;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,8 +52,18 @@ public class DischargesController {
 
     @GetMapping("/discharge-summary/{id}")
 //    @PreAuthorize("hasAuthority('view_discharge-summary')")
-    public ResponseEntity<DischargeSummary> getDischarge(@PathVariable(value = "id") Long id) {
-        return ResponseEntity.ok(service.getDischargeById(id));
+    public ResponseEntity<DischargeData> getDischarge(@PathVariable(value = "id") Long id) {
+        return ResponseEntity.ok(service.getDischargeById(id).toData());
+    }
+
+    @GetMapping("/discharge-summary/{visitNo}/visit")
+//    @PreAuthorize("hasAuthority('view_discharge-summary')")
+    public ResponseEntity<DischargeData> getDischargeByVisit(@PathVariable(value = "visitNo") String visitNo) {
+        DischargeSummary discharge = service.getDischargeByVisit(visitNo);
+        if(discharge!=null){
+            return ResponseEntity.ok(discharge.toData());
+        }
+        return ResponseEntity.ok(null);
     }
 
     @PostMapping("/discharge-summary/{admissionNo}/diagnosis")
