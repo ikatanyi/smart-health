@@ -37,4 +37,5 @@ public class Disease extends Auditable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CodeType codeType;
+    private String mCode;
 }

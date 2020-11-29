@@ -26,6 +26,8 @@ public class Moh extends Identifiable {
     @Column(length = 10)
     private String code;
     private Boolean active;
+    private Boolean a705;
+    private Boolean b705;
     
     
     public MohData toData(){
@@ -35,6 +37,8 @@ public class Moh extends Identifiable {
         data.setCategory(this.getCategory());
         data.setCode(this.getCode());
         data.setDescription(this.getDescription());
+        data.setA705(this.getA705());
+        data.setB705(this.getB705());
         return data;
     }
 }
