@@ -27,7 +27,7 @@ public class Prescription extends DoctorRequest {
     private String asNeededCondition;
     private Integer numRefills;
     private Double issuedQuantity;
-    private boolean onDischarge = false;
+    private Boolean onDischarge;
 
     public Prescription() {
         this.setDrug(true);
