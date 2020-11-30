@@ -411,6 +411,14 @@
 				</textElement>
 				<text><![CDATA[SUMMARY:]]></text>
 			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="1" y="53" width="555" height="17" uuid="412fdf25-4233-4ed7-b0f3-732d2d0dc17a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5" rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{instructions}]]></textFieldExpression>
+			</textField>
 			<subreport>
 				<reportElement positionType="Float" x="1" y="154" width="553" height="21" uuid="ac71b5ff-3d65-4f4b-a722-7bfe8b83b60b"/>
 				<subreportParameter name="SUBREPORT_DIR">
@@ -496,7 +504,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_procedures_results.jasper"]]></subreportExpression>
 			</subreport>
 			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="1" y="53" width="551" height="13" uuid="d46c5b7b-bb16-463a-a724-fab622bf02b8"/>
+				<reportElement positionType="Float" x="1" y="194" width="553" height="13" uuid="d46c5b7b-bb16-463a-a724-fab622bf02b8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -507,14 +515,6 @@
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{diagnosis})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patientFile_diagnosis.jasper"]]></subreportExpression>
 			</subreport>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="0" y="194" width="553" height="17" uuid="412fdf25-4233-4ed7-b0f3-732d2d0dc17a"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-					<paragraph leftIndent="5" rightIndent="5"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{instructions}]]></textFieldExpression>
-			</textField>
 		</band>
 	</detail>
 	<columnFooter>
