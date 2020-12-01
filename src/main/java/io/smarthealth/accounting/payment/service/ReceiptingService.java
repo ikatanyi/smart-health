@@ -105,6 +105,7 @@ public class ReceiptingService {
         receipt.setTransactionNo(trdId);
         receipt.setReceiptNo(receiptNo);
         receipt.setPrepayment(Boolean.FALSE);
+        receipt.setReceivedFrom(data.getPayer());
         data.setReceiptNo(receiptNo);
         data.setTransactionNo(trdId);
 

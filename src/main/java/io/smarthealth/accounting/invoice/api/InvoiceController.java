@@ -152,4 +152,31 @@ public class InvoiceController {
 
         return ResponseEntity.ok(invoice != null ? invoice.toData() : new InvoiceData());
     }
+    
+     @GetMapping("/invoices/search")
+    @PreAuthorize("hasAuthority('view_invoices')")
+    public ResponseEntity<?> getInvoices( 
+            @RequestParam(value = "q", required = false) String query,
+            @RequestParam(value = "status", required = false) InvoiceStatus status,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "pageSize", required = false) Integer size) {
+
+        Pageable pageable = PaginationUtil.createPage(page, size); 
+
+        Page<InvoiceData> list = service.searchInvoice(query,status, pageable)
+                .map(x -> x.toData());
+
+        Pager<List<InvoiceData>> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Invoices");
+        pagers.setPageDetails(details);
+        return ResponseEntity.ok(pagers);
+    }
 }

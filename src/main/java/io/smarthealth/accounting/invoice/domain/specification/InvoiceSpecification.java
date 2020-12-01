@@ -18,20 +18,20 @@ public class InvoiceSpecification {
 
         return (root, query, cb) -> {
 
-            final ArrayList<Predicate> predicates = new ArrayList<>(); 
+            final ArrayList<Predicate> predicates = new ArrayList<>();
             if (payer != null) {
                 predicates.add(cb.equal(root.get("payer").get("id"), payer));
             }
             if (scheme != null) {
                 predicates.add(cb.equal(root.get("scheme").get("id"), scheme));
             }
-            
-               if (scheme != null) {
+
+            if (scheme != null) {
                 predicates.add(cb.equal(root.get("scheme").get("id"), scheme));
             }
-          if(hasCapitation!=null){
-              predicates.add(cb.equal(root.get("capitation"), hasCapitation));
-          }
+            if (hasCapitation != null) {
+                predicates.add(cb.equal(root.get("capitation"), hasCapitation));
+            }
 //             if (customer != null) {
 //                final String likeExpression = "%" + customer + "%";
 //                predicates.add(
@@ -74,6 +74,30 @@ public class InvoiceSpecification {
             if (filterPastDue != null && filterPastDue) {
                 predicates.add(cb.greaterThan(root.get("dueDate"), LocalDate.now()));
             }
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
+
+    public static Specification<Invoice> searchSpecification(String term, InvoiceStatus status) {
+
+        return (root, query, cb) -> {
+
+            final ArrayList<Predicate> predicates = new ArrayList<>();
+
+            if (status != null) {
+                predicates.add(cb.equal(root.get("status"), status));
+            }
+            if (term != null) {
+                final String likeExpression = "%" + term + "%";
+//                predicates.add(
+//                        cb.or(
+//                                cb.like(root.get("number"), likeExpression),
+//                                cb.like(root.get("memberNumber"), likeExpression)
+//                        )
+//                );
+                  predicates.add(cb.like(root.get("number"), likeExpression));
+            }
+
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
