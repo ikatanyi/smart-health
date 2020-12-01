@@ -8,6 +8,8 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.accounting.payment.domain.Receipt;
+import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -43,9 +45,9 @@ public class RemittanceController {
     @PreAuthorize("hasAuthority('create_remittance')")
     public ResponseEntity<?> receivePayment(@Valid @RequestBody CreateRemittance data) {
 
-        Remittance remittance = service.createRemittance(data);
+        Receipt remittance = service.createRemittance(data);
 
-        Pager<RemittanceData> pagers = new Pager();
+        Pager<ReceiptData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Remittance Successfully Created.");
         pagers.setContent(remittance.toData());

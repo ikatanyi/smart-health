@@ -49,6 +49,8 @@ public class Receipt extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_receipts_shift_id"))
     private Shift shift;
     private Boolean prepayment;
+    private String receivedFrom;
+    //receipt transaction POS | Remittance | Deposit | Payment
     private Boolean voided;
     private String voidedBy;
     private LocalDateTime voidedDatetime;

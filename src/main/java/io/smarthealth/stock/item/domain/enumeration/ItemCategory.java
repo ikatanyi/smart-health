@@ -10,6 +10,7 @@ package io.smarthealth.stock.item.domain.enumeration;
  * @author Kelsas
  */
 public enum ItemCategory {
+    Admission,
     DoctorFee,
     Imaging,
     Lab,
@@ -19,7 +20,7 @@ public enum ItemCategory {
     Drug,
     CoPay,
     Dental,
-    Admission,
+    NHIF_Rebate,
     Receipt,
     Opticals,
     Others

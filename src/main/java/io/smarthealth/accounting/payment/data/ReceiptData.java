@@ -37,6 +37,7 @@ public class ReceiptData {
     private String currency;
     private String createdBy;
     private Boolean prepayment;
+    private String receivedFrom;
     private Boolean voided;
     private String voidedBy;
     private LocalDateTime voidedDatetime;

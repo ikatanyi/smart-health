@@ -29,7 +29,6 @@ import io.smarthealth.accounting.invoice.domain.InvoiceMergeRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceItemSpecification;
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceSpecification;
-import io.smarthealth.clinical.pharmacy.data.ReturnedDrugData;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
@@ -44,10 +43,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
-import io.smarthealth.clinical.pharmacy.domain.DispensedDrug;
-import io.smarthealth.clinical.pharmacy.service.DispensingService;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +78,6 @@ public class InvoiceService {
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final VisitService visitService;
     private final PaymentDetailsService paymentDetailsService;
-    private final DispensingService dispensingService;
 //    private final TxnService txnService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -241,6 +236,12 @@ public class InvoiceService {
 
         return invoices;
     }
+    
+    public Page<Invoice> searchInvoice(String term, InvoiceStatus status,Pageable pageable) {
+        Specification<Invoice> spec = InvoiceSpecification.searchSpecification(term, status);
+        Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
+        return invoices;
+    }
 
     public Page<InvoiceItem> fetchVoidedInvoiceItem(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Pageable page) {
 
@@ -288,6 +289,7 @@ public class InvoiceService {
 //        invoiceRepository.deleteById(fromInvoice.getId());
 //        return invoiceMergeRepository.save(invoiceMerge);
 //    }
+
     //TODO cancelling of the invoice
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Invoice cancelInvoice(String invoiceNo, List<InvoiceItemData> items) {
@@ -323,9 +325,6 @@ public class InvoiceService {
         BigDecimal amount = lists.stream().map(x -> x.getBalance()).reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
         BigDecimal adjustedAmount = oldAmount.subtract(amount);
         reverseInvoiceItem(invoice, adjustedAmount);
-        //get the inventory item and return them to stocks
-
-        returnInventory(invoice.getVisit().getVisitNumber(), lists);
 
         // post the journal
         return new Invoice();
@@ -542,61 +541,24 @@ public class InvoiceService {
         invoiceRepository.save(toInvoice);
         //audi log the changes
         //String fromInvoiceNumber, String toInvoiceNumber, BigDecimal originalInvoiceAmount, BigDecimal newInvoiceAmount, String reasonForMerge
-
+       
         Double amount = invoice.getItems().stream()
                 .map(x -> {
                     return x.getBillItem().getAmount();
                 })
                 .reduce(0D, (x, y) -> x + y);
 
-//        Double balance = invoice.getItems().stream()
-//                .map(x -> {
-//                    return x.getBillItem().getBalance();
-//                })
-//                .reduce(0D, (x, y) -> x + y);
-        BigDecimal originalAmount = invoice.getAmount();
+        Double balance = invoice.getItems().stream()
+                .map(x -> {
+                    return x.getBillItem().getBalance();
+                })
+                .reduce(0D, (x, y) -> x + y);
+       BigDecimal originalAmount =invoice.getAmount();
         invoice.setAmount(BigDecimal.valueOf(amount));
         invoice.setBalance(BigDecimal.valueOf(amount));
-
+        
         invoiceMergeRepository.save(new InvoiceMerge(toInvoice.getNumber(), invoice.getNumber(), originalAmount, invoice.getAmount(), mergeInvoice.getReason()));
 
         return invoiceRepository.save(invoice);
-    }
-    // return stocks
-
-    @Transactional
-    private void returnInventory(String visitNo, List<InvoiceItem> lists) {
-        lists.forEach(x -> System.out.println("am returning this... "+x.getBillItem().getItem().getId()));
-        
-        List<ReturnedDrugData> data = lists.stream()
-                .filter(x -> x.getBillItem().getItem().getDrug() )
-                .map(x -> {
-                    System.err.println("Drug Iff: "+x.getBillItem().getItem().getId());
-                    System.err.println("visit: "+visitNo);
-                    System.err.println("Bill Date: "+x.getBillItem().getBillingDate());
-                    System.err.println("Trans: "+x.getBillItem().getTransactionId());
-                    
-                    List<DispensedDrug> drug = dispensingService.findDispensedDrugs(x.getBillItem().getItem().getId(), visitNo, x.getBillItem().getBillingDate(), x.getBillItem().getTransactionId());
-                    System.err.println("nimefika hapa ... ");
-                    for(DispensedDrug d : drug){
-                        System.err.println("my dispensed drug >>>> "+ d.getDrug().getId()+" : "+d.getTransactionId());
-                    }
-                    
-                    if (!drug.isEmpty()) {
-                        DispensedDrug d = drug.get(0);
-                        ReturnedDrugData rdd = new ReturnedDrugData();
-                        rdd.setDrugId(d.getDrug().getId());
-                        rdd.setReturnDate(LocalDate.now());
-                        rdd.setReason("Bill Item voided");
-                        rdd.setQuantity(x.getBillItem().getQuantity());
-                        System.err.println("My data... "+rdd.toString());
-                        return rdd;
-                    }
-                    return null;
-                })
-                .filter(x -> x!=null)
-                .collect(Collectors.toList());
-      
-            dispensingService.returnItems(visitNo, data);
     }
 }
