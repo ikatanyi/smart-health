@@ -855,11 +855,11 @@ public class BillingService {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
             predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), Boolean.TRUE));
-            
+
             if (!includeCanceled) {
                 predicates.add(cb.notEqual(root.get("status"), BillStatus.Canceled));
             }
-            
+
             if (walkIn != null) {
                 predicates.add(cb.equal(root.get("patientBill").get("reference"), walkIn));
             }
@@ -961,8 +961,7 @@ public class BillingService {
         }
         return bills;
     }
-    
-    
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createFee(String admissionNumber, ItemCategory category, Integer qty) {
         Double sellingRate = 0.0;
@@ -970,57 +969,56 @@ public class BillingService {
         Visit visit = visitRepository.findByVisitNumber(admissionNumber)
                 .orElseThrow(() -> APIException.badRequest("Admission Number {0} is not active for transaction", admissionNumber));
         PatientBill patientbill = null;
-                PriceList priceList = pricelistService.fetchPriceListByItemCategory(category);
-                if(category==ItemCategory.NHIF_Rebate){
-                    sellingRate = -1*(NumberUtils.toDouble(priceList.getSellingRate()));
-                    
-                }
-                else{
-                    sellingRate = (NumberUtils.toDouble(priceList.getSellingRate()));
-                }
-                    patientbill = new PatientBill();
-                    patientbill.setVisit(visit);
-                    patientbill.setPatient(visit.getPatient());
-                    patientbill.setWalkinFlag(Boolean.FALSE);
-                    patientbill.setAmount(sellingRate*qty);
-                    patientbill.setDiscount(0D);
-                    patientbill.setBalance(sellingRate);
-                    patientbill.setBillingDate(LocalDate.now());
-                    patientbill.setPaymentMode(visit.getPaymentMethod().name());
-                    patientbill.setStatus(BillStatus.Draft);
+        PriceList priceList = pricelistService.fetchPriceListByItemCategory(category);
+        if (category == ItemCategory.NHIF_Rebate) {
+            sellingRate = -1 * (NumberUtils.toDouble(priceList.getSellingRate()));
 
-                    String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
-                    String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
+        } else {
+            sellingRate = (NumberUtils.toDouble(priceList.getSellingRate()));
+        }
+        patientbill = new PatientBill();
+        patientbill.setVisit(visit);
+        patientbill.setPatient(visit.getPatient());
+        patientbill.setWalkinFlag(Boolean.FALSE);
+        patientbill.setAmount(sellingRate * qty);
+        patientbill.setDiscount(0D);
+        patientbill.setBalance(sellingRate);
+        patientbill.setBillingDate(LocalDate.now());
+        patientbill.setPaymentMode(visit.getPaymentMethod().name());
+        patientbill.setStatus(BillStatus.Draft);
 
-                    patientbill.setBillNumber(bill_no);
-                    patientbill.setTransactionId(trdId);
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
 
-                    PatientBillItem billItem = new PatientBillItem();
+        patientbill.setBillNumber(bill_no);
+        patientbill.setTransactionId(trdId);
 
-                    billItem.setBillingDate(LocalDate.now());
-                    billItem.setTransactionId(trdId);
-                    billItem.setItem(priceList.getItem());
-                    billItem.setPaid(false);
-                    billItem.setPrice(sellingRate);
-                    billItem.setQuantity(NumberUtils.createDouble(String.valueOf(qty)));
-                    billItem.setAmount(sellingRate*qty);
-                    billItem.setDiscount(0D);
-                    billItem.setBalance(sellingRate*qty);
-                    billItem.setServicePoint(priceList.getServicePoint().getName());
-                    billItem.setServicePointId(priceList.getServicePoint().getId());
-                    billItem.setStatus(BillStatus.Draft);
-                    billItem.setMedicId(null);
+        PatientBillItem billItem = new PatientBillItem();
 
-                    patientbill.addBillItem(billItem);
+        billItem.setBillingDate(LocalDate.now());
+        billItem.setTransactionId(trdId);
+        billItem.setItem(priceList.getItem());
+        billItem.setPaid(false);
+        billItem.setPrice(sellingRate);
+        billItem.setQuantity(NumberUtils.createDouble(String.valueOf(qty)));
+        billItem.setAmount(sellingRate * qty);
+        billItem.setDiscount(0D);
+        billItem.setBalance(sellingRate * qty);
+        billItem.setServicePoint(priceList.getServicePoint().getName());
+        billItem.setServicePointId(priceList.getServicePoint().getId());
+        billItem.setStatus(BillStatus.Draft);
+        billItem.setMedicId(null);
 
-                    return save(patientbill);
-            }
+        patientbill.addBillItem(billItem);
+
+        return save(patientbill);
+    }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createReceipt(PatientReceipt data) {
         String visitNumber = data.getVisitNumber();
         BigDecimal amount = data.getReceipt().getAmount().negate();
-        Double receiptedAmount = amount.doubleValue();
+        Double receiptedAmount = (amount.doubleValue() * -1);
 
         Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
                 .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
@@ -1051,7 +1049,7 @@ public class BillingService {
             billItem.setBillingDate(LocalDate.now());
             billItem.setTransactionId(trdId);
             billItem.setItem(item);
-            billItem.setPaid(Boolean.TRUE);
+            billItem.setPaid(Boolean.FALSE);
             billItem.setPrice(receiptedAmount);
             billItem.setQuantity(1D);
             billItem.setAmount(receiptedAmount);
@@ -1070,8 +1068,9 @@ public class BillingService {
         }
         return null;
     }
-     @Transactional
-   public void updatePaymentReference(String oldReference, String newReference){
-       billItemRepository.updatePaymentReference(newReference,oldReference);
-   }
+
+    @Transactional
+    public void updatePaymentReference(String oldReference, String newReference) {
+        billItemRepository.updatePaymentReference(newReference, oldReference);
+    }
 }

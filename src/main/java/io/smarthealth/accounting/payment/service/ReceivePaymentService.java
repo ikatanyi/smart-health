@@ -49,10 +49,6 @@ import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.PayerRepository;
-import io.smarthealth.stock.stores.domain.Store;
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  *

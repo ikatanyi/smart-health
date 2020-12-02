@@ -102,6 +102,8 @@ public class SmsMessagingService {
 
     public String sendSMS(String phone, String msg) {
         String status = null;
+        
+        if(phone == null) return "";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 

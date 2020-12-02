@@ -39,6 +39,7 @@ public class CreateRemittance {
     private PayChannel paymentChannel;
     private PayerType payerType;
     private RecordType recordType;
+    private String visitNumber;
 //    private Long typeId; //{0 - Bank ,1 - Petty Cash, 2 Undeposited Fund }
 //    private String accountNumber;  //if bank 
 

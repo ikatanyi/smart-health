@@ -236,6 +236,12 @@ public class InvoiceService {
 
         return invoices;
     }
+    
+    public Page<Invoice> searchInvoice(String term, InvoiceStatus status,Pageable pageable) {
+        Specification<Invoice> spec = InvoiceSpecification.searchSpecification(term, status);
+        Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
+        return invoices;
+    }
 
     public Page<InvoiceItem> fetchVoidedInvoiceItem(Long payer, Long scheme, String invoice, InvoiceStatus status, String patientNo, DateRange range, Pageable page) {
 
