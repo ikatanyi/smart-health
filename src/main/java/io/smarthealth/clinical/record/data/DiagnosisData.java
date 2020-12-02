@@ -53,6 +53,7 @@ public class DiagnosisData {
     @ApiModelProperty(required = false, hidden = true)
     private int age;
     private Boolean condition;
+    private String mCode;
 
     public DiagnosisData() {
     }

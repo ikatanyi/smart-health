@@ -61,9 +61,9 @@ public interface MohRepository extends JpaRepository<Moh, Long>, JpaSpecificatio
             + "     m.code AS code,"
             + "     p.date_of_birth"
             + "   FROM"
-            + "      moh m LEFT JOIN patient_diagnosis d ON m.code = d.code LEFT JOIN person p ON d.patient_id = p.id AND m.active='1' AND d.certainty='Confirmed' AND m.category='MORBIDITY' AND  d.created_on BETWEEN :fromDate AND :toDate"
-            + "  WHERE (YEAR(NOW())-YEAR(p.date_of_birth))>=5"
-            + "   GROUP BY DAYOFMONTH(d.created_on), m.code"  , nativeQuery=true)
+            + "      moh m LEFT JOIN (patient_diagnosis d JOIN disease s ON d.code=s.code)  ON m.code = s.m_code LEFT JOIN person p ON d.patient_id = p.id AND m.active='1' AND d.certainty='Confirmed' AND m.category='MORBIDITY' AND  d.created_on BETWEEN :fromDate AND :toDate"
+            + "  WHERE d.certainty='Confirmed' AND m.a705='true' AND (YEAR(NOW())-YEAR(p.date_of_birth))>=5"
+            + "   GROUP BY DAYOFMONTH(d.created_on), m.code ORDER BY m.code ASC"  , nativeQuery=true)
     List<MonthlyMobidity> findMorbidityOver5(LocalDate fromDate, LocalDate toDate);
     
     @Query(value = "SELECT"
@@ -105,9 +105,9 @@ public interface MohRepository extends JpaRepository<Moh, Long>, JpaSpecificatio
             + "     m.code AS code,"
             + "     p.date_of_birth"
             + "   FROM"
-            + "      moh m LEFT JOIN patient_diagnosis d ON m.code = d.code LEFT JOIN person p ON d.patient_id = p.id AND m.active='1' AND d.certainty='Confirmed' AND m.category='MORBIDITY' AND  d.created_on BETWEEN :fromDate AND :toDate"
-            + "  WHERE (YEAR(NOW())-YEAR(p.date_of_birth))<=5"
-            + "   GROUP BY DAYOFMONTH(d.created_on), m.code"  , nativeQuery=true)
+            + "      moh m LEFT JOIN (patient_diagnosis d JOIN disease s ON d.code=s.code)  ON m.code = s.m_code LEFT JOIN person p ON d.patient_id = p.id AND m.active='1' AND d.certainty='Confirmed' AND m.category='MORBIDITY' AND  d.created_on BETWEEN :fromDate AND :toDate"
+            + "  WHERE d.certainty='Confirmed' AND m.b705='true' AND (YEAR(NOW())-YEAR(p.date_of_birth))<=5"
+            + "   GROUP BY DAYOFMONTH(d.created_on), m.code ORDER BY m.code ASC"   , nativeQuery=true)
     List<MonthlyMobidity> findMorbidityUnder5(LocalDate fromDate, LocalDate toDate);
    
     

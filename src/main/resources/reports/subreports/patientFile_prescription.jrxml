@@ -81,7 +81,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="221" y="0" width="208" height="12" uuid="0db14a27-5ed5-49c1-a0c8-71013f44f56a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>

@@ -48,6 +48,7 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.commons.lang.NumberUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -181,13 +182,19 @@ public class AdmissionReportService {
         String visitNumber = reportParam.getFirst("visitNumber");
         Admission adm = admissionService.findAdmissionByNumber(visitNumber);
         DischargeData discharges = dischargeService.getDischargeByAdmission(adm).toData();
-
+        String procedures="",diagnosis="",drugs="", scans="";
+        int i=0;
+        
         List<PatientScanTestData> scanData = radiologyService.getPatientScansTestByVisit(visitNumber)
                 .stream()
-                .map((scan) -> scan.toData())
+                .map((scan) -> {
+                   PatientScanTestData data =  scan.toData();
+                   scans.concat(data.getScanName()).concat("\n").concat("Findings\n").concat(data.getResultData()!=null?data.getResultData().getTemplateNotes():"");
+                   return data;
+                        })
                 .collect(Collectors.toList());
 
-        List<PatientProcedureTestData> procedures = procedureService.findProcedureResultsByVisit(adm)
+        List<PatientProcedureTestData> proceduresData = procedureService.findProcedureResultsByVisit(adm)
                 .stream()
                 .map((proc) -> proc.toData())
                 .collect(Collectors.toList());
@@ -196,21 +203,30 @@ public class AdmissionReportService {
                 .stream()
                 .map((test) -> test.toData(Boolean.TRUE))
                 .collect(Collectors.toList());
+        
         List<PrescriptionData> pharmacyData = prescriptionService.fetchAllPrescriptionsByVisitAndDischarge(adm, true, Pageable.unpaged()).getContent()
                 .stream()
-                .map((presc) -> PrescriptionData.map(presc))
+                .map((presc) -> {
+                    PrescriptionData data = PrescriptionData.map(presc);
+                    drugs.concat(String.valueOf(i++)).concat(StringUtils.capitalise(data.getItemName())).concat(" ("+StringUtils.clean(data.getRoute())+") Take "+data.getDose()+" "+StringUtils.clean(data.getDoseUnits())+" "+StringUtils.clean(data.getFrequency())+" "+data.getDuration()+" "+StringUtils.clean(data.getDurationUnits())+"\n");
+                return data;
+                })
                 .collect(Collectors.toList());
         
         List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(adm, Pageable.unpaged())
                 .stream()
-                .map((diag) -> DiagnosisData.map(diag))
+                .map((diag) -> {
+                   DiagnosisData data =  DiagnosisData.map(diag);
+                   diagnosis.concat(String.valueOf(i++)).concat(". "+StringUtils.clean(data.getDescription())+"("+StringUtils.clean(data.getCode())+")\n");
+                   return data;
+                        })
                 .collect(Collectors.toList());
 
-        reportData.getFilters().put("pharmacyData", pharmacyData);
-        reportData.getFilters().put("diagnosis", diagnosisData);
+        reportData.getFilters().put("pharmacyData", drugs);
+        reportData.getFilters().put("diagnosis", diagnosis);
         reportData.getFilters().put("labTests", labTests);
         reportData.getFilters().put("procedures", procedures);
-        reportData.getFilters().put("scanData", scanData);
+        reportData.getFilters().put("scanData", scans);
 
         reportData.setData(Arrays.asList(discharges));
         reportData.setFormat(format);
