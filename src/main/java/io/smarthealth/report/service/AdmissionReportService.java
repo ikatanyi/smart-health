@@ -184,7 +184,7 @@ public class AdmissionReportService {
         DischargeData discharges = dischargeService.getDischargeByAdmission(adm).toData();
         String procedures="",diagnosis="",drugs="", scans="";
         String dd="";
-        int i=0;
+        int i=1;
         
         List<PatientScanTestData> scanData = radiologyService.getPatientScansTestByVisit(visitNumber)
                 .stream()
@@ -214,10 +214,12 @@ public class AdmissionReportService {
                 .collect(Collectors.toList());
 
         for(PrescriptionData data:pharmacyData){
-            drugs = drugs.concat(String.valueOf(i++)+". ").concat(StringUtils.capitalise(data.getItemName())).concat(" ("+StringUtils.clean(data.getRoute())+") Take "+data.getDose()+" "+StringUtils.clean(data.getDoseUnits())+" "+StringUtils.clean(data.getFrequency())+" "+data.getDuration()+" "+StringUtils.clean(data.getDurationUnits())+"\n");
+            drugs= drugs.concat(String.valueOf(i++)+". ").concat(StringUtils.capitalise(data.getItemName())).concat(" ("+StringUtils.clean(data.getRoute())+") Take "+data.getDose()+" "+StringUtils.clean(data.getDoseUnits())+" "+StringUtils.clean(data.getFrequency())+" "+data.getDuration()+" "+StringUtils.clean(data.getDurationUnits())+"\n");
             dd= dd.concat(data.getItemName());
-            System.out.println("DDD "+dd);
+//            System.out.println("DDD "+dd);
+            System.out.println("Drugs "+drugs);
         }
+
 
         List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(adm, Pageable.unpaged())
                 .stream()
@@ -227,9 +229,9 @@ public class AdmissionReportService {
                         })
                 .collect(Collectors.toList());
 
-        i=0;
+        i=1;
         for(DiagnosisData data:diagnosisData){
-            diagnosis = diagnosis.concat(String.valueOf(i++)+". ").concat(". "+StringUtils.clean(data.getDescription())+"("+StringUtils.clean(data.getCode())+")\n");
+           diagnosis=  diagnosis.concat(String.valueOf(i++)+". ").concat(". "+StringUtils.clean(data.getDescription())+"("+StringUtils.clean(data.getCode())+")\n");
         }
 
         reportData.getFilters().put("pharmacyData", drugs);

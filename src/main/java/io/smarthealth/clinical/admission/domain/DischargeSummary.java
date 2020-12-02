@@ -8,6 +8,8 @@ package io.smarthealth.clinical.admission.domain;
 import io.smarthealth.clinical.admission.data.DischargeData;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -40,6 +42,7 @@ public class DischargeSummary extends Auditable {
     private String diagnosis;
     private String instructions;
     private String outcome;
+    private LocalDate reviewDate;
 
     public DischargeData toData() {
         DischargeData data = new DischargeData();
@@ -59,6 +62,7 @@ public class DischargeSummary extends Auditable {
         data.setPatientNumber(this.patient.getPatientNumber());
         data.setResidence(this.getPatient().getResidence());
         data.setAge(this.getPatient().getAge());
+        data.setReviewDate(this.getReviewDate());
         if(this.getAdmission()!=null){
             if(this.getAdmission().getBed()!=null)
                data.setBed(this.getAdmission().getBed().getName());

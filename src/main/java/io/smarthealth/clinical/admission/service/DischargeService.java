@@ -56,7 +56,7 @@ public class DischargeService {
         admission.setDischargeDate(discharge.getDischargeDate());
         admission.setDischarged(Boolean.TRUE);
         admission.setDischargedBy(discharge.getDischargedBy());
-        admission.setStatus(VisitEnum.Status.CheckOut);
+//        admission.setStatus(VisitEnum.Status.CheckOut);
         admissionRepository.save(admission);
         
         return repository.save(discharge);
@@ -155,5 +155,9 @@ public class DischargeService {
         diagnosis.setDateRecorded(data.getDiagnosisDate().atStartOfDay());
         
         return patientDiagnosisRepository.save(diagnosis);
+    }
+
+    public  DischargeSummary saveDischargeSummary(DischargeSummary discharge){
+        return repository.save(discharge);
     }
 }

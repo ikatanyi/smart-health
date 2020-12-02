@@ -59,6 +59,10 @@ public class VisitService {
     private final BillingService billingService;
     private final ConfigService configService;
 
+    public Optional<Visit> patientActiveVisit(final Long patientId){
+        return  visitRepository.patientActiveVisit(patientId);
+    }
+
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
         Patient patient = findPatientOrThrow(patientNumber);
         Page<Visit> visits = visitRepository.findByPatientOrderByStartDatetimeDesc(patient, pageable);
