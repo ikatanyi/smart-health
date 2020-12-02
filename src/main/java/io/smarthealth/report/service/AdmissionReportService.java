@@ -214,7 +214,7 @@ public class AdmissionReportService {
                 .collect(Collectors.toList());
 
         for(PrescriptionData data:pharmacyData){
-            drugs = drugs.concat("-").concat(StringUtils.capitalise(data.getItemName())).concat(" ("+StringUtils.clean(data.getRoute())+") Take "+data.getDose()+" "+StringUtils.clean(data.getDoseUnits())+" "+StringUtils.clean(data.getFrequency())+" "+data.getDuration()+" "+StringUtils.clean(data.getDurationUnits())+"\n");
+            drugs = drugs.concat(String.valueOf(i++)+". ").concat(StringUtils.capitalise(data.getItemName())).concat(" ("+StringUtils.clean(data.getRoute())+") Take "+data.getDose()+" "+StringUtils.clean(data.getDoseUnits())+" "+StringUtils.clean(data.getFrequency())+" "+data.getDuration()+" "+StringUtils.clean(data.getDurationUnits())+"\n");
             dd= dd.concat(data.getItemName());
             System.out.println("DDD "+dd);
         }
@@ -227,8 +227,9 @@ public class AdmissionReportService {
                         })
                 .collect(Collectors.toList());
 
+        i=0;
         for(DiagnosisData data:diagnosisData){
-            diagnosis = diagnosis.concat("-").concat(". "+StringUtils.clean(data.getDescription())+"("+StringUtils.clean(data.getCode())+")\n");
+            diagnosis = diagnosis.concat(String.valueOf(i++)+". ").concat(". "+StringUtils.clean(data.getDescription())+"("+StringUtils.clean(data.getCode())+")\n");
         }
 
         reportData.getFilters().put("pharmacyData", drugs);
