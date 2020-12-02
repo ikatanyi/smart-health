@@ -208,7 +208,7 @@ public class AdmissionReportService {
                 .stream()
                 .map((presc) -> {
                     PrescriptionData data = PrescriptionData.map(presc);
-                    drugs.concat(String.valueOf(i++)).concat(StringUtils.capitalise(data.getItemName())).concat(" ("+StringUtils.clean(data.getRoute())+") Take "+data.getDose()+" "+StringUtils.clean(data.getDoseUnits())+" "+StringUtils.clean(data.getFrequency())+" "+data.getDuration()+" "+StringUtils.clean(data.getDurationUnits())+"\n");
+                    drugs.concat("-").concat(StringUtils.capitalise(data.getItemName())).concat(" ("+StringUtils.clean(data.getRoute())+") Take "+data.getDose()+" "+StringUtils.clean(data.getDoseUnits())+" "+StringUtils.clean(data.getFrequency())+" "+data.getDuration()+" "+StringUtils.clean(data.getDurationUnits())+"\n");
                 return data;
                 })
                 .collect(Collectors.toList());
@@ -217,7 +217,7 @@ public class AdmissionReportService {
                 .stream()
                 .map((diag) -> {
                    DiagnosisData data =  DiagnosisData.map(diag);
-                   diagnosis.concat(String.valueOf(i++)).concat(". "+StringUtils.clean(data.getDescription())+"("+StringUtils.clean(data.getCode())+")\n");
+                   diagnosis.concat("-").concat(". "+StringUtils.clean(data.getDescription())+"("+StringUtils.clean(data.getCode())+")\n");
                    return data;
                         })
                 .collect(Collectors.toList());
