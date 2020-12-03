@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="discharge_slip" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="49"/>
+	<property name="ireport.y" value="48"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
@@ -412,7 +412,7 @@
 				<text><![CDATA[SUMMARY:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="1" y="53" width="555" height="17" uuid="412fdf25-4233-4ed7-b0f3-732d2d0dc17a"/>
+				<reportElement positionType="Float" x="1" y="53" width="555" height="13" uuid="412fdf25-4233-4ed7-b0f3-732d2d0dc17a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 					<paragraph leftIndent="5" rightIndent="5"/>

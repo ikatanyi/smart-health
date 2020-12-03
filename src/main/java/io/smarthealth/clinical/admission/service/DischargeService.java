@@ -10,7 +10,6 @@ import io.smarthealth.clinical.admission.domain.specification.DischargeSummarySp
 import io.smarthealth.clinical.record.domain.Diagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosisRepository;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
