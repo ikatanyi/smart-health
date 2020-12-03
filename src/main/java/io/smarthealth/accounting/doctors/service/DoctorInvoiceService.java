@@ -24,9 +24,11 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import io.smarthealth.accounting.doctors.domain.DoctorItemRepository;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum.ServiceType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.stock.item.domain.Item;
@@ -52,6 +54,7 @@ public class DoctorInvoiceService {
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final VisitRepository visitRepository;
     private final ItemService itemService;
+ 
 //    private final VisitService visitService;
 
     public DoctorInvoice createDoctorInvoice(DoctorInvoiceData data) {
@@ -237,8 +240,12 @@ public class DoctorInvoiceService {
 
         Employee doctor = employeeService.findEmployeeByIdOrThrow(data.getDoctorId());
         Patient patient = getPatient(data.getPatientNumber());
-        DoctorItem serviceItem = getDoctorServiceItem(data.getServiceId());
-
+        Item item = itemService.findItemEntityOrThrow(data.getServiceId());
+        DoctorItem serviceItem = new DoctorItem();
+        serviceItem.setAmount(data.getAmount());
+        serviceItem.setDoctor(doctor);
+        serviceItem.setIsPercentage(false);
+//        serviceItem.setServiceType(ServiceType.Consultation);
         DoctorInvoice invoice = new DoctorInvoice();
         invoice.setAmount(data.getAmount());
         invoice.setBalance(data.getAmount());
