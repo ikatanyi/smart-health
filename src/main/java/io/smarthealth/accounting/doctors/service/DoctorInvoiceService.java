@@ -51,6 +51,7 @@ public class DoctorInvoiceService {
     private final JournalService journalService;
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final VisitRepository visitRepository;
+    private final ItemService itemService;
 //    private final VisitService visitService;
 
     public DoctorInvoice createDoctorInvoice(DoctorInvoiceData data) {
@@ -228,6 +229,37 @@ public class DoctorInvoiceService {
 
     public Employee getDoctorById(Long medicId) {
         return employeeService.findEmployeeByIdOrThrow(medicId);
+    }
+    
+    public DoctorInvoice saveDoctorInvoice(DoctorInvoiceData data) {
+
+        String trnId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+
+        Employee doctor = employeeService.findEmployeeByIdOrThrow(data.getDoctorId());
+        Patient patient = getPatient(data.getPatientNumber());
+        DoctorItem serviceItem = getDoctorServiceItem(data.getServiceId());
+
+        DoctorInvoice invoice = new DoctorInvoice();
+        invoice.setAmount(data.getAmount());
+        invoice.setBalance(data.getAmount());
+        invoice.setDoctor(doctor);
+        invoice.setInvoiceDate(data.getInvoiceDate());
+        invoice.setInvoiceNumber(data.getInvoiceNumber());
+        invoice.setPaid(Boolean.FALSE);
+        invoice.setPatient(patient);
+        invoice.setPaymentMode(data.getPaymentMode());
+        invoice.setServiceItem(serviceItem);
+        invoice.setTransactionId(trnId);
+        invoice.setTransactionType(DoctorInvoice.TransactionType.Credit);
+        if (data.getVisitNumber() != null) {
+            Visit visit = this.findVisitEntityOrThrow(data.getVisitNumber());
+            invoice.setVisit(visit);
+        }
+
+        //TODO:: post this to the ledger as required
+        DoctorInvoice savedInvoice = save(invoice);
+//        journalService.save(toJournal(savedInvoice));
+        return savedInvoice;
     }
 
 }
