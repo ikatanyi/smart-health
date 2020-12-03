@@ -183,7 +183,8 @@ public class AdmissionReportService {
         Admission adm = admissionService.findAdmissionByNumber(visitNumber);
         DischargeData discharges = dischargeService.getDischargeByAdmission(adm).toData();
         String procedures="",diagnosis="",drugs="", scans="";
-        int i=0;
+        String dd="";
+        int i=1;
         
         List<PatientScanTestData> scanData = radiologyService.getPatientScansTestByVisit(visitNumber)
                 .stream()
@@ -203,24 +204,35 @@ public class AdmissionReportService {
                 .stream()
                 .map((test) -> test.toData(Boolean.TRUE))
                 .collect(Collectors.toList());
-        
+
         List<PrescriptionData> pharmacyData = prescriptionService.fetchAllPrescriptionsByVisitAndDischarge(adm, true, Pageable.unpaged()).getContent()
                 .stream()
                 .map((presc) -> {
                     PrescriptionData data = PrescriptionData.map(presc);
-                    drugs.concat("-").concat(StringUtils.capitalise(data.getItemName())).concat(" ("+StringUtils.clean(data.getRoute())+") Take "+data.getDose()+" "+StringUtils.clean(data.getDoseUnits())+" "+StringUtils.clean(data.getFrequency())+" "+data.getDuration()+" "+StringUtils.clean(data.getDurationUnits())+"\n");
-                return data;
+                    return data;
                 })
                 .collect(Collectors.toList());
-        
+
+        for(PrescriptionData data:pharmacyData){
+            drugs= drugs.concat(String.valueOf(i++)+". ").concat(StringUtils.capitalise(data.getItemName())).concat(" ("+StringUtils.clean(data.getRoute())+") Take "+data.getDose()+" "+StringUtils.clean(data.getDoseUnits())+" "+StringUtils.clean(data.getFrequency())+" "+data.getDuration()+" "+StringUtils.clean(data.getDurationUnits())+"\n");
+            dd= dd.concat(data.getItemName());
+//            System.out.println("DDD "+dd);
+            System.out.println("Drugs "+drugs);
+        }
+
+
         List<DiagnosisData> diagnosisData = diagnosisService.fetchAllDiagnosisByVisit(adm, Pageable.unpaged())
                 .stream()
                 .map((diag) -> {
                    DiagnosisData data =  DiagnosisData.map(diag);
-                   diagnosis.concat("-").concat(". "+StringUtils.clean(data.getDescription())+"("+StringUtils.clean(data.getCode())+")\n");
                    return data;
                         })
                 .collect(Collectors.toList());
+
+        i=1;
+        for(DiagnosisData data:diagnosisData){
+           diagnosis=  diagnosis.concat(String.valueOf(i++)+". ").concat(". "+StringUtils.clean(data.getDescription())+"("+StringUtils.clean(data.getCode())+")\n");
+        }
 
         reportData.getFilters().put("pharmacyData", drugs);
         reportData.getFilters().put("diagnosis", diagnosis);

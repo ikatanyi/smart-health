@@ -156,4 +156,8 @@ public class DischargeService {
         
         return patientDiagnosisRepository.save(diagnosis);
     }
+
+    public  DischargeSummary saveDischargeSummary(DischargeSummary discharge){
+        return repository.save(discharge);
+    }
 }

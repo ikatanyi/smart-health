@@ -7,6 +7,11 @@ import io.smarthealth.appointment.domain.AppointmentRepository;
 import io.smarthealth.appointment.domain.AppointmentType;
 import io.smarthealth.appointment.domain.enumeration.StatusType;
 import io.smarthealth.appointment.domain.specification.AppointmentSpecification;
+import io.smarthealth.clinical.admission.domain.DischargeSummary;
+import io.smarthealth.clinical.admission.service.DischargeService;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.ContentPage;
@@ -48,6 +53,8 @@ public class AppointmentService {
     private final EmployeeService employeeService;
     private final ItemService itemService;
     private final SmsMessagingService messagingService;
+    private final VisitService visitService;
+    private DischargeService dischargeService;
 
     @Autowired
     ModelMapper modelMapper;
@@ -110,7 +117,22 @@ public class AppointmentService {
         entity.setAppointmentType(appointmentType);
 
         Appointment savedAppointment = appointmentRepository.save(entity);
+
         messagingService.createBatchTextMessage(dataList);
+        //check if discharge
+        if (patient.isPresent()) {
+            Optional<Visit> visit = visitService.patientActiveVisit(patient.get().getId());
+            if (visit.isPresent()) {
+                Visit v = visit.get();
+                if(v.getVisitType().equals(VisitEnum.VisitType.Inpatient)){
+                    //find discharge by visit
+                   DischargeSummary discharge=  dischargeService.getDischargeByVisit(v.getVisitNumber());
+                    discharge.setReviewDate(savedAppointment.getAppointmentDate());
+                    dischargeService.saveDischargeSummary(discharge);
+                }
+            }
+
+        }
         
         return savedAppointment;
 
