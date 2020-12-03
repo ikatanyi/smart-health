@@ -117,11 +117,12 @@ public class AppointmentService {
         entity.setAppointmentType(appointmentType);
 
         Appointment savedAppointment = appointmentRepository.save(entity);
-
-        messagingService.createBatchTextMessage(dataList);
+        System.out.println("To be done");
         //check if discharge
         if (patient.isPresent()) {
+            System.out.println("Available Paient "+patient.get().getPatientNumber());
             Optional<Visit> visit = visitService.patientActiveVisit(patient.get().getId());
+            System.out.println("Visit "+visit.get().getId());
             if (visit.isPresent()) {
                 Visit v = visit.get();
                 if(v.getVisitType().equals(VisitEnum.VisitType.Inpatient)){
@@ -133,6 +134,9 @@ public class AppointmentService {
             }
 
         }
+
+        messagingService.createBatchTextMessage(dataList);
+        
         
         return savedAppointment;
 
