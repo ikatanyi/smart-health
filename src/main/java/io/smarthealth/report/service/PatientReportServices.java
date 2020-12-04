@@ -620,7 +620,7 @@ public class PatientReportServices {
                     Integer age = 0;
                     Integer total = 0;
                     Gender gender = null;
-                    List<LabRegisterTest> tests = labService.getLabTestsByDate(register.getLabTest(),range.getStartDateTime(),range.getStopDateTime());
+                    List<LabRegisterTest> tests = labService.getLabTestsByDate(register.getLabTest(),range.getStartDateTime(),range.getEndDateTime());
                     for (LabRegisterTest test : tests) {
                         String patientNo = test.getLabRegister().getPatientNo();
                         values.setTestName(test.getLabTest().getTestName());
