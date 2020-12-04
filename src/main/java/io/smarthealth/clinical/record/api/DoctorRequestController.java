@@ -341,6 +341,13 @@ public class DoctorRequestController {
         return ResponseEntity.ok(pagers);
     }
 
+    @PutMapping("/doc-request/{requestId}/status")
+    @PreAuthorize("hasAuthority('edit_dispense')")
+    public ResponseEntity<?> voidDocRequest(@PathVariable(value = "requestId") Long id) {
+        Boolean status = requestService.voidRequest(id);
+        return ResponseEntity.ok(status);
+    }
+
     @DeleteMapping("/doc-request/{id}")
     @PreAuthorize("hasAuthority('delete_doctorrequest')")
     public ResponseEntity<?> deleteRequest(@PathVariable("id") final Long id) {
