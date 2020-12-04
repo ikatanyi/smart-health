@@ -171,9 +171,15 @@ public class DoctorRequestService implements DateConverter {
         return DoctorRequestToData(docReq);
     }
 
-    public ResponseEntity<?> deleteById(long Id) {
+    public ResponseEntity<?> deleteById(long id) {
         try {
-            doctorRequestRepository.deleteById(Id);
+            DoctorRequest req = doctorRequestRepository.findById(id).orElse(null);
+            if (req != null) {
+                if (req.getFulfillerStatus() != FullFillerStatusType.Fulfilled) {
+                    doctorRequestRepository.deleteById(id);
+                }
+            }
+
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();

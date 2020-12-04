@@ -751,15 +751,15 @@ public class ClinicalVisitController {
             activeVisit.setServicePoint(servicePoint);
         }
 
-//        if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
-//            activeVisit.setIsActiveOnConsultation(Boolean.TRUE);
+        if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
+            activeVisit.setIsActiveOnConsultation(Boolean.TRUE);
 //            if (activeVisit.getHealthProvider() == null && vital.getSendTo().equals("Service Point")) {
 //                throw APIException.badRequest("Please specify the doctor", "");
 //            }
 //            if (activeVisit.getHealthProvider() == null && vital.getSendTo().equals("")) {
 //                throw APIException.badRequest("Please specify the doctor", "");
 //            }
-//        }
+        }
 
         if (vital.getSendTo().equals("specialist")) {
             Employee newDoctorSelected = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());
@@ -903,9 +903,11 @@ public class ClinicalVisitController {
 
             createConsultationBill(activeVisit, clinicId, newDoctorSelected, schemeId);
         } else {
-            //otherwise we just create a new doctors iivnoice using the existing bill
+            //otherwise we just create a new doctors invoice using the existing bill
             Optional<DoctorItem> newChargeableDoctorItem = doctorInvoiceService.getDoctorItem(newDoctorSelected, activeVisit.getClinic().getServiceType());
-            doctorInvoiceService.createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
+            if(newChargeableDoctorItem.isPresent()){
+                doctorInvoiceService.createDoctorInvoice(activeVisit, newDoctorSelected, newChargeableDoctorItem.get());
+            }
         }
 
         //log the audit for the changes
