@@ -46,6 +46,8 @@ public interface LabRegisterTestRepository extends JpaRepository<LabRegisterTest
     
     List<LabRegisterTest> findByLabTest(@Param("labtest")LabTest labtest);
     
+    List<LabRegisterTest> findByLabTestAndEntryDateTimeBetween(@Param("labtest")LabTest labtest, LocalDateTime date1, LocalDateTime date2);
+    
     @Query("SELECT t FROM LabRegisterTest t WHERE t.entryDateTime BETWEEN :frmdt AND :todt GROUP BY t.labTest")
     List<LabRegisterTest> findTestsByDateRange(@Param("frmdt") LocalDateTime from, @Param("todt") LocalDateTime todt);
 }

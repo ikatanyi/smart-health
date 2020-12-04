@@ -119,8 +119,6 @@ public class PatientQueueService {
     }
     
     public boolean patientIsQueued(final ServicePoint servicePoint, final Patient patient) {
-        System.out.println("Service point "+servicePoint.getName());
-        System.out.println("Patient "+patient.getFullName());
         return patientQueueRepository.findByPatientAndServicePointAndStatus(patient, servicePoint, true).isPresent();
 //        Optional<PatientQueue> patientQueue = patientQueueRepository.findByPatientAndDepartmentAndStatus(patient, department, true);
 //        if (patientQueue.isPresent()) {
