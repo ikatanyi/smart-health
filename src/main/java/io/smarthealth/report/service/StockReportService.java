@@ -258,7 +258,16 @@ public class StockReportService {
         reportData.setReportName("Inventory-expiry-Statement");
         reportService.generateReport(reportData, response);
     }
+    public ReportData emailExpiryStock() {
+        List<ExpiryStock> inventoryItemData = inventoryItemService.getExpiryStock();
+        ReportData reportData = new ReportData();
+        reportData.setData(inventoryItemData);
+        reportData.setFormat(ExportFormat.PDF);
+        reportData.setTemplate("/inventory/inventory_expiry_statement");
+        reportData.setReportName("Inventory-expiry-Statement");
 
+        return reportData;
+    }
     public void getInventoryAdjustedItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long storeId = NumberUtils.createLong(reportParam.getFirst("storeId"));

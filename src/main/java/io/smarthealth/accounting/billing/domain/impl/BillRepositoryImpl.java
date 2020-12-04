@@ -102,6 +102,7 @@ public class BillRepositoryImpl implements BillRepository {
 //        .collect(Collectors.toList());
            
         }
+        //TODO:: find a better way to agreggate the patient bills, lets list items as credit and debit 
         
          List<SummaryBill> sortedBills = result
                     .stream()

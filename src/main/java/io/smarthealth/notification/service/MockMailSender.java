@@ -1,7 +1,6 @@
 package io.smarthealth.notification.service;
 
 import io.smarthealth.notification.data.EmailData;
-import io.smarthealth.notification.service.EmailerService;
 import java.io.IOException;
 import java.util.List;
 import javax.mail.MessagingException;
@@ -13,7 +12,7 @@ public class MockMailSender implements EmailerService<EmailData> {
     public MockMailSender() {
         log.info("Created");
     }
-
+ 
 //    @Override
 //    public void send(EmailData mail) {
 //

@@ -8,10 +8,12 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.stores.domain.Store;
 import java.time.LocalDate;
+import javax.inject.Named;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -67,6 +69,7 @@ public class DispensedDrug extends Auditable implements Cloneable {
     private Boolean walkinFlag = Boolean.FALSE;
     private String batchNumber;
     private String deliveryNumber;
+    private String billNumber;
 
 //    @Enumerated(EnumType.STRING)
     public DispensedDrugData toData() {
@@ -110,6 +113,7 @@ public class DispensedDrug extends Auditable implements Cloneable {
         data.setReturnedQuantity(returnedQty);
         data.setQtyBalance(this.qtyIssued - returnedQty);
         data.setReturnReason(this.returnReason);
+        data.setBillNumber(this.billNumber);
 
         return data;
     }

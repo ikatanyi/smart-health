@@ -47,7 +47,6 @@ import org.springframework.stereotype.Service;
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
-    private final PersonRepository personRepository;
     private final PatientRepository patientRepository;
     private final AppointmentTypeService appointmentTypeService;
     private final EmployeeService employeeService;
