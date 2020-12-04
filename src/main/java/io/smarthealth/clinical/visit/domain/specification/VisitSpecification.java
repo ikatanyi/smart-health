@@ -61,8 +61,8 @@ public class VisitSpecification {
                 predicates.add(
                         cb.or(
                                 cb.equal(root.get("status"), VisitEnum.Status.Admitted),
-                                cb.equal(root.get("status"), VisitEnum.Status.CheckIn)
-                        //                                cb.equal(root.get("status"), VisitEnum.Status.Transferred)
+                                cb.equal(root.get("status"), VisitEnum.Status.CheckIn),
+                                cb.equal(root.get("status"), VisitEnum.Status.Discharged)
                         )
                 );
             }
@@ -70,7 +70,7 @@ public class VisitSpecification {
             if (!visitIsRunning) {
                 predicates.add(
                         cb.or(
-                                cb.equal(root.get("status"), VisitEnum.Status.Discharged),
+                                //cb.equal(root.get("status"), VisitEnum.Status.Discharged),
                                 cb.equal(root.get("status"), VisitEnum.Status.CheckOut),
                                 cb.equal(root.get("status"), VisitEnum.Status.Transferred)
                         )

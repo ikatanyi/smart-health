@@ -10,6 +10,7 @@ import io.smarthealth.clinical.admission.domain.specification.DischargeSummarySp
 import io.smarthealth.clinical.record.domain.Diagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosis;
 import io.smarthealth.clinical.record.domain.PatientDiagnosisRepository;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -55,7 +56,7 @@ public class DischargeService {
         admission.setDischargeDate(discharge.getDischargeDate());
         admission.setDischarged(Boolean.TRUE);
         admission.setDischargedBy(discharge.getDischargedBy());
-//        admission.setStatus(VisitEnum.Status.CheckOut);
+        admission.setStatus(VisitEnum.Status.Discharged);
         admissionRepository.save(admission);
         
         return repository.save(discharge);

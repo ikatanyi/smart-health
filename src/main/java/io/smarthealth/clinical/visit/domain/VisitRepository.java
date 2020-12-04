@@ -54,8 +54,8 @@ public interface VisitRepository extends JpaRepository<Visit, Long>, JpaSpecific
     @Query(value = "SELECT DISTINCT(c.healthProvider) FROM Visit c WHERE (c.status='CheckIn' OR c.status = 'Admitted')")
     List<Employee> practionersByActiveVisits();
 
-    @Query(value = "SELECT c FROM Visit c WHERE (c.status='CheckIn' OR c.status = 'Admitted') AND c.patient.id =:patientId")
-    Optional<Visit> patientActiveVisit(@Param("patientId") Long patientId);
+    @Query(value = "SELECT c.visitNumber FROM Visit c WHERE (c.status='CheckIn' OR c.status = 'Admitted' OR c.status='Discharged') AND c.patient.id =:patientId")
+    String patientActiveVisit(@Param("patientId") Long patientId);
 
     @Query(value = "SELECT COUNT(c) FROM Visit c WHERE (c.status='CheckIn' OR c.status = 'Admitted')")
     Long countWhereVisitsAreActive();

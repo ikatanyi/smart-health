@@ -54,7 +54,7 @@ public class AppointmentService {
     private final ItemService itemService;
     private final SmsMessagingService messagingService;
     private final VisitService visitService;
-    private DischargeService dischargeService;
+    private  final DischargeService dischargeService;
 
     @Autowired
     ModelMapper modelMapper;
@@ -117,22 +117,29 @@ public class AppointmentService {
         entity.setAppointmentType(appointmentType);
 
         Appointment savedAppointment = appointmentRepository.save(entity);
-
-        messagingService.createBatchTextMessage(dataList);
+        System.out.println("To be done");
         //check if discharge
         if (patient.isPresent()) {
-            Optional<Visit> visit = visitService.patientActiveVisit(patient.get().getId());
-            if (visit.isPresent()) {
-                Visit v = visit.get();
-                if(v.getVisitType().equals(VisitEnum.VisitType.Inpatient)){
+            System.out.println("Available Paient " + patient.get().getPatientNumber());
+            String visitNumber = visitService.patientActiveVisit(patient.get().getId());
+            System.out.println("Vist Numberrrr " + visitNumber);
+            if (visitNumber != null) {
+Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+
+
+                if (visit.getVisitType().equals(VisitEnum.VisitType.Inpatient)) {
                     //find discharge by visit
-                   DischargeSummary discharge=  dischargeService.getDischargeByVisit(v.getVisitNumber());
+                    DischargeSummary discharge = dischargeService.getDischargeByVisit(visitNumber);
                     discharge.setReviewDate(savedAppointment.getAppointmentDate());
                     dischargeService.saveDischargeSummary(discharge);
                 }
-            }
 
         }
+
+        }
+
+        messagingService.createBatchTextMessage(dataList);
+        
         
         return savedAppointment;
 

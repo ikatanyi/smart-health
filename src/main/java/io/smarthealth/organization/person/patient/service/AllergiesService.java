@@ -75,6 +75,7 @@ public class AllergiesService {
     }
 
     public PatientAllergiesData convertPatientAllergiesToData(Allergy allergy) {
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
         PatientAllergiesData allergiesData = modelMapper.map(allergy, PatientAllergiesData.class);
         if (allergy.getPatient() != null) {
             allergiesData.setPatientData(patientService.convertToPatientData(allergy.getPatient()));

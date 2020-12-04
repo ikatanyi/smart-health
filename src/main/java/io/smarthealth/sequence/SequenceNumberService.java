@@ -133,7 +133,6 @@ public class SequenceNumberService {
 
         sequenceNumber = sequenceNumberRepository.findById(sequenceNumber.getId())
                 .orElseThrow(()-> APIException.notFound("Sequence number [" + name + "] not found in tenant [" + tenant + "]"));
-                 
         Long number = sequenceNumber.getNumber();
         sequenceNumber.setNumber(number + 1);
         sequenceNumberRepository.save(sequenceNumber);
