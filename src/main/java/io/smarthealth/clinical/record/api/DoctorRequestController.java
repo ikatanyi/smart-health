@@ -74,7 +74,10 @@ public class DoctorRequestController {
     @PostMapping("/visit/{visitNo}/doctor-request")
     @PreAuthorize("hasAuthority('create_doctorrequest')")
     public @ResponseBody
-    ResponseEntity<?> createRequest(@PathVariable("visitNo") final String visitNumber, @RequestBody @Valid final List<DoctorRequestData> docRequestData) {
+    ResponseEntity<?> createRequest(
+            @PathVariable("visitNo") final String visitNumber,
+            @RequestBody @Valid final List<DoctorRequestData> docRequestData
+    ) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
 
         Optional<User> user = userService.findUserByUsernameOrEmail(SecurityUtils.getCurrentUserLogin().get());
@@ -151,7 +154,12 @@ public class DoctorRequestController {
 
     @GetMapping("/visit/{visitNo}/doctor-request")
     @PreAuthorize("hasAuthority('view_doctorrequest')")
-    public ResponseEntity<?> fetchAllRequestsByVisit(@PathVariable("visitNo") final String visitNo, Pageable pageable) {
+    public ResponseEntity<?> fetchAllRequestsByVisit(
+            @PathVariable("visitNo") final String visitNo,
+            @PathVariable(value = "pageNo", required = false) final Integer pageNo,
+            @PathVariable(value = "pageSize", required = false) final Integer pageSize
+            ) {
+        Pageable pageable = PaginationUtil.createPage(pageNo,pageSize);
         Visit visit = visitService.findVisitEntityOrThrow(visitNo);
         Page<DoctorRequest> page = requestService.findAllRequestsByVisit(visit, pageable);
 
@@ -260,7 +268,8 @@ public class DoctorRequestController {
             @RequestParam(value = "term", required = false) String term
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-
+        System.out.println("Page "+page);
+        System.out.println("Size "+size);
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 //        final DateRange range = DateRange.fromIsoString(dateRange);
         Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable, activeVisit, term, range);
