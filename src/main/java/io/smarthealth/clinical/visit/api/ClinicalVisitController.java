@@ -751,15 +751,15 @@ public class ClinicalVisitController {
             activeVisit.setServicePoint(servicePoint);
         }
 
-        if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
-            activeVisit.setIsActiveOnConsultation(Boolean.TRUE);
-            if (activeVisit.getHealthProvider() == null && vital.getSendTo().equals("Service Point")) {
-                throw APIException.badRequest("Please specify the doctor", "");
-            }
-            if (activeVisit.getHealthProvider() == null && vital.getSendTo().equals("")) {
-                throw APIException.badRequest("Please specify the doctor", "");
-            }
-        }
+//        if (activeVisit.getServiceType().equals(VisitEnum.ServiceType.Consultation) || activeVisit.getServiceType().equals(VisitEnum.ServiceType.Review)) {
+//            activeVisit.setIsActiveOnConsultation(Boolean.TRUE);
+//            if (activeVisit.getHealthProvider() == null && vital.getSendTo().equals("Service Point")) {
+//                throw APIException.badRequest("Please specify the doctor", "");
+//            }
+//            if (activeVisit.getHealthProvider() == null && vital.getSendTo().equals("")) {
+//                throw APIException.badRequest("Please specify the doctor", "");
+//            }
+//        }
 
         if (vital.getSendTo().equals("specialist")) {
             Employee newDoctorSelected = employeeService.fetchEmployeeByNumberOrThrow(vital.getStaffNumber());

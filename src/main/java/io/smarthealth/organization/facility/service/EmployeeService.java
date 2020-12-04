@@ -5,6 +5,7 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.notification.data.EmailData;
 import io.smarthealth.notification.service.EmailerService;
 import io.smarthealth.infrastructure.utility.PassayPassword;
+import io.smarthealth.notification.service.SmsMessagingService;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
@@ -62,6 +63,9 @@ public class EmployeeService {
     @Autowired
     EmailerService mailService;
 
+    @Autowired
+    SmsMessagingService smsMessagingService;
+
     @Transactional
     public Employee createFacilityEmployee(Employee employee, PersonContact personContact, boolean createUserAccount, String[] roles) {
         //verify if exists
@@ -83,8 +87,8 @@ public class EmployeeService {
             //generate password
             String password = PassayPassword.generatePassayPassword();
             User user = new User(
-                    savedContact.getEmail(),
-                    savedContact.getEmail(),
+                    savedContact.getEmail()==null? savedContact.getTelephone(): savedContact.getEmail(),
+                    savedContact.getEmail()==null? savedContact.getTelephone(): savedContact.getEmail(),
                     password,
                     savedContact.getPerson().getGivenName().concat(" ").concat(savedContact.getPerson().getSurname())
             );
@@ -104,7 +108,12 @@ public class EmployeeService {
             employeeRepository.save(savedEmployee);
 //.concat(" / ").concat(" ").concat(user.getUsername()
             //send welcome message to the new system user
-            mailService.send(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + userSaved.getUsername() + "<br/> password : " + password)));
+            if(savedContact.getEmail()!=null){
+                mailService.send(EmailData.of(user.getEmail(), "Registration Success", "<b>Welcome</b> " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are <br/> username : " + userSaved.getUsername() + "<br/> password : " + password)));
+            }else{
+                smsMessagingService.sendSMS(savedContact.getTelephone(), "Welcome " + personContact.getPerson().getGivenName().concat(" ").concat(personContact.getPerson().getSurname()).concat(". Your login credentials are \n username : " + userSaved.getUsername() + "\n password : " + password));
+            }
+
         }
         return savedEmployee;
     }
