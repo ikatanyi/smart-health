@@ -22,7 +22,7 @@ public class ServicePoint extends Identifiable {
     @Column(nullable = false)
     private ServicePointType servicePointType;
 
-    private String pointType;
+    private String pointType; 
     private String name;
     private String description;
 
