@@ -31,4 +31,5 @@ public class ReportData {
     @Enumerated(EnumType.STRING)
     private ExportFormat format;
     private List data;
+    //
 }

@@ -271,4 +271,8 @@ public class VisitService {
         return visitRepository.patientTatStatement(visitId);
     }
 
+    public Page<Visit> getSimpleVisits(String visitNumber, String patientNumber, DateRange dateRange, Pageable page) {
+        Specification<Visit> spec = VisitSpecification.createSpecification(visitNumber, patientNumber, dateRange);
+        return visitRepository.findAll(spec, page);
+    }
 }

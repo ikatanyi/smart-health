@@ -122,4 +122,25 @@ public class VisitSpecification {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
+
+    public static Specification<Visit> createSpecification(String visitNumber, String patientNumber, DateRange dateRange) {
+
+        return (root, query, cb) -> {
+
+            final ArrayList<Predicate> predicates = new ArrayList<>();
+
+            if (visitNumber != null) {
+                predicates.add(cb.equal(root.get("visitNumber"), visitNumber));
+            }
+
+            if (visitNumber != null) {
+                predicates.add(cb.equal(root.get("patient").get("patientNumber"), patientNumber));
+            }
+            if (dateRange != null) {
+                predicates.add(cb.between(root.get("startDatetime"), dateRange.getStartDateTime(), dateRange.getEndDateTime()));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
 }

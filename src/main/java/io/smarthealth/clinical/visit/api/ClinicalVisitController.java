@@ -86,6 +86,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
+import io.smarthealth.clinical.visit.data.SimpleVisit;
 
 /**
  *
@@ -846,6 +847,23 @@ public class ClinicalVisitController {
 
     }
 
+    @GetMapping("/visits/list")
+    @PreAuthorize("hasAuthority('view_visits')")
+    public ResponseEntity<Pager<SimpleVisit>> getVisitList(
+            @RequestParam(value = "visitNumber", required = false) final String visitNumber,
+            @RequestParam(value = "patientNumber", required = false) final String patientNumber,
+            @RequestParam(value = "dateRange", required = false) final String dateRange,
+            @RequestParam(value = "page", required = false) final Integer pageNo,
+            @RequestParam(value = "pageSize", required = false) final Integer pageSize
+    ) {
+        Pageable pageable = PaginationUtil.createPage(pageNo, pageSize);
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Page<SimpleVisit> page = visitService.getSimpleVisits(visitNumber, patientNumber, range, pageable)
+                .map(SimpleVisit::map);
+
+        return ResponseEntity.ok((Pager<SimpleVisit>) PaginationUtil.toPager(page, "Patient Visits"));
+    }
+
     private VisitData convertToVisitData(Visit visit) {
         VisitData visitData = VisitData.map(visit);
         if (visit.getHealthProvider() != null) {
@@ -876,6 +894,7 @@ public class ClinicalVisitController {
     private VitalRecordData convertToVitalsData(VitalsRecord vitalsRecord) {
         return modelMapper.map(vitalsRecord, VitalRecordData.class);
     }
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     private void updateVisitDoctor(Visit activeVisit, Employee newDoctorSelected, String reason, Long clinicId) {
 
