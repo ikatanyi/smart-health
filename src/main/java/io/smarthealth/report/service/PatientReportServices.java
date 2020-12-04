@@ -173,7 +173,7 @@ public class PatientReportServices {
             data.setPatientNumber(visit.getPatient().getPatientNumber());
             data.setVisitNumber(visit.getVisitNumber());
             if(visit.getStartDatetime()!=null)
-               data.setStartDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStartDatetime()));
+//               data.setStartDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStartDatetime()));
             if(visit.getStopDatetime()!=null)
                data.setStopDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStopDatetime()));
             data.setDate(visit.getStartDatetime().toLocalDate());
@@ -620,7 +620,7 @@ public class PatientReportServices {
                     Integer age = 0;
                     Integer total = 0;
                     Gender gender = null;
-                    List<LabRegisterTest> tests = labService.getLabTests(register.getLabTest());
+                    List<LabRegisterTest> tests = labService.getLabTestsByDate(register.getLabTest(),range.getStartDateTime(),range.getStopDateTime());
                     for (LabRegisterTest test : tests) {
                         String patientNo = test.getLabRegister().getPatientNo();
                         values.setTestName(test.getLabTest().getTestName());

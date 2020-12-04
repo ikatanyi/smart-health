@@ -439,6 +439,10 @@ public class LaboratoryService {
             return testRepository.findByLabTest(test);
     }
     
+    public List<LabRegisterTest> getLabTestsByDate(LabTest test, LocalDatetTime date1,LocalDatetTime date2) {
+            return testRepository.findByLabTestAndEntryDateTimeBetween(test);
+    }
+    
     public List<LabRegisterTest> getTestsByDate(DateRange range) {
             return testRepository.findTestsByDateRange(range.getStartDateTime(),range.getEndDateTime());
     }
