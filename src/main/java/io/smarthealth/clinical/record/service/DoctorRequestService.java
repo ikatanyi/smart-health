@@ -185,7 +185,8 @@ public class DoctorRequestService implements DateConverter {
 //            fulfillDocRequest(id);
             DoctorRequest req = doctorRequestRepository.findById(id).orElse(null);
             if (req != null) {
-                req.setVoided(Boolean.TRUE);
+                if(req.getFulfillerStatus()!= FullFillerStatusType.Fulfilled)
+                    req.setVoided(Boolean.TRUE);
                 req.setFulfillerStatus(FullFillerStatusType.Fulfilled);
                 req.setNotes("Voided for a reason");
                 doctorRequestRepository.save(req);
