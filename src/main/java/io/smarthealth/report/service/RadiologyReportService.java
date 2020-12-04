@@ -5,15 +5,10 @@
  */
 package io.smarthealth.report.service;
 
-import io.smarthealth.clinical.procedure.data.PatientProcedureRegisterData;
-import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
-import io.smarthealth.clinical.radiology.data.PatientScanRegisterData;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
-import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
-import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
@@ -22,7 +17,6 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
