@@ -268,8 +268,6 @@ public class DoctorRequestController {
             @RequestParam(value = "term", required = false) String term
     ) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-        System.out.println("Page "+page);
-        System.out.println("Size "+size);
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 //        final DateRange range = DateRange.fromIsoString(dateRange);
         Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable, activeVisit, term, range);
