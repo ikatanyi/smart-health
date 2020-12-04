@@ -56,7 +56,7 @@ public class DischargeService {
         admission.setDischargeDate(discharge.getDischargeDate());
         admission.setDischarged(Boolean.TRUE);
         admission.setDischargedBy(discharge.getDischargedBy());
-//        admission.setStatus(VisitEnum.Status.CheckOut);
+        admission.setStatus(VisitEnum.Status.Discharged);
         admissionRepository.save(admission);
         
         return repository.save(discharge);

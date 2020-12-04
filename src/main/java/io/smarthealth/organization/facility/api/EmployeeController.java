@@ -93,7 +93,8 @@ public class EmployeeController {
     @GetMapping("/employee")
     @PreAuthorize("hasAuthority('view_employee')")
     public ResponseEntity<List<EmployeeData>> fetchAllEmployees(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
-        Page<EmployeeData> page = employeeService.fetchAllEmployees(queryParams, pageable).map(p -> employeeService.convertEmployeeEntityToEmployeeData(p));
+        System.out.println("Motoooo");
+        Page<EmployeeData> page = employeeService.fetchAllEmployees(queryParams, Pageable.unpaged()).map(p -> employeeService.convertEmployeeEntityToEmployeeData(p));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }

@@ -22,6 +22,7 @@ import io.smarthealth.clinical.record.domain.PrescriptionRepository;
 import io.smarthealth.clinical.record.domain.specification.DoctorRequestSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateConverter;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -176,6 +177,24 @@ public class DoctorRequestService implements DateConverter {
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+    
+    public boolean voidRequest(Long id) {
+        try {
+//            fulfillDocRequest(id);
+            DoctorRequest req = doctorRequestRepository.findById(id).orElse(null);
+            if (req != null) {
+                if(req.getFulfillerStatus()!= FullFillerStatusType.Fulfilled)
+                    req.setVoided(Boolean.TRUE);
+                req.setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                req.setNotes("Voided for a reason");
+                doctorRequestRepository.save(req);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw APIException.internalError("Error deleting Patient request with id " + id, e.getMessage());
         }
     }
 

@@ -59,7 +59,8 @@ public class VisitService {
     private final BillingService billingService;
     private final ConfigService configService;
 
-    public Optional<Visit> patientActiveVisit(final Long patientId){
+    public String patientActiveVisit(final Long patientId){
+        System.out.println("To search "+patientId);
         return  visitRepository.patientActiveVisit(patientId);
     }
 

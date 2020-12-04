@@ -162,6 +162,7 @@ public class DispensingService {
             if (req != null) {
                 req.setVoided(Boolean.TRUE);
                 req.setFulfillerStatus(FullFillerStatusType.Fulfilled);
+                req.setNotes("Voided for a reason");
                 doctorRequestRepository.save(req);
             }
             return true;
