@@ -171,13 +171,15 @@ public class PatientReportServices {
             reportVisitData data = new reportVisitData();
             data.setPatientName(visit.getPatient().getFullName());
             data.setPatientNumber(visit.getPatient().getPatientNumber());
-            data.setVisitNumber(visit.getVisitNumber());
-            if(visit.getStartDatetime()!=null)
-//               data.setStartDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStartDatetime()));
+            data.setVisitNumber(visit.getVisitNumber());           
             if(visit.getStopDatetime()!=null)
                data.setStopDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStopDatetime()));
+            if(visit.getStartDatetime()!=null){
+               data.setStartDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStartDatetime()));
+               
+            }
             data.setDate(visit.getStartDatetime().toLocalDate());
-
+            data.setStartDatetime(String.valueOf(visit.getStartDatetime()));
             List<TatInterface> tatInterFaces = visitService.getPatientTat(visit.getId());
             for (TatInterface interf : tatInterFaces) {
                 switch (interf.getServicePoint()) {

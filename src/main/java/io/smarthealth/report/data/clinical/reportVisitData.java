@@ -19,8 +19,8 @@ public class reportVisitData {
     private String patientNumber;
     private String patientName;
     private LocalDate date;
-    private String startDatetime;
-    private String stopDatetime;
+    private String startDatetime="";
+    private String stopDatetime="";
     private String consultation="0";
     private String procedure="0";
     private String radiology="0";
