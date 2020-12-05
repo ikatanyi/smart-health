@@ -31,10 +31,13 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import javax.activation.DataSource;
+import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +69,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -158,6 +163,21 @@ public class JasperReportsService {
         return bytes;
     }
 
+    public DataSource generateEmailReport(ReportData reportData) throws SQLException, JRException, IOException {
+        JRDataSource ds = new JRBeanCollectionDataSource(reportData.getData());
+        Resource report = resourceLoader.getResource(appProperties.getReportLoc() + reportData.getTemplate() + ".jasper");//new ClassPathResource("static/jasper/rpt_report.jasper");
+
+        HashMap param = reportConfig(null, null,null);
+        param.putAll(reportData.getFilters());
+
+        JasperPrint jasperPrint = JasperFillManager.fillReport(report.getInputStream(), param, ds);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JasperExportManager.exportReportToPdfStream(jasperPrint, baos);
+        DataSource aAttachment = new ByteArrayDataSource(baos.toByteArray(), "application/pdf");
+
+        return aAttachment;
+    }
+
     public void generateReport(ReportData reportData, HttpServletResponse response) throws SQLException, JRException, IOException {
 
         JasperPrint jasperPrint = null;
@@ -248,20 +268,19 @@ public class JasperReportsService {
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 
-            case XLS:                
+            case XLS:
             case XLSX:
-                AbstractXlsReportConfiguration config=null;
-                if(type.name().toLowerCase().equals("xlsx")){                    
+                AbstractXlsReportConfiguration config = null;
+                if (type.name().toLowerCase().equals("xlsx")) {
                     exporter = new JRXlsxExporter();
                     config = new SimpleXlsxReportConfiguration();
                     response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-                }
-                else{
+                } else {
                     exporter = new JRXlsExporter();
                     config = new SimpleXlsxReportConfiguration();
                     response.setContentType("application/vnd.ms-excel");
                 }
-                
+
                 config.setOnePagePerSheet(false);
                 config.setIgnoreGraphics(Boolean.TRUE);
 //                config.setDetectCellType(Boolean.TRUE);
@@ -279,7 +298,7 @@ public class JasperReportsService {
                 exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
 //                File outputFile = new File("excelTest.xlsx");
 //                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputFile));
-                
+
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
                 break;
 

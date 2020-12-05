@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
  *
  * @author Kelsas
  */
-@Data
+ @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
