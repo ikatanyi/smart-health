@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PatientVisit" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="507"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
@@ -125,7 +125,7 @@
 				<text><![CDATA[Rad]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="441" y="22" width="54" height="11" uuid="63177d3e-c6c4-4911-8030-fe1fcb52dc6e"/>
+				<reportElement x="441" y="22" width="36" height="11" uuid="63177d3e-c6c4-4911-8030-fe1fcb52dc6e"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -145,7 +145,7 @@
 				<text><![CDATA[Start]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="495" y="22" width="59" height="11" uuid="8e6d7a5c-6fc4-4bef-a5d7-d843d6c082f5"/>
+				<reportElement x="511" y="22" width="43" height="11" uuid="8e6d7a5c-6fc4-4bef-a5d7-d843d6c082f5"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -246,7 +246,7 @@
 				<textFieldExpression><![CDATA[$F{radiology}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="441" y="0" width="54" height="11" uuid="a66b0716-1c2a-4e41-9a13-c7ec23271eee"/>
+				<reportElement x="441" y="0" width="36" height="11" uuid="a66b0716-1c2a-4e41-9a13-c7ec23271eee"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Dashed"/>
 				</box>
@@ -267,7 +267,7 @@
 				<textFieldExpression><![CDATA[""+$F{startDatetime}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="495" y="0" width="59" height="11" uuid="6318b4a0-8688-4ed9-a31e-bbcb09c69c8b"/>
+				<reportElement x="511" y="0" width="43" height="11" uuid="6318b4a0-8688-4ed9-a31e-bbcb09c69c8b"/>
 				<box>
 					<bottomPen lineWidth="0.15" lineStyle="Dashed"/>
 				</box>
