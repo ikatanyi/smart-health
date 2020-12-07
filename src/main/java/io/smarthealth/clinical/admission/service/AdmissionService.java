@@ -259,4 +259,8 @@ public class AdmissionService {
 
         return admissionRepository.save(a);
     }
+
+    public  Admission saveAdmission(Admission admission){
+       return admissionRepository.save(admission);
+    }
 }

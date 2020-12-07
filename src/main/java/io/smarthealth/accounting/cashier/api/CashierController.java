@@ -176,14 +176,16 @@ public class CashierController {
     @GetMapping("/cashiers/shifts")
     @PreAuthorize("hasAuthority('view_cashiersShift')")
     public ResponseEntity<?> getAllCashierShifts(
-            @RequestParam(value = "showBalance", required = false) Boolean showBalance,
+            @RequestParam(value = "showBalance", required = false, defaultValue = "true") Boolean showBalance,
             @RequestParam(value = "status", required = false) ShiftStatus status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
         Pageable pageable = PaginationUtil.createPage(page, size);
+        System.out.println("Show Balance"+showBalance);
 
         if (showBalance != null && showBalance) {
             Page<CashierShift> list = service.getCashierShiftWithBalance(status, pageable);
+            
             Pager<List<CashierShift>> pagers = new Pager();
             pagers.setCode("0");
             pagers.setMessage("Success");

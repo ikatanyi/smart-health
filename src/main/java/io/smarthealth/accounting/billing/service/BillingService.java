@@ -319,14 +319,14 @@ public class BillingService {
 
     public PatientBillItem findBillItemByPatientBill(String billNumber) {
         Optional<PatientBill> patientBill = findByBillNumber(billNumber);
-        if (patientBill.isPresent()) {
-            Optional<PatientBillItem> billItem = billItemRepository.findByPatientBill(patientBill.get());
-            if (billItem.isPresent()) {
-                return billItem.get();
-            } else {
-                return null;
-            }
-        }
+//        if (patientBill.isPresent()) {
+//            Optional<PatientBillItem> billItem = billItemRepository.findByPatientBill(patientBill.get());
+//            if (billItem.isPresent()) {
+//                return billItem.get();
+//            } else {
+//                return null;
+//            }
+//        }
         return null;
     }
 
