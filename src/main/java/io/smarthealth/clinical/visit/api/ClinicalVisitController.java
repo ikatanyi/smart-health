@@ -617,27 +617,27 @@ public class ClinicalVisitController {
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
-//    @PostMapping("/visits/{visitNumber}/vitals")
-//    @PreAuthorize("hasAuthority('create_visits')")
-//    @ApiOperation(value = "Create/Add a new patient vital by visit number", response = VitalRecordData.class)
-//    public @ResponseBody
-//    ResponseEntity<VitalRecordData> addVitalRecordByVisit(@PathVariable("visitNumber") String visitNumber,
-//            @RequestBody
-//            @Valid
-//            final VitalRecordData vital
-//    ) {
-//        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-//        VitalsRecord vitalR = this.triageService.addVitalRecordsByVisit(visit, vital);
-//
-////        VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
-//        VitalRecordData vr = triageService.convertToVitalsData(vitalR);
-//
-//        URI location = ServletUriComponentsBuilder
-//                .fromCurrentContextPath().path("/api/visits/{visitNumber}/vitals/{id}")
-//                .buildAndExpand(visitNumber, vitalR.getId()).toUri();
-//
-//        return ResponseEntity.created(location).body(vr);
-//    }
+    @PostMapping("/visits/{visitNumber}/vitals")
+    @PreAuthorize("hasAuthority('create_visits')")
+    @ApiOperation(value = "Create/Add a new patient vital by visit number", response = VitalRecordData.class)
+    public @ResponseBody
+    ResponseEntity<VitalRecordData> addVitalRecordByVisit(@PathVariable("visitNumber") String visitNumber,
+            @RequestBody
+            @Valid
+            final VitalRecordData vital
+    ) {
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        VitalsRecord vitalR = this.triageService.addVitalRecordsByVisit(visit, vital);
+
+//        VitalRecordData vr = modelMapper.map(vitalR, VitalRecordData.class);
+        VitalRecordData vr = triageService.convertToVitalsData(vitalR);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/api/visits/{visitNumber}/vitals/{id}")
+                .buildAndExpand(visitNumber, vitalR.getId()).toUri();
+
+        return ResponseEntity.created(location).body(vr);
+    }
 
     @PostMapping("/visits/{visitNumber}/triage-notes")
     @PreAuthorize("hasAuthority('create_visits')")

@@ -90,7 +90,11 @@ public class DoctorRequestController {
             //validate if already requested
             List<DoctorRequest> docRequest = requestService.fetchRequestByVisitAndItem(visit, item);
             if (docRequest.size() > 0) {
-                throw APIException.conflict("{0} has already been requested ", item.getItemName());
+                for (DoctorRequest dr: docRequest) {
+                    if (dr.getFulfillerStatus().equals(FullFillerStatusType.Unfulfilled)) {
+                        throw APIException.conflict("{0} has already been requested ", item.getItemName());
+                    }
+                }
             }
             doctorRequest.setItem(item);
             doctorRequest.setItemCostRate(item.getCostRate() != null ? item.getCostRate().doubleValue() : 0);

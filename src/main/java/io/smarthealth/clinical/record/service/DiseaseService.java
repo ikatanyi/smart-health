@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /**
  *
  * @author Simon.Waweru
@@ -29,5 +31,9 @@ public class DiseaseService {
     }
     public Page<Disease> filterDiseaseByNameOrCode(String name, String code, Pageable pageable) {
         return diseaseRepository.findByNameContainingOrCodeContainingIgnoreCase(name, code, pageable);
+    }
+
+    public Optional<Disease> findDiseaseByCodeOptional(String code) {
+        return diseaseRepository.findByCode(code);
     }
 }
