@@ -5,10 +5,12 @@ import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.clinical.theatre.data.TheatreProvider;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
+import java.util.List;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -56,13 +58,17 @@ public class PatientBillItem extends Auditable {
 
     @Transient
     private Long medicId;
+    
     private Long requestReference;
     /**
      * Reference payment details i.e. Receipt or an Invoice used to settle this
      * bill
      */
     private String paymentReference;
-
+   
+    @Transient
+    List<TheatreProvider> theatreProviders;
+    
     public BillItemData toData() {
         BillItemData data = new BillItemData();
         data.setId(this.getId());

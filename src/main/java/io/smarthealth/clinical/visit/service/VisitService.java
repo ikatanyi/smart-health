@@ -58,12 +58,7 @@ public class VisitService {
     private final EmployeeService employeeService;
     private final BillingService billingService;
     private final ConfigService configService;
-
-    public String patientActiveVisit(final Long patientId){
-        System.out.println("To search "+patientId);
-        return  visitRepository.patientActiveVisit(patientId);
-    }
-
+ 
     public Page<Visit> fetchVisitByPatientNumber(String patientNumber, final Pageable pageable) {
         Patient patient = findPatientOrThrow(patientNumber);
         Page<Visit> visits = visitRepository.findByPatientOrderByStartDatetimeDesc(patient, pageable);
@@ -111,7 +106,7 @@ public class VisitService {
         Specification<Visit> visitSpecs = VisitSpecification.createSpecification(visitNumber, employee, servicePoint, patient, patientName, runningStatus, range, isActiveOnConsultation, orderByTriageCategory, queryTerm);
         Page<Visit> visits = visitRepository.findAll(visitSpecs, pageable);
 //        List<Visit> visitList = visits.getContent();//new ArrayList<>(Arrays.asList());
-        List visitList = Arrays.asList(visits.getContent());
+//        List visitList = Arrays.asList(visits.getContent());
 
         List<Visit> visitData = new ArrayList<>(visits.getContent());
 //        visitData = visits.getContent();
@@ -276,4 +271,13 @@ public class VisitService {
         return visitRepository.patientTatStatement(visitId);
     }
 
+      public String patientActiveVisit(final Long patientId){
+        System.out.println("To search "+patientId);
+        return  visitRepository.patientActiveVisit(patientId);
+    }
+
+    public Page<Visit> getSimpleVisits(String visitNumber, String patientNumber, DateRange dateRange, Pageable page) {
+        Specification<Visit> spec = VisitSpecification.createSpecification(visitNumber, patientNumber, dateRange);
+        return visitRepository.findAll(spec, page);
+    }
 }

@@ -166,8 +166,8 @@ public class BillingService {
         System.out.println("End of bill items");
 
         PatientBill savedBill = save(patientbill);
-        if (savedBill.getPaymentMode().equals("Insurance")) {
-
+        //TODO consider the inpatient billing 
+        if (savedBill.getPaymentMode().equals("Insurance") || (visit != null && visit.getVisitType() == VisitEnum.VisitType.Inpatient)) {
             journalService.save(toJournal(savedBill, null));
         }
         return savedBill;
@@ -180,6 +180,15 @@ public class BillingService {
         if (savedBill.getPaymentMode().equals("Insurance")) {
             journalService.save(toJournal(savedBill, store));
         }
+    }
+
+    public PatientBill createPatientBill(PatientBill patientBill) {
+        PatientBill savedBill = patientBillRepository.saveAndFlush(patientBill);
+        //TODO consider the inpatient billing 
+        if (savedBill.getPaymentMode().equals("Insurance") || (savedBill.getVisit() != null && savedBill.getVisit().getVisitType() == VisitEnum.VisitType.Inpatient)) {
+            journalService.save(toJournal(savedBill, null));
+        }
+        return savedBill;
     }
 
     public PatientBill save(PatientBill bill) {

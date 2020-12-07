@@ -16,10 +16,10 @@ public class ProcedureSpecification {
         super();
     }
 
-    public static Specification<PatientProcedureRegister> createSpecification(String PatientNumber,String scanNo, String visitId, DateRange range) {
+    public static Specification<PatientProcedureRegister> createSpecification(String PatientNumber, String scanNo, String visitId, DateRange range) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
- 
+
             if (PatientNumber != null) {
                 predicates.add(cb.equal(root.get("patient").get("patientNumber"), PatientNumber));
             }
@@ -29,12 +29,12 @@ public class ProcedureSpecification {
             if (visitId != null) {
                 predicates.add(cb.greaterThan(root.get("visit").get("visitId"), visitId));
             }
-             if(range!=null){
-                  predicates.add(
-                     cb.between(root.get("createdOn"), range.getStartDateTime(), range.getEndDateTime())
-                  );
-              }
+            if (range != null) {
+                predicates.add(
+                        cb.between(root.get("createdOn"), range.getStartDateTime(), range.getEndDateTime())
+                );
+            }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
-    }
+    } 
 }

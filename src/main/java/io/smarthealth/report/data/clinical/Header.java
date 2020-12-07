@@ -5,10 +5,8 @@
  */
 package io.smarthealth.report.data.clinical;
 
-import io.smarthealth.organization.facility.data.FacilityData;
 import io.smarthealth.organization.facility.domain.Facility;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import lombok.Data;
 
 /**
