@@ -3,7 +3,6 @@ package io.smarthealth.clinical.laboratory.domain;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,8 +22,8 @@ import org.apache.commons.lang3.builder.ToStringExclude;
  *
  * @author Kelsas
  */
-@Entity
 @Data
+@Entity 
 @Table(name = "lab_register_tests")
 public class LabRegisterTest extends Identifiable {
 

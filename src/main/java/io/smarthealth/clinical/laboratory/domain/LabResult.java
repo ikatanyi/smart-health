@@ -14,8 +14,8 @@ import lombok.Data;
  *
  * @author Kelsas
  */
-@Entity
 @Data
+@Entity 
 @Table(name = "lab_register_results") 
 public class LabResult extends Auditable {
 
