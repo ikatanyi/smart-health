@@ -512,17 +512,28 @@ public class PatientReportServices {
 
     public void getMorbidityReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        Boolean a705 , b705;
+        final String term;
         System.out.println(reportParam.getFirst("dateRange"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         String term = reportParam.getFirst("term");
-        List<MonthlyMobidity> requestData = mohService.getMonthlyMobidity(range, term);
-        reportData.setData(requestData);
+        List<MonthlyMobidity> requestDataArray = new ArrayList();
+        if(term.equals(">5"))
+            a705=true;
+        else
+            b705=true;
+        
+        List<Moh> mohList = getAllMohs(a705, b705, term);
+        for(Moh moh:mohList){
+            requestDataArray.addAll(mohService.getMonthlyMobidity(range, term, moh.getCode()));
+        }
+        reportData.setData(requestDataArray);
         reportData.setFormat(format);
-
+        
         LocalDate ld = range.getStartDate();
         Month month = ld.getMonth();
         Integer year = ld.getYear();
-
+        
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.getFilters().put("year", year);
         reportData.getFilters().put("month", month.getDisplayName(TextStyle.FULL, Locale.ENGLISH));
