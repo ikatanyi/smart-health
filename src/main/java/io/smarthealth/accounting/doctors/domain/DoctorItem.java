@@ -5,8 +5,11 @@ import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -23,6 +26,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "acc_doctor_items")
+// @Inheritance(strategy = InheritanceType.JOINED)
+ @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "fee_type")
 public class DoctorItem extends Auditable {
 
     @ManyToOne

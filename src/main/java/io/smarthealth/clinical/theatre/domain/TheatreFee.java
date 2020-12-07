@@ -8,6 +8,8 @@ package io.smarthealth.clinical.theatre.domain;
 import io.smarthealth.clinical.theatre.domain.enumeration.FeeCategory;
 import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
@@ -23,9 +25,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "theatre_doctors_fee")
-@Inheritance(strategy = InheritanceType.JOINED)
+//@Table(name = "theatre_doctors_fee")
 public class TheatreFee extends DoctorItem {
 
+    @Enumerated(EnumType.STRING)
     private FeeCategory feeCategory;
 }

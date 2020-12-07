@@ -133,6 +133,7 @@ public class DispensingService {
         drugRequest.setBillNumber(savedBill.getBillNumber());
 
         dispenseItem(store, drugRequest);
+        
         return trdId;
     }
 

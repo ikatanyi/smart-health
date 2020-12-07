@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.lang.Constants;
@@ -51,7 +52,7 @@ public class BillItemData {
     private String paymentReference;
     private Boolean walkinFlag;
     private String createdBy;
-    private String billPayMode;
+    private BillPayMode billPayMode;
 
     private String schemeId;
 }

@@ -21,6 +21,7 @@ public class TheatreBillItem {
     private Double quantity = 1D;
     private Double price = 0D;
     private Double amount = 0D;
+    private Long storeId;
     private List<TheatreProvider> providers = new ArrayList<>();
 
 }

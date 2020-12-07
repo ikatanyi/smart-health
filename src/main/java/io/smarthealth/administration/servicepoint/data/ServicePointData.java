@@ -1,7 +1,11 @@
 package io.smarthealth.administration.servicepoint.data;
- 
+
 import io.smarthealth.accounting.accounts.data.SimpleAccountData;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.stock.stores.data.StoreData;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -22,6 +26,7 @@ public class ServicePointData {
     private SimpleAccountData incomeAccount;
     private SimpleAccountData expenseAccount;
     private SimpleAccountData inventoryAssetAccount;
+    private List<StoreData> stores = new ArrayList();
 
     public ServicePointData() {
     }
@@ -40,9 +45,16 @@ public class ServicePointData {
         if (point.getExpenseAccount() != null) {
             data.setExpenseAccount(SimpleAccountData.map(point.getExpenseAccount()));
         }
-        if (point.getInventoryAssetAccount()!= null) {
+        if (point.getInventoryAssetAccount() != null) {
             data.setInventoryAssetAccount(SimpleAccountData.map(point.getInventoryAssetAccount()));
         }
+        
+        data.setStores(
+                point.getStores()
+                        .stream()
+                        .map(StoreData::map)
+                        .collect(Collectors.toList())
+        );
 
         return data;
     }

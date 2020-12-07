@@ -6,6 +6,12 @@ import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.data.SimpleServicePoint;
 import io.smarthealth.infrastructure.domain.Identifiable;
+import io.smarthealth.stock.stores.data.StoreData;
+import io.smarthealth.stock.stores.domain.Store;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -22,7 +28,7 @@ public class ServicePoint extends Identifiable {
     @Column(nullable = false)
     private ServicePointType servicePointType;
 
-    private String pointType; 
+    private String pointType;
     private String name;
     private String description;
 
@@ -37,12 +43,15 @@ public class ServicePoint extends Identifiable {
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_inventory_asset_account_id"))
     private Account inventoryAssetAccount;
-//    @ManyToOne
-//    @JoinColumn(foreignKey = @ForeignKey(name = "fk_service_point_facility"))
-//    private Facility facility;
+
+    @OneToMany(mappedBy = "servicePoint",  cascade = CascadeType.ALL)
+    private List<Store> stores = new ArrayList();
+     
     private Boolean active;
 
     public ServicePointData toData() {
+        this.stores.stream()
+                .forEach(x -> System.out.println("The store withing this point .... "+x.toString()));
         ServicePointData data = new ServicePointData();
         data.setId(this.getId());
         data.setActive(this.getActive());
@@ -59,6 +68,11 @@ public class ServicePoint extends Identifiable {
         if (this.getInventoryAssetAccount() != null) {
             data.setInventoryAssetAccount(SimpleAccountData.map(this.getInventoryAssetAccount()));
         }
+        data.setStores(
+           this.stores.stream()
+                .map(StoreData::map)
+                .collect(Collectors.toList())
+        );
 
         return data;
     }
@@ -69,6 +83,7 @@ public class ServicePoint extends Identifiable {
         data.setName(this.getName());
         return data;
     }
+
     @Override
     public String toString() {
         return "Service Point [id=" + getId() + ", name=" + name + ", type=" + pointType + "]";

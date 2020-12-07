@@ -26,21 +26,21 @@ public class TheatreFeeSpecification {
                 predicates.add(cb.equal(root.get("isPercentage"), isPercentage));
             }
             if (valueAmount != null) {
-                predicates.add(cb.equal(root.get("valueAmount"), valueAmount));
+                predicates.add(cb.equal(root.get("amount"), valueAmount));
             }
             if (feeCategory != null) {
                 predicates.add(cb.equal(root.get("feeCategory"), feeCategory));
             }
 
             if (itemCode != null) {
-                predicates.add(cb.equal(root.get("procedure").get("itemCode"), itemCode));
+                predicates.add(cb.equal(root.get("serviceType").get("itemCode"), itemCode));
             }
             if (term != null) {
                 final String likeExpression = "%" + term + "%";
                 predicates.add(
                         cb.or(
-                                cb.like(root.get("itemName"), likeExpression),
-                                cb.like(root.get("itemCode"), likeExpression)
+                                cb.like(root.get("serviceType").get("itemName"), likeExpression),
+                                cb.like(root.get("serviceType").get("itemCode"), likeExpression)
                         )
                 );
             }

@@ -7,7 +7,6 @@ package io.smarthealth.clinical.theatre.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class TheatreBill {
     private LocalDate billingDate;
     private Long servicePointId;
     private String servicePoint;
-    private String paymentMode;
+    private String paymentMode="Insurance";
     private List<TheatreBillItem> items = new ArrayList<>();
 
     public Double getAmount() {
