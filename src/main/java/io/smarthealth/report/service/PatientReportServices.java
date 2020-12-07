@@ -6,7 +6,6 @@
 package io.smarthealth.report.service;
 
 import com.mchange.lang.StringUtils;
-import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.administration.codes.domain.Code;
 import io.smarthealth.administration.codes.domain.CodeValue;
 import io.smarthealth.administration.codes.service.CodeService;
@@ -17,7 +16,6 @@ import io.smarthealth.appointment.service.AppointmentService;
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
-import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
 import io.smarthealth.clinical.moh.data.MonthlyMobidity;
 import io.smarthealth.clinical.moh.data.Register;
@@ -95,6 +93,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
+import io.smarthealth.clinical.moh.data.MohData;
 
 /**
  *
@@ -512,8 +511,8 @@ public class PatientReportServices {
 
     public void getMorbidityReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
-        Boolean a705 , b705;
-        final String term;
+        Boolean a705=false , b705=false;
+        final String name=null;
         System.out.println(reportParam.getFirst("dateRange"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         String term = reportParam.getFirst("term");
@@ -523,8 +522,8 @@ public class PatientReportServices {
         else
             b705=true;
         
-        List<Moh> mohList = getAllMohs(a705, b705, term);
-        for(Moh moh:mohList){
+        List<MohData> mohList = mohService.getAllMohs(a705, b705, name);
+        for(MohData moh:mohList){
             requestDataArray.addAll(mohService.getMonthlyMobidity(range, term, moh.getCode()));
         }
         reportData.setData(requestDataArray);

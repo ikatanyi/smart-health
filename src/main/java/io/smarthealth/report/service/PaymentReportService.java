@@ -41,6 +41,8 @@ import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.accounts.ReportReceiptData;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
+import io.smarthealth.clinical.admission.service.AdmissionService;
+import io.smarthealth.clinical.admission.domain.Admission;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -64,6 +66,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
+
 /**
  *
  * @author Kennedy.Imbenzi
@@ -86,6 +89,7 @@ public class PaymentReportService {
     private final ReceiptingService receivePaymentService;
     private final CashierService cashierService;
     private final ConfigService configService;
+    private final AdmissionService admissionService;
 
     public void getPettyCashRequests(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, IOException, JRException {
         String requestNo = reportParam.getFirst("requestNo");
@@ -140,11 +144,19 @@ public class PaymentReportService {
     public void getInvoice(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
         String invoiceNo = reportParam.getFirst("invoiceNo");
+        
         ReportData reportData = new ReportData();        
         GlobalConfiguration config = configService.getByNameOrThrow("CapitationItemAmountDisplay");
         Boolean showCapitationItem = config.getValue().equals("1");
         reportData.getFilters().put("showCapitationItem", showCapitationItem);
         InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
+        
+        Optional<Admission> admission = admissionService.findByAdmissionNo(invoiceData.getVisitNumber());
+        if(admission.isPresent()){
+            reportData.getFilters().put("inPatient", true);
+            reportData.getFilters().put("dischargeDate", admission.get().getDischargeDate());
+            reportData.getFilters().put("admissionDate", admission.get().getAdmissionDate());
+        }
         reportData.setData(Arrays.asList(invoiceData));
         reportData.setTemplate("/accounts/invoice");
         reportData.setReportName("invoice");

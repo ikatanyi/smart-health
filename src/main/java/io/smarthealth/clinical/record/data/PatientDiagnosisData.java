@@ -34,6 +34,7 @@ public class PatientDiagnosisData {
     private String certainty;
     private String diagnosisOrder;
     private String notes;
+    private String mCode;
     private Boolean isCondition = Boolean.FALSE;
 
     public static PatientDiagnosisData map(PatientDiagnosis diagnosis) {
@@ -60,6 +61,7 @@ public class PatientDiagnosisData {
         data.setDiagnosisOrder(diagnosis.getDiagnosisOrder());
         data.setCertainty(diagnosis.getCertainty());
         data.setNotes(diagnosis.getNotes());
+        data.setMCode(diagnosis.getMCode());
         data.setIsCondition(diagnosis.getIsCondition());
 
         return data;

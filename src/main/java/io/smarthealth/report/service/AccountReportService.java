@@ -29,8 +29,6 @@ import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
 import io.smarthealth.accounting.invoice.data.InvoiceItemData;
-import io.smarthealth.accounting.invoice.domain.Invoice;
-import io.smarthealth.accounting.invoice.domain.InvoiceItem;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.ReceiptData;
@@ -66,6 +64,7 @@ import io.smarthealth.report.data.accounts.DailyBillingData;
 import io.smarthealth.report.data.accounts.InsuranceInvoiceData;
 import io.smarthealth.report.data.accounts.ReportReceiptData;
 import io.smarthealth.report.data.accounts.TrialBalanceData;
+import io.smarthealth.clinical.admission.service.AdmissionService;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -75,7 +74,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -120,6 +118,7 @@ public class AccountReportService {
     private final DispatchService dispatchService;
     private final SchemeService schemeService;
     private final DiagnosisService diagnosisService;
+    private final AdmissionService admissionService;
 
     public void getTrialBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
