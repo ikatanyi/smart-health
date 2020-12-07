@@ -177,7 +177,7 @@ public class BillingService {
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
         bill.setBillNumber(bill_no);
         PatientBill savedBill = save(bill);
-        if (savedBill.getPaymentMode().equals("Insurance")) {
+        if (savedBill.getPaymentMode().equals("Insurance") || (savedBill.getVisit() != null && savedBill.getVisit().getVisitType() == VisitEnum.VisitType.Inpatient)) {
             journalService.save(toJournal(savedBill, store));
         }
     }

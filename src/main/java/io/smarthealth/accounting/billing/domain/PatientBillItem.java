@@ -20,7 +20,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "patient_billing_item")  
+@Table(name = "patient_billing_item")
 public class PatientBillItem extends Auditable {
 
     @JsonIgnore
@@ -58,17 +58,19 @@ public class PatientBillItem extends Auditable {
 
     @Transient
     private Long medicId;
-    
+
     private Long requestReference;
     /**
      * Reference payment details i.e. Receipt or an Invoice used to settle this
      * bill
      */
     private String paymentReference;
-   
+
     @Transient
     List<TheatreProvider> theatreProviders;
-    
+    @Transient
+    private Long storeId;
+
     public BillItemData toData() {
         BillItemData data = new BillItemData();
         data.setId(this.getId());
@@ -110,7 +112,7 @@ public class PatientBillItem extends Auditable {
             data.setPatientNumber(this.getPatientBill().getReference());
         }
         data.setWalkinFlag(this.getPatientBill().getWalkinFlag());
-        data.setBillPayMode(this.getBillPayMode().name());
+        data.setBillPayMode(this.getBillPayMode());
         return data;
     }
 
