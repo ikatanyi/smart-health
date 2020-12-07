@@ -705,7 +705,7 @@ public class ClinicalVisitController {
     @ApiOperation(value = "Fetch all patient's last vitals by patient", response = VitalRecordData.class)
     public ResponseEntity<?> fetchLastVisit(
             @PathVariable("patientNumber") final String patientNumber,
-            @RequestParam("currentVisitNumber") final String currentVisitNumber
+            @RequestParam(value = "currentVisitNumber", required = false) final String currentVisitNumber
     ) {
 
         Page<Visit> v = visitService.lastVisit(patientService.findPatientOrThrow(patientNumber), currentVisitNumber);
