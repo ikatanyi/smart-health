@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.activation.DataSource;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -37,8 +38,7 @@ public class SmtpMailSender implements EmailerService<EmailData> {
         this.htmlTemplateEngine = htmlTemplateEngine;
         this.fileTemplateEngine = fileTemplateEngine;
     }
-    
-    
+
     /**
      * Sends a mail using a MimeMessageHelper
      *
@@ -177,8 +177,7 @@ public class SmtpMailSender implements EmailerService<EmailData> {
 
         log.info("Processing html email request: " + emailDto.toString());
 
-        message = prepareStaticResources(message, emailDto);
-
+        //message = prepareStaticResources(message, emailDto);
         // Send mail
         this.mailSender.send(mimeMessage);
 
@@ -198,7 +197,7 @@ public class SmtpMailSender implements EmailerService<EmailData> {
      */
     public List<EmailData> sendEmails(List<EmailData> emailDtos) throws MessagingException, IOException {
 
-        List<MimeMessage> mimeMessages = new ArrayList<MimeMessage>();
+        List<MimeMessage> mimeMessages = new ArrayList<>();
         MimeMessage mimeMessage = null;
 
         for (EmailData emailDto : emailDtos) {
@@ -231,12 +230,10 @@ public class SmtpMailSender implements EmailerService<EmailData> {
 
     }
 
-    private MimeMessageHelper prepareMessage(MimeMessage mimeMessage, EmailData emailDto)
-            throws MessagingException, IOException {
+    private MimeMessageHelper prepareMessage(MimeMessage mimeMessage, EmailData emailDto) throws MessagingException, IOException {
 
         // Prepare message using a Spring helper
-        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                "UTF-8");
+        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
         message.setSubject(emailDto.getSubject());
         message.setFrom(emailDto.getFrom());
         message.setTo(emailDto.getTo());
@@ -250,10 +247,14 @@ public class SmtpMailSender implements EmailerService<EmailData> {
         }
 
         if (emailDto.isHasAttachment()) {
-            List<File> attachments = loadResources(
-                    emailDto.getPathToAttachment() + "/*" + emailDto.getAttachmentName() + "*.*");
-            for (File file : attachments) {
-                message.addAttachment(file.getName(), file);
+            if (emailDto.getAttachmentFile() != null) {
+                message.addAttachment(emailDto.getAttachmentName(), (DataSource) emailDto.getAttachmentFile());
+            } else {
+
+                List<File> attachments = loadResources(emailDto.getPathToAttachment() + "/*" + emailDto.getAttachmentName() + "*.*");
+                for (File file : attachments) {
+                    message.addAttachment(file.getName(), file);
+                }
             }
         }
 
@@ -270,7 +271,7 @@ public class SmtpMailSender implements EmailerService<EmailData> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        List<File> attachFiles = new ArrayList<File>();
+        List<File> attachFiles = new ArrayList<>();
 
         for (Resource resource : resources) {
             attachFiles.add(resource.getFile());

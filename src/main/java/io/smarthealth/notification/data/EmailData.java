@@ -52,6 +52,8 @@ public class EmailData {
 
     private String templateLocation;
 
+    private Object attachmentFile;
+
     private Map<String, Object> parameterMap;
 
     private Map<String, Object> staticResourceMap;
@@ -241,6 +243,14 @@ public class EmailData {
         this.staticResourceMap = staticResourceMap;
     }
 
+    public Object getAttachmentFile() {
+        return attachmentFile;
+    }
+
+    public void setAttachmentFile(Object attachmentFile) {
+        this.attachmentFile = attachmentFile;
+    }
+  
     /* (non-Javadoc)
 	 * @see java.lang.Object#toString()
      */

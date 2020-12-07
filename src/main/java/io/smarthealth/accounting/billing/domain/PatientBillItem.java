@@ -5,10 +5,12 @@ import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.clinical.theatre.data.TheatreProvider;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
+import java.util.List;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -18,7 +20,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "patient_billing_item")  
+@Table(name = "patient_billing_item")
 public class PatientBillItem extends Auditable {
 
     @JsonIgnore
@@ -56,12 +58,18 @@ public class PatientBillItem extends Auditable {
 
     @Transient
     private Long medicId;
+
     private Long requestReference;
     /**
      * Reference payment details i.e. Receipt or an Invoice used to settle this
      * bill
      */
     private String paymentReference;
+
+    @Transient
+    List<TheatreProvider> theatreProviders;
+    @Transient
+    private Long storeId;
 
     public BillItemData toData() {
         BillItemData data = new BillItemData();
@@ -104,7 +112,7 @@ public class PatientBillItem extends Auditable {
             data.setPatientNumber(this.getPatientBill().getReference());
         }
         data.setWalkinFlag(this.getPatientBill().getWalkinFlag());
-        data.setBillPayMode(this.getBillPayMode().name());
+        data.setBillPayMode(this.getBillPayMode());
         return data;
     }
 

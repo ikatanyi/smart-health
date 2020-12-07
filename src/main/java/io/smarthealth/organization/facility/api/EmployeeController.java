@@ -3,6 +3,7 @@ package io.smarthealth.organization.facility.api;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -92,8 +93,8 @@ public class EmployeeController {
 
     @GetMapping("/employee")
     @PreAuthorize("hasAuthority('view_employee')")
-    public ResponseEntity<List<EmployeeData>> fetchAllEmployees(@RequestParam MultiValueMap<String,
-            String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+    public ResponseEntity<List<EmployeeData>> fetchAllEmployees(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
+        System.out.println("Motoooo");
         Page<EmployeeData> page = employeeService.fetchAllEmployees(queryParams, Pageable.unpaged()).map(p -> employeeService.convertEmployeeEntityToEmployeeData(p));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
@@ -101,8 +102,7 @@ public class EmployeeController {
 
     @GetMapping("/department/{code}/employee")
     @PreAuthorize("hasAuthority('view_employee')")
-    public ResponseEntity<List<EmployeeData>> fetchEmployeesByDepartment(@PathVariable("code") final String departmentCode, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder
-            ) {
+    public ResponseEntity<Pager<EmployeeData>> fetchEmployeesByDepartment(@PathVariable("code") final String departmentCode, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
         Department department = departmentService.fetchDepartmentByCode(departmentCode);
         List<Employee> employeeList = employeeService.findEmployeeByDepartment(queryParams, department, Pageable.unpaged());
         List<EmployeeData> employeeDataList = new ArrayList<>();
@@ -111,7 +111,9 @@ public class EmployeeController {
             employeeDataList.add(employeeService.convertEmployeeEntityToEmployeeData(employee));
         }
 
-        return new ResponseEntity<>(employeeDataList, HttpStatus.OK);
+        return ResponseEntity.ok((Pager<EmployeeData>) PaginationUtil.paginateList(employeeDataList, "Departmental Employee", "", pageable));
+
+//        return new ResponseEntity<>(employeeDataList, HttpStatus.OK);
     }
 
     @GetMapping("/employee/{category}")

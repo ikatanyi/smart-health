@@ -171,11 +171,15 @@ public class PatientReportServices {
             reportVisitData data = new reportVisitData();
             data.setPatientName(visit.getPatient().getFullName());
             data.setPatientNumber(visit.getPatient().getPatientNumber());
-            data.setVisitNumber(visit.getVisitNumber());
-            data.setStartDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStartDatetime()));
-            data.setStopDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStopDatetime()));
+            data.setVisitNumber(visit.getVisitNumber());           
+            if(visit.getStopDatetime()!=null)
+               data.setStopDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStopDatetime()));
+            if(visit.getStartDatetime()!=null){
+               data.setStartDatetime(DateTimeFormatter.ISO_LOCAL_TIME.format(visit.getStartDatetime()));
+               
+            }
             data.setDate(visit.getStartDatetime().toLocalDate());
-
+            data.setStartDatetime(String.valueOf(visit.getStartDatetime()));
             List<TatInterface> tatInterFaces = visitService.getPatientTat(visit.getId());
             for (TatInterface interf : tatInterFaces) {
                 switch (interf.getServicePoint()) {
@@ -508,17 +512,28 @@ public class PatientReportServices {
 
     public void getMorbidityReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        Boolean a705 , b705;
+        final String term;
         System.out.println(reportParam.getFirst("dateRange"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         String term = reportParam.getFirst("term");
-        List<MonthlyMobidity> requestData = mohService.getMonthlyMobidity(range, term);
-        reportData.setData(requestData);
+        List<MonthlyMobidity> requestDataArray = new ArrayList();
+        if(term.equals(">5"))
+            a705=true;
+        else
+            b705=true;
+        
+        List<Moh> mohList = getAllMohs(a705, b705, term);
+        for(Moh moh:mohList){
+            requestDataArray.addAll(mohService.getMonthlyMobidity(range, term, moh.getCode()));
+        }
+        reportData.setData(requestDataArray);
         reportData.setFormat(format);
-
+        
         LocalDate ld = range.getStartDate();
         Month month = ld.getMonth();
         Integer year = ld.getYear();
-
+        
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.getFilters().put("year", year);
         reportData.getFilters().put("month", month.getDisplayName(TextStyle.FULL, Locale.ENGLISH));
@@ -618,7 +633,7 @@ public class PatientReportServices {
                     Integer age = 0;
                     Integer total = 0;
                     Gender gender = null;
-                    List<LabRegisterTest> tests = labService.getLabTests(register.getLabTest());
+                    List<LabRegisterTest> tests = labService.getLabTestsByDate(register.getLabTest(),range.getStartDateTime(),range.getEndDateTime());
                     for (LabRegisterTest test : tests) {
                         String patientNo = test.getLabRegister().getPatientNo();
                         values.setTestName(test.getLabTest().getTestName());

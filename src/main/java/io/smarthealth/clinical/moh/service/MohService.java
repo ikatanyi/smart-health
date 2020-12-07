@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.moh.data.MonthlyMobidity;
+import io.smarthealth.clinical.moh.domain.specification.MohSpecification;
+import org.springframework.data.jpa.domain.Specification;
 
 /**
  *
@@ -92,10 +94,16 @@ public class MohService {
         return list.getContent();
     }
     
-    public List<MonthlyMobidity>getMonthlyMobidity(DateRange range, String term){
+    public List<MohData> getAllMohs(Boolean a705, Boolean b705, final String term) {
+        Specification<Moh> spec = MohSpecification.createMohSpecification(a705, b705, term);
+        Page<MohData> list = mohRepository.findAll(spec, Pageable.unpaged()).map(um -> um.toData());
+        return list.getContent();
+    }
+    
+    public List<MonthlyMobidity>getMonthlyMobidity(DateRange range, String age, String term){
         if(term.equals(">5"))
-           return mohRepository.findMorbidityOver5(range.getStartDate(), range.getEndDate());
+           return mohRepository.findMorbidityOver5(range.getStartDate(), range.getEndDate(), term);
         else
-           return mohRepository.findMorbidityUnder5(range.getStartDate(), range.getEndDate());  
+           return mohRepository.findMorbidityUnder5(range.getStartDate(), range.getEndDate(), term);  
     }
 }

@@ -1,5 +1,5 @@
 package io.smarthealth.stock.item.data;
- 
+
 import io.smarthealth.stock.item.domain.Uom;
 import lombok.Data;
 
