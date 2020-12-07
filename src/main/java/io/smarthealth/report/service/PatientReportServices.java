@@ -525,7 +525,7 @@ public class PatientReportServices {
         
         List<Moh> mohList = getAllMohs(a705, b705, term);
         for(Moh moh:mohList){
-            requestDataArray.addAll(mohService.getMonthlyMobidity(range, term, moh.getCode()))
+            requestDataArray.addAll(mohService.getMonthlyMobidity(range, term, moh.getCode()));
         }
         reportData.setData(requestDataArray);
         reportData.setFormat(format);
