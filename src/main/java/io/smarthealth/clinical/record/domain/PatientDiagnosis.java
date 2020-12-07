@@ -38,8 +38,6 @@ public class PatientDiagnosis extends ClinicalRecord {
     
     private String mCode;
 
-    private String mCode;
-
     public DischargeDiagnosis toData() {
         DischargeDiagnosis data = new DischargeDiagnosis();
         data.setId(this.getId());
