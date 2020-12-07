@@ -192,6 +192,11 @@ public class AdmissionService {
         return admissionRepository.findByPatientAndStatus(patient, Status.Admitted);
 
     }
+    
+    public Optional<Admission> findByAdmissionNo(String admissionNo) {
+        return admissionRepository.findByAdmissionNo(admissionNo);
+
+    }
 
     public Admission findAdmissionByNumber(String admissionNo) {
         if (admissionNo != null) {
