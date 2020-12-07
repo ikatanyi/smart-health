@@ -138,7 +138,7 @@ public class ProcedureService {
             patientProcReg.setIsWalkin(Boolean.TRUE);
         } else {
             Visit visit = visitService.findVisitEntityOrThrow(visitNo);
-            patientProcReg.setVisit(visit);
+            patientProcReg.setVisit(visit);            
             patientProcReg.setPatientName(visit.getPatient().getFullName());
             patientProcReg.setPatientNo(visit.getPatient().getPatientNumber());
             patientProcReg.setIsWalkin(Boolean.FALSE);

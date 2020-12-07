@@ -323,7 +323,7 @@ public class LaboratoryService {
 
         } else {
             WalkIn w = createWalking(data.getPatientName());
-            request.setRequestedBy(data.getPatientName());
+            request.setRequestedBy(data.getRequestedBy());
             request.setPatientNo(w.getWalkingIdentitificationNo());
             request.setPaymentMode("Cash");
         }
