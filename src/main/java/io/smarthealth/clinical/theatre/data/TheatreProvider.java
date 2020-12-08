@@ -17,5 +17,5 @@ public class TheatreProvider {
 
     private Long medicId;
     private String medicName;
-    private FeeCategory feeCategory;
+    private FeeCategory role;
 }

@@ -21,9 +21,9 @@ public interface CashierRepository extends JpaRepository<Cashier, Long> {
 
     Page<Cashier> findByActive(Boolean active, Pageable page);
 
-    @Query("SELECT R.shift.id AS id,R.shift.cashPoint.name AS cashPoint,R.shift.cashier.user.name as cashier, R.shift.startDate as startDate,  R.shift.endDate as endDate,  R.shift.shiftNo as shiftNo,  R.shift.status as status,  SUM(R.amount - R.refundedAmount) as balance,R.shift.cashier.id as cashierId  FROM Receipt as R GROUP BY R.shift.shiftNo ORDER BY R.transactionDate DESC")
+    @Query("SELECT R.shift.id AS id,R.shift.cashPoint.name AS cashPoint,R.shift.cashier.user.name as cashier, R.shift.startDate as startDate,  R.shift.endDate as endDate,  R.shift.shiftNo as shiftNo,  R.shift.status as status,  SUM(R.amount - R.refundedAmount) as amount,R.shift.cashier.id as cashierId  FROM Receipt as R GROUP BY R.shift.shiftNo ORDER BY R.transactionDate DESC")
     Page<CashierShift> shiftBalanceByDateInterface(Pageable page);
 
-    @Query("SELECT R.shift.id AS id, R.shift.cashPoint.name AS cashPoint,R.shift.cashier.user.name as cashier, R.shift.startDate as startDate,  R.shift.endDate as endDate,  R.shift.shiftNo as shiftNo,  R.shift.status as status,  SUM(R.amount - R.refundedAmount) as balance,R.shift.cashier.id as cashierId  FROM Receipt as R where R.shift.status =:status GROUP BY R.shift.shiftNo ORDER BY R.transactionDate DESC")
+    @Query("SELECT R.shift.id AS id, R.shift.cashPoint.name AS cashPoint,R.shift.cashier.user.name as cashier, R.shift.startDate as startDate,  R.shift.endDate as endDate,  R.shift.shiftNo as shiftNo,  R.shift.status as status,  SUM(R.amount - R.refundedAmount) as amount,R.shift.cashier.id as cashierId  FROM Receipt as R where R.shift.status =:status GROUP BY R.shift.shiftNo ORDER BY R.transactionDate DESC")
     Page<CashierShift> shiftBalanceByDateInterface(@Param("status") ShiftStatus status, Pageable page);
 }

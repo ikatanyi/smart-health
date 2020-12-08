@@ -24,7 +24,7 @@ public class Store extends Identifiable {
     private String storeName;
     private boolean patientStore;
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_store_service_point_id"))
     private ServicePoint servicePoint;
 

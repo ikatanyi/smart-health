@@ -35,6 +35,8 @@ public class PatientDiagnosis extends ClinicalRecord {
     private Boolean isCondition = Boolean.FALSE;
     
     private String doctor;
+    
+    private String mCode;
 
     public DischargeDiagnosis toData() {
         DischargeDiagnosis data = new DischargeDiagnosis();

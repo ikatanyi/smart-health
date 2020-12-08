@@ -192,6 +192,11 @@ public class AdmissionService {
         return admissionRepository.findByPatientAndStatus(patient, Status.Admitted);
 
     }
+    
+    public Optional<Admission> findByAdmissionNo(String admissionNo) {
+        return admissionRepository.findByAdmissionNo(admissionNo);
+
+    }
 
     public Admission findAdmissionByNumber(String admissionNo) {
         if (admissionNo != null) {
@@ -253,5 +258,9 @@ public class AdmissionService {
         bedService.updateBed(b);
 
         return admissionRepository.save(a);
+    }
+
+    public  Admission saveAdmission(Admission admission){
+       return admissionRepository.save(admission);
     }
 }

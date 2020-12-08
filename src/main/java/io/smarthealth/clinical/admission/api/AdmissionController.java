@@ -7,7 +7,9 @@ package io.smarthealth.clinical.admission.api;
 
 import io.smarthealth.clinical.admission.data.AdmissionData;
 import io.smarthealth.clinical.admission.domain.Admission;
+import io.smarthealth.clinical.admission.domain.Bed;
 import io.smarthealth.clinical.admission.service.AdmissionService;
+import io.smarthealth.clinical.admission.service.BedService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -41,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdmissionController {
 
     private final AdmissionService admissionService;
+    private final BedService bedService;
 
     @PostMapping("/admission")
 //    @PreAuthorize("hasAuthority('create_admission')")
@@ -118,5 +121,28 @@ public class AdmissionController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
+
+
+    @PutMapping("/admission/{admissionNo}/checkout")
+//    @PreAuthorize("hasAuthority('create_admission')")
+    public ResponseEntity<?> checkOuInPatient(@PathVariable("admissionNo") String admissionNo) {
+
+        Admission a = admissionService.findAdmissionByNumber(admissionNo);
+        a.setStatus(Status.CheckOut);
+
+        admissionService.saveAdmission(a);
+
+        //release bed
+        Bed bed = a.getBed();
+        bed.setStatus(Bed.Status.Available);
+        bedService.updateBed(bed);
+
+        Pager<AdmissionData> pagers = new Pager();
+        pagers.setCode("200");
+        pagers.setMessage("Admission Updated successfully");
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagers);
+    }
+
 
 }

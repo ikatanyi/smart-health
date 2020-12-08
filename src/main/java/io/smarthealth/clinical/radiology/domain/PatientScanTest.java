@@ -89,6 +89,8 @@ public class PatientScanTest extends Auditable {
             entity.setPatientNumber(this.getPatientScanRegister().getPatientNo());
             entity.setIsWalkin(this.getPatientScanRegister().getIsWalkin());           
             entity.setOrderedDate(this.getPatientScanRegister().getReceivedDate());
+            entity.setReferenceNo(this.getPatientScanRegister().getTransactionId());
+            entity.setPaymentMode(this.getPatientScanRegister().getPaymentMode());
             if(this.getPatientScanRegister().getVisit()!=null) {
                 if(this.getPatientScanRegister().getVisit().getHealthProvider()!=null)
                     entity.setRequestedByStaffNumber(this.getPatientScanRegister().getVisit().getHealthProvider().getStaffNumber()); 

@@ -290,10 +290,14 @@ public class ConsultationController {
             Visit visit = visitService.findVisitEntityOrThrow(data.getVisitNumber());
             Patient patient = patientService.findPatientOrThrow(data.getPatientNumber());
             patientDiagnosis = diagnosisDataService.map(data);
+            //find diagnosis by code identifier
+           Optional<Disease> disease=  diseaseService.findDiseaseByCodeOptional(data.getCode());
+            if(disease.isPresent()){
+                patientDiagnosis.setMCode(disease.get().getMCode());
+            }
             patientDiagnosis.setVisit(visit);
             patientDiagnosis.setPatient(patient);
             patientDiagnosises.add(patientDiagnosis);
-
         }
 
         List<PatientDiagnosis> savedDiagnosisList = diagnosisService.createListOfPatientDiagnosis(patientDiagnosises);

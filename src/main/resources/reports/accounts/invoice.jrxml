@@ -17,6 +17,9 @@
 	<parameter name="Header_Data" class="java.util.List"/>
 	<parameter name="Footer_Data" class="java.util.List"/>
 	<parameter name="showCapitationItem" class="java.lang.Boolean"/>
+	<parameter name="admissionDate" class="java.lang.Object"/>
+	<parameter name="dischargeDate" class="java.lang.Object"/>
+	<parameter name="inPatient" class="java.lang.Boolean"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -71,7 +74,7 @@
 		</band>
 	</background>
 	<title>
-		<band height="196">
+		<band height="230">
 			<line>
 				<reportElement positionType="Float" x="2" y="21" width="552" height="1" uuid="b384c05c-cf32-45c7-b4b4-32132cee5059"/>
 				<graphicElement>
@@ -200,6 +203,42 @@
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="335" y="202" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="f4112b91-7a30-4a94-ad6d-ef9b01f85ce3">
+					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Discharge Date :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="414" y="202" width="140" height="16" isRemoveLineWhenBlank="true" uuid="e5003b73-baac-45bd-a87e-f9b2397e4475">
+					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dischargeDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" mode="Transparent" x="335" y="185" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="d2b76eb3-f1aa-48ed-bc54-c4d86193c3e4">
+					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Admission Date :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="414" y="185" width="140" height="16" isRemoveLineWhenBlank="true" uuid="371a0fbe-10e9-41a6-ab98-e4061dba6590">
+					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{admissionDate}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<detail>

@@ -25,7 +25,7 @@ public class MohSpecification {
             }
 
             if (!b705) {
-                predicates.add(cb.equal(root.get("b705"), b705));
+                predicates.add(cb.equal(root.get("b705"), true));
             }
 
             if (term != null) {
@@ -36,6 +36,7 @@ public class MohSpecification {
                         )
                 );
             }
+            query.orderBy(cb.asc(root.get("id")));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

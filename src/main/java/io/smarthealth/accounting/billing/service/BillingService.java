@@ -177,7 +177,7 @@ public class BillingService {
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
         bill.setBillNumber(bill_no);
         PatientBill savedBill = save(bill);
-        if (savedBill.getPaymentMode().equals("Insurance")) {
+        if (savedBill.getPaymentMode().equals("Insurance") || (savedBill.getVisit() != null && savedBill.getVisit().getVisitType() == VisitEnum.VisitType.Inpatient)) {
             journalService.save(toJournal(savedBill, store));
         }
     }
@@ -319,14 +319,14 @@ public class BillingService {
 
     public PatientBillItem findBillItemByPatientBill(String billNumber) {
         Optional<PatientBill> patientBill = findByBillNumber(billNumber);
-        if (patientBill.isPresent()) {
-            Optional<PatientBillItem> billItem = billItemRepository.findByPatientBill(patientBill.get());
-            if (billItem.isPresent()) {
-                return billItem.get();
-            } else {
-                return null;
-            }
-        }
+//        if (patientBill.isPresent()) {
+//            Optional<PatientBillItem> billItem = billItemRepository.findByPatientBill(patientBill.get());
+//            if (billItem.isPresent()) {
+//                return billItem.get();
+//            } else {
+//                return null;
+//            }
+//        }
         return null;
     }
 
