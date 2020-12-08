@@ -37,5 +37,6 @@ public class ItemData {
     private Long taxId;
     private String tax;
     private Boolean active;
+    private Boolean generalFeeItem;
 
 }

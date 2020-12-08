@@ -17,6 +17,8 @@ import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.stock.item.domain.Item;
+import lombok.Data;
+
 import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -25,7 +27,6 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import lombok.Data;
 
 @Data
 @Entity

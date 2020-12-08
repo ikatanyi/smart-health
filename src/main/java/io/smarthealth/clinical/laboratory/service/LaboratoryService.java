@@ -325,7 +325,7 @@ public class LaboratoryService {
 
         } else {
             WalkIn w = createWalking(data.getPatientName());
-            Optional<Employee> employee = employeeService.findByEmployeeID(data.getRequestedBy());
+            Optional<Employee> employee = employeeService.findByEmployeeID(data.getMedicId());
             if(employee.isPresent())                
                 request.setRequestedBy(employee.get().getFullName());
             request.setPatientNo(w.getWalkingIdentitificationNo());
