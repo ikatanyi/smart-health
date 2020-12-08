@@ -98,9 +98,9 @@ public class RadiologyService {
         patientScanRegData.setTransactionId(transactionId);
         patientScanReg.setTransactionId(transactionId);
         patientScanReg.setIsWalkin(patientScanRegData.getIsWalkin());
-
+        Visit visit = null;
         if (visitNo != null && !patientScanReg.getIsWalkin()) {
-            Visit visit = visitService.findVisitEntityOrThrow(visitNo);
+            visit = visitService.findVisitEntityOrThrow(visitNo);
             patientScanReg.setVisit(visit);
             patientScanReg.setPatientName(visit.getPatient().getFullName());
             patientScanReg.setPatientNo(visit.getPatient().getPatientNumber());
