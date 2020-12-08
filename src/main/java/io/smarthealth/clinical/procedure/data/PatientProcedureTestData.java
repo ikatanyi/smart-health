@@ -35,6 +35,7 @@ public class PatientProcedureTestData {
     private Long requestId;
     private String requestedBy;
     private Boolean paid;
+    private Boolean generalFeeItem;
     private double testPrice;
     private double discount;
     private String paymentMode;

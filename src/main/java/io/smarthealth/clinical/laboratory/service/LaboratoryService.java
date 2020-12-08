@@ -22,6 +22,7 @@ import io.smarthealth.clinical.laboratory.domain.LabTestRepository;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.domain.specification.LabRegisterSpecification;
 import io.smarthealth.clinical.laboratory.domain.specification.LabResultSpecification;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -355,13 +356,23 @@ public class LaboratoryService {
             panels.add(data);
             return null;
         }
-
+        
         LabRegisterTest test = new LabRegisterTest();
         test.setCollected(Boolean.FALSE);
         test.setEntered(Boolean.FALSE);
         test.setLabTest(labTest);
 
-        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
+//        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
+        if(patientScanReg.getPaymentMode().equals("Cash")){
+            Optional<Visit> visit = visitService.findVisit(data.getVisitNumber);
+                   if(visit.isPresent() && visit.get().getVisitType()== VisitEnum.VisitType.Inpatient)
+                      test.setPaid(Boolean.TRUE);
+                    else
+                      test.setPaid(Boolean.FALSE);
+                }
+                else{
+                     test.setPaid(Boolean.TRUE);
+                }
         test.setVoided(Boolean.FALSE);
         test.setValidated(Boolean.FALSE);
         test.setRequestId(data.getRequestId());

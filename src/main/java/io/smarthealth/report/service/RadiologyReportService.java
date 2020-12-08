@@ -6,6 +6,7 @@
 package io.smarthealth.report.service;
 
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
@@ -46,7 +47,7 @@ public class RadiologyReportService {
     private final JasperReportsService reportService;
     private final PatientService patientService;
     private final RadiologyService scanService;
-    
+    private final BillingService billingService;
     private final VisitService visitService;
     
     
