@@ -12,6 +12,7 @@ import io.smarthealth.clinical.wardprocedure.domain.ConsentForm;
 import io.smarthealth.clinical.wardprocedure.domain.repository.ConsentFormRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 /**
