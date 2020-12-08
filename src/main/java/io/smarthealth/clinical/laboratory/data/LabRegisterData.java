@@ -47,8 +47,8 @@ public class LabRegisterData {
 
     private String paymentMode;
     
-
-
+    private String requestedBy;
+    
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<LabRegisterTestData> tests = new ArrayList<>();
     
