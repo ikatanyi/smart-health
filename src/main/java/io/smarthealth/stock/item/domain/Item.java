@@ -57,6 +57,9 @@ public class Item extends Identifiable {
     private String unit;
     private String description;
 
+    @Column(columnDefinition="tinyint(1) default 0")
+    private Boolean generalFeeItem;
+
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_item_tax_id"))
     private Tax tax;
@@ -108,6 +111,7 @@ public class Item extends Identifiable {
         data.setRate(this.rate);
         data.setRoute(this.route);
         data.setStrength(this.strength);
+        data.setGeneralFeeItem(this.getGeneralFeeItem());
         if (this.tax != null) {
             data.setTax(this.tax.getTaxName());
             data.setTaxId(this.tax.getId());

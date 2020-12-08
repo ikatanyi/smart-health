@@ -170,6 +170,7 @@ public class ItemService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Item updateItem(Long id, CreateItem createItem) {
+        System.out.println("getGeneralFeeItem "+createItem.getGeneralFeeItem());
         Item item = findItemEntityOrThrow(id);
         item.setDrug(Boolean.FALSE);
         item.setCategory(createItem.getStockCategory());
@@ -180,6 +181,7 @@ public class ItemService {
         item.setItemType(createItem.getItemType());
         item.setRate(createItem.getRate());
         item.setUnit(createItem.getItemUnit());
+        item.setGeneralFeeItem(createItem.getGeneralFeeItem());
 
         if (createItem.getTaxId() != null) {
             Optional<Tax> tax = taxRepository.findById(createItem.getTaxId());

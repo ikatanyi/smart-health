@@ -40,5 +40,6 @@ public class CreateItem {
     private String uom; 
     @ApiModelProperty(hidden=true)
     private Double available;
+    private Boolean generalFeeItem;
     
 }
