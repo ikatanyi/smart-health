@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.doctors.data.DoctorInvoiceData;
-import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoiceRepository;
 import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import io.smarthealth.accounting.doctors.domain.specification.DoctorInvoiceSpecification;
@@ -25,10 +24,10 @@ import io.smarthealth.organization.person.patient.domain.PatientRepository;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.service.ItemService;
+import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import io.smarthealth.accounting.doctors.domain.DoctorItemRepository;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum.ServiceType;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.stock.item.domain.Item;
@@ -54,6 +53,8 @@ public class DoctorInvoiceService {
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final VisitRepository visitRepository;
     private final ItemService itemService;
+    
+
  
 //    private final VisitService visitService;
 

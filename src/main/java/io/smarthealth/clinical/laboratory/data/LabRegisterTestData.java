@@ -24,6 +24,7 @@ public class LabRegisterTestData {
 
     private Long id;
     private Long labRegisterId;
+    private String visitNumber;
 
     private String orderNumber;
     private String labNumber;

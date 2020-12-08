@@ -15,32 +15,34 @@
 		<variableExpression><![CDATA[$F{createdBy}]]></variableExpression>
 	</variable>
 	<detail>
-		<band height="74" splitType="Stretch">
+		<band height="105" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="2" y="58" width="539" height="11" uuid="cd9db49d-c9dc-4960-a0a5-7e5d0236328b"/>
+				<reportElement positionType="Float" x="2" y="74" width="553" height="19" uuid="cd9db49d-c9dc-4960-a0a5-7e5d0236328b"/>
+				<box topPadding="1" bottomPadding="1"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{comments}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="2" y="22" width="539" height="12" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
+				<reportElement positionType="Float" x="2" y="22" width="553" height="21" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
+				<box topPadding="1" leftPadding="0" bottomPadding="1" rightPadding="1"/>
 				<textElement verticalAlignment="Middle" markup="html">
-					<font size="8"/>
+					<font size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{templateNotes}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="2" y="8" width="539" height="13" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
+				<reportElement x="2" y="0" width="553" height="21" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
 				<textElement verticalAlignment="Middle">
-					<font size="9" isBold="true"/>
+					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Report]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="2" y="44" width="539" height="13" uuid="0cba2f73-babc-42a6-9ebc-072229ea1b81"/>
+				<reportElement positionType="Float" x="2" y="56" width="553" height="17" uuid="0cba2f73-babc-42a6-9ebc-072229ea1b81"/>
 				<textElement verticalAlignment="Middle">
-					<font size="9" isBold="true"/>
+					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Conclusion]]></text>
 			</staticText>
