@@ -31,7 +31,8 @@ public class LabRegisterData {
     private String orderNumber; //reference doctor's request
 
     private String labNumber;
-
+    private Long medicId;
+    @ApiModelProperty(hidden=true, required=false)
     private String requestedBy;
     @ApiModelProperty(hidden=true, required=false)
     private String requestedByStaffNumber;
@@ -46,8 +47,6 @@ public class LabRegisterData {
     private LabTestStatus status;
 
     private String paymentMode;
-    
-    private String requestedBy;
     
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<LabRegisterTestData> tests = new ArrayList<>();

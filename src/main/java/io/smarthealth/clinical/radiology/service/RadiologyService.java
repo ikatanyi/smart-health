@@ -25,6 +25,7 @@ import io.smarthealth.clinical.radiology.domain.specification.PatientScanTestSpe
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.documents.data.DocumentData;
@@ -98,9 +99,9 @@ public class RadiologyService {
         patientScanRegData.setTransactionId(transactionId);
         patientScanReg.setTransactionId(transactionId);
         patientScanReg.setIsWalkin(patientScanRegData.getIsWalkin());
-
+        Visit visit = null;
         if (visitNo != null && !patientScanReg.getIsWalkin()) {
-            Visit visit = visitService.findVisitEntityOrThrow(visitNo);
+            visit = visitService.findVisitEntityOrThrow(visitNo);
             patientScanReg.setVisit(visit);
             patientScanReg.setPatientName(visit.getPatient().getFullName());
             patientScanReg.setPatientNo(visit.getPatient().getPatientNumber());
@@ -135,7 +136,7 @@ public class RadiologyService {
                 pte.setRadiologyTest(labTestType);
                 pte.setStatus(ScanTestState.Scheduled);
                 if(patientScanReg.getPaymentMode().equals("Cash")){
-                   if(visit!=null && visit.getVisitType()==VisitType.Inpatient)
+                   if(visit!=null && visit.getVisitType()== VisitEnum.VisitType.Inpatient)
                       pte.setPaid(Boolean.TRUE);                    
                     else
                       pte.setPaid(Boolean.FALSE);
