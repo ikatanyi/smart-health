@@ -36,7 +36,7 @@ public class MohSpecification {
                         )
                 );
             }
-            query.orderBy(cb.asc(root.get("code")));
+            query.orderBy(cb.asc(root.get("id")));
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

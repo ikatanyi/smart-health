@@ -91,14 +91,12 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>  
-        
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.16</version>
-            <type>jar</type>
-        </dependency>
-
+		<groupId>org.projectlombok</groupId>
+		<artifactId>lombok</artifactId>
+		<version>1.18.16</version>
+		<scope>provided</scope>
+	</dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -248,9 +246,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <executable>true</executable>
-                    <nonFilteredFileExtensions>
-                        <nonFilteredFileExtension>jasper</nonFilteredFileExtension>
-                    </nonFilteredFileExtensions>
                 </configuration>
                 <executions>
                     <execution>

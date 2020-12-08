@@ -22,8 +22,8 @@ import io.smarthealth.clinical.laboratory.domain.LabTestRepository;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.domain.specification.LabRegisterSpecification;
 import io.smarthealth.clinical.laboratory.domain.specification.LabResultSpecification;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
-import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -55,6 +55,7 @@ import io.smarthealth.documents.service.FileStorageService;
 import io.smarthealth.notification.data.NoticeType;
 import io.smarthealth.notification.data.NotificationData;
 import io.smarthealth.notification.service.NotificationEventPublisher;
+import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.security.util.SecurityUtils;
@@ -66,6 +67,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.web.multipart.MultipartFile;
+import io.smarthealth.organization.facility.domain.Employee;
 
 /**
  *
@@ -91,12 +93,13 @@ public class LaboratoryService {
     private final FileStorageService fileService;
     private final ConfigService configurationService;
     private final LabConfigurationService labConfigService;
+    private final EmployeeService employeeService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public LabRegister createLabRegister(LabRegisterData data) {
 
         LabRegister request = toLabRegister(data);
-
+        
         String trnId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String labNo = sequenceNumberService.next(1L, Sequences.LabNumber.name());
         request.setLabNumber(labNo);
@@ -306,7 +309,6 @@ public class LaboratoryService {
         request.setOrderNumber(data.getOrderNumber());
         request.setIsWalkin(data.getIsWalkin());
         request.setPaymentMode(data.getPaymentMode());
-
         if (!data.getIsWalkin()) {
             Visit visit = getPatientVisit(data.getVisitNumber());
             request.setVisit(visit);
@@ -323,12 +325,14 @@ public class LaboratoryService {
 
         } else {
             WalkIn w = createWalking(data.getPatientName());
-            request.setRequestedBy(data.getPatientName());
+            Optional<Employee> employee = employeeService.findByEmployeeID(data.getRequestedBy());
+            if(employee.isPresent())                
+                request.setRequestedBy(employee.get().getFullName());
             request.setPatientNo(w.getWalkingIdentitificationNo());
             request.setPaymentMode("Cash");
         }
         String method = request.getPaymentMode();
-        System.out.println("method "+method);
+        System.out.println("method " + method);
 
         request.setRequestDatetime(data.getRequestDatetime());
         request.setStatus(LabTestStatus.AwaitingSpecimen);
@@ -361,7 +365,17 @@ public class LaboratoryService {
         test.setEntered(Boolean.FALSE);
         test.setLabTest(labTest);
 
-        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
+//        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
+        if (paymentMode.equals("Cash")) {
+            Optional<Visit> visit = visitService.findVisit(data.getVisitNumber());
+            if (visit.isPresent() && visit.get().getVisitType() == VisitEnum.VisitType.Inpatient) {
+                test.setPaid(Boolean.TRUE);
+            } else {
+                test.setPaid(Boolean.FALSE);
+            }
+        } else {
+            test.setPaid(Boolean.TRUE);
+        }
         test.setVoided(Boolean.FALSE);
         test.setValidated(Boolean.FALSE);
         test.setRequestId(data.getRequestId());
@@ -385,7 +399,17 @@ public class LaboratoryService {
                         test.setCollected(Boolean.FALSE);
                         test.setEntered(Boolean.FALSE);
                         test.setLabTest(x);
-                        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
+//                        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
+                        if (paymentMode.equals("Cash")) {
+                            Optional<Visit> visit = visitService.findVisit(data.getVisitNumber());
+                            if (visit.isPresent() && visit.get().getVisitType() == VisitEnum.VisitType.Inpatient) {
+                                test.setPaid(Boolean.TRUE);
+                            } else {
+                                test.setPaid(Boolean.FALSE);
+                            }
+                        } else {
+                            test.setPaid(Boolean.TRUE);
+                        }
 
                         test.setPaid(Boolean.TRUE);
                         test.setVoided(Boolean.FALSE);
@@ -434,17 +458,17 @@ public class LaboratoryService {
         }
         return testRepository.findTestsByVisitNumber(visitNo);
     }
-    
+
     public List<LabRegisterTest> getLabTests(LabTest test) {
-            return testRepository.findByLabTest(test);
+        return testRepository.findByLabTest(test);
     }
-    
-    public List<LabRegisterTest> getLabTestsByDate(LabTest test, LocalDateTime date1,LocalDateTime date2) {
-            return testRepository.findByLabTestAndEntryDateTimeBetween(test,date1,date2);
+
+    public List<LabRegisterTest> getLabTestsByDate(LabTest test, LocalDateTime date1, LocalDateTime date2) {
+        return testRepository.findByLabTestAndEntryDateTimeBetween(test, date1, date2);
     }
-    
+
     public List<LabRegisterTest> getTestsByDate(DateRange range) {
-            return testRepository.findTestsByDateRange(range.getStartDateTime(),range.getEndDateTime());
+        return testRepository.findTestsByDateRange(range.getStartDateTime(), range.getEndDateTime());
     }
 
     private WalkIn createWalking(String patientName) {
@@ -654,4 +678,4 @@ public class LaboratoryService {
                     }
                 });
     }
-} 
+}

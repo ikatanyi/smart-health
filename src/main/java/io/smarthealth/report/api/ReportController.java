@@ -1,6 +1,5 @@
 package io.smarthealth.report.api;
 
-import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.report.domain.enumeration.ReportName;
 import io.smarthealth.report.service.LabReportService;
@@ -18,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.sql.SQLException;
 import javax.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRException;

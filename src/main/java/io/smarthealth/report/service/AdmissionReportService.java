@@ -182,7 +182,7 @@ public class AdmissionReportService {
         String visitNumber = reportParam.getFirst("visitNumber");
         Admission adm = admissionService.findAdmissionByNumber(visitNumber);
         DischargeData discharges = dischargeService.getDischargeByAdmission(adm).toData();
-        String procedures="",diagnosis="",drugs="", scans="";
+        String procedures="",diagnosis="",drugs="", scans="",tests="";
         String dd="";
         int i=1;
         
@@ -190,10 +190,14 @@ public class AdmissionReportService {
                 .stream()
                 .map((scan) -> {
                    PatientScanTestData data =  scan.toData();
-                   scans.concat(data.getScanName()).concat("\n").concat("Findings\n").concat(data.getResultData()!=null?data.getResultData().getTemplateNotes():"");
+                   
                    return data;
                         })
                 .collect(Collectors.toList());
+        
+        for(PatientScanTestData data:scanData){
+            scans = scans.concat(String.valueOf(i++)+". ").concat(data.getScanName()).concat("\n");
+        }
 
         List<PatientProcedureTestData> proceduresData = procedureService.findProcedureResultsByVisit(adm)
                 .stream()
@@ -213,6 +217,7 @@ public class AdmissionReportService {
                 })
                 .collect(Collectors.toList());
 
+        i=1;
         for(PrescriptionData data:pharmacyData){
             drugs= drugs.concat(String.valueOf(i++)+". ").concat(StringUtils.capitalise(data.getItemName())).concat(" ("+StringUtils.clean(data.getRoute())+") Take "+data.getDose()+" "+StringUtils.clean(data.getDoseUnits())+" "+StringUtils.clean(data.getFrequency())+" "+data.getDuration()+" "+StringUtils.clean(data.getDurationUnits())+"\n");
             dd= dd.concat(data.getItemName());
@@ -231,12 +236,21 @@ public class AdmissionReportService {
 
         i=1;
         for(DiagnosisData data:diagnosisData){
-           diagnosis=  diagnosis.concat(String.valueOf(i++)+". ").concat(". "+StringUtils.clean(data.getDescription())+"("+StringUtils.clean(data.getCode())+")\n");
+           diagnosis=  diagnosis.concat(String.valueOf(i++)+". ").concat(StringUtils.clean(data.getDescription())+"("+StringUtils.clean(data.getCode())+")\n");
         }
 
+        i=1;
+        for(LabRegisterTestData data:labTests){
+            tests=tests.concat(String.valueOf(i++)+". ").concat(StringUtils.clean(data.getTestName())).concat("("+data.getTestCode()+")\n");
+        }
+        i=1;
+        for(PatientProcedureTestData data:proceduresData){
+            if(!data.getGeneralFeeItem())
+                procedures=procedures.concat(String.valueOf(i++)+". ").concat(StringUtils.clean(data.getProcedureName())).concat("\n");
+        }
         reportData.getFilters().put("pharmacyData", drugs);
         reportData.getFilters().put("diagnosis", diagnosis);
-        reportData.getFilters().put("labTests", labTests);
+        reportData.getFilters().put("labTests", tests);
         reportData.getFilters().put("procedures", procedures);
         reportData.getFilters().put("scanData", scans);
 

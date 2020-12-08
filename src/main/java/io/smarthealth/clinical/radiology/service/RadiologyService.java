@@ -134,7 +134,15 @@ public class RadiologyService {
                 pte.setQuantity(id.getQuantity());
                 pte.setRadiologyTest(labTestType);
                 pte.setStatus(ScanTestState.Scheduled);
-                pte.setPaid(patientScanReg.getPaymentMode().equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
+                if(patientScanReg.getPaymentMode().equals("Cash")){
+                   if(visit!=null && visit.getVisitType()==VisitType.Inpatient)
+                      pte.setPaid(Boolean.TRUE);                    
+                    else
+                      pte.setPaid(Boolean.FALSE);
+                }
+                else{
+                     pte.setPaid(Boolean.TRUE);
+                }
                 pte.setMedic(employeeService.findEmployeeById(id.getMedicId()));
 //                Employee medic = employeeService.findEmployeeById(id.getMedicId());
 //                if (medic.isPresent()) {

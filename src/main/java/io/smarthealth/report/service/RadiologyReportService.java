@@ -5,6 +5,8 @@
  */
 package io.smarthealth.report.service;
 
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.service.RadiologyService;
@@ -45,7 +47,7 @@ public class RadiologyReportService {
     private final JasperReportsService reportService;
     private final PatientService patientService;
     private final RadiologyService scanService;
-    
+    private final BillingService billingService;
     private final VisitService visitService;
     
     
@@ -64,7 +66,21 @@ public class RadiologyReportService {
          List<PatientScanTestData> patientData = scanService.findAllTests(patientNumber, search, scanNo, status, visitId, range, isWalkin, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map((register) -> register.toData())
+                .map((register) -> {
+                    PatientScanTestData data = register.toData();
+                    List<PatientBillItem> billItem = billingService.getPatientBillItem(data.getReferenceNo());
+                    if(!billItem.isEmpty()){
+                        data.setReferenceNo(billItem.get(0).getPaymentReference());
+                        billItem.stream().map((item) -> {
+                            if(data.getPaymentMode().equalsIgnoreCase("Cash"))
+                                data.setTotalCash(+item.getAmount());
+                            return item;
+                        }).filter((item) -> (data.getPaymentMode().equalsIgnoreCase("Insurance"))).forEachOrdered((item) -> {
+                            data.setTotalInsurance(+item.getAmount());
+                        });
+                    }
+                    return data;
+                })
                 .collect(Collectors.toList());
         reportData.setData(patientData);
         if(!patientData.isEmpty()){

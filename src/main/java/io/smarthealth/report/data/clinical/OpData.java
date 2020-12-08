@@ -5,6 +5,7 @@
  */
 package io.smarthealth.report.data.clinical;
 
+
 import lombok.Data;
 
 /**

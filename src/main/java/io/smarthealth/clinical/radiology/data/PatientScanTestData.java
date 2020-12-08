@@ -78,6 +78,19 @@ public class PatientScanTestData {
     @ApiModelProperty(required = false, hidden = true)
     private DocumentData documentData;
     
+    @ApiModelProperty(required = false, hidden = true)
+    private Double totalCash=0.0;
+    
+    @ApiModelProperty(required = false, hidden = true)
+    private Double totalInsurance=0.0;
+    
+    @ApiModelProperty(required = false, hidden = true)
+    private String  referenceNo;
+    
+    @ApiModelProperty(required = false, hidden = true)
+    private String  paymentMode;
+    
+    
     public PatientScanTest map(){
         PatientScanTest entity = new PatientScanTest();
         entity.setComments(this.getComments());        
