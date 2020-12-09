@@ -701,8 +701,19 @@ public class BillingService {
         String visitNumber = data.getVisitNumber();
         Long schemeId = data.getSchemeId();
         //TODO check if the visit is valid or not
-        Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
-                .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
+        Optional<Visit> visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn);
+        if(!visitOptional.isPresent()){
+            visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.Admitted);
+            if(!visitOptional.isPresent()){
+                visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.Discharged);
+            }
+        }
+        if(!visitOptional.isPresent()){
+            throw APIException.notFound("No active visit found for the patient selected");
+        }
+
+        Visit visit = visitOptional.get();
+
         Scheme scheme = schemeService.fetchSchemeById(schemeId);
 
         Optional<SchemeConfigurations> schemeConfigs = schemeService.fetchSchemeConfigByScheme(scheme);
