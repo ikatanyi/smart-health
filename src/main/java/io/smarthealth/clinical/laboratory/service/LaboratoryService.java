@@ -332,10 +332,12 @@ public class LaboratoryService {
 
         } else {
             WalkIn w = createWalking(data.getPatientName());
-            if(data.getMedicId()!=null)
+            if(data.getMedicId()!=null){
                 Optional<Employee> employee = employeeService.findByEmployeeID(data.getMedicId());
-                if(employee.isPresent())
+                if(employee.isPresent()){
                     request.setRequestedBy(employee.get().getFullName());
+                }
+            }
             request.setPatientNo(w.getWalkingIdentitificationNo());
             request.setPaymentMode("Cash");
         }

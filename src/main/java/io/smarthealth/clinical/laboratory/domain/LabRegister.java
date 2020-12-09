@@ -81,7 +81,7 @@ public class LabRegister extends Auditable {
             }
         } else {
 
-            data.setPatientName(this.requestedBy);
+            data.setPatientName("");
             data.setVisitNumber(this.patientNo);
         }
         data.setPatientNo(this.patientNo);
