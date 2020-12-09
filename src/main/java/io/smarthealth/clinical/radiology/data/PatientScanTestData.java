@@ -64,10 +64,10 @@ public class PatientScanTestData {
     @ApiModelProperty(required=false, hidden=true)
     private Boolean supervisorConfirmation;
     @ApiModelProperty(required=false, hidden=true)
-    private LocalDate receivedDate;
+    private LocalDate receivedDate=LocalDate.now();
     
     @ApiModelProperty(required=false, hidden=true)
-    private LocalDate orderedDate;
+    private LocalDate orderedDate=LocalDate.now();
     
     @ApiModelProperty(required=false, hidden=true)
     private String reportedBy;

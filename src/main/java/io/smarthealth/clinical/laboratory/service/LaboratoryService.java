@@ -313,6 +313,13 @@ public class LaboratoryService {
             Visit visit = getPatientVisit(data.getVisitNumber());
             request.setVisit(visit);
             request.setRequestedBy(data.getRequestedBy());
+
+            if(data.getRequestedBy()==null&&data.getMedicId()!=null){
+                Optional<Employee> employee = employeeService.findByEmployeeID(data.getMedicId());
+                if(employee.isPresent())
+                    request.setRequestedBy(employee.get().getFullName());
+            }
+
             request.setPatientNo(visit.getPatient().getPatientNumber());
 
             Optional<PaymentDetails> visitPayDetails = paymentDetailsService.getPaymentDetailsByVist(visit);
@@ -325,9 +332,10 @@ public class LaboratoryService {
 
         } else {
             WalkIn w = createWalking(data.getPatientName());
-            Optional<Employee> employee = employeeService.findByEmployeeID(data.getMedicId());
-            if(employee.isPresent())                
-                request.setRequestedBy(employee.get().getFullName());
+            if(data.getMedicId()!=null)
+                Optional<Employee> employee = employeeService.findByEmployeeID(data.getMedicId());
+                if(employee.isPresent())
+                    request.setRequestedBy(employee.get().getFullName());
             request.setPatientNo(w.getWalkingIdentitificationNo());
             request.setPaymentMode("Cash");
         }
