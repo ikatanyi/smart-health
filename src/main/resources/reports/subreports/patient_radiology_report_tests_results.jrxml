@@ -17,32 +17,32 @@
 	<detail>
 		<band height="222" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="2" y="126" width="553" height="19" uuid="cd9db49d-c9dc-4960-a0a5-7e5d0236328b"/>
+				<reportElement positionType="Float" x="1" y="124" width="553" height="19" uuid="cd9db49d-c9dc-4960-a0a5-7e5d0236328b"/>
 				<box topPadding="1" bottomPadding="1"/>
 				<textElement verticalAlignment="Middle">
-					<font size="12"/>
+					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{comments}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="2" y="38" width="553" height="21" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
+				<reportElement positionType="Float" x="1" y="38" width="553" height="16" uuid="fcd46d14-1487-45be-bf29-39f0c097114e"/>
 				<box topPadding="1" leftPadding="0" bottomPadding="1" rightPadding="1"/>
 				<textElement verticalAlignment="Middle" markup="html">
-					<font size="12"/>
+					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{templateNotes}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="2" y="14" width="553" height="21" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
-				<textElement verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
+				<reportElement mode="Opaque" x="1" y="20" width="553" height="15" forecolor="#000000" backcolor="#CCCCCC" uuid="8c3fcd3b-ce0d-427d-ab42-357a7a688287"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Report]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="2" y="108" width="553" height="17" uuid="0cba2f73-babc-42a6-9ebc-072229ea1b81"/>
-				<textElement verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
+				<reportElement positionType="Float" mode="Opaque" x="1" y="107" width="553" height="15" forecolor="#000000" backcolor="#CCCCCC" uuid="0cba2f73-babc-42a6-9ebc-072229ea1b81"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Conclusion]]></text>
 			</staticText>
