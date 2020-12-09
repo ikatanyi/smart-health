@@ -101,7 +101,7 @@ public class MohService {
     }
     
     public List<MonthlyMobidity>getMonthlyMobidity(DateRange range, String age, String term){
-        if(term.equals(">5"))
+        if(age.equals(">5"))
            return mohRepository.findMorbidityOver5(range.getStartDate(), range.getEndDate(), term);
         else
            return mohRepository.findMorbidityUnder5(range.getStartDate(), range.getEndDate(), term);  

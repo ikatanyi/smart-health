@@ -154,19 +154,12 @@
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="57" splitType="Stretch">
+		<band height="87" splitType="Stretch">
 			<subreport>
-				<reportElement x="0" y="37" width="555" height="15" uuid="ece125a6-21bb-4b96-abbf-fd39e8eff18b"/>
+				<reportElement x="0" y="60" width="555" height="22" uuid="ece125a6-21bb-4b96-abbf-fd39e8eff18b"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{reportResultData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_radiology_report_tests_results.jasper"]]></subreportExpression>
 			</subreport>
-			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="314" y="17" width="242" height="15" isRemoveLineWhenBlank="true" uuid="556f86a4-8354-4166-bd14-d82709baf363"/>
-				<textElement verticalAlignment="Middle">
-					<font size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{reportedBy}]]></textFieldExpression>
-			</textField>
 			<textField pattern="dd-MM-yyyy" isBlankWhenNull="false">
 				<reportElement positionType="Float" x="60" y="17" width="160" height="15" isRemoveLineWhenBlank="true" uuid="87855063-ab72-4dc8-b178-8dbafc2ca692"/>
 				<textElement verticalAlignment="Middle">
@@ -181,12 +174,6 @@
 				</textElement>
 				<text><![CDATA[Test Code :]]></text>
 			</staticText>
-			<line>
-				<reportElement positionType="Float" x="0" y="35" width="555" height="1" forecolor="#CC0000" uuid="7140b217-aeb6-464e-94dc-e454845eff62"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#999999"/>
-				</graphicElement>
-			</line>
 			<staticText>
 				<reportElement positionType="Float" x="1" y="18" width="59" height="14" uuid="6e202cde-efcf-41d1-97b6-a1d1d1de52db"/>
 				<textElement verticalAlignment="Middle">
@@ -201,24 +188,13 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{testCode}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement positionType="Float" x="230" y="1" width="126" height="15" uuid="e86a0c40-2d99-4088-8ed1-c1d59f70aae9"/>
-				<textElement verticalAlignment="Middle">
-					<font size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Test Name:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="230" y="17" width="127" height="15" isRemoveLineWhenBlank="true" uuid="a25b623a-115d-40a0-bf5b-204b70835d70"/>
-				<textElement verticalAlignment="Middle">
-					<font size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Reported By:]]></text>
-			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement positionType="Float" x="314" y="1" width="242" height="15" uuid="a7f6d8c6-5a6e-418c-a62c-59370074e4e3"/>
-				<textElement verticalAlignment="Middle">
-					<font size="11"/>
+				<reportElement positionType="Float" x="2" y="35" width="552" height="20" uuid="a7f6d8c6-5a6e-418c-a62c-59370074e4e3"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{scanName}]]></textFieldExpression>
 			</textField>
@@ -233,4 +209,18 @@
 			</subreport>
 		</band>
 	</pageFooter>
+	<summary>
+		<band height="40">
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="313" y="22" width="242" height="15" isRemoveLineWhenBlank="true" uuid="556f86a4-8354-4166-bd14-d82709baf363"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reportedBy}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
 </jasperReport>

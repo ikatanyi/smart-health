@@ -89,7 +89,7 @@ public class TheatreService {
 
         patientbill.setBillNumber(bill_no);
         patientbill.setTransactionId(trdId);
-
+        ServicePoint srv = servicePointService.getServicePoint(data.getServicePointId());
         List<PatientBillItem> lineItems = data.getItems()
                 .stream()
                 .map(lineData -> {
@@ -114,7 +114,7 @@ public class TheatreService {
                     billItem.setDiscount(0D);
                     billItem.setBalance((billItem.getAmount()));
 
-                    billItem.setServicePoint(data.getServicePoint());
+                    billItem.setServicePoint(srv.getName());
                     billItem.setServicePointId(data.getServicePointId());
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setMedicId(null);

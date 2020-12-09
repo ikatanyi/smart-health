@@ -89,98 +89,98 @@
 				<text><![CDATA[INVOICE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="335" y="151" width="78" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
+				<reportElement positionType="Float" mode="Transparent" x="335" y="96" width="78" height="16" forecolor="#000000" backcolor="#9966FF" uuid="bc4d02a3-3301-406d-a444-2d75c58069b7"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Insurance :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="335" y="168" width="78" height="16" forecolor="#000000" backcolor="#9966FF" uuid="e480ec8a-e6de-414a-8827-42d638720712"/>
+				<reportElement positionType="Float" mode="Transparent" x="335" y="113" width="78" height="16" forecolor="#000000" backcolor="#9966FF" uuid="e480ec8a-e6de-414a-8827-42d638720712"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Scheme :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="151" width="140" height="16" uuid="1eafd5cb-179e-4783-9fb9-933e46d441d7"/>
+				<reportElement positionType="Float" x="414" y="96" width="140" height="16" uuid="1eafd5cb-179e-4783-9fb9-933e46d441d7"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{payer}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="168" width="140" height="16" uuid="35b60930-d90e-4906-8708-e0d617ece117"/>
+				<reportElement positionType="Float" x="414" y="113" width="140" height="16" uuid="35b60930-d90e-4906-8708-e0d617ece117"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{scheme}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="335" y="121" width="78" height="13" uuid="fe562e29-aad3-45dd-b0c4-fa8ba349ed98"/>
+				<reportElement positionType="Float" x="335" y="66" width="78" height="13" uuid="fe562e29-aad3-45dd-b0c4-fa8ba349ed98"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Member Name:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="335" y="93" width="78" height="13" uuid="dd747499-49e1-47a0-a0b4-e243aaeacf1d"/>
+				<reportElement positionType="Float" x="335" y="38" width="78" height="13" uuid="dd747499-49e1-47a0-a0b4-e243aaeacf1d"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Invoice Date :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="335" y="135" width="78" height="13" uuid="3ca0e4ed-78c6-4055-b598-3535412fe202"/>
+				<reportElement positionType="Float" x="335" y="80" width="78" height="13" uuid="3ca0e4ed-78c6-4055-b598-3535412fe202"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Member No :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" pattern="dd-MM-yyyy" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="93" width="140" height="13" isRemoveLineWhenBlank="true" uuid="6e8ee49e-9160-41cb-a7bb-1e225794004c"/>
+				<reportElement positionType="Float" x="414" y="38" width="140" height="13" isRemoveLineWhenBlank="true" uuid="6e8ee49e-9160-41cb-a7bb-1e225794004c"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{visitDate}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="79" width="140" height="13" forecolor="#000000" uuid="66ddc2a0-8061-4fa8-8c7d-b5a0c6704846"/>
+				<reportElement positionType="Float" x="414" y="24" width="140" height="13" forecolor="#000000" uuid="66ddc2a0-8061-4fa8-8c7d-b5a0c6704846"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{number}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="121" width="140" height="13" uuid="6c43b589-8dbc-4cfd-8621-63c6e3c5eb39"/>
+				<reportElement positionType="Float" x="414" y="66" width="140" height="13" uuid="6c43b589-8dbc-4cfd-8621-63c6e3c5eb39"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}.toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="135" width="140" height="13" uuid="357516ad-e8d0-4046-9359-0e36ab26475a"/>
+				<reportElement positionType="Float" x="414" y="80" width="140" height="13" uuid="357516ad-e8d0-4046-9359-0e36ab26475a"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{memberNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="335" y="79" width="78" height="13" forecolor="#000000" uuid="f65afb30-85e4-4d6b-b5f7-c1786359a0fb"/>
+				<reportElement positionType="Float" x="335" y="24" width="78" height="13" forecolor="#000000" uuid="f65afb30-85e4-4d6b-b5f7-c1786359a0fb"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Invoice No :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="107" width="140" height="13" uuid="65012583-6d90-42d6-9715-e8781619b3ed"/>
+				<reportElement positionType="Float" x="414" y="52" width="140" height="13" uuid="65012583-6d90-42d6-9715-e8781619b3ed"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" x="335" y="107" width="78" height="13" uuid="28719ca1-77c9-4692-8cce-8b12e53f5e11"/>
+				<reportElement positionType="Float" x="335" y="52" width="78" height="13" uuid="28719ca1-77c9-4692-8cce-8b12e53f5e11"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
@@ -204,7 +204,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="335" y="202" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="f4112b91-7a30-4a94-ad6d-ef9b01f85ce3">
+				<reportElement positionType="Float" mode="Transparent" x="335" y="147" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="f4112b91-7a30-4a94-ad6d-ef9b01f85ce3">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -212,8 +212,8 @@
 				</textElement>
 				<text><![CDATA[Discharge Date :]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="202" width="140" height="16" isRemoveLineWhenBlank="true" uuid="e5003b73-baac-45bd-a87e-f9b2397e4475">
+			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="414" y="147" width="140" height="16" isRemoveLineWhenBlank="true" uuid="e5003b73-baac-45bd-a87e-f9b2397e4475">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -222,7 +222,7 @@
 				<textFieldExpression><![CDATA[$P{dischargeDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement positionType="Float" mode="Transparent" x="335" y="185" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="d2b76eb3-f1aa-48ed-bc54-c4d86193c3e4">
+				<reportElement positionType="Float" mode="Transparent" x="335" y="130" width="78" height="16" isRemoveLineWhenBlank="true" forecolor="#000000" backcolor="#9966FF" uuid="d2b76eb3-f1aa-48ed-bc54-c4d86193c3e4">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -230,8 +230,8 @@
 				</textElement>
 				<text><![CDATA[Admission Date :]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="414" y="185" width="140" height="16" isRemoveLineWhenBlank="true" uuid="371a0fbe-10e9-41a6-ab98-e4061dba6590">
+			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="414" y="130" width="140" height="16" isRemoveLineWhenBlank="true" uuid="371a0fbe-10e9-41a6-ab98-e4061dba6590">
 					<printWhenExpression><![CDATA[$P{inPatient}.equals( true )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
