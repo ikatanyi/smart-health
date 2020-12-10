@@ -8,6 +8,7 @@ package io.smarthealth.accounting.billing.api;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.CopayData;
+import io.smarthealth.accounting.billing.data.PatientBalance;
 import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.data.VoidBillItem;
 import io.smarthealth.accounting.billing.data.nue.BillDetail;
@@ -133,7 +134,7 @@ public class BillingV2Controller {
     @PreAuthorize("hasAuthority('view_billV2')")
     public ResponseEntity<?> getBillDetails(
             @PathVariable(value = "visitNumber") String visitNumber,
-             @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
+            @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
@@ -158,8 +159,14 @@ public class BillingV2Controller {
     @PreAuthorize("hasAuthority('edit_billV2')")
     public ResponseEntity<?> cancelBills(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody List<VoidBillItem> billItems) {
         List<BillItemData> bills = service.voidBillItem(visitNumber, billItems).stream().map(x -> x.toData()).collect(Collectors.toList());
-
         return ResponseEntity.ok(bills);
+    }
+    
+     @GetMapping("/billing/balance")
+    public ResponseEntity<PatientBalance> getBalance(
+            @RequestParam(value = "visitNumber", required = false) String visitNumber,
+            @RequestParam(value = "patientNumber", required = false) String patientNumber) {
+        return ResponseEntity.ok(new PatientBalance());
     }
 
     Page<SummaryBill> toPage(List<SummaryBill> list, int pagesize, int pageNo) {
@@ -174,4 +181,5 @@ public class BillingV2Controller {
         Page<SummaryBill> pageResponse = new PageImpl<>(list.subList(min, max), pageable, list.size());
         return pageResponse;
     }
+ 
 }

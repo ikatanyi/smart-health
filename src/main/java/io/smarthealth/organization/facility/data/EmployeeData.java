@@ -15,7 +15,7 @@ import lombok.Data;
 /**
  *
  * @author Simon.waweru
- */
+ */  
 @Data
 public class EmployeeData extends PersonData {
 

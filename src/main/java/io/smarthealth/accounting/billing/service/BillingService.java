@@ -191,7 +191,7 @@ public class BillingService {
         }
         double amountToBill = 0.00;
         int itemCount = 0;
-        
+
         for (PatientBillItem b : bill.getBillItems()) {
             amountToBill = amountToBill + b.getAmount();
             itemCount++;
@@ -209,44 +209,45 @@ public class BillingService {
 
         if (bill.getVisit() != null) {
             pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
+            PaymentDetails payDetails = pd.orElse(null);
+            if (payDetails != null) {
 
-            Optional<SchemeConfigurations> schemeConfigurations = schemeService.fetchSchemeConfigByScheme(pd.get().getScheme());
+                Optional<SchemeConfigurations> schemeConfigurations = payDetails.getScheme() != null ? schemeService.fetchSchemeConfigByScheme(payDetails.getScheme()) : Optional.empty();
 
-            if(schemeConfigurations.isPresent() && schemeConfigurations.get().isLimitEnabled()){
-
-            if (pd.isPresent() && pd.get().getLimitEnabled()) {
-                PaymentDetails payDetails = pd.get();
-                if (payDetails.getRunningLimit() < amountToBill && !payDetails.getExcessAmountEnabled()) {
-                    throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount (" + payDetails.getRunningLimit() + ") ", "");
-                }
-                if (payDetails.getRunningLimit() < amountToBill && payDetails.getExcessAmountEnabled()) {
-                    //check if
-                    if (payDetails.getLimitReached()) {
-                        //proceed to accept excess entry
-                        //TODO: register to keep log of the excess amounts with correct pricebook
-                        for (PatientBillItem b : bill.getBillItems()) {
-                            BigDecimal defaultPrice = b.getItem().getRate(); //default cash selling price
-                            if (payDetails.getExcessAmountPayMode().equals(BillPayMode.Cash)) {
-                                b.setAmount(NumberUtils.createDouble(defaultPrice.toString()));
-                                b.setBillPayMode(BillPayMode.Cash);
-                            } else {
-                                try {
-                                    pricelistService.fetchPriceAmountByItemAndPriceBook(b.getItem(), payDetails.getExcessAmountPayer().getPriceBook());
-                                    b.setBillPayMode(BillPayMode.Credit);
-                                    b.setScheme(payDetails.getExcessAmountScheme());
-                                } catch (Exception e) {
+                if (schemeConfigurations.isPresent() && schemeConfigurations.get().isLimitEnabled()) {
+//                    if (pd.isPresent() && pd.get().getLimitEnabled()) {
+//                        PaymentDetails payDetails = pd.get();
+                    if (payDetails.getRunningLimit() < amountToBill && !payDetails.getExcessAmountEnabled()) {
+                        throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount (" + payDetails.getRunningLimit() + ") ", "");
+                    }
+                    if (payDetails.getRunningLimit() < amountToBill && payDetails.getExcessAmountEnabled()) {
+                        //check if
+                        if (payDetails.getLimitReached()) {
+                            //proceed to accept excess entry
+                            //TODO: register to keep log of the excess amounts with correct pricebook
+                            for (PatientBillItem b : bill.getBillItems()) {
+                                BigDecimal defaultPrice = b.getItem().getRate(); //default cash selling price
+                                if (payDetails.getExcessAmountPayMode().equals(BillPayMode.Cash)) {
                                     b.setAmount(NumberUtils.createDouble(defaultPrice.toString()));
+                                    b.setBillPayMode(BillPayMode.Cash);
+                                } else {
+                                    try {
+                                        pricelistService.fetchPriceAmountByItemAndPriceBook(b.getItem(), payDetails.getExcessAmountPayer().getPriceBook());
+                                        b.setBillPayMode(BillPayMode.Credit);
+                                        b.setScheme(payDetails.getExcessAmountScheme());
+                                    } catch (Exception e) {
+                                        b.setAmount(NumberUtils.createDouble(defaultPrice.toString()));
+                                    }
                                 }
                             }
                         }
+                        if (!payDetails.getLimitReached() && itemCount > 0) {
+                            throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed \nrunning limit amount (" + payDetails.getRunningLimit() + "). \nRemove one or more items from the bill count", "");
+                        }
                     }
-                    if (!payDetails.getLimitReached() && itemCount > 0) {
-                        throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed \nrunning limit amount (" + payDetails.getRunningLimit() + "). \nRemove one or more items from the bill count", "");
-                    }
-                }
+//                    }
                 }
             }
-
         }
 
         log.debug("END validate limit amount");

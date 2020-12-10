@@ -13,6 +13,7 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,11 +23,9 @@ import lombok.Setter;
  * @author Kelsas
  */ 
 @Entity 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @Table(name = "user_notifications") 
-public class Notifications extends Auditable {
+public class Notification extends Auditable {
 
     private LocalDateTime datetime;
     @OneToOne
@@ -38,7 +37,10 @@ public class Notifications extends Auditable {
     @Enumerated(EnumType.STRING)
     private NoticeType noticeType;
 
-    public Notifications(User recipient, String message, NoticeType noticeType,String reference) {
+    public Notification() {
+    }
+
+    public Notification(User recipient, String message, NoticeType noticeType,String reference) {
         this.recipient = recipient;
         this.message = message;
         this.isRead = false;
@@ -65,7 +67,7 @@ public class Notifications extends Auditable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Notifications other = (Notifications) obj;
+        final Notification other = (Notification) obj;
         if (!Objects.equals(this.getId(), other.getId())) {
             return false;
         }

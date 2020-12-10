@@ -9,14 +9,16 @@ import io.smarthealth.security.domain.User;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
 import javax.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Doctor's Requests
  *
  * @author Kelsas
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "patient_doctor_request")
 @Inheritance(strategy = InheritanceType.JOINED)

@@ -15,7 +15,7 @@ import lombok.Data;
 /**
  *
  * @author Simon.waweru
- */
+ */ 
 @Data
 @Entity 
 public class EmployeeSpecialization extends Auditable {

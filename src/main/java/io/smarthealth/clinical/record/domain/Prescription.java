@@ -29,7 +29,7 @@ public class Prescription extends DoctorRequest {
     private Double issuedQuantity;
 
     public Prescription() {
-        this.setDrug(true);
+        this.setDrug(Boolean.TRUE);
     }
 
 }

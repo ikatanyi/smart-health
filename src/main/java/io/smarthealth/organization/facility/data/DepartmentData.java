@@ -17,7 +17,7 @@ import lombok.Data;
  *
  * @author Simon.waweru
  */ 
-@Data
+ @Data
 public class DepartmentData {
 
     

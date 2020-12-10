@@ -8,14 +8,16 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDateTime;
 import javax.persistence.*; 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Patient CheckIn
  *
  * @author Kelsas
  */ 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "patient_visit")
 @Inheritance(strategy = InheritanceType.JOINED)
