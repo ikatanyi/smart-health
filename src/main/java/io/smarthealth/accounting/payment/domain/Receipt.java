@@ -98,6 +98,7 @@ public class Receipt extends Auditable {
         data.setCurrency(this.currency);
         data.setPaid(this.getPaid());
         data.setPrepayment(this.prepayment);
+        data.setReceivedFrom(this.getReceivedFrom());
         data.setTransactionDate(this.getTransactionDate());
         data.setCreatedBy(this.getCreatedBy());
         if (this.shift != null) {

@@ -137,7 +137,7 @@ public class LabRegisterController {
     public ResponseEntity<?> getLabRequests(
             @RequestParam(value = "expand", required = false) Boolean expand,
             @RequestParam(value = "labNo", required = false) String labNumber,
-             @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "orderNo", required = false) String orderNumber,
             @RequestParam(value = "visitNo", required = false) String visitNumber,
             @RequestParam(value = "patientNo", required = false) String patientNumber,
