@@ -20,9 +20,16 @@ import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
+import io.smarthealth.accounting.pricelist.service.PricebookService;
+import io.smarthealth.accounting.pricelist.service.PricelistService;
+import io.smarthealth.clinical.theatre.data.DoctorFeeFix;
 import io.smarthealth.clinical.theatre.data.TheatreBill;
+import io.smarthealth.clinical.theatre.domain.enumeration.FeeCategory;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
+import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -69,6 +76,9 @@ public class TheatreService {
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final ServicePointService servicePointService;
     private final JournalService journalService;
+    private final PaymentDetailsService paymentDetailsService;
+    private final PricelistService pricelistService;
+    private final PricebookService pricebookService;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createBill(TheatreBill data) {
@@ -155,6 +165,66 @@ public class TheatreService {
             return doctorRate;
         }
         return item.getAmount();
+    }
+
+    private List<DoctorInvoice> toDoctorInvoiceFix(List<DoctorFeeFix> doctorFeeFixList) {
+        List<DoctorInvoice> toInvoice = new ArrayList<>();
+        int count =0;
+        for(DoctorFeeFix docFee: doctorFeeFixList){
+            Item item = itemService.findItemWithNoFoundDetection(docFee.getItemCode());
+            Visit visit = visitRepository.findByVisitNumber(docFee.getVisitNumber()).orElseThrow(()-> APIException.notFound("No visit found"));
+           Double amount = 0.00;
+            if(visit.getPaymentMethod().equals(VisitEnum.PaymentMethod.Cash)){
+               amount = item.getRate().doubleValue();
+           }else{
+                PaymentDetails paymentDetails = paymentDetailsService.fetchPaymentDetailsByVisit(visit);
+
+                amount = pricelistService.fetchPriceAmountByItemAndPriceBook(item, paymentDetails.getPayer().getPriceBook());
+           }
+
+            Optional<TheatreFee> surgeonFee = theatreFeeService.findByItemAndCategory(item, FeeCategory.SurgeonFee);
+            if (surgeonFee.isPresent()) {
+                BigDecimal amt = computeTheatreFee(surgeonFee.get(), (1 * amount));
+                Employee doctor = doctorInvoiceService.getDoctorByStaffNumber(docFee.getSurgeonStaffNumber());
+                DoctorInvoice invoice = new DoctorInvoice();
+                invoice.setAmount(amt);
+                invoice.setBalance(amt);
+                invoice.setDoctor(doctor);
+                invoice.setInvoiceDate(docFee.getBillingDate());
+                invoice.setInvoiceNumber("SYS-" + count++);
+                invoice.setBillItemId(item.getId());
+                invoice.setPaid(Boolean.FALSE);
+                invoice.setPatient(visit.getPatient());
+                invoice.setPaymentMode(visit.getPaymentMethod().name());
+                invoice.setServiceItem(surgeonFee.get());
+                invoice.setTransactionId(null);
+                invoice.setVisit(visit);
+                toInvoice.add(invoice);
+            }
+
+            Optional<TheatreFee> anaesthetistFee = theatreFeeService.findByItemAndCategory(item, FeeCategory.AnaesthetistFee);
+            if (anaesthetistFee.isPresent()) {
+                BigDecimal amt = computeTheatreFee(anaesthetistFee.get(), (1 * amount));
+                Employee doctor = doctorInvoiceService.getDoctorByStaffNumber(docFee.getSurgeonStaffNumber());
+                DoctorInvoice invoice = new DoctorInvoice();
+                invoice.setAmount(amt);
+                invoice.setBalance(amt);
+                invoice.setDoctor(doctor);
+                invoice.setInvoiceDate(docFee.getBillingDate());
+                invoice.setInvoiceNumber("SYS-" + count++);
+                invoice.setBillItemId(item.getId());
+                invoice.setPaid(Boolean.FALSE);
+                invoice.setPatient(visit.getPatient());
+                invoice.setPaymentMode(visit.getPaymentMethod().name());
+                invoice.setServiceItem(anaesthetistFee.get());
+                invoice.setTransactionId(null);
+                invoice.setVisit(visit);
+                toInvoice.add(invoice);
+            }
+
+        }
+
+        return toInvoice;
     }
 
     private List<DoctorInvoice> toDoctorInvoice(PatientBill bill) {
