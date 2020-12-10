@@ -340,4 +340,11 @@ public class TheatreService {
         return toSave;
     }
 
+    public void fixDoctorFee(List<DoctorFeeFix> doctorFeeFixes){
+        List<DoctorInvoice> doctorInvoices = toDoctorInvoiceFix(doctorFeeFixes);
+        if (doctorInvoices.size() > 0) {
+            doctorInvoices.forEach(inv -> doctorInvoiceService.save(inv));
+        }
+    }
+
 }
