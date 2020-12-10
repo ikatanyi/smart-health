@@ -77,7 +77,7 @@
 				<text><![CDATA[Radiology Studies Summary]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="110" y="36" width="92" height="12" uuid="69314529-a98d-4a99-a730-3b054b0c3de6"/>
+				<reportElement x="90" y="36" width="92" height="12" uuid="69314529-a98d-4a99-a730-3b054b0c3de6"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -107,7 +107,7 @@
 				<text><![CDATA[Mode]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="203" y="36" width="48" height="12" uuid="c413311e-33fe-4cf6-8024-74b1b3b30468"/>
+				<reportElement x="183" y="36" width="48" height="12" uuid="c413311e-33fe-4cf6-8024-74b1b3b30468"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -127,7 +127,7 @@
 				<text><![CDATA[Reference]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="251" y="36" width="84" height="12" uuid="67756dba-ca97-4e10-9095-d279db544eba"/>
+				<reportElement x="231" y="36" width="104" height="12" uuid="67756dba-ca97-4e10-9095-d279db544eba"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -147,7 +147,7 @@
 				<text><![CDATA[Price]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="19" y="36" width="91" height="12" uuid="22c1770b-b435-417e-8703-0d947e62e1bf"/>
+				<reportElement x="19" y="36" width="70" height="12" uuid="22c1770b-b435-417e-8703-0d947e62e1bf"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -191,14 +191,14 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="110" y="0" width="92" height="20" uuid="85ed173e-b92d-4939-bd99-a57a71e43dba"/>
+				<reportElement x="90" y="0" width="92" height="20" uuid="85ed173e-b92d-4939-bd99-a57a71e43dba"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="203" y="0" width="48" height="20" uuid="7d5cc57c-8607-4bbf-9422-d8fef653804b"/>
+				<reportElement x="183" y="0" width="48" height="20" uuid="7d5cc57c-8607-4bbf-9422-d8fef653804b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -212,7 +212,7 @@
 				<textFieldExpression><![CDATA[$F{paymentMode}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="251" y="0" width="84" height="20" uuid="1dd9610f-5fb8-433d-b9fe-65dbdeff6f6c"/>
+				<reportElement x="231" y="0" width="104" height="20" uuid="1dd9610f-5fb8-433d-b9fe-65dbdeff6f6c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -226,11 +226,11 @@
 				<textFieldExpression><![CDATA[$F{requestedBy}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="19" y="0" width="91" height="20" uuid="79e2aaed-fc87-45c0-a74a-cda85abf850d"/>
+				<reportElement x="19" y="0" width="70" height="20" uuid="79e2aaed-fc87-45c0-a74a-cda85abf850d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{entryDateTime}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{orderedDate}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement positionType="Float" x="1" y="19" width="554" height="1" uuid="e8cda4a5-5619-46c8-8a9f-f6f8becd9839"/>
@@ -246,7 +246,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{testPrice}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="381" y="0" width="42" height="20" forecolor="#000000" uuid="36ff7792-2564-46a5-aad4-5c2523b0a907"/>
 				<textElement verticalAlignment="Middle" markup="none">
 					<font size="7"/>

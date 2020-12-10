@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="discharge_slip" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="175"/>
+	<property name="ireport.y" value="6"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
@@ -121,7 +121,7 @@
 				<text><![CDATA[Age]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="115" y="18" width="135" height="11" uuid="11ef8bfd-58ba-4446-98b3-fa1dcae53789"/>
+				<reportElement x="115" y="18" width="152" height="12" uuid="11ef8bfd-58ba-4446-98b3-fa1dcae53789"/>
 				<box>
 					<pen lineWidth="0.0"/>
 					<topPen lineWidth="0.0"/>
@@ -376,7 +376,7 @@
 				<text><![CDATA[Discharge Summary Date]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy HH.mm.ss">
-				<reportElement x="439" y="18" width="106" height="12" uuid="5b247957-4636-491b-b581-dd93508b2894"/>
+				<reportElement x="299" y="18" width="246" height="12" uuid="5b247957-4636-491b-b581-dd93508b2894"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
