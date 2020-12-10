@@ -23,5 +23,6 @@ public enum ItemCategory {
     NHIF_Rebate,
     Receipt,
     Opticals,
-    Others
+    Others,
+    Theatre
 }
