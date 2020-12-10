@@ -45,6 +45,7 @@ public class ReportMailingJobService {
         try {
             DataSource ds = reportService.generateEmailReport(stockReportService.emailExpiryStock());
             Mail mail = new EmailBuilder()
+                    .From("smarthealthv2@gmail.com")
                     .To("kevsasko@gmail.com")
                     .Subject("Expiry Stock")
                     .Attachment(ds)

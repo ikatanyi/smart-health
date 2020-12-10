@@ -74,6 +74,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Kelsas
@@ -82,6 +83,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class JasperReportsService {
 
     @Autowired
@@ -325,6 +327,7 @@ public class JasperReportsService {
     /**
      *
      */
+    @Transactional(readOnly = true)
     private HashMap reportConfig(String patientNumber, String staffNumber, Long supplierId) throws JRException {
         List<PatientBanner> patientDataArray = new ArrayList();
         List<EmployeeBanner> employeeDataArray = new ArrayList();

@@ -548,11 +548,11 @@ public class InvoiceService {
                 })
                 .reduce(0D, (x, y) -> x + y);
 
-        Double balance = invoice.getItems().stream()
-                .map(x -> {
-                    return x.getBillItem().getBalance();
-                })
-                .reduce(0D, (x, y) -> x + y);
+//        Double balance = invoice.getItems().stream()
+//                .map(x -> {
+//                    return x.getBillItem().getBalance();
+//                })
+//                .reduce(0D, (x, y) -> x + y);
        BigDecimal originalAmount =invoice.getAmount();
         invoice.setAmount(BigDecimal.valueOf(amount));
         invoice.setBalance(BigDecimal.valueOf(amount));

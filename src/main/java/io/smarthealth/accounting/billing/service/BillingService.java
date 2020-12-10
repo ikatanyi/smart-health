@@ -185,11 +185,13 @@ public class BillingService {
     public PatientBill save(PatientBill bill) {
         log.debug("START save bill");
         Optional<PaymentDetails> pd = null;
+
         if (bill.getVisit() != null) {
             pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
         }
         double amountToBill = 0.00;
         int itemCount = 0;
+        
         for (PatientBillItem b : bill.getBillItems()) {
             amountToBill = amountToBill + b.getAmount();
             itemCount++;
@@ -198,6 +200,7 @@ public class BillingService {
                 b.setBillPayMode(bill.getVisit().getPaymentMethod().name().equals("Insurance") ? BillPayMode.Credit : BillPayMode.Cash);
                 if (bill.getVisit().getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance) && pd.isPresent()) {
                     b.setScheme(pd.get().getScheme());
+
                 }
             }
         }
@@ -206,6 +209,11 @@ public class BillingService {
 
         if (bill.getVisit() != null) {
             pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
+
+            Optional<SchemeConfigurations> schemeConfigurations = schemeService.fetchSchemeConfigByScheme(pd.get().getScheme());
+
+            if(schemeConfigurations.isPresent() && schemeConfigurations.get().isLimitEnabled()){
+
             if (pd.isPresent() && pd.get().getLimitEnabled()) {
                 PaymentDetails payDetails = pd.get();
                 if (payDetails.getRunningLimit() < amountToBill && !payDetails.getExcessAmountEnabled()) {
@@ -233,21 +241,12 @@ public class BillingService {
                         }
                     }
                     if (!payDetails.getLimitReached() && itemCount > 0) {
-                        System.out.println("Line 233");
-                        System.out.println("payDetails.getLimitReached() " + payDetails.getLimitReached());
-                        System.out.println("itemCount " + itemCount);
-                        //TODO consider adding global configuration to able this feature or disable
                         throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed \nrunning limit amount (" + payDetails.getRunningLimit() + "). \nRemove one or more items from the bill count", "");
                     }
-
+                }
                 }
             }
-            if (pd.isPresent()) {
-                //update payment details
-                if (amountToBill > pd.get().getLimitAmount()) {
 
-                }
-            }
         }
 
         log.debug("END validate limit amount");

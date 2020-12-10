@@ -80,17 +80,17 @@ public class AutomatedNotificationController {
         Page<AutomatedNotificationData> list = service.get(pageable)
                 .map(AutomatedNotificationData::map);
 
-        Pager<List<AutomatedNotificationData>> pagers = new Pager();
-        pagers.setCode("0");
-        pagers.setMessage("Success");
-        pagers.setContent(list.getContent());
-        PageDetails details = new PageDetails();
-        details.setPage(list.getNumber() + 1);
-        details.setPerPage(list.getSize());
-        details.setTotalElements(list.getTotalElements());
-        details.setTotalPage(list.getTotalPages());
-        details.setReportName("Automated Notification List");
-        pagers.setPageDetails(details);
-        return ResponseEntity.ok(pagers);
+//        Pager<List<AutomatedNotificationData>> pagers = new Pager();
+//        pagers.setCode("0");
+//        pagers.setMessage("Success");
+//        pagers.setContent(list.getContent());
+//        PageDetails details = new PageDetails();
+//        details.setPage(list.getNumber() + 1);
+//        details.setPerPage(list.getSize());
+//        details.setTotalElements(list.getTotalElements());
+//        details.setTotalPage(list.getTotalPages());
+//        details.setReportName("Automated Notification List");
+//        pagers.setPageDetails(details);
+        return ResponseEntity.ok((Pager<List<AutomatedNotificationData>>)PaginationUtil.toPager(list, "Automated Notification List"));
     }
 }
