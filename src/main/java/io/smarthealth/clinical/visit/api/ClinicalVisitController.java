@@ -336,6 +336,9 @@ public class ClinicalVisitController {
             final String status
     ) {
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        if(status.equals("CheckOut") && visit.getVisitType().equals(VisitEnum.VisitType.Inpatient) && !visit.getStatus().equals(VisitEnum.Status.Discharged)){
+throw APIException.badRequest("Huh! This patient is not yet discharged!");
+        }
 
         visit.setStatus(VisitEnum.Status.valueOf(status));
         visit = this.visitService.createAVisit(visit);

@@ -12,6 +12,7 @@ import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.clinical.admission.service.BedService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
@@ -128,6 +129,9 @@ public class AdmissionController {
     public ResponseEntity<?> checkOuInPatient(@PathVariable("admissionNo") String admissionNo) {
 
         Admission a = admissionService.findAdmissionByNumber(admissionNo);
+        if(!a.getDischarged()){
+            throw APIException.badRequest("You cannot checkout a patient who has not been discharged!");
+        }
         a.setStatus(Status.CheckOut);
 
         admissionService.saveAdmission(a);
