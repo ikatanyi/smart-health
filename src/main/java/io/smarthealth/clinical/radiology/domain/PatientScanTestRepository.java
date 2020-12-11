@@ -5,6 +5,8 @@
  */
 package io.smarthealth.clinical.radiology.domain;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -20,6 +22,10 @@ public interface PatientScanTestRepository extends JpaRepository<PatientScanTest
      @Modifying
     @Query("UPDATE PatientScanTest d SET d.paid=true WHERE d.id=:id")
     int updateImagingPaid(@Param("id") Long id);
+    
     @Query("FROM PatientScanTest d WHERE d.patientScanRegister.visit.visitNumber=:visitNumber")
     List<PatientScanTest>findByVisit(@Param("visitNumber")String visitNumber);
+    
+    @Query("SELECT d.radiologyTest.scanName as testName, count(d.radiologyTest.scanName) AS count, SUM(d.testPrice) as totalPrice FROM PatientScanTest d WHERE d.createdOn BETWEEN :fromDate AND :toDate Group by d.radiologyTest")
+    List<TotalTest>findTotalTests(@Param("fromDate")Instant fromDate, @Param("toDate")Instant toDate);
 }

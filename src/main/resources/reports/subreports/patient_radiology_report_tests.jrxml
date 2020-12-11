@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="patientLab_report_tests" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b3381605-b0c8-42fa-9eeb-f8ba94fce080">
-	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
@@ -16,64 +16,16 @@
 	<field name="reportedBy" class="java.lang.String"/>
 	<field name="reportResultData" class="java.util.List"/>
 	<columnHeader>
-		<band height="35" splitType="Stretch">
-			<staticText>
-				<reportElement x="1" y="17" width="59" height="14" uuid="e83091c0-858a-4e8a-a1fe-5bd1c97300d8"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Date Reported :]]></text>
-			</staticText>
+		<band height="26" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="60" y="0" width="101" height="15" isRemoveLineWhenBlank="true" uuid="135ebb32-b8d6-478b-8dab-f10d13c2b763"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{testCode}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="1" y="0" width="59" height="16" uuid="67303c2a-87ee-41db-9b69-acb699ac149e"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Test Code :]]></text>
-			</staticText>
-			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
-				<reportElement x="60" y="16" width="101" height="15" isRemoveLineWhenBlank="true" uuid="22f110f5-45be-4e34-bc1a-8635dcc6957f"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{entryDateTime}.equals( null )?new SimpleDateFormat("dd-MM-yyyy").parse($F{entryDateTime}.toString()):new Date()]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="167" y="16" width="46" height="15" isRemoveLineWhenBlank="true" uuid="6a1af588-72d6-43a4-acf2-3218bd0987f1"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Reported By:]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="213" y="16" width="176" height="15" isRemoveLineWhenBlank="true" uuid="6c6a9d4f-f8ea-4710-98f1-ac6c622da9cc"/>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{reportedBy}]]></textFieldExpression>
-			</textField>
-			<line>
-				<reportElement positionType="Float" x="1" y="34" width="555" height="1" forecolor="#CC0000" uuid="9c05c8dd-41ec-44ef-b45d-3567633bdd03"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#999999"/>
-				</graphicElement>
-			</line>
-			<textField isBlankWhenNull="true">
-				<reportElement x="213" y="0" width="176" height="15" uuid="eaa34ea4-a65c-4738-86dd-cb8c0ecd05d3"/>
+				<reportElement x="47" y="0" width="508" height="16" uuid="eaa34ea4-a65c-4738-86dd-cb8c0ecd05d3"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{scanName}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="167" y="0" width="45" height="15" uuid="2435fbbf-e9b7-40ea-8862-5e182a47d9cb"/>
+				<reportElement x="1" y="0" width="45" height="16" uuid="2435fbbf-e9b7-40ea-8862-5e182a47d9cb"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
@@ -84,7 +36,7 @@
 	<detail>
 		<band height="25" splitType="Stretch">
 			<subreport>
-				<reportElement x="0" y="5" width="555" height="20" uuid="f34baf56-bfab-4384-b0d4-f9233c4010e8"/>
+				<reportElement x="0" y="0" width="555" height="25" uuid="f34baf56-bfab-4384-b0d4-f9233c4010e8"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{reportResultData})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "patient_radiology_report_tests_results.jasper"]]></subreportExpression>
 			</subreport>

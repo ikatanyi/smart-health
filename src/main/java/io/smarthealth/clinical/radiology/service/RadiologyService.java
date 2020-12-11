@@ -18,6 +18,7 @@ import io.smarthealth.clinical.radiology.domain.PatientScanTestRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyResult;
 import io.smarthealth.clinical.radiology.domain.RadiologyResultRepository;
 import io.smarthealth.clinical.radiology.domain.RadiologyTest;
+import io.smarthealth.clinical.radiology.domain.TotalTest;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyRegisterSpecification;
 import io.smarthealth.clinical.radiology.domain.specification.RadiologyResultSpecification;
@@ -41,6 +42,7 @@ import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,14 +137,14 @@ public class RadiologyService {
                 pte.setQuantity(id.getQuantity());
                 pte.setRadiologyTest(labTestType);
                 pte.setStatus(ScanTestState.Scheduled);
-                if(patientScanReg.getPaymentMode().equals("Cash")){
-                   if(visit!=null && visit.getVisitType()== VisitEnum.VisitType.Inpatient)
-                      pte.setPaid(Boolean.TRUE);                    
-                    else
-                      pte.setPaid(Boolean.FALSE);
-                }
-                else{
-                     pte.setPaid(Boolean.TRUE);
+                if (patientScanReg.getPaymentMode().equals("Cash")) {
+                    if (visit != null && visit.getVisitType() == VisitEnum.VisitType.Inpatient) {
+                        pte.setPaid(Boolean.TRUE);
+                    } else {
+                        pte.setPaid(Boolean.FALSE);
+                    }
+                } else {
+                    pte.setPaid(Boolean.TRUE);
                 }
                 pte.setMedic(employeeService.findEmployeeById(id.getMedicId()));
 //                Employee medic = employeeService.findEmployeeById(id.getMedicId());
@@ -163,7 +165,7 @@ public class RadiologyService {
         }
         PatientScanRegister scanRegister = patientradiologyRepository.save(patientScanReg);
         PatientBill bill = toBill(scanRegister);
-        billService.save(bill); 
+        billService.save(bill);
         return scanRegister;
     }
 
@@ -337,6 +339,10 @@ public class RadiologyService {
 
     public List<PatientScanTest> getPatientScansTestByVisit(String visitNumber) {
         return registerTestRepository.findByVisit(visitNumber);
+    }
+
+    public List<TotalTest> getPatientScansTestTotals(Instant fromDate, Instant toDate) {
+        return registerTestRepository.findTotalTests(fromDate, toDate);
     }
 
     public List<PatientScanTest> findScanResultsByVisit(final Visit visit) {

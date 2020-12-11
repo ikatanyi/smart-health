@@ -23,6 +23,8 @@ import io.smarthealth.clinical.procedure.service.ProcedureService;
 import io.smarthealth.clinical.radiology.data.RadiologyTestData;
 import io.smarthealth.clinical.radiology.domain.enumeration.Gender;
 import io.smarthealth.clinical.radiology.service.RadiologyConfigService;
+import io.smarthealth.clinical.theatre.data.DoctorFeeFix;
+import io.smarthealth.clinical.theatre.service.TheatreService;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
@@ -85,6 +87,7 @@ public class BatchImportService {
     private final RadiologyConfigService radiologyService;
     private final AccountService accountService;
     private final ServicePointService servicePointService;
+    private final TheatreService theatreService;
 
     public void importData(final TemplateType type, final MultipartFile file) {
 
@@ -161,6 +164,10 @@ public class BatchImportService {
                 case Account_Balances:
                     List<AccBalanceData> balData = toPojoUtil.toPojo(AccBalanceData.class, inputFilestream);
                     accountService.openingBatchEntry(balData);
+                    break;
+                case DoctorInvoices:
+                    List<DoctorFeeFix>doctorfee = toPojoUtil.toPojo(DoctorFeeFix.class, inputFilestream);
+                    theatreService.fixDoctorFee(doctorfee);
                     break;
                 default:
                     throw APIException.notFound("Coming Soon!!!", "");

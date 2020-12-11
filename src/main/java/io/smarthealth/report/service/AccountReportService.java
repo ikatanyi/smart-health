@@ -649,6 +649,18 @@ public class AccountReportService {
         String receiptNo = reportParam.getFirst("receiptNo");
         //"RCT-00009"
         ReceiptData receiptData = paymentService.getPaymentByReceiptNumber(receiptNo).toData();
+        if(receiptData.getPrepayment()){
+            receiptData.setReceiptItems(new ArrayList());
+            receiptData.setPaid(receiptData.getAmount());
+            receiptData.setTenderedAmount(receiptData.getAmount());
+            ReceiptItemData itemData = new ReceiptItemData();
+            itemData.setDiscount(BigDecimal.ZERO);
+            itemData.setAmountPaid(receiptData.getAmount());
+            itemData.setItemName(receiptData.getDescription());
+            itemData.setPrice(receiptData.getAmount());
+            itemData.setQuantity(1.0);
+            receiptData.getReceiptItems().add(itemData);
+        }
         reportData.setData(Arrays.asList(receiptData));
         reportData.setFormat(format);
         reportData.setTemplate("/payments/general_receipt");

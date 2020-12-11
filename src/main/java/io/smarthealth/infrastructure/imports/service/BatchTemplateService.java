@@ -6,12 +6,12 @@
 package io.smarthealth.infrastructure.imports.service;
 
 import io.smarthealth.clinical.laboratory.data.LabTestData;
+import io.smarthealth.clinical.theatre.data.DoctorFeeFix;
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.debtor.claim.allocation.data.BatchAllocationData;
 import io.smarthealth.report.service.AccountReportService;
 import io.smarthealth.debtor.member.data.PayerMemberData;
 import io.smarthealth.debtor.payer.data.BatchPayerData;
-import io.smarthealth.infrastructure.imports.data.InventoryStockData;
 import io.smarthealth.infrastructure.imports.data.LabAnnalytesData;
 import io.smarthealth.infrastructure.imports.data.PriceBookItemData;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
@@ -24,13 +24,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 
 /**
  *
@@ -97,6 +95,10 @@ public class BatchTemplateService {
                 break;
             case Account_Balances:
                 accReportService.getAccountsBals(ExportFormat.XLSX, response);
+                break;
+            case DoctorInvoices:
+                fileName = "Doctor Invoice";
+                componentClass = DoctorFeeFix.class;
                 break;
             default:
                 break;

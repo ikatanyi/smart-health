@@ -28,5 +28,6 @@ public enum TemplateType {
     LabTestsFixer, 
     SchemeMembers,
     InventoryStock,
-    Account_Balances
+    Account_Balances,
+    DoctorInvoices
 }

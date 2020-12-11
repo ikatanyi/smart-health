@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="departmental_mode_report" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="322"/>
 	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<style name="table">
@@ -392,7 +392,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Copay]]></text>
+				<text><![CDATA[Other]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" x="85" y="69" width="67" height="12" uuid="9638fb63-5268-480a-964c-bf730ccb175a"/>
@@ -677,7 +677,7 @@
 					<font size="7"/>
 					<paragraph rightIndent="2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{copayment}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{other}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="548" y="0" width="43" height="16" uuid="b32d585d-1124-4848-b097-1878872fbb4d"/>
@@ -727,23 +727,20 @@
 		</band>
 	</detail>
 	<lastPageFooter>
-		<band height="32">
-			<staticText>
-				<reportElement x="1" y="19" width="53" height="12" uuid="f1382228-b219-4b5f-b04b-331ed6c3e4c3"/>
-				<textElement verticalAlignment="Bottom">
-					<font size="7"/>
-				</textElement>
-				<text><![CDATA[Printed on:]]></text>
-			</staticText>
+		<band height="15">
 			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
-				<reportElement x="54" y="19" width="169" height="12" uuid="6209b4d2-0151-4289-9a72-cadb1ac26a27"/>
+				<reportElement x="691" y="1" width="111" height="12" uuid="6209b4d2-0151-4289-9a72-cadb1ac26a27"/>
 				<textElement verticalAlignment="Bottom">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Printed On: "+new java.util.Date()]]></textFieldExpression>
 			</textField>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band height="16">
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="337" y="0" width="38" height="16" uuid="f4e90eb9-2a66-4a8e-982c-943df2f908b3"/>
+				<reportElement x="336" y="0" width="39" height="16" uuid="f4e90eb9-2a66-4a8e-982c-943df2f908b3"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -758,7 +755,7 @@
 				<textFieldExpression><![CDATA[$V{pharmacy}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="254" y="0" width="42" height="16" uuid="e127c048-221a-48d1-978c-96d91d77dcfa"/>
+				<reportElement x="253" y="0" width="43" height="16" uuid="e127c048-221a-48d1-978c-96d91d77dcfa"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -788,7 +785,7 @@
 				<textFieldExpression><![CDATA[$V{card}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="296" y="0" width="41" height="16" uuid="7abc5732-36ad-450b-b0e8-d091205a6e46"/>
+				<reportElement x="295" y="0" width="42" height="16" uuid="7abc5732-36ad-450b-b0e8-d091205a6e46"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -833,7 +830,7 @@
 				<textFieldExpression><![CDATA[$V{cash}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="415" y="0" width="45" height="16" uuid="00751537-462c-437e-9038-81db8c605799"/>
+				<reportElement x="414" y="0" width="46" height="16" uuid="00751537-462c-437e-9038-81db8c605799"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -863,7 +860,7 @@
 				<textFieldExpression><![CDATA[$V{mobile}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="375" y="0" width="40" height="16" uuid="1fe4c04d-7b62-4554-9506-460758155ab2"/>
+				<reportElement x="374" y="0" width="41" height="16" uuid="1fe4c04d-7b62-4554-9506-460758155ab2"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -878,7 +875,7 @@
 				<textFieldExpression><![CDATA[$V{radiology}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="460" y="0" width="43" height="16" uuid="02e17f36-182b-4d83-b700-c5acc3a6bc37"/>
+				<reportElement x="459" y="0" width="44" height="16" uuid="02e17f36-182b-4d83-b700-c5acc3a6bc37"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -923,7 +920,7 @@
 				<textFieldExpression><![CDATA[$V{amount}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="0" width="253" height="16" uuid="027de6ad-fda5-4142-a358-610199b80c3c"/>
+				<reportElement x="0" y="0" width="254" height="16" uuid="027de6ad-fda5-4142-a358-610199b80c3c"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -938,5 +935,5 @@
 				<text><![CDATA[]]></text>
 			</staticText>
 		</band>
-	</lastPageFooter>
+	</summary>
 </jasperReport>

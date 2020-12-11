@@ -66,7 +66,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
-
 /**
  *
  * @author Kennedy.Imbenzi
@@ -144,15 +143,15 @@ public class PaymentReportService {
     public void getInvoice(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
         String invoiceNo = reportParam.getFirst("invoiceNo");
-        
-        ReportData reportData = new ReportData();        
+
+        ReportData reportData = new ReportData();
         GlobalConfiguration config = configService.getByNameOrThrow("CapitationItemAmountDisplay");
         Boolean showCapitationItem = config.getValue().equals("1");
         reportData.getFilters().put("showCapitationItem", showCapitationItem);
         InvoiceData invoiceData = (invoiceService.getInvoiceByNumberOrThrow(invoiceNo)).toData();
-        
+
         Optional<Admission> admission = admissionService.findByAdmissionNo(invoiceData.getVisitNumber());
-        if(admission.isPresent()){
+        if (admission.isPresent()) {
             reportData.getFilters().put("inPatient", true);
             reportData.getFilters().put("dischargeDate", admission.get().getDischargeDate());
             reportData.getFilters().put("admissionDate", admission.get().getAdmissionDate());
@@ -247,32 +246,31 @@ public class PaymentReportService {
         reportData.setReportName("Payment-Statement");
         reportService.generateReport(reportData, response);
     }
-    
-    
+
     public void shiftPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         Long cashierId = NumberUtils.createLong(reportParam.getFirst("cashierId"));
         String shiftNo = reportParam.getFirst("shiftNo");
-        
+
         List<CashierShift> paymentshiftData = receivePaymentService.getCashierShift(shiftNo, cashierId);
         List<ShiftPayment> shiftPayment = cashierService.getShiftByMethod(shiftNo);
-        
+
         reportData.getFilters().put("PaymentData", shiftPayment);
         reportData.getFilters().put("CashierShiftData", paymentshiftData);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
 
-        if(!paymentshiftData.isEmpty())
-           reportData.getFilters().put("Cashier_Data", Arrays.asList(cashierService.getCashier(paymentshiftData.get(0).getCashierId()).toData()));
-      
+        if (!paymentshiftData.isEmpty()) {
+            reportData.getFilters().put("Cashier_Data", Arrays.asList(cashierService.getCashier(paymentshiftData.get(0).getCashierId()).toData()));
+        }
+
 //        reportData.setData(paymentshiftData);
         reportData.setFormat(format);
         reportData.setTemplate("/payments/shift_report");
-        reportData.setReportName("Shift-Report"+shiftNo);
+        reportData.setReportName("Shift-Report" + shiftNo);
         reportService.generateReport(reportData, response);
     }
-    
-    
+
     public void getCashierShift(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String receiptNo = reportParam.getFirst("receiptNo");
@@ -282,11 +280,11 @@ public class PaymentReportService {
         String shiftNo = reportParam.getFirst("shiftNo");
         Long cashierId = NumberUtils.createLong(reportParam.getFirst("cashierId"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
-          Boolean prepaid = reportParam.getFirst("prepaid") != null ? Boolean.parseBoolean(reportParam.getFirst("prepaid")) : null; 
+        Boolean prepaid = reportParam.getFirst("prepaid") != null ? Boolean.parseBoolean(reportParam.getFirst("prepaid")) : null;
         ReportReceiptData data = null;//new ReportReceiptData();
         //"RCT-00009"
         List<ReportReceiptData> receiptDataArray = new ArrayList();
-        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid,Pageable.unpaged())
+        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, Pageable.unpaged())
                 .stream()
                 .map((receipt) -> receipt.toData())
                 .collect(Collectors.toList());
@@ -365,13 +363,13 @@ public class PaymentReportService {
         }
 
         List<JRSortField> sortList = new ArrayList<>();
-        JRDesignSortField sortField = new JRDesignSortField();        
+        JRDesignSortField sortField = new JRDesignSortField();
         sortField = new JRDesignSortField();
         sortField.setName("createdBy");
         sortField.setOrder(SortOrderEnum.DESCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);
-        
+
         sortField = new JRDesignSortField();
         sortField.setName("transactionDate");
         sortField.setOrder(SortOrderEnum.DESCENDING);
@@ -385,7 +383,6 @@ public class PaymentReportService {
         reportData.setReportName("Cashier-Cash-Sale-Breakdown");
         reportService.generateReport(reportData, response);
     }
-    
 
     private PettyCashStatus PettyCashStatusToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {

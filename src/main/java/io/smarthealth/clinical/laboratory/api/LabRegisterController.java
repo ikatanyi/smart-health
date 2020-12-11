@@ -11,6 +11,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.organization.person.domain.WalkIn;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +30,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import io.smarthealth.organization.person.service.WalkingService;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -36,14 +40,16 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api")
 public class LabRegisterController {
 
     private final LaboratoryService service;
+    private final WalkingService walkinService;
 
-    public LabRegisterController(LaboratoryService service) {
-        this.service = service;
-    }
+//    public LabRegisterController(LaboratoryService service) {
+//        this.service = service;
+//    }
 
     @PostMapping("/labs/register")
     @PreAuthorize("hasAuthority('create_labregister')")
@@ -131,7 +137,7 @@ public class LabRegisterController {
     public ResponseEntity<?> getLabRequests(
             @RequestParam(value = "expand", required = false) Boolean expand,
             @RequestParam(value = "labNo", required = false) String labNumber,
-             @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "orderNo", required = false) String orderNumber,
             @RequestParam(value = "visitNo", required = false) String visitNumber,
             @RequestParam(value = "patientNo", required = false) String patientNumber,
@@ -144,7 +150,16 @@ public class LabRegisterController {
          final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
          
         Page<LabRegisterData> list = service.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status, range,search,pageable)
-                .map(x -> x.toData(isExpanded(expand)));
+                .map(x -> {
+                    LabRegisterData data =  x.toData(isExpanded(expand));
+                    if(x.getIsWalkin()){
+                       Optional<WalkIn> walkin = walkinService.fetchWalkingByWalkingNo(data.getPatientNo());
+                       if(walkin.isPresent())
+                           data.setPatientName(walkin.get().getFullName());
+                    }  
+                   
+                   return data;
+                });
 
         Pager<List<LabRegisterData>> pagers = new Pager();
         pagers.setCode("0");
