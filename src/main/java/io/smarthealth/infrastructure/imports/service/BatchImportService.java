@@ -5,10 +5,6 @@
  */
 package io.smarthealth.infrastructure.imports.service;
 
-import io.smarthealth.accounting.accounts.domain.JournalEntry;
-import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
-import io.smarthealth.accounting.accounts.domain.JournalState;
-import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.AccountService;
 import io.smarthealth.accounting.pricelist.service.PricebookService;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
@@ -50,8 +46,6 @@ import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -166,7 +160,6 @@ public class BatchImportService {
                     throw APIException.notFound("Coming Soon!!!", "");
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw APIException.badRequest("Error! {0} ", e.getMessage());
         }
     }

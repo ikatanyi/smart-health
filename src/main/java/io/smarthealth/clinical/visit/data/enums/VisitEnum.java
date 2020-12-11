@@ -25,10 +25,10 @@ public class VisitEnum {
         Inpatient
     }
 
-    public enum PaymentMethod {
-        Cash,
-        Insurance
-    }
+//    public enum PaymentMethod {
+//        Cash,
+//        Insurance
+//    }
 
     public enum ServiceType {
         Consultation,

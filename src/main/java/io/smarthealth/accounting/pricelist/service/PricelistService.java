@@ -220,6 +220,11 @@ public class PricelistService {
 
     /**
      * Search Item PriceList (item, servicePointId, priceBookId, pageable
+     * @param searchItem
+     * @param servicePointId
+     * @param priceBookId
+     * @param page
+     * @return 
      */
     
     public Page<PriceList> searchPriceList(String searchItem, Long servicePointId, Long priceBookId, Pageable page) {

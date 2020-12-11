@@ -5,6 +5,7 @@ import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
@@ -18,7 +19,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "patient_billing_item")  
+@Table(name = "patient_billing_item")
 public class PatientBillItem extends Auditable {
 
     @JsonIgnore
@@ -43,9 +44,10 @@ public class PatientBillItem extends Auditable {
     private String servicePoint;
     private Long servicePointId;
     private Boolean paid;
+    private boolean finalized = false;
 
     @Enumerated(EnumType.STRING)
-    private BillPayMode billPayMode;//Cash/Insurance
+    private PaymentMethod billPayMode;//Cash/Insurance
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_bill_item_scheme_id"))
@@ -62,6 +64,7 @@ public class PatientBillItem extends Auditable {
      * bill
      */
     private String paymentReference;
+    private String invoiceNumber;
 
     public BillItemData toData() {
         BillItemData data = new BillItemData();
@@ -105,6 +108,8 @@ public class PatientBillItem extends Auditable {
         }
         data.setWalkinFlag(this.getPatientBill().getWalkinFlag());
         data.setBillPayMode(this.billPayMode);
+        data.setFinalized(this.finalized);
+        data.setInvoiceNumber(this.invoiceNumber);
         return data;
     }
 
@@ -134,6 +139,8 @@ public class PatientBillItem extends Auditable {
         data.setReference(this.paymentReference);
         data.setStatus(this.status);
         data.setBillPayMode(this.getBillPayMode());
+        data.setFinalized(this.finalized);
+        data.setInvoiceNumber(this.invoiceNumber);
         return data;
     }
 

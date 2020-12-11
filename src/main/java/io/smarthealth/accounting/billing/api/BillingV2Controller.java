@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.accounting.billing.api;
 
 import io.smarthealth.accounting.billing.data.BillData;
@@ -14,7 +9,7 @@ import io.smarthealth.accounting.billing.data.VoidBillItem;
 import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.service.BillingService;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -100,7 +95,7 @@ public class BillingV2Controller {
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
             @RequestParam(value = "hasBalance", required = false) Boolean hasBalance,
             @RequestParam(value = "isWalkin", required = false) Boolean isWakin,
-            @RequestParam(value = "paymentMode", required = false) VisitEnum.PaymentMethod paymentMode,
+            @RequestParam(value = "paymentMode", required = false) PaymentMethod paymentMode,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
             @RequestParam(value = "page", required = false) Integer page,

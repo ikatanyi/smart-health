@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.notification.data;
+package io.smarthealth.messaging.model;
 
 import java.sql.Array;
 import java.util.Arrays;

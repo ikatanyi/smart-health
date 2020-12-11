@@ -52,6 +52,7 @@ import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
@@ -75,6 +76,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
+import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecification;
 
 /**
  *
@@ -197,8 +200,8 @@ public class BillingService {
             itemCount++;
             if (bill.getVisit() != null) {
                 //Billing paymode added to accomodate exclusions and other functionalities
-                b.setBillPayMode(bill.getVisit().getPaymentMethod().name().equals("Insurance") ? BillPayMode.Credit : BillPayMode.Cash);
-                if (bill.getVisit().getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance) && pd.isPresent()) {
+                b.setBillPayMode(bill.getVisit().getPaymentMethod());
+                if (bill.getVisit().getPaymentMethod().equals(PaymentMethod.Insurance) && pd.isPresent()) {
                     b.setScheme(pd.get().getScheme());
 
                 }
@@ -227,13 +230,13 @@ public class BillingService {
                             //TODO: register to keep log of the excess amounts with correct pricebook
                             for (PatientBillItem b : bill.getBillItems()) {
                                 BigDecimal defaultPrice = b.getItem().getRate(); //default cash selling price
-                                if (payDetails.getExcessAmountPayMode().equals(BillPayMode.Cash)) {
+                                if (payDetails.getExcessAmountPayMode() == PaymentMethod.Cash) {
                                     b.setAmount(NumberUtils.createDouble(defaultPrice.toString()));
-                                    b.setBillPayMode(BillPayMode.Cash);
+                                    b.setBillPayMode(PaymentMethod.Cash);
                                 } else {
                                     try {
                                         pricelistService.fetchPriceAmountByItemAndPriceBook(b.getItem(), payDetails.getExcessAmountPayer().getPriceBook());
-                                        b.setBillPayMode(BillPayMode.Credit);
+                                        b.setBillPayMode(PaymentMethod.Insurance);
                                         b.setScheme(payDetails.getExcessAmountScheme());
                                     } catch (Exception e) {
                                         b.setAmount(NumberUtils.createDouble(defaultPrice.toString()));
@@ -683,6 +686,7 @@ public class BillingService {
         savedItem.setBalance(0D);
         savedItem.setServicePoint(billedItem.getServicePoint());
         savedItem.setServicePointId(billedItem.getServicePointId());
+        savedItem.setBillPayMode(PaymentMethod.Cash);
 
         return savedItem;
     }
@@ -752,6 +756,7 @@ public class BillingService {
                     billItem.setServicePointId(0L);
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setMedicId(null);
+                    billItem.setBillPayMode(PaymentMethod.Cash);
 
                     patientbill.addBillItem(billItem);
 
@@ -765,7 +770,7 @@ public class BillingService {
     //TODO 2020-05-03 -> filter all the bills and group them together
 
     // Get Bills
-    public List<SummaryBill> getBillTotals(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, VisitEnum.PaymentMethod paymentMode, DateRange range, Boolean includeCanceled) {
+    public List<SummaryBill> getBillTotals(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, PaymentMethod paymentMode, DateRange range, Boolean includeCanceled) {
         return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range, includeCanceled);
     }
 

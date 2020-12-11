@@ -21,7 +21,6 @@ import io.smarthealth.clinical.procedure.domain.ProcedureRepository;
 import io.smarthealth.clinical.procedure.domain.Procedure;
 import io.smarthealth.clinical.procedure.domain.ProcedureTestRepository;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
-import io.smarthealth.clinical.procedure.domain.specification.ProcedureRegisterSpecification;
 import io.smarthealth.clinical.procedure.domain.specification.ProcedureSpecification;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
@@ -49,7 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.procedure.domain.ProcedureRegisterRepository;
 import io.smarthealth.clinical.procedure.domain.RegisterTestRepository;
 import io.smarthealth.clinical.procedure.domain.specification.RegisterTestSpecification;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 
 /**
  *
@@ -211,7 +210,7 @@ public class ProcedureService {
             patientbill.setReference(data.getPatientNo());
             patientbill.setOtherDetails(data.getPatientName());
             patientbill.setWalkinFlag(Boolean.TRUE);
-            patientbill.setPaymentMode(VisitEnum.PaymentMethod.Cash.name());
+            patientbill.setPaymentMode(PaymentMethod.Cash.name());
         }
         patientbill.setAmount(data.getAmount());
         patientbill.setBillingDate(data.getBillingDate());

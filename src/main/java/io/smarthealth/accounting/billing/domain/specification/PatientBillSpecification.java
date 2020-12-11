@@ -9,7 +9,7 @@ import io.smarthealth.accounting.billing.data.BillSummary;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.util.ArrayList;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -66,10 +66,10 @@ public class PatientBillSpecification {
         };
     }
 
-    public static Specification<PatientBillItem> getReceiptedItems(String visitNo, VisitEnum.PaymentMethod paymentMode) {
+    public static Specification<PatientBillItem> getReceiptedItems(String visitNo, PaymentMethod paymentMode) {
         return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
-            if (paymentMode == VisitEnum.PaymentMethod.Cash) {
+            if (paymentMode == PaymentMethod.Cash) {
                 predicates.add(cb.equal(root.get("paid"), true));
             } else {
                 predicates.add(cb.lessThan(root.get("amount"), 0));

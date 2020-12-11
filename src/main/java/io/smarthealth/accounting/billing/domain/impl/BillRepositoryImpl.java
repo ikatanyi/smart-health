@@ -4,7 +4,7 @@ import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.domain.BillRepository;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class BillRepositoryImpl implements BillRepository {
     }
 
     @Override
-    public List<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin,VisitEnum.PaymentMethod paymentMode, DateRange range, Boolean includeCanceled ) {
+    public List<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin,PaymentMethod paymentMode, DateRange range, Boolean includeCanceled ) {
         if (isWalkin != null && isWalkin) {
             return getWalkIn(patientNumber, hasBalance,paymentMode,range, includeCanceled);
         }
@@ -131,7 +131,7 @@ public class BillRepositoryImpl implements BillRepository {
         return BigDecimal.valueOf(sum);
     }
 
-    private List<SummaryBill> getWalkIn(String patientNumber, Boolean hasBalance,VisitEnum.PaymentMethod paymentMode, DateRange range, Boolean includeCanceled) {
+    private List<SummaryBill> getWalkIn(String patientNumber, Boolean hasBalance,PaymentMethod paymentMode, DateRange range, Boolean includeCanceled) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<SummaryBill> cq = cb.createQuery(SummaryBill.class);
         Root<PatientBillItem> root = cq.from(PatientBillItem.class);

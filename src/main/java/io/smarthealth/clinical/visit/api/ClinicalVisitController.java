@@ -5,7 +5,6 @@ import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
-import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.doctors.domain.DoctorClinicItems;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
@@ -87,6 +86,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 import io.smarthealth.clinical.visit.data.SimpleVisit;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 
 /**
  *
@@ -185,7 +185,7 @@ public class ClinicalVisitController {
 
         //register payment details 
         Scheme scheme = null;
-        if (visitData.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
+        if (visitData.getPaymentMethod().equals(PaymentMethod.Insurance)) {
             scheme = schemeService.fetchSchemeById(visitData.getPayment().getSchemeId());
             Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
             PaymentDetails pd = PaymentDetailsData.map(visitData.getPayment());
@@ -251,7 +251,7 @@ public class ClinicalVisitController {
         //PriceList pricelist = pricelistService.fetchPriceListByItemAndPriceBook(clinic.getServiceType(), null);
         PriceBook pb = null;
         //find pricebook
-        if (visit.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
+        if (visit.getPaymentMethod().equals(PaymentMethod.Insurance)) {
             //get the scheme
             if (schemeId != null) {
                 Scheme scheme = schemeService.fetchSchemeById(schemeId);
@@ -490,8 +490,8 @@ public class ClinicalVisitController {
             PaymentDetails pdd = pd.get();
             pdd.setExcessAmountAuthorisedBy(user);
             pdd.setExcessAmountEnabled(data.getExcessAmountEnabled());
-            pdd.setExcessAmountPayMode(data.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance) ? BillPayMode.Credit : BillPayMode.Cash);
-            if (data.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
+            pdd.setExcessAmountPayMode(data.getPaymentMethod());
+            if (data.getPaymentMethod().equals(PaymentMethod.Insurance)) {
 //update excess card details
 
             }
@@ -528,16 +528,16 @@ public class ClinicalVisitController {
 
             paymentDetailAuditRepository.save(audit);
 
-            if (data.getPaymentMethod() == VisitEnum.PaymentMethod.Cash) {
+            if (data.getPaymentMethod() == PaymentMethod.Cash) {
                 paymentDetailsService.deletePaymentDetails(pd);
             }
 
         }
 
-        if (data.getPaymentMethod() == VisitEnum.PaymentMethod.Cash) {
-            visit.setPaymentMethod(VisitEnum.PaymentMethod.Cash);
+        if (data.getPaymentMethod() == PaymentMethod.Cash) {
+            visit.setPaymentMethod(PaymentMethod.Cash);
         } else {
-            visit.setPaymentMethod(VisitEnum.PaymentMethod.Insurance);
+            visit.setPaymentMethod(PaymentMethod.Insurance);
             if (data.getSchemeId() == null) {
                 throw APIException.badRequest("Scheme Id is required");
             }

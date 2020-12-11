@@ -5,12 +5,15 @@
  */
 package io.smarthealth.notification.domain;
 
+import io.smarthealth.notification.domain.enumeration.NotificationType;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
  * @author Kelsas
  */
-public interface AutomatedNotificationRepository extends JpaRepository<AutomatedNotification, Long>{
-    
+public interface AutomatedNotificationRepository extends JpaRepository<AutomatedNotification, Long> {
+
+    Optional<AutomatedNotification> findByNotificationType(NotificationType type);
 }
