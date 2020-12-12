@@ -40,7 +40,27 @@ public class LoadDatabase {
                 Item toSave = new Item();
                 toSave.setActive(Boolean.TRUE);
                 toSave.setBillable(Boolean.TRUE);
+                  toSave.setItemName("Receipt");
                 toSave.setCategory(ItemCategory.Receipt);
+                toSave.setCostRate(BigDecimal.ZERO);
+                toSave.setDrug(Boolean.FALSE);
+                toSave.setItemCode(sku);
+                toSave.setRate(BigDecimal.ZERO);
+                toSave.setItemType(ItemType.Service);
+
+                log.info("save {}", repo.save(toSave));
+            }
+            
+            Optional<Item> copay = repo.findFirstByCategory(ItemCategory.CoPay);
+            if (!copay.isPresent()) {
+                
+                String sku = sequenceNumberService.next(1L, Sequences.ServiceItem.name());
+                
+                Item toSave = new Item();
+                toSave.setActive(Boolean.TRUE);
+                toSave.setItemName("Copayment");
+                toSave.setBillable(Boolean.TRUE);
+                toSave.setCategory(ItemCategory.CoPay);
                 toSave.setCostRate(BigDecimal.ZERO);
                 toSave.setDrug(Boolean.FALSE);
                 toSave.setItemCode(sku);

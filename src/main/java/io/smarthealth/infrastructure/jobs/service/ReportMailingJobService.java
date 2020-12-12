@@ -49,30 +49,31 @@ public class ReportMailingJobService {
 
         if (recipients.isPresent()) {
             AutomatedNotification users = recipients.get();
-            try {
-                byte[] report = reportService.generateEmailReport(stockReportService.emailExpiryStock());
+            if (users.isActive()) {
+                try {
+                    byte[] report = reportService.generateEmailReport(stockReportService.emailExpiryStock());
 
-                if (report != null && !users.getUsers().isEmpty()) {
-                    users.getUsers().stream()
-                            .filter(x -> x.getEmail() != null)
-                            .forEach(user -> {
-                                try {
-                                    String recipientName = user.getName(); //"Kelvin Kelsas";
-                                    String recipientEmail = user.getEmail();
-                                    Locale locale = new Locale("sw"); // Locale.ENGLISH;
+                    if (report != null && !users.getUsers().isEmpty()) {
+                        users.getUsers().stream()
+                                .filter(x -> (x.getEmail() != null && x.isEnabled()))
+                                .forEach(user -> {
+                                    try {
+                                        String recipientName = user.getName(); //"Kelvin Kelsas";
+                                        String recipientEmail = user.getEmail();
+                                        Locale locale = new Locale("sw"); // Locale.ENGLISH;
 
-                                    mailService.sendMailWithAttachment(
-                                            recipientName, recipientEmail, "Stock_Expirty_" + UUID.randomUUID().toString(),
-                                            report, "application/pdf", locale);
-                                } catch (MessagingException ex) {
-                                    log.error("shit has happen {} ", ex.getMessage());
-                                }
-                            });
+                                        mailService.sendMailWithAttachment(
+                                                recipientName, recipientEmail, "Stock_Expirty_" + UUID.randomUUID().toString(),
+                                                report, "application/pdf", locale);
+                                    } catch (MessagingException ex) {
+                                        log.error("shit has happen {} ", ex.getMessage());
+                                    }
+                                });
+                    }
+                } catch (SQLException | JRException | IOException ex) {
+                    log.error("shit has happen {} ", ex.getMessage());
                 }
-            } catch (SQLException | JRException  | IOException ex) {
-                log.error("shit has happen {} ", ex.getMessage());
             }
-
         }
 
 //        try {

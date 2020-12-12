@@ -43,7 +43,9 @@ public class InvoiceController {
     @PreAuthorize("hasAuthority('create_invoices')")
     public ResponseEntity<?> createInvoice(@Valid @RequestBody CreateInvoice invoiceData) {
 
-        List<InvoiceData> trans = service.createInvoice(invoiceData).stream().map(x -> x.toData()).collect(Collectors.toList());
+        List<InvoiceData> trans = service.createInvoice(invoiceData).stream()
+                .map(x -> x.toData())
+                .collect(Collectors.toList());
 
         Pager<List<InvoiceData>> pagers = new Pager();
         pagers.setCode("0");

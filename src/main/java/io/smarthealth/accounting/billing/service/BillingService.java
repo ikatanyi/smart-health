@@ -790,14 +790,17 @@ public class BillingService {
                 .forEach(x -> {
                     if (x.getBalance() > 0 && (x.getStatus() == BillStatus.Draft)) {
                         bills.add(x.toBillItem());
-                    } else if (x.getStatus() == BillStatus.Paid) {
+                    } else if (x.getStatus() == BillStatus.Paid && x.isFinalized() == false) {
                         paidBills.add(x.toBillItem());
-                        BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
-                        BigDecimal amount = BigDecimal.valueOf(x.getAmount());
-                        if (amount.signum() == -1) {
-                            amount = amount.negate();
+                        //only return receipts
+                        if (x.getItem().getCategory() == ItemCategory.CoPay || x.getItem().getCategory() == ItemCategory.Receipt) {
+                            BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
+                            BigDecimal amount = BigDecimal.valueOf(x.getAmount());
+                            if (amount.signum() == -1) {
+                                amount = amount.negate();
+                            }
+                            payments.add(new BillPayment(type, x.getPaymentReference(), amount));
                         }
-                        payments.add(new BillPayment(type, x.getPaymentReference(), amount));
                     } else {
                         System.err.println("Canceled Billed");
                     }

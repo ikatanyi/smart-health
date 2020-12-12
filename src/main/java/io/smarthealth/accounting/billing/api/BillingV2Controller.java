@@ -129,6 +129,7 @@ public class BillingV2Controller {
     @PreAuthorize("hasAuthority('view_billV2')")
     public ResponseEntity<?> getBillDetails(
             @PathVariable(value = "visitNumber") String visitNumber,
+            @RequestParam(value = "finalized", required = false, defaultValue = "false") final boolean finalized,
             @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
