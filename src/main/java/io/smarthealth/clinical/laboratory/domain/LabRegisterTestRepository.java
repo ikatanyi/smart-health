@@ -1,7 +1,9 @@
 package io.smarthealth.clinical.laboratory.domain;
 
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
+import io.smarthealth.clinical.radiology.domain.TotalTest;
 import io.smarthealth.security.util.SecurityUtils;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -50,4 +52,8 @@ public interface LabRegisterTestRepository extends JpaRepository<LabRegisterTest
     
     @Query("SELECT t FROM LabRegisterTest t WHERE t.entryDateTime BETWEEN :frmdt AND :todt GROUP BY t.labTest")
     List<LabRegisterTest> findTestsByDateRange(@Param("frmdt") LocalDateTime from, @Param("todt") LocalDateTime todt);
+    
+    
+    @Query("SELECT d.testName as testName, count(d.testName) AS count, SUM(d.price) as totalPrice FROM LabRegisterTest d WHERE d.createdOn BETWEEN :fromDate AND :toDate Group by d.testName")
+    List<TotalTest>findTotalTests(@Param("fromDate")Instant fromDate, @Param("toDate")Instant toDate);
 }

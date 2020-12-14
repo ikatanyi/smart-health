@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterRepository;
 import io.smarthealth.clinical.laboratory.domain.LabRegisterTestRepository;
 import io.smarthealth.clinical.laboratory.domain.specification.LabRegisterTestSpecification;
+import io.smarthealth.clinical.radiology.domain.TotalTest;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
@@ -68,6 +69,7 @@ import org.apache.commons.lang3.EnumUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.web.multipart.MultipartFile;
 import io.smarthealth.organization.facility.domain.Employee;
+import java.time.Instant;
 
 /**
  *
@@ -479,6 +481,10 @@ public class LaboratoryService {
 
     public List<LabRegisterTest> getTestsByDate(DateRange range) {
         return testRepository.findTestsByDateRange(range.getStartDateTime(), range.getEndDateTime());
+    }
+    
+    public List<TotalTest> getPatientTestTotals(Instant fromDate, Instant toDate) {
+        return testRepository.findTotalTests(fromDate, toDate);
     }
 
     private WalkIn createWalking(String patientName) {

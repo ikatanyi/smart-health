@@ -12,6 +12,7 @@ import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.clinical.laboratory.service.LaboratoryService;
+import io.smarthealth.clinical.radiology.domain.TotalTest;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -21,6 +22,8 @@ import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.report.data.ReportData;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -82,7 +85,14 @@ public class LabReportService {
         } else {
             reportData.setTemplate("/clinical/laboratory/LabStatement_summary");
         }
+        
+        Instant fromDate = range.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant toDate = range.getEndDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        List<TotalTest> tests = labService.getPatientTestTotals(fromDate, toDate);
+        
         reportData.setReportName("Lab-Statement");
+        reportData.getFilters().put("tests", tests);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportService.generateReport(reportData, response);
     }
