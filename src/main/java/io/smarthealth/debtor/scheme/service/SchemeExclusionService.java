@@ -80,7 +80,7 @@ public class SchemeExclusionService {
 
     public Optional<SchemeExclusions> get(Long itemId, Long schemeId) {
 
-        return repository.exclusionExists(itemId, schemeId);
+        return repository.findExclusions(itemId, schemeId);
     }
 
     public Page<SchemeExclusions> get(Long itemId, Long schemeId, Pageable page) {
