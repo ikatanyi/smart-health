@@ -8,6 +8,7 @@ package io.smarthealth.clinical.radiology.domain;
 import io.smarthealth.clinical.radiology.data.PatientScanTestData;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.documents.domain.Document;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
@@ -23,6 +24,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Data;
 
 /**
@@ -69,6 +71,9 @@ public class PatientScanTest extends Auditable {
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_test_document_id"))
     private Document document;
+    
+    @Transient
+    private PaymentMethod paymentMethod;
 
     public PatientScanTestData toData() {
         PatientScanTestData entity = new PatientScanTestData();

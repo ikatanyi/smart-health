@@ -2,6 +2,7 @@ package io.smarthealth.clinical.laboratory.domain;
 
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.domain.Identifiable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringExclude;
 
@@ -23,7 +25,7 @@ import org.apache.commons.lang3.builder.ToStringExclude;
  * @author Kelsas
  */
 @Data
-@Entity 
+@Entity
 @Table(name = "lab_register_tests")
 public class LabRegisterTest extends Identifiable {
 
@@ -65,7 +67,9 @@ public class LabRegisterTest extends Identifiable {
     @ToStringExclude
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_register_parent_test_id"))
     private LabTest parentLabTest;
-
+    @Transient
+    private PaymentMethod paymentMethod;
+    
     @OneToMany(mappedBy = "labRegisterTest")
     private List<LabResult> labResults;
 
@@ -85,7 +89,6 @@ public class LabRegisterTest extends Identifiable {
         data.setEntered(this.entered);
         data.setEnteredBy(this.enteredBy);
         data.setEntryDateTime(this.entryDateTime);
-        
 
         data.setValidated(this.validated);
         data.setValidatedBy(this.validatedBy);
@@ -112,7 +115,7 @@ public class LabRegisterTest extends Identifiable {
         data.setPaid(this.paid);
 //        data.setReferenceNo(this.referenceNo);
         data.setRequestId(this.requestId);
-        
+
         data.setSpecimen(this.specimen);
         data.setStatus(this.status);
         data.setIsPanel(this.isPanel);

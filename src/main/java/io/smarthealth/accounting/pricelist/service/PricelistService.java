@@ -9,6 +9,7 @@ import io.smarthealth.accounting.pricelist.domain.PriceListRepository;
 import io.smarthealth.accounting.pricelist.domain.specification.PriceListSpecification;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.domain.ServicePointRepository;
+import io.smarthealth.debtor.scheme.domain.SchemeExclusionRepository;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.domain.ItemRepository;
@@ -38,6 +39,7 @@ public class PricelistService {
     private final PriceBookRepository priceBookRepository;
     private final ItemRepository itemRepository;
     private final ServicePointRepository servicePointRepository;
+    private final SchemeExclusionRepository schemeExclusionRepository;
 
     @Transactional
     public PriceList createPriceList(PriceListData data) {
@@ -129,10 +131,19 @@ public class PricelistService {
      * @param page
      * @return
      */
-    public Page<PriceList> getPricelistByLocation(Long servicePointId, Long priceBookId, Pageable page) {
+    public Page<PriceList> getPricelistByLocation(Long servicePointId, Long priceBookId, Long itemId, Pageable page) {
         ServicePoint servicePoint = getServicePoint(servicePointId);
-
-        Page<PriceList> prices = repository.findByServicePoint(servicePoint, page);
+        Page<PriceList> prices = null;
+        if (itemId != null) {
+            Item item = itemRepository.findById(itemId).orElse(null);
+            if (item != null) {
+                prices = repository.findByServicePointAndItem(servicePoint, item, page);
+            } else {
+                prices = repository.findByServicePoint(servicePoint, page);
+            }
+        } else {
+            prices = repository.findByServicePoint(servicePoint, page);
+        }
 
         if (priceBookId != null) {
             Optional<PriceBook> priceBook = priceBookRepository.findById(priceBookId);
@@ -145,6 +156,7 @@ public class PricelistService {
                     prices.map(pbi -> {
                         PriceBookItem i = findPriceItem(book, pbi.getItem());
                         if (i != null) {
+
                             return i.toPriceBookItemRate(pbi);
                         }
                         return pbi;
@@ -185,7 +197,7 @@ public class PricelistService {
     public PriceList fetchPriceListByItemAndServicePoint(final Item item, final ServicePoint servicePoint) {
         return repository.findByItemAndServicePoint(item, servicePoint).orElseThrow(() -> APIException.notFound("Pricelist not found ", ""));
     }
-    
+
     public PriceList fetchPriceListByItemCategory(final ItemCategory category) {
         return repository.getPriceListByItemCategory(category).orElseThrow(() -> APIException.notFound("Pricelist not found ", ""));
     }
@@ -220,13 +232,13 @@ public class PricelistService {
 
     /**
      * Search Item PriceList (item, servicePointId, priceBookId, pageable
+     *
      * @param searchItem
      * @param servicePointId
      * @param priceBookId
      * @param page
-     * @return 
+     * @return
      */
-    
     public Page<PriceList> searchPriceList(String searchItem, Long servicePointId, Long priceBookId, Pageable page) {
 
         Specification<PriceList> searchSpec = PriceListSpecification.searchSpecification(searchItem, servicePointId);
@@ -253,7 +265,6 @@ public class PricelistService {
     }
 
     public double fetchPriceAmountByItemAndPriceBook(final Item item, final PriceBook book) {
-        System.out.println("Item " + item.getItemName());
         if (book != null) {
             if (book.isGlobalRate()) {
                 double perc = book.getPercentage() != null ? book.getPercentage() : 0;

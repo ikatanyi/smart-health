@@ -3,6 +3,7 @@ package io.smarthealth.clinical.radiology.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
 import io.smarthealth.clinical.radiology.domain.enumeration.ScanTestState;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.documents.data.DocumentData;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.swagger.annotations.ApiModelProperty;
@@ -77,6 +78,7 @@ public class PatientScanTestData {
     
     @ApiModelProperty(required = false, hidden = true)
     private DocumentData documentData;
+    private PaymentMethod paymentMethod;
     
     public PatientScanTest map(){
         PatientScanTest entity = new PatientScanTest();

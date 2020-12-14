@@ -130,7 +130,7 @@ public class ProcedureService {
         PatientProcedureRegister patientProcReg = PatientProcedureRegisterData.map(patientProcRegData);
         String transactionId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         patientProcReg.setTransactionId(transactionId);
-        System.out.println("patientProcRegData.isWalkin() " + patientProcRegData.getIsWalkin());
+        
         if (patientProcRegData.getIsWalkin()) {
             patientProcReg.setPatientName(patientProcRegData.getPatientName());
             patientProcReg.setPatientNo(patientProcRegData.getPatientNumber());
@@ -166,6 +166,7 @@ public class ProcedureService {
                 pte.setQuantity(id.getQuantity());
                 pte.setPaid(Boolean.FALSE);
                 pte.setProcedureTest(item);
+                pte.setPaymentMethod(id.getPaymentMethod());
                 pte.setMedic(employeeService.findEmployeeById(id.getMedicId()));
 //                Optional<Employee> employee = employeeService.findEmployeeById(id.getMedicId());
 //                if (employee.isPresent()) {
@@ -199,8 +200,7 @@ public class ProcedureService {
     private PatientBill toBill(PatientProcedureRegister data) {
         ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
         PatientBill patientbill = new PatientBill();
-        
-        
+
         if (!data.getIsWalkin()) {
             patientbill.setVisit(data.getVisit());
             patientbill.setPatient(data.getVisit().getPatient());
@@ -244,6 +244,7 @@ public class ProcedureService {
                     billItem.setServicePointId(servicePoint.getId());
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setBillingDate(data.getBillingDate());
+                    billItem.setBillPayMode(lineData.getPaymentMethod());
 
                     return billItem;
                 })

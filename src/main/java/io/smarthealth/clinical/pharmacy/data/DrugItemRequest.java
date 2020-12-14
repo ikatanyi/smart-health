@@ -7,8 +7,10 @@ package io.smarthealth.clinical.pharmacy.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDate;
+import javax.persistence.Transient;
 import lombok.Data;
 
 /**
@@ -47,5 +49,6 @@ public class DrugItemRequest {
     private String doctorName; 
     private Boolean collected;
     private String dispensedBy;
-    private String collectedBy;
+    private String collectedBy; 
+    private PaymentMethod paymentMethod;
 }

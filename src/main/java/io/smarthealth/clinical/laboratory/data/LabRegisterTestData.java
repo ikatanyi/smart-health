@@ -3,6 +3,7 @@ package io.smarthealth.clinical.laboratory.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
 import io.swagger.annotations.ApiModelProperty;
@@ -60,6 +61,7 @@ public class LabRegisterTestData {
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime validationDateTime;
     private LabTestStatus status;
+    private PaymentMethod paymentMethod;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @ApiModelProperty(hidden = true)

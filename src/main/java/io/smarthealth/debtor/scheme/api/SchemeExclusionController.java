@@ -15,6 +15,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.Pager;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -87,6 +88,14 @@ public class SchemeExclusionController {
         return ResponseEntity.ok((Pager<SchemeExclusionData>) PaginationUtil.toPager(list, "Scheme Exclusions"));
     }
 
+    @GetMapping("/scheme-exclusions/isExclusion")
+    public ResponseEntity<?> isExclusion(
+            @RequestParam(value = "itemId", required = true) Long itemId,
+            @RequestParam(value = "schemeId", required = true) Long schemeId) {
+        Optional<SchemeExclusions> exc = service.get(itemId, schemeId);
+
+        return ResponseEntity.ok(exc.isPresent());
+    }
 //    @GetMapping("/scheme-exclusions/{sche}/list")
 //    public ResponseEntity<List<SchemeExclusionData>> getByItem(@PathVariable(value = "itemId") Long id) {
 //        List<SchemeExclusionData> list = service.getByItem(id).stream()

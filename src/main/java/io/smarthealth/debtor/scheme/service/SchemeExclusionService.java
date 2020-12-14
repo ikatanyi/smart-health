@@ -78,6 +78,11 @@ public class SchemeExclusionService {
         return repository.findById(id);
     }
 
+    public Optional<SchemeExclusions> get(Long itemId, Long schemeId) {
+
+        return repository.exclusionExists(itemId, schemeId);
+    }
+
     public Page<SchemeExclusions> get(Long itemId, Long schemeId, Pageable page) {
         Specification<SchemeExclusions> spec = SchemeSpecification.createSchemeExclusionSpecification(itemId, schemeId);
         return repository.findAll(spec, page);

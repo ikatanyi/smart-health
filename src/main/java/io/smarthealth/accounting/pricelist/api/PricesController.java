@@ -129,11 +129,12 @@ public class PricesController {
     public ResponseEntity<?> getPriceListByLocation(
             @PathVariable(value = "servicepointId") Long servicePointId,
             @RequestParam(value = "pricebook_id", required = false) Long priceBookId,
+            @RequestParam(value = "item_id", required = false) Long itemId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        Page<PriceListData> list = priceService.getPricelistByLocation(servicePointId, priceBookId, pageable)
+        Page<PriceListData> list = priceService.getPricelistByLocation(servicePointId, priceBookId,itemId, pageable)
                 .map(x -> x.toData());
 
         Pager<List<PriceListData>> pagers = new Pager();
@@ -149,13 +150,14 @@ public class PricesController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-
+   
     @GetMapping("/pricelists/search")
     @PreAuthorize("hasAuthority('view_pricelist')")
     public ResponseEntity<?> getPriceListByLocation(
             @RequestParam(value = "item") String item,
             @RequestParam(value = "pricebook_id", required = false) Long priceBookId,
-            @RequestParam(value = "servicepoint_id", required = false) Long servicePointId, 
+            @RequestParam(value = "scheme_id", required = false) Long schemeId,
+            @RequestParam(value = "servicepoint_id", required = false) Long servicePointId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
@@ -176,4 +178,5 @@ public class PricesController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
+   
 }

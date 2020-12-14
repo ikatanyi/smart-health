@@ -18,7 +18,7 @@ import lombok.Data;
  * @author simz
  */
 @Data
-@Entity
+@Entity 
 public class SchemeExclusions extends Auditable {
 
     @ManyToOne

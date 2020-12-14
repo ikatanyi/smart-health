@@ -28,7 +28,7 @@ public class PriceListData {
     private String servicePoint;
 
     private Boolean defaultPrice;
-    
+    private boolean excluded;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate effectiveDate;
 
