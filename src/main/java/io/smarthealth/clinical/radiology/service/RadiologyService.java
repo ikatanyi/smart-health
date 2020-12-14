@@ -200,7 +200,7 @@ public class RadiologyService {
 //                    if (lineData.getRequest() != null) {
 //                        
 //                    }
-                    billItem.setBillPayMode(lineData.);
+                    billItem.setBillPayMode(lineData.getPaymentMethod());
                     billItem.setPrice(lineData.getTestPrice());
                     billItem.setQuantity(lineData.getQuantity());
                     billItem.setAmount(lineData.getTestPrice() * lineData.getQuantity());
