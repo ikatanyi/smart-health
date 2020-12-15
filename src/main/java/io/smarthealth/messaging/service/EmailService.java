@@ -79,7 +79,7 @@ public class EmailService {
         mailSender.send(message);
         log.info("Sent SMTP mail from thread " + Thread.currentThread().getName());
     }
-
+ 
 //     Context context = new Context();
 //        context.setVariables(mail.getProps());
 //        String html = templateEngine.process(mail.getTemplate(), context);

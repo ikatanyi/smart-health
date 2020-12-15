@@ -110,8 +110,8 @@ public class PricelistService {
 
         toUpdateItem.setActive(data.getActive() != null ? data.getActive() : Boolean.TRUE);
         toUpdateItem.setDefaultPrice(data.getDefaultPrice());
-        toUpdateItem.setEffectiveDate(data.getEffectiveDate());
-        toUpdateItem.setItem(item);
+//        toUpdateItem.setEffectiveDate(data.getEffectiveDate());
+//        toUpdateItem.setItem(item);
         toUpdateItem.setSellingRate(data.getSellingRate());
         toUpdateItem.setServicePoint(servicePoint);
         return repository.save(toUpdateItem);
