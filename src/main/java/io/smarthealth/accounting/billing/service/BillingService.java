@@ -775,9 +775,9 @@ public class BillingService {
         return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range, includeCanceled);
     }
 
-    public BillDetail getBillDetails(String visitNumber, boolean includeCanceled, Pageable pageable) {
-        List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled));
-        List<PatientBillItem> walkinItems = billItemRepository.findAll(withWalkinNumber(visitNumber, includeCanceled));
+    public BillDetail getBillDetails(String visitNumber, boolean includeCanceled, PaymentMethod paymentMethod, Pageable pageable) {
+        List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, paymentMethod));
+        List<PatientBillItem> walkinItems = billItemRepository.findAll(withWalkinNumber(visitNumber, includeCanceled, paymentMethod));
         if (!walkinItems.isEmpty()) {
             patientItems.addAll(walkinItems);
         }
@@ -826,8 +826,8 @@ public class BillingService {
     }
 
     public List<BillItem> getAllBillDetails(String visitNumber, boolean includeCanceled) {
-        List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled));
-        List<PatientBillItem> walkinItems = billItemRepository.findAll(withWalkinNumber(visitNumber, includeCanceled));
+        List<PatientBillItem> patientItems = billItemRepository.findAll(withVisitNumber(visitNumber, includeCanceled, null));
+        List<PatientBillItem> walkinItems = billItemRepository.findAll(withWalkinNumber(visitNumber, includeCanceled, null));
         if (!walkinItems.isEmpty()) {
             patientItems.addAll(walkinItems);
         }
@@ -845,7 +845,7 @@ public class BillingService {
     }
     //when changing billing I should only show those
 
-    private Specification<PatientBillItem> withVisitNumber(String visitNo, boolean includeCanceled) {
+    private Specification<PatientBillItem> withVisitNumber(String visitNo, boolean includeCanceled, PaymentMethod paymentMethod) {
         return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), Boolean.FALSE));
@@ -855,11 +855,14 @@ public class BillingService {
             if (!includeCanceled) {
                 predicates.add(cb.notEqual(root.get("status"), BillStatus.Canceled));
             }
+              if (paymentMethod != null) {
+                predicates.add(cb.notEqual(root.get("billPayMode"), paymentMethod));
+            }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
 
-    private Specification<PatientBillItem> withWalkinNumber(String walkIn, boolean includeCanceled) {
+    private Specification<PatientBillItem> withWalkinNumber(String walkIn, boolean includeCanceled,  PaymentMethod paymentMethod) {
         return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
@@ -871,6 +874,9 @@ public class BillingService {
 
             if (walkIn != null) {
                 predicates.add(cb.equal(root.get("patientBill").get("reference"), walkIn));
+            }
+              if (paymentMethod != null) {
+                predicates.add(cb.notEqual(root.get("billPayMode"), paymentMethod));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };

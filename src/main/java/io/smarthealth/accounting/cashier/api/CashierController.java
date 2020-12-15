@@ -109,10 +109,10 @@ public class CashierController {
 
     @PutMapping("/cashiers/{id}/shift/{shiftNo}/close")
     @PreAuthorize("hasAuthority('edit_cashiersShift')")
-    public ResponseEntity<?> endCashierShift(@PathVariable(value = "id") Long code, @PathVariable(value = "shiftNo") String shiftNo) {
+    public ResponseEntity<?> endCashierShift(@PathVariable(value = "id") Long cashierId, @PathVariable(value = "shiftNo") String shiftNo) {
 
         //check if this shift exist
-        Shift shift = service.closeShift(code, shiftNo);
+        Shift shift = service.closeShift(cashierId, shiftNo);
 
         return ResponseEntity.ok(shift.toData());
     }

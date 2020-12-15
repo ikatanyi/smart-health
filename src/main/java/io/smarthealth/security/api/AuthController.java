@@ -88,9 +88,11 @@ public class AuthController {
         User user = new User(data.getEmail(),
                 data.getUsername(),
                 password,
-                data.getName());
+                data.getName()
+        );
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword())); 
+        user.setPhoneNumber(data.getPhoneNumber());
         /*
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER.name())
                 .orElseThrow(() -> APIException.internalError("User Role not set."));
@@ -153,7 +155,8 @@ public class AuthController {
                 .orElseThrow(() -> APIException.notFound("Username or email {0} not found.... ", username));
         user.setEmail(data.getEmail());
         user.setName(data.getName());
-
+        user.setPhoneNumber(data.getPhoneNumber());
+       
         if (!data.getRoles().isEmpty()) {
             Set<Role> userRoles = new HashSet<>();
             for (String role : data.getRoles()) {

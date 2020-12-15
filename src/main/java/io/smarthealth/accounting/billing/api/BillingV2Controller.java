@@ -129,13 +129,14 @@ public class BillingV2Controller {
     @PreAuthorize("hasAuthority('view_billV2')")
     public ResponseEntity<?> getBillDetails(
             @PathVariable(value = "visitNumber") String visitNumber,
+             @PathVariable(value = "billPayMode") PaymentMethod paymentMethod,
             @RequestParam(value = "finalized", required = false, defaultValue = "false") final boolean finalized,
             @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
-        BillDetail details = service.getBillDetails(visitNumber, includeCanceled, pageable);
+        Pageable pageable = PaginationUtil.createUnPaged(page, size);
+        BillDetail details = service.getBillDetails(visitNumber, includeCanceled,paymentMethod, pageable);
 
 //        Pager<List<SummaryBill>> pagers = new Pager();
 //        pagers.setCode("0");

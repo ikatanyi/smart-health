@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import lombok.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -69,10 +70,10 @@ public class SchemeExclusionController {
     }
 
     @DeleteMapping("/scheme-exclusions/{id}")
-    public ResponseEntity<SchemeExclusionData> delete(@PathVariable(value = "id") Long id) {
-        SchemeExclusions results = service.get(id)
-                .orElseThrow(() -> APIException.notFound("Scheme Exclusion with ID {0} Not Found", id));
-        return ResponseEntity.ok(SchemeExclusionData.map(results));
+    public ResponseEntity<?> delete(@PathVariable(value = "id") Long id) {
+        service.delete(id);
+        return ResponseEntity.accepted().body(new Delete("Success", "Exclusion Deleted Successful"));
+        
     }
 
     @GetMapping("/scheme-exclusions")
@@ -103,4 +104,11 @@ public class SchemeExclusionController {
 //                .collect(Collectors.toList());
 //        return ResponseEntity.ok(list);
 //    }
+
+    @Value
+    public class Delete {
+
+        String status;
+        String message;
+    }
 }
