@@ -23,7 +23,7 @@ public class PriceListData {
     private ItemType itemType;
     private BigDecimal sellingRate;
     private BigDecimal costRate;
-
+    private BigDecimal cashRate;
     private Long servicePointId;
     private String servicePoint;
 

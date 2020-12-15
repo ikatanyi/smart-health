@@ -68,6 +68,7 @@ public class PriceList extends Auditable {
             data.setItemCategory(this.item.getCategory());
             data.setItemType(this.item.getItemType());
             data.setCostRate(this.item.getCostRate());
+            data.setCashRate(this.item.getRate());
             if (this.defaultPrice != null && this.defaultPrice) {
                 data.setSellingRate(this.item.getRate());
             }
@@ -87,9 +88,7 @@ public class PriceList extends Auditable {
             data.setServicePoint(this.servicePoint.getName());
             data.setServicePointId(this.servicePoint.getId());
         }
-        if (this.item.getId().equals(3326)) {
-            System.err.println("About to return price book price " + data.getSellingRate());
-        }
+       
 
         return data;
     }
