@@ -850,7 +850,7 @@ public class AccountReportService {
         String visitNumber = reportParam.getFirst("visitNumber");
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
          Boolean includeCanceled = reportParam.getFirst("includeCanceled") != null ? Boolean.valueOf(reportParam.getFirst("includeCanceled")) : Boolean.FALSE;
-        BillDetail data = billService.getBillDetails(visitNumber,includeCanceled, Pageable.unpaged());
+        BillDetail data = billService.getBillDetails(visitNumber,includeCanceled,null, Pageable.unpaged());
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         reportData.setData(data.getBills());
         reportData.setFormat(format);
