@@ -162,6 +162,8 @@ public class BillingService {
                     billItem.setServicePointId(lineData.getServicePointId());
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setMedicId(lineData.getMedicId());
+                    billItem.setBillPayMode(lineData.getPaymentMethod());
+
                     return billItem;
                 })
                 .collect(Collectors.toList());

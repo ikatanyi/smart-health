@@ -51,7 +51,7 @@ public class BillItemData {
     private String paymentReference;
     private Boolean walkinFlag;
     private String createdBy;
-    private PaymentMethod billPayMode;
+    private PaymentMethod paymentMethod;
     private String schemeId;
     private String invoiceNumber;
     private boolean finalized = false;

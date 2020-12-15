@@ -107,7 +107,7 @@ public class PatientBillItem extends Auditable {
             data.setPatientNumber(this.getPatientBill().getReference());
         }
         data.setWalkinFlag(this.getPatientBill().getWalkinFlag());
-        data.setBillPayMode(this.billPayMode);
+        data.setPaymentMethod(this.billPayMode);
         data.setFinalized(this.finalized);
         data.setInvoiceNumber(this.invoiceNumber);
         return data;

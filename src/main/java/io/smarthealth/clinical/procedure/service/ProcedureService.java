@@ -244,6 +244,7 @@ public class ProcedureService {
                     billItem.setServicePointId(servicePoint.getId());
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setBillingDate(data.getBillingDate());
+                    
                     billItem.setBillPayMode(lineData.getPaymentMethod());
 
                     return billItem;
