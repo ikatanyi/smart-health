@@ -202,10 +202,9 @@ public class BillingService {
             itemCount++;
             if (bill.getVisit() != null) {
                 //Billing paymode added to accomodate exclusions and other functionalities
-                b.setBillPayMode(bill.getVisit().getPaymentMethod());
+//                b.setBillPayMode(bill.getVisit().getPaymentMethod());
                 if (bill.getVisit().getPaymentMethod().equals(PaymentMethod.Insurance) && pd.isPresent()) {
                     b.setScheme(pd.get().getScheme());
-
                 }
             }
         }
