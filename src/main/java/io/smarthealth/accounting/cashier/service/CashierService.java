@@ -120,7 +120,7 @@ public class CashierService {
         if (cashier.getUser().getEmail() != null) {
             mailService.send(EmailData.of(cashier.getUser().getEmail(), "Cashier Access Details", email));
         }
-        cashier.setPin(id);
+        cashier.setPin(randomPIN);
 
         repository.save(cashier);
 
