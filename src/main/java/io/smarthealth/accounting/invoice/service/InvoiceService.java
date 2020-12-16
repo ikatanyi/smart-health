@@ -44,6 +44,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -185,7 +186,7 @@ public class InvoiceService {
                                         lineItem.setBillItem(updatedItem);
 //                                            lineItem.setBalance(inv.getAmount().doubleValue() > 0 ? inv.getAmount() : BigDecimal.ZERO);
                                         lineItem.setBalance(inv.getAmount());
-                                        if (updatedItem.getBillPayMode() != PaymentMethod.Cash) {
+                                        if (updatedItem.getItem().getCategory() == ItemCategory.CoPay || updatedItem.getItem().getCategory() == ItemCategory.Receipt || updatedItem.getBillPayMode() != PaymentMethod.Cash) {
                                             invoice.addItem(lineItem);
                                         }
                                         //this is
