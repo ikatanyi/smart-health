@@ -855,11 +855,8 @@ public class BillingService {
             if (!includeCanceled) {
                 predicates.add(cb.notEqual(root.get("status"), BillStatus.Canceled));
             }
-            if (paymentMethod != null) {
-                PatientBillItem d= (PatientBillItem) root;
-                if(d.getItem().getCategory() != ItemCategory.CoPay || d.getItem().getCategory() != ItemCategory.Receipt) {
-                    predicates.add(cb.equal(root.get("billPayMode"), paymentMethod));
-                }
+            if (paymentMethod != null) { 
+                predicates.add(cb.equal(root.get("billPayMode"), paymentMethod));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
