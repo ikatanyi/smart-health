@@ -159,6 +159,7 @@ public class FileUploadController {
     @PostMapping("/patient-document")
 //    @PreAuthorize("hasAuthority('upload_patient_documents')")
     public ResponseEntity<?> uploadPatientDocument(@Valid @ModelAttribute final PatientDocumentData patientDocumentData) {
+        System.out.println("About to upload patient doc");
         Document fileSaved = fileService.uploadPatientDocument(patientDocumentData);
         Pager<PatientDocumentData> pagers = new Pager();
         pagers.setCode("200");
@@ -197,7 +198,9 @@ public class FileUploadController {
 
     @GetMapping("/patient-document/{id}/download")
 //    @PreAuthorize("hasAuthority('download_patient_document')")
-    public ResponseEntity<Resource> downloadPatientDocument(@PathVariable("id") Long docId, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Resource> downloadPatientDocument(
+            @PathVariable("id") Long docId,
+            HttpServletRequest request) throws IOException {
         // Load file as Resource
         Resource resource = uploadService.loadPatientDocumentAsResource(docId);
 
