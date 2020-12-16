@@ -31,6 +31,7 @@ import io.smarthealth.accounting.invoice.domain.specification.InvoiceItemSpecifi
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceSpecification;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Payer;
@@ -166,6 +167,7 @@ public class InvoiceService {
                                 .forEach(inv -> {
                                     PatientBillItem item = billingService.findBillItemById(inv.getBillItemId());
                                     //only finalize what has not been finalized
+
                                     if (item.isFinalized() == false) {
 
                                         InvoiceItem lineItem = new InvoiceItem();
@@ -178,11 +180,14 @@ public class InvoiceService {
                                         item.setFinalized(true);
                                         item.setInvoiceNumber(invoiceNo);
                                         item.setBalance(0D);
+
                                         PatientBillItem updatedItem = billingService.updateBillItem(item);
                                         lineItem.setBillItem(updatedItem);
 //                                            lineItem.setBalance(inv.getAmount().doubleValue() > 0 ? inv.getAmount() : BigDecimal.ZERO);
                                         lineItem.setBalance(inv.getAmount());
-                                        invoice.addItem(lineItem);
+                                        if (updatedItem.getBillPayMode() != PaymentMethod.Cash) {
+                                            invoice.addItem(lineItem);
+                                        }
                                         //this is
                                     }
                                 });
