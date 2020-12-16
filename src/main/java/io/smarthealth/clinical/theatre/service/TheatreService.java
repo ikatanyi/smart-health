@@ -205,7 +205,7 @@ public class TheatreService {
             Optional<TheatreFee> anaesthetistFee = theatreFeeService.findByItemAndCategory(item, FeeCategory.AnaesthetistFee);
             if (anaesthetistFee.isPresent()) {
                 BigDecimal amt = computeTheatreFee(anaesthetistFee.get(), (1 * amount));
-                Employee doctor = doctorInvoiceService.getDoctorByStaffNumber(docFee.getSurgeonStaffNumber());
+                Employee doctor = doctorInvoiceService.getDoctorByStaffNumber(docFee.getAnaestheticStaffNumber());
                 DoctorInvoice invoice = new DoctorInvoice();
                 invoice.setAmount(amt);
                 invoice.setBalance(amt);
@@ -342,6 +342,7 @@ public class TheatreService {
 
     public void fixDoctorFee(List<DoctorFeeFix> doctorFeeFixes){
         List<DoctorInvoice> doctorInvoices = toDoctorInvoiceFix(doctorFeeFixes);
+        System.out.println("Done with this number "+doctorInvoices.size());
         if (doctorInvoices.size() > 0) {
             doctorInvoices.forEach(inv -> doctorInvoiceService.save(inv));
         }

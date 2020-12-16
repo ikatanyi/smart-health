@@ -14,4 +14,5 @@ public enum DocumentType {
         Scan,
         RadiologyReport,
         ProcedureReport,
+        General
 }

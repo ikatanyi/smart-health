@@ -28,5 +28,6 @@ public enum GlobalConfigNum {
     CashierShiftDuration,
     Notifications,
     DefaultCurrency,
-    DiscountMaxPercentage;
+    DiscountMaxPercentage,
+    PatientDocuments;
 }

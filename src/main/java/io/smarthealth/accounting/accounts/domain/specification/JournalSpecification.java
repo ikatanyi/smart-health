@@ -1,9 +1,6 @@
 package io.smarthealth.accounting.accounts.domain.specification;
 
-import io.smarthealth.accounting.accounts.domain.JournalEntry;
-import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
-import io.smarthealth.accounting.accounts.domain.JournalState;
-import io.smarthealth.accounting.accounts.domain.TransactionType;
+import io.smarthealth.accounting.accounts.domain.*;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,7 +17,7 @@ public class JournalSpecification {
         super();
     }
 
-    public static Specification<JournalEntry> createSpecification(String transactionNo, TransactionType transactionType, JournalState status, DateRange range) {
+    public static Specification<JournalEntry> createSpecification(String transactionNo, TransactionType transactionType, JournalState status, DateRange range, Account account) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
@@ -39,6 +36,9 @@ public class JournalSpecification {
                 predicates.add(
                         cb.between(root.get("date"), range.getStartDateTime().toLocalDate(), range.getEndDateTime().toLocalDate())
                 );
+            }
+            if(account!=null){
+                predicates.add(cb.equal(root.join("items").get("account"), account));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };

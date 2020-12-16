@@ -10,5 +10,5 @@ public class DoctorFeeFix {
     private String surgeonStaffNumber;
     private String anaestheticStaffNumber;
     private String visitNumber;
-    private LocalDate billingDate;
+    private LocalDate billingDate = LocalDate.now();
 }

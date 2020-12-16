@@ -236,7 +236,7 @@ public class DoctorInvoiceService {
     }
 
     public Employee getDoctorByStaffNumber(String staffNo) {
-        return employeeService.findEmployeeByStaffNumber(staffNo).orElseThrow(()-> APIException.notFound("Employee not found"));
+        return employeeService.findEmployeeByStaffNumber(staffNo).orElseThrow(()-> APIException.notFound("Employee identified by staff number {0} not found", staffNo));
     }
     
     public DoctorInvoice saveDoctorInvoice(DoctorInvoiceData data) {
