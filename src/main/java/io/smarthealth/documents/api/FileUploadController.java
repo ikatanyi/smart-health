@@ -1,6 +1,10 @@
 package io.smarthealth.documents.api;
 
+import io.smarthealth.clinical.admission.data.AdmissionData;
+import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.documents.data.DocumentData;
+import io.smarthealth.documents.data.PatientDocumentData;
+import io.smarthealth.documents.domain.Document;
 import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.domain.enumeration.Status;
 import io.smarthealth.documents.service.FileStorageService;
@@ -17,20 +21,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -82,13 +80,14 @@ public class FileUploadController {
             @RequestParam(value = "status", required = false) Status status,
             @RequestParam(value = "documentType", required = false) DocumentType documentType,
             @RequestParam(value = "dateRange", required = false) String dateRange,
+            @RequestParam(value = "fileName", required = false) String fileName,
             @RequestParam(value = "servicePointId", required = false) Long servicePointId,
             @RequestParam(value = "page", required = false) Integer pag,
             @RequestParam(value = "pageSize", required = false) Integer size
     ) {
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(pag, size);
-        List<DocumentData> testData = fileService.findAllDocuments(patientNumber, documentType, status, servicePointId, range, pageable)
+        List<DocumentData> testData = fileService.findAllDocuments(patientNumber, documentType, status, servicePointId, range,null,fileName, pageable)
                 .stream()
                 .map((template) -> template.toData()
                 ).collect(Collectors.toList());
@@ -156,4 +155,66 @@ public class FileUploadController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+
+    @PostMapping("/patient-document")
+//    @PreAuthorize("hasAuthority('upload_patient_documents')")
+    public ResponseEntity<?> uploadPatientDocument(@Valid @ModelAttribute final PatientDocumentData patientDocumentData) {
+        Document fileSaved = fileService.uploadPatientDocument(patientDocumentData);
+        Pager<PatientDocumentData> pagers = new Pager();
+        pagers.setCode("200");
+        pagers.setMessage("Document uploaded successfully");
+        pagers.setContent(fileSaved.toPatientDocumentData());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
+    }
+
+    @GetMapping("/patient-document")
+//    @PreAuthorize("hasAuthority('view_patient_documents')")
+    public ResponseEntity<?> fetchPatientDocuments(
+            @RequestParam(value = "patientNumber", required = true) String patientNumber,
+            @RequestParam(value = "visitNumber", required = false) String visitNumber,
+            @RequestParam(value = "fileName", required = false) String fileName
+    ) {
+       Page<PatientDocumentData> list = fileService.findAllDocuments(patientNumber, null, null, null, null,visitNumber,fileName, Pageable.unpaged())
+               .map((f) -> f.toPatientDocumentData()
+               );
+
+
+        Pager<List<PatientDocumentData>> pagers = new Pager();
+        pagers.setCode("200");
+        pagers.setMessage("Success");
+        pagers.setContent(list.getContent());
+        PageDetails details = new PageDetails();
+        details.setPage(list.getNumber() + 1);
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
+        details.setReportName("Patient Documents Data");
+        pagers.setPageDetails(details);
+
+        return ResponseEntity.ok(pagers);
+    }
+
+    @GetMapping("/patient-document/{id}/download")
+//    @PreAuthorize("hasAuthority('download_patient_document')")
+    public ResponseEntity<Resource> downloadPatientDocument(@PathVariable("id") Long docId, HttpServletRequest request) throws IOException {
+        // Load file as Resource
+        Resource resource = uploadService.loadPatientDocumentAsResource(docId);
+
+        // Try to determine file's content type
+        String contentType = null;
+        contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+
+        // Fallback to the default content type if type could not be determined
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+
 }
