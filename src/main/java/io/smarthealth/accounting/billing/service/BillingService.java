@@ -855,14 +855,17 @@ public class BillingService {
             if (!includeCanceled) {
                 predicates.add(cb.notEqual(root.get("status"), BillStatus.Canceled));
             }
-              if (paymentMethod != null) {
-                predicates.add(cb.equal(root.get("billPayMode"), paymentMethod));
+            if (paymentMethod != null) {
+                PatientBillItem d= (PatientBillItem) root;
+                if(d.getItem().getCategory() != ItemCategory.CoPay || d.getItem().getCategory() != ItemCategory.Receipt) {
+                    predicates.add(cb.equal(root.get("billPayMode"), paymentMethod));
+                }
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
 
-    private Specification<PatientBillItem> withWalkinNumber(String walkIn, boolean includeCanceled,  PaymentMethod paymentMethod) {
+    private Specification<PatientBillItem> withWalkinNumber(String walkIn, boolean includeCanceled, PaymentMethod paymentMethod) {
         return (Root<PatientBillItem> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
 
@@ -875,7 +878,8 @@ public class BillingService {
             if (walkIn != null) {
                 predicates.add(cb.equal(root.get("patientBill").get("reference"), walkIn));
             }
-              if (paymentMethod != null) {
+            if (paymentMethod != null) {
+
                 predicates.add(cb.equal(root.get("billPayMode"), paymentMethod));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
