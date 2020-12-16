@@ -278,6 +278,7 @@ public class ClinicalVisitController {
             itemData.setQuantity(1.0);
             itemData.setServicePoint(sp.getName());
             itemData.setServicePointId(sp.getId());
+            itemData.setPaymentMethod(visit.getPaymentMethod());
             billItems.add(itemData);
 
             BillData data = new BillData();

@@ -856,7 +856,7 @@ public class BillingService {
                 predicates.add(cb.notEqual(root.get("status"), BillStatus.Canceled));
             }
               if (paymentMethod != null) {
-                predicates.add(cb.notEqual(root.get("billPayMode"), paymentMethod));
+                predicates.add(cb.equal(root.get("billPayMode"), paymentMethod));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
@@ -876,7 +876,7 @@ public class BillingService {
                 predicates.add(cb.equal(root.get("patientBill").get("reference"), walkIn));
             }
               if (paymentMethod != null) {
-                predicates.add(cb.notEqual(root.get("billPayMode"), paymentMethod));
+                predicates.add(cb.equal(root.get("billPayMode"), paymentMethod));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
