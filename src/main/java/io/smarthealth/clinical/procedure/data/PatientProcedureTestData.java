@@ -5,9 +5,9 @@
  */
 package io.smarthealth.clinical.procedure.data;
 
-import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.clinical.procedure.domain.PatientProcedureTest;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import javax.persistence.EnumType;
@@ -19,8 +19,8 @@ import lombok.Data;
  * @author Kennedy.Imbenzi
  */
 @Data
-public class PatientProcedureTestData {
-
+public class PatientProcedureTestData { 
+    
     @ApiModelProperty(required = false, hidden = true)
     private Long id;
     private String results;
@@ -38,14 +38,14 @@ public class PatientProcedureTestData {
     private Boolean generalFeeItem;
     private double testPrice;
     private double discount;
-    private String paymentMode;
+      private PaymentMethod paymentMethod;
     private double quantity;
     @ApiModelProperty(required = false, hidden = true)
     private String medicName;
     private Long medicId;
     private LocalDate procedureDate=LocalDate.now();
     private String createdBy;
-   
+
 
     public static PatientProcedureTest map(PatientProcedureTestData scan) {
         PatientProcedureTest entity = new PatientProcedureTest();

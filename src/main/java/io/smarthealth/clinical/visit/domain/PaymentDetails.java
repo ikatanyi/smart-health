@@ -5,7 +5,7 @@
  */
 package io.smarthealth.clinical.visit.domain;
 
-import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
@@ -79,7 +79,7 @@ public class PaymentDetails extends Auditable {
     private Boolean limitReached = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
-    private BillPayMode excessAmountPayMode;//Cash/Credit
+    private PaymentMethod excessAmountPayMode;//Cash/Credit
 
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_payment_details_user_id"))
     @ManyToOne

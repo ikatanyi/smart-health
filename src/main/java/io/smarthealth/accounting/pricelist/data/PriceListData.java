@@ -23,12 +23,12 @@ public class PriceListData {
     private ItemType itemType;
     private BigDecimal sellingRate;
     private BigDecimal costRate;
-
+    private BigDecimal cashRate;
     private Long servicePointId;
     private String servicePoint;
 
     private Boolean defaultPrice;
-    
+    private boolean excluded;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDate effectiveDate;
 

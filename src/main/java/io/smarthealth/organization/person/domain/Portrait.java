@@ -8,8 +8,8 @@ import lombok.Data;
  *
  * @author Kelsas
  */
-@Entity
 @Data
+@Entity 
 @Table(name = "patient_portrait")
 public class Portrait extends Identifiable{
  

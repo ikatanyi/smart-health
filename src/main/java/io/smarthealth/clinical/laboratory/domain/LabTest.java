@@ -2,6 +2,7 @@ package io.smarthealth.clinical.laboratory.domain;
 
 import io.smarthealth.clinical.laboratory.data.LabTestData;
 import io.smarthealth.clinical.laboratory.data.Labs;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
@@ -47,6 +48,8 @@ public class LabTest extends Auditable {
     private Boolean isPanel;
     @Transient
     private BigDecimal panelPrice;
+    @Transient
+    private PaymentMethod paymentMethod;
     
     @OneToMany(mappedBy = "labTest", cascade = CascadeType.ALL)
     private List<Analyte> analytes = new ArrayList<>();
@@ -101,7 +104,7 @@ public class LabTest extends Auditable {
         data.setPanelTests(
                 this.panelTests
                         .stream()
-                        .map(x ->new Labs(x.getId(), x.getCode(), x.getTestName()) )
+                        .map(x -> new Labs(x.getId(), x.getCode(), x.getTestName()))
                         .collect(Collectors.toSet())
         );
         return data;

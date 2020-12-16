@@ -11,7 +11,7 @@ import lombok.Data;
 /**
  *
  * @author K
- */
+ */ 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class PatientData extends PersonData {

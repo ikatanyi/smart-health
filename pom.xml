@@ -92,11 +92,11 @@
             <artifactId>flyway-core</artifactId>
         </dependency>  
         <dependency>
-		<groupId>org.projectlombok</groupId>
-		<artifactId>lombok</artifactId>
-		<version>1.18.16</version>
-		<scope>provided</scope>
-	</dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.16</version>
+            <type>jar</type>
+        </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

@@ -5,7 +5,7 @@
  */
 package io.smarthealth.report.data.clinical;
 
-import io.smarthealth.clinical.visit.data.enums.VisitEnum.PaymentMethod;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import java.time.LocalDate;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

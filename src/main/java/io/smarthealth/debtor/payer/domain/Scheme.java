@@ -1,5 +1,6 @@
 package io.smarthealth.debtor.payer.domain;
 
+import io.smarthealth.debtor.scheme.domain.SchemeConfigurations;
 import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.time.LocalDate;
@@ -46,7 +47,6 @@ public class Scheme extends Auditable {
     private String emailAddress;
     private String line1;
     private String line2;
-
     // any other scheme configuration parameters will
     // have a single configuration class to hold configurations values for this
 }

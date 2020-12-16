@@ -41,8 +41,8 @@ import io.smarthealth.accounting.payment.service.RemittanceService;
 import io.smarthealth.clinical.record.data.PatientTestsData;
 import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum.PaymentMethod;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.claim.allocation.data.AllocationData;
 import io.smarthealth.debtor.claim.allocation.service.AllocationService;
@@ -864,7 +864,7 @@ public class AccountReportService {
         String visitNumber = reportParam.getFirst("visitNumber");
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
          Boolean includeCanceled = reportParam.getFirst("includeCanceled") != null ? Boolean.valueOf(reportParam.getFirst("includeCanceled")) : Boolean.FALSE;
-        BillDetail data = billService.getBillDetails(visitNumber,includeCanceled, Pageable.unpaged());
+        BillDetail data = billService.getBillDetails(visitNumber,includeCanceled,null, Pageable.unpaged());
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         reportData.setData(data.getBills());
         reportData.setFormat(format);

@@ -6,7 +6,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.notification.data.NoticeType;
 import io.smarthealth.notification.data.NotificationData;
 import io.smarthealth.notification.events.DocRequestEvent;
-import io.smarthealth.notification.domain.Notifications;
+import io.smarthealth.notification.domain.Notification;
 import io.smarthealth.notification.domain.NotificationRepository;
 import io.smarthealth.notification.domain.specification.NotificationSpecification;
 import io.smarthealth.notification.events.UserNotificationEvent;
@@ -42,19 +42,19 @@ public class NotificationService {
     private final UserService userService;
 
     @Transactional
-    public Notifications createNotification(NotificationData request) {
+    public Notification createNotification(NotificationData request) {
         User user = userService.findUserByUsernameOrEmail(request.getUsername()).orElse(null);
-        Notifications notify = new Notifications(user, request.getDescription(), request.getNoticeType(), request.getReference());
+        Notification notify = new Notification(user, request.getDescription(), request.getNoticeType(), request.getReference());
         return notificationRepository.save(notify);
     }
 
-    public Optional<Notifications> getNotification(Long id) {
+    public Optional<Notification> getNotification(Long id) {
         return notificationRepository.findById(id);
     }
 
     @Transactional
     public void updateRead(Long id) {
-        Notifications notice = getNotification(id).orElse(null);
+        Notification notice = getNotification(id).orElse(null);
         if (notice != null) {
             notice.setRead(true);
             notificationRepository.save(notice);
@@ -69,14 +69,14 @@ public class NotificationService {
         notificationRepository.readAllNotifications(user.getId());
     }
 
-    public Page<Notifications> getAllNotifications(String username, Boolean isRead, NoticeType noticeType, DateRange range, Pageable pageable) {
-        Specification<Notifications> spec = NotificationSpecification.createSpecification(username, isRead, noticeType, range);
+    public Page<Notification> getAllNotifications(String username, Boolean isRead, NoticeType noticeType, DateRange range, Pageable pageable) {
+        Specification<Notification> spec = NotificationSpecification.createSpecification(username, isRead, noticeType, range);
         return notificationRepository.findAll(spec, pageable);
     }
 
     @Transactional
     public void deleteNotification(Long id) {
-        Notifications notice = getNotification(id).orElse(null);
+        Notification notice = getNotification(id).orElse(null);
         if (notice != null) {
             notificationRepository.delete(notice);
         }
@@ -90,7 +90,7 @@ public class NotificationService {
      * @param notification The notification message.
      * @param username The username for the user to send notification.
      */
-    public void notify(Notifications notification, String username) {
+    public void notify(Notification notification, String username) {
         messagingTemplate.convertAndSendToUser(
                 username,
                 "/queue/notify",
@@ -122,10 +122,10 @@ public class NotificationService {
         Optional<User> user = userService.findUserByUsernameOrEmail(data.getUsername());
         if (user.isPresent()) {
             User toNotify = user.get();
-            Notifications notice = new Notifications(toNotify, data.getDescription(), data.getNoticeType(), data.getReference());
+            Notification notice = new Notification(toNotify, data.getDescription(), data.getNoticeType(), data.getReference());
             notice.setRead(false);
             //save
-            Notifications saveNotice = notificationRepository.save(notice); 
+            Notification saveNotice = notificationRepository.save(notice); 
             this.messagingTemplate.convertAndSendToUser(toNotify.getUsername(), "/queue/notify", saveNotice.toData());
 
             System.err.println("Notifying user ... " + toNotify.getUsername() + " Message: " + saveNotice.getMessage());

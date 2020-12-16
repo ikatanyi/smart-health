@@ -432,6 +432,7 @@ public class LaboratoryService {
                         test.setParentLabTest(labTest);
 
                         test.setStatus(LabTestStatus.AwaitingSpecimen);
+                        test.setPaymentMethod(data.getPaymentMethod());
                         return test;
                     })
                     .collect(Collectors.toList());
@@ -564,7 +565,8 @@ public class LaboratoryService {
             billItem.setBalance(price);
             billItem.setServicePoint(srvpoint.getName());
             billItem.setServicePointId(srvpoint.getId());
-            billItem.setStatus(BillStatus.Draft);
+            billItem.setStatus(BillStatus.Draft); 
+            billItem.setBillPayMode(x.getPaymentMethod());
             //TODO enter the bills as array 
 //            billItem.setRequestReference(); //this is the one I need to know how to handle ot
             lineItems.add(billItem);
@@ -582,6 +584,7 @@ public class LaboratoryService {
         if (registeredTest.getIsPanel() != null && registeredTest.getIsPanel()) {
             if (registeredTest.getParentLabTest() != null && !panels.contains(registeredTest.getParentLabTest())) {
                 LabTest panelTest = registeredTest.getParentLabTest();
+                panelTest.setPaymentMethod(registeredTest.getPaymentMethod());
                 panelTest.setPanelPrice(registeredTest.getPrice());
                 panels.add(panelTest);
             }
@@ -601,6 +604,7 @@ public class LaboratoryService {
         billItem.setQuantity(1d);
         billItem.setAmount(registeredTest.getPrice().doubleValue());
         billItem.setDiscount(0.00);
+        billItem.setBillPayMode(registeredTest.getPaymentMethod());
         //check limit amount not the global payment method during visit activation
         Optional<PaymentDetails> visitPayDetails = paymentDetailsService.getPaymentDetailsByVist(registeredTest.getLabRegister().getVisit());
         if (visitPayDetails.isPresent()) {

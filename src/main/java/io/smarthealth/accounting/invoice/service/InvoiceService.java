@@ -31,6 +31,7 @@ import io.smarthealth.accounting.invoice.domain.specification.InvoiceItemSpecifi
 import io.smarthealth.accounting.invoice.domain.specification.InvoiceSpecification;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Payer;
@@ -43,6 +44,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -82,8 +84,10 @@ public class InvoiceService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<Invoice> createInvoice(CreateInvoice invoiceData) {
-
+        //TODO:: check if there's already an existing invoices for the current visits, if available create a new supplimentary invoice
         Visit visit = visitService.findVisitEntityOrThrow(invoiceData.getVisitNumber());
+
+        //determine if we already closed invoice
         Optional<PaymentDetails> paymentDetails = paymentDetailsService.getPaymentDetailsByVist(visit);
 
         String trxId = sequenceNumberService.next(1L, Sequences.Transactions.name());
@@ -93,10 +97,19 @@ public class InvoiceService {
         invoiceData.getPayers()
                 .stream()
                 .forEach(payerData -> {
-                    String invoiceNo = sequenceNumberService.next(1L, Sequences.Invoice.name());
 
                     Payer payer = payerService.findPayerByIdWithNotFoundDetection(payerData.getPayerId());
                     Scheme scheme = schemeService.fetchSchemeById(payerData.getSchemeId());
+
+                    List<Invoice> existingInvoice = invoiceRepository.findByVisitAndScheme(visit, scheme);
+                    String invoiceNo;
+                    //check if we have an existing invoice otherwise create a supplimentary invoice
+                    if (existingInvoice.isEmpty()) {
+                        invoiceNo = sequenceNumberService.next(1L, Sequences.Invoice.name());
+                    } else {
+                        Invoice inv = existingInvoice.stream().findAny().get();
+                        invoiceNo = inv.getNumber() + "S" + existingInvoice.size();
+                    }
 
                     Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
 
@@ -153,29 +166,42 @@ public class InvoiceService {
                         invoiceData.getItems()
                                 .stream()
                                 .forEach(inv -> {
-
-                                    InvoiceItem lineItem = new InvoiceItem();
                                     PatientBillItem item = billingService.findBillItemById(inv.getBillItemId());
-                                    BigDecimal bal = BigDecimal.valueOf(item.getAmount()).subtract(inv.getAmount());
-                                    item.setPaid(Boolean.TRUE);
-                                    item.setStatus(BillStatus.Paid);
-                                    item.setPaymentReference(invoiceNo);
-                                    item.setBalance(0D);
-                                    PatientBillItem updatedItem = billingService.updateBillItem(item);
-                                    lineItem.setBillItem(updatedItem);
+                                    //only finalize what has not been finalized
+
+                                    if (item.isFinalized() == false) {
+
+                                        InvoiceItem lineItem = new InvoiceItem();
+                                        BigDecimal bal = BigDecimal.valueOf(item.getAmount()).subtract(inv.getAmount());
+                                        item.setPaid(Boolean.TRUE);
+                                        item.setStatus(BillStatus.Paid);
+                                        if (item.getPaymentReference() == null) {
+                                            item.setPaymentReference(invoiceNo);
+                                        }
+                                        item.setFinalized(true);
+                                        item.setInvoiceNumber(invoiceNo);
+                                        item.setBalance(0D);
+
+                                        PatientBillItem updatedItem = billingService.updateBillItem(item);
+                                        lineItem.setBillItem(updatedItem);
 //                                            lineItem.setBalance(inv.getAmount().doubleValue() > 0 ? inv.getAmount() : BigDecimal.ZERO);
-                                    lineItem.setBalance(inv.getAmount());
-                                    invoice.addItem(lineItem);
+                                        lineItem.setBalance(inv.getAmount());
+                                        if (updatedItem.getItem().getCategory() == ItemCategory.CoPay || updatedItem.getItem().getCategory() == ItemCategory.Receipt || updatedItem.getBillPayMode() != PaymentMethod.Cash) {
+                                            invoice.addItem(lineItem);
+                                        }
+                                        //this is
+                                    }
                                 });
+                        BigDecimal lineTotals = invoice.getItems().stream()
+                                .map(x -> x.getBalance())
+                                .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
+                        System.err.println("Line Totals: ?>>>> " + lineTotals);
                         if (config.isPresent() && config.get().isCapitationEnabled()) {
                             invoice.setBalance(invoiceAmount);
                         } else {
-                            invoice.setBalance(invoiceData.getItems()
-                                    .stream()
-                                    .map(x -> x.getAmount())
-                                    .reduce(BigDecimal.ZERO, (x, y) -> x.add(y))
-                            );
+                            invoice.setBalance(invoice.getLineTotals());
                         }
+                        System.err.println("Calculated Line Totals: ?>>>> " + invoice.getBalance());
                     }
                     savedInvoices.add(saveInvoice(invoice));
                 }
@@ -236,8 +262,8 @@ public class InvoiceService {
 
         return invoices;
     }
-    
-    public Page<Invoice> searchInvoice(String term, InvoiceStatus status,Pageable pageable) {
+
+    public Page<Invoice> searchInvoice(String term, InvoiceStatus status, Pageable pageable) {
         Specification<Invoice> spec = InvoiceSpecification.searchSpecification(term, status);
         Page<Invoice> invoices = invoiceRepository.findAll(spec, pageable);
         return invoices;
@@ -289,7 +315,6 @@ public class InvoiceService {
 //        invoiceRepository.deleteById(fromInvoice.getId());
 //        return invoiceMergeRepository.save(invoiceMerge);
 //    }
-
     //TODO cancelling of the invoice
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Invoice cancelInvoice(String invoiceNo, List<InvoiceItemData> items) {
@@ -541,22 +566,22 @@ public class InvoiceService {
         invoiceRepository.save(toInvoice);
         //audi log the changes
         //String fromInvoiceNumber, String toInvoiceNumber, BigDecimal originalInvoiceAmount, BigDecimal newInvoiceAmount, String reasonForMerge
-       
+
         Double amount = invoice.getItems().stream()
                 .map(x -> {
                     return x.getBillItem().getAmount();
                 })
                 .reduce(0D, (x, y) -> x + y);
 
-        Double balance = invoice.getItems().stream()
-                .map(x -> {
-                    return x.getBillItem().getBalance();
-                })
-                .reduce(0D, (x, y) -> x + y);
-       BigDecimal originalAmount =invoice.getAmount();
+//        Double balance = invoice.getItems().stream()
+//                .map(x -> {
+//                    return x.getBillItem().getBalance();
+//                })
+//                .reduce(0D, (x, y) -> x + y);
+        BigDecimal originalAmount = invoice.getAmount();
         invoice.setAmount(BigDecimal.valueOf(amount));
         invoice.setBalance(BigDecimal.valueOf(amount));
-        
+
         invoiceMergeRepository.save(new InvoiceMerge(toInvoice.getNumber(), invoice.getNumber(), originalAmount, invoice.getAmount(), mergeInvoice.getReason()));
 
         return invoiceRepository.save(invoice);
