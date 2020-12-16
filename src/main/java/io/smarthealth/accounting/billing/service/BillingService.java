@@ -875,7 +875,7 @@ public class BillingService {
             if (!includeCanceled) {
                 predicates.add(cb.notEqual(root.get("status"), BillStatus.Canceled));
             }
-            if (paymentMethod != null) { 
+            if (paymentMethod != null) {
                 predicates.add(cb.equal(root.get("billPayMode"), paymentMethod));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
@@ -1112,6 +1112,7 @@ public class BillingService {
             billItem.setServicePointId(0L);
             billItem.setStatus(BillStatus.Paid);
             billItem.setMedicId(null);
+            billItem.setBillPayMode(PaymentMethod.Cash);
 
             patientbill.addBillItem(billItem);
 
