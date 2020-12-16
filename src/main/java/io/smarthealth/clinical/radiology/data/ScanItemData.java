@@ -5,7 +5,9 @@
  */
 package io.smarthealth.clinical.radiology.data;
 
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import java.math.BigDecimal;
+import javax.persistence.Transient;
 import lombok.Data;
 
 /**
@@ -19,5 +21,6 @@ public class ScanItemData {
     private Long medicId;
     private String itemCode;
     private Double itemPrice;
-    private Double quantity;
+    private Double quantity; 
+    private PaymentMethod paymentMethod;
 }

@@ -5,6 +5,8 @@
  */
 package io.smarthealth.clinical.procedure.data;
 
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
+import javax.persistence.Transient;
 import lombok.Data;
 
 /**
@@ -18,5 +20,6 @@ public class ProcedureItemData {
     private Long medicId;
     private String itemCode;
     private Double itemPrice;
-    private Double quantity;
+    private Double quantity; 
+    private PaymentMethod paymentMethod;
 }

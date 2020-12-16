@@ -1,11 +1,10 @@
 package io.smarthealth.accounting.billing.data.nue;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -36,10 +35,11 @@ public class BillItem {
     private String transactionId;
     private String reference;
     private Boolean paid;
-    
+    private boolean finalized = false;
+     private String invoiceNumber;
     @Enumerated(EnumType.STRING)
     private BillStatus status;
     
      @Enumerated(EnumType.STRING)
-    private BillPayMode billPayMode;
+    private PaymentMethod billPayMode;
 }

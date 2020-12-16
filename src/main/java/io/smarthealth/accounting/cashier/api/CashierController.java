@@ -109,10 +109,10 @@ public class CashierController {
 
     @PutMapping("/cashiers/{id}/shift/{shiftNo}/close")
     @PreAuthorize("hasAuthority('edit_cashiersShift')")
-    public ResponseEntity<?> endCashierShift(@PathVariable(value = "id") Long code, @PathVariable(value = "shiftNo") String shiftNo) {
+    public ResponseEntity<?> endCashierShift(@PathVariable(value = "id") Long cashierId, @PathVariable(value = "shiftNo") String shiftNo) {
 
         //check if this shift exist
-        Shift shift = service.closeShift(code, shiftNo);
+        Shift shift = service.closeShift(cashierId, shiftNo);
 
         return ResponseEntity.ok(shift.toData());
     }
@@ -228,6 +228,17 @@ public class CashierController {
         return ResponseEntity.ok(list);
     }
 
+    @PostMapping("/cashiers/{id}/validate-pin")
+    public ResponseEntity<?> validateCashierPin(@PathVariable(value = "id") Long id, @RequestParam("pin") Long pin) {
+        return ResponseEntity.ok(service.isValidPin(id, pin));
+    }
+
+    @PostMapping("/cashiers/{id}/reset-pin")
+    public ResponseEntity<?> resetPin(@PathVariable(value = "id") Long id) {
+        service.resetPin(id);
+        return ResponseEntity.ok(new Reset("Success", "Email with PIN reset details have been send to your registered email"));
+    }
+
     public enum Command {
         Activate,
         Deactivate
@@ -237,5 +248,12 @@ public class CashierController {
     public class Status {
 
         private String status;
+    }
+
+    @Value
+    public class Reset {
+
+        String status;
+        String message;
     }
 }

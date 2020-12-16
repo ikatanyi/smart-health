@@ -1,21 +1,14 @@
-package io.smarthealth.infrastructure.common;
+package io.smarthealth.config;
 
-import io.smarthealth.notification.service.SmtpMailSender;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.mail.javamail.JavaMailSender;
-import io.smarthealth.notification.service.EmailerService;
-import io.smarthealth.notification.service.MockMailSender;
-import org.thymeleaf.TemplateEngine;
 
 /**
  *
@@ -31,13 +24,13 @@ public class ApplicationAutoConfig {
      *
      * @return
      */
-    @Bean
-    @ConditionalOnMissingBean(EmailerService.class)
-    @ConditionalOnProperty(name = "spring.mail.host", havingValue = "foo", matchIfMissing = true)
-    public EmailerService<?> mockMailSender() {
-        log.info("Configuring MockMailSender");
-        return new MockMailSender();
-    }
+//    @Bean
+//    @ConditionalOnMissingBean(EmailerService.class)
+//    @ConditionalOnProperty(name = "spring.mail.host", havingValue = "foo", matchIfMissing = true)
+//    public EmailerService<?> mockMailSender() {
+//        log.info("Configuring MockMailSender");
+//        return new MockMailSender();
+//    }
 
     /**
      * Configures an SmtpMailSender when the property
@@ -51,13 +44,14 @@ public class ApplicationAutoConfig {
      * @param templateEngine
      * @return
      */
-    @Bean
-    @ConditionalOnMissingBean(EmailerService.class)
-    @ConditionalOnProperty("spring.mail.host")
-    public EmailerService<?> smtpMailSender(JavaMailSender mailSender, TemplateEngine textTemplateEngine, TemplateEngine htmlTemplateEngine, TemplateEngine fileTemplateEngine) {
-        log.info("Configuring SmtpMailSender");
-        return new SmtpMailSender(mailSender, textTemplateEngine, htmlTemplateEngine, fileTemplateEngine);
-    }
+    
+//    @Bean
+//    @ConditionalOnMissingBean(EmailerService.class)
+//    @ConditionalOnProperty("spring.mail.host")
+//    public EmailerService<?> smtpMailSender(JavaMailSender mailSender, TemplateEngine textTemplateEngine, TemplateEngine htmlTemplateEngine, TemplateEngine fileTemplateEngine) {
+//        log.info("Configuring SmtpMailSender");
+//        return new SmtpMailSender(mailSender, textTemplateEngine, htmlTemplateEngine, fileTemplateEngine);
+//    }
 
     /**
      * Conversion between Applications Entities and DTO

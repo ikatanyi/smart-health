@@ -71,6 +71,8 @@ public class InventoryItem extends Identifiable {
                     data.setReorderLevel(this.getItem().getReorderRules().get(0).getReorderLevel());
                 }
             }
+            data.setDrug(this.getItem().getDrug());
+            
         }
 
         if (this.getStore() != null) {

@@ -30,7 +30,7 @@ public class Prescription extends DoctorRequest {
     private Boolean onDischarge;
 
     public Prescription() {
-        this.setDrug(true);
+        this.setDrug(Boolean.TRUE);
     }
 
 }

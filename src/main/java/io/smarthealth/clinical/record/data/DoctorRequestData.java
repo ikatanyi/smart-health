@@ -17,7 +17,7 @@ import lombok.Data;
 /**
  *
  * @author Kelsas
- */
+ */ 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DoctorRequestData {

@@ -1,8 +1,8 @@
 package io.smarthealth.clinical.visit.data;
 
 import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.debtor.scheme.domain.enumeration.CoPayType;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
@@ -41,9 +41,7 @@ public class PaymentDetailsData {
     
     @ApiModelProperty(hidden = true)
     private double coPayValue;
-    
-    @ApiModelProperty(hidden = true)
-    private VisitEnum.PaymentMethod paymentMethod;
+    private PaymentMethod paymentMethod;
     private boolean hasCapitation;
     private BigDecimal capitationAmount = BigDecimal.ZERO;
     private double runningLimit;
@@ -68,7 +66,7 @@ public class PaymentDetailsData {
         d.setVisitId(e.getVisit().getId());
         d.setLimitAmount(e.getLimitAmount());
         d.setPayerName(e.getPayer().getPayerName());
-        d.setPaymentMethod(VisitEnum.PaymentMethod.Insurance);
+        d.setPaymentMethod(PaymentMethod.Insurance);
         d.setSchemeName(e.getScheme().getSchemeName());
         if (e.getCoPayCalcMethod() != null) {
             d.setCoPayCalcMethod(e.getCoPayCalcMethod());

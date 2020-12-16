@@ -35,6 +35,7 @@ public class Cashier extends Identifiable {
     private CashPoint cashPoint;
     private LocalDate startDate;
     private LocalDate endDate;
+    private Long pin;
     private Boolean active = Boolean.TRUE;
 
     @OneToMany(mappedBy = "cashier")
@@ -56,6 +57,7 @@ public class Cashier extends Identifiable {
         }
         data.setStartDate(this.startDate);
         data.setEndDate(this.endDate);
+        data.setPin(this.pin);
          
         return data;
     }

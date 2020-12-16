@@ -8,8 +8,8 @@ import lombok.Data;
  *
  * @author Kelsas
  */
-@Entity
 @Data
+@Entity 
 @Table(name = "stock_uom")
 public class Uom extends Identifiable {
 

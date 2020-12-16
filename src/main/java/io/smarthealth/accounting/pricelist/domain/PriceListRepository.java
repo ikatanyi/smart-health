@@ -27,7 +27,9 @@ public interface PriceListRepository extends JpaRepository<PriceList, Long>, Jpa
     List<PriceList> findByItem(Item item);
 
     Optional<PriceList> findByItemAndServicePoint(final Item item, final ServicePoint servicePoint);
-    
+
+    Page<PriceList> findByServicePointAndItem(ServicePoint servicePoint, Item item, Pageable page);
+
     @Query(name = "select p from PriceList p where p.item.category=:category", nativeQuery = true)
     Optional<PriceList> getPriceListByItemCategory(@Param("category") ItemCategory category);
 }

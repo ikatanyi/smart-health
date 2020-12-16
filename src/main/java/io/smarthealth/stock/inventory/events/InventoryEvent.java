@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 /**
  *
  * @author Kelsas
- */
+ */ 
 @Data
 @NoArgsConstructor
 public class InventoryEvent implements Serializable {

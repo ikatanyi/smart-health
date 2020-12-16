@@ -1,7 +1,6 @@
 package io.smarthealth.stock.item.domain;
 
 import io.smarthealth.accounting.taxes.domain.Tax;
-import io.smarthealth.administration.servicepoint.data.ServicePointData;
 import io.smarthealth.administration.servicepoint.data.SimpleServicePoint;
 import io.smarthealth.stock.item.data.Uoms;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
@@ -12,7 +11,7 @@ import lombok.Data;
 /**
  *
  * @author Kelsas
- */
+ */ 
 @Data
 public class ItemMetadata {
 

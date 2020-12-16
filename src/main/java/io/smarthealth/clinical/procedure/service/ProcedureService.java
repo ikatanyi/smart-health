@@ -21,7 +21,6 @@ import io.smarthealth.clinical.procedure.domain.ProcedureRepository;
 import io.smarthealth.clinical.procedure.domain.Procedure;
 import io.smarthealth.clinical.procedure.domain.ProcedureTestRepository;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
-import io.smarthealth.clinical.procedure.domain.specification.ProcedureRegisterSpecification;
 import io.smarthealth.clinical.procedure.domain.specification.ProcedureSpecification;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
@@ -49,7 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.clinical.procedure.domain.ProcedureRegisterRepository;
 import io.smarthealth.clinical.procedure.domain.RegisterTestRepository;
 import io.smarthealth.clinical.procedure.domain.specification.RegisterTestSpecification;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 
 /**
  *
@@ -131,7 +130,7 @@ public class ProcedureService {
         PatientProcedureRegister patientProcReg = PatientProcedureRegisterData.map(patientProcRegData);
         String transactionId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         patientProcReg.setTransactionId(transactionId);
-        System.out.println("patientProcRegData.isWalkin() " + patientProcRegData.getIsWalkin());
+        
         if (patientProcRegData.getIsWalkin()) {
             patientProcReg.setPatientName(patientProcRegData.getPatientName());
             patientProcReg.setPatientNo(patientProcRegData.getPatientNumber());
@@ -167,6 +166,7 @@ public class ProcedureService {
                 pte.setQuantity(id.getQuantity());
                 pte.setPaid(Boolean.FALSE);
                 pte.setProcedureTest(item);
+                pte.setPaymentMethod(id.getPaymentMethod());
                 pte.setMedic(employeeService.findEmployeeById(id.getMedicId()));
 //                Optional<Employee> employee = employeeService.findEmployeeById(id.getMedicId());
 //                if (employee.isPresent()) {
@@ -200,8 +200,7 @@ public class ProcedureService {
     private PatientBill toBill(PatientProcedureRegister data) {
         ServicePoint servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
         PatientBill patientbill = new PatientBill();
-        
-        
+
         if (!data.getIsWalkin()) {
             patientbill.setVisit(data.getVisit());
             patientbill.setPatient(data.getVisit().getPatient());
@@ -211,7 +210,7 @@ public class ProcedureService {
             patientbill.setReference(data.getPatientNo());
             patientbill.setOtherDetails(data.getPatientName());
             patientbill.setWalkinFlag(Boolean.TRUE);
-            patientbill.setPaymentMode(VisitEnum.PaymentMethod.Cash.name());
+            patientbill.setPaymentMode(PaymentMethod.Cash.name());
         }
         patientbill.setAmount(data.getAmount());
         patientbill.setBillingDate(data.getBillingDate());
@@ -245,6 +244,8 @@ public class ProcedureService {
                     billItem.setServicePointId(servicePoint.getId());
                     billItem.setStatus(BillStatus.Draft);
                     billItem.setBillingDate(data.getBillingDate());
+                    
+                    billItem.setBillPayMode(lineData.getPaymentMethod());
 
                     return billItem;
                 })

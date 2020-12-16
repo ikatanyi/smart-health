@@ -1,19 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.smarthealth.accounting.billing.api;
 
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.CopayData;
+import io.smarthealth.accounting.billing.data.PatientBalance;
 import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.data.VoidBillItem;
 import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.service.BillingService;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
@@ -99,7 +95,7 @@ public class BillingV2Controller {
             @RequestParam(value = "patientNumber", required = false) String patientNumber,
             @RequestParam(value = "hasBalance", required = false) Boolean hasBalance,
             @RequestParam(value = "isWalkin", required = false) Boolean isWakin,
-            @RequestParam(value = "paymentMode", required = false) VisitEnum.PaymentMethod paymentMode,
+            @RequestParam(value = "paymentMode", required = false) PaymentMethod paymentMode,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
             @RequestParam(value = "page", required = false) Integer page,
@@ -133,12 +129,14 @@ public class BillingV2Controller {
     @PreAuthorize("hasAuthority('view_billV2')")
     public ResponseEntity<?> getBillDetails(
             @PathVariable(value = "visitNumber") String visitNumber,
-             @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
+            @RequestParam(value = "billPayMode" , required = false) PaymentMethod paymentMethod,
+            @RequestParam(value = "finalized", required = false, defaultValue = "false") final boolean finalized,
+            @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
-        Pageable pageable = PaginationUtil.createPage(page, size);
-        BillDetail details = service.getBillDetails(visitNumber, includeCanceled, pageable);
+        Pageable pageable = PaginationUtil.createUnPaged(page, size);
+        BillDetail details = service.getBillDetails(visitNumber, includeCanceled,paymentMethod, pageable);
 
 //        Pager<List<SummaryBill>> pagers = new Pager();
 //        pagers.setCode("0");
@@ -158,8 +156,14 @@ public class BillingV2Controller {
     @PreAuthorize("hasAuthority('edit_billV2')")
     public ResponseEntity<?> cancelBills(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody List<VoidBillItem> billItems) {
         List<BillItemData> bills = service.voidBillItem(visitNumber, billItems).stream().map(x -> x.toData()).collect(Collectors.toList());
-
         return ResponseEntity.ok(bills);
+    }
+    
+     @GetMapping("/billing/balance")
+    public ResponseEntity<PatientBalance> getBalance(
+            @RequestParam(value = "visitNumber", required = false) String visitNumber,
+            @RequestParam(value = "patientNumber", required = false) String patientNumber) {
+        return ResponseEntity.ok(new PatientBalance());
     }
 
     Page<SummaryBill> toPage(List<SummaryBill> list, int pagesize, int pageNo) {
@@ -174,4 +178,5 @@ public class BillingV2Controller {
         Page<SummaryBill> pageResponse = new PageImpl<>(list.subList(min, max), pageable, list.size());
         return pageResponse;
     }
+ 
 }

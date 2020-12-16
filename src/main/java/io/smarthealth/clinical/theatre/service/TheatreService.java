@@ -25,7 +25,7 @@ import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.clinical.theatre.data.DoctorFeeFix;
 import io.smarthealth.clinical.theatre.data.TheatreBill;
 import io.smarthealth.clinical.theatre.domain.enumeration.FeeCategory;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
@@ -174,7 +174,7 @@ public class TheatreService {
             Item item = itemService.findItemWithNoFoundDetection(docFee.getItemCode());
             Visit visit = visitRepository.findByVisitNumber(docFee.getVisitNumber()).orElseThrow(()-> APIException.notFound("No visit found"));
            Double amount = 0.00;
-            if(visit.getPaymentMethod().equals(VisitEnum.PaymentMethod.Cash)){
+            if(visit.getPaymentMethod().equals(PaymentMethod.Cash)){
                amount = item.getRate().doubleValue();
            }else{
                 PaymentDetails paymentDetails = paymentDetailsService.fetchPaymentDetailsByVisit(visit);

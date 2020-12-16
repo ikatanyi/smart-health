@@ -1,11 +1,12 @@
 package io.smarthealth.stock.item.data;
-
+ 
 import lombok.Data;
+
 
 /**
  *
  * @author Kelsas
- */
+ */ 
 @Data
 public class SimpleItemData {
 

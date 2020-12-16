@@ -178,8 +178,8 @@ public class DispensingService {
 
     public List<DispensedDrug> returnItems(String visitNumber, List<ReturnedDrugData> returnedDrugs) {
         System.err.println("Retugint the ites, ..... ");
-        returnedDrugs.forEach(x -> System.out.println("daddy ... "+x.getDrugId()));
-        
+        returnedDrugs.forEach(x -> System.out.println("daddy ... " + x.getDrugId()));
+
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         List<DispensedDrug> returnedArray = new ArrayList();
@@ -276,6 +276,7 @@ public class DispensingService {
                     billItem.setPaid(data.getPaymentMode() != null ? data.getPaymentMode().equals("Insurance") : false);
 //                    billItem.setServicePoint(lineData.getServicePoint());
 //                    billItem.setServicePointId(lineData.getServicePointId());
+                    billItem.setBillPayMode(lineData.getPaymentMethod());
                     billItem.setStatus(BillStatus.Draft);
                     return billItem;
                 })

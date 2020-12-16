@@ -36,5 +36,5 @@ public class ProcedureSpecification {
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
-    } 
+    }
 }

@@ -10,8 +10,8 @@ import lombok.Data;
  *
  * @author Kelsas
  */
-@Entity
 @Data
+@Entity 
 public class SequenceDefinition extends Identifiable {
   
     @Version

@@ -15,9 +15,9 @@ import lombok.Data;
 /**
  *
  * @author Simon.waweru
- */
-@Entity
+ */ 
 @Data
+@Entity 
 public class EmployeeSpecialization extends Auditable {
 
     @Enumerated(EnumType.STRING)
