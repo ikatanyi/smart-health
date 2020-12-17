@@ -339,6 +339,7 @@ public class LaboratoryService {
                 .map(x -> toLabRegisterTest(x, method, panels))
                 .filter(x -> x != null)
                 .collect(Collectors.toList());
+        
         if (!panels.isEmpty()) {
             panels.forEach(x -> {
                 registeredlist.addAll(registerPanelTests(x, method));
@@ -353,6 +354,7 @@ public class LaboratoryService {
         LabTest labTest = getLabTest(data.getTestId());
         if (labTest.getIsPanel() != null && labTest.getIsPanel()) {
             panels.add(data);
+            
             return null;
         }
 
@@ -360,7 +362,7 @@ public class LaboratoryService {
         test.setCollected(Boolean.FALSE);
         test.setEntered(Boolean.FALSE);
         test.setLabTest(labTest);
-
+       test.setPaymentMethod(data.getPaymentMethod());
         test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
         test.setVoided(Boolean.FALSE);
         test.setValidated(Boolean.FALSE);
