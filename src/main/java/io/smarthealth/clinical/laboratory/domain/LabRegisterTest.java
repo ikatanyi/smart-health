@@ -16,7 +16,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringExclude;
 
@@ -67,7 +66,8 @@ public class LabRegisterTest extends Identifiable {
     @ToStringExclude
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_register_parent_test_id"))
     private LabTest parentLabTest;
-    @Transient
+//    @Transient
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
     
     @OneToMany(mappedBy = "labRegisterTest")

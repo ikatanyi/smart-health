@@ -353,6 +353,7 @@ public class LaboratoryService {
                 .map(x -> toLabRegisterTest(x, method, panels))
                 .filter(x -> x != null)
                 .collect(Collectors.toList());
+        
         if (!panels.isEmpty()) {
             panels.forEach(x -> {
                 registeredlist.addAll(registerPanelTests(x, method));
@@ -367,6 +368,7 @@ public class LaboratoryService {
         LabTest labTest = getLabTest(data.getTestId());
         if (labTest.getIsPanel() != null && labTest.getIsPanel()) {
             panels.add(data);
+            
             return null;
         }
 
@@ -374,18 +376,8 @@ public class LaboratoryService {
         test.setCollected(Boolean.FALSE);
         test.setEntered(Boolean.FALSE);
         test.setLabTest(labTest);
-
-//        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
-        if (paymentMode.equals("Cash")) {
-            Optional<Visit> visit = visitService.findVisit(data.getVisitNumber());
-            if (visit.isPresent() && visit.get().getVisitType() == VisitEnum.VisitType.Inpatient) {
-                test.setPaid(Boolean.TRUE);
-            } else {
-                test.setPaid(Boolean.FALSE);
-            }
-        } else {
-            test.setPaid(Boolean.TRUE);
-        }
+       test.setPaymentMethod(data.getPaymentMethod());
+        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
         test.setVoided(Boolean.FALSE);
         test.setValidated(Boolean.FALSE);
         test.setRequestId(data.getRequestId());
