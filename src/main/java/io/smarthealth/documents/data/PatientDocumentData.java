@@ -6,7 +6,6 @@ import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.infrastructure.lang.Constants;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.jboss.logging.annotations.Message;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EnumType;
