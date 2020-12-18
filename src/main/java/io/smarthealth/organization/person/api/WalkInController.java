@@ -5,6 +5,7 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.data.WalkInData;
 import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.service.WalkingService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -39,6 +40,9 @@ public class WalkInController {
 
     @Autowired
     private WalkingService walkInService;
+    
+    @Autowired
+    AuditTrailService auditTrailService;
 
     @PostMapping("/walk-in")
     @PreAuthorize("hasAuthority('create_walkin')")
@@ -50,7 +54,7 @@ public class WalkInController {
         pagers.setCode("0");
         pagers.setMessage("WalkIn Successfully Created.");
         pagers.setContent(WalkInData.convertToWalkingData(savedWalking));
-
+        auditTrailService.saveAuditTrail("WalkIn", "Created a walkin patient "+w.getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -62,7 +66,7 @@ public class WalkInController {
         pagers.setCode("0");
         pagers.setMessage("WalkIn Data");
         pagers.setContent(WalkInData.convertToWalkingData(w));
-
+        auditTrailService.saveAuditTrail("WalkIn", "Searched a walkin patient identified by walkInNo "+WalkInNo);
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -91,6 +95,7 @@ public class WalkInController {
         details.setTotalPage(page.getTotalPages());
         details.setReportName("WalkIn Register");
         pagers.setPageDetails(details);
+        auditTrailService.saveAuditTrail("WalkIn", "Viewed all walkin patients ");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pagers);
     }

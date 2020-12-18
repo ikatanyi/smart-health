@@ -8,6 +8,7 @@ import io.smarthealth.clinical.admission.service.BedTypeService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,10 +34,12 @@ public class BedTypeController {
 
     private final BedTypeService service;
     private final BedChargeService bedChargeService;
+    private final AuditTrailService auditTrailService; 
      
     @GetMapping("/bed-type/{id}")
 //    @PreAuthorize("hasAuthority('view_bed-type')")
     public BedType getItem(@PathVariable(value = "id") Long code) {
+        auditTrailService.saveAuditTrail("Admission", "Searched for bed identified by id "+code);
         return service.getBedType(code);
     }
 
@@ -50,9 +53,10 @@ public class BedTypeController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-
-        Page<BedTypeData> list = service.fetchBedTypes(name, active,term, pageable).map(u -> u.toData());
         
+        Page<BedTypeData> list = service.fetchBedTypes(name, active,term, pageable).map(u ->{
+            auditTrailService.saveAuditTrail("Admission", "Viewed  bed type "+u.getName());
+            return u.toData();});        
         
         Pager<List<BedTypeData>> pagers=new Pager();
         pagers.setCode("0");
@@ -80,7 +84,7 @@ public class BedTypeController {
         pagers.setCode("0");
         pagers.setMessage("BedType created successful");
         pagers.setContent(result); 
-        
+        auditTrailService.saveAuditTrail("Admission", "Created  bed type"+result.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -90,7 +94,7 @@ public class BedTypeController {
     public ResponseEntity<?> updateBedType(@PathVariable("id") Long id, @Valid @RequestBody BedTypeData bedTypeData) {
         
         BedTypeData result = service.updateBedType(id,bedTypeData).toData();
-        
+        auditTrailService.saveAuditTrail("Admission", "Edited  bed type"+result.getName());
         Pager<BedTypeData> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("BedType Updated successful");
@@ -103,6 +107,7 @@ public class BedTypeController {
     @GetMapping("/bed-type/charge/{id}")
 //    @PreAuthorize("hasAuthority('view_bed-charge')")
     public BedChargeData getBedCharge(@PathVariable(value = "id") Long code) {
+        auditTrailService.saveAuditTrail("Admission", "Searched bed type charge identified by "+code);
         return service.getBedCharge(code).toData();
     }
 
@@ -116,8 +121,12 @@ public class BedTypeController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<BedChargeData> list = service.fetchAllBedCharges(bedTypeId, itemName, pageable).map(u -> u.toData());
-
+        Page<BedChargeData> list = service.fetchAllBedCharges(bedTypeId, itemName, pageable).map(u -> {
+            auditTrailService.saveAuditTrail("Admission", "Viewed bed type charge"+u.getBedType());
+            return u.toData();
+                });
+        
+        
         Pager<List<BedChargeData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -138,7 +147,7 @@ public class BedTypeController {
     public ResponseEntity<?> createBedTypeCharge(@PathVariable("bedTypeId") Long bedTypeId, @Valid @RequestBody BedChargeData bedChargeData) {
 
         BedChargeData result = service.createBedCharge(bedTypeId, bedChargeData).toData();
-
+        auditTrailService.saveAuditTrail("Admission", "Edited bed type Charge for "+result.getBedType());
         Pager<BedChargeData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Charge created successful");
@@ -154,7 +163,10 @@ public class BedTypeController {
 
         List<BedChargeData> result = service.createBatchBedCharge(bedTypeId, bedChargeData)
                 .stream()
-                .map((c)->c.toData())
+                .map((c)->{ 
+                    auditTrailService.saveAuditTrail("Admission", "Created bed type charge of"+c.getItem().getItemName()+" for bed type "+c.getBedType().getName());
+                    return c.toData();
+                        })
                 .collect(Collectors.toList());
 
         Pager<List<BedChargeData>> pagers = new Pager();

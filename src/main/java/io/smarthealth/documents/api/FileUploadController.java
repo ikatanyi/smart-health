@@ -9,6 +9,7 @@ import io.smarthealth.infrastructure.imports.service.UploadService;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.util.List;

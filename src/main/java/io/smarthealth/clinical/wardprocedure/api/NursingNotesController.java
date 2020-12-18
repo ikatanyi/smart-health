@@ -10,6 +10,7 @@ import io.smarthealth.clinical.wardprocedure.domain.NursingNotes;
 import io.smarthealth.clinical.wardprocedure.service.NursingNotesService;
 import io.smarthealth.infrastructure.utility.ListData;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class NursingNotesController {
 
     private final NursingNotesService nursingNotesService;
+    private final AuditTrailService auditTrailService;
 
     //create
     @PostMapping("/nursing-notes")
@@ -48,7 +50,7 @@ public class NursingNotesController {
         pagers.setCode("200");
         pagers.setMessage("Nursing note successfully submitted");
         pagers.setContent(NursingNotesData.map(nursingNotes));
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Created nursing notes for patient "+nursingNotes.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -65,7 +67,7 @@ public class NursingNotesController {
         pagers.setCode("200");
         pagers.setMessage("Nursing note data");
         pagers.setContent(NursingNotesData.map(nursingNotes));
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Viewed nursing notes identified by id "+id);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -81,7 +83,7 @@ public class NursingNotesController {
         listData.setCode("200");
         listData.setMessage("Success");
         listData.setContent(list);
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Viewed nursing notes for patient with admissionNo"+admissionNumber);
         return ResponseEntity.status(HttpStatus.OK).body(listData);
     }
 
@@ -97,7 +99,7 @@ public class NursingNotesController {
         pagers.setCode("200");
         pagers.setMessage("Nursing note successfully updated");
         pagers.setContent(NursingNotesData.map(nursingNotes));
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Edited nursing notes for patient identified by id "+id);
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -110,7 +112,7 @@ public class NursingNotesController {
         Pager<NursingNotesData> pagers = new Pager();
         pagers.setCode("200");
         pagers.setMessage("Nursing note successfully deleted");
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Deleted nursing notes for patient identified by id "+id);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 

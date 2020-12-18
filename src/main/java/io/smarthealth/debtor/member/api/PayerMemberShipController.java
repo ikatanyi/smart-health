@@ -15,6 +15,7 @@ import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -47,6 +48,8 @@ public class PayerMemberShipController {
     private final PayerMemberService payerMemberService;
     private final SchemeService schemeService;
     private final PayerService payerService;
+    private final AuditTrailService auditTrailService;
+    
 
     @GetMapping("/scheme-member")
     @PreAuthorize("hasAuthority('view_schememember')")
@@ -72,7 +75,7 @@ public class PayerMemberShipController {
         }
 
         Page<PayerMemberData> page = payerMemberService.filterMembers(payer, scheme, policyNo, term, pageable).map(m -> PayerMemberData.map(m));
-
+        
         Pager<List<PayerMemberData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -84,6 +87,7 @@ public class PayerMemberShipController {
         details.setTotalPage(page.getTotalPages());
         details.setReportName("Members Register");
         pagers.setPageDetails(details);
+        auditTrailService.saveAuditTrail("Member", "Viewed all Payer Members ");
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -105,6 +109,7 @@ public class PayerMemberShipController {
         details.setTotalPage(page.getTotalPages());
         details.setReportName("Members Register");
         pagers.setPageDetails(details);
+        auditTrailService.saveAuditTrail("Mmeber", "Viewed payer member for scheme identified by schemeId "+schemeId);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -124,7 +129,7 @@ public class PayerMemberShipController {
         PageDetails details = new PageDetails();
         details.setReportName("Member Details");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Member", "Created Scheme member for scheme "+scheme.getSchemeName());
         return ResponseEntity.ok(pagers);
     }
 
@@ -140,7 +145,7 @@ public class PayerMemberShipController {
         PageDetails details = new PageDetails();
         details.setReportName("Member Details");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Member", "Viewed all payer members for payer with policyNo "+policyNo);
         return ResponseEntity.ok(pagers);
     }
 }

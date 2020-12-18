@@ -14,6 +14,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -49,6 +50,9 @@ public class DoctorClinicSetupController {
 
     @Autowired
     ItemService itemService;
+    
+    @Autowired
+    AuditTrailService auditTrailService;
 
     @PostMapping("/clinics")
     @PreAuthorize("hasAuthority('create_doctorClinic')")
@@ -67,7 +71,7 @@ public class DoctorClinicSetupController {
         }
 
         DoctorClinicItems savedClinic = doctorClinicService.saveClinicItem(clinic);
-
+        auditTrailService.saveAuditTrail("Clinics", "Created a doctor clinic "+savedClinic.getClinicName());
         Pager<DoctorClinicData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Clinic Created.");
@@ -84,7 +88,7 @@ public class DoctorClinicSetupController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<DoctorClinicData> list = doctorClinicService.fetchClinics(pageable).map(c -> DoctorClinicData.map(c));
-
+        auditTrailService.saveAuditTrail("Clinics", "Viewed all doctor clinics ");
         Pager<List<DoctorClinicData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -109,7 +113,7 @@ public class DoctorClinicSetupController {
         pagers.setCode("0");
         pagers.setMessage("Clinic Details");
         pagers.setContent(DoctorClinicData.map(clinic));
-
+        auditTrailService.saveAuditTrail("Clinics", "Viewed  doctor clinic with id "+clinicId);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -133,7 +137,7 @@ public class DoctorClinicSetupController {
         }
 
         DoctorClinicItems savedClinic = doctorClinicService.saveClinicItem(clinic);
-
+        auditTrailService.saveAuditTrail("Clinics", "Edited  doctor clinic  "+clinic.getClinicName());
         Pager<DoctorClinicData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Clinic Updated.");

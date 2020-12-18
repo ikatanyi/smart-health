@@ -10,6 +10,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -37,9 +38,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class BankingController {
 
     private final BankingService service;
-
-    public BankingController(BankingService service) {
+    private final AuditTrailService auditTrailService;
+    public BankingController(BankingService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/banking/deposit")
@@ -51,7 +53,7 @@ public class BankingController {
         pagers.setCode("0");
         pagers.setMessage("Bank Deposited Recorded Successfully");
         pagers.setContent(banking.toData());
-
+        auditTrailService.saveAuditTrail("Banking", "Made a bank deposit of "+ banking.getCredit()+" to "+banking.getClient());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -64,7 +66,7 @@ public class BankingController {
         pagers.setCode("0");
         pagers.setMessage("Bank Withdrawal Recorded Successfully");
         pagers.setContent(banking.toData());
-         
+        auditTrailService.saveAuditTrail("Banking", "Made a bank Withdawal of "+ banking.getDebit()+" to "+banking.getClient());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -72,6 +74,7 @@ public class BankingController {
     @PreAuthorize("hasAuthority('create_bankTransfer')") 
     public ResponseEntity<?> bankTransfer(@Valid @RequestBody InterbankData data) {
         String banking = service.transfer(data);
+        auditTrailService.saveAuditTrail("Banking", "Made a bank Transfer of "+ data.getAmount()+" from "+data.getFromAccount()+" to "+data.getToAccount());
         return ResponseEntity.ok(banking);
     }
 
@@ -83,6 +86,7 @@ public class BankingController {
         pagers.setCode("0");
         pagers.setMessage("Bank Charges Recorded Successfully");
         pagers.setContent(banking.toData());
+        auditTrailService.saveAuditTrail("Banking", "Set bank charges for account"+ banking.getBankAccount().getAccountName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -90,6 +94,7 @@ public class BankingController {
     @PreAuthorize("hasAuthority('view_banking')") 
     public ResponseEntity<?> getBanking(@PathVariable(value = "id") Long id) {
         Banking banking = service.getBanking(id);
+        auditTrailService.saveAuditTrail("Banking", "Set bank charges for account"+ banking.getBankAccount().getAccountName());
         return ResponseEntity.ok(banking.toData());
     }
 //String accountNumber, String client, String referenceNumber, String transactionNo, BankingType transactionType, DateRange range, Pageable page
@@ -112,7 +117,7 @@ public class BankingController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<BankingData> list = service.getBankings(accountNumber, client, referenceNumber, transactionNo, transactionType, range, pageable)
                 .map(x -> x.toData());
-
+        auditTrailService.saveAuditTrail("Banking", "Viewed bank accounts");
         Pager<List<BankingData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

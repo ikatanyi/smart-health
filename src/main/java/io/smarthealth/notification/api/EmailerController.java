@@ -2,6 +2,7 @@ package io.smarthealth.notification.api;
 
 import io.smarthealth.notification.data.EmailData;
 import io.smarthealth.notification.service.EmailerService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.util.List;

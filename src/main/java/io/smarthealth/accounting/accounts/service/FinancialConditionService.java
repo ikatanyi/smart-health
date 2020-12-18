@@ -10,6 +10,7 @@ import io.smarthealth.accounting.accounts.domain.JournalEntryItemRepository;
 import io.smarthealth.accounting.accounts.domain.Ledger;
 import io.smarthealth.accounting.accounts.domain.LedgerRepository;
 import io.smarthealth.infrastructure.lang.DateConverter;
+import io.smarthealth.security.service.AuditTrailService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class FinancialConditionService {
     private final LedgerRepository ledgerRepository;
     private final JournalEntryItemRepository journalEntryItemRepository;
     private final AccountRepository accountRepository;
+    private final AuditTrailService auditTrailService;
 
     public FinancialCondition getFinancialCondition(LocalDate localDate) {
         final FinancialCondition financialCondition = new FinancialCondition();

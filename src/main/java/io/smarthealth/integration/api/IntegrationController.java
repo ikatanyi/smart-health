@@ -8,6 +8,7 @@ package io.smarthealth.integration.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.smarthealth.integration.data.ClaimFileData;
 import io.smarthealth.integration.service.IntegrationService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -8,11 +8,14 @@ import io.smarthealth.accounting.accounts.domain.Ledger;
 import io.smarthealth.accounting.accounts.service.LedgerService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.security.service.AuditTrailService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,14 +24,11 @@ import org.springframework.web.bind.annotation.*;
 @Api
 @RestController
 @RequestMapping("/api/ledgers")
+@RequiredArgsConstructor
 public class LedgerController {
 
     private final LedgerService ledgerService;
-
-    public LedgerController(final LedgerService ledgerService) {
-        super();
-        this.ledgerService = ledgerService;
-    }
+    private final AuditTrailService auditTrailService;
 
     @PostMapping
     @ResponseBody
@@ -42,7 +42,7 @@ public class LedgerController {
             throw APIException.conflict("Ledger {0} already exists.", ledger.getIdentifier());
         }
         this.ledgerService.createLedger(ledger);
-
+        auditTrailService.saveAuditTrail("Ledger", "Created Account Ledger "+ledger.getDescription());
         return ResponseEntity.accepted().build();
     }
 
@@ -56,7 +56,7 @@ public class LedgerController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-
+        auditTrailService.saveAuditTrail("Ledger", "Viewed Account Ledgers ");
         return ResponseEntity.ok(
                 this.ledgerService.fetchLedgers(includeSubLedgers, term, type, pageable)
         );
@@ -79,7 +79,7 @@ public class LedgerController {
                 .stream()
                 .map(LedgerData::map)
                 .collect(Collectors.toList());
-
+        auditTrailService.saveAuditTrail("Ledger", "Viewed Account Ledger types ");
         return ResponseEntity.ok(ledgerList);
     }
 
@@ -88,6 +88,7 @@ public class LedgerController {
     @PreAuthorize("hasAuthority('view_Legder')")
     ResponseEntity<LedgerData> findLedger(@PathVariable("identifier") final String identifier) {
         Optional<LedgerData> ledger = ledgerService.findLedgerData(identifier);
+        auditTrailService.saveAuditTrail("Ledger", "Viewed Account Ledger with AccountNo."+identifier);
         if (ledger.isPresent()) {
             return ResponseEntity.ok(ledger.get());
         } else {
@@ -100,6 +101,7 @@ public class LedgerController {
     @PreAuthorize("hasAuthority('create_Legder')")
     ResponseEntity<Void> addSubLedger(@PathVariable("identifier") final String identifier, @RequestBody @Valid final LedgerData subLedger) {
         final Optional<Ledger> optionalParentLedger = this.ledgerService.findLedger(identifier);
+        auditTrailService.saveAuditTrail("Ledger", "Created Account SubLedger with AccountNo."+identifier);
         if (optionalParentLedger.isPresent()) {
             final Ledger parentLedger = optionalParentLedger.get();
             if (!parentLedger.getAccountType().equals(subLedger.getType())) {
@@ -131,6 +133,7 @@ public class LedgerController {
             throw APIException.notFound("Ledger {0} not found.", identifier);
         }
 //        this.commandGateway.process(new ModifyLedgerCommand(ledger));
+        auditTrailService.saveAuditTrail("Ledger", "Edited Account Ledger With AccountNo."+identifier);
         this.ledgerService.modifyLedger(ledger);
 
         return ResponseEntity.accepted().build();
@@ -155,6 +158,7 @@ public class LedgerController {
         }
 
 //        this.commandGateway.process(new DeleteLedgerCommand(identifier));
+        auditTrailService.saveAuditTrail("Ledger", "Removed Account Ledger  "+optionalLedger.get().getDescription());
         this.ledgerService.deleteLedger(identifier);
 
         return ResponseEntity.accepted().build();
@@ -171,7 +175,7 @@ public class LedgerController {
             throw APIException.notFound("Ledger {0} not found.", identifier);
         }
         Pageable pageable = PaginationUtil.createPage(page, size);
-
+        auditTrailService.saveAuditTrail("Ledger", "Viewed all Account Ledgers  ");
         return ResponseEntity.ok(this.ledgerService.fetchAccounts(identifier, pageable));
     }
 }

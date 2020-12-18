@@ -10,6 +10,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -37,9 +38,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentController {
 
     private final MakePaymentService service;
-
-    public PaymentController(MakePaymentService service) {
+    private final AuditTrailService auditTrailService;
+    
+    public PaymentController(MakePaymentService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/payments")
@@ -51,14 +54,15 @@ public class PaymentController {
         pagers.setCode("0");
         pagers.setMessage("Payment successfully Created.");
         pagers.setContent(payment.toData());
-
+        auditTrailService.saveAuditTrail("Payments", "Made a payment of "+payment.getAmount()+" to "+payment.getPayee());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
     @GetMapping("/payments/{id}")
     @PreAuthorize("hasAuthority('view_payment')")
     public ResponseEntity<?> getPayment(@PathVariable(value = "id") Long id) {
-        Payment payment = service.getPaymentOrThrow(id);
+        auditTrailService.saveAuditTrail("Payments", "Searched a payment identified by "+id);
+        Payment payment = service.getPaymentOrThrow(id);        
         return ResponseEntity.ok(payment.toData());
     }
 
@@ -80,7 +84,8 @@ public class PaymentController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<PaymentData> list = service.getPayments(creditorType, creditorId, creditor, transactionNo, range, pageable)
                 .map(x -> x.toData());
-
+        
+        auditTrailService.saveAuditTrail("Payments", "Viewed all payments made");
         Pager<List<PaymentData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -104,7 +109,7 @@ public class PaymentController {
         pagers.setCode("0");
         pagers.setMessage("Payment successfully Created.");
         pagers.setContent(payment.toData());
-
+        auditTrailService.saveAuditTrail("Payments", "Created a Petty cash payment");
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 }

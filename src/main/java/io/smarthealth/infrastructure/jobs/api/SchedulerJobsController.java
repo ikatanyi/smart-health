@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.jobs.data.JobDetailHistoryData;
 import io.smarthealth.infrastructure.jobs.data.UpdateJobDetailData;
 import io.smarthealth.infrastructure.jobs.service.JobRegisterService;
 import io.smarthealth.infrastructure.jobs.service.SchedulerService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;

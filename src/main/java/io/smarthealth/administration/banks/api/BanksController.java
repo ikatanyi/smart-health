@@ -13,6 +13,7 @@ import io.smarthealth.administration.banks.service.BankService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +43,12 @@ public class BanksController {
 
     private final BankService bankService;
     private final ModelMapper modelMapper;
+    private final AuditTrailService auditTrailService;
 
-    public BanksController(BankService bankService, ModelMapper modelMapper) {
+    public BanksController(BankService bankService, ModelMapper modelMapper, AuditTrailService auditTrailService) {
         this.bankService = bankService;
         this.modelMapper = modelMapper;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/bank")
@@ -56,7 +59,7 @@ public class BanksController {
         }
 
         Bank mainBank = modelMapper.map(bankData, Bank.class);
-
+        auditTrailService.saveAuditTrail("Administration", "Created Bank "+bankData.getBankName());
         List<BankBranch> branch = new ArrayList<>();
         if (!bankData.getBranch().isEmpty()) {
             for (BankBranchData bbd : bankData.getBranch()) {
@@ -91,7 +94,7 @@ public class BanksController {
             }
             mainBank.setBankBranch(branch);
         }
-
+        auditTrailService.saveAuditTrail("Administration", "Edited Bank "+bankData.getBankName());
         Bank result = bankService.updateBank(id, mainBank);
         BankData bankData1 = modelMapper.map(result, BankData.class);
         Pager<BankData> pagers = new Pager();
@@ -113,7 +116,7 @@ public class BanksController {
         for (Bank bank : result) {
             BankData b = modelMapper.map(bank, BankData.class);
             b.setBankId(bank.getId());
-
+            auditTrailService.saveAuditTrail("Administration", "Viewed Bank "+bank.getBankName());
             if (bank.getBankBranch().size() > 0) {
 //                Type listType = new TypeToken<List<BankBranch>>() {
 //                }.getType();
@@ -130,7 +133,7 @@ public class BanksController {
             }
             bd.add(b);
         }
-
+        
         Pager<List<BankData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -156,7 +159,7 @@ public class BanksController {
         for (Bank bank : result) {
             BankData b = modelMapper.map(bank, BankData.class);
             b.setBankId(bank.getId());
-
+            auditTrailService.saveAuditTrail("Administration", "Viewed Bank "+bank.getBankName());
             if (bank.getBankBranch().size() > 0) {
 //                Type listType = new TypeToken<List<BankBranch>>() {
 //                }.getType();
@@ -194,8 +197,9 @@ public class BanksController {
             if (bankService.findByBranchNameAndBank(b.getBranchName(), mainBank).isPresent()) {
                 throw APIException.conflict("A branch with name {0} already exists.", b.getBranchName());
             }
-
+            
             BankBranch bb = modelMapper.map(b, BankBranch.class);
+            auditTrailService.saveAuditTrail("Administration", "Created Bank branch"+bb.getBranchName());
             bb.setBank(mainBank);
             branchList.add(bb);
         }
@@ -218,11 +222,13 @@ public class BanksController {
         List<BankBranchData> branchesData = new ArrayList<>();
         for (BankBranch bb : result) {
             BankBranchData bbd = modelMapper.map(bb, BankBranchData.class);
+            auditTrailService.saveAuditTrail("Administration", "Viewed Bank branch"+bbd.getBranchName());
             bbd.setBranchId(bb.getId());
             bbd.setMainBankName(bb.getBank().getBankName());
             branchesData.add(bbd);
         }
-
+        
+        
         Pager<List<BankBranchData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -248,6 +254,7 @@ public class BanksController {
         for (BankBranch bb : result) {
             BankBranchData bbd = modelMapper.map(bb, BankBranchData.class);
             bbd.setBranchId(bb.getId());
+            auditTrailService.saveAuditTrail("Administration", "Viewed Bank branch"+bb.getBranchName());
             branchesData.add(bbd);
         }
 

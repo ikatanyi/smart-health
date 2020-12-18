@@ -9,6 +9,7 @@ import io.smarthealth.administration.medicaltemplate.data.MedicalTemplateData;
 import io.smarthealth.administration.medicaltemplate.service.MedicalTemplateService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,12 +35,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class MedicalTemplateController {
 
     private final MedicalTemplateService medicalTemplateService;
+    private final AuditTrailService auditTrailService; 
 
     @PostMapping("/medical-template")
     @PreAuthorize("hasAuthority('Administration_Module')")
     public @ResponseBody
     ResponseEntity<?> saveTemplate(@RequestBody @Valid final MedicalTemplateData medicalTemplateData) {
         MedicalTemplateData savedTemplateData = medicalTemplateService.saveMedicalTemplate(medicalTemplateData).toData();
+        auditTrailService.saveAuditTrail("Administration", "Created Medical template  "+medicalTemplateData.getTemplateName());
         Pager<MedicalTemplateData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -57,6 +60,7 @@ public class MedicalTemplateController {
             @PathVariable("templateName") final String templateName
     ) {
         MedicalTemplateData savedTemplateData = medicalTemplateService.fetchMedicalTemplateByName(templateName).toData();
+        auditTrailService.saveAuditTrail("Administration", "viewed Medical template  "+savedTemplateData.getTemplateName());
         Pager<MedicalTemplateData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

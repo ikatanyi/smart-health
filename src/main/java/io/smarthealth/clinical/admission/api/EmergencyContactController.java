@@ -6,6 +6,7 @@ import io.smarthealth.clinical.admission.service.EmergencyContactService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -30,11 +31,13 @@ import org.springframework.web.bind.annotation.*;
 public class EmergencyContactController {
 
     private final EmergencyContactService service;
+    private final AuditTrailService auditTrailService;
      
     @GetMapping("/emergency-contact/{id}")
 //    @PreAuthorize("hasAuthority('view_contact')")
     public EmergencyContact getItem(@PathVariable(value = "id") Long code) {
         EmergencyContact contact = service.getEmergencyContact(code);
+        auditTrailService.saveAuditTrail("Admission", "Viewed Emergency contact Identified by "+code );
         return  contact;
     }
 
@@ -48,7 +51,10 @@ public class EmergencyContactController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<EmergencyContactData> list = service.fetchEmergencyContacts(name, patientNumber, term, pageable).map(u -> u.toData());
+        Page<EmergencyContactData> list = service.fetchEmergencyContacts(name, patientNumber, term, pageable).map(u -> {
+            auditTrailService.saveAuditTrail("Admission", "Viewed Emergency contact "+u.getName()+" for patient"+u.getAdmission().getPatient().getFullName() );
+            return u.toData();
+                });
         
         
         Pager<List<EmergencyContactData>> pagers=new Pager();
@@ -72,7 +78,7 @@ public class EmergencyContactController {
     public ResponseEntity<?> createEmergencyContact(@PathVariable("admissionId") Long id, @Valid @RequestBody EmergencyContactData contactData) {
         
         EmergencyContactData result = service.createEmergencyContact(id, contactData).toData();
-        
+        auditTrailService.saveAuditTrail("Admission", "Created Emergency contact "+result.getName());
         Pager<EmergencyContactData> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("Emergency Contact created successful");
@@ -87,7 +93,7 @@ public class EmergencyContactController {
     public ResponseEntity<?> updateEmergencyContact(@PathVariable("id") Long id, @Valid @RequestBody EmergencyContactData contactData) {
         
         EmergencyContactData result = service.updateEmergencyContact(id,contactData).toData();
-        
+        auditTrailService.saveAuditTrail("Admission", "Edited Emergency contact "+result.getName());
         Pager<EmergencyContactData> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("EmergencyContact Updated successful");

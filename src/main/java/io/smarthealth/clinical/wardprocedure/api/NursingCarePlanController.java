@@ -10,6 +10,7 @@ import io.smarthealth.clinical.wardprocedure.domain.NursingCarePlan;
 import io.smarthealth.clinical.wardprocedure.service.NursingCarePlanService;
 import io.smarthealth.infrastructure.utility.ListData;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class NursingCarePlanController {
 
     private final NursingCarePlanService nursingCarePlanService;
+    private final AuditTrailService auditTrailService;
 
     //create
     @PostMapping("/nursing-careplan")
@@ -48,7 +50,8 @@ public class NursingCarePlanController {
         pagers.setCode("200");
         pagers.setMessage("Nursing care plan successfully submitted");
         pagers.setContent(NursingCarePlanData.map(nursingCarePlan));
-
+        
+        auditTrailService.saveAuditTrail("Ward Procedure", "Created nursing care plan for patient "+nursingCarePlan.getAdmission().getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -65,7 +68,7 @@ public class NursingCarePlanController {
         pagers.setCode("200");
         pagers.setMessage("Nursing care plan data");
         pagers.setContent(NursingCarePlanData.map(nursingCarePlan));
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Viewed nursing care plan for id "+id);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -81,7 +84,7 @@ public class NursingCarePlanController {
         listData.setCode("200");
         listData.setMessage("Success");
         listData.setContent(list);
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Viewed nursing care plan for patient admissionNo "+admissionNumber);
         return ResponseEntity.status(HttpStatus.OK).body(listData);
     }
 
@@ -97,7 +100,7 @@ public class NursingCarePlanController {
         pagers.setCode("200");
         pagers.setMessage("Nursing care plan successfully updated");
         pagers.setContent(NursingCarePlanData.map(nursingCarePlan));
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Edited nursing care plan identified by id "+id);
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -110,7 +113,7 @@ public class NursingCarePlanController {
         Pager<NursingCarePlanData> pagers = new Pager();
         pagers.setCode("200");
         pagers.setMessage("Nursing care plan successfully deleted");
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Deleted nursing care plan identified by id "+id);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 }

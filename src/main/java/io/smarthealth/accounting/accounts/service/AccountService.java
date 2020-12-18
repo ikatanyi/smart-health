@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.accounts.service;
 
+import static com.lowagie.text.pdf.PdfName.ASSET;
 import io.smarthealth.accounting.accounts.data.AccountBalance;
 import io.smarthealth.accounting.accounts.data.AccountData;
 import io.smarthealth.accounting.accounts.data.AccountGroups;
@@ -11,7 +12,6 @@ import io.smarthealth.accounting.accounts.domain.AccountRepository;
 import io.smarthealth.accounting.accounts.domain.AccountState;
 import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.accounting.accounts.domain.IncomeExpenseData;
-import io.smarthealth.accounting.accounts.domain.JournalEntry;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.accounting.accounts.domain.JournalEntryItemRepository;
 import io.smarthealth.accounting.accounts.domain.JournalState;
@@ -23,6 +23,7 @@ import io.smarthealth.accounting.accounts.domain.specification.JournalSpecificat
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.imports.data.AccBalanceData;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.security.service.AuditTrailService;
 import io.smarthealth.infrastructure.utility.DateUtility;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -44,9 +45,11 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final LedgerRepository ledgerRepository;
     private final JournalEntryItemRepository journalEntryItemRepository;
+    private final AuditTrailService auditTrailService;
 
     public Optional<AccountData> findAccount(final String identifier) {
         final Optional<Account> accountEntity = this.accountRepository.findByIdentifier(identifier);
+         auditTrailService.saveAuditTrail("Accounts", "Searched account by accountNo. "+identifier);
         if (accountEntity.isPresent()) {
             return Optional.of(AccountData.map(accountEntity.get()));
         }
@@ -54,6 +57,7 @@ public class AccountService {
     }
 
     public Optional<Account> findByAccountNumber(String identifier) {
+           
         return accountRepository.findByIdentifier(identifier);
     }
 
@@ -117,7 +121,7 @@ public class AccountService {
             this.adjustLedgerTotals(
                     savedAccount.getLedger().getIdentifier(), savedAccount.getBalance());
         }
-
+        auditTrailService.saveAuditTrail("Accounts", "Created Account "+account.getName());
         return savedAccount;
     }
 
@@ -148,7 +152,7 @@ public class AccountService {
         if (ledger != null) {
             this.ledgerRepository.save(ledger);
         }
-
+        auditTrailService.saveAuditTrail("Accounts", "Edited Account "+accountEntity.getName());
         return account.getIdentifier();
     }
 
@@ -156,6 +160,7 @@ public class AccountService {
     public String deleteAccount(String accountIdentifier) {
         final Account accountEntity = findByAccountNumberOrThrow(accountIdentifier);
         this.accountRepository.delete(accountEntity);
+        auditTrailService.saveAuditTrail("Accounts", "Deleted Account "+accountEntity.getName());
         return accountIdentifier;
     }
 
@@ -168,9 +173,11 @@ public class AccountService {
         if (savedLedger.getParentLedger() != null) {
             this.adjustLedgerTotals(savedLedger.getParentLedger().getIdentifier(), amount);
         }
+        auditTrailService.saveAuditTrail("Accounts", "Adjusted Ledger Totals for ledger "+ledger.getName()+" from "+currentTotal+" to"+amount);
     }
 
     public Ledger findLedgerByIdOrThrow(String ledgerIdentifier) {
+        auditTrailService.saveAuditTrail("Accounts", "Searched account "+ledgerIdentifier);
         return ledgerRepository.findByIdentifier(ledgerIdentifier)
                 .orElseThrow(() -> APIException.notFound("Ledger with id {0} not found", ledgerIdentifier));
     }
@@ -187,8 +194,9 @@ public class AccountService {
                 .collect(Collectors.toList());
         metadata.setIncomeAccounts(income);
         metadata.setExpensesAccounts(expenses);
-
+        auditTrailService.saveAuditTrail("Accounts", "viewed Income Expense");
         return metadata;
+        
     }
 
     public List<SimpleAccountData> getTransactionalAccounts(AccountType type) {
@@ -198,6 +206,7 @@ public class AccountService {
         } else {
             accounts = accountRepository.findAll();
         }
+        auditTrailService.saveAuditTrail("Accounts", "Transactional Accounts");
 
         return accounts
                 .stream()
@@ -236,19 +245,23 @@ public class AccountService {
                         default:
                     }
                 });
+        auditTrailService.saveAuditTrail("Accounts", "Viewed Account Groups");
         return groups;
     }
 
     public Page<JournalEntryItem> getAccountEntries(String identifier, Pageable page) {
         final Account accountEntity = findByAccountNumberOrThrow(identifier);
+        auditTrailService.saveAuditTrail("Accounts", "Viewed Account Entries");
         return journalEntryItemRepository.findByAccount(accountEntity, page);
     }
 
     public BigDecimal getAccountBalance(String identifier, LocalDate date) {
+        auditTrailService.saveAuditTrail("Accounts", "Viewed Account Balance for account "+ identifier +" for date "+ date );
         return journalEntryItemRepository.getAccountsBalance(identifier, date);
     }
 
     public BigDecimal getAccountBalance(String identifier, DateRange period) {
+        auditTrailService.saveAuditTrail("Accounts", "Viewed Account Balance for account "+ identifier +" for a period of "+ period );
         return journalEntryItemRepository.getAccountsBalance(identifier, period);
     }
 
@@ -260,10 +273,12 @@ public class AccountService {
         if (period != null) {
             description = String.format("Period : %s to %s", period.getStartDate().format(DateTimeFormatter.ISO_DATE), period.getEndDate().format(DateTimeFormatter.ISO_DATE));
             balance = getAccountBalance(identifier, period);
+            auditTrailService.saveAuditTrail("Accounts", "Viewed Account Balance for account "+ identifier +" for a period of "+ period );
         } else {
             LocalDate dte = date == null ? LocalDate.now() : date;
             description = String.format("Balance as at : %s", dte.format(DateTimeFormatter.ISO_DATE));
             balance = getAccountBalance(identifier, date);
+            auditTrailService.saveAuditTrail("Accounts", "Viewed Account Balance for account "+ identifier +" for date "+ date );
         }
 
         return new AccountBalance(account.getIdentifier(), account.getName(), description, balance);
@@ -310,7 +325,7 @@ public class AccountService {
             data.setAmount(bal);
             list.add(data);
         }
-
+        auditTrailService.saveAuditTrail("Accounts", "Viewed Account Transactions for account "+ identifier +" for the period between "+ period );
         //period details From 01 May 2020 To 31 May 2020
         return list;
     }
@@ -334,7 +349,8 @@ public class AccountService {
         data.setTransactionNo(entryDate.toString());
         data.setCreatedBy("");
         data.setType(TransactionType.Balance_Brought_Forward);
-
+        
+        auditTrailService.saveAuditTrail("Accounts", "Opening Account Balance for account "+ identifier +" with Amount "+ balance );
         return data;
     }
 
@@ -345,7 +361,7 @@ public class AccountService {
             Account account = findByAccountNumber(acc.getIdentifier()).orElse(null);
             
             JournalEntryItem data = new JournalEntryItem(account, "Balance b/f", BigDecimal.ZERO, acc.getBalance());
-
+            auditTrailService.saveAuditTrail("Accounts", "Opening Account Balance for account[Batch] "+ acc.getIdentifier() +" with Amount "+ acc.getBalance() );
             itemArray.add(data);
         }
         return journalEntryItemRepository.saveAll(itemArray);

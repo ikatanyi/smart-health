@@ -4,6 +4,7 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.org.data.OrganisationData;
 import io.smarthealth.organization.org.domain.Organisation;
 import io.smarthealth.organization.org.service.OrganisationService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;

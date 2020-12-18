@@ -6,6 +6,7 @@ import io.smarthealth.administration.config.service.ConfigService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -33,15 +34,18 @@ import org.springframework.web.bind.annotation.*;
 public class GlobalConfigurationController {
 
     private final ConfigService service;
-
-    public GlobalConfigurationController(ConfigService service) {
+    private final AuditTrailService auditTrailService; 
+    
+    public GlobalConfigurationController(ConfigService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @GetMapping("/configurations/{id}")
     @PreAuthorize("hasAuthority('view_configurations')")
     public ResponseEntity<?> getConfiguration(@PathVariable(value = "id") Long code) {
         GlobalConfiguration config = service.getWithNonFoundDetection(code);
+        auditTrailService.saveAuditTrail("Administration", "Edited configuration "+config.getName());
         return ResponseEntity.ok(config);
     }
     
@@ -49,6 +53,7 @@ public class GlobalConfigurationController {
 //    @PreAuthorize("hasAuthority('view_globalConfigurations')")
     public ResponseEntity<?> getConfigurationByName(@PathVariable(value = "configName") GlobalConfigNum configName) {
         GlobalConfiguration config = service.getByNameOrThrow(configName.name());
+        auditTrailService.saveAuditTrail("Administration", "View configuration "+config.getName());
         return ResponseEntity.ok(config);
     }
 
@@ -57,7 +62,7 @@ public class GlobalConfigurationController {
     public ResponseEntity<?> updateConfiguration(@PathVariable(value = "id") Long code, @Valid @RequestBody GlobalConfiguration config) {
 
         GlobalConfiguration savedConfig = service.updateConfig(code, config);
-
+        auditTrailService.saveAuditTrail("Administration", "Edited configuration "+savedConfig.getName());
         return ResponseEntity.ok(savedConfig);
     }
 
@@ -68,7 +73,7 @@ public class GlobalConfigurationController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-
+        auditTrailService.saveAuditTrail("Administration", "Viewed all configurations ");
         Page<GlobalConfiguration> list = service.fetchAllConfigs(pageable);
         Pager<List<GlobalConfiguration>> pagers = new Pager();
         pagers.setCode("0");

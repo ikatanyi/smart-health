@@ -12,6 +12,7 @@ import io.smarthealth.report.service.PharmacyReportService;
 import io.smarthealth.report.service.ProcedureReportService;
 import io.smarthealth.report.service.StockReportService;
 import io.smarthealth.report.service.SupplierReportService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
@@ -45,6 +46,7 @@ public class ReportController {
     private final PaymentReportService paymentReportService;
     private final StockReportService stockReportService;
     private final AdmissionReportService admissionReportService;
+    private final AuditTrailService auditTrailService;
 
     @GetMapping("/report")
     @PreAuthorize("hasAuthority('view_reports')")
@@ -288,9 +290,13 @@ public class ReportController {
             case Discharge_Summary:
                 admissionReportService.getDischargeSummary(queryParams, format, response);
                 break;
+            case Audit_Report:
+                patientReportService.getAuditTrail(queryParams, format, response);
+                break;
             default:
                 break;
         }
+        auditTrailService.saveAuditTrail("Reports", "Viewed report  "+reportName);
         return ResponseEntity.ok("success");
     }
 

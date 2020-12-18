@@ -11,6 +11,7 @@ import io.smarthealth.stock.item.domain.ItemMetadata;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import io.smarthealth.stock.item.service.ItemService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -34,9 +35,11 @@ import org.springframework.web.bind.annotation.*;
 public class ItemRestController {
 
     private final ItemService service;
+    private final AuditTrailService auditTrailService;
 
-    public ItemRestController(ItemService itemService) {
+    public ItemRestController(ItemService itemService, AuditTrailService auditTrailService) {
         this.service = itemService;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/items")
@@ -53,7 +56,7 @@ public class ItemRestController {
         pagers.setCode("0");
         pagers.setMessage("Item created successful");
         pagers.setContent(result);
-
+        auditTrailService.saveAuditTrail("Inventory", "Created an item "+result.getItemName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -63,6 +66,7 @@ public class ItemRestController {
     public ItemData getItem(@PathVariable(value = "code") String code) {
         Item item = service.findByItemCode(code)
                 .orElseThrow(() -> APIException.notFound("Item with code {0} not found.", code));
+        auditTrailService.saveAuditTrail("Inventory", "Viewed item "+item.getItemName());
         return item.toData();
     }
 
@@ -71,6 +75,7 @@ public class ItemRestController {
     public ResponseEntity<?> getItem(@PathVariable(value = "id") Long id) {
         Item item = service.findById(id)
                 .orElseThrow(() -> APIException.notFound("Item with Id {0} not found.", id));
+        auditTrailService.saveAuditTrail("Inventory", "Viewed item "+item.getItemName());
         return ResponseEntity.ok(service.toItemData(item));
     }
 
@@ -84,7 +89,7 @@ public class ItemRestController {
         pagers.setCode("0");
         pagers.setMessage("Item update successful");
         pagers.setContent(result.toData());
-
+        auditTrailService.saveAuditTrail("Inventory", "Edited item "+result.getItemName());
         return ResponseEntity.ok(pagers);
 
     }
@@ -114,7 +119,7 @@ public class ItemRestController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Items");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Inventory", "Viewed all registered items ");
         return ResponseEntity.ok(pagers);
     }
 

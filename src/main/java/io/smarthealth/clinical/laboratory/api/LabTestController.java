@@ -6,6 +6,7 @@ import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,9 +36,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class LabTestController {
 
     private final LabConfigurationService service;
+    private final AuditTrailService auditTrailService;
 
-    public LabTestController(LabConfigurationService service) {
+    public LabTestController(LabConfigurationService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/labs/tests")
@@ -45,7 +48,7 @@ public class LabTestController {
     public ResponseEntity<?> createLabTest(@Valid @RequestBody LabTestData data) {
 
         LabTest test = service.createTest(data);
-
+        auditTrailService.saveAuditTrail("Laboratory", "Created lab test  "+test.getTestName());
         Pager<LabTestData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Lab Test Created.");
@@ -60,7 +63,10 @@ public class LabTestController {
 
         List<LabTestData> item = service.createTest(data)
                 .stream()
-                .map(x -> x.toData())
+                .map(x -> {
+                    auditTrailService.saveAuditTrail("Laboratory", "Created lab test  "+x.getTestName());
+                    return x.toData();
+                        })
                 .collect(Collectors.toList());
 
         Pager< List<LabTestData>> pagers = new Pager();
@@ -75,6 +81,7 @@ public class LabTestController {
     @PreAuthorize("hasAuthority('view_labtests')")
     public ResponseEntity<?> getLabTest(@PathVariable(value = "id") Long id) {
         LabTest item = service.getTestById(id);
+        auditTrailService.saveAuditTrail("Laboratory", "Searched lab test  "+item.getTestName());
         return ResponseEntity.ok(item.toData());
     }
 
@@ -82,6 +89,7 @@ public class LabTestController {
     @PreAuthorize("hasAuthority('edit_labtests')")
     public ResponseEntity<?> updateLabTest(@PathVariable(value = "id") Long id, @Valid @RequestBody LabTestData data) {
         LabTest test = service.updateTest(id, data);
+         auditTrailService.saveAuditTrail("Laboratory", "Updated lab test  "+test.getTestName());
         return ResponseEntity.ok(test.toData());
     }
 
@@ -89,6 +97,7 @@ public class LabTestController {
     @PreAuthorize("hasAuthority('delete_labtests')")
     public ResponseEntity<?> voidLabTest(@PathVariable(value = "id") Long id) {
         service.voidLabTest(id);
+         auditTrailService.saveAuditTrail("Laboratory", "Deleted lab test identified by id "+id);
         return ResponseEntity.accepted().build();
     }
 
@@ -102,7 +111,10 @@ public class LabTestController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<LabTestData> list = service.getLabTests(query, displine, pageable)
-                .map(x -> x.toData());
+                .map(x ->{
+                    auditTrailService.saveAuditTrail("Laboratory", "viewed lab test  "+x.getTestName());
+                    return x.toData();
+                        });
 
         Pager<List<LabTestData>> pagers = new Pager();
         pagers.setCode("0");
@@ -122,7 +134,10 @@ public class LabTestController {
     @PreAuthorize("hasAuthority('view_labtests')")
     public ResponseEntity<?> search(@RequestParam(value = "search") String test) {
         List<LabTestData> lists = service.searchLabTest(test)
-                .stream().map(x -> x.toData())
+                .stream().map(x ->{
+                    auditTrailService.saveAuditTrail("Laboratory", "viewed lab test  "+x.getTestName());
+                    return x.toData();
+                        })
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(lists);

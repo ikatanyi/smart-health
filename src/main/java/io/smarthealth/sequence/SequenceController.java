@@ -1,6 +1,7 @@
 package io.smarthealth.sequence;
 
 import io.smarthealth.sequence.data.SequenceRequest;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

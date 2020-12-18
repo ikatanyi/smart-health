@@ -5,6 +5,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.data.PermissionData;
 import io.smarthealth.security.domain.PermissionRepository;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;

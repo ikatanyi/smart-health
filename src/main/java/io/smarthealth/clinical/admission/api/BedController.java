@@ -7,6 +7,7 @@ import io.smarthealth.clinical.admission.service.BedService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,10 +33,12 @@ import org.springframework.web.bind.annotation.*;
 public class BedController {
 
     private final BedService service;
+    private final AuditTrailService auditTrailService; 
      
     @GetMapping("/bed/{id}")
 //    @PreAuthorize("hasAuthority('view_bed')")
     public Bed getItem(@PathVariable(value = "id") Long code) {
+        auditTrailService.saveAuditTrail("Admission", "Searched for bed identified by id "+code);
         Bed bed = service.getBed(code);
         return  bed;
     }
@@ -51,8 +54,11 @@ public class BedController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
         Pageable pageable = PaginationUtil.createPage(page, size);
-
-        Page<BedData> list = service.fetchBeds(name, status, active, roomId, term, pageable).map(u -> u.toData());
+        auditTrailService.saveAuditTrail("Admission", "Viewed all beds");
+        Page<BedData> list = service.fetchBeds(name, status, active, roomId, term, pageable).map(u -> {
+            auditTrailService.saveAuditTrail("Admission", "Viewed  bed "+u.getName());
+            return u.toData();
+                });
         
         
         Pager<List<BedData>> pagers=new Pager();
@@ -81,7 +87,7 @@ public class BedController {
         pagers.setCode("0");
         pagers.setMessage("Bed created successful");
         pagers.setContent(result); 
-        
+        auditTrailService.saveAuditTrail("Admission", "Created  bed "+result.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -96,7 +102,7 @@ public class BedController {
         pagers.setCode("0");
         pagers.setMessage("Bed Updated successful");
         pagers.setContent(result); 
-        
+        auditTrailService.saveAuditTrail("Admission", "Edited  bed "+result.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }

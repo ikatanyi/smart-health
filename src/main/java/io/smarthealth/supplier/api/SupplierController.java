@@ -10,6 +10,7 @@ import io.smarthealth.supplier.data.SupplierStatement;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.domain.SupplierMetadata;
 import io.smarthealth.supplier.service.SupplierService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -32,9 +33,11 @@ import org.springframework.web.bind.annotation.*;
 public class SupplierController {
 
     private final SupplierService service;
+    private final AuditTrailService auditTrailService;
 
-    public SupplierController(SupplierService supplierService) {
+    public SupplierController(SupplierService supplierService, AuditTrailService auditTrailService) {
         this.service = supplierService;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/suppliers")
@@ -51,7 +54,7 @@ public class SupplierController {
         pagers.setCode("0");
         pagers.setMessage("Supplier created successful");
         pagers.setContent(result);
-
+        auditTrailService.saveAuditTrail("Suppliers", "Created a supplier "+result.getSupplierName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -61,6 +64,7 @@ public class SupplierController {
     public SupplierData getSupplier(@PathVariable(value = "id") Long code) {
         Supplier supplier = service.getSupplierById(code)
                 .orElseThrow(() -> APIException.notFound("Supplier with id {0} not found.", code));
+        auditTrailService.saveAuditTrail("Suppliers", "Created a supplier "+supplier.getSupplierName());
         return supplier.toData();
     }
 
@@ -88,7 +92,7 @@ public class SupplierController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Suppliers");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Suppliers", "Viewed all suppliers ");
         return ResponseEntity.ok(pagers);
     }
 

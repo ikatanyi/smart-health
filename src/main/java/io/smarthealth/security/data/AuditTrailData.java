@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package io.smarthealth.security.data;
+
 import io.smarthealth.security.domain.AuditTrail;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.Instant;

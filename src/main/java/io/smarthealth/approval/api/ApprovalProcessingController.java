@@ -20,6 +20,7 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,9 @@ public class ApprovalProcessingController {
 
     @Autowired
     PettyCashApprovalsService approvalsService;
+    
+    @Autowired
+    AuditTrailService auditTrailService; 
 
     @GetMapping("/approval-request/{moduleName}")
     @PreAuthorize("hasAuthority('view_approvalRequests')")
@@ -66,7 +70,7 @@ public class ApprovalProcessingController {
         User user = service.findUserByUsernameOrEmail(username)
                 .orElseThrow(() -> APIException.badRequest("User not found"));
         Employee employee = employeeService.fetchEmployeeByUser(user);
-
+        auditTrailService.saveAuditTrail("Approval Request", "Viewed Approval requests for  "+moduleName.name());
         int loggedInPersonApprovalLevel = approvalConfigService.fetchModuleApproverByModuleAndEmployee(ApprovalModule.PettyCash, employee).getApprovalLevel();
 
         switch (moduleName) {
@@ -107,6 +111,7 @@ public class ApprovalProcessingController {
                 for (PettyCashApprovals a : list) {
                     dataList.add(PettyCashApprovalsData.map(a));
                 }
+                
                 Pager<List<PettyCashApprovalsData>> pagers = new Pager();
                 pagers.setCode("0");
                 pagers.setMessage("Success");
@@ -126,6 +131,7 @@ public class ApprovalProcessingController {
             default:
                 break;
         }
+        auditTrailService.saveAuditTrail("Approval Request", "Viewed Approval requests history for  "+moduleName.name());
         return null;
     }
 //    @GetMapping("/approval-process/{moduleName}")
@@ -136,6 +142,7 @@ public class ApprovalProcessingController {
 
     @PostMapping("/approval-process/{moduleName}")
     public ResponseEntity<?> processRequest(@PathVariable("moduleName") final ApprovalModule moduleName) {
+        auditTrailService.saveAuditTrail("Approval Request", "Created Approval requests for  "+moduleName.name());
         return ResponseEntity.ok(null);
     }
 }

@@ -9,6 +9,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +32,12 @@ public class AllocationController {
 
     private final AllocationService allocationService;
     private final RemittanceService remitanceService;
+    private final AuditTrailService auditTrailService;
 
-    public AllocationController(AllocationService allocationService, RemittanceService remitanceService) {
+    public AllocationController(AllocationService allocationService, RemittanceService remitanceService, AuditTrailService auditTrailService) {
         this.allocationService = allocationService;
         this.remitanceService = remitanceService;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/allocation/{remmitanceId}")
@@ -51,7 +54,7 @@ public class AllocationController {
         pagers.setCode("0");
         pagers.setMessage("Allocation successful");
         pagers.setContent(dataList);
-
+        auditTrailService.saveAuditTrail("Claim", "Created remittance allocation ");
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -59,6 +62,7 @@ public class AllocationController {
     @PreAuthorize("hasAuthority('view_allocation')")
     public AllocationData getAllocation(@PathVariable(value = "id") Long id) {
         AllocationData allocation = allocationService.getAllocationByIdWithFailDetection(id).map();
+        auditTrailService.saveAuditTrail("Claim", "Viewed remittance allocation identified by id "+id);
         return allocation;
     }
 
@@ -66,6 +70,7 @@ public class AllocationController {
     @PreAuthorize("hasAuthority('edit_allocation')")
     public AllocationData updateRemitance(@PathVariable(value = "id") Long id, AllocationData allocationData) {
         AllocationData allocation = allocationService.updateAllocation(id, allocationData).map();
+        auditTrailService.saveAuditTrail("Claim", "Edited remittance allocation identified by id "+id);
         return allocation;
     }
 
@@ -84,7 +89,7 @@ public class AllocationController {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<AllocationData> list = allocationService.getAllocations(invoiceNo, receiptNo, receiptNo, payerId, schemeId, range, pageable)
                 .map(remit -> remit.map());
-
+         auditTrailService.saveAuditTrail("Claim", "Viewed all remittance allocation");
         Pager<List<AllocationData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

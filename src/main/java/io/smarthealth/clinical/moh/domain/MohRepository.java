@@ -109,7 +109,7 @@ public interface MohRepository extends JpaRepository<Moh, Long>, JpaSpecificatio
             + "     moh m"
             + "     left JOIN patient_diagnosis d ON TRIM(m.code) = TRIm(d.m_code) OR ISNULL(d.m_code)"
             + "     left JOIN person p ON p.id = d.patient_id"
-            + "     WHERE  d.certainty='Confirmed' AND m.active='1' AND m.code=:code  AND date(d.date_recorded) BETWEEN :fromDate AND :toDate  AND (YEAR(NOW())-YEAR(p.date_of_birth))>5"
+            + "     WHERE  d.certainty='Confirmed' AND m.active='1' AND m.code=:code  AND date(d.date_recorded) BETWEEN :fromDate AND :toDate  AND (YEAR(NOW())-YEAR(p.date_of_birth))<=5"
             + "     GROUP BY m.code ORDER BY CAST(m.code  AS UNSIGNED), m.code ASC", nativeQuery=true)
     List<MonthlyMobidity> findMorbidityUnder5(@Param("fromDate") LocalDate fromDate, @Param("toDate") LocalDate toDate, @Param("code") String code);
    

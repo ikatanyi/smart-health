@@ -14,6 +14,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -43,10 +44,12 @@ public class ReceiptingController {
 
     private final ReceiptingService service;
     private final ReceivePaymentService receivePaymentService;
+    private final AuditTrailService auditTrailService;
 
-    public ReceiptingController(ReceiptingService service, ReceivePaymentService receivePaymentService) {
+    public ReceiptingController(ReceiptingService service, ReceivePaymentService receivePaymentService, AuditTrailService auditTrailService) {
         this.service = service;
         this.receivePaymentService = receivePaymentService;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/receipting")
@@ -58,7 +61,7 @@ public class ReceiptingController {
         pagers.setCode("0");
         pagers.setMessage("Payment successfully Created.");
         pagers.setContent(payment.toData());
-
+        auditTrailService.saveAuditTrail("Receipts", "Created a payment receipt "+payment.getReceiptNo());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -71,7 +74,7 @@ public class ReceiptingController {
         pagers.setCode("0");
         pagers.setMessage("Payment successfully Created.");
         pagers.setContent(payment.toData());
-
+        auditTrailService.saveAuditTrail("Receipts", "Created a Deposit receipt "+payment.getReceiptNo());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -79,6 +82,7 @@ public class ReceiptingController {
     @PreAuthorize("hasAuthority('view_receipt')")
     public ResponseEntity<?> getPaymentReceipt(@PathVariable(value = "id") Long id) {
         Receipt payment = service.getPaymentOrThrow(id);
+        auditTrailService.saveAuditTrail("Receipts", "Searched a payment receipt "+payment.getReceiptNo());
         return ResponseEntity.ok(payment.toData());
     }
 
@@ -86,6 +90,7 @@ public class ReceiptingController {
     @PreAuthorize("hasAuthority('edit_receipt')")
     public ResponseEntity<?> voidPaymentReceipt(@PathVariable(value = "receiptNo") String receiptNo) {
         service.voidPayment(receiptNo);
+        auditTrailService.saveAuditTrail("Receipts", "Cancelled a payment receipt "+receiptNo);
         return ResponseEntity.accepted().build();
     }
 
@@ -93,6 +98,7 @@ public class ReceiptingController {
     @PreAuthorize("hasAuthority('edit_receipt')")
     public ResponseEntity<?> receiptAdjustment(@PathVariable(value = "receiptNo") String receiptNo, @Valid @RequestBody List<ReceiptItemData> toAdjustItems) {
         Receipt receipt = service.receiptAdjustment(receiptNo, toAdjustItems);
+        auditTrailService.saveAuditTrail("Receipts", "Adjusted a payment receipt "+receiptNo);
         return ResponseEntity.ok(receipt.toData());
     }
 
@@ -100,6 +106,7 @@ public class ReceiptingController {
     @PreAuthorize("hasAuthority('edit_receipt')")
     public ResponseEntity<?> paymentMethodAdjustment(@PathVariable(value = "receiptNo") String receiptNo, @Valid @RequestBody List<ReceiptMethod> receiptMethod) {
         Receipt receipt = service.receiptAdjustmentMethod(receiptNo, receiptMethod);
+        auditTrailService.saveAuditTrail("Receipts", "Adjusted a payment receipt "+receiptNo+" payment method to "+receiptMethod);
         return ResponseEntity.ok(receipt.toData());
     }
 
@@ -124,6 +131,7 @@ public class ReceiptingController {
         Page<ReceiptData> list = service.getPayments(payer, receiptNo, transactionNo, shiftNo, cashier, servicePointId, range,prepaid, pageable)
                 .map(x -> x.toData());
 
+        auditTrailService.saveAuditTrail("Receipts", "Viewed all payment receipts ");
         Pager<List<ReceiptData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -153,7 +161,7 @@ public class ReceiptingController {
 //        final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Pageable pageable = PaginationUtil.createPage(page, size);
         List<CashierShift> list = service.getCashierShift(shiftNo, cashier);
-
+        auditTrailService.saveAuditTrail("Receipts", "Viewed all payment receipts per shift");
         Pager<List<CashierShift>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

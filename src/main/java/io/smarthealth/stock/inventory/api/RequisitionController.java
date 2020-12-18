@@ -6,6 +6,7 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.inventory.data.RequisitionData;
 import io.smarthealth.stock.inventory.domain.Requisition;
 import io.smarthealth.stock.inventory.service.RequisitionService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -28,9 +29,11 @@ import org.springframework.web.bind.annotation.*;
 public class RequisitionController {
 
     private final RequisitionService service;
+    private final AuditTrailService auditTrailService;
 
-    public RequisitionController(RequisitionService service) {
+    public RequisitionController(RequisitionService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/requisitions")
@@ -43,7 +46,7 @@ public class RequisitionController {
         pagers.setCode("0");
         pagers.setMessage("Requisition created successful");
         pagers.setContent(result);
-
+        auditTrailService.saveAuditTrail("Inventory", "Created an inventory requistion "+result.getRequestionNo());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -52,6 +55,7 @@ public class RequisitionController {
     @PreAuthorize("hasAuthority('view_requisition')")
     public RequisitionData getRequisition(@PathVariable(value = "id") Long code) {
         Requisition po = service.findOneWithNoFoundDetection(code);
+        auditTrailService.saveAuditTrail("Inventory", "Viewed an inventory requistion identified by id "+code);
         return RequisitionData.map(po);
     }
 
@@ -78,7 +82,7 @@ public class RequisitionController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Requisitions");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Inventory", "Viewed all requisitions done");
         return ResponseEntity.ok(pagers);
     }
 }

@@ -1,5 +1,6 @@
 package io.smarthealth.config.apidoc;
 
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.Arrays;
 import java.util.Collections;

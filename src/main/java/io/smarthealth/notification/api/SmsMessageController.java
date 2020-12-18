@@ -7,6 +7,7 @@ import io.smarthealth.notification.data.SmsMessageData;
 import io.smarthealth.notification.domain.SmsMessage;
 import io.smarthealth.notification.domain.enumeration.ReceiverType;
 import io.smarthealth.notification.service.SmsMessagingService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;

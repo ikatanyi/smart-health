@@ -6,6 +6,7 @@ import io.smarthealth.accounting.doctors.service.DoctorItemService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,9 +36,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class DoctorItemsController {
 
     private final DoctorItemService doctorService;
+    private final AuditTrailService auditTrailService;
 
-    public DoctorItemsController(DoctorItemService doctorService) {
+    public DoctorItemsController(DoctorItemService doctorService, AuditTrailService auditTrailService) {
         this.doctorService = doctorService;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/doctors-items")
@@ -45,7 +48,7 @@ public class DoctorItemsController {
     public ResponseEntity<?> createDoctorItem(@Valid @RequestBody DoctorItemData data) {
 
         DoctorItem item = doctorService.createDoctorItem(data);
-
+        auditTrailService.saveAuditTrail("Doctor Items", "Created a Billable doctor item "+item.getServiceType().getItemName()+" for doctor"+item.getDoctor().getFullName());
         Pager<DoctorItemData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Doctor Items Created.");
@@ -60,14 +63,15 @@ public class DoctorItemsController {
 
         List<DoctorItemData> item = doctorService.createDoctorItem(data)
                 .stream()
-                .map(x -> x.toData())
+                .map(x ->{ 
+                    auditTrailService.saveAuditTrail("Doctor Items", "Created a Billable doctor item "+x.getServiceType().getItemName()+" for doctor"+x.getDoctor().getFullName());
+                    return x.toData();})
                 .collect(Collectors.toList());
 
         Pager< List<DoctorItemData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Doctor Items Created.");
         pagers.setContent(item);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -75,6 +79,7 @@ public class DoctorItemsController {
     @PreAuthorize("hasAuthority('view_doctorItems')") 
     public ResponseEntity<?> getDoctorItem(@PathVariable(value = "id") Long id) {
         DoctorItem item = doctorService.getDoctorItem(id);
+        auditTrailService.saveAuditTrail("Doctor Items", "Viewed a Billable doctor item with id "+id);
         return ResponseEntity.ok(item.toData());
     }
 
@@ -82,13 +87,16 @@ public class DoctorItemsController {
     @PreAuthorize("hasAuthority('edit_doctorItems')") 
     public ResponseEntity<?> updateDoctorItem(@PathVariable(value = "id") Long id, @Valid @RequestBody DoctorItemData data) {
         DoctorItem item = doctorService.updateDoctorItem(id, data);
+        auditTrailService.saveAuditTrail("Doctor Items", "Edited a Billable doctor item with id "+id);
         return ResponseEntity.ok(item.toData());
     }
 
     @DeleteMapping("/doctors-items/{id}")
     @PreAuthorize("hasAuthority('delete_doctorItems')") 
     public ResponseEntity<?> deleteDoctorItem(@PathVariable(value = "id") Long id) {
+        
         doctorService.deleteDoctorItem(id);
+        auditTrailService.saveAuditTrail("Doctor Items", "Deleted a Billable doctor item with id "+id);
         return ResponseEntity.accepted().build();
     }
 
@@ -104,7 +112,7 @@ public class DoctorItemsController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<DoctorItemData> list = doctorService.getDoctorItems(doctor, staffNo, service, pageable)
                 .map(x -> x.toData());
-
+        auditTrailService.saveAuditTrail("Doctor Items", "Viewed all Billable doctor item ");
         Pager<List<DoctorItemData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

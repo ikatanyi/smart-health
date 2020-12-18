@@ -10,6 +10,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.accounting.payment.domain.Receipt;
 import io.smarthealth.accounting.payment.data.ReceiptData;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -36,9 +37,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class RemittanceController {
 
     private final RemittanceService service;
+    private final AuditTrailService auditTrailService;
 
-    public RemittanceController(RemittanceService service) {
+    public RemittanceController(RemittanceService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/remittance")
@@ -51,7 +54,7 @@ public class RemittanceController {
         pagers.setCode("0");
         pagers.setMessage("Remittance Successfully Created.");
         pagers.setContent(remittance.toData());
-
+        auditTrailService.saveAuditTrail("Remmitance", "Received Payement from "+remittance.getReceivedFrom()+" receiptNo "+remittance.getReceiptNo());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -59,6 +62,7 @@ public class RemittanceController {
     @PreAuthorize("hasAuthority('view_remittance')")
     public RemittanceData getRemittance(@PathVariable(value = "id") Long id) {
         Remittance remitance = service.getRemittanceOrThrow(id);
+        auditTrailService.saveAuditTrail("Remmitance", "Searched Remmitance Payement Identified by "+id);
         return remitance.toData();
     }
 //Long payerId, String receipt, String remittanceNo, Boolean hasBalance, DateRange range, Pageable page
@@ -78,7 +82,8 @@ public class RemittanceController {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<RemittanceData> list = service.getRemittances(payerId, dateRange, dateRange, hasBalance, range, pageable)
                 .map(x -> x.toData());
-
+        
+        auditTrailService.saveAuditTrail("Remmitance", "Viewed all Remmitance Payements ");
         Pager<List<RemittanceData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

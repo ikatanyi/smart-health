@@ -8,6 +8,7 @@ package io.smarthealth.report.api;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.report.data.dashboard.HomePageReportsData;
 import io.smarthealth.report.service.DashboardReportsService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -7,11 +7,14 @@ import io.smarthealth.accounting.accounts.service.FinancialActivityAccountServic
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,13 +31,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @Slf4j
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class FinancialActivityAccountController {
 
     private final FinancialActivityAccountService service;
-
-    public FinancialActivityAccountController(FinancialActivityAccountService service) {
-        this.service = service;
-    }
+    private final AuditTrailService auditTrailService;
+    
 
     @PostMapping("/financialactivityaccounts")
     @PreAuthorize("hasAuthority('create_financialActivityAccounts')")    
@@ -43,19 +45,21 @@ public class FinancialActivityAccountController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/financialactivityaccounts/{id}")
                 .buildAndExpand(result.getAccount().getIdentifier()).toUri();
-
+        auditTrailService.saveAuditTrail("Financial Activity", "created Financial Activity "+ activityAccount.getAccountName());
         return ResponseEntity.created(location).body(result);
     }
 
     @GetMapping("/financialactivityaccounts/{id}")
     @PreAuthorize("hasAuthority('view_financialActivityAccounts')")    
     public FinancialActivityAccount getActivityMappedByAccounts(@PathVariable(value = "id") Long identifier) {
+        auditTrailService.saveAuditTrail("Financial Activity", "Viewed Financial Activity with accountNo"+ identifier);
         return service.getActivityById(identifier);
     }
 
     @PutMapping("/financialactivityaccounts/{id}")
     @PreAuthorize("hasAuthority('edit_financialActivityAccounts')") 
     public FinancialActivityAccount getActivityMappedByAccounts(@PathVariable(value = "id") Long identifier, @Valid @RequestBody ActivityAccounts activityAccount) {
+         auditTrailService.saveAuditTrail("Financial Activity", "Edited Financial Activity with accountNo"+ identifier);
         return service.updateFinancialActivity(identifier, activityAccount);
     }
 
@@ -80,13 +84,14 @@ public class FinancialActivityAccountController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Financial Activity");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Financial Activity", "Viewed All Financial Activity with accountNo ");
         return ResponseEntity.ok(pagers);
     }
 
     @GetMapping("/financialActivities")
     @PreAuthorize("hasAuthority('view_financialActivityAccounts')") 
     public List<FinancialActivityData> getActivities() {
+        auditTrailService.saveAuditTrail("Financial Activity", "Viewed All Financial Activity with accountNo ");
         return service.getActivities()
                 .stream()
                 .map(ac -> FinancialActivityData.map(ac))

@@ -42,6 +42,7 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -80,6 +81,7 @@ public class ConsultationController {
     private final RadiologyService radiologyService;
     private final DoctorInvoiceService doctorInvoiceService;
     private final EmployeeService employeeService;
+    private final AuditTrailService auditTrailService;
 
 
     /* Patient Notes */
@@ -124,10 +126,13 @@ public class ConsultationController {
                 }
             }
         }
+        
         PatientNotesData savedData = patientNotesService.convertEntityToData(pns);
+        
         //update consultation queue
         visit.setIsActiveOnConsultation(Boolean.FALSE);
         visitService.createAVisit(visit);
+        auditTrailService.saveAuditTrail("Consultation", "Saved Patient notes for patient  "+savedData.getPatientNumber());
         return ResponseEntity.ok().body(ApiResponse.successMessage("History and examination notes saved successfully", HttpStatus.CREATED, savedData));
     }
 
@@ -135,14 +140,17 @@ public class ConsultationController {
     @PreAuthorize("hasAuthority('view_consultation')")
     public @ResponseBody
     ResponseEntity<?> fetchPatientNotesByVisit(@PathVariable("visitNumber") final String visitNumber) {
-        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+        Visit visit = visitService.findVisitEntityOrThrow(visitNumber);        
         Optional<PatientNotes> pn = patientNotesService.fetchPatientNotesByVisit(visit);
+        
         if (pn.isPresent()) {
             PatientNotesData savedData = patientNotesService.convertEntityToData(pn.get());
+            auditTrailService.saveAuditTrail("Consultation", "Viewed Patient notes for patient  "+visit.getPatient().getFullName()+" for visit "+visit.getVisitNumber());
             return ResponseEntity.ok().body(ApiResponse.successMessage("Success", HttpStatus.OK, savedData));
         } else {
             return ResponseEntity.ok().body(ApiResponse.successMessage("No records found", HttpStatus.OK, new ArrayList<>()));
         }
+        
     }
 
     @GetMapping("/patient/{patientNo}/patient-notes")
@@ -162,7 +170,7 @@ public class ConsultationController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Notes ");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Consultation", "Viewed Patient notes for patient  "+patient.getFullName());
         return ResponseEntity.ok(pagers);
     }
 
@@ -181,6 +189,7 @@ public class ConsultationController {
         } else {
             list = diseaseService.fetchAllDiseases(pageable);
         }
+        
         Pager<List<Disease>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -192,7 +201,7 @@ public class ConsultationController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Diseases");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Consultation", "Viewed Patient diseases ");
         return ResponseEntity.ok(pagers);
     }
 
@@ -226,6 +235,7 @@ public class ConsultationController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Patient diagnosis");
         pagers.setPageDetails(details);
+        auditTrailService.saveAuditTrail("Consultation", "Viewed Patient diseases for visitNo "+visitNumber);
         return ResponseEntity.ok(pagers);
     }
 
@@ -274,7 +284,7 @@ public class ConsultationController {
         details.setTotalPage(visitDiagnosisPage.getPageCount());
         details.setReportName("Patient diagnosis");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Consultation", "Viewed Patient diseases for PatientNo "+patientNo);
         return ResponseEntity.ok(pagers);
     }
 
@@ -321,7 +331,7 @@ public class ConsultationController {
         details.setTotalPage(page.getTotalPages());
         details.setReportName("Patient Diagnosis");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Consultation", "Created Patient diagnosis ");
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(pagers);
     }
@@ -338,6 +348,7 @@ public class ConsultationController {
         pagers.setCode("0");
         pagers.setMessage("Patient Diagnosis");
         pagers.setContent(DiagnosisData.map(diagnosis));
+        auditTrailService.saveAuditTrail("Consultation", "Edited Patient diagnosis for Patient "+diagnosis.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -346,6 +357,7 @@ public class ConsultationController {
     public @ResponseBody
     ResponseEntity.BodyBuilder deletePatientDiagnosis(@PathVariable("id") final Long id) {
         diagnosisService.deleteDiagnosis(id);
+        auditTrailService.saveAuditTrail("Consultation", "Deleted Patient diagnosis identified by id "+id);
         return ResponseEntity.ok();
     }
 
@@ -379,7 +391,7 @@ public class ConsultationController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Consultation waiting list");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Consultation", "Viewed Consultation waiting list");
         return ResponseEntity.ok(pagers);
     }
 
@@ -391,15 +403,17 @@ public class ConsultationController {
         if (resultsData.getResultType().equals(DocResults.Type.Laboratory)) {
             LabRegisterTest test = laboratoryService.getLabRegisterTest(resultsData.getResultId());
             laboratoryService.markResultRegisterStatusAsRead(test);
+            auditTrailService.saveAuditTrail("Consultation", "Viewed Consultation Patient lab results for test "+test.getTestName());
         }
 
         if (resultsData.getResultType().equals(DocResults.Type.Radiology)) {
             Page<RadiologyResult> radiologyResults = radiologyService.findAllRadiologyResults(resultsData.getVisitNo(), null, null, null, ScanTestState.Completed, null, null, null, Pageable.unpaged());
             for (RadiologyResult result : radiologyResults) {
                 radiologyService.markRadiologyResultStatusAsRead(result);
+                 auditTrailService.saveAuditTrail("Consultation", "Viewed Consultation Patient lab results for test "+result.getPatientScanTest().getRadiologyTest().getScanName());
             }
         }
-
+        
         return ResponseEntity.ok();
     }
 
@@ -418,7 +432,7 @@ public class ConsultationController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         List<DocResults> list = visitService.getPatientResultsAlerts(visitNo, patientNo, type, range, patientName, practitionerUsername, showResultsRead);
-
+        auditTrailService.saveAuditTrail("Consultation", "Viewed All Consultation Patient results ");
         Pager<?> pagers = PaginationUtil.paginateList(list, "Patient Doctor Results alert Queue", "", pageable);
         return ResponseEntity.ok(pagers);
     }

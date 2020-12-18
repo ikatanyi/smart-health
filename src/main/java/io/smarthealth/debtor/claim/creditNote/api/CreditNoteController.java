@@ -6,6 +6,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -26,9 +27,11 @@ import org.springframework.web.bind.annotation.*;
 public class CreditNoteController {
 
     private final CreditNoteService creditNoteService;
+    private final AuditTrailService auditTrailService;
 
-    public CreditNoteController(CreditNoteService creditNoteService) {
+    public CreditNoteController(CreditNoteService creditNoteService, AuditTrailService auditTrailService) {
         this.creditNoteService = creditNoteService;
+        this.auditTrailService = auditTrailService;
     }
 
     
@@ -44,7 +47,7 @@ public class CreditNoteController {
         pagers.setCode("0");
         pagers.setMessage("Credit Note successfully Created.");
         pagers.setContent(creditNote);
-
+        auditTrailService.saveAuditTrail("Credit Note", "Created credit note for invoice "+creditNote.getInvoiceNo());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -52,6 +55,7 @@ public class CreditNoteController {
     @PreAuthorize("hasAuthority('view_creditnote')")
     public CreditNoteData getCreditNote(@PathVariable(value = "id") Long id) {
         CreditNoteData creditNote = creditNoteService.getCreditNoteByIdWithFailDetection(id).toData();
+        auditTrailService.saveAuditTrail("Credit Note", "Viewed credit note for invoice "+creditNote.getInvoiceNo());
         return creditNote;
     }
 
@@ -59,6 +63,7 @@ public class CreditNoteController {
     @PreAuthorize("hasAuthority('edit_creditnote')")
     public CreditNoteData updateRemitance(@PathVariable(value = "id") Long id, CreditNoteData creditNoteData) {
         CreditNoteData creditNote = creditNoteService.updateCreditNote(id, creditNoteData).toData();
+        auditTrailService.saveAuditTrail("Credit Note", "Edited credit note for invoice "+creditNote.getInvoiceNo());
         return creditNote;
     }
 
@@ -75,7 +80,7 @@ public class CreditNoteController {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<CreditNoteData> list = creditNoteService.getCreditNotes(invoiceNo,  payerId, range, pageable)
                 .map(crnote -> crnote.toData());
-
+        auditTrailService.saveAuditTrail("Credit Note", "Viewed all credit notes");
         Pager<List<CreditNoteData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

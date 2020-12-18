@@ -11,9 +11,12 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,13 +27,15 @@ import org.springframework.web.bind.annotation.*;
 @Api
 @RestController
 @RequestMapping("/api/journal")
+@RequiredArgsConstructor
 public class JournalController {
 
     private final JournalService journalService;
+    private final AuditTrailService auditTrailService;
 
-    public JournalController(JournalService journalService) {
-        this.journalService = journalService;
-    }
+//    public JournalController(JournalService journalService) {
+//        this.journalService = journalService;
+//    }
     //CRUD
 
     @PostMapping
@@ -51,7 +56,7 @@ public class JournalController {
         pagers.setCode("0");
         pagers.setMessage("Journal created successful");
         pagers.setContent(result.toData());
-
+        auditTrailService.saveAuditTrail("Journal", "Created Journal "+result.getDescription());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -82,6 +87,7 @@ public class JournalController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Journal Entries");
         pagers.setPageDetails(details);
+        auditTrailService.saveAuditTrail("Journal", "View Journals ");
         return ResponseEntity.ok(pagers);
     }
 
@@ -89,7 +95,9 @@ public class JournalController {
     @ResponseBody
     @PreAuthorize("hasAuthority('view_journal')")
     ResponseEntity<JournalEntryData> findJournalEntry(@PathVariable("id") Long id) {
+        
         JournalEntry optionalJournalEntry = journalService.findJournalIdOrThrow(id);
+        auditTrailService.saveAuditTrail("Journal", "Viewed Journal "+optionalJournalEntry.getDescription());
         return ResponseEntity.ok(optionalJournalEntry.toData());
     }
 
@@ -98,6 +106,7 @@ public class JournalController {
     @PreAuthorize("hasAuthority('view_journal')")
     ResponseEntity<JournalEntryData> reverseJournalEntry(@PathVariable("id") Long id, @RequestBody @Valid JournalReversal journalReversal) {
         JournalEntry optionalJournalEntry = journalService.reverseJournal(id, journalReversal);
+        auditTrailService.saveAuditTrail("Journal", "Reversed Journal Entry for"+optionalJournalEntry.getDescription());
         return ResponseEntity.ok(optionalJournalEntry.toData());
     }
 

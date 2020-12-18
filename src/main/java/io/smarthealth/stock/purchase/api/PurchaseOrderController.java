@@ -10,6 +10,7 @@ import io.smarthealth.stock.purchase.domain.HtmlData;
 import io.smarthealth.stock.purchase.domain.PurchaseOrder;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseOrderStatus;
 import io.smarthealth.stock.purchase.service.PurchaseService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import java.util.List;
@@ -33,9 +34,11 @@ import org.springframework.web.bind.annotation.*;
 public class PurchaseOrderController {
 
     private final PurchaseService service;
+    private final AuditTrailService auditTrailService;
 
-    public PurchaseOrderController(PurchaseService service) {
+    public PurchaseOrderController(PurchaseService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/purchaseorders")
@@ -48,7 +51,7 @@ public class PurchaseOrderController {
         pagers.setCode("0");
         pagers.setMessage("Purchase Order created successful");
         pagers.setContent(result);
-
+        auditTrailService.saveAuditTrail("Purchase", "Created a purchase order "+result.getOrderNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -56,6 +59,7 @@ public class PurchaseOrderController {
     @GetMapping("/purchaseorders/{orderNo}")
     @PreAuthorize("hasAuthority('view_purchaseorders')")
     public PurchaseOrderData getPurchaseOrder(@PathVariable(value = "orderNo") String code) {
+        auditTrailService.saveAuditTrail("Purchase", "Viewed a purchase order with orderNo "+code);
         return service.findByOrderNumberOrThrow(code).toData();
     }
 
@@ -64,6 +68,7 @@ public class PurchaseOrderController {
     public ResponseEntity<?> getPurchaseOrderHtml(@PathVariable(value = "id") String code) {
         System.out.println("Iddddddddddddddddddddddd");
         HtmlData data = service.purchaseOrderHtml(code);
+        auditTrailService.saveAuditTrail("Purchase", "Viewed a purchase order identified by id "+code);
         return ResponseEntity.ok(data);
     }
 
@@ -95,13 +100,14 @@ public class PurchaseOrderController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Purchase Orders");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Purchase", "Viewed all purchase orders ");
         return ResponseEntity.ok(pagers);
     }
     
     @PutMapping("/purchaseorders/{id}")
     @PreAuthorize("hasAuthority('create_purchaseorders')")
     public PurchaseOrderData updatePurchaseOrder(@PathVariable(value = "id") Long code, @Valid @RequestBody PurchaseOrderData orderData) {
+        auditTrailService.saveAuditTrail("Purchase", "Edited a purchase order identified by "+code);
         return service.updatePurchaseOrder(code,orderData).toData();
     }
     
@@ -109,6 +115,7 @@ public class PurchaseOrderController {
     @PreAuthorize("hasAuthority('create_purchaseorders')")
     public ResponseEntity<?> removePurchaseOrderItem(@PathVariable(value = "id") Long id) {
          service.removePurchaseOrderItem(id);
+         auditTrailService.saveAuditTrail("Purchase", "Deleted a purchase order identified by "+id);
          return ResponseEntity.accepted().build();
     }
     
@@ -116,6 +123,7 @@ public class PurchaseOrderController {
     @PreAuthorize("hasAuthority('create_purchaseorders')")
     public ResponseEntity<?> removePurchaseOrder(@PathVariable(value = "id") Long id, @RequestParam(value = "remarks", required = false) String remarks) {
          service.cancelPurchaseOrder(id,remarks);
+         auditTrailService.saveAuditTrail("Purchase", "Deleted purchase order identified by "+id);
          return ResponseEntity.accepted().build();
     }
     
@@ -129,7 +137,7 @@ public class PurchaseOrderController {
         pagers.setCode("0");
         pagers.setMessage("Purchase Order created successful");
         pagers.setContent(result);
-
+        auditTrailService.saveAuditTrail("Purchase", "An item identified by " +id+" added to purchase order "+result.getOrderNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }

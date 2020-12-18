@@ -84,5 +84,6 @@ public enum ReportName {
         Purchase_Order_Statement,
         Moh706_Lab_Report,
         Invoice_Balancing_Statement,
-        Discharge_Summary
+        Discharge_Summary,
+        Audit_Report
 }

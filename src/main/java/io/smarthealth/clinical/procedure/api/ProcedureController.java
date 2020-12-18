@@ -11,6 +11,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +42,9 @@ public class ProcedureController {
 
     @Autowired
     ProcedureService radiologyService;
+    
+    @Autowired
+    AuditTrailService auditTrailService;
 
     @Autowired
     ModelMapper modelMapper;
@@ -52,6 +56,7 @@ public class ProcedureController {
         List<ProcedureData> radiologyTestList = radiologyService.createProcedureTest(procedureData)
                 .stream()
                 .map((radiology)->{
+                 auditTrailService.saveAuditTrail("Procedure", "created Patient procedure "+radiology.getProcedureName());    
                  ProcedureData testdata =  ProcedureData.map(radiology);
             return testdata;
             }).collect(Collectors.toList());
@@ -69,6 +74,7 @@ public class ProcedureController {
     @PreAuthorize("hasAuthority('view_procedure')")
     public ResponseEntity<?> fetchProcedureTest(@PathVariable("id") final Long id) {
         ProcedureData radiologyTests = ProcedureData.map(radiologyService.getById(id));
+         auditTrailService.saveAuditTrail("Procedure", "Searched Patient procedure test identified by id "+id); 
         if (radiologyTests != null) {
             return ResponseEntity.ok(radiologyTests);
         } else {
@@ -90,6 +96,8 @@ public class ProcedureController {
                  ProcedureData testdata =  ProcedureData.map(radiology);
             return testdata;
             }).collect(Collectors.toList());
+        
+        auditTrailService.saveAuditTrail("Procedure", "Viewed all registered Patient procedure tests"); 
         Pager page = new Pager();
         page.setCode("200");
         page.setContent(testData);

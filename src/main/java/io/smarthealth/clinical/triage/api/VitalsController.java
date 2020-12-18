@@ -17,6 +17,7 @@ import io.smarthealth.infrastructure.lang.Constants;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class VitalsController {
     private final TriageService triageService;
     private final VisitService visitService;
     private final PatientService patientService;
+    private final AuditTrailService auditTrailService;
 
     @GetMapping("/visits/{visitNumber}/vitals")
     @PreAuthorize("hasAuthority('view_visits')")
@@ -62,7 +64,9 @@ public class VitalsController {
             @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder,
             Pageable pageable
     ) {
+        
         Page<VitalRecordData> page = triageService.fetchVitalRecordsByVisit(visitNumber, pageable).map(v -> triageService.convertToVitalsData(v));
+        auditTrailService.saveAuditTrail("Triage", "Viewed vitals for patient for visit identified by  "+visitNumber);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -77,7 +81,8 @@ public class VitalsController {
             @RequestParam(value = "pageNo", required = false, defaultValue = "0") final Integer pageNo
     ) {
         //Sort.by(Sort.Direction.ASC, "startDatetime")
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, "startDatetime"));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, "startDatetime"));        
+        
         Page<Visit> visitsPage = visitService.fetchVisitByPatientNumber(patientNumber, pageable);
 
         List<VisitVitalsData> visitVitalsDatas = new ArrayList<>();
@@ -94,7 +99,8 @@ public class VitalsController {
             visitVital.setVitalRecordData(vitalRecordData);
             visitVitalsDatas.add(visitVital);
         }
-
+        
+        auditTrailService.saveAuditTrail("Triage", "Viewed vitals for patient for Patient identified by  "+patientNumber);
         Pager<List<VisitVitalsData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -120,6 +126,7 @@ public class VitalsController {
         //Sort.by(Sort.Direction.ASC, "dateRecorded")
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "dateRecorded"));
         Page<VitalRecordData> page = triageService.fetchVitalRecordsByPatient(patientNumber, paging).map(v ->  VitalRecordData.map(v)); //triageService.convertToVitalsData(v)
+        auditTrailService.saveAuditTrail("Triage", "Viewed vitals for patient for Patient identified by  "+patientNumber);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -133,6 +140,7 @@ public class VitalsController {
 
         Optional<VitalsRecord> vr = triageService.fetchLastVitalRecordsByPatient(patientNumber);
         if (vr.isPresent()) {
+            auditTrailService.saveAuditTrail("Triage", "Viewed Lat entered vitals for patient for Patient identified by  "+patientNumber);
             return ResponseEntity.ok(VitalRecordData.map(vr.get()));
         } else {
             return ResponseEntity.ok(new VitalRecordData());
@@ -182,6 +190,7 @@ public class VitalsController {
         details.setTotalPage(vitalsRecords.getTotalPages());
         details.setReportName("Visit Vitals");
         pagers.setPageDetails(details);
+        auditTrailService.saveAuditTrail("Triage", "Viewed all vitals chart for Patients");
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 

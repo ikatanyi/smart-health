@@ -15,6 +15,7 @@ import io.smarthealth.clinical.admission.service.CareTeamService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,19 +46,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class CareTeamController {
 
     private final CareTeamService careTeamService;
+    private final AuditTrailService auditTrailService; 
 
     @PostMapping("/care-team")
 //    @PreAuthorize("hasAuthority('create_care_team')")
     public ResponseEntity<?> createCareTeam(@Valid @RequestBody List<CareTeamData> data) {
         List<CareTeamData> ct = careTeamService.createCareTeam(data).stream()
-                .map(e -> CareTeamData.map(e))
+                .map(e -> {
+                     auditTrailService.saveAuditTrail("Admission", "Added Care team "+e.getMedic().getFullName());
+                    return CareTeamData.map(e);
+                        })
                 .collect(Collectors.toList());
 
         Pager< List<CareTeamData>> pagers = new Pager();
         pagers.setCode("200");
         pagers.setMessage("Care Team successfully submitted");
         pagers.setContent(ct);
-
+       
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -68,7 +73,10 @@ public class CareTeamController {
     ) {
 
         List<CareTeamData> ct = careTeamService.fetchCareTeamByAdmissionNumber(admissionNumber).stream()
-                .map(e -> CareTeamData.map(e))
+                .map(e ->{
+                    auditTrailService.saveAuditTrail("Admission", "Added Care team "+e.getMedic().getFullName());
+                   return  CareTeamData.map(e);
+                        })
                 .collect(Collectors.toList());
 
         Pager< List<CareTeamData>> pagers = new Pager();
@@ -93,7 +101,10 @@ public class CareTeamController {
         List<CareTeamData> list =  careTeamService.getCareTeams(patientNo, admissionNo, careRole, active,  voided, pageable)
                                 .getContent()
                                 .stream()                                
-                                .map(e -> CareTeamData.map(e))
+                                .map(e -> { 
+                                    auditTrailService.saveAuditTrail("Admission", "Viewed Care team "+e.getMedic().getFullName() +" for admitted patient "+e.getPatient().getFullName());
+                                        return CareTeamData.map(e);
+                                })
                                 .collect(Collectors.toList());
         
         
@@ -117,7 +128,7 @@ public class CareTeamController {
     public ResponseEntity<?> updateCareTeam(@PathVariable("id") Long id, @Valid @RequestBody CareTeamData careTeamData) {
 
         CareTeamData a = CareTeamData.map(careTeamService.updateCareTeam(id, careTeamData));
-
+        auditTrailService.saveAuditTrail("Admission", "Edited Care team identified by id "+id);
         Pager<CareTeamData> pagers = new Pager();
         pagers.setCode("200");
         pagers.setMessage("Care team Updated successfully");
@@ -131,9 +142,12 @@ public class CareTeamController {
     public ResponseEntity<?> addCareteam(@Valid @RequestBody List<CareTeamData> careTeamData) {
 
         List<CareTeamData> ct = careTeamService.addCareTeam(careTeamData).stream()
-                .map(e -> CareTeamData.map(e))
+                .map(e -> {   
+                    auditTrailService.saveAuditTrail("Admission", "Added Care team "+e.getMedic().getFullName());
+                    return CareTeamData.map(e);
+                        })
                 .collect(Collectors.toList());
-
+        
         Pager< List<CareTeamData>> pagers = new Pager();
         pagers.setCode("200");
         pagers.setMessage("Care Team successfully added");
@@ -144,7 +158,8 @@ public class CareTeamController {
     @DeleteMapping("/care-team/{id}")
 //    @PreAuthorize("hasAuthority('create_admission')")
     public ResponseEntity<?> removeCareteam(@PathVariable("id") Long id, @Valid @RequestParam(value="reason", required=false) String reason) {
-
+        
+        auditTrailService.saveAuditTrail("Admission", "Deleted Care team identified by id "+id);
         careTeamService.removeCareTeam(id, reason);
         Pager<AdmissionData> pagers = new Pager();
         pagers.setCode("200");

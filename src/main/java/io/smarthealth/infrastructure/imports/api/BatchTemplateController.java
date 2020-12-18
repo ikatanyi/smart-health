@@ -2,6 +2,7 @@ package io.smarthealth.infrastructure.imports.api;
 
 import io.smarthealth.infrastructure.imports.domain.TemplateType;
 import io.smarthealth.infrastructure.imports.service.BatchTemplateService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.sql.SQLException;

@@ -32,6 +32,13 @@ public class AuditTrailService {
         AuditTrail auditTrail  = data.map();
         return auditTrailRepository.save(auditTrail);
     } 
+    
+    public AuditTrail saveAuditTrail(String name, String description){
+        AuditTrail auditTrail  = new AuditTrail();
+        auditTrail.setName(name);
+        auditTrail.setDescription(description);
+        return auditTrailRepository.save(auditTrail);
+    } 
    
 
     public Page<AuditTrail> findAll(DateRange range, String name, Pageable pageable) {

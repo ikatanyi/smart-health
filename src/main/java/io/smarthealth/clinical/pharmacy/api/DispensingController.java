@@ -10,6 +10,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.inventory.data.TransData;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,9 +40,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class DispensingController {
 
     private final DispensingService service;
+    private final AuditTrailService auditTrailService;
 
-    public DispensingController(DispensingService service) {
+    public DispensingController(DispensingService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/pharmacybilling")
@@ -49,7 +52,7 @@ public class DispensingController {
     public ResponseEntity<?> dispenseAndBilling(@Valid @RequestBody DrugRequest data) {
 
         String patientbill = service.dispense(data);
-
+        auditTrailService.saveAuditTrail("Pharmacy", "Dispensed and billed drugs for patient "+data.getPatientName());
         Pager<TransData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Bill Successfully Created.");
@@ -62,7 +65,7 @@ public class DispensingController {
     public ResponseEntity<?> dispenseReturns(@Valid @RequestBody DrugRequest data) {
 
         String patientbill = service.dispense(data);
-
+        auditTrailService.saveAuditTrail("Pharmacy", "Accepted drugs return for patient "+data.getPatientName());
         Pager<TransData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Bill Successfully Created.");
@@ -75,6 +78,7 @@ public class DispensingController {
     @PreAuthorize("hasAuthority('view_dispense')")
     public DispensedDrugData getDispensedDrug(@PathVariable(value = "id") Long code) {
         DispensedDrug bill = service.findDispensedDrugOrThrow(code);
+         auditTrailService.saveAuditTrail("Pharmacy", "Searched dispensed drugs identified by id "+code);
         return bill.toData();
     }
     
@@ -82,6 +86,7 @@ public class DispensingController {
     @PreAuthorize("hasAuthority('edit_dispense')")
     public ResponseEntity<?> updatePatientDrug(@PathVariable(value = "requestId") Long id) {
         Boolean status = service.UpdateFullfillerStatus(id);
+        auditTrailService.saveAuditTrail("Pharmacy", "Fulfilled  drug dispensation identified by id "+id);
         return ResponseEntity.ok(status);
     }
 
@@ -102,7 +107,7 @@ public class DispensingController {
         Pageable pageable = PaginationUtil.createPage(page, size, Sort.by(Sort.Direction.DESC, "dispensedDate"));
         Page<DispensedDrugData> list = service.findDispensedDrugs(referenceNumber, visitNumber, patientNumber, prescription, billNumber, isReturn, range, pageable)
                 .map(drug -> drug.toData());
-
+        auditTrailService.saveAuditTrail("Pharmacy", "Viewed drug dispensation history");
         Pager<List<DispensedDrugData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -125,7 +130,7 @@ public class DispensingController {
                               .stream()
                               .map((returnItem)->returnItem.toData())
                               .collect(Collectors.toList());
-
+        auditTrailService.saveAuditTrail("Pharmacy", "Viewed drug returns for visit "+visitNumber);
         Pager<List<DispensedDrugData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Drugs Successfully returned");

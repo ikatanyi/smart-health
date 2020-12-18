@@ -11,6 +11,7 @@ import io.smarthealth.organization.company.domain.CompanyLogo;
 import io.smarthealth.organization.facility.data.FacilityData;
 import io.smarthealth.organization.facility.domain.Facility;
 import io.smarthealth.organization.facility.service.FacilityService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.util.List;

@@ -5,6 +5,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.security.service.AuditTrailService;
 import io.smarthealth.security.data.AuditTrailData;
 import io.smarthealth.security.domain.AuditTrail;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;

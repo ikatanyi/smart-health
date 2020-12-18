@@ -18,6 +18,7 @@ import io.smarthealth.security.domain.RoleRepository;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.domain.UserRepository;
 import io.smarthealth.security.service.UserService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.ArrayList;

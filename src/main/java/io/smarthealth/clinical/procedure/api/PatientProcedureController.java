@@ -12,6 +12,7 @@ import io.smarthealth.clinical.procedure.domain.PatientProcedureTest;
 import io.smarthealth.clinical.procedure.service.ProcedureService;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,11 +47,15 @@ public class PatientProcedureController {
     @Autowired
     ModelMapper modelMapper;   
     
+    @Autowired
+    AuditTrailService auditTrailService;
+    
     @PostMapping("/patient-procedure")
     @PreAuthorize("hasAuthority('create_patientprocedure')")
     public @ResponseBody
     ResponseEntity<?> createPatientProcedure(@RequestBody final PatientProcedureRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo, @RequestParam(value = "requestId", required = false) final Long requestId) {
         PatientProcedureRegisterData Patientprocedures = procedureService.savePatientProcedure(patientRegData, visitNo).toData();
+        auditTrailService.saveAuditTrail("Procedure", "Created Patient procedure for visit "+visitNo+" for patient"+patientRegData.getPatientName());
         Pager<PatientProcedureRegisterData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -72,7 +77,7 @@ public class PatientProcedureController {
                 .stream()
                 .map((procedureTest)->procedureTest.toData())
                 .collect(Collectors.toList());
-
+        auditTrailService.saveAuditTrail("Procedure", "Viewed Patient procedures identified by procedureNo "+procedureAccessionNo);
         return ResponseEntity.status(HttpStatus.OK).body(patientLabTests);
     }
     
@@ -84,7 +89,7 @@ public class PatientProcedureController {
         r.setComments(resultData.getComments());
         r.setResult(resultData.getResults());
         r.setStatus(resultData.getState());
-
+        auditTrailService.saveAuditTrail("Procedure", "Edited Patient procedure results identified by procedureNo "+r.getPatientProcedureRegister().getAccessNo());
         PatientProcedureTest savedResult = procedureService.updateProcedureResult(r);
         return ResponseEntity.status(HttpStatus.OK).body(savedResult.toData());
     }
@@ -94,7 +99,7 @@ public class PatientProcedureController {
     public ResponseEntity<?> fetchPatientProcedureById(@PathVariable("id") final Long id) {
         PatientProcedureTestData result = procedureService.findResultsByIdWithNotFoundDetection(id).toData();
         Pager<PatientProcedureTestData> pagers = new Pager();
-
+        auditTrailService.saveAuditTrail("Procedure", "Viewed Patient procedures identified by resultId "+id);
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(result);

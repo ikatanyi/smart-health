@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 
 /**
@@ -41,21 +42,25 @@ public class TheatreController {
 
     private final TheatreFeeService feeService;
     private final TheatreService service;
+    private final AuditTrailService auditTrailService;
 
-    public TheatreController(TheatreFeeService feeService, TheatreService service) {
+    public TheatreController(TheatreFeeService feeService, TheatreService service, AuditTrailService auditTrailService) {
         this.feeService = feeService;
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/theatre/billing")
     public ResponseEntity<BillData> createBill(@Valid @RequestBody TheatreBill theatreData) {
         PatientBill patientBill = service.createBill(theatreData);
+        auditTrailService.saveAuditTrail("Consultation", "Created a theatre billing for patient "+patientBill.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(patientBill.toData());
     }
 
     @PostMapping("/theatre/fee-setup")
     public ResponseEntity<TheatreFeeData> createFee(@Valid @RequestBody TheatreFeeData data) {
         TheatreFee results = feeService.createConfiguration(data);
+        auditTrailService.saveAuditTrail("Consultation", "Created a theatre fee setup for "+results.getFeeCategory().name());
         return ResponseEntity.status(HttpStatus.CREATED).body(TheatreFeeData.map(results));
     }
 
@@ -63,12 +68,14 @@ public class TheatreController {
     public ResponseEntity<TheatreFeeData> get(@PathVariable(value = "id") Long id) {
         TheatreFee results = feeService.get(id)
                 .orElseThrow(() -> APIException.notFound("Procedure Configuration with ID {0} Not Found", id));
+        auditTrailService.saveAuditTrail("Consultation", "Viewed a theatre fee setup identified by id "+id);
         return ResponseEntity.ok(TheatreFeeData.map(results));
     }
 
     @PutMapping("/theatre/fee-setup/{id}")
     public ResponseEntity<TheatreFeeData> update(@PathVariable(value = "id") Long id, @Valid @RequestBody TheatreFeeData data) {
         TheatreFee results = feeService.updateConfiguration(id, data);
+        auditTrailService.saveAuditTrail("Consultation", "Edited a theatre fee  "+results.getServiceType().getItemName());
         return ResponseEntity.ok(TheatreFeeData.map(results));
     }
 
@@ -76,6 +83,7 @@ public class TheatreController {
     public ResponseEntity<TheatreFeeData> delete(@PathVariable(value = "id") Long id) {
         TheatreFee results = feeService.get(id)
                 .orElseThrow(() -> APIException.notFound("Theatre fee-setup with ID {0} Not Found", id));
+        auditTrailService.saveAuditTrail("Consultation", "Deleted theatre fee "+results.getServiceType().getItemName());
         return ResponseEntity.ok(TheatreFeeData.map(results));
     }
 
@@ -91,7 +99,7 @@ public class TheatreController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<TheatreFeeData> list = feeService.getProcedures(itemCode, term, isPercentage, value, feeCategory, pageable)
                 .map(TheatreFeeData::map);
-
+        auditTrailService.saveAuditTrail("Consultation", "Viewed all theatre fees");
         return ResponseEntity.ok((Pager<TheatreFeeData>) PaginationUtil.toPager(list, "Theatre Procedure Configuration"));
     }
 
@@ -100,6 +108,7 @@ public class TheatreController {
         List<TheatreFeeData> list = feeService.getByItem(id).stream()
                 .map(TheatreFeeData::map)
                 .collect(Collectors.toList());
+        auditTrailService.saveAuditTrail("Consultation", "Viewed theatre fees identified by id "+id);
         return ResponseEntity.ok(list);
     }
 }

@@ -1,6 +1,7 @@
 package io.smarthealth.clinical.admission.api;
 
 import io.smarthealth.clinical.admission.service.BedChargeService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
