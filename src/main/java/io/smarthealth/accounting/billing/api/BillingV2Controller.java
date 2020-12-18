@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import io.smarthealth.accounting.billing.data.FinalizeBill;
 
 /**
  *
@@ -129,14 +130,14 @@ public class BillingV2Controller {
     @PreAuthorize("hasAuthority('view_billV2')")
     public ResponseEntity<?> getBillDetails(
             @PathVariable(value = "visitNumber") String visitNumber,
-            @RequestParam(value = "billPayMode" , required = false) PaymentMethod paymentMethod,
+            @RequestParam(value = "billPayMode", required = false) PaymentMethod paymentMethod,
             @RequestParam(value = "finalized", required = false, defaultValue = "false") final boolean finalized,
             @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createUnPaged(page, size);
-        BillDetail details = service.getBillDetails(visitNumber, includeCanceled,paymentMethod, pageable);
+        BillDetail details = service.getBillDetails(visitNumber, includeCanceled, paymentMethod, pageable);
 
 //        Pager<List<SummaryBill>> pagers = new Pager();
 //        pagers.setCode("0");
@@ -158,8 +159,14 @@ public class BillingV2Controller {
         List<BillItemData> bills = service.voidBillItem(visitNumber, billItems).stream().map(x -> x.toData()).collect(Collectors.toList());
         return ResponseEntity.ok(bills);
     }
-    
-     @GetMapping("/billing/balance")
+
+    @GetMapping("/billing/{visitNumber}/finalize")
+    @PreAuthorize("hasAuthority('view_billV2')")
+    public ResponseEntity<?> finalizeBills(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody FinalizeBill finalizeBill) {
+        return ResponseEntity.ok("");
+    }
+
+    @GetMapping("/billing/balance")
     public ResponseEntity<PatientBalance> getBalance(
             @RequestParam(value = "visitNumber", required = false) String visitNumber,
             @RequestParam(value = "patientNumber", required = false) String patientNumber) {
@@ -178,5 +185,5 @@ public class BillingV2Controller {
         Page<SummaryBill> pageResponse = new PageImpl<>(list.subList(min, max), pageable, list.size());
         return pageResponse;
     }
- 
+
 }
