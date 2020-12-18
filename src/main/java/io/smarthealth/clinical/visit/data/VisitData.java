@@ -7,6 +7,7 @@ import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.VisitType;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.patient.data.PatientData;
@@ -57,7 +58,7 @@ public class VisitData {
     private String comments;
 
     @Enumerated(EnumType.STRING)
-    private VisitEnum.PaymentMethod paymentMethod;
+    private PaymentMethod paymentMethod;
 
     private PatientData patientData;
 

@@ -3,19 +3,22 @@ package io.smarthealth.clinical.visit.domain;
 import io.smarthealth.accounting.doctors.domain.DoctorClinicItems;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint; 
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import java.time.LocalDateTime;
 import javax.persistence.*; 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Patient CheckIn
  *
  * @author Kelsas
  */ 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "patient_visit")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -51,7 +54,7 @@ public class Visit extends Auditable {
     private Boolean scheduled;
 
     @Enumerated(EnumType.STRING)
-    private VisitEnum.PaymentMethod paymentMethod;
+    private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
     private VisitEnum.ServiceType serviceType;

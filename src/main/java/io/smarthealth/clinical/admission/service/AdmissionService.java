@@ -16,6 +16,7 @@ import io.smarthealth.clinical.admission.domain.specification.AdmissionSpecifica
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum.Status;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.service.PaymentDetailsService;
@@ -128,7 +129,7 @@ public class AdmissionService {
         System.out.println("d.getPaymentMethod() " + d.getPaymentMethod());
         //payment data
         Scheme scheme = null;
-        if (d.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
+        if (d.getPaymentMethod().equals(PaymentMethod.Insurance)) {
             scheme = schemeService.fetchSchemeById(d.getPaymentDetailsData().getSchemeId());
             Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
             PaymentDetails pd = PaymentDetailsData.map(d.getPaymentDetailsData());
@@ -232,7 +233,7 @@ public class AdmissionService {
 
         //payment data
         Scheme scheme = null;
-        if (d.getPaymentMethod().equals(VisitEnum.PaymentMethod.Insurance)) {
+        if (d.getPaymentMethod().equals(PaymentMethod.Insurance)) {
             scheme = schemeService.fetchSchemeById(d.getPaymentDetailsData().getSchemeId());
             Optional<SchemeConfigurations> config = schemeService.fetchSchemeConfigByScheme(scheme);
             PaymentDetails pd = PaymentDetailsData.map(d.getPaymentDetailsData());

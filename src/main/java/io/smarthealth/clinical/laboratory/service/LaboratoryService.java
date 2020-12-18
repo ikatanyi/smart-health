@@ -355,6 +355,7 @@ public class LaboratoryService {
                 .map(x -> toLabRegisterTest(x, method, panels))
                 .filter(x -> x != null)
                 .collect(Collectors.toList());
+        
         if (!panels.isEmpty()) {
             panels.forEach(x -> {
                 registeredlist.addAll(registerPanelTests(x, method));
@@ -369,6 +370,7 @@ public class LaboratoryService {
         LabTest labTest = getLabTest(data.getTestId());
         if (labTest.getIsPanel() != null && labTest.getIsPanel()) {
             panels.add(data);
+            
             return null;
         }
 
@@ -376,18 +378,8 @@ public class LaboratoryService {
         test.setCollected(Boolean.FALSE);
         test.setEntered(Boolean.FALSE);
         test.setLabTest(labTest);
-
-//        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
-        if (paymentMode.equals("Cash")) {
-            Optional<Visit> visit = visitService.findVisit(data.getVisitNumber());
-            if (visit.isPresent() && visit.get().getVisitType() == VisitEnum.VisitType.Inpatient) {
-                test.setPaid(Boolean.TRUE);
-            } else {
-                test.setPaid(Boolean.FALSE);
-            }
-        } else {
-            test.setPaid(Boolean.TRUE);
-        }
+       test.setPaymentMethod(data.getPaymentMethod());
+        test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
         test.setVoided(Boolean.FALSE);
         test.setValidated(Boolean.FALSE);
         test.setRequestId(data.getRequestId());
@@ -434,6 +426,7 @@ public class LaboratoryService {
                         test.setParentLabTest(labTest);
 
                         test.setStatus(LabTestStatus.AwaitingSpecimen);
+                        test.setPaymentMethod(data.getPaymentMethod());
                         return test;
                     })
                     .collect(Collectors.toList());
@@ -570,7 +563,8 @@ public class LaboratoryService {
             billItem.setBalance(price);
             billItem.setServicePoint(srvpoint.getName());
             billItem.setServicePointId(srvpoint.getId());
-            billItem.setStatus(BillStatus.Draft);
+            billItem.setStatus(BillStatus.Draft); 
+            billItem.setBillPayMode(x.getPaymentMethod());
             //TODO enter the bills as array 
 //            billItem.setRequestReference(); //this is the one I need to know how to handle ot
             lineItems.add(billItem);
@@ -588,6 +582,7 @@ public class LaboratoryService {
         if (registeredTest.getIsPanel() != null && registeredTest.getIsPanel()) {
             if (registeredTest.getParentLabTest() != null && !panels.contains(registeredTest.getParentLabTest())) {
                 LabTest panelTest = registeredTest.getParentLabTest();
+                panelTest.setPaymentMethod(registeredTest.getPaymentMethod());
                 panelTest.setPanelPrice(registeredTest.getPrice());
                 panels.add(panelTest);
             }
@@ -607,6 +602,7 @@ public class LaboratoryService {
         billItem.setQuantity(1d);
         billItem.setAmount(registeredTest.getPrice().doubleValue());
         billItem.setDiscount(0.00);
+        billItem.setBillPayMode(registeredTest.getPaymentMethod());
         //check limit amount not the global payment method during visit activation
         Optional<PaymentDetails> visitPayDetails = paymentDetailsService.getPaymentDetailsByVist(registeredTest.getLabRegister().getVisit());
         if (visitPayDetails.isPresent()) {

@@ -22,11 +22,11 @@ public class PriceListSpecification {
     public static Specification<PriceList> searchSpecification(String queryItem, Long servicePointId) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
-             predicates.add(cb.greaterThan(root.get("sellingRate"), 0));
-             if (servicePointId != null) {
+            predicates.add(cb.greaterThan(root.get("sellingRate"), 0));
+            if (servicePointId != null) {
                 predicates.add(cb.equal(root.get("servicePoint").get("id"), servicePointId));
             }
-             
+
             if (queryItem != null) {
                 final String likeExpression = "%" + queryItem + "%";
                 predicates.add(
@@ -35,6 +35,20 @@ public class PriceListSpecification {
                                 cb.like(root.get("item").get("itemCode"), likeExpression)
                         )
                 );
+            }
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
+
+    public static Specification<PriceList> itemSpecification(Long itemId, Long servicePointId) {
+        return (root, query, cb) -> {
+            final ArrayList<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.greaterThan(root.get("sellingRate"), 0));
+            if (servicePointId != null) {
+                predicates.add(cb.equal(root.get("servicePoint").get("id"), servicePointId));
+            }
+            if (itemId != null) {
+                predicates.add(cb.equal(root.get("item").get("id"), itemId));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
@@ -61,11 +75,11 @@ public class PriceListSpecification {
 //                predicates.add(cb.equal(root.get("item").get("category"), category));
 //            }
 //             predicates.add(root.get("status").in(status));
-             if (category != null && !category.isEmpty()) {
-                  predicates.add(root.get("item").get("category").in(category));
+            if (category != null && !category.isEmpty()) {
+                predicates.add(root.get("item").get("category").in(category));
 //                predicates.add(cb.equal(root.get("item").get("category"), category));
             }
-             
+
             if (itemType != null) {
                 predicates.add(cb.equal(root.get("item").get("itemType"), itemType));
             }

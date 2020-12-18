@@ -1,8 +1,10 @@
 package io.smarthealth.documents.domain;
 
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.documents.data.DocResponse;
 import io.smarthealth.documents.data.DocumentData;
+import io.smarthealth.documents.data.PatientDocumentData;
 import io.smarthealth.documents.domain.enumeration.DocumentType;
 import io.smarthealth.documents.domain.enumeration.Status;
 import io.smarthealth.infrastructure.domain.Auditable;
@@ -16,6 +18,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.time.LocalDate;
 
 /**
  *
@@ -41,6 +45,12 @@ public class Document extends Auditable {
     private String notes;
     private String fileType;
     private Long size;
+    private LocalDate documentDate;
+
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_document_visit_id"))
+    private Visit visit;
+
 
     public DocumentData toData() {
         DocumentData data = new DocumentData();
@@ -63,12 +73,29 @@ public class Document extends Auditable {
         return data;
     }
 
+    public PatientDocumentData toPatientDocumentData() {
+        PatientDocumentData data = new PatientDocumentData();
+        data.setId(this.getId());
+        data.setDocumentType(this.getDocumentType());
+        data.setName(this.getFileName());
+        data.setFileType(this.getFileType());
+        data.setComments(this.getNotes());
+        if (this.getPatient() != null) {
+            data.setPatientNumber(this.getPatient().getPatientNumber());
+            data.setPatientName(this.getPatient().getFullName());
+        }
+        data.setSize(this.getSize());
+        return data;
+    }
+
     public DocResponse toSimpleData() {
         DocResponse doc = new DocResponse();
         doc.setDocumentId(this.documentNumber);
         doc.setDocumentName(this.fileName);
         doc.setFileType(this.fileType);
-        doc.setUrl(getPublicUrl());
+        if(!this.documentType.equals(DocumentType.General)) {
+            doc.setUrl(getPublicUrl());
+        }
         return doc;
     }
 

@@ -6,6 +6,12 @@
 package io.smarthealth.infrastructure.imports.service;
 
 import io.smarthealth.ApplicationProperties;
+import io.smarthealth.administration.config.domain.GlobalConfigNum;
+import io.smarthealth.administration.config.domain.GlobalConfiguration;
+import io.smarthealth.administration.config.domain.GlobalConfigurationRepository;
+import io.smarthealth.documents.domain.Document;
+import io.smarthealth.documents.domain.FileStorageRepository;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.exception.FileStorageException;
 import io.smarthealth.infrastructure.exception.MyFileNotFoundException;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -40,15 +46,19 @@ public class UploadService {
 
     private final ApplicationProperties properties;
     private final SequenceNumberService sequenceNumberService;
+    private final GlobalConfigurationRepository globalConfigurationRepository;
+    private final FileStorageRepository fileStorageRepository;
 
     @Autowired
     private ResourceLoader resourceLoader;
     
     
-    public UploadService(ApplicationProperties properties,SequenceNumberService sequenceNumberService) throws IOException {
+    public UploadService(ApplicationProperties properties,SequenceNumberService sequenceNumberService, GlobalConfigurationRepository globalConfigurationRepository, FileStorageRepository fileStorageRepository) throws IOException {
         this.properties = properties;
         this.sequenceNumberService = sequenceNumberService;
         this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath());
+        this.globalConfigurationRepository = globalConfigurationRepository;
+        this.fileStorageRepository = fileStorageRepository;
     }
 
 
@@ -61,9 +71,11 @@ public class UploadService {
 //        }
 //    }
 
-    public void UploadService(String dir) {
+    public void UploadService() {
+        GlobalConfiguration config = globalConfigurationRepository.findByName(GlobalConfigNum.PatientDocuments.name()).orElseThrow(() -> APIException.notFound("Patient documents folder {0} not set", GlobalConfigNum.PatientDocuments.name()));
         try {
-            this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath().concat("/").concat(dir));
+            //this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath().concat("/").concat(dir));
+            this.rootLocation = Paths.get(config.getValue());
             if(!Files.exists(rootLocation, LinkOption.NOFOLLOW_LINKS))
                 Files.createDirectories(rootLocation);
         } catch (IOException ex) {
@@ -71,8 +83,8 @@ public class UploadService {
         }
     }
 
-    public String storeFile(MultipartFile file, String directory) {
-        UploadService(directory);
+    public String storeFile(MultipartFile file) {
+        UploadService();
         String documentNo=null;
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -111,4 +123,25 @@ public class UploadService {
         }
         return resource;
     }
+
+    public Resource loadPatientDocumentAsResource(final Long id) {
+        Document document = fileStorageRepository.findById(id).orElseThrow(() -> APIException.notFound("Document identified by id {0} not found ", id));
+        Path filePath=null;
+        Resource resource = null;
+        GlobalConfiguration config = globalConfigurationRepository.findByName(GlobalConfigNum.PatientDocuments.name()).orElseThrow(() -> APIException.notFound("Patient documents folder {0} not set", GlobalConfigNum.PatientDocuments.name()));
+        try {
+            this.rootLocation = Paths.get(config.getValue());
+            filePath = this.rootLocation.resolve(document.getFileName()).normalize();
+            resource = new UrlResource(filePath.toUri());
+            if (resource.exists()) {
+                return resource;
+            }
+        } catch (MalformedURLException ex) {
+            throw new MyFileNotFoundException("File not found " + filePath, ex);
+        } catch (IOException ex) {
+            throw new MyFileNotFoundException("File not found " + filePath, ex);
+        }
+        return resource;
+    }
+
 }

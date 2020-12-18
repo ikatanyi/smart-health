@@ -10,6 +10,7 @@ import io.smarthealth.debtor.payer.domain.Scheme;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+import io.smarthealth.debtor.scheme.domain.SchemeExclusions;
 
 /**
  *
@@ -30,7 +31,7 @@ public class SchemeSpecification {
             if (payer != null) {
                 predicates.add(cb.equal(root.get("payer"), payer));
             }
-          
+
             if (term != null) {
                 final String termExpression = "%" + term + "%";
                 predicates.add(
@@ -39,6 +40,22 @@ public class SchemeSpecification {
                                 cb.like(root.get("schemeCode"), termExpression)
                         )
                 );
+            }
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
+
+    public static Specification<SchemeExclusions> createSchemeExclusionSpecification(Long itemId, Long schemeId) {
+        return (root, query, cb) -> {
+
+            final ArrayList<Predicate> predicates = new ArrayList<>();
+
+            if (itemId != null) {
+                predicates.add(cb.equal(root.get("item").get("id"), itemId));
+            }
+            if (schemeId != null) {
+                predicates.add(cb.equal(root.get("scheme").get("id"), schemeId));
             }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

@@ -82,10 +82,10 @@ public class Invoice extends Auditable {
     private String notes;
     private Boolean awaitingSmart = Boolean.FALSE;
     @Column(name = "is_capitation_invoice")
-   private Boolean capitation=Boolean.FALSE;
+    private Boolean capitation = Boolean.FALSE;
     @Transient
     private BigDecimal invoiceAmount; //temporarly holding for orginal invoice amount
-    
+
     @Where(clause = "voided = false")
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     private List<InvoiceItem> items = new ArrayList<>();
@@ -128,7 +128,7 @@ public class Invoice extends Auditable {
             data.setVisitNumber(this.visit.getVisitNumber());
             data.setVisitDate(this.visit.getStartDatetime().toLocalDate());
             data.setAge(ChronoUnit.DAYS.between(this.date, LocalDate.now()));
-            
+
         }
         data.setIdNumber(this.idNumber);
         data.setMemberName(this.memberName);
@@ -136,13 +136,13 @@ public class Invoice extends Auditable {
         data.setInvoiceDate(this.date);
         data.setDueDate(this.dueDate);
         data.setNumber(this.number);
-        data.setAmount(this.amount!=null ? this.amount.setScale(0, RoundingMode.HALF_UP) : BigDecimal.ZERO);
+        data.setAmount(this.amount != null ? this.amount.setScale(0, RoundingMode.HALF_UP) : BigDecimal.ZERO);
         data.setDiscount(this.discount);
         data.setTax(this.tax);
         data.setBalance(this.balance);
         data.setCreatedBy(this.getCreatedBy());
         data.setTransactionNo(this.transactionNo);
-        data.setState(this.status!=null ? this.status.name(): null);
+        data.setState(this.status != null ? this.status.name() : null);
         data.setAwaitingSmart(this.getAwaitingSmart());
         data.setInvoiceItems(
                 this.items.stream()
@@ -161,7 +161,6 @@ public class Invoice extends Auditable {
                         .collect(Collectors.toList())
         );
         data.setCapitation(this.capitation);
-        
 
         return data;
     }
@@ -172,5 +171,11 @@ public class Invoice extends Auditable {
         }
         return BigDecimal.valueOf(val);
     }
-   
+
+    public BigDecimal getLineTotals() {
+        return java.math.BigDecimal.valueOf(this.items.stream()
+                .map(x -> x.getBillItem().getAmount())
+                .reduce(0D, (x, y) -> (x + y))
+        );
+    }
 }

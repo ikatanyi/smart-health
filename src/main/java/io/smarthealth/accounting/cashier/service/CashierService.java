@@ -13,6 +13,8 @@ import io.smarthealth.accounting.cashier.domain.ShiftStatus;
 import io.smarthealth.accounting.cashier.domain.CashPoint;
 import io.smarthealth.accounting.cashier.domain.CashPointRepository;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.messaging.model.EmailData;
+import io.smarthealth.messaging.service.EmailService;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -27,6 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -42,6 +45,7 @@ public class CashierService {
     private final UserService userService;
     private final ShiftRepository shiftRepository;
     private final SequenceNumberService sequenceNumberService;
+    private final EmailService mailService;
 
     public Optional<Cashier> findByUser(final User user) {
         return repository.findByUser(user);
@@ -61,12 +65,23 @@ public class CashierService {
         if (repository.findByUser(user).isPresent()) {
             throw APIException.conflict("Cashier {0} already exists.", user.getName());
         }
+
+        long randomPIN = (int) (Math.random() * 9000) + 1000;
         Cashier cashier = new Cashier();
         cashier.setActive(true);
         cashier.setUser(user);
+        cashier.setPin(randomPIN);
         cashier.setCashPoint(cashPoint);
         cashier.setStartDate(data.getStartDate());
         cashier.setEndDate(data.getEndDate());
+
+        String email = "<p> Dear " + cashier.getUser().getName() + ", </p>"
+                + "<p> Your cashier access PIN is <strong>" + randomPIN + "</strong>. Keep it Safe. </p>"
+                + "<p>Regards. </p>";
+
+        if (user.getEmail() != null) {
+            mailService.send(EmailData.of(user.getEmail(), "Cashier Access Details", email));
+        }
 
         return repository.save(cashier);
     }
@@ -83,6 +98,32 @@ public class CashierService {
             return shiftRepository.findByStatus(status, page);
         }
         return shiftRepository.findAll(page);
+    }
+
+    public boolean isValidPin(Long id, Long pin) {
+        Cashier cashier = getCashier(id);
+        if (pin == null) {
+            return false;
+        }
+        return Objects.equals(cashier.getPin(), pin);
+    }
+
+    @Transactional
+    public void resetPin(Long id) {
+        Cashier cashier = getCashier(id);
+        long randomPIN = (int) (Math.random() * 9000) + 1000;
+
+        String email = "<p> Dear " + cashier.getUser().getName() + ", </p>"
+                + "<p> Your cashier access PIN is <strong>" + randomPIN + "</strong>. Keep it Safe. </p>"
+                + "<p>Regards. </p>";
+
+        if (cashier.getUser().getEmail() != null) {
+            mailService.send(EmailData.of(cashier.getUser().getEmail(), "Cashier Access Details", email));
+        }
+        cashier.setPin(randomPIN);
+
+        repository.save(cashier);
+
     }
 
     public Cashier getCashier(Long id) {

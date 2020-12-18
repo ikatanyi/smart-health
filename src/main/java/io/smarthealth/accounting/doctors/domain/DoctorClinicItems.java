@@ -5,7 +5,6 @@
  */
 package io.smarthealth.accounting.doctors.domain;
 
-import io.smarthealth.administration.employeespecialization.domain.EmployeeSpecialization;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
 import javax.persistence.Column;
@@ -19,8 +18,8 @@ import lombok.Data;
  *
  * @author Simon.waweru
  */
-@Entity
 @Data
+@Entity 
 public class DoctorClinicItems extends Auditable {
 
     @ManyToOne

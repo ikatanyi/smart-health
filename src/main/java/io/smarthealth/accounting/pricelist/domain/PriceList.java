@@ -68,12 +68,14 @@ public class PriceList extends Auditable {
             data.setItemCategory(this.item.getCategory());
             data.setItemType(this.item.getItemType());
             data.setCostRate(this.item.getCostRate());
+            data.setCashRate(this.sellingRate);
             if (this.defaultPrice != null && this.defaultPrice) {
                 data.setSellingRate(this.item.getRate());
+                data.setCashRate(this.item.getRate());
             }
-             if (this.item.getItemName().equals("FULL HAEMOGRAM/CBC -Male")) {
-                    System.out.println("setting price book price " + this.hasPriceBook);
-                }
+            if (this.item.getItemName().equals("FULL HAEMOGRAM/CBC -Male")) {
+                System.out.println("setting price book price " + this.hasPriceBook);
+            }
 
             if (this.hasPriceBook) {
 //                System.out.println("Has Price book " + this.getItem().getId());
@@ -82,13 +84,11 @@ public class PriceList extends Auditable {
 //                }
                 data.setSellingRate(this.priceBookAmount);
             }
+
         }
         if (this.servicePoint != null) {
             data.setServicePoint(this.servicePoint.getName());
             data.setServicePointId(this.servicePoint.getId());
-        }
-        if (this.item.getId().equals(3326)) {
-            System.err.println("About to return price book price " + data.getSellingRate());
         }
 
         return data;

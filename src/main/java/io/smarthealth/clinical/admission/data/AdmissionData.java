@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.admission.domain.Admission;
 import io.smarthealth.clinical.visit.data.PaymentDetailsData;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.Constants;
 import static io.smarthealth.infrastructure.lang.Constants.DATE_TIME_PATTERN;
 import io.smarthealth.organization.person.domain.enumeration.Gender;
@@ -38,7 +39,7 @@ public class AdmissionData {
 
     private String admittingReason;
 
-    private VisitEnum.PaymentMethod paymentMethod;
+    private PaymentMethod paymentMethod;
     private Long wardId;
 
     @ApiModelProperty(hidden = true)

@@ -7,7 +7,10 @@ package io.smarthealth.documents.service;
 
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
+import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.documents.data.DocumentData;
+import io.smarthealth.documents.data.PatientDocumentData;
 import io.smarthealth.documents.domain.Document;
 import io.smarthealth.documents.domain.FileStorageRepository;
 import io.smarthealth.documents.domain.enumeration.DocumentType;
@@ -50,6 +53,7 @@ public class FileStorageService {
 
     private final ServicePointService servicePointService;
     private final SequenceNumberService sequenceNumberService;
+    private final VisitService visitService;
 
     @Transactional
     public Document documentUpload(DocumentData documentData) {
@@ -63,7 +67,24 @@ public class FileStorageService {
         }
         document.setServicePoint(servicePoint);
 
-        String fileName = uploadService.storeFile(documentData.getDocfile(), servicePoint.getServicePointType().name());
+        String fileName = uploadService.storeFile(documentData.getDocfile());
+        document.setFileName(fileName);
+        return fileStorageRepository.save(document);
+    }
+
+    @Transactional
+    public Document uploadPatientDocument(PatientDocumentData documentData) {
+        System.out.println("documentData "+documentData.getPatientNumber());
+        System.out.println("documentData "+documentData.getComments());
+        Document document = documentData.fromData();
+        Patient patient = patientService.findPatientOrThrow(documentData.getPatientNumber());
+        Visit visit = null;
+        if(documentData.getVisitNumber()!=null){
+            visit = visitService.findVisitEntityOrThrow(documentData.getVisitNumber());
+        }
+       document.setPatient(patient);
+        document.setVisit(visit);
+        String fileName = uploadService.storeFile(documentData.getFile());
         document.setFileName(fileName);
         return fileStorageRepository.save(document);
     }
@@ -96,7 +117,7 @@ public class FileStorageService {
         document.setFileType(fileType);
         document.setPatient(patient);
         document.setServicePoint(servicePoint);
-        String fileName = uploadService.storeFile(file, servicePoint.getName());
+        String fileName = uploadService.storeFile(file);
         document.setFileName(fileName);
 
         return fileStorageRepository.save(document);
@@ -112,8 +133,12 @@ public class FileStorageService {
     }
 
     @Transactional
-    public Page<Document> findAllDocuments(String PatientNumber, DocumentType documentType, Status status, Long servicePointId, DateRange range, Pageable pgbl) {
-        Specification spec = DocumentSpecification.createSpecification(PatientNumber, documentType, status, servicePointId, range);
+    public Page<Document> findAllDocuments(String PatientNumber, DocumentType documentType, Status status, Long servicePointId, DateRange range,String visitNumber,String fileName, Pageable pgbl) {
+        Visit visit = null;
+        if(visitNumber!=null){
+            visit = visitService.findVisitEntityOrThrow(visitNumber);
+        }
+        Specification spec = DocumentSpecification.createSpecification(PatientNumber, documentType, status, servicePointId, range, visit, fileName);
         return fileStorageRepository.findAll(spec, pgbl);
     }
 

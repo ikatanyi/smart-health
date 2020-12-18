@@ -46,6 +46,7 @@ public class UserData implements Serializable {
     @JsonFormat(pattern = Constants.DATE_TIME_PATTERN)
     private LocalDateTime lastLogin;
     private boolean firstTimeLogin;
+    private String phoneNumber;
     private List<String> roles = new ArrayList<>();
 
 }

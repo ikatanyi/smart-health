@@ -14,15 +14,15 @@ import org.springframework.data.repository.query.Param;
  *
  * @author Kelsas
  */
-public interface NotificationRepository extends JpaRepository<Notifications, Long>, JpaSpecificationExecutor<Notifications> {
+public interface NotificationRepository extends JpaRepository<Notification, Long>, JpaSpecificationExecutor<Notification> {
 
-    List<Notifications> findByRecipient(User user);
+    List<Notification> findByRecipient(User user);
 
-    List<Notifications> findByRecipientAndIsRead(User user, boolean read);
+    List<Notification> findByRecipientAndIsRead(User user, boolean read);
 
     long countByRecipientAndIsRead(User user, boolean read);
 
-    Optional<Notifications> findByRecipientAndReferenceAndNoticeType(User recipient, String reference, NoticeType noticeType);
+    Optional<Notification> findByRecipientAndReferenceAndNoticeType(User recipient, String reference, NoticeType noticeType);
     
     @Modifying
     @Query(value = "UPDATE user_notifications u SET u.is_read=TRUE WHERE u.is_read=FALSE AND u.recipient_id=:recipient", nativeQuery = true)

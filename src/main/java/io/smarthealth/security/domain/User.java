@@ -14,6 +14,7 @@ import javax.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import io.smarthealth.security.service.UserPhoneNumber;
 
 /**
  * Authentication User
@@ -21,16 +22,16 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @author Kelsas
  */
 @Entity
-@Table(name = "auth_user") 
-public class User extends Identifiable implements UserDetails {
+@Table(name = "auth_user")
+public class User extends Identifiable implements UserDetails, UserPhoneNumber {
 
     private String email;
     private String username;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String name;
-    
-    private  boolean enabled;
+
+    private boolean enabled;
 
     @Column(name = "account_locked")
     private boolean accountNonLocked;
@@ -44,7 +45,10 @@ public class User extends Identifiable implements UserDetails {
     private boolean verified;
 
     private LocalDateTime lastLogin;
+
     private boolean firstTimeLogin;
+
+    private String phoneNumber;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "auth_role_user",
@@ -53,12 +57,13 @@ public class User extends Identifiable implements UserDetails {
             inverseJoinColumns = {
                 @JoinColumn(name = "role_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_auth_user_roles_id"))})
     private Set<Role> roles;
+
     @OneToMany(mappedBy = "excessAmountAuthorisedBy")
     private List<PaymentDetails> paymentDetailss;
 
     public User() {
         this.enabled = true;
-        this.firstTimeLogin=true;
+        this.firstTimeLogin = true;
     }
 
     public User(String email, String username, String password, String name, Set<Role> roles) {
@@ -68,7 +73,7 @@ public class User extends Identifiable implements UserDetails {
         this.name = name;
         this.roles = roles;
         this.enabled = true;
-         this.firstTimeLogin=true;
+        this.firstTimeLogin = true;
     }
 
     public User(String email, String username, String name) {
@@ -76,7 +81,7 @@ public class User extends Identifiable implements UserDetails {
         this.username = username;
         this.name = name;
         this.enabled = true;
-        this.firstTimeLogin=true;
+        this.firstTimeLogin = true;
     }
 
     public User(String email, String username, String password, String name) {
@@ -84,9 +89,9 @@ public class User extends Identifiable implements UserDetails {
         this.username = username;
         this.password = password;
         this.name = name;
-        
+
         this.enabled = true;
-        this.firstTimeLogin=true;
+        this.firstTimeLogin = true;
     }
 
     @Override
@@ -208,6 +213,7 @@ public class User extends Identifiable implements UserDetails {
         data.setLastLogin(this.lastLogin);
         data.setName(this.name);
         data.setFirstTimeLogin(this.firstTimeLogin);
+        data.setPhoneNumber(this.phoneNumber);
 //        data.setPassword(this.password);
         List<String> rolelist = new ArrayList<>();
         this.roles
@@ -218,4 +224,13 @@ public class User extends Identifiable implements UserDetails {
         return data;
     }
 
+    @Override
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    @Override
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 }

@@ -8,8 +8,8 @@ package io.smarthealth.clinical.visit.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.Constants;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.Data;
@@ -30,7 +30,7 @@ public class SimpleVisit {
     private LocalDateTime visitDate;
     private String doctorName;
     private Long doctorId;
-    private VisitEnum.PaymentMethod paymentMethod;
+    private PaymentMethod paymentMethod;
     private VisitEnum.Status status;
 
     public static SimpleVisit map(Visit visit) {

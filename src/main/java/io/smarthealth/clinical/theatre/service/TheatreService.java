@@ -25,7 +25,7 @@ import io.smarthealth.accounting.pricelist.service.PricelistService;
 import io.smarthealth.clinical.theatre.data.DoctorFeeFix;
 import io.smarthealth.clinical.theatre.data.TheatreBill;
 import io.smarthealth.clinical.theatre.domain.enumeration.FeeCategory;
-import io.smarthealth.clinical.visit.data.enums.VisitEnum;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.domain.PaymentDetails;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.VisitRepository;
@@ -174,7 +174,7 @@ public class TheatreService {
             Item item = itemService.findItemWithNoFoundDetection(docFee.getItemCode());
             Visit visit = visitRepository.findByVisitNumber(docFee.getVisitNumber()).orElseThrow(()-> APIException.notFound("No visit found"));
            Double amount = 0.00;
-            if(visit.getPaymentMethod().equals(VisitEnum.PaymentMethod.Cash)){
+            if(visit.getPaymentMethod().equals(PaymentMethod.Cash)){
                amount = item.getRate().doubleValue();
            }else{
                 PaymentDetails paymentDetails = paymentDetailsService.fetchPaymentDetailsByVisit(visit);
@@ -205,7 +205,7 @@ public class TheatreService {
             Optional<TheatreFee> anaesthetistFee = theatreFeeService.findByItemAndCategory(item, FeeCategory.AnaesthetistFee);
             if (anaesthetistFee.isPresent()) {
                 BigDecimal amt = computeTheatreFee(anaesthetistFee.get(), (1 * amount));
-                Employee doctor = doctorInvoiceService.getDoctorByStaffNumber(docFee.getSurgeonStaffNumber());
+                Employee doctor = doctorInvoiceService.getDoctorByStaffNumber(docFee.getAnaestheticStaffNumber());
                 DoctorInvoice invoice = new DoctorInvoice();
                 invoice.setAmount(amt);
                 invoice.setBalance(amt);
@@ -342,6 +342,7 @@ public class TheatreService {
 
     public void fixDoctorFee(List<DoctorFeeFix> doctorFeeFixes){
         List<DoctorInvoice> doctorInvoices = toDoctorInvoiceFix(doctorFeeFixes);
+        System.out.println("Done with this number "+doctorInvoices.size());
         if (doctorInvoices.size() > 0) {
             doctorInvoices.forEach(inv -> doctorInvoiceService.save(inv));
         }

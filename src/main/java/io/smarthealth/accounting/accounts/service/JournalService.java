@@ -73,8 +73,12 @@ public class JournalService {
         return je;
     }
 
-    public Page<JournalEntryData> findJournals(String transactionNo, TransactionType type, JournalState status, DateRange range, Pageable page) {
-        Specification<JournalEntry> spec = JournalSpecification.createSpecification(transactionNo, type, status, range);
+    public Page<JournalEntryData> findJournals(String transactionNo, TransactionType type, JournalState status, DateRange range, String accountNo, Pageable page) {
+        Account account = null;
+        if(accountNo!=null){
+            account = accountService.findByAccountNumberOrThrow(accountNo);
+        }
+        Specification<JournalEntry> spec = JournalSpecification.createSpecification(transactionNo, type, status, range, account);
         return journalRepository.findAll(spec, page)
                 .map(x -> x.toData());
     }

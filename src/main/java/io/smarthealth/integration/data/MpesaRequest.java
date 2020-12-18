@@ -5,8 +5,7 @@ import lombok.ToString;
 /**
  *
  * @author Kelsas
- */
-
+ */ 
 @ToString
 public class MpesaRequest {
 
@@ -21,6 +20,9 @@ public class MpesaRequest {
    private  String CallBackURL;
    private  String AccountReference;
    private  String TransactionDesc;
+
+    public MpesaRequest() {
+    }
 
     public String getBusinessShortCode() {
         return BusinessShortCode;

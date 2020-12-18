@@ -17,7 +17,7 @@ import lombok.Data;
 /**
  *
  * @author Kelsas
- */
+ */ 
 @Data
 public class DispensedDrugData implements Serializable {
 

@@ -2,8 +2,8 @@ package io.smarthealth.clinical.laboratory.domain;
 
 import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.domain.Identifiable;
-import io.smarthealth.stock.item.domain.Item;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,8 +23,8 @@ import org.apache.commons.lang3.builder.ToStringExclude;
  *
  * @author Kelsas
  */
-@Entity
 @Data
+@Entity
 @Table(name = "lab_register_tests")
 public class LabRegisterTest extends Identifiable {
 
@@ -66,7 +66,10 @@ public class LabRegisterTest extends Identifiable {
     @ToStringExclude
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_lab_register_parent_test_id"))
     private LabTest parentLabTest;
-
+//    @Transient
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
+    
     @OneToMany(mappedBy = "labRegisterTest")
     private List<LabResult> labResults;
 
@@ -86,7 +89,6 @@ public class LabRegisterTest extends Identifiable {
         data.setEntered(this.entered);
         data.setEnteredBy(this.enteredBy);
         data.setEntryDateTime(this.entryDateTime);
-        
 
         data.setValidated(this.validated);
         data.setValidatedBy(this.validatedBy);
@@ -103,7 +105,6 @@ public class LabRegisterTest extends Identifiable {
             data.setReferenceNo(this.labRegister.getTransactionId());
 
             if (this.labRegister.getVisit() != null) {
-                data.setVisitNumber(this.labRegister.getVisit().getVisitNumber());
                 data.setPatientName(this.labRegister.getVisit().getPatient().getGivenName());
                 data.setDOB(this.labRegister.getVisit().getPatient().getDateOfBirth());
                 data.setGender(this.labRegister.getVisit().getPatient().getGender());
@@ -114,7 +115,7 @@ public class LabRegisterTest extends Identifiable {
         data.setPaid(this.paid);
 //        data.setReferenceNo(this.referenceNo);
         data.setRequestId(this.requestId);
-        
+
         data.setSpecimen(this.specimen);
         data.setStatus(this.status);
         data.setIsPanel(this.isPanel);

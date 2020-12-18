@@ -2,10 +2,10 @@ package io.smarthealth.organization.facility.service;
 
 import io.smarthealth.administration.employeespecialization.data.enums.EmployeeCategory.Category;
 import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.notification.data.EmailData;
-import io.smarthealth.notification.service.EmailerService;
+import io.smarthealth.messaging.model.EmailData;
 import io.smarthealth.infrastructure.utility.PassayPassword;
 import io.smarthealth.notification.service.SmsMessagingService;
+import io.smarthealth.messaging.service.EmailService;
 import io.smarthealth.organization.facility.data.EmployeeData;
 import io.smarthealth.organization.facility.domain.Department;
 import io.smarthealth.organization.facility.domain.DepartmentRepository;
@@ -61,7 +61,7 @@ public class EmployeeService {
     PersonContactService personContactService;
 
     @Autowired
-    EmailerService mailService;
+    EmailService mailService;
 
     @Autowired
     SmsMessagingService smsMessagingService;

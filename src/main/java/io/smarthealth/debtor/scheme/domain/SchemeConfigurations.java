@@ -19,6 +19,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import lombok.Data;
 
 /**
@@ -29,9 +30,10 @@ import lombok.Data;
 @Data
 public class SchemeConfigurations extends Auditable {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_scheme_configurations_scheme_id"), unique = true)
     private Scheme scheme;
+    
     @Enumerated(EnumType.STRING)
     private DiscountType discountMethod;
     private double discountValue;

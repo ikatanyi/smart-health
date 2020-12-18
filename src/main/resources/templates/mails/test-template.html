@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:remove="all">SmartHealth</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body>
+        <p th:text="#{greeting(${name})}">
+            Hello, Smarthealth Static!
+        </p>
+        <p>
+            Attached report <b>Drugs about to expire</b> as at
+            <span th:text="${#dates.format(subscriptionDate)}">28-12-2012</span>
+        </p>
+        <p>
+            You can find <b>your uploaded attachment</b> attached to this message.
+        </p>
+        <p>
+            Regards, <br />
+            &emsp; <em>The SmartHealth Team</em>
+        </p>
+    </body>
+</html>

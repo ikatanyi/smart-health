@@ -1,11 +1,12 @@
 package io.smarthealth.security.api;
 
 import io.smarthealth.infrastructure.common.PaginationUtil;
-import io.smarthealth.infrastructure.exception.APIException;
-import io.smarthealth.notification.data.EmailData;
+import io.smarthealth.infrastructure.exception.APIException; 
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.infrastructure.utility.PassayPassword;
+import io.smarthealth.messaging.model.EmailData;
+import io.smarthealth.messaging.service.EmailService;
 import io.smarthealth.notification.data.NotificationResponse;
 import io.smarthealth.security.data.ApiResponse;
 import io.smarthealth.security.data.PasswordData;
@@ -18,7 +19,6 @@ import io.smarthealth.security.domain.RoleRepository;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.domain.UserRepository;
 import io.smarthealth.security.service.UserService;
-import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.ArrayList;
@@ -47,8 +47,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import io.smarthealth.notification.service.EmailerService;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder; 
 
 /**
  *
@@ -64,7 +63,7 @@ public class AuthController {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
-    private final EmailerService mailSender;
+    private final EmailService mailSender;
 
     @PostMapping("/users")
     @PreAuthorize("hasAuthority('create_users')")
@@ -89,9 +88,11 @@ public class AuthController {
         User user = new User(data.getEmail(),
                 data.getUsername(),
                 password,
-                data.getName());
+                data.getName()
+        );
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword())); 
+        user.setPhoneNumber(data.getPhoneNumber());
         /*
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER.name())
                 .orElseThrow(() -> APIException.internalError("User Role not set."));
@@ -154,7 +155,8 @@ public class AuthController {
                 .orElseThrow(() -> APIException.notFound("Username or email {0} not found.... ", username));
         user.setEmail(data.getEmail());
         user.setName(data.getName());
-
+        user.setPhoneNumber(data.getPhoneNumber());
+       
         if (!data.getRoles().isEmpty()) {
             Set<Role> userRoles = new HashSet<>();
             for (String role : data.getRoles()) {

@@ -8,6 +8,7 @@ package io.smarthealth.debtor.scheme.domain;
 import io.smarthealth.debtor.payer.domain.Scheme;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.stock.item.domain.Item;
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import lombok.Data;
@@ -17,7 +18,7 @@ import lombok.Data;
  * @author simz
  */
 @Data
-@Entity
+@Entity 
 public class SchemeExclusions extends Auditable {
 
     @ManyToOne
@@ -25,4 +26,6 @@ public class SchemeExclusions extends Auditable {
 
     @ManyToOne
     private Item item;
+    
+    private LocalDateTime exclusionDate;
 }
