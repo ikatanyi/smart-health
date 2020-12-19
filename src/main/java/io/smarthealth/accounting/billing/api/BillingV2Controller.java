@@ -12,6 +12,7 @@ import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.accounting.billing.data.BillFinalizeData;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -98,6 +99,7 @@ public class BillingV2Controller {
             @RequestParam(value = "hasBalance", required = false) Boolean hasBalance,
             @RequestParam(value = "isWalkin", required = false) Boolean isWakin,
             @RequestParam(value = "paymentMode", required = false) PaymentMethod paymentMode,
+            @RequestParam(value = "visitType", required = false) VisitEnum.VisitType visitType,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
             @RequestParam(value = "page", required = false) Integer page,
@@ -106,7 +108,7 @@ public class BillingV2Controller {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        List<SummaryBill> list = service.getBillTotals(visitNumber, patientNumber, hasBalance, isWakin, paymentMode, range, includeCanceled);
+        List<SummaryBill> list = service.getBillTotals(visitNumber, patientNumber, hasBalance, isWakin, paymentMode, range, includeCanceled, visitType);
 
         int start = (int) pageable.getOffset();
         int end = (start + pageable.getPageSize()) > list.size() ? list.size() : (start + pageable.getPageSize());

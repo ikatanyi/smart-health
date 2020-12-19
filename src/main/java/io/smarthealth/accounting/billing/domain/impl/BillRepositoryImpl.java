@@ -4,6 +4,7 @@ import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.domain.BillRepository;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.math.BigDecimal;
@@ -35,7 +36,7 @@ public class BillRepositoryImpl implements BillRepository {
     }
 
     @Override
-    public List<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, PaymentMethod paymentMode, DateRange range, Boolean includeCanceled) {
+    public List<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, PaymentMethod paymentMode, DateRange range, Boolean includeCanceled, VisitEnum.VisitType visitType) {
         if (isWalkin != null && isWalkin) {
             return getWalkIn(patientNumber, hasBalance, paymentMode, range, includeCanceled);
         }
@@ -70,6 +71,11 @@ public class BillRepositoryImpl implements BillRepository {
         if (includeCanceled != null && !includeCanceled) {
             predicates.add(cb.notEqual(root.get("status"), BillStatus.Canceled));
         }
+
+        if (visitType != null) {
+            predicates.add(cb.equal(root.get("patientBill").get("visit").get("visitType"), visitType));
+        }
+
         if (range != null) {
             predicates.add(
                     cb.between(root.get("billingDate"), range.getStartDate(), range.getEndDate())
@@ -113,7 +119,7 @@ public class BillRepositoryImpl implements BillRepository {
     }
 
     @Override
-    public BigDecimal getBillTotal(String visitNumber, Boolean includeCanceled) {
+    public BigDecimal getBillTotal(String visitNumber, Boolean includeCanceled, VisitEnum.VisitType visitType) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Double> query = cb.createQuery(Double.class);
         Root<PatientBillItem> patientBillItem = query.from(PatientBillItem.class);
@@ -124,6 +130,9 @@ public class BillRepositoryImpl implements BillRepository {
         }
         if (includeCanceled != null && !includeCanceled) {
             predicates.add(cb.notEqual(patientBillItem.get("status"), BillStatus.Canceled));
+        }
+        if (visitType != null) {
+            predicates.add(cb.equal(patientBillItem.get("patientBill").get("visit").get("visitType"), visitType));
         }
         query.where(predicates.toArray(new Predicate[0]));
 
