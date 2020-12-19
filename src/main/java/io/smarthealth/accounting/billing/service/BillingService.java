@@ -10,6 +10,7 @@ import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.data.BillData;
+import io.smarthealth.accounting.billing.data.BillFinalizeData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
@@ -22,7 +23,6 @@ import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.data.nue.BillPayment;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
-import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.domain.Item;
@@ -38,8 +38,6 @@ import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
 import lombok.RequiredArgsConstructor;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
-import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
-import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecification;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
@@ -78,6 +76,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
 import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecification;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 
 /**
  *
@@ -196,10 +195,15 @@ public class BillingService {
         }
         double amountToBill = 0.00;
         int itemCount = 0;
-
+        //TODO:: refactor scheme limit checks into a method
+        
+       //update the scheme that paid this bill if insurance
         for (PatientBillItem b : bill.getBillItems()) {
-            amountToBill = amountToBill + b.getAmount();
-            itemCount++;
+            //ignore for now the receipts and copay from limit checks
+            if (b.getItem().getCategory() != ItemCategory.CoPay || b.getItem().getCategory() != ItemCategory.Receipt) {
+                amountToBill = amountToBill + b.getAmount();
+                itemCount++;
+            }
             if (bill.getVisit() != null) {
                 //Billing paymode added to accomodate exclusions and other functionalities
 //                b.setBillPayMode(bill.getVisit().getPaymentMethod());
@@ -796,6 +800,7 @@ public class BillingService {
                         //only return receipts
                         if (x.getItem().getCategory() == ItemCategory.CoPay || x.getItem().getCategory() == ItemCategory.Receipt) {
                             BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
+                            ReceiptType receiptType = x.get
                             BigDecimal amount = BigDecimal.valueOf(x.getAmount());
                             if (amount.signum() == -1) {
                                 amount = amount.negate();
@@ -1036,8 +1041,20 @@ public class BillingService {
         BigDecimal amount = data.getReceipt().getAmount().negate();
         Double receiptedAmount = (amount.doubleValue() * -1);
 
-        Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
-                .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
+//        Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
+//                .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
+        Optional<Visit> visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn);
+        if (!visitOptional.isPresent()) {
+            visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.Admitted);
+            if (!visitOptional.isPresent()) {
+                visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.Discharged);
+            }
+        }
+        if (!visitOptional.isPresent()) {
+            throw APIException.notFound("No active visit found for the patient selected");
+        }
+
+        Visit visit = visitOptional.get();
 
         Optional<Item> receiptItem = itemService.findFirstByCategory(ItemCategory.Receipt);
         if (receiptItem.isPresent()) {
@@ -1084,6 +1101,34 @@ public class BillingService {
             return save(patientbill);
         }
         return null;
+    }
+
+    public String finalizeBill(String visitNumber, BillFinalizeData finalizeBill) {
+        Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
+                .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
+        String cinvoice = sequenceNumberService.next(1L, Sequences.CashBillNumber.name());
+        List<PatientBillItem> lists = finalizeBill.getBillItems().stream()
+                .map(x -> {
+                    PatientBillItem item = findBillItemById(x.getBillItemId());
+                    if (item.isFinalized() == false) {
+                        item.setPaid(Boolean.TRUE);
+                        item.setStatus(BillStatus.Paid);
+                        if (item.getPaymentReference() == null) {
+                            item.setPaymentReference(cinvoice);
+                        }
+                        item.setFinalized(true);
+                        item.setInvoiceNumber(cinvoice);
+                        item.setBalance(0D);
+                        return item;
+                    }
+                    return null;
+                })
+                .filter(x -> x != null)
+                .collect(Collectors.toList());
+
+        billItemRepository.saveAll(lists);
+
+        return cinvoice;
     }
 
     @Transactional

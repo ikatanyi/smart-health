@@ -11,6 +11,7 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.accounting.billing.data.BillFinalizeData;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -19,6 +20,7 @@ import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,7 +37,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import io.smarthealth.accounting.billing.data.FinalizeBill;
 
 /**
  *
@@ -139,17 +140,6 @@ public class BillingV2Controller {
         Pageable pageable = PaginationUtil.createUnPaged(page, size);
         BillDetail details = service.getBillDetails(visitNumber, includeCanceled, paymentMethod, pageable);
 
-//        Pager<List<SummaryBill>> pagers = new Pager();
-//        pagers.setCode("0");
-//        pagers.setMessage("Success");
-//        pagers.setContent(list.getContent());
-//        PageDetails details = new PageDetails();
-//        details.setPage(list.getNumber() + 1);
-//        details.setPerPage(list.getSize());
-//        details.setTotalElements(list.getTotalElements());
-//        details.setTotalPage(list.getTotalPages());
-//        details.setReportName("Patient Bills");
-//        pagers.setPageDetails(details);
         return ResponseEntity.ok(details);
     }
 
@@ -162,8 +152,9 @@ public class BillingV2Controller {
 
     @GetMapping("/billing/{visitNumber}/finalize")
     @PreAuthorize("hasAuthority('view_billV2')")
-    public ResponseEntity<?> finalizeBills(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody FinalizeBill finalizeBill) {
-        return ResponseEntity.ok("");
+    public ResponseEntity<?> finalizeBills(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody BillFinalizeData finalizeBill) {
+        String invoice = service.finalizeBill(visitNumber, finalizeBill);
+        return ResponseEntity.ok(new FinalizedBill(invoice));
     }
 
     @GetMapping("/billing/balance")
@@ -186,4 +177,9 @@ public class BillingV2Controller {
         return pageResponse;
     }
 
+    @Value
+    public class FinalizedBill {
+
+        String billNumber;
+    }
 }

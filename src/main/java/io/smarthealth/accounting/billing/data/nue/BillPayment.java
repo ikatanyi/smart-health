@@ -9,17 +9,17 @@ import lombok.NoArgsConstructor;
  *
  * @author Kelsas
  */
-@Data 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class BillPayment {
-    
-    public enum Type{
+
+    public enum Type {
         Copayment,
         Receipt
     } 
     private Type type;
     private String reference;
     private BigDecimal amount;
-    
+
 }

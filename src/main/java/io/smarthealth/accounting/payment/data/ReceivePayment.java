@@ -40,8 +40,8 @@ public class ReceivePayment {
     private String referenceNumber;
     private String visitNumber;
     private String patientNumber;
-    private String receiptNo;
-
+    private String receiptNo; 
+    
     private List<BilledItem> billItems = new ArrayList<>();
 
     private List<ReceiptMethod> payment = new ArrayList<>();

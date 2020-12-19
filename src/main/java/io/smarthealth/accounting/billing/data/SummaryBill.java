@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.billing.data;
 
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SummaryBill {
-    
+
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     public LocalDate date;
     public String visitNumber;
@@ -26,5 +27,7 @@ public class SummaryBill {
     public BigDecimal balance;
     public String paymentMethod;
     public Boolean isWalkin;
+    public String scheme;
+    public VisitEnum.VisitType visitType;
 
 }
