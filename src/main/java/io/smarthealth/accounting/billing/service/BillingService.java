@@ -1139,7 +1139,19 @@ public class BillingService {
                 .collect(Collectors.toList());
 
         //TODO consider expensing the deposits received
-        billItemRepository.saveAll(lists);
+        List<PatientBillItem> updatedBills = billItemRepository.saveAll(lists);
+
+        updatedBills.forEach(pi -> {
+            if(pi.getItem().getCategory() == ItemCategory.Receipt){
+                 Optional<Receipt> savedReceipt = receiptRepository.findByReceiptNo(pi.getPaymentReference());
+                 if(savedReceipt.isPresent() && savedReceipt.get().getPrepayment()){
+                     // we have a deposit to journal it
+                     
+                     
+                 }
+            }
+        }
+        );
 
         return cinvoice;
     }
@@ -1148,4 +1160,62 @@ public class BillingService {
     public void updatePaymentReference(String oldReference, String newReference) {
         billItemRepository.updatePaymentReference(newReference, oldReference);
     }
+
+//    private JournalEntry toJournalDeposits(Receipt payment, CreateRemittance data) {
+//        Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.DeferredRevenue);
+//
+//        if (!creditAccount.isPresent()) {
+//            throw APIException.badRequest("Deferred Revenue (Deposit) Account is Not Mapped for Transaction");
+//        }
+//        //move the money from here to patient control
+//
+//        PayChannel channel = data.getPaymentChannel();
+//
+//        List<JournalEntryItem> items = new ArrayList<>();
+//        String descType = "";
+//        String liabilityNarration = "Patient Deposit " + payment.getAmount() + " " + (data.getNotes() != null ? "(" + data.getNotes() + ")" : "");
+//        items.add(new JournalEntryItem(creditAccount.get().getAccount(), liabilityNarration, BigDecimal.ZERO, payment.getAmount()));
+//        //create the invoice payments
+//        descType = "Patient Payment deposit";
+//
+//        //PAYMENT CHANNEL
+//        String narration = descType + "  for " + payment.getDescription() + " Reference No : " + payment.getReceiptNo();
+//        if (channel.getType() == PayChannel.Type.Bank) {
+//            BankAccount bank = bankingService.findBankAccountByNumber(channel.getAccountNumber())
+//                    .orElseThrow(() -> APIException.notFound("Bank Account Number {0} Not Found", channel.getAccountNumber()));
+//            Account debitAccount = bank.getLedgerAccount();
+//            //withdraw this amount from this bank
+//            bankingService.deposit(bank, payment, data.getAmount());
+//            items.add(new JournalEntryItem(debitAccount, narration, payment.getAmount(), BigDecimal.ZERO));
+//            //at this pointwithdraw the cash
+//        } else if (channel.getType() == PayChannel.Type.Cash) {
+//            Account debitAccount = null;
+//            if (channel.getAccountId() == 1) {
+//                Optional<FinancialActivityAccount> pettycashAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Petty_Cash);
+//                if (!pettycashAccount.isPresent()) {
+//                    throw APIException.badRequest("Petty Cash Account is Not Mapped");
+//                }
+//                debitAccount = pettycashAccount.get().getAccount();
+//            }
+//            if (channel.getAccountId() == 2) {
+//                Optional<FinancialActivityAccount> receiptAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
+//                if (!receiptAccount.isPresent()) {
+//                    throw APIException.badRequest("Undeposited Fund Account (Receipt Control) is Not Mapped");
+//                }
+//                debitAccount = receiptAccount.get().getAccount();
+//            }
+//            if (debitAccount == null) {
+//                return null;
+//            }
+//            items.add(new JournalEntryItem(debitAccount, narration, payment.getAmount(), BigDecimal.ZERO));
+//        }
+//
+//        String description = descType + " Reference No " + payment.getReceiptNo();
+//
+//        JournalEntry toSave = new JournalEntry(payment.getTransactionDate().toLocalDate(), description, items);
+//        toSave.setTransactionType(TransactionType.Receipting);
+//        toSave.setTransactionNo(payment.getTransactionNo());
+//        toSave.setStatus(JournalState.PENDING);
+//        return toSave;
+//    }
 }

@@ -52,8 +52,9 @@ public class BillRepositoryImpl implements BillRepository {
                 cb.sum(root.get("balance")).as(BigDecimal.class),
                 root.get("patientBill").get("paymentMode"),
                 root.get("patientBill").get("walkinFlag"),
-                root.get("scheme").get("schemeName"),
+//                root.get("scheme").get("schemeName"),
                 root.get("patientBill").get("visit").get("visitType")
+//                root.get("scheme").get("payer").get("payerName")
         );
 
         List<Predicate> predicates = new ArrayList<>();
@@ -67,6 +68,7 @@ public class BillRepositoryImpl implements BillRepository {
         }
         if (paymentMode != null) {
             predicates.add(cb.equal(root.get("patientBill").get("paymentMode"), paymentMode.name()));
+//            predicates.add(cb.equal(root.get("patientBill").get("visit").get("paymentMethod"), paymentMode));
         }
         if (includeCanceled != null && !includeCanceled) {
             predicates.add(cb.notEqual(root.get("status"), BillStatus.Canceled));
@@ -154,8 +156,9 @@ public class BillRepositoryImpl implements BillRepository {
                 cb.sum(root.get("balance")).as(BigDecimal.class),
                 root.get("patientBill").get("paymentMode"),
                 root.get("patientBill").get("walkinFlag"),
-                root.get("scheme").get("schemeName"),
+//                root.get("scheme").get("schemeName"),
                 root.get("patientBill").get("visit").get("visitType")
+//                root.get("scheme").get("payer").get("payerName")
         );
 
         List<Predicate> predicates = new ArrayList<>();
