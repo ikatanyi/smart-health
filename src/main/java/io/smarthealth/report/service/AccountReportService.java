@@ -652,7 +652,7 @@ public class AccountReportService {
         String receiptNo = reportParam.getFirst("receiptNo");
         //"RCT-00009"
         ReceiptData receiptData = paymentService.getPaymentByReceiptNumber(receiptNo).toData();
-        if(receiptData.getPrepayment()){
+        if(receiptData.getPrepayment()||receiptData.getReceiptType()!= ReceiptType.POS){
             receiptData.setReceiptItems(new ArrayList());
             receiptData.setPaid(receiptData.getAmount());
             receiptData.setTenderedAmount(receiptData.getAmount());
