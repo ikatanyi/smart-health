@@ -1,13 +1,15 @@
 package io.smarthealth.accounting.payment.data;
 
 import java.math.BigDecimal;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author Kelsas
  */
-@Data
+@Getter
+@Setter
 public class BilledItem {
 
     private Long billItemId; //this can be the 
