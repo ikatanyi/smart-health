@@ -1044,6 +1044,7 @@ public class BillingService {
         billItem.setServicePointId(priceList.getServicePoint().getId());
         billItem.setStatus(BillStatus.Draft);
         billItem.setMedicId(null);
+        billItem.setBillPayMode(visit.getPaymentMethod());
 
         patientbill.addBillItem(billItem);
 
