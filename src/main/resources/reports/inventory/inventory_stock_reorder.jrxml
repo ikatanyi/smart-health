@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="inventory_stock_reorder_statement" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="HEADER_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PatientData" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Footer_Data" class="java.util.List" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="storeId" class="java.lang.Long"/>
+	<field name="storeName" class="java.lang.String"/>
+	<field name="item" class="java.lang.String"/>
+	<field name="itemCode" class="java.lang.String"/>
+	<field name="costPrice" class="java.math.BigDecimal"/>
+	<field name="sellingPrice" class="java.math.BigDecimal"/>
+	<field name="availableStock" class="java.lang.Double"/>
+	<field name="reorderLevel" class="java.lang.Double"/>
+	<variable name="PatientCount" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<variable name="total" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{sellingPrice}.multiply(new BigDecimal($F{availableStock}))]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="70" splitType="Stretch">
+			<line>
+				<reportElement positionType="Float" x="2" y="69" width="554" height="1" uuid="5d2fc52e-b224-419b-992e-58f23cb65a0b"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="69" uuid="05921211-9986-4f9b-a55e-0186167db752"/>
+				<subreportParameter name="PIC_DIR"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="28">
+			<staticText>
+				<reportElement x="1" y="10" width="174" height="17" forecolor="#000000" uuid="f2d0c562-90e9-4939-b849-101fc09f16da"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Inventory Stock Re-Order Statement]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="0" y="27" width="555" height="1" uuid="f7b6d8ff-77a2-4bcc-9bec-9ecf07b21877"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="29">
+			<staticText>
+				<reportElement mode="Opaque" x="19" y="15" width="89" height="14" forecolor="#FFFFFF" backcolor="#666666" uuid="c98df0e6-e4db-45dc-a260-28bfb050ccc1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Item Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="240" y="15" width="82" height="14" forecolor="#FFFFFF" backcolor="#666666" uuid="39a56b9d-4c64-426d-bff4-302e706ebb28"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<text><![CDATA[Reorder Level]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="Float" x="0" y="28" width="554" height="1" uuid="2a5fdac6-d0f1-47f2-8955-c1b83d1bb467"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement mode="Opaque" x="108" y="15" width="132" height="14" forecolor="#FFFFFF" backcolor="#666666" uuid="29f991f3-ba06-4270-bdf5-d4bd6ec208b2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="322" y="15" width="122" height="14" forecolor="#FFFFFF" backcolor="#666666" uuid="519c73f4-ed65-464b-b067-4df1d7acbe1d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Available Stock]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="15" width="19" height="14" forecolor="#FFFFFF" backcolor="#666666" uuid="78a46e80-bad5-45bc-ba92-30c42e1ea6c5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="429" y="15" width="125" height="14" forecolor="#FFFFFF" backcolor="#666666" uuid="c1f79045-4dad-43cb-8fb0-a4be41437202"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="19" y="0" width="89" height="13" isRemoveLineWhenBlank="true" forecolor="#000000" uuid="cd5a298b-885b-4c89-9fa0-8b866cd0f4d9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{itemCode}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="240" y="0" width="82" height="13" isRemoveLineWhenBlank="true" forecolor="#000000" uuid="ea160521-7cdc-444d-8d71-33d966c33782"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph rightIndent="25"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reorderLevel}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="108" y="0" width="132" height="13" isRemoveLineWhenBlank="true" uuid="e0ad7c0b-4560-4d9c-b762-eb9917ecf4d3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement positionType="Float" x="1" y="12" width="554" height="1" uuid="e8cda4a5-5619-46c8-8a9f-f6f8becd9839"/>
+				<graphicElement>
+					<pen lineWidth="0.15" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="322" y="0" width="107" height="13" forecolor="#000000" uuid="86de2753-9eef-4bed-8005-782634d39739"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+					<paragraph rightIndent="30"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{availableStock}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="19" height="13" uuid="4f179e0e-f473-436c-974a-83b02dfac4c0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="16">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="16" uuid="c5699b70-140f-47f9-8fc2-b573a6ef6b62"/>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</columnFooter>
+</jasperReport>

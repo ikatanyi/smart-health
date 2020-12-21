@@ -82,7 +82,7 @@ public class InventoryItemController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<InventoryItemData> list = service.getInventoryItems(storeId, itemId, search, includeClosed, pageable);
+        Page<InventoryItemData> list = service.getInventoryItems(storeId, itemId, search, includeClosed, pageable).map(itm -> itm.toData());
 
 //        Page<InventoryItemData> list = service.getPricebooks(category, type, pageable, includeClosed).map(u -> InventoryItemData.map(u));
         Pager<List<InventoryItemData>> pagers = new Pager();

@@ -74,6 +74,7 @@ public class StockReportService {
     private final PurchaseService purchaseService;
     private final InventoryService inventoryService;
     private final ItemService itemService;
+    
 
     public void getSuppliers(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -214,7 +215,11 @@ public class StockReportService {
         String search = reportParam.getFirst("search");
         Boolean includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
 
-        List<InventoryItemData> inventoryItemData = inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged()).getContent();
+        List<InventoryItemData> inventoryItemData = inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map(x -> x.toData())
+                .collect(Collectors.toList());
 
         reportData.setData(inventoryItemData);
         reportData.setFormat(format);
@@ -234,7 +239,13 @@ public class StockReportService {
             search = reportParam.getFirst("search");
             includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
         }
-        List<InventoryItemData> inventoryItemData = inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged()).getContent();
+        List<InventoryItemData> inventoryItemData = inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map(itm->{
+                    return itm.toData();
+                })
+                .collect(Collectors.toList());
 
         reportData.setData(inventoryItemData);
         reportData.setFormat(format);
@@ -324,11 +335,51 @@ public class StockReportService {
                 .stream()
                 .map((u) -> u.toData())
                 .collect(Collectors.toList());
+        
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField.setName("category");
+        sortField.setOrder(SortOrderEnum.ASCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
 
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
         reportData.setData(inventoryItemData);
         reportData.setFormat(format);
         reportData.setTemplate("/inventory/stock_purchase");
         reportData.setReportName("Stock-Purchase-Statement");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void InventoryReorderStock(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        Long storeId = null, itemId = null;
+        String search = null;
+        Boolean includeClosed = null;
+        if (reportParam != null) {
+            storeId = NumberUtils.createLong(reportParam.getFirst("storeId"));
+            itemId = NumberUtils.createLong(reportParam.getFirst("item_id"));
+            search = reportParam.getFirst("search");
+            includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
+        }
+        List<InventoryItemData> inventoryItemData =new ArrayList<>();
+                inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map(itm -> {
+                     Double reOrderCount = itemService.getItemReorderCount(itm.getItem().getItemCode(), itm.getStore().getId());
+                     if(itm.getAvailableStock() <= reOrderCount){
+                         InventoryItemData data = itm.toData();
+                         data.setReorderLevel(reOrderCount);
+                         inventoryItemData.add(data);
+                     }
+                     return itm.toData();
+                        });
+
+        reportData.setData(inventoryItemData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/inventory/inventory_stock_reorder_statement");
+        reportData.setReportName("Inventory-Stock--Reorder-Statement");
         reportService.generateReport(reportData, response);
     }
 
