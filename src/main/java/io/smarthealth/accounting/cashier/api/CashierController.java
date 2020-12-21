@@ -54,6 +54,7 @@ public class CashierController {
     @PreAuthorize("hasAuthority('create_cashiers')")
     public ResponseEntity<?> createCashier(@Valid @RequestBody CashierData cashierData) {
         Cashier result = service.createCashier(cashierData);
+        auditTrailService.saveAuditTrail("Cashiers", "Created cashier "+result.getUser().getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(result.toData());
     }
 
@@ -121,7 +122,7 @@ public class CashierController {
         //check if this shift exist
         Shift shift = service.closeShift(cashierId, shiftNo);
 
-        Shift shift = service.closeShift(code, shiftNo);
+//        Shift shift = service.closeShift(code, shiftNo);
         auditTrailService.saveAuditTrail("Cashiers", "Ended cashier "+shift.getCashier().getUser().getName()+" shiftNo "+shiftNo);
         return ResponseEntity.ok(shift.toData());
     }
