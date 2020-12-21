@@ -152,7 +152,7 @@ public class BillingV2Controller {
         return ResponseEntity.ok(bills);
     }
 
-    @GetMapping("/billing/{visitNumber}/finalize")
+    @PostMapping("/billing/{visitNumber}/finalize")
     @PreAuthorize("hasAuthority('view_billV2')")
     public ResponseEntity<?> finalizeBills(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody BillFinalizeData finalizeBill) {
         String invoice = service.finalizeBill(visitNumber, finalizeBill);
