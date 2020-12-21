@@ -20,6 +20,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
+
 /**
  *
  * @author Kelsas
@@ -112,7 +113,7 @@ public class Receipt extends Auditable {
                         .stream().map(x -> x.toData())
                         .collect(Collectors.toList())
         );
-        //ZXC
+
         data.setVoided(this.voided);
         data.setVoidedBy(this.voidedBy);
         data.setVoidedDatetime(this.voidedDatetime);
@@ -120,7 +121,8 @@ public class Receipt extends Auditable {
         if (prepayment) {
             data.setReceiptType(ReceiptType.Deposit);
         } else {
-            if (data.getReceiptItems().isEmpty()) {
+
+            if (this.receiptItems.isEmpty() && (refundedAmount == BigDecimal.ZERO)) {
                 data.setReceiptType(ReceiptType.Payment);
             } else {
                 data.setReceiptType(ReceiptType.POS);
@@ -130,14 +132,3 @@ public class Receipt extends Auditable {
         return data;
     }
 }
-
-//    private LocalDateTime receiptDatetime;
-//    private String paymentMethod;
-//    private String receiptNo;
-//    private String referenceNumber;
-//    private BigDecimal debit;
-//    private BigDecimal credit;
-//    private String transactionType; // Receipting | Refund | Banking
-//    private LocalDate transactionDate;
-//    private String transactionNo;
-//    private String shiftNo;

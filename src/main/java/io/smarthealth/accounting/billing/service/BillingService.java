@@ -22,6 +22,7 @@ import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.data.nue.BillPayment;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
@@ -77,6 +78,8 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
 import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecification;
 import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
+import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
+import io.smarthealth.accounting.payment.domain.Receipt;
 
 /**
  *
@@ -100,6 +103,7 @@ public class BillingService {
     private final CashPaidUpdater cashPaidUpdater;
     private final PaymentDetailsService paymentDetailsService;
     private final PricelistService pricelistService;
+    private final ReceiptRepository receiptRepository;
 
     //Create service bill
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -196,8 +200,8 @@ public class BillingService {
         double amountToBill = 0.00;
         int itemCount = 0;
         //TODO:: refactor scheme limit checks into a method
-        
-       //update the scheme that paid this bill if insurance
+
+        //update the scheme that paid this bill if insurance
         for (PatientBillItem b : bill.getBillItems()) {
             //ignore for now the receipts and copay from limit checks
             if (b.getItem().getCategory() != ItemCategory.CoPay || b.getItem().getCategory() != ItemCategory.Receipt) {
@@ -775,8 +779,8 @@ public class BillingService {
     //TODO 2020-05-03 -> filter all the bills and group them together
 
     // Get Bills
-    public List<SummaryBill> getBillTotals(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, PaymentMethod paymentMode, DateRange range, Boolean includeCanceled,VisitEnum.VisitType visitType) {
-        return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range, includeCanceled,visitType);
+    public List<SummaryBill> getBillTotals(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, PaymentMethod paymentMode, DateRange range, Boolean includeCanceled, VisitEnum.VisitType visitType) {
+        return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range, includeCanceled, visitType);
     }
 
     public BillDetail getBillDetails(String visitNumber, boolean includeCanceled, PaymentMethod paymentMethod, Pageable pageable) {
@@ -800,11 +804,20 @@ public class BillingService {
                         //only return receipts
                         if (x.getItem().getCategory() == ItemCategory.CoPay || x.getItem().getCategory() == ItemCategory.Receipt) {
                             BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
+                            ReceiptType receiptType = ReceiptType.Payment;
+
+                            if (x.getPaymentReference() != null) {
+                                Optional<Receipt> receipt = receiptRepository.findByReceiptNo(x.getPaymentReference());
+                                if (receipt.isPresent()) {
+                                    receiptType = receipt.get().toData().getReceiptType();
+                                }
+                            }
+
                             BigDecimal amount = BigDecimal.valueOf(x.getAmount());
                             if (amount.signum() == -1) {
                                 amount = amount.negate();
                             }
-                            payments.add(new BillPayment(type, x.getPaymentReference(), amount));
+                            payments.add(new BillPayment(type, x.getPaymentReference(), amount, receiptType));
                         }
                     } else {
                         System.err.println("Canceled Billed");
@@ -1125,6 +1138,7 @@ public class BillingService {
                 .filter(x -> x != null)
                 .collect(Collectors.toList());
 
+        //TODO consider expensing the deposits received
         billItemRepository.saveAll(lists);
 
         return cinvoice;

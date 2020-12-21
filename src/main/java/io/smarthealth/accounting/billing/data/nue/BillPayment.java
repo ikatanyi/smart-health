@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import  io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 /**
  *
  * @author Kelsas
@@ -21,5 +21,5 @@ public class BillPayment {
     private Type type;
     private String reference;
     private BigDecimal amount;
-
+    private ReceiptType receiptType;
 }

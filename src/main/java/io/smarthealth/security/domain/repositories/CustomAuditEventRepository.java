@@ -53,7 +53,7 @@ public class CustomAuditEventRepository implements AuditEventRepository {
             persistenceAuditEventRepository.findByPrincipalAndAuditEventDateAfterAndAuditEventType(principal, after, type);
         return auditEventConverter.convertToAuditEvent(persistentAuditEvents);
     }
-
+    //TODO:: only log the initial auth events.
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void add(AuditEvent event) {
