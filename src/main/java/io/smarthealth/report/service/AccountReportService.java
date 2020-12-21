@@ -35,6 +35,7 @@ import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.accounting.payment.data.ReceiptTransactionData;
 import io.smarthealth.accounting.payment.data.RemittanceData;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.accounting.payment.service.ReceiptingService;
 import io.smarthealth.accounting.payment.service.RemittanceService;
@@ -658,7 +659,10 @@ public class AccountReportService {
             ReceiptItemData itemData = new ReceiptItemData();
             itemData.setDiscount(BigDecimal.ZERO);
             itemData.setAmountPaid(receiptData.getAmount());
-            itemData.setItemName(receiptData.getDescription());
+            if(receiptData.getReceiptType()== ReceiptType.Payment)
+                itemData.setItemName("Medical Services");
+            else
+                itemData.setItemName("Deposit");
             itemData.setPrice(receiptData.getAmount());
             itemData.setQuantity(1.0);
             receiptData.getReceiptItems().add(itemData);
