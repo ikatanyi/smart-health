@@ -9,6 +9,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 
 /**
  *
@@ -17,8 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReceiptData {
-  
+public class ReceiptData { 
     private Long id;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
     private LocalDateTime transactionDate;
@@ -40,9 +40,9 @@ public class ReceiptData {
     private String receivedFrom;
     private Boolean voided;
     private String voidedBy;
+    private ReceiptType receiptType;
     private LocalDateTime voidedDatetime;
     private List<ReceiptTransactionData> transactions = new ArrayList<>();
     private List<ReceiptItemData> receiptItems = new ArrayList<>();
-    
-    
+
 }
