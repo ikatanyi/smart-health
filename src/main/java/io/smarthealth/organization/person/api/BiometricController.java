@@ -16,6 +16,7 @@ import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.organization.person.service.BiometricService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

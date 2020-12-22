@@ -4,6 +4,7 @@ import io.smarthealth.clinical.laboratory.data.LabSpecimenData;
 import io.smarthealth.clinical.laboratory.domain.LabSpecimen;
 import io.smarthealth.clinical.laboratory.service.LabConfigurationService;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,15 +31,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class LabSpecimenController {
 
     private final LabConfigurationService service;
+    private final AuditTrailService auditTrailService;
 
-    public LabSpecimenController(LabConfigurationService service) {
+    public LabSpecimenController(LabConfigurationService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/labs/specimens")
     @PreAuthorize("hasAuthority('create_labspecimen')")
     public ResponseEntity<?> createLabSpecimen(@Valid @RequestBody LabSpecimenData data) {
         LabSpecimen test = service.createSpecimen(data); 
+        auditTrailService.saveAuditTrail("Laboratory", "Created lab specimen "+test.getSpecimen());
         return ResponseEntity.status(HttpStatus.CREATED).body(test.toData());
     }
 
@@ -48,7 +52,10 @@ public class LabSpecimenController {
 
         List<LabSpecimenData> specimens = service.createSpecimen(data)
                 .stream()
-                .map(x -> x.toData())
+                .map(x -> {
+                    auditTrailService.saveAuditTrail("Laboratory", "Created lab specimen "+x.getSpecimen());
+                    return x.toData();
+                        })
                 .collect(Collectors.toList());
  
 
@@ -58,6 +65,7 @@ public class LabSpecimenController {
     @GetMapping("/labs/specimens/{id}")
     @PreAuthorize("hasAuthority('view_labspecimen')")
     public ResponseEntity<?> getLabSpecimen(@PathVariable(value = "id") Long id) {
+        auditTrailService.saveAuditTrail("Laboratory", "Searched lab specimen identified by id "+id);
         LabSpecimen item = service.getLabSpecimenOrThrow(id);
         return ResponseEntity.ok(item.toData());
     }
@@ -66,6 +74,7 @@ public class LabSpecimenController {
     @PreAuthorize("hasAuthority('edit_labspecimen')")
     public ResponseEntity<?> updateLabSpecimen(@PathVariable(value = "id") Long id, @Valid @RequestBody LabSpecimenData data) {
         LabSpecimen test = service.updateSpecimen(id, data);
+        auditTrailService.saveAuditTrail("Laboratory", "Edited lab specimen identified by id "+id);
         return ResponseEntity.ok(test.toData());
     }
 
@@ -73,6 +82,7 @@ public class LabSpecimenController {
     @PreAuthorize("hasAuthority('delete_labspecimen')")
     public ResponseEntity<?> deleteLabSpecimen(@PathVariable(value = "id") Long id) {
         service.deleteSpecimen(id);
+        auditTrailService.saveAuditTrail("Laboratory", "deleted lab specimen identified by id "+id);
         return ResponseEntity.accepted().build();
     }
 
@@ -81,7 +91,10 @@ public class LabSpecimenController {
     public ResponseEntity<?> getLabSpecimen() {
         List<LabSpecimenData> lists = service.findLabSpecimens()
                 .stream()
-                .map(x -> x.toData())
+                .map(x -> {
+                    auditTrailService.saveAuditTrail("Laboratory", "Viewed lab specimen  "+x.getSpecimen());
+                    return x.toData();
+                        })
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(lists);

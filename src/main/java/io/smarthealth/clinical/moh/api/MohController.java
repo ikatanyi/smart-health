@@ -6,6 +6,7 @@ import io.smarthealth.clinical.moh.service.MohService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,15 +29,19 @@ import org.springframework.web.bind.annotation.*;
 public class MohController {
 
     private final MohService service;
+    private final AuditTrailService auditTrailService;
 
-    public MohController(MohService itemService) {
+
+    public MohController(MohService itemService, AuditTrailService auditTrailService) {
         this.service = itemService;
+        this.auditTrailService = auditTrailService;
     }
 
     @GetMapping("/moh/{id}")
 //    @PreAuthorize("hasAuthority('view_moh')")
     public Moh getMoh(@PathVariable(value = "id") Long code) {
         Moh moh = service.fetchMohById(code);
+        auditTrailService.saveAuditTrail("Laboratory", "searched registered morbidity diseases "+moh.getDescription());
         return moh;
     }
 
@@ -50,8 +55,10 @@ public class MohController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<MohData> list = service.fetchAllMoh(pageable).map(u -> u.toData());
-
+        Page<MohData> list = service.fetchAllMoh(pageable).map(u -> {            
+            return u.toData();
+                });
+        auditTrailService.saveAuditTrail("Laboratory", "viewed registered morbidity diseases ");
         Pager<List<MohData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -72,7 +79,7 @@ public class MohController {
     public ResponseEntity<?> createMoh(@Valid @RequestBody MohData mohData) {
 
         MohData result = service.createMoh(mohData).toData();
-
+        auditTrailService.saveAuditTrail("Laboratory", "Created morbidity diseases "+result.getDescription());
         Pager<MohData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Moh created successful");
@@ -88,7 +95,10 @@ public class MohController {
 
         List<MohData> result = service.createBatchMoh(mohData)
                 .stream()
-                .map(u -> u.toData())
+                .map(u -> {
+                    auditTrailService.saveAuditTrail("Laboratory", "Created morbidity disease "+u.getDescription());
+                    return u.toData();
+                        })
                 .collect(Collectors.toList());
 
         Pager<List<MohData>> pagers = new Pager();
@@ -105,7 +115,7 @@ public class MohController {
     public ResponseEntity<?> updateMoh(@PathVariable("id") Long id, @Valid @RequestBody MohData mohData) {
 
         MohData result = service.updateMoh(id, mohData).toData();
-
+        auditTrailService.saveAuditTrail("Laboratory", "Edited morbidity disease "+result.getDescription());
         Pager<MohData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Moh created successful");

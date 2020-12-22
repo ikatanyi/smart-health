@@ -25,6 +25,7 @@ import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -69,6 +70,8 @@ public class DoctorRequestController {
     private final UserService userService;
 
     private final NotificationEventPublisher notificationEventPublisher;
+    
+    private final AuditTrailService auditTrailService;
 
     @Transactional
     @PostMapping("/visit/{visitNo}/doctor-request")
@@ -95,6 +98,7 @@ public class DoctorRequestController {
                         throw APIException.conflict("{0} has already been requested ", item.getItemName());
                     }
                 }
+                
             }
             doctorRequest.setItem(item);
             doctorRequest.setItemCostRate(item.getCostRate() != null ? item.getCostRate().doubleValue() : 0);
@@ -115,6 +119,9 @@ public class DoctorRequestController {
         }
 
         List<DoctorRequest> docReqs = requestService.createRequest(docRequests);
+        for(DoctorRequest req:docReqs){
+            auditTrailService.saveAuditTrail("Consultation", "created a request for "+req.getItem().getItemName()+" for patient "+req.getPatient().getFullName());
+        }
 
         notificationEventPublisher.publishDocRequestEvent(requestType);
 
@@ -134,10 +141,12 @@ public class DoctorRequestController {
     public ResponseEntity<?> fetchRequestById(@PathVariable("id") final Long id) {
         Optional<DoctorRequestData> specimens = requestService.getDocRequestDataById(id);
         if (specimens != null) {
+            auditTrailService.saveAuditTrail("Consultation", "created a request for "+specimens.get().getItemName()+" for patient "+specimens.get().getPatientData().getFullName());
             return ResponseEntity.ok(specimens);
         } else {
             throw APIException.notFound("Request Number {0} not found.", id);
         }
+        
     }
 
     @DeleteMapping("/doctor-request/{id}")
@@ -150,6 +159,7 @@ public class DoctorRequestController {
                 throw APIException.badRequest("You cannot remove a fulfilled request", "");
             }
             requestService.deleteDocRequest(docRequest.get());
+            auditTrailService.saveAuditTrail("Consultation", "Deleted a request identified by id "+id);
             return ResponseEntity.ok("Successfully deleted");
         } else {
             throw APIException.notFound("Request Number {0} not found.", id);
@@ -183,7 +193,7 @@ public class DoctorRequestController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Consultation", "Viewed requests identified by visitNo "+visitNo);
         return ResponseEntity.ok(pagers);
     }
 
@@ -254,7 +264,7 @@ public class DoctorRequestController {
         details.setTotalPage(waitingPage.getPageCount());
         details.setReportName("History Doctor Requests");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Consultation", "Viewed past requests for patient "+patient.getFullName());
         return ResponseEntity.ok(pagers);
     }
 
@@ -309,7 +319,7 @@ public class DoctorRequestController {
         details.setTotalPage(waitingPage.getPageCount());
         details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Consultation", "Viewed all patient requests");
         return ResponseEntity.ok(pagers);
     }
 
@@ -341,7 +351,7 @@ public class DoctorRequestController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Consultation", "Viewed all patient requests for visitNo "+visitNo);
         return ResponseEntity.ok(pagers);
     }
 
@@ -349,12 +359,14 @@ public class DoctorRequestController {
     @PreAuthorize("hasAuthority('edit_dispense')")
     public ResponseEntity<?> voidDocRequest(@PathVariable(value = "requestId") Long id) {
         Boolean status = requestService.voidRequest(id);
+        auditTrailService.saveAuditTrail("Consultation", "Deleted patient request for identified by id "+id);
         return ResponseEntity.ok(status);
     }
 
     @DeleteMapping("/doc-request/{id}")
     @PreAuthorize("hasAuthority('delete_doctorrequest')")
     public ResponseEntity<?> deleteRequest(@PathVariable("id") final Long id) {
+        auditTrailService.saveAuditTrail("Consultation", "Deleted patient request for identified by id "+id);
         return requestService.deleteById(id);
     }
 
@@ -375,7 +387,7 @@ public class DoctorRequestController {
 
         Page<OrdersRequest> list = requestService.getDoctorOrderRequests(visitNumber, patientNumber, requestType, fulfillerStatus, range, pageable)
                 .map(OrdersRequest::of); 
-        
+        auditTrailService.saveAuditTrail("Consultation", "Viewed all patient requests ");
         return ResponseEntity.ok((Pager<OrdersRequest>) PaginationUtil.toPager(list, "Doctors Requests"));
     }
 }

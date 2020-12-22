@@ -5,6 +5,7 @@ import io.smarthealth.administration.finances.service.PaymentMethodService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -27,9 +28,11 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentMethodApiController {
 
     private final PaymentMethodService service;
+    private final AuditTrailService auditTrailService; 
 
-    public PaymentMethodApiController(PaymentMethodService service) {
+    public PaymentMethodApiController(PaymentMethodService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/payment-method")
@@ -37,7 +40,7 @@ public class PaymentMethodApiController {
     public ResponseEntity<?> createPaymentMethod(@Valid @RequestBody PaymentMethodData data) {
 
         PaymentMethodData result = service.createPaymentMethod(data);
-
+        auditTrailService.saveAuditTrail("Administration", "Created Payment method "+result.getName());
         Pager<PaymentMethodData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Payment Mode Success Created");
@@ -50,6 +53,7 @@ public class PaymentMethodApiController {
     @PreAuthorize("hasAuthority('view_paymentMethod')")
     public ResponseEntity<?> getPaymentMethod(@PathVariable(value = "id") Long id) {
         PaymentMethodData data = service.getPaymentMethod(id).toData();
+        auditTrailService.saveAuditTrail("Administration", "Viewed Payment method "+data.getName());
         return ResponseEntity.ok(data);
     }
 
@@ -57,7 +61,7 @@ public class PaymentMethodApiController {
      @PreAuthorize("hasAuthority('edit_paymentMethod')")
     public ResponseEntity<?> updatePaymentMethod(@PathVariable(value = "id") Long id, @Valid @RequestBody PaymentMethodData data) {
         PaymentMethodData result = service.updatePaymentMethod(id, data);
-
+        auditTrailService.saveAuditTrail("Administration", "Edited Payment method "+result.getName());
         Pager<PaymentMethodData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Service Point Success updated");
@@ -73,7 +77,7 @@ public class PaymentMethodApiController {
             @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-
+        auditTrailService.saveAuditTrail("Administration", "Viewed all Payment methods ");
         Page<PaymentMethodData> list = service.listPaymentMethods(pageable);
         Pager<List<PaymentMethodData>> pagers = new Pager();
         pagers.setCode("0");

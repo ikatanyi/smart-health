@@ -6,6 +6,7 @@
 package io.smarthealth.integration.api;
 
 import io.smarthealth.integration.service.MpesaService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.math.BigDecimal;
 import lombok.extern.slf4j.Slf4j;

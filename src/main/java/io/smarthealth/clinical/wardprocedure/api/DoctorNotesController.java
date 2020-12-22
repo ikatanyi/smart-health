@@ -10,6 +10,7 @@ import io.smarthealth.clinical.wardprocedure.domain.DoctorNotes;
 import io.smarthealth.clinical.wardprocedure.service.DoctorNotesService;
 import io.smarthealth.infrastructure.utility.ListData;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DoctorNotesController {
 
     private final DoctorNotesService doctorNotesService;
+    private final AuditTrailService auditTrailService;
 
     //create
     @PostMapping("/doctor-notes")
@@ -48,7 +50,7 @@ public class DoctorNotesController {
         pagers.setCode("200");
         pagers.setMessage("Doctor note successfully submitted");
         pagers.setContent(DoctorNotesData.map(doctorNotes));
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Entered doctor notes");
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -65,7 +67,7 @@ public class DoctorNotesController {
         pagers.setCode("200");
         pagers.setMessage("Doctor note data");
         pagers.setContent(DoctorNotesData.map(doctorNotes));
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Viewed doctor notes for patient "+doctorNotes.getAdmission().getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -81,7 +83,7 @@ public class DoctorNotesController {
         listData.setCode("200");
         listData.setMessage("Success");
         listData.setContent(list);
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Viewed doctor notes for admission identified by "+admissionNumber);
         return ResponseEntity.status(HttpStatus.OK).body(listData);
     }
 
@@ -97,7 +99,7 @@ public class DoctorNotesController {
         pagers.setCode("200");
         pagers.setMessage("Doctor note successfully updated");
         pagers.setContent(DoctorNotesData.map(doctorNotes));
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Edited doctor notes identified by "+id);
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -110,7 +112,7 @@ public class DoctorNotesController {
         Pager<DoctorNotesData> pagers = new Pager();
         pagers.setCode("200");
         pagers.setMessage("Doctor note successfully deleted");
-
+        auditTrailService.saveAuditTrail("Ward Procedure", "Deleted doctor notes identified by "+id);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 

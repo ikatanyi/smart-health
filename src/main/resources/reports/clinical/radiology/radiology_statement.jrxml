@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="radiology_statement" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
-	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="770"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
@@ -19,6 +19,7 @@
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Footer_Data" class="java.util.List"/>
 	<parameter name="range" class="java.lang.String"/>
+	<parameter name="tests" class="java.util.List"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -264,4 +265,13 @@
 			</subreport>
 		</band>
 	</pageFooter>
+	<summary>
+		<band height="14">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="14" uuid="e3902b84-1a56-4a9d-ae15-2d54029d37cd"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{tests})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "statement_analytics_subreport.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
 </jasperReport>

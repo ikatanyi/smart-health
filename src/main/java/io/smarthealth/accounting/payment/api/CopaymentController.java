@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -34,15 +35,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class CopaymentController {
 
     private final CopaymentService service;
+    private final AuditTrailService auditTrailService;
 
-    public CopaymentController(CopaymentService service) {
+    public CopaymentController(CopaymentService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/copayment")
     @PreAuthorize("hasAuthority('create_copayment')")
     public ResponseEntity<?> createCopayment(@Valid @RequestBody CopaymentData data) {
         Copayment copay = service.createCopayment(data);
+        auditTrailService.saveAuditTrail("Copayment", "Created copay for invoice "+copay.getInvoice().getNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(copay.toData());
     }
 
@@ -50,6 +54,7 @@ public class CopaymentController {
     @PreAuthorize("hasAuthority('view_copayment')")
     public ResponseEntity<?> getCopayment(@PathVariable(value = "id") Long id) {
         Copayment copay = service.getCopaymentOrThrow(id);
+        auditTrailService.saveAuditTrail("Copayment", "Created copay for invoice "+copay.getInvoice().getNumber());
         return ResponseEntity.ok(copay.toData());
     }
 
@@ -70,7 +75,7 @@ public class CopaymentController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<CopaymentData> list = service.getCopayments(visitNumber, patientNumber, visitNumber, receiptNo, paid, range, pageable)
                 .map(x -> x.toData());
-
+        auditTrailService.saveAuditTrail("Copayment", "Viewed Created copays  ");
         Pager<List<CopaymentData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

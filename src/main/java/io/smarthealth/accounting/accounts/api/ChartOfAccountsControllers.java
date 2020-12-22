@@ -2,6 +2,7 @@ package io.smarthealth.accounting.accounts.api;
 
 import io.smarthealth.accounting.accounts.data.ChartOfAccountEntry;
 import io.smarthealth.accounting.accounts.service.ChartOfAccountServices;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import org.springframework.http.ResponseEntity;

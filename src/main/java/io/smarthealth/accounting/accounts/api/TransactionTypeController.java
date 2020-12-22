@@ -6,6 +6,7 @@
 package io.smarthealth.accounting.accounts.api;
 
 import io.smarthealth.accounting.accounts.domain.TransactionType;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.stores.data.StoreData;
 import io.smarthealth.stock.stores.domain.Store;
 import io.smarthealth.stock.stores.service.StoreService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -28,9 +29,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class StoreRestController {
     private final StoreService service;
+    private final AuditTrailService auditTrailService;
 
-    public StoreRestController(StoreService service) {
+    public StoreRestController(StoreService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
     @PostMapping("/stores")
     @PreAuthorize("hasAuthority('create_stores')")
@@ -42,7 +45,7 @@ public class StoreRestController {
         pagers.setCode("0");
         pagers.setMessage("Store created success");
         pagers.setContent(StoreData.map(result)); 
-        
+        auditTrailService.saveAuditTrail("Stores", "Created store "+result.getStoreName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
     @GetMapping("/stores/{id}")
@@ -50,6 +53,7 @@ public class StoreRestController {
     public ResponseEntity<?> getStore(@PathVariable(value = "id") Long code) {
         Store store = service.getStore(code)
                 .orElseThrow(() -> APIException.notFound("Store with id  {0} not found.", code));
+        auditTrailService.saveAuditTrail("Stores", "Viewed store "+store.getStoreName());
         return ResponseEntity.ok(StoreData.map(store));
         
     }
@@ -57,6 +61,7 @@ public class StoreRestController {
     @PreAuthorize("hasAuthority('view_stores')")
     public ResponseEntity<?> updateStore(@PathVariable(value = "id") Long id, @Valid @RequestBody StoreData data) {
         Store store = service.updateStore(id, data);
+        auditTrailService.saveAuditTrail("Stores", "Edited store "+store.getStoreName());
         return ResponseEntity.ok(StoreData.map(store));
         
     }
@@ -82,7 +87,7 @@ public class StoreRestController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Stores");
         pagers.setPageDetails(details);
-         
+        auditTrailService.saveAuditTrail("Stores", "Viewed all stores");
         return ResponseEntity.ok(pagers);
     }
     

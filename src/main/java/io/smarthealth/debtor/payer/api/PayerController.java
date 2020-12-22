@@ -19,6 +19,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.supplier.data.SupplierStatement;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ public class PayerController {
     private final PaymentTermsService paymentTermsService;
     private final PricebookService pricebookService;
     private final ContactService contactService;
+    private final AuditTrailService auditTrailService;
 
     @PostMapping("/payer")
     @PreAuthorize("hasAuthority('create_payer')")
@@ -100,7 +102,7 @@ public class PayerController {
                 .buildAndExpand(result.getId()).toUri();
 
         PayerData data = PayerData.map(result);
-
+         auditTrailService.saveAuditTrail("Payer", "Created a payer "+payer.getPayerName());
         return ResponseEntity.created(location).body(data);
     }
 
@@ -171,7 +173,7 @@ public class PayerController {
                 .buildAndExpand(result.getId()).toUri();
 
         PayerData data = PayerData.map(result);
-
+        auditTrailService.saveAuditTrail("Payer", "Edited  payer "+payer.getPayerName());
         return ResponseEntity.ok(data);
     }
 
@@ -187,7 +189,7 @@ public class PayerController {
         PageDetails details = new PageDetails();
         details.setReportName("Payer");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Payer", "Viewed payer "+payers.getPayerName());
         return ResponseEntity.ok(pagers);
     }
 
@@ -202,7 +204,7 @@ public class PayerController {
             pageable = PageRequest.of(pageNo, pageSize);
         }
         Page<PayerData> payers = payerService.fetchPayers(term, pageable).map(p -> PayerData.map(p));
-
+        auditTrailService.saveAuditTrail("Payer", "Viewed all registered payers ");
         Pager<List<PayerData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -226,7 +228,7 @@ public class PayerController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-
+        auditTrailService.saveAuditTrail("Payer", "Viewed payer statement");
         List<PayerStatement> list = payerService.getStatement(payerId, range);
 
         return ResponseEntity.ok(PaginationUtil.paginateList(list, "Debtor Statement", "", pageable));

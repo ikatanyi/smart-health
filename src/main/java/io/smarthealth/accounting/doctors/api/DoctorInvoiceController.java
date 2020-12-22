@@ -9,6 +9,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -40,13 +41,14 @@ public class DoctorInvoiceController {
 
     private final DoctorInvoiceService doctorService;
     private final BillingService billService;
+    private final AuditTrailService auditTrailService;
 
     @PostMapping("/doctor-invoices")
     @PreAuthorize("hasAuthority('create_doctorInvoices')") 
     public ResponseEntity<?> createDoctorInvoice(@Valid @RequestBody DoctorInvoiceData data) {
 
         DoctorInvoice item = doctorService.createDoctorInvoice(data);
-
+        auditTrailService.saveAuditTrail("Doctor Invoice", "Created Doctor Invoice for doctor"+data.getDoctorName()+" ,for invoice"+data.getInvoiceNumber());
         Pager<DoctorInvoiceData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Invoice Successfully Created.");
@@ -62,6 +64,7 @@ public class DoctorInvoiceController {
         PatientBillItem billItem = billService.findBillItemByPatientBill(item.getInvoiceNumber());
                     if(billItem!=null)
                         invoiceData.setReferenceNumber(billItem.getPaymentReference());
+        auditTrailService.saveAuditTrail("Doctor Invoice", "Viewed Doctor Invoice with Id "+id);
         return ResponseEntity.ok(invoiceData);
     }
 
@@ -73,6 +76,7 @@ public class DoctorInvoiceController {
         PatientBillItem billItem = billService.findBillItemByPatientBill(item.getInvoiceNumber());
                     if(billItem!=null)
                         invoiceData.setReferenceNumber(billItem.getPaymentReference());
+        auditTrailService.saveAuditTrail("Doctor Invoice", "Edited Doctor Invoice with Id "+id);            
         return ResponseEntity.ok(invoiceData);
     }
 
@@ -80,6 +84,7 @@ public class DoctorInvoiceController {
     @PreAuthorize("hasAuthority('delete_doctorInvoices')") 
     public ResponseEntity<?> deleteDoctorInvoice(@PathVariable(value = "id") Long id) {
         doctorService.deleteDoctorInvoice(id);
+        auditTrailService.saveAuditTrail("Doctor Invoice", "Deleted Doctor Invoice with Id "+id); 
         return ResponseEntity.accepted().build();
     }
     @GetMapping("/doctor-invoices")
@@ -106,7 +111,7 @@ public class DoctorInvoiceController {
                         data.setReferenceNumber(item.getPaymentReference());
                     return data;
                 });
-
+        auditTrailService.saveAuditTrail("Doctor Invoice", "Viewed Billed Doctor Invoices"); 
         Pager<List<DoctorInvoiceData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

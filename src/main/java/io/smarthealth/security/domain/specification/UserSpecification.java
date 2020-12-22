@@ -1,9 +1,5 @@
 package io.smarthealth.security.domain.specification;
  
-import io.smarthealth.accounting.accounts.domain.specification.*;
-import io.smarthealth.accounting.accounts.domain.Account;
-import io.smarthealth.accounting.accounts.domain.AccountState;
-import io.smarthealth.accounting.accounts.domain.AccountType;
 import io.smarthealth.security.domain.User;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;

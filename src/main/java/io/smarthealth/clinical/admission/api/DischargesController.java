@@ -10,6 +10,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.Optional;
@@ -34,13 +35,14 @@ import org.springframework.web.bind.annotation.*;
 public class DischargesController {
 
     private final DischargeService service;
+    private final AuditTrailService auditTrailService; 
 
     @PostMapping("/discharge-summary")
 //    @PreAuthorize("hasAuthority('create_discharge-summary')")
     public ResponseEntity<Pager<DischargeData>> createDischargeSummary(@Valid @RequestBody DischargeData summaryData) {
 
         DischargeSummary result = service.createDischarge(summaryData);
-
+        auditTrailService.saveAuditTrail("Admission", "Discharged patient "+result.getPatient().getFullName()+" by doctor "+result.getDischargedBy());
         Pager<DischargeData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Discharge Created successful");
@@ -53,6 +55,7 @@ public class DischargesController {
     @GetMapping("/discharge-summary/{id}")
 //    @PreAuthorize("hasAuthority('view_discharge-summary')")
     public ResponseEntity<DischargeData> getDischarge(@PathVariable(value = "id") Long id) {
+         auditTrailService.saveAuditTrail("Admission", "Searched discharged patient identified by"+id );
         return ResponseEntity.ok(service.getDischargeById(id).toData());
     }
 
@@ -60,6 +63,7 @@ public class DischargesController {
 //    @PreAuthorize("hasAuthority('view_discharge-summary')")
     public ResponseEntity<DischargeData> getDischargeByVisit(@PathVariable(value = "visitNo") String visitNo) {
         DischargeSummary discharge = service.getDischargeByVisit(visitNo);
+        auditTrailService.saveAuditTrail("Admission", "Searched discharged patient identified by visit "+visitNo );
         if(discharge!=null){
             return ResponseEntity.ok(discharge.toData());
         }
@@ -70,6 +74,7 @@ public class DischargesController {
 //    @PreAuthorize("hasAuthority('edit_discharge-summary')")
     public ResponseEntity<DischargeDiagnosis> updateDischargeDiagnosis(@PathVariable(value = "admissionNo") String admissionNo, @Valid @RequestBody DischargeDiagnosis diagnosisData) {
         PatientDiagnosis diag = service.updateDiagnosis(admissionNo, diagnosisData);
+        auditTrailService.saveAuditTrail("Admission", "Edited discharged summary identified by admissionNo "+admissionNo );
         return ResponseEntity.ok(diag.toData());
     }
 
@@ -86,7 +91,10 @@ public class DischargesController {
         Pageable pageable = PaginationUtil.createPage(page, size);
 
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<DischargeData> list = service.getDischarges(dischargeNo, patientNo, term, range, pageable).map(u -> u.toData());
+        Page<DischargeData> list = service.getDischarges(dischargeNo, patientNo, term, range, pageable).map(u -> { 
+            auditTrailService.saveAuditTrail("Admission", "Viewed patient discharge for "+u.getPatient().getFullName() );
+            return u.toData();
+                });
 
         Pager<List<DischargeData>> pagers = new Pager();
         pagers.setCode("0");
@@ -108,7 +116,7 @@ public class DischargesController {
     public ResponseEntity<Pager<DischargeData>> updateDischarge(@PathVariable("id") Long id, @Valid @RequestBody DischargeData summaryData) {
 
         DischargeSummary result = service.updateDischarge(id, summaryData);
-
+        auditTrailService.saveAuditTrail("Admission", "Edited patient discharge Identified for "+result.getPatient().getFullName() );
         Pager<DischargeData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("DischargeSummary Updated successful");

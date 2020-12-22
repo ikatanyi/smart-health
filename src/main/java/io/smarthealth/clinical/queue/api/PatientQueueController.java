@@ -19,6 +19,7 @@ import io.smarthealth.organization.facility.service.DepartmentService;
 import io.smarthealth.organization.facility.service.FacilityService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -57,6 +58,9 @@ public class PatientQueueController {
 
     @Autowired
     private VisitService visitService;
+    
+    @Autowired
+    AuditTrailService auditTrailService;
 
     @Autowired
     private ServicePointService servicePointService;
@@ -88,7 +92,7 @@ public class PatientQueueController {
 
         Page<Visit> page = visitService.findVisitByServicePoint(serviceP, pageable);
         //.map(q -> patientQueueService.convertToPatientQueueData(q));
-
+        auditTrailService.saveAuditTrail("Queue", "Viewed Patient Queue for servicePoint "+serviceP.getName()); 
         for (Visit visit : page.getContent()) {
             PatientQueueData pq = new PatientQueueData();
             pq.setPatientData(patientService.convertToPatientData(visit.getPatient()));
@@ -120,6 +124,7 @@ public class PatientQueueController {
         Patient patient = patientService.findPatientOrThrow(patientNumber);
         Page<PatientQueueData> page = patientQueueService.fetchQueueByPatient(patient, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
+        auditTrailService.saveAuditTrail("Queue", "Viewed Patient Queue for Patient "+patient.getFullName()); 
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
@@ -134,6 +139,7 @@ public class PatientQueueController {
     @PreAuthorize("hasAuthority('view_patientqueue')")
     public ResponseEntity<List<PatientQueueData>> fetchQueue(@RequestParam(value = "visitNumber", required = false) final String visitNumber, @RequestParam(value = "staffNumber", required = false) final String staffNumber, @RequestParam(value = "servicePoint", required = false) final String servicePoint, @RequestParam(value = "patientNumber", required = false) final String patientNumber, Pageable pageable) {
         Page<PatientQueueData> page = patientQueueService.fetchQueue(visitNumber, staffNumber, servicePoint, patientNumber, pageable).map(q -> patientQueueService.convertToPatientQueueData(q));
+        auditTrailService.saveAuditTrail("Queue", "Viewed all Patient Queue "); 
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 
@@ -143,6 +149,7 @@ public class PatientQueueController {
         PatientQueue pq = patientQueueService.fetchQueueByID(queueNo);
         pq.setStatus(false);
         pq.setStopTime(Instant.now());
+        auditTrailService.saveAuditTrail("Queue", "Ended Patient Visit for Patient "+pq.getPatient().getFullName()); 
         patientQueueService.createPatientQueue(pq);
         return new ResponseEntity<>(HttpStatus.OK);
     }

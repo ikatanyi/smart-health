@@ -12,6 +12,7 @@ import io.smarthealth.stock.inventory.data.TransData;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.service.InventoryService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 public class InventoryController {
 
     private final InventoryService service;
+    private final AuditTrailService auditTrailService;
 
     @PostMapping("/inventory-entries")
     @PreAuthorize("hasAuthority('create_inventory')")
@@ -47,7 +49,7 @@ public class InventoryController {
         pagers.setCode("0");
         pagers.setMessage("Stock Movement successful");
         pagers.setContent(new TransData(result));
-
+        auditTrailService.saveAuditTrail("Inventory", "Created an inventory stock entry");
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -62,7 +64,7 @@ public class InventoryController {
         pagers.setCode("0");
         pagers.setMessage("Stock Movement successful");
         pagers.setContent(new TransData(result));
-
+        auditTrailService.saveAuditTrail("Inventory", "Created an inventory stock entry  for a specified supplier");
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -72,6 +74,7 @@ public class InventoryController {
     @PreAuthorize("hasAuthority('view_inventory')")
     public StockEntryData searchStockEntry(@PathVariable(value = "id") Long id) {
         StockEntryData stocks = service.getStockEntry(id).toData();
+        auditTrailService.saveAuditTrail("Inventory", "Viewed an inventory stock entry with id "+id);
         return stocks;
     }
 
@@ -106,7 +109,7 @@ public class InventoryController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Stock Movements");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Inventory", "Viewed all inventory stock entries");
         return ResponseEntity.ok(pagers);
     }
 
@@ -122,7 +125,7 @@ public class InventoryController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         List<StockMovement> list = service.getStockMovement(storeId, itemId, range);
-
+        auditTrailService.saveAuditTrail("Inventory", "Viewed inventory stock entries for item identified by item id "+itemId);
         Pager<?> pagers = PaginationUtil.paginateList(list, "Item Flow Report", "", pageable);
         return ResponseEntity.ok(pagers);
     }

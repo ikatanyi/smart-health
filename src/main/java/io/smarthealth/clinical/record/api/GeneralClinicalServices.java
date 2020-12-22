@@ -33,6 +33,7 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -90,6 +91,9 @@ public class GeneralClinicalServices {
 
     @Autowired
     DoctorItemService doctorItemService;
+    
+    @Autowired
+    AuditTrailService auditTrailService;
 
 //    prepare sick-off note
     @PostMapping("/sick-off")
@@ -111,6 +115,7 @@ public class GeneralClinicalServices {
         pagers.setCode("0");
         pagers.setMessage("Patient Sick-Off Note");
         pagers.setContent(data);
+        auditTrailService.saveAuditTrail("Consultation", "Created a sick-note for patient "+visit.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -124,6 +129,7 @@ public class GeneralClinicalServices {
         pagers.setCode("0");
         pagers.setMessage("Patient Sick-Off Note");
         pagers.setContent(note);
+        auditTrailService.saveAuditTrail("Consultation", "Created a sick-off for patient "+visit.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -144,6 +150,7 @@ public class GeneralClinicalServices {
         details.setTotalPage(page.getTotalPages());
         details.setReportName("Patient Sick-Off Notes");
         pagers.setPageDetails(details);
+        auditTrailService.saveAuditTrail("Consultation", "Viewed a sick-notes for patient "+patient.getFullName());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pagers);
     }
@@ -217,6 +224,7 @@ public class GeneralClinicalServices {
         pagers.setCode("0");
         pagers.setMessage("Patient referral request successfully submitted");
         pagers.setContent(data);
+        auditTrailService.saveAuditTrail("Consultation", "Created a referral for patient "+data.getPatientName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -230,6 +238,7 @@ public class GeneralClinicalServices {
         pagers.setCode("0");
         pagers.setMessage("Patient Referral Details");
         pagers.setContent(note);
+        auditTrailService.saveAuditTrail("Consultation", "Viewed a referral for patient "+visit.getPatient().getFullName()+" identified by visitNo "+visitNo);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -259,6 +268,7 @@ public class GeneralClinicalServices {
         details.setTotalPage(1);
         details.setReportName("Employee data");
         pagers.setPageDetails(details);
+        auditTrailService.saveAuditTrail("Consultation", "Viewed all requests for all practitioners");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pagers);
     }
@@ -277,7 +287,7 @@ public class GeneralClinicalServices {
             pageable = PageRequest.of(pageNo, pageSize);
         }
         Page<ReferralData> page = referralsService.fetchReferrals(visitNo, patientNo, pageable).map((r) -> ReferralData.map(r));
-
+        auditTrailService.saveAuditTrail("Consultation", "Viewed all referrals");
         Pager< List< ReferralData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

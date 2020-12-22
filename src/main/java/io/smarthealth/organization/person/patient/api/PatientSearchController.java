@@ -7,6 +7,7 @@ package io.smarthealth.organization.person.patient.api;
 
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,9 +28,11 @@ public class PatientSearchController {
 
 //    private final PatientSearchService patientSearchService;
     private final PatientService patientService;
+    private final AuditTrailService auditTrailService;
 
-    public PatientSearchController(PatientService patientService) {
+    public PatientSearchController(PatientService patientService, AuditTrailService auditTrailService) {
         this.patientService = patientService;
+        this.auditTrailService = auditTrailService;
     }
 
 //    public PatientSearchController(PatientSearchService patientSearchService, PatientService patientService) {
@@ -52,7 +55,7 @@ public class PatientSearchController {
         List<PatientData> lists = patientService.search(searchTerm, page, size).stream()
                 .map(p -> patientService.convertToPatientData(p))
                 .collect(Collectors.toList());
-
+        auditTrailService.saveAuditTrail("Patient", "Viewed all registered patients");
         return ResponseEntity.ok(lists);
     }
 

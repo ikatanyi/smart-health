@@ -361,5 +361,16 @@ public class ItemService {
         data.setStockCategory(item.getCategory());
         return data;
     }
+    
+    public Double getItemReorderCount(String itemCode,Long storeId) {
+        Store store = storeService.getStoreWithNoFoundDetection(storeId);
+        Item stockItem = findByItemCodeOrThrow(itemCode);
+        Optional<ReorderRule> rule = reorderRuleRepository.findByStoreAndStockItem(store, stockItem);
+        if (rule.isPresent()) {
+            return rule.get().getReorderQty();
+        } else {
+            return 0.0;
+        }
+    }
 
 }

@@ -9,6 +9,7 @@ import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.stock.purchase.service.PurchaseInvoiceService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -31,9 +32,11 @@ import org.springframework.web.bind.annotation.*;
 public class PurchaseInvoiceController {
 
     private final PurchaseInvoiceService service;
+    private final AuditTrailService auditTrailService;
 
-    public PurchaseInvoiceController(PurchaseInvoiceService service) {
+    public PurchaseInvoiceController(PurchaseInvoiceService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/purchaseinvoices")
@@ -46,7 +49,7 @@ public class PurchaseInvoiceController {
         pagers.setCode("0");
         pagers.setMessage("Purchase Invoice created successful");
         pagers.setContent(result.toData());
-
+        auditTrailService.saveAuditTrail("Purchase", "Created an purchase invoice "+result.getInvoiceNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -55,6 +58,7 @@ public class PurchaseInvoiceController {
     @PreAuthorize("hasAuthority('view_purchaseinvoices')")
     public PurchaseInvoiceData getPurchaseInvoice(@PathVariable(value = "id") Long code) {
         PurchaseInvoice po = service.findOneWithNoFoundDetection(code);
+        auditTrailService.saveAuditTrail("Purchase", "Viewed purchase invoice "+po.getInvoiceNumber());
         return po.toData();
     }
 
@@ -85,7 +89,7 @@ public class PurchaseInvoiceController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Purchase Orders");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Purchase", "Viewed all purchase invoices ");
         return ResponseEntity.ok(pagers);
     }
 
@@ -98,7 +102,7 @@ public class PurchaseInvoiceController {
         pagers.setCode("0");
         pagers.setMessage("Credit Note created successful");
         pagers.setContent(result.toData());
-
+        auditTrailService.saveAuditTrail("Purchase", "Created an purchase invoice credit note for Purchase invoice"+result.getInvoiceNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 }

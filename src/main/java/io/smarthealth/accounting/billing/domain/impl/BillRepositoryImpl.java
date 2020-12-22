@@ -111,11 +111,12 @@ public class BillRepositoryImpl implements BillRepository {
 //        .sorted(Comparator.comparing(User::getScore))
 //        .collect(Collectors.toList());
         }
-
-        List<SummaryBill> sortedBills = result
-                .stream()
-                .sorted(Comparator.comparing(SummaryBill::getDate))
-                .collect(Collectors.toList());
+        //TODO:: find a better way to agreggate the patient bills, lets list items as credit and debit 
+        
+         List<SummaryBill> sortedBills = result
+                    .stream()
+                    .sorted(Comparator.comparing(SummaryBill::getDate))
+                    .collect(Collectors.toList());
 
         return sortedBills;
     }

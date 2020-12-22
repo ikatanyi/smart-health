@@ -8,6 +8,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,15 +39,18 @@ import org.springframework.web.multipart.MultipartFile;
 public class LabResultController {
 
     private final LaboratoryService service;
+    private final AuditTrailService auditTrailService;
 
-    public LabResultController(LaboratoryService service) {
+    public LabResultController(LaboratoryService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/labs/results")
     @PreAuthorize("hasAuthority('create_labresults')")
     public ResponseEntity<?> createLabResult(@Valid @RequestBody LabResultData data) {
         LabResult results = service.createLabResult(data);
+        auditTrailService.saveAuditTrail("Laboratory", "Entered lab results for "+results.getAnalyte()+" identified by labNumber "+results.getLabNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(results.toData());
     }
 
@@ -56,7 +60,10 @@ public class LabResultController {
 
         List<LabResultData> lists = service.createLabResult(data)
                 .stream()
-                .map(x -> x.toData())
+                .map(x -> {
+                    auditTrailService.saveAuditTrail("Laboratory", "Entered lab results for "+x.getAnalyte()+" identified by labNumber "+x.getLabNumber());
+                    return x.toData();
+                        })
                 .collect(Collectors.toList());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(lists);
@@ -66,6 +73,7 @@ public class LabResultController {
     @PreAuthorize("hasAuthority('view_labresults')")
     public ResponseEntity<?> getLabResult(@PathVariable(value = "id") Long id) {
         LabResult request = service.getResult(id);
+        auditTrailService.saveAuditTrail("Laboratory", "viewed lab results for "+request.getAnalyte()+" identified by labNumber "+request.getLabNumber());
         return ResponseEntity.ok(request.toData());
     }
 
@@ -73,6 +81,7 @@ public class LabResultController {
     @PreAuthorize("hasAuthority('edit_labresults')")
     public ResponseEntity<?> updateLabResult(@PathVariable(value = "id") Long id, @Valid @RequestBody LabResultData data) {
         LabResult item = service.updateLabResult(id, data);
+        auditTrailService.saveAuditTrail("Laboratory", "Edited lab results for "+item.getAnalyte()+" identified by labNumber "+item.getLabNumber());
         return ResponseEntity.ok(item.toData());
     }
 
@@ -100,7 +109,10 @@ public class LabResultController {
         final DateRange range = DateRange.fromIsoString(dateRange);
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<LabResultData> list = service.getLabResults(visitNumber, patientNumber, labNumber, walkin, testName, orderNo, range, pageable)
-                .map(x -> x.toData());
+                .map(x ->{
+                    auditTrailService.saveAuditTrail("Laboratory", "viewed lab results for "+x.getAnalyte()+" identified by labNumber "+x.getLabNumber());
+                    return x.toData();
+                        });
 
         Pager<List<LabResultData>> pagers = new Pager();
         pagers.setCode("0");
@@ -126,6 +138,7 @@ public class LabResultController {
     ) {
 
         DocResponse doc = service.uploadDocument(testId, name, file);
+        auditTrailService.saveAuditTrail("Laboratory", "Uploaded lab test identified by test Id "+testId);
         return ResponseEntity.status(HttpStatus.OK).body(doc);
     }
 }

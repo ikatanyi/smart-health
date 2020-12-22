@@ -5,6 +5,7 @@ import io.smarthealth.accounting.taxes.service.TaxServices;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -27,9 +28,11 @@ import org.springframework.web.bind.annotation.*;
 public class TaxRestController {
 
     private final TaxServices service;
+    private final AuditTrailService auditTrailService;
 
-    public TaxRestController(TaxServices taxServices) {
+    public TaxRestController(TaxServices taxServices, AuditTrailService auditTrailService) {
         this.service = taxServices;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/taxes")
@@ -42,7 +45,7 @@ public class TaxRestController {
         pagers.setCode("0");
         pagers.setMessage("Tax Success Created");
         pagers.setContent(result);
-
+        auditTrailService.saveAuditTrail("Tax", "Created tax item "+result.getTaxName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -54,7 +57,7 @@ public class TaxRestController {
         pagers.setCode("0");
         pagers.setMessage("Tax Success updated");
         pagers.setContent(result);
-
+        auditTrailService.saveAuditTrail("Tax", "Viewed tax item "+result.getTaxName());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(pagers);
     }
     
@@ -62,6 +65,7 @@ public class TaxRestController {
     @PreAuthorize("hasAuthority('view_tax')")
     public ResponseEntity<?> getTaxesByName(@PathVariable(value = "name") String name) {
         List<Tax> result = service.fetchTaxesByName(name);
+        auditTrailService.saveAuditTrail("Tax", "viewed tax items Identified by "+name);
         Pager<List<Tax>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -73,6 +77,7 @@ public class TaxRestController {
     @PreAuthorize("hasAuthority('edit_tax')")
     public ResponseEntity<?> updatetax(@PathVariable(value = "id") Long id, @Valid @RequestBody Tax data) {
         Tax tax = service.updateTax(id, data);
+        auditTrailService.saveAuditTrail("Tax", "Serched tax items Identified by "+id);
         return ResponseEntity.ok(tax);
     }
 
@@ -83,7 +88,7 @@ public class TaxRestController {
             @RequestParam(value = "pageSize", required = false, defaultValue = "1000") Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-
+        auditTrailService.saveAuditTrail("Tax", "viewed all taxes");
         Page<Tax> list = service.fetchAllTaxes(pageable);
         Pager<List<Tax>> pagers = new Pager();
         pagers.setCode("0");

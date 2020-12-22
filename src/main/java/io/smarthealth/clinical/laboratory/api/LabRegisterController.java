@@ -12,6 +12,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.person.domain.WalkIn;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +47,7 @@ public class LabRegisterController {
 
     private final LaboratoryService service;
     private final WalkingService walkinService;
+    private final AuditTrailService auditTrailService;
 
 //    public LabRegisterController(LaboratoryService service) {
 //        this.service = service;
@@ -56,12 +58,12 @@ public class LabRegisterController {
     public ResponseEntity<?> createLabRequest(@Valid @RequestBody LabRegisterData data) {
        
         LabRegister item = service.createLabRegister(data);
-
+        auditTrailService.saveAuditTrail("Laboratory", "Acknowledged lab request orderNo"+item.getOrderNumber());
         Pager<LabRegisterData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Lab Request Created.");
         pagers.setContent(item.toData(false));
-
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -85,6 +87,7 @@ public class LabRegisterController {
     public ResponseEntity<?> getLabRequest(@PathVariable(value = "labNo") String labNo, @RequestParam(value = "expand", required = false) Boolean expand) {
 
         LabRegister request = service.getLabRegisterByNumber(labNo);
+        auditTrailService.saveAuditTrail("Laboratory", "Viewed lab register test identified by labNo "+labNo);
         return ResponseEntity.ok(request.toData(isExpanded(expand)));
     }
 
@@ -92,6 +95,7 @@ public class LabRegisterController {
     @PreAuthorize("hasAuthority('edit_labregister')")
     public ResponseEntity<?> updateLabRegisterTests(@PathVariable(value = "labNo") String labNo, @PathVariable(value = "id") Long testId, @Valid @RequestBody StatusRequest status) {
         int results = service.updateLabRegisteredTest(labNo, testId, status);
+        auditTrailService.saveAuditTrail("Laboratory", "Update lab register test identified by testId "+testId);
         return ResponseEntity.ok(results);
     }
 
@@ -99,6 +103,7 @@ public class LabRegisterController {
     @PreAuthorize("hasAuthority('view_labregister')")
     public ResponseEntity<?> getLabRequestTests(@PathVariable(value = "labNo") String labNo) {
         LabRegister item = service.getLabRegisterByNumber(labNo);
+        auditTrailService.saveAuditTrail("Laboratory", "Viewed lab test identified by LabNo "+labNo);
         List<LabRegisterTestData> list = item.getTests()
                 .stream().map(x -> x.toData(false))
                 .collect(Collectors.toList());
@@ -111,7 +116,10 @@ public class LabRegisterController {
     public ResponseEntity<?> getLabRegisterResults(@PathVariable(value = "labNo") String labNo) {
         LabRegister request = service.getLabRegisterByNumber(labNo);
         List<LabResultData> results = service.getResultByRegister(request)
-                .stream().map(x -> x.toData())
+                .stream().map(x -> {
+                    auditTrailService.saveAuditTrail("Laboratory", "Viewed lab test results for "+x.getAnalyte());
+                    return x.toData();
+                        })
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(results);
@@ -121,6 +129,7 @@ public class LabRegisterController {
     @PreAuthorize("hasAuthority('edit_labregister')")
     public ResponseEntity<?> updateLabRequest(@PathVariable(value = "id") Long id, @Valid @RequestBody LabRegisterData data) {
         LabRegister item = service.updateLabRegister(id, data);
+        auditTrailService.saveAuditTrail("Laboratory", "Edited lab test identified by labNo "+item.getLabNumber());
         return ResponseEntity.ok(item.toData(false));
     }
 
@@ -128,6 +137,7 @@ public class LabRegisterController {
     @PreAuthorize("hasAuthority('delete_labregister')")
     public ResponseEntity<?> deleteLabRequest(@PathVariable(value = "id") Long id) {
         service.voidLabRegister(id);
+        auditTrailService.saveAuditTrail("Laboratory", "Deleted lab test identified by id "+id);
         return ResponseEntity.accepted().build();
     }
 //String labNumber, String orderNumber, String visitNumber,String patientNumber, TestStatus status
@@ -157,7 +167,7 @@ public class LabRegisterController {
                        if(walkin.isPresent())
                            data.setPatientName(walkin.get().getFullName());
                     }  
-                   
+                   auditTrailService.saveAuditTrail("Laboratory", "viewed lab test "+x.getLabNumber());
                    return data;
                 });
 
@@ -182,6 +192,7 @@ public class LabRegisterController {
         List<LabRegisterTestData> labRegisterTests = service.getTestsResultsByVisit(visitNo, labNumber)
                 .stream().map(x -> x.toData(true))
                 .collect(Collectors.toList());
+        auditTrailService.saveAuditTrail("Laboratory", "viewed lab test results identified by visitNo "+visitNo);
         return ResponseEntity.ok(labRegisterTests);
     }
 

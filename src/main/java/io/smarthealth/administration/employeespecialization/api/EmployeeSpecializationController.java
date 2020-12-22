@@ -12,6 +12,7 @@ import io.smarthealth.administration.employeespecialization.service.EmployeeSpec
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,9 @@ public class EmployeeSpecializationController {
 
     @Autowired
     EmployeeSpecializationService employeeSpecializationService;
+    
+    @Autowired
+    AuditTrailService auditTrailService; 
 
     @PostMapping("/employee-specialization")
     @PreAuthorize("hasAuthority('create_employeeSpecialization')")
@@ -49,7 +53,7 @@ public class EmployeeSpecializationController {
         pagers.setCode("0");
         pagers.setMessage("Specialization details created successfully");
         pagers.setContent(EmployeeSpecializationData.map(result));
-
+        auditTrailService.saveAuditTrail("administration", "created employee specialization "+result.getSpecialization());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -62,6 +66,7 @@ public class EmployeeSpecializationController {
         for (EmployeeSpecialization sp : specialization) {
             EmployeeSpecializationData d = EmployeeSpecializationData.map(sp);
             data.add(d);
+            auditTrailService.saveAuditTrail("administration", "created employee specialization "+d.getSpecialization());
         }
         Pager<List<EmployeeSpecializationData>> pagers = new Pager();
         pagers.setCode("0");
@@ -87,6 +92,7 @@ public class EmployeeSpecializationController {
         for (EmployeeSpecialization sp : specialization) {
             EmployeeSpecializationData d = EmployeeSpecializationData.map(sp);
             data.add(d);
+            auditTrailService.saveAuditTrail("administration", "created employee specialization "+d.getSpecialization());
         }
         Pager<List<EmployeeSpecializationData>> pagers = new Pager();
         pagers.setCode("0");
@@ -107,6 +113,7 @@ public class EmployeeSpecializationController {
     @PreAuthorize("hasAuthority('view_employeeSpecialization')")
     public ResponseEntity<?> fetchEmployeeSpecializationById(@PathVariable("id") final Long id) {
         EmployeeSpecialization result = employeeSpecializationService.fetchSpecializationById(id);
+        auditTrailService.saveAuditTrail("administration", "created employee specialization "+result.getSpecialization());
         Pager<EmployeeSpecializationData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Specialization details identified by id " + id);
@@ -120,6 +127,7 @@ public class EmployeeSpecializationController {
     public ResponseEntity<?> updateEmployeeSpecializationById(@Valid @RequestBody EmployeeSpecializationData d, @PathVariable("id") final Long id) {
         EmployeeSpecialization result = employeeSpecializationService.fetchSpecializationById(id);
         //EmployeeSpecialization es =  EmployeeSpecializationData.map(d);
+        auditTrailService.saveAuditTrail("administration", "Edited employee specialization "+result.getSpecialization());
         result.setCategory(d.getCategory());
         result.setSpecialization(d.getSpecialization());
         EmployeeSpecialization newResult = employeeSpecializationService.createEmployeeSpecialization(result);
@@ -135,6 +143,7 @@ public class EmployeeSpecializationController {
     @PreAuthorize("hasAuthority('delete_employeeSpecialization')")
     public ResponseEntity<?> deleteEmployeeSpecializationById(@PathVariable("id") final Long id) {
         employeeSpecializationService.deleteSpecialization(id);
+        auditTrailService.saveAuditTrail("administration", "Deleted employee specialization identified by "+id);
         return ResponseEntity.ok(ApiResponse.successMessage("Specialization details identified by id " + id + " was successfully deleted", HttpStatus.OK, id));
     }
 }

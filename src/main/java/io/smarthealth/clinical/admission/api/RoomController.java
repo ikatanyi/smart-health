@@ -7,6 +7,7 @@ import io.smarthealth.clinical.admission.service.RoomService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,11 +33,14 @@ import org.springframework.web.bind.annotation.*;
 public class RoomController {
 
     private final RoomService service;
+    private final AuditTrailService auditTrailService;            
+
      
     @GetMapping("/room/{id}")
 //    @PreAuthorize("hasAuthority('view_room')")
     public Room getItem(@PathVariable(value = "id") Long code) {
-        Room room = service.getRoom(code);
+        auditTrailService.saveAuditTrail("Admission", "Searched ward room identified by "+code);
+        Room room = service.getRoom(code);        
         return  room;
     }
 
@@ -52,8 +56,11 @@ public class RoomController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-
-        Page<RoomData> list = service.fetchRooms(name, type, active, wardId, term, pageable).map(u -> u.toData());
+     
+        Page<RoomData> list = service.fetchRooms(name, type, active, wardId, term, pageable).map(u -> { 
+            auditTrailService.saveAuditTrail("Admission", "Viewed ward room  "+u.getName());
+            return u.toData();
+                });
         
         
         Pager<List<RoomData>> pagers=new Pager();
@@ -77,7 +84,7 @@ public class RoomController {
     public ResponseEntity<?> createRoom(@Valid @RequestBody RoomData roomData) {
         
         RoomData result = service.createRoom(roomData).toData();
-        
+        auditTrailService.saveAuditTrail("Admission", "Created ward room  "+result.getName());
         Pager<RoomData> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("Room created successful");
@@ -92,7 +99,7 @@ public class RoomController {
     public ResponseEntity<?> updateRoom(@PathVariable("id") Long id, @Valid @RequestBody RoomData roomData) {
         
         RoomData result = service.updateRoom(id,roomData).toData();
-        
+        auditTrailService.saveAuditTrail("Admission", "Edited ward room  "+result.getName());
         Pager<RoomData> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("Room Updated successful");

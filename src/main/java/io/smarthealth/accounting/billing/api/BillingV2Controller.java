@@ -17,11 +17,13 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.Value;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -46,14 +48,16 @@ import org.springframework.web.bind.annotation.RestController;
 @Api
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v2")
 public class BillingV2Controller {
 
     private final BillingService service;
+    private final AuditTrailService auditTrailService;
 
-    public BillingV2Controller(BillingService service) {
-        this.service = service;
-    }
+//    public BillingV2Controller(BillingService service) {
+//        this.service = service;
+//    }
 
     @PostMapping("/billing")
     @PreAuthorize("hasAuthority('create_billV2')")
@@ -65,7 +69,7 @@ public class BillingV2Controller {
         pagers.setCode("0");
         pagers.setMessage("Bill Successfully Created.");
         pagers.setContent(patientbill.toData());
-
+        auditTrailService.saveAuditTrail("Billing", "Created a bill for "+patientbill.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -73,6 +77,7 @@ public class BillingV2Controller {
     @PreAuthorize("hasAuthority('view_billV2')")
     public BillData getBill(@PathVariable(value = "id") Long code) {
         PatientBill bill = service.findOneWithNoFoundDetection(code);
+        auditTrailService.saveAuditTrail("Billing", "Viewed a bill for "+bill.getPatient().getFullName());
         return bill.toData();
     }
 
@@ -87,7 +92,7 @@ public class BillingV2Controller {
         if (patientbill == null) {
             throw APIException.badRequest("Copay creation was not successful");
         }
-
+        auditTrailService.saveAuditTrail("Billing", "Created a copay bill for "+patientbill.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(patientbill.toData());
     }
 
@@ -113,7 +118,7 @@ public class BillingV2Controller {
         int start = (int) pageable.getOffset();
         int end = (start + pageable.getPageSize()) > list.size() ? list.size() : (start + pageable.getPageSize());
         Page<SummaryBill> pages = new PageImpl<>(list.subList(start, end), pageable, list.size());
-
+        auditTrailService.saveAuditTrail("Billing", "Viewed a bill summary ");
         Pager<List<SummaryBill>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -140,7 +145,20 @@ public class BillingV2Controller {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createUnPaged(page, size);
-        BillDetail details = service.getBillDetails(visitNumber, includeCanceled, paymentMethod, pageable);
+        BillDetail details = service.getBillDetails(visitNumber, includeCanceled,paymentMethod, pageable);
+        auditTrailService.saveAuditTrail("Billing", "Viewed Billed items");
+//        Pager<List<SummaryBill>> pagers = new Pager();
+//        pagers.setCode("0");
+//        pagers.setMessage("Success");
+//        pagers.setContent(list.getContent());
+//        PageDetails details = new PageDetails();
+//        details.setPage(list.getNumber() + 1);
+//        details.setPerPage(list.getSize());
+//        details.setTotalElements(list.getTotalElements());
+//        details.setTotalPage(list.getTotalPages());
+//        details.setReportName("Patient Bills");
+//        pagers.setPageDetails(details);
+//        BillDetail details = service.getBillDetails(visitNumber, includeCanceled, paymentMethod, pageable);
 
         return ResponseEntity.ok(details);
     }
@@ -149,6 +167,7 @@ public class BillingV2Controller {
     @PreAuthorize("hasAuthority('edit_billV2')")
     public ResponseEntity<?> cancelBills(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody List<VoidBillItem> billItems) {
         List<BillItemData> bills = service.voidBillItem(visitNumber, billItems).stream().map(x -> x.toData()).collect(Collectors.toList());
+        auditTrailService.saveAuditTrail("Billing", "Deleted a bill items for visit. "+visitNumber);
         return ResponseEntity.ok(bills);
     }
 
@@ -156,6 +175,7 @@ public class BillingV2Controller {
     @PreAuthorize("hasAuthority('view_billV2')")
     public ResponseEntity<?> finalizeBills(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody BillFinalizeData finalizeBill) {
         String invoice = service.finalizeBill(visitNumber, finalizeBill);
+        auditTrailService.saveAuditTrail("Billing", "Finalized a cash bill for visit. "+visitNumber);
         return ResponseEntity.ok(new FinalizedBill(invoice));
     }
 

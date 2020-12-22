@@ -7,6 +7,7 @@ import io.smarthealth.notification.data.NoticeType;
 import io.smarthealth.notification.data.NotificationData;
 import io.smarthealth.notification.data.NotificationResponse;
 import io.smarthealth.notification.service.NotificationService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;

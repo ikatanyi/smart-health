@@ -9,9 +9,11 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -36,10 +38,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api")
 public class RadiologyResultController {
 
-    private final RadiologyService service;
+    private final RadiologyService service;    
+    private final AuditTrailService auditTrailService;
 
-    public RadiologyResultController(RadiologyService service) {
+    public RadiologyResultController(RadiologyService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     
@@ -47,6 +51,7 @@ public class RadiologyResultController {
     @PreAuthorize("hasAuthority('create_radiologyresults')")
     public ResponseEntity<?> createRadiologyResult(@Valid @RequestBody RadiologyResultData data) {
         RadiologyResult results = service.saveRadiologyResult( data);
+        auditTrailService.saveAuditTrail("Radiology", "Entered Patient Radiology results for test  "+results.getPatientScanTest().getRadiologyTest().getScanName());
         return ResponseEntity.status(HttpStatus.CREATED).body(results.toData());
     }
     
@@ -54,6 +59,7 @@ public class RadiologyResultController {
     @PreAuthorize("hasAuthority('create_radiologyresults')")
     public ResponseEntity<?> uploadScanImage(Long testId, MultipartFile file) {
         PatientScanTestData results = service.uploadScanImage(testId, file).toData();
+        auditTrailService.saveAuditTrail("Radiology", "Uploaded Patient Radiology image for test  "+results.getScanName());
         return ResponseEntity.status(HttpStatus.CREATED).body(results);
     }
 
@@ -62,6 +68,7 @@ public class RadiologyResultController {
     @PreAuthorize("hasAuthority('view_radiologyresults')")
     public ResponseEntity<?> getRadiologyResult(@PathVariable(value = "id") Long id) {
         RadiologyResult request = service.findResultsByIdWithNotFoundDetection(id);
+        auditTrailService.saveAuditTrail("Radiology", "Viewed Patient Radiology test for"+request.getPatientScanTest().getRadiologyTest().getScanName());
         return ResponseEntity.ok(request.toData());
     }
 
@@ -69,6 +76,7 @@ public class RadiologyResultController {
     @PreAuthorize("hasAuthority('edit_radiologyresults')")
     public ResponseEntity<?> updateLabResult(@PathVariable(value = "id") Long id, MultipartFile file, @Valid @RequestBody RadiologyResultData data) {
         RadiologyResult item = service.updateRadiologyResult(id, file, data);
+        auditTrailService.saveAuditTrail("Radiology", "Updated Patient Radiology test identified by id "+id);
         return ResponseEntity.ok(item.toData());
     }
 
@@ -96,6 +104,7 @@ public class RadiologyResultController {
         Page<RadiologyResultData> list = service.findAllRadiologyResults(visitNumber, patientNumber, scanNumber, walkin, status, orderNo, range, search, pageable)
                 .map(x -> x.toData());
 
+        auditTrailService.saveAuditTrail("Radiology", "Viewed all Patient Radiology results done");
         Pager<List<RadiologyResultData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

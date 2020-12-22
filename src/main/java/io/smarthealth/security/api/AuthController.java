@@ -48,6 +48,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder; 
+import io.smarthealth.security.service.AuditTrailService;
 
 /**
  *
@@ -64,6 +65,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final EmailService mailSender;
+    private final AuditTrailService auditTrailService;
 
     @PostMapping("/users")
     @PreAuthorize("hasAuthority('create_users')")
@@ -115,7 +117,7 @@ public class AuthController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/auth/users/{username}")
                 .buildAndExpand(result.getUsername()).toUri();
-
+        auditTrailService.saveAuditTrail("Security", "Created user "+user.getUsername());
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
     }
 
@@ -143,7 +145,7 @@ public class AuthController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Users");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Security", "Viewed all registered users");
         return ResponseEntity.ok(pagers);
 //        return ResponseEntity.ok(users);
     }
@@ -169,6 +171,7 @@ public class AuthController {
         user.setUsername(data.getUsername());
         user.setEnabled(data.isEnabled());
         User savedUser = userRepository.save(user);
+        auditTrailService.saveAuditTrail("Security", "Updated user profile for user identified by "+username);
         return ResponseEntity.ok(savedUser.toData());
     }
 
@@ -178,7 +181,7 @@ public class AuthController {
 
         User user = userService.findUserByUsernameOrEmail(username)
                 .orElseThrow(() -> APIException.notFound("Username or email {0} not found.... ", username));
-
+        auditTrailService.saveAuditTrail("Security", "Viewed user profile for user "+username);
         return ResponseEntity.ok(user.toData());
     }
 
@@ -201,6 +204,7 @@ public class AuthController {
                     });
 
                 });
+        auditTrailService.saveAuditTrail("Security", "Viewed user permissions for user "+user.getUsername());
         return ResponseEntity.ok(list);
     }
 
@@ -223,7 +227,7 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(password));
         user.setFirstTimeLogin(true);
         userRepository.save(user);
-
+        auditTrailService.saveAuditTrail("Security", "Reset password for user "+user.getUsername());
         return ResponseEntity.ok(new ApiResponse(true, "You should receive a temporarly password on your registered email shortly"));
     }
 
@@ -241,6 +245,7 @@ public class AuthController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/auth/users/updatePassword")
                 .buildAndExpand().toUri();
+        auditTrailService.saveAuditTrail("Security", "Changed Password");
         return ResponseEntity.ok(new ApiResponse(true, "Token Validated Success. \n Change Password : " + location.toString()));
     }
 
@@ -260,7 +265,7 @@ public class AuthController {
         user.setFirstTimeLogin(false);
 
         userService.changeUserPassword(user, passwordDto.getNewPassword());
-
+        auditTrailService.saveAuditTrail("Security", "Updated password for user "+user.getUsername());
         return ResponseEntity.ok(new ApiResponse(true, "Password updated successfully"));
     }
 
@@ -275,7 +280,7 @@ public class AuthController {
         if (user == null) {
             return ResponseEntity.ok(new NotificationResponse(Boolean.FALSE, "User is empty, No notifications"));
         }
-
+       auditTrailService.saveAuditTrail("Security", "Viewed user notifications for "+user.getUsername());
         return ResponseEntity.ok(userService.getUserNotification(user));
 
     }

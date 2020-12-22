@@ -6,6 +6,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -28,9 +29,11 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentTermsRestController {
 
     private final PaymentTermsService service;
+    private final AuditTrailService auditTrailService; 
 
-    public PaymentTermsRestController(PaymentTermsService paymentTerms) {
+    public PaymentTermsRestController(PaymentTermsService paymentTerms, AuditTrailService auditTrailService) {
         this.service = paymentTerms;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/payment-terms")
@@ -41,7 +44,7 @@ public class PaymentTermsRestController {
         }
 
         PaymentTerms result = service.createPaymentTerm(paymentTerms);
-
+        auditTrailService.saveAuditTrail("Administration", "Created Payment terms  "+result.getTermsName());
         Pager<PaymentTerms> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Payment Terms created successful");
@@ -55,7 +58,7 @@ public class PaymentTermsRestController {
     @PreAuthorize("hasAuthority('create_paymentTerms')")
     public ResponseEntity<?> upatePaymentTerms(@PathVariable("id") Long id, @Valid @RequestBody PaymentTerms paymentTerms) {
         PaymentTerms result = service.updatePaymentTerm(id, paymentTerms);
-
+        auditTrailService.saveAuditTrail("Administration", "Edited Payment terms  "+result.getTermsName());
         Pager<PaymentTerms> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Payment Terms updated successful");
@@ -69,6 +72,7 @@ public class PaymentTermsRestController {
     @PreAuthorize("hasAuthority('view_paymentTerms')")
     public PaymentTerms getPaymentterm(@PathVariable(value = "id") Long id) {
         PaymentTerms paymentTerms = service.getPaymentTermByIdWithFailDetection(id);
+        auditTrailService.saveAuditTrail("Administration", "Viewed Payment terms  "+paymentTerms.getTermsName());
         return paymentTerms;
     }
 
@@ -82,7 +86,7 @@ public class PaymentTermsRestController {
         Pageable pageable = PaginationUtil.createPage(page, size);
 
         Page<PaymentTerms> list = service.getPaymentTerms(pageable, includeClosed);
-
+        auditTrailService.saveAuditTrail("Administration", "Viewed all Payment terms");
         Pager<List<PaymentTerms>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -102,7 +106,7 @@ public class PaymentTermsRestController {
     @PreAuthorize("hasAuthority('view_paymentTerms')")
     public ResponseEntity<?> getPaymentTermsByName(@PathVariable("name") String name) {
         List<PaymentTerms> list = service.getPaymentTermsByName(name);
-
+        auditTrailService.saveAuditTrail("Administration", "Searched Payment terms  identified by "+name);
         Pager<List<PaymentTerms>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

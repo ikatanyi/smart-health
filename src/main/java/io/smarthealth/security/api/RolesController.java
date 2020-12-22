@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.data.PermissionData;
 import io.smarthealth.security.data.RoleData;
 import io.smarthealth.security.data.RolePermissionsData;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;

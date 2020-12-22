@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PatientVisit" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="20"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
@@ -75,7 +75,7 @@
 	<columnHeader>
 		<band height="33">
 			<staticText>
-				<reportElement x="19" y="22" width="73" height="11" uuid="893fb935-ca5e-447c-887e-af73a2f47729"/>
+				<reportElement mode="Opaque" x="19" y="22" width="73" height="11" forecolor="#FFFFFF" backcolor="#666666" uuid="893fb935-ca5e-447c-887e-af73a2f47729"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -85,17 +85,18 @@
 				<text><![CDATA[Patient No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="92" y="22" width="103" height="11" uuid="d8061cad-6118-4fec-8d05-8f390619ac61"/>
+				<reportElement mode="Opaque" x="92" y="22" width="103" height="11" forecolor="#FFFFFF" backcolor="#666666" uuid="d8061cad-6118-4fec-8d05-8f390619ac61"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
 				<textElement>
 					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="279" y="22" width="47" height="11" uuid="5f410467-fdd2-45db-a5cc-0a779e6dce62"/>
+				<reportElement mode="Opaque" x="286" y="22" width="32" height="11" forecolor="#FFFFFF" backcolor="#666666" uuid="5f410467-fdd2-45db-a5cc-0a779e6dce62"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -105,7 +106,7 @@
 				<text><![CDATA[Conslt]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="374" y="22" width="46" height="11" uuid="41c86393-6f56-4da3-b645-3a4df80cd4d3"/>
+				<reportElement mode="Opaque" x="358" y="22" width="38" height="11" forecolor="#FFFFFF" backcolor="#666666" uuid="41c86393-6f56-4da3-b645-3a4df80cd4d3"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -115,7 +116,7 @@
 				<text><![CDATA[Proc]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="420" y="22" width="46" height="11" uuid="52ba3084-130f-47d2-a3ff-58aaddeb375e"/>
+				<reportElement mode="Opaque" x="396" y="22" width="40" height="11" forecolor="#FFFFFF" backcolor="#666666" uuid="52ba3084-130f-47d2-a3ff-58aaddeb375e"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -125,7 +126,7 @@
 				<text><![CDATA[Rad]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="466" y="22" width="46" height="11" uuid="63177d3e-c6c4-4911-8030-fe1fcb52dc6e"/>
+				<reportElement mode="Opaque" x="436" y="22" width="35" height="11" forecolor="#FFFFFF" backcolor="#666666" uuid="63177d3e-c6c4-4911-8030-fe1fcb52dc6e"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -135,17 +136,18 @@
 				<text><![CDATA[Lab]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="195" y="22" width="84" height="11" uuid="90e18d65-a3d6-4dfd-a499-af99f0587a49"/>
+				<reportElement mode="Opaque" x="195" y="22" width="91" height="11" forecolor="#FFFFFF" backcolor="#666666" uuid="90e18d65-a3d6-4dfd-a499-af99f0587a49"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
 				<textElement>
 					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Start]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="512" y="22" width="42" height="11" uuid="8e6d7a5c-6fc4-4bef-a5d7-d843d6c082f5"/>
+				<reportElement mode="Opaque" x="512" y="22" width="42" height="11" forecolor="#FFFFFF" backcolor="#666666" uuid="8e6d7a5c-6fc4-4bef-a5d7-d843d6c082f5"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -155,7 +157,7 @@
 				<text><![CDATA[Total Time]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="22" width="19" height="11" uuid="af5866cb-5d10-48e5-9199-6e8559e4b0af"/>
+				<reportElement mode="Opaque" x="0" y="22" width="19" height="11" forecolor="#FFFFFF" backcolor="#666666" uuid="af5866cb-5d10-48e5-9199-6e8559e4b0af"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -179,7 +181,7 @@
 				<text><![CDATA[Duration(Min)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="326" y="22" width="48" height="11" uuid="bab03954-5642-45bd-b910-92b90f1bd118"/>
+				<reportElement mode="Opaque" x="318" y="22" width="40" height="11" forecolor="#FFFFFF" backcolor="#666666" uuid="bab03954-5642-45bd-b910-92b90f1bd118"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -187,6 +189,16 @@
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Med]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="471" y="22" width="41" height="11" forecolor="#FFFFFF" backcolor="#666666" uuid="3bbf6b50-3225-498c-a600-70efce2356d5"/>
+				<box>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Other]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -209,11 +221,12 @@
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
+					<paragraph leftIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="279" y="0" width="47" height="11" uuid="3000340d-fcd4-45a2-958f-c3d9440ee37d"/>
+				<reportElement x="286" y="0" width="32" height="11" uuid="3000340d-fcd4-45a2-958f-c3d9440ee37d"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -224,7 +237,7 @@
 				<textFieldExpression><![CDATA[$F{consultation}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="374" y="0" width="46" height="11" uuid="e3c1b257-a89b-41ad-91c1-f78435d11fa3"/>
+				<reportElement x="358" y="0" width="38" height="11" uuid="e3c1b257-a89b-41ad-91c1-f78435d11fa3"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -235,7 +248,7 @@
 				<textFieldExpression><![CDATA[$F{procedure}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="420" y="0" width="46" height="11" uuid="77ee21cd-109f-43bb-9c41-e7eff4943373"/>
+				<reportElement x="396" y="0" width="40" height="11" uuid="77ee21cd-109f-43bb-9c41-e7eff4943373"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -246,7 +259,7 @@
 				<textFieldExpression><![CDATA[$F{radiology}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="466" y="0" width="46" height="11" uuid="a66b0716-1c2a-4e41-9a13-c7ec23271eee"/>
+				<reportElement x="436" y="0" width="35" height="11" uuid="a66b0716-1c2a-4e41-9a13-c7ec23271eee"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -257,12 +270,13 @@
 				<textFieldExpression><![CDATA[$F{laboratory}]]></textFieldExpression>
 			</textField>
 			<textField pattern="h.mm.ss a" isBlankWhenNull="true">
-				<reportElement x="195" y="0" width="84" height="11" isRemoveLineWhenBlank="true" uuid="062a492e-b804-4b53-8575-bcd4fe5ff5ad"/>
+				<reportElement x="195" y="0" width="91" height="11" isRemoveLineWhenBlank="true" uuid="062a492e-b804-4b53-8575-bcd4fe5ff5ad"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
+					<paragraph leftIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""+$F{startDatetime}]]></textFieldExpression>
 			</textField>
@@ -287,8 +301,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="326" y="0" width="48" height="11" uuid="8a3dfc16-6c10-4890-bdc1-d389210c7850"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="318" y="0" width="40" height="11" uuid="8a3dfc16-6c10-4890-bdc1-d389210c7850"/>
 				<box>
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -304,6 +318,14 @@
 					<pen lineWidth="0.15" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="471" y="0" width="41" height="11" uuid="ae9df5c6-c582-43b0-beab-3e6ac6a1e8a2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph rightIndent="15"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{other}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<columnFooter>

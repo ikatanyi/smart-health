@@ -16,6 +16,7 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -45,6 +46,7 @@ public class AdmissionController {
 
     private final AdmissionService admissionService;
     private final BedService bedService;
+    private final AuditTrailService auditTrailService; 
 
     @PostMapping("/admission")
 //    @PreAuthorize("hasAuthority('create_admission')")
@@ -56,7 +58,7 @@ public class AdmissionController {
         pagers.setCode("200");
         pagers.setMessage("Admission request successfully submitted");
         pagers.setContent(AdmissionData.map(a));
-
+        auditTrailService.saveAuditTrail("Admission", "Admitted patient "+a.getPatient().getFullName()+" to ward "+a.getWard().getName()+" ,room"+a.getRoom().getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -65,7 +67,7 @@ public class AdmissionController {
     public ResponseEntity<?> findAdmissionById(
             @PathVariable("id") final Long id
     ) {
-
+         auditTrailService.saveAuditTrail("Admission", "Searched Admission identified by id "+id);
         Admission a = admissionService.findAdmissionById(id);
         Pager<AdmissionData> pagers = new Pager();
         pagers.setCode("200");
@@ -93,7 +95,7 @@ public class AdmissionController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<AdmissionData> list = admissionService.fetchAdmissions(admissionNo, wardId, roomId, bedId, term, discharged, active, status, range, pageable).map(a -> AdmissionData.map(a));
-
+        auditTrailService.saveAuditTrail("Admission", "Viewed all Admissions");
         Pager<List<AdmissionData>> pagers = new Pager();
         pagers.setCode("200");
         pagers.setMessage("Success");
@@ -114,7 +116,7 @@ public class AdmissionController {
     public ResponseEntity<?> updateAdmission(@PathVariable("id") Long id, @Valid @RequestBody AdmissionData admissionData) {
 
         Admission a = admissionService.updateAdmission(id, admissionData);
-
+        auditTrailService.saveAuditTrail("Admission", "Edited Admissions idenfied by id "+id);
         Pager<AdmissionData> pagers = new Pager();
         pagers.setCode("200");
         pagers.setMessage("Admission Updated successfully");
@@ -133,7 +135,7 @@ public class AdmissionController {
             throw APIException.badRequest("You cannot checkout a patient who has not been discharged!");
         }
         a.setStatus(Status.CheckOut);
-
+        auditTrailService.saveAuditTrail("Admission", "Checkedout patient  "+a.getPatient().getFullName());
         admissionService.saveAdmission(a);
 
         //release bed

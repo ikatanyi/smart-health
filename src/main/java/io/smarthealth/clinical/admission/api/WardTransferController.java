@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -31,13 +32,14 @@ import org.springframework.web.bind.annotation.*;
 public class WardTransferController {
 
     private final WardTransferService service;
-
+    private final AuditTrailService auditTrailService;
+    
     @PostMapping("/ward-transfer")
 //    @PreAuthorize("hasAuthority('create_ward-transfer')")
     public ResponseEntity<?> createWardTransfer(@Valid @RequestBody WardTransferData transferData) {
 
         WardTransferData result = service.createWardTransfer(transferData).todata();
-
+        auditTrailService.saveAuditTrail("Admission", "Transferred patient to ward "+result.getWardName()+" room "+result.getRoomName()+" bed "+result.getBedName());
         Pager<WardTransferData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("WardTransfer completed successful");
@@ -50,6 +52,7 @@ public class WardTransferController {
     @GetMapping("/ward-transfer/{id}")
 //    @PreAuthorize("hasAuthority('view_ward-transfer')")
     public WardTransfer getItem(@PathVariable(value = "id") Long id) {
+        auditTrailService.saveAuditTrail("Admission", "Searched  patient Transferred identified by id "+id);
         return service.findWardTransferById(id);
     }
 
@@ -68,7 +71,10 @@ public class WardTransferController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<WardTransferData> list = service.fetchWardTransfers(bedId, bedId, bedId, patientNo, admissionNo, range, term, pageable).map(u -> u.todata());
+        Page<WardTransferData> list = service.fetchWardTransfers(bedId, bedId, bedId, patientNo, admissionNo, range, term, pageable).map(u ->{
+            auditTrailService.saveAuditTrail("Admission", "viewed patient trnasfer to ward "+u.getWard().getName()+" room "+u.getRoom().getName()+" bed "+u.getBed().getName());
+            return u.todata();
+                });
 
         Pager<List<WardTransferData>> pagers = new Pager();
         pagers.setCode("0");
@@ -90,7 +96,7 @@ public class WardTransferController {
     public ResponseEntity<?> updateWardTransfer(@PathVariable("id") Long id, @Valid @RequestBody WardTransferData transferData) {
 
         WardTransferData result = service.updateWardTransfer(id, transferData).todata();
-
+        auditTrailService.saveAuditTrail("Admission", "Edited  patient ward Transferred identified by id "+id);
         Pager<WardTransferData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("WardTransfer Updated successful");

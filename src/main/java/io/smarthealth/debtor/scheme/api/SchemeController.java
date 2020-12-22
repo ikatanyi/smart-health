@@ -11,6 +11,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.List;
@@ -50,6 +51,9 @@ public class SchemeController {
     @Autowired
     SequenceNumberService sequenceNumberService;
 
+    @Autowired
+    AuditTrailService auditTrailService;
+
     @PostMapping("/scheme")
     @PreAuthorize("hasAuthority('create_scheme')")
     public ResponseEntity<?> createScheme(@Valid @RequestBody SchemeData scheme) {
@@ -72,7 +76,7 @@ public class SchemeController {
         if (config.isPresent()) {
             data.setConfigData(SchemConfigData.map(config.get()));
         }
-
+         auditTrailService.saveAuditTrail("Scheme", "Created a scheme "+s.getSchemeName());
         return ResponseEntity.created(location).body(data);
     }
 
@@ -108,7 +112,7 @@ public class SchemeController {
         if (config.isPresent()) {
             data.setConfigData(SchemConfigData.map(config.get()));
         }
-
+        auditTrailService.saveAuditTrail("Scheme", "Edited a scheme "+scheme.getSchemeName());
         return ResponseEntity.created(location).body(data);
     }
 
@@ -140,7 +144,7 @@ public class SchemeController {
         details.setTotalPage(scheme.getTotalPages());
         details.setReportName("Scheme List");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Scheme", "Viewed all registered schemes ");
         return ResponseEntity.ok(pagers);
     }
 
@@ -172,7 +176,7 @@ public class SchemeController {
         details.setTotalPage(scheme.getTotalPages());
         details.setReportName("Scheme List");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Scheme", "Viewed a scheme identified by scheme Id"+id);
         return ResponseEntity.ok(pagers);
     }
 
@@ -223,7 +227,7 @@ public class SchemeController {
         pagers.setCode("0");
         pagers.setMessage("Scheme parameters have successfully been updated");
         pagers.setContent(SchemeData.map(myscheme));
-
+        auditTrailService.saveAuditTrail("Scheme", "Created a scheme configuration for "+scheme.getSchemeName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -233,7 +237,7 @@ public class SchemeController {
     public ResponseEntity<?> fetchSchemeConfigurationByScheme(@PathVariable("id") final Long id) {
         //look for scheme config
         Scheme scheme = schemeService.fetchSchemeById(id);
-
+        auditTrailService.saveAuditTrail("Scheme", "Viewed a scheme configutaion identified by id  "+id);
         if (schemeService.SchemeConfigBySchemeExists(scheme)) {
             SchemeConfigurations schemeConfig = schemeService.fetchSchemeConfigBySchemeWithNotAvailableDetection(scheme);
             Pager<SchemConfigData> pagers = new Pager();
@@ -261,9 +265,8 @@ public class SchemeController {
         pagers.setCode("0");
         pagers.setMessage("Scheme parameters have successfully been updated");
         pagers.setContent(SchemConfigData.map(schemeConfig));
-
+        auditTrailService.saveAuditTrail("Scheme", "Viewed a scheme configutaion identified by id  "+id);
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
-    //manage exclusions here
 
 }

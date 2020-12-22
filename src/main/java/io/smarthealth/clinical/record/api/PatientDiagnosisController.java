@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.smarthealth.clinical.record.data.PatientDiagnosisData;
+import io.smarthealth.security.service.AuditTrailService;
 
 /**
  *
@@ -29,9 +30,11 @@ import io.smarthealth.clinical.record.data.PatientDiagnosisData;
 @RequestMapping("/api")
 public class PatientDiagnosisController {
     private final DiagnosisService service;
+    private final AuditTrailService auditTrailService;
 
-    public PatientDiagnosisController(DiagnosisService service) {
+    public PatientDiagnosisController(DiagnosisService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
     
     @GetMapping("/patient-diagnosis") 
@@ -46,7 +49,7 @@ public class PatientDiagnosisController {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<PatientDiagnosisData> page = service.fetchAllDiagnosis(visitNumber, patientNumber, range, pageable)
                 .map(PatientDiagnosisData::map);
-
+        auditTrailService.saveAuditTrail("Consultation", "Viewed all patient diagnosis");
         return ResponseEntity.ok((Pager<PatientDiagnosisData>) PaginationUtil.toPager(page, "Patient Diagnosis"));
     }
 }

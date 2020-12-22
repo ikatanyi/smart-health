@@ -8,6 +8,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
 import io.smarthealth.stock.item.domain.enumeration.ItemType;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,9 +38,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class PricesController {
 
     private final PricelistService priceService;
+    private final AuditTrailService auditTrailService;
 
-    public PricesController(PricelistService priceService) {
+    public PricesController(PricelistService priceService, AuditTrailService auditTrailService) {
         this.priceService = priceService;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/pricelists")
@@ -52,7 +55,7 @@ public class PricesController {
         pagers.setCode("0");
         pagers.setMessage("Pricelist Created.");
         pagers.setContent(item.toData());
-
+        auditTrailService.saveAuditTrail("PriceList", "Created a pricelist item "+item.getItem().getItemName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -62,7 +65,10 @@ public class PricesController {
 
         List<PriceListData> item = priceService.createPriceList(data)
                 .stream()
-                .map(x -> x.toData())
+                .map(x -> {
+                   auditTrailService.saveAuditTrail("PriceList", "Created a pricelist item"+x.getItem().getItemName());
+                   return x.toData();
+                })
                 .collect(Collectors.toList());
 
         Pager< List<PriceListData>> pagers = new Pager();
@@ -77,6 +83,7 @@ public class PricesController {
     @PreAuthorize("hasAuthority('view_pricelist')")
     public ResponseEntity<?> getPriceList(@PathVariable(value = "id") Long id) {
         PriceList item = priceService.getPriceList(id);
+        auditTrailService.saveAuditTrail("PriceList", "Searched a pricelist item identified by "+id);
         return ResponseEntity.ok(item.toData());
     }
 
@@ -84,6 +91,7 @@ public class PricesController {
     @PreAuthorize("hasAuthority('edit_pricelist')")
     public ResponseEntity<?> updatePriceList(@PathVariable(value = "id") Long id, @Valid @RequestBody PriceListData data) {
         PriceList item = priceService.updatePriceList(id, data);
+        auditTrailService.saveAuditTrail("PriceList", "Edited a pricelist item identified by "+id);
         return ResponseEntity.ok(item.toData());
     }
 
@@ -91,6 +99,7 @@ public class PricesController {
     @PreAuthorize("hasAuthority('delete_pricelist')")
     public ResponseEntity<?> deletePriceList(@PathVariable(value = "id") Long id) {
         priceService.deletePriceList(id);
+        auditTrailService.saveAuditTrail("PriceList", "Deleted a pricelist item identified by "+id);
         return ResponseEntity.accepted().build();
     }
 //String queryItem, Long servicePointId, Boolean defaultPrice
@@ -108,7 +117,10 @@ public class PricesController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<PriceListData> list = priceService.getPriceLists(queryItem, servicePointId, defaultPrice, itemCategory, itemType, pageable)
-                .map(x -> x.toData());
+                .map(x -> {
+                    auditTrailService.saveAuditTrail("PriceList", "Viewed pricelist item "+x.getItem().getItemName());
+                    return x.toData();
+                });
 
         Pager<List<PriceListData>> pagers = new Pager();
         pagers.setCode("0");
@@ -135,7 +147,10 @@ public class PricesController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<PriceListData> list = priceService.getPricelistByLocation(servicePointId, priceBookId,itemId, pageable)
-                .map(x -> x.toData());
+                .map(x -> {
+                    auditTrailService.saveAuditTrail("PriceList", "Viewed pricelist item "+x.getItem().getItemName());
+                    return x.toData();
+                        });
 
         Pager<List<PriceListData>> pagers = new Pager();
         pagers.setCode("0");
@@ -163,7 +178,10 @@ public class PricesController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<PriceListData> list = priceService.searchPriceList(item, servicePointId, priceBookId, pageable)
-                .map(x -> x.toData());
+                .map(x -> {
+                    auditTrailService.saveAuditTrail("PriceList", "Viewed pricelist item "+x.getItem().getItemName());
+                    return x.toData();                    
+                        });
 
         Pager<List<PriceListData>> pagers = new Pager();
         pagers.setCode("0");
@@ -178,5 +196,4 @@ public class PricesController {
         pagers.setPageDetails(details);
         return ResponseEntity.ok(pagers);
     }
-   
 }

@@ -6,6 +6,7 @@ import io.smarthealth.organization.company.data.LogoResponse;
 import io.smarthealth.organization.company.domain.Company;
 import io.smarthealth.organization.company.domain.CompanyLogo;
 import io.smarthealth.organization.company.service.CompanyService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;

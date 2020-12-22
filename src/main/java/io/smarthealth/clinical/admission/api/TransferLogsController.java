@@ -5,6 +5,7 @@ import io.smarthealth.clinical.admission.service.TransferLogsService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class TransferLogsController {
 
     private final TransferLogsService service;
+    private final AuditTrailService auditTrailService;    
      
 
     @GetMapping("/transfer-logs")
@@ -36,7 +38,10 @@ public class TransferLogsController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<TransferLogsData> list = service.fetchTransferLogs(pageable).map(u -> u.toData());
+        Page<TransferLogsData> list = service.fetchTransferLogs(pageable).map(u -> {
+            auditTrailService.saveAuditTrail("Admission", "viewed patient transfer from bed"+u.getFromBed()+" to bed "+u.getToBed());
+            return u.toData();
+                });
         
         
         Pager<List<TransferLogsData>> pagers=new Pager();

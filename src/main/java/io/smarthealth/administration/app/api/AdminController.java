@@ -1,5 +1,6 @@
 package io.smarthealth.administration.app.api;
 
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
 

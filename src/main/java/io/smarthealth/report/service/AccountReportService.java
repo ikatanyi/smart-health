@@ -35,6 +35,7 @@ import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.accounting.payment.data.ReceiptTransactionData;
 import io.smarthealth.accounting.payment.data.RemittanceData;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.accounting.payment.service.ReceiptingService;
 import io.smarthealth.accounting.payment.service.RemittanceService;
@@ -64,7 +65,8 @@ import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.accounts.DailyBillingData;
 import io.smarthealth.report.data.accounts.InsuranceInvoiceData;
 import io.smarthealth.report.data.accounts.ReportReceiptData;
-import io.smarthealth.report.data.accounts.TrialBalanceData; 
+import io.smarthealth.report.data.accounts.TrialBalanceData;
+import io.smarthealth.clinical.admission.service.AdmissionService;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -117,7 +119,8 @@ public class AccountReportService {
     private final ReceiptingService receivePaymentService;
     private final DispatchService dispatchService;
     private final SchemeService schemeService;
-    private final DiagnosisService diagnosisService; 
+    private final DiagnosisService diagnosisService;
+    private final AdmissionService admissionService;
 
     public void getTrialBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
@@ -649,14 +652,17 @@ public class AccountReportService {
         String receiptNo = reportParam.getFirst("receiptNo");
         //"RCT-00009"
         ReceiptData receiptData = paymentService.getPaymentByReceiptNumber(receiptNo).toData();
-        if(receiptData.getPrepayment()){
+        if(receiptData.getPrepayment()||receiptData.getReceiptType()!= ReceiptType.POS){
             receiptData.setReceiptItems(new ArrayList());
             receiptData.setPaid(receiptData.getAmount());
             receiptData.setTenderedAmount(receiptData.getAmount());
             ReceiptItemData itemData = new ReceiptItemData();
             itemData.setDiscount(BigDecimal.ZERO);
             itemData.setAmountPaid(receiptData.getAmount());
-            itemData.setItemName(receiptData.getDescription());
+            if(receiptData.getReceiptType()== ReceiptType.Payment)
+                itemData.setItemName("Medical Services");
+            else
+                itemData.setItemName("Deposit");
             itemData.setPrice(receiptData.getAmount());
             itemData.setQuantity(1.0);
             receiptData.getReceiptItems().add(itemData);

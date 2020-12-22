@@ -8,6 +8,7 @@ import io.smarthealth.stock.inventory.data.AdjustmentData;
 import io.smarthealth.stock.inventory.data.StockAdjustmentData;
 import io.smarthealth.stock.inventory.data.TransData;
 import io.smarthealth.stock.inventory.service.InventoryAdjustmentService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 public class InventoryAdjustmentController {
 
     private final InventoryAdjustmentService service;
+    private final AuditTrailService auditTrailService;
 
     @PostMapping("/inventory-adjustment")
     @PreAuthorize("hasAuthority('create_inventoryadjustment')")
@@ -43,7 +45,7 @@ public class InventoryAdjustmentController {
         pagers.setCode("0");
         pagers.setMessage("Stock Adjustment successful");
         pagers.setContent(new TransData(result));
-
+        auditTrailService.saveAuditTrail("Inventory", "Created an inventory adjustment");
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -52,6 +54,7 @@ public class InventoryAdjustmentController {
     @PreAuthorize("hasAuthority('view_inventoryadjustment')")
     public StockAdjustmentData searchStockAdjustment(@PathVariable(value = "id") Long id) {
         StockAdjustmentData stocks = service.getStockAdjustment(id).toData();
+        auditTrailService.saveAuditTrail("Inventory", "Searched for an inventory adjustment with id "+id);
         return stocks;
     }
  
@@ -80,7 +83,7 @@ public class InventoryAdjustmentController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Stock Adjustment ");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Inventory", "Viewed all inventory adjustments");
         return ResponseEntity.ok(pagers);
     }
 

@@ -20,6 +20,7 @@ import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.service.EmployeeService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.logging.Level;
@@ -54,6 +55,9 @@ public class AppointmentController {
 
     @Autowired
     EmployeeService employeeService;
+    
+    @Autowired
+    AuditTrailService auditTrailService; 
 
     @PostMapping("/appointmentTypes")
     @PreAuthorize("hasAuthority('create_appoinmentType')")
@@ -64,7 +68,7 @@ public class AppointmentController {
         pagers.setCode("0");
         pagers.setMessage("AppointmentType made successful");
         pagers.setContent(appointmentTypeService.toData(result));
-
+        auditTrailService.saveAuditTrail("Appointment", "Created Appointment type  "+result.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -78,7 +82,7 @@ public class AppointmentController {
         Appointment appointment = this.appointmentService.createAppointment(appointmentData);
 
         AppointmentData savedAppointmentData = AppointmentData.map(appointment);
-
+        auditTrailService.saveAuditTrail("Appointment", "Created Appointment for  "+savedAppointmentData.getFirstName());
         Pager<AppointmentData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Appointment made successfully");
@@ -94,7 +98,7 @@ public class AppointmentController {
         Appointment appointment = this.appointmentService.UpdateAppointment(id, appointmentData);
 
         AppointmentData savedAppointmentData = AppointmentData.map(appointment);
-
+        auditTrailService.saveAuditTrail("Appointment", "Edited Appointment for  "+savedAppointmentData.getFirstName());
         Pager<AppointmentData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Appointment Updated successfully");
@@ -111,7 +115,7 @@ public class AppointmentController {
         Appointment appointment = this.appointmentService.rescheduleAppointment(id, data);
 
         AppointmentData savedAppointmentData = AppointmentData.map(appointment);
-
+        auditTrailService.saveAuditTrail("Appointment", "Rescheduled Appointment for  "+savedAppointmentData.getFirstName()+" to"+savedAppointmentData.getAppointmentDate());
         Pager<AppointmentData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Appointment rescheduled successful");
@@ -150,7 +154,7 @@ public class AppointmentController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<AppointmentData> results = appointmentService.fetchAllAppointments(practitionerNumber, patientId, status, deptCode, urgency, name, range, pageable).map(a->AppointmentData.map(a));
-        
+        auditTrailService.saveAuditTrail("Appointment", "Viewed all Appointments");
         Pager pager = new Pager();
         pager.setCode("200");
         pager.setContent(results.getContent());
@@ -175,7 +179,7 @@ public class AppointmentController {
     ResponseEntity<?> fetchAppointmentByappointmentNo(@PathVariable("appointmentNo") final String appointmentNo) {
 
         Appointment appointment = appointmentService.fetchAppointmentByNo(appointmentNo);
-
+        auditTrailService.saveAuditTrail("Appointment", "Viewed Appointments identified by AppointmentNo"+appointmentNo);
         return new ResponseEntity<>(AppointmentData.map(appointment), HttpStatus.OK);
     }
 
@@ -189,7 +193,8 @@ public class AppointmentController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<AppointmentTypeData> results = appointmentTypeService.fetchAllAppointmentTypes(pageable).map(a -> appointmentTypeService.toData(a));
 //        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
-
+        
+        auditTrailService.saveAuditTrail("Appointment", "Viewed all Appointments Types");
         Pager<List<AppointmentTypeData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -204,6 +209,7 @@ public class AppointmentController {
     @PreAuthorize("hasAuthority('view_appoinment')")
     public ResponseEntity<AppointmentTypeData> fetchAppTypeById(@PathVariable("id") final Long id) {
         AppointmentTypeData appointmentTypeData = appointmentTypeService.toData(appointmentTypeService.fetchAppointmentTypeWithNoFoundDetection(id));
+        auditTrailService.saveAuditTrail("Appointment", "Viewed Appointment identified by Id "+id);
         return ResponseEntity.ok(appointmentTypeData);
     }
 
@@ -211,6 +217,7 @@ public class AppointmentController {
     @PreAuthorize("hasAuthority('edit_appoinment')")
     public ResponseEntity<?> fetchAppTypeById(@PathVariable("id") final Long id,@RequestBody @Valid final AppointmentTypeData appointmentTypeD) {
         AppointmentType result = appointmentTypeService.updateAppointmentType(id, appointmentTypeD);
+        auditTrailService.saveAuditTrail("Appointment", "Edited Appointment type "+result.getName());
         Pager<AppointmentTypeData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("AppointmentType made successful");
@@ -231,6 +238,7 @@ public class AppointmentController {
     ResponseEntity<ApiResponse> deleteAppointmentType(@PathVariable("id") final Long appId) {
         try {
             this.appointmentTypeService.removeAppointmentTypeById(appId);
+            auditTrailService.saveAuditTrail("Appointment", "Deleted Appointment type identified by id "+appId);
             return ResponseEntity.accepted().body(ApiResponse.successMessage("Appointment type was successfully deleted", HttpStatus.ACCEPTED, null));
         } catch (Exception ex) {
             Logger.getLogger(AppointmentController.class.getName()).log(Level.SEVERE, null, ex);

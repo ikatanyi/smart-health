@@ -3,6 +3,7 @@ package io.smarthealth.infrastructure.jobs.api;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.jobs.data.SchedulerDetailData;
 import io.smarthealth.infrastructure.jobs.service.JobRegisterService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;

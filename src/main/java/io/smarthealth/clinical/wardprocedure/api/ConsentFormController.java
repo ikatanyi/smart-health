@@ -14,6 +14,7 @@ import io.smarthealth.clinical.wardprocedure.service.ConsentService;
 import io.smarthealth.infrastructure.utility.ListData;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +42,8 @@ public class ConsentFormController {
 
     private final ConsentService consentService;
     
+    private final AuditTrailService auditTrailService;
+    
 
     @PostMapping("/consent")
     public @ResponseBody
@@ -53,6 +56,7 @@ public class ConsentFormController {
         PageDetails details = new PageDetails();
         details.setReportName("Consent Form");
         pagers.setPageDetails(details);
+        auditTrailService.saveAuditTrail("Ward Procedure", "Created Patient Consent form");
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -67,6 +71,7 @@ public class ConsentFormController {
         if (consentType != null) {
             consentService.fetchConsentFormsByVisitAndType(visitNumber, consentType).stream().map(t -> t.toData()).collect(Collectors.toList());
         }
+        auditTrailService.saveAuditTrail("Ward Procedure", "Viewed Patient Consent form for visit "+visitNumber);
         ListData<ConsentFormData> listData = new ListData();
         listData.setCode("200");
         listData.setMessage("Success");

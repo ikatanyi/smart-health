@@ -27,6 +27,7 @@ import io.smarthealth.organization.person.patient.service.PatientIdentificationT
 import io.smarthealth.organization.person.patient.service.PatientIdentifierService;
 import io.smarthealth.organization.person.patient.service.PatientService;
 import io.smarthealth.organization.person.service.PersonService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
@@ -80,6 +81,9 @@ public class PatientController {
 
     @Autowired
     private PatientIdentifierService patientIdentifierService;
+    
+    @Autowired
+    AuditTrailService auditTrailService;
 
     @PostMapping("/patients")
     @PreAuthorize("hasAuthority('create_patients')")
@@ -91,7 +95,7 @@ public class PatientController {
         PatientData savedpatientData = patientService.convertToPatientData(patient);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
-
+        auditTrailService.saveAuditTrail("Patient", "Created  patient " + patient.getFullName());
         return ResponseEntity.created(location).body(ApiResponse.successMessage("Patient successfuly created", HttpStatus.CREATED, savedpatientData));
     }
 
@@ -100,7 +104,9 @@ public class PatientController {
     public @ResponseBody
     ResponseEntity<PatientData> findPatientByPatientNumber(@PathVariable("id") final String patientNumber) {
         final Optional<PatientData> patient = this.patientService.fetchPatientByPatientNumber(patientNumber);
+
         if (patient.isPresent()) {
+            auditTrailService.saveAuditTrail("Patient", "Viewed patient " + patient.get().getFullName());
             return ResponseEntity.ok(patient.get());
         } else {
             throw APIException.notFound("Patient Number {0} not found.", patientNumber);
@@ -138,6 +144,7 @@ public class PatientController {
         details.setTotalPage(pageResult.getTotalPages());
         details.setReportName("Patient Register");
         pagers.setPageDetails(details);
+        auditTrailService.saveAuditTrail("Patient", "Viewed all registered  patients ");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pagers);
     }
@@ -166,6 +173,7 @@ public class PatientController {
             patient.setPrimaryContact(patientData.getPrimaryContact());
 
             this.patientService.updatePatient(patientNumber, patient);
+            auditTrailService.saveAuditTrail("Patient", "Edited  details for patient " + patient.getFullName());
         } else {
             //entDa
             throw APIException.notFound("Patient {0} not found.", patientNumber);
@@ -182,6 +190,7 @@ public class PatientController {
     ResponseEntity<PatientData> getPatientByIdentifier(@PathVariable("identifier") /*Identifier type*/ final String patientNumber, @PathVariable("no") final String patientNo) {
         final Optional<PatientData> patient = this.patientService.fetchPatientByPatientNumber(patientNumber);
         if (patient.isPresent()) {
+            auditTrailService.saveAuditTrail("Patient", "Viewed  patient details for " + patient.get().getFullName());
             return ResponseEntity.ok(patient.get());
         } else {
             throw APIException.notFound("Patient Number {0} not found.", patientNumber);
@@ -211,6 +220,7 @@ public class PatientController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
+        auditTrailService.saveAuditTrail("Patient", "Edited  patient contact details for " + patient.getFullName());
         return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
     }
 
@@ -238,7 +248,7 @@ public class PatientController {
         }
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patients/{id}")
                 .buildAndExpand(patient.getPatientNumber()).toUri();
-
+        auditTrailService.saveAuditTrail("Patient", "Edited  patient Address details for " + patient.getFullName());
         return ResponseEntity.created(location).body(patientService.convertToPatientData(patient));
     }
 
@@ -259,7 +269,7 @@ public class PatientController {
         pagers.setCode("0");
         pagers.setMessage("Next of kin created");
         pagers.setContent(PersonNextOfKinData.map(nextOfKin));
-
+        auditTrailService.saveAuditTrail("Patient", "Created next of kin for patient " + patient.getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -294,6 +304,7 @@ public class PatientController {
             Portrait portrait = this.patientService.createPortrait(patient, image);
             URI location = fromCurrentRequest().buildAndExpand(portrait.getId()).toUri();
             PortraitData data = modelMapper.map(portrait, PortraitData.class);
+            auditTrailService.saveAuditTrail("Patient", "Uploaded  patient portrait for " + patient.getFullName());
             return ResponseEntity.created(location).body(data);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -311,7 +322,7 @@ public class PatientController {
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/patient_identification_type/{id}")
                 .buildAndExpand(patientIdtype.getId()).toUri();
-
+        auditTrailService.saveAuditTrail("Patient", "Created  patient identication type " + patientIdtype.getIdentificationName());
         return ResponseEntity.created(location).body(ApiResponse.successMessage("Identity type was successfully created", HttpStatus.CREATED, patientIdtype));
     }
 
@@ -327,13 +338,14 @@ public class PatientController {
     @PreAuthorize("hasAuthority('view_patients')")
     public ResponseEntity<List<PatientIdentificationType>> fetchAllPatientIdTypes(@RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder, Pageable pageable) {
 
-//        return new ResponseEntity<List<PatientIdentificationType>>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
+        auditTrailService.saveAuditTrail("Patient", "Viewed all patient identications type ");
         return new ResponseEntity<>(patientIdentificationTypeService.fetchAllPatientIdTypes(), HttpStatus.OK);
     }
 
     @GetMapping("/patient_identification_type/{id}")
     @PreAuthorize("hasAuthority('view_patients')")
     public PatientIdentificationType fetchAllPatientIdTypes(@PathVariable("id") final String patientIdType) {
+        auditTrailService.saveAuditTrail("Patient", "Viewed  patient identication type identified by "+patientIdType);
         return patientIdentificationTypeService.fetchIdType(Long.valueOf(patientIdType));
     }
 
@@ -351,6 +363,7 @@ public class PatientController {
         PatientAllergiesData savedData = allergiesService.convertPatientAllergiesToData(allergy);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/allergy/{id}")
                 .buildAndExpand(allergy.getId()).toUri();
+        auditTrailService.saveAuditTrail("Patient", "Created patient allergy for "+patient.getFullName());
         return ResponseEntity.created(location).body(savedData);
     }
 
@@ -362,6 +375,7 @@ public class PatientController {
         AllergyTypeData savedData = allergiesService.convertAllergyTypEntityToData(allergyType);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/allergy-type/{id}")
                 .buildAndExpand(allergyType.getId()).toUri();
+        auditTrailService.saveAuditTrail("Patient", "Created patient allergy type "+allergyType.getName());
         return ResponseEntity.created(location).body(savedData);
     }
 
@@ -369,6 +383,7 @@ public class PatientController {
     @PreAuthorize("hasAuthority('view_patients')")
     public ResponseEntity<?> fetchAllPatientsAllergy(@PathVariable("patientNumber") final String patientNumber, @RequestParam MultiValueMap<String, String> queryParams, Pageable pageable) {
         Patient patient = patientService.findPatientOrThrow(patientNumber);
+        auditTrailService.saveAuditTrail("Patient", "Viewed all patient allergies for "+patient.getFullName());
         Page<PatientAllergiesData> page = allergiesService.fetchPatientAllergies(patient, pageable).map(p -> allergiesService.convertPatientAllergiesToData(p));
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
@@ -385,6 +400,7 @@ public class PatientController {
         }).forEachOrdered((atd) -> {
             data.add(atd);
         });
+        auditTrailService.saveAuditTrail("Patient", "Viewed all patient allergy types ");
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
@@ -455,8 +471,8 @@ public class PatientController {
         pagers.setContent(patientIdentifierService.convertIdentifierEntityToData(savedPi));
 
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
-	}
-	
+    }
+
     @GetMapping("/patients/tafuta")
     public @ResponseBody
     ResponseEntity<List<PatientData>> tafutaPatient(@RequestParam("q") final String term) {

@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -29,15 +30,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentDepositController {
 
     private final ReceivePaymentService service;
+    private final AuditTrailService auditTrailService;
 
-    public PaymentDepositController(ReceivePaymentService service) {
+    public PaymentDepositController(ReceivePaymentService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
  
     @GetMapping("/payment-deposits/{id}")
 //    @PreAuthorize("hasAuthority('view_receipt')")
     public ResponseEntity<?> getPaymentDeposit(@PathVariable(value = "id") Long id) {
         PaymentDeposit payment = service.getPaymentOrThrow(id);
+        auditTrailService.saveAuditTrail("Deposits", "Searched deposit identified by "+id);
         return ResponseEntity.ok(payment.toData());
     }
 
@@ -57,7 +61,8 @@ public class PaymentDepositController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<PaymentDepositData> list = service.getPayments(patientNumber, receiptNo, hasBalance, range, pageable)
                 .map(x -> x.toData());
-
+        
+        auditTrailService.saveAuditTrail("Deposits", "Viewed deposits Made");
         Pager<List<PaymentDepositData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

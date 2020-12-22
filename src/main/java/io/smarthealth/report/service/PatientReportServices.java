@@ -94,6 +94,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import io.smarthealth.clinical.moh.data.MohData;
+import io.smarthealth.security.service.AuditTrailService;
+import io.smarthealth.security.data.AuditTrailData;
+import java.time.Instant;
 
 /**
  *
@@ -121,6 +124,7 @@ public class PatientReportServices {
     private final EmployeeSpecializationService specializationService;
     private final CodeService codeService;
     private final LaboratoryService laboratoryService;
+    private final AuditTrailService auditTrailService;
 
     private final VisitService visitService;
 
@@ -731,6 +735,24 @@ public class PatientReportServices {
         reportData.setFormat(format);
         reportData.setTemplate("/patient/PatientAttendanceReport");
         reportData.setReportName("Patient_Attendance_Report");
+        reportService.generateReport(reportData, response);
+    }
+    
+    public void getAuditTrail(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String dateRange = reportParam.getFirst("dateRange");
+        String name = reportParam.getFirst("name");
+        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        List<AuditTrailData> auditData = auditTrailService.findAll(range, name, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map(x->x.toData())
+                .collect(Collectors.toList());
+        
+        reportData.setData(auditData);
+        reportData.setFormat(format);
+        reportData.setTemplate("/patient/audit_report");
+        reportData.setReportName("Audit_Report");
         reportService.generateReport(reportData, response);
     }
 

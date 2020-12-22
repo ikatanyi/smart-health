@@ -7,6 +7,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -30,11 +31,13 @@ import org.springframework.web.bind.annotation.*;
 public class NhifController {
 
     private final NhifRebateService service;
+    private final AuditTrailService auditTrailService;
      
     @GetMapping("/nhif-rebate/{id}")
 //    @PreAuthorize("hasAuthority('view_nhif-rebate')")
     public NhifRebate getNhifRebate(@PathVariable(value = "id") Long code) {
         NhifRebate rebate = service.getNhifRebate(code);
+        auditTrailService.saveAuditTrail("Admission", "Created NHIF rebate for "+rebate.getAdmission().getPatient().getFullName() );
         return  rebate;
     }
 
@@ -49,7 +52,10 @@ public class NhifController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
         Pageable pageable = PaginationUtil.createPage(page, size);
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-        Page<NhifRebateData> list = service.fetchNhifRebates(admissionNumber, patientNumber, memberNumber, range, pageable).map(u -> u.toData());
+        Page<NhifRebateData> list = service.fetchNhifRebates(admissionNumber, patientNumber, memberNumber, range, pageable).map(u ->{ 
+            auditTrailService.saveAuditTrail("Admission", "Viewed NHIF rebate for "+u.getAdmission().getPatient().getFullName() );
+            return u.toData();
+                });
         
         
         Pager<List<NhifRebateData>> pagers=new Pager();
@@ -73,7 +79,7 @@ public class NhifController {
     public ResponseEntity<?> createNhifRebate(@Valid @RequestBody NhifRebateData nhifRebateData) {
         
         NhifRebateData result = service.createNhifRebate(nhifRebateData).toData();
-        
+         auditTrailService.saveAuditTrail("Admission", "Created NHIF rebate for "+result.getPatientName()+" admission number "+result.getAdmissionNumber());
         Pager<NhifRebateData> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("Nhif-Rebate created successful");

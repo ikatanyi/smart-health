@@ -15,6 +15,7 @@ import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.Optional;
@@ -41,16 +42,19 @@ public class CashierController {
 
     private final CashierService service;
     private final UserService userService;
+    private final AuditTrailService auditTrailService;
 
-    public CashierController(CashierService service, UserService us) {
+    public CashierController(CashierService service, UserService us, AuditTrailService auditTrailService) {
         this.service = service;
         this.userService = us;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/cashiers")
     @PreAuthorize("hasAuthority('create_cashiers')")
     public ResponseEntity<?> createCashier(@Valid @RequestBody CashierData cashierData) {
         Cashier result = service.createCashier(cashierData);
+        auditTrailService.saveAuditTrail("Cashiers", "Created cashier "+result.getUser().getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(result.toData());
     }
 
@@ -58,6 +62,7 @@ public class CashierController {
     @PreAuthorize("hasAuthority('view_cashiers')")
     public ResponseEntity<?> getCashier(@PathVariable(value = "id") Long code) {
         Cashier result = service.getCashier(code);
+        auditTrailService.saveAuditTrail("Cashiers", "Viewed cashier "+result.getUser().getUsername()+" details");
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(result.toData());
     }
 
@@ -67,9 +72,11 @@ public class CashierController {
 
         if (command == Command.Activate || command == Command.Deactivate) {
             Cashier result = service.changeStatus(id, command.name());
+            auditTrailService.saveAuditTrail("Cashiers", "Changer cashier "+result.getUser().getUsername()+" status to "+command.name());
             //list all events 
             return ResponseEntity.ok(result.toData());
         }
+        
         throw APIException.badRequest("Unrecognized Command Issued");
     }
 
@@ -83,6 +90,7 @@ public class CashierController {
         } else {
             shift = service.closeShift(result);
         }
+        auditTrailService.saveAuditTrail("Cashiers", "cashier "+result.getUser().getUsername()+" shift "+status);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(shift.toData());
     }
 
@@ -94,7 +102,7 @@ public class CashierController {
         List<ShiftData> shiftData = shifts.stream()
                 .map(x -> x.toData())
                 .collect(Collectors.toList());
-
+        auditTrailService.saveAuditTrail("Cashiers", "viewed cashier "+result.getUser().getUsername()+" shifts details ");
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(shiftData);
     }
 
@@ -114,6 +122,8 @@ public class CashierController {
         //check if this shift exist
         Shift shift = service.closeShift(cashierId, shiftNo);
 
+//        Shift shift = service.closeShift(code, shiftNo);
+        auditTrailService.saveAuditTrail("Cashiers", "Ended cashier "+shift.getCashier().getUser().getName()+" shiftNo "+shiftNo);
         return ResponseEntity.ok(shift.toData());
     }
 
@@ -121,6 +131,7 @@ public class CashierController {
     @PreAuthorize("hasAuthority('edit_cashiers')")
     public ResponseEntity<?> updateCashier(@PathVariable(value = "id") Long id, @Valid @RequestBody CashierData data) {
         Cashier cashDrawer = service.updateCashier(id, data);
+        auditTrailService.saveAuditTrail("Cashiers", "Edited cashier "+cashDrawer.getUser().getName());
         return ResponseEntity.ok(cashDrawer);
     }
 
@@ -136,6 +147,7 @@ public class CashierController {
         Page<CashierData> list = service.fetchAllCashiers(active, pageable)
                 .map(x -> x.toData());
 
+        auditTrailService.saveAuditTrail("Cashiers", "Viewed all cashier details");
         Pager<List<CashierData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -159,7 +171,7 @@ public class CashierController {
     ) {
         User user = userService.findUserByUsernameOrEmail(username).orElseThrow(() -> APIException.notFound("User identified by {0} not found ", username));
         Optional<Cashier> cashier = service.findByUserAndStatus(user, active);
-
+        auditTrailService.saveAuditTrail("Cashiers", "Searched cashier details details identified by username "+username);
         Pager<CashierData> pagers = new Pager();
         if (cashier.isPresent()) {
             pagers.setCode("200");
@@ -203,7 +215,8 @@ public class CashierController {
 
         Page<ShiftData> list = service.fetchAllShifts(status, pageable)
                 .map(x -> x.toData());
-
+        
+        auditTrailService.saveAuditTrail("Cashiers", "Viewed all cashier shifts balances ");
         Pager<List<ShiftData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -224,7 +237,7 @@ public class CashierController {
     @PreAuthorize("hasAuthority('view_cashiersShift')")
     public ResponseEntity<?> getShiftSummary(@PathVariable(value = "shiftNo") String shiftNo) {
         List<ShiftPayment> list = service.getShiftByMethod(shiftNo);
-
+        auditTrailService.saveAuditTrail("Cashiers", "Viewed all cashier shifts Summary ");
         return ResponseEntity.ok(list);
     }
 

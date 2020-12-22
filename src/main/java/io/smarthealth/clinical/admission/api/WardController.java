@@ -6,6 +6,7 @@ import io.smarthealth.clinical.admission.service.WardService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 public class WardController {
 
     private final WardService service;
+    private final AuditTrailService auditTrailService;    
      
     @GetMapping("/ward/{id}")
 //    @PreAuthorize("hasAuthority('view_ward')")
@@ -48,8 +50,11 @@ public class WardController {
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-
-        Page<WardData> list = service.fetchWards(name, active,term, pageable).map(u -> u.toData());
+        
+        Page<WardData> list = service.fetchWards(name, active,term, pageable).map(u -> { 
+            auditTrailService.saveAuditTrail("Admission", "viewed patient ward "+u.getName());
+            return u.toData();
+                });
         
         
         Pager<List<WardData>> pagers=new Pager();
@@ -78,7 +83,7 @@ public class WardController {
         pagers.setCode("0");
         pagers.setMessage("Ward created successful");
         pagers.setContent(result); 
-        
+        auditTrailService.saveAuditTrail("Admission", "Created patient ward "+result.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
 
     }
@@ -88,7 +93,7 @@ public class WardController {
     public ResponseEntity<?> updateWard(@PathVariable("id") Long id, @Valid @RequestBody WardData wardData) {
         
         WardData result = service.updateWard(id,wardData).toData();
-        
+        auditTrailService.saveAuditTrail("Admission", "Edited patient ward "+result.getName());
         Pager<WardData> pagers=new Pager();
         pagers.setCode("0");
         pagers.setMessage("Ward Updated successful");

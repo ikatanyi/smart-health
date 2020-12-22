@@ -8,6 +8,7 @@ import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.ItemDTO;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 public class InventoryItemController {
 
     private final InventoryItemService service;
+    private final AuditTrailService auditTrailService;
 
     @PostMapping("/inventoryItem")
     @PreAuthorize("hasAuthority('create_inventoryitem')")
@@ -53,6 +55,7 @@ public class InventoryItemController {
     @PreAuthorize("hasAuthority('view_inventoryItem')")
     public InventoryItemData getInventoryItem(@PathVariable(value = "id") Long code, @PathVariable(value = "storeId") Long storeId) {
         InventoryItem inventoryItem = service.getInventoryItem(code, storeId).orElse(null);
+        auditTrailService.saveAuditTrail("Inventory", "viewed inventory item "+inventoryItem.getItem().getItemName()+"at the store identified by id "+storeId);
         return inventoryItem!=null ? inventoryItem.toData() : null;
     }
     
@@ -63,7 +66,7 @@ public class InventoryItemController {
         List<InventoryItemData> inventoryItem = service.getInventoryItemList(code, item)
                 .stream()
                 .map(x -> x.toData()).collect(Collectors.toList());
-
+        auditTrailService.saveAuditTrail("Inventory", "viewed inventory items at store identified by id "+code);
         return inventoryItem;
     }
 
@@ -79,7 +82,7 @@ public class InventoryItemController {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
 
-        Page<InventoryItemData> list = service.getInventoryItems(storeId, itemId, search, includeClosed, pageable);
+        Page<InventoryItemData> list = service.getInventoryItems(storeId, itemId, search, includeClosed, pageable).map(itm -> itm.toData());
 
 //        Page<InventoryItemData> list = service.getPricebooks(category, type, pageable, includeClosed).map(u -> InventoryItemData.map(u));
         Pager<List<InventoryItemData>> pagers = new Pager();
@@ -93,19 +96,21 @@ public class InventoryItemController {
         details.setTotalPage(list.getTotalPages());
         details.setReportName("Inventory Items");
         pagers.setPageDetails(details);
-
+        auditTrailService.saveAuditTrail("Inventory", "viewed all inventory items ");
         return ResponseEntity.ok(pagers);
     }
     
     @GetMapping("/inventoryItem/{itemCode}/item-count")
     @PreAuthorize("hasAuthority('view_inventoryItem')")
     public Integer getInventoryItemCount(@PathVariable(value = "itemCode") String itemCode) {
+        auditTrailService.saveAuditTrail("Inventory", "viewed inventory item count for item identified by "+itemCode);
         return service.getItemCount(itemCode);
     }
     
     @GetMapping("/inventoryItem/{itemCode}/store/{storeId}/item-count")
     @PreAuthorize("hasAuthority('view_inventoryItem')")
     public Integer getInventoryItemCountByStore(@PathVariable(value = "itemCode") String itemCode, @PathVariable(value = "storeId") Long storeId) {
+       auditTrailService.saveAuditTrail("Inventory", "viewed inventory item count for item identified by "+itemCode+" for store identified by "+storeId);
         return service.getItemCountByItemAndStore(itemCode,storeId);
     }
 

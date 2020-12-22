@@ -43,6 +43,7 @@ public class StockEntryData {
      private LocalDate expiryDate;
     private String batchNo;
     private String createdBy;
+    private String category;
 
     public static StockEntryData map(StockEntry stock) {
         StockEntryData data = new StockEntryData();
@@ -55,6 +56,7 @@ public class StockEntryData {
             data.setItemId(stock.getItem().getId());
             data.setItemCode(stock.getItem().getItemCode());
             data.setItem(stock.getItem().getItemName());
+            data.setCategory(stock.getItem().getDrugCategory());
         }
 
         data.setUnit(stock.getUnit());
@@ -71,6 +73,7 @@ public class StockEntryData {
         data.setBatchNo(stock.getBatchNo());
         data.setExpiryDate(stock.getExpiryDate());
         data.setCreatedBy(stock.getCreatedBy());
+        
 
         return data;
     }

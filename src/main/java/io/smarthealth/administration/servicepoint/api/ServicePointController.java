@@ -6,6 +6,7 @@ import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -28,9 +29,11 @@ import org.springframework.web.bind.annotation.*;
 public class ServicePointController {
 
     private final ServicePointService service;
+    private final AuditTrailService auditTrailService; 
 
-    public ServicePointController(ServicePointService service) {
+    public ServicePointController(ServicePointService service, AuditTrailService auditTrailService) {
         this.service = service;
+        this.auditTrailService = auditTrailService;
     }
 
     @PostMapping("/servicepoints")
@@ -43,7 +46,7 @@ public class ServicePointController {
         pagers.setCode("0");
         pagers.setMessage("Service Point Success Created");
         pagers.setContent(result);
-
+        auditTrailService.saveAuditTrail("Administration", "Created Service point  "+result.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -51,6 +54,7 @@ public class ServicePointController {
     @PreAuthorize("hasAuthority('view_servicepoints')")
     public ResponseEntity<?> getServicepoint(@PathVariable(value = "id") Long id) {
         ServicePointData data = service.getServicePoint(id).toData();
+        auditTrailService.saveAuditTrail("Administration", "Viewed Service point  "+data.getName());
         return ResponseEntity.ok(data);
     }
 
@@ -58,7 +62,7 @@ public class ServicePointController {
     @PreAuthorize("hasAuthority('edit_servicepoints')")
     public ResponseEntity<?> updateServicepoint(@PathVariable(value = "id") Long id,@Valid @RequestBody ServicePointData data) {
         ServicePointData result = service.updateServicePoint(id, data);
-
+        auditTrailService.saveAuditTrail("Administration", "Edited Service point  "+result.getName());
         Pager<ServicePointData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Service Point Success updated");
@@ -80,6 +84,7 @@ public class ServicePointController {
         Page<ServicePointData> list = service.listServicePoints(type, pointType, pageable)
                 .map(x -> x.toData());
 
+        auditTrailService.saveAuditTrail("Administration", "Viewed all registered Service point");
         Pager<List<ServicePointData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

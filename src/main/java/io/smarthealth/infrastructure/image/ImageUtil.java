@@ -5,7 +5,6 @@
  */
 package io.smarthealth.infrastructure.image;
 
-
 import io.smarthealth.clinical.radiology.domain.PatientScanTest;
 import io.smarthealth.infrastructure.exception.APIException;
 import java.io.File;
@@ -25,37 +24,38 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Kennedy.Imbenzi
  */
 public class ImageUtil {
-    
-     @Autowired
+
+    @Autowired
     ClinicalImageRepository portraitRepository;
-     
-     private File ImageDirRoot;
-     
-     @Value("${upload.image.max-size:10242880}")
+
+    private File ImageDirRoot;
+
+    @Value("${upload.image.max-size:10242880}")
     Long maxSize;
-     
-     @Value("${clinical.image.upload.dir}")
-    private String imageUploadDir;
-    /**
-     * Delete patient's photo
-     */
-//    @Autowired
-//    ImageUtil( @Value("${clinical.image.upload.dir}") String uploadDir) {
-//        this.ImageDirRoot = new File(uploadDir);
-//    }
-    
+
+    @Value("${clinical.image.upload.dir}")
+    private String imageUploadDir ;
+            /**
+             * Delete patient's photo
+             */
+            //    @Autowired
+            //    ImageUtil( @Value("${clinical.image.upload.dir}") String uploadDir) {
+            //        this.ImageDirRoot = new File(uploadDir);
+            //    }
+
+
     public Boolean deleteImage(String potraitName) throws IOException {
         //remove file if exists on folder
         /*Delete patient file*/
-        
+
         ImageDirRoot = new File(imageUploadDir);
-        Boolean state=false;
+        Boolean state = false;
         System.out.println("-------------Deleting patient portrait--------------");
         File file = new File(this.ImageDirRoot, potraitName);
         if (file.exists()) {
             if (file.delete()) {
                 System.out.println("File deleted successfully");
-                state=true;
+                state = true;
             } else {
                 System.out.println("Fail to delete file");
             }
@@ -70,7 +70,7 @@ public class ImageUtil {
         if (file == null) {
             return null;
         }
-        
+
         throwIfInvalidSize(file.getSize());
         throwIfInvalidContentType(file.getContentType());
         File fileForPatient = new File(imageUploadDir, file.getOriginalFilename());
@@ -90,7 +90,7 @@ public class ImageUtil {
             throw new RuntimeException(ex);
         }
     }
-    
+
     private void throwIfInvalidSize(final Long size) {
 
         if (size > maxSize) {
@@ -104,5 +104,5 @@ public class ImageUtil {
             throw APIException.badRequest("Only content type {0} and {1} allowed", MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE);
         }
     }
-    
+
 }

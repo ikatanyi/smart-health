@@ -59,6 +59,7 @@ import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.net.URI;
@@ -150,9 +151,13 @@ public class ClinicalVisitController {
 
     @Autowired
     private PatientBillRepository patientBillRepository;
+    
+    @Autowired
+    AuditTrailService auditTrailService;    
 
     @Autowired
     private SpecialistChangeAuditService specialistChangeAuditService;
+    
     @Autowired
     UserService service;
 
@@ -168,6 +173,7 @@ public class ClinicalVisitController {
         if (visitService.isPatientVisitActive(patient)) {
             throw APIException.conflict("Patient identified by {0} already has an active visit", patient.getPatientNumber());
         }
+        
         Visit visit = VisitData.map(visitData);
         Employee employee = null;
         if (visitData.getPractitionerCode() != null) {
@@ -231,7 +237,7 @@ public class ClinicalVisitController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/visits/{visitNumber}")
                 .buildAndExpand(visit.getVisitNumber()).toUri();
-
+        auditTrailService.saveAuditTrail("Visit", "Activated a visit for patient "+visit.getPatient().getFullName());
         return ResponseEntity.created(location).body(ApiResponse.successMessage("Visit was activated successfully", HttpStatus.CREATED, visitDat));
     }
 
@@ -293,7 +299,7 @@ public class ClinicalVisitController {
             data.setPatientNumber(patient.getPatientNumber());
             data.setPaymentMode(visit.getPaymentMethod().name());
             data.setVisitNumber(visit.getVisitNumber());
-
+            auditTrailService.saveAuditTrail("Visit", "Created a Consultation bill for patient "+patient.getFullName());
             billingService.createPatientBill(data);
         }
     }
@@ -324,7 +330,7 @@ public class ClinicalVisitController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/visits/{visitNumber}")
                 .buildAndExpand(visit.getVisitNumber()).toUri();
-
+        auditTrailService.saveAuditTrail("Visit", "Edited a Patient visit for patient "+patient.getFullName());
         return ResponseEntity.created(location).body(visitDat);
     }
 
@@ -346,7 +352,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         visit = this.visitService.createAVisit(visit);
         //Convert to data
         VisitData visitDat = VisitData.map(visit);
-
+        auditTrailService.saveAuditTrail("Visit", "Edited a Patient visit status for patient "+visit.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.OK).body(visitDat);
     }
 
@@ -368,7 +374,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         pagers.setCode("0");
         pagers.setMessage("Update Successful");
         pagers.setContent(visitDat);
-
+        auditTrailService.saveAuditTrail("Visit", "Edited a Patient consultation status for patient "+visit.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -390,7 +396,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         pagers.setCode("0");
         pagers.setMessage("Visit Data");
         pagers.setContent(visitDat);
-
+        auditTrailService.saveAuditTrail("Visit", "viewed a Patient visit identified by visitNo "+visitNumber);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -420,7 +426,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         pagers.setCode("0");
         pagers.setMessage("Update Successful");
         pagers.setContent(visitDat);
-
+        auditTrailService.saveAuditTrail("Visit", "Edited a Patient consultation doctor for patient "+visit.getPatient().getFullName()+" to doctor "+employee.getFullName());
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -449,6 +455,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         }
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<VisitData> page = visitService.fetchAllVisits(visitNumber, staffNumber, servicePointType, patientNumber, patientName, runningStatus, range, isActiveOnConsultation, username, orderByTriageCategory, queryTerm, billPaymentValidationPoint, pageable).map(v -> convertToVisitData(v));
+        auditTrailService.saveAuditTrail("Visit", "Viewed all patients visits");
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 
@@ -461,7 +468,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         pagers.setCode("0");
         pagers.setMessage("Payment Mode");
         pagers.setContent(PaymentDetailsData.map(pde));
-
+        auditTrailService.saveAuditTrail("Visit", "Viewed a Patient payment mode for patient visit "+visit.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -469,12 +476,14 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
     @PreAuthorize("hasAuthority('view_visits')")
     public ResponseEntity<?> fetchpaymentModeByLastVisit(@PathVariable("patientNumber") String patientNumber) {
         Patient p = patientService.findPatientOrThrow(patientNumber);
+        auditTrailService.saveAuditTrail("Visit", "Retrived a last payment mode for patient "+p.getFullName());
         Optional<PaymentDetails> pde = paymentDetailsService.getLastPaymentDetailsByPatient(p);
         Pager<PaymentDetailsData> pagers = new Pager();
         if (pde.isPresent()) {
             pagers.setCode("200");
             pagers.setMessage("Payment Mode");
             pagers.setContent(PaymentDetailsData.map(pde.get()));
+            
         } else {
             pagers.setCode("404");
             pagers.setMessage("Payment Mode Not Found");
@@ -501,6 +510,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
 
             }
             paymentDetailsService.createPaymentDetails(pdd);
+            auditTrailService.saveAuditTrail("Visit", "Edited a Patient limit amount for patient visit "+visitNo);
         }
         return ResponseEntity.ok(true);
     }
@@ -589,7 +599,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         pagers.setCode("0");
         pagers.setMessage("Mode Changed Successful");
         pagers.setContent(ppd);
-
+        auditTrailService.saveAuditTrail("Visit", "Edited a Patient payment mode for patient "+visit.getPatient().getFullName());
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -598,6 +608,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
     public ResponseEntity<?> fetchActiveVisitByPatient(@PathVariable("patientNumber") String patientNumber
     ) {
         Patient patient = visitService.findPatientOrThrow(patientNumber);
+        auditTrailService.saveAuditTrail("Visit", "Searched active visits for patient "+patient.getFullName());
         Optional<Visit> visit = visitService.fetchVisitByPatientAndStatus(patient, VisitEnum.Status.CheckIn);
         if (visit.isPresent()) {
             Pager<VisitData> pagers = new Pager();
@@ -609,6 +620,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(APIException.notFound("{0} does not have an active visit", patient.getFullName()));
             // throw APIException.notFound("{0} does not have an active visit", patient.getFullName());
         }
+        
     }
 
     @GetMapping("/patients/{patientNumber}/visits")
@@ -619,6 +631,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
     ) {
         //System.out.println("patientNumber " + patientNumber);
         Page<VisitData> page = visitService.fetchVisitByPatientNumber(patientNumber, pageable).map(v -> convertToVisitData(v));
+        auditTrailService.saveAuditTrail("Visit", "Viewed all Patient visits for patient identified by "+patientNumber);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -641,7 +654,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/visits/{visitNumber}/vitals/{id}")
                 .buildAndExpand(visitNumber, vitalR.getId()).toUri();
-
+        auditTrailService.saveAuditTrail("Visit", "Entered Patient vitals for patient identified by visitNo "+visitNumber);
         return ResponseEntity.created(location).body(vr);
     }
 
@@ -665,6 +678,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         pagers.setCode("0");
         pagers.setMessage("Triage notes has successfully been saved");
         pagers.setContent(TriageNotesData.map(triageNotesService.createNewTriageNotes(e)));
+        auditTrailService.saveAuditTrail("Visit", "Entered Patient triage notes for patient identified by visitNo "+visitNumber);
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -687,6 +701,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         details.setTotalPage(page.getTotalPages());
         details.setReportName("Triage Notes ");
         pagers.setPageDetails(details);
+        auditTrailService.saveAuditTrail("Visit", "viewed Patient triage notes for patient identified by visitNo "+visitNumber);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pagers);
     }
@@ -703,6 +718,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         pagers.setCode("0");
         pagers.setMessage("Triage notes");
         pagers.setContent(TriageNotesData.map(e));
+        auditTrailService.saveAuditTrail("Visit", "Searched Patient triage notes for patient identified by id "+id);
         return ResponseEntity.status(HttpStatus.OK).body(pagers);
     }
 
@@ -715,6 +731,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
     ) {
 
         Page<Visit> v = visitService.lastVisit(patientService.findPatientOrThrow(patientNumber), currentVisitNumber);
+        auditTrailService.saveAuditTrail("Visit", "Viewed Last visit Patient vitals for patient identified by patientNo "+patientNumber);
         if (v.getContent().size() > 0) {
             Pager<VisitData> pagers = new Pager();
             pagers.setCode("0");
@@ -807,7 +824,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/patient/{patientNo}/vitals/{id}")
                 .buildAndExpand(patientNo, vitalR.getId()).toUri();
-
+        auditTrailService.saveAuditTrail("Visit", "Entered Patient vitals for patient "+patient.getFullName());
         return ResponseEntity.created(location).body(vr);
     }
 //
@@ -867,7 +884,7 @@ throw APIException.badRequest("Huh! This patient is not yet discharged!");
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<SimpleVisit> page = visitService.getSimpleVisits(visitNumber, patientNumber, range, pageable)
                 .map(SimpleVisit::map);
-
+        auditTrailService.saveAuditTrail("Visit", "Viewed all Patient visits");
         return ResponseEntity.ok((Pager<SimpleVisit>) PaginationUtil.toPager(page, "Patient Visits"));
     }
 

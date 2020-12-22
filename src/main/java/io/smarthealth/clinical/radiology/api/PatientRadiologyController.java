@@ -10,6 +10,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,11 +47,15 @@ public class PatientRadiologyController {
     @Autowired
     ModelMapper modelMapper;   
     
+    @Autowired
+    AuditTrailService auditTrailService;
+    
     @PostMapping("/patient-scan")
     @PreAuthorize("hasAuthority('create_patientradiology')")
     public @ResponseBody
     ResponseEntity<?> createPatientScan(@RequestBody final PatientScanRegisterData patientRegData, @RequestParam(value = "visitNo", required = false) final String visitNo) {
         PatientScanRegisterData Patientscans = radiologyService.savePatientResults(patientRegData, visitNo).todata();
+        auditTrailService.saveAuditTrail("Radiology", "Acknowledged Patient Radiology scan for visit "+visitNo+" for patient"+patientRegData.getPatientName());
         Pager<PatientScanRegisterData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -71,7 +76,7 @@ public class PatientRadiologyController {
                 .stream()
                 .map((scanTest)->(scanTest.toData()))
                 .collect(Collectors.toList());
-
+        auditTrailService.saveAuditTrail("Radiology", "Viewed Acknowledged Patient Radiology tests identified by radiologyNo "+scanAccessionNo);
         return ResponseEntity.status(HttpStatus.OK).body(patientLabTests);
     }
 
@@ -80,6 +85,7 @@ public class PatientRadiologyController {
     public @ResponseBody
     ResponseEntity<?> updateRadiolgyTest(@PathVariable("testId") final Long testId, @Valid @RequestBody PatientScanTestData patientScanTestData) {
         PatientScanTest savedResult = radiologyService.updatePatientScanTest(testId, patientScanTestData);
+        auditTrailService.saveAuditTrail("Radiology", "Edited Patient Radiology tests identified by test id "+testId);
         return ResponseEntity.status(HttpStatus.OK).body(savedResult.toData());
     }
 
@@ -87,6 +93,7 @@ public class PatientRadiologyController {
     @PreAuthorize("hasAuthority('view_patientradiology')")
     public ResponseEntity<?> fetchPatientScanById(@PathVariable("id") final Long id) {
         PatientScanTestData result = radiologyService.findPatientRadiologyTestByIdWithNotFoundDetection(id).toData();
+        auditTrailService.saveAuditTrail("Radiology", "Viewed Patient Radiology tests identified by test id "+id);
         Pager<PatientScanTestData> pagers = new Pager();
 
         pagers.setCode("0");
@@ -118,7 +125,7 @@ public class PatientRadiologyController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         Page<PatientScanTestData> list = radiologyService.findAllTests(patientNumber, search, orderNo, status, visitNumber, range, walkin, pageable)
                 .map(x -> x.toData());
-
+        auditTrailService.saveAuditTrail("Radiology", "Viewed all Patient Radiology tests done");
         Pager<List<PatientScanTestData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

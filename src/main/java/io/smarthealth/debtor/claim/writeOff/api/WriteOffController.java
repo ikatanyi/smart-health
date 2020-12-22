@@ -6,6 +6,7 @@ import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;
@@ -26,9 +27,11 @@ import org.springframework.web.bind.annotation.*;
 public class WriteOffController {
 
     private final WriteOffService writeOffService;
+    private final AuditTrailService auditTrailService;
 
-    public WriteOffController(WriteOffService writeOffService) {
+    public WriteOffController(WriteOffService writeOffService, AuditTrailService auditTrailService) {
         this.writeOffService = writeOffService;
+        this.auditTrailService = auditTrailService;
     }
 
     
@@ -44,7 +47,7 @@ public class WriteOffController {
         pagers.setCode("0");
         pagers.setMessage("WriteOff successfully Created.");
         pagers.setContent(remittance);
-
+        auditTrailService.saveAuditTrail("Write Off", "Created a write-off for invoice "+remittance.getInvoiceNo());
         return ResponseEntity.status(HttpStatus.CREATED).body(pagers);
     }
 
@@ -59,6 +62,7 @@ public class WriteOffController {
     @PreAuthorize("hasAuthority('edit_writeoff')")
     public WriteOffData updateRemitance(@PathVariable(value = "id") Long id, WriteOffData writeOffData) {
         WriteOffData writeOff = writeOffService.map(writeOffService.updateWriteOff(id, writeOffData));
+        auditTrailService.saveAuditTrail("Write Off", "Viewed a write-off for invoice "+writeOff.getInvoiceNo());
         return writeOff;
     }
 
@@ -76,7 +80,7 @@ public class WriteOffController {
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Page<WriteOffData> list = writeOffService.getAllWriteOff(payerId, schemeId, dateRange, range, pageable)
                 .map(disp -> writeOffService.map(disp));
-
+        auditTrailService.saveAuditTrail("Write Off", "Viewed all write-off ");
         Pager<List<WriteOffData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");

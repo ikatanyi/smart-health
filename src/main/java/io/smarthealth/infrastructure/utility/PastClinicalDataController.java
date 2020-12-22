@@ -8,6 +8,7 @@ package io.smarthealth.infrastructure.utility;
 import io.smarthealth.infrastructure.utility.ivorydata.IvoryHistoricalClinicalDataSindano;
 import io.smarthealth.infrastructure.utility.ivorydata.PatientData;
 import io.smarthealth.infrastructure.utility.newpoint.NewPointHistoricalClinicalDataSindano;
+import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
