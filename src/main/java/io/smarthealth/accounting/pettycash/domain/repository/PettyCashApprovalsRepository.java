@@ -6,7 +6,7 @@
 package io.smarthealth.accounting.pettycash.domain.repository;
 
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
-import io.smarthealth.approval.domain.PettyCashApprovals;
+import io.smarthealth.accounting.pettycash.domain.PettyCashApprovals;
 import io.smarthealth.security.domain.User;
 import java.util.List;
 import java.util.Optional;

@@ -7,8 +7,8 @@ package io.smarthealth.accounting.pettycash.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
-import io.smarthealth.approval.domain.PettyCashApprovals;
-import io.smarthealth.approval.domain.PettyCashApprovedItems;
+import io.smarthealth.accounting.pettycash.domain.PettyCashApprovals;
+import io.smarthealth.accounting.pettycash.domain.PettyCashApprovedItems;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
