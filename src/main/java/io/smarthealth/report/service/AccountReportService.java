@@ -76,6 +76,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -851,13 +852,33 @@ public class AccountReportService {
         Boolean hasBalance = reportParam.getFirst("hasBalance") != null ? Boolean.getBoolean(reportParam.getFirst("hasBalance")) : null;
         BillStatus status = BillStatusToEnum(reportParam.getFirst("billStatus"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
-        List<BillItemData> data = billService.getPatientBillItems(patientNumber, visitNumber, billNumber, null, servicePointId, hasBalance, status, range, Pageable.unpaged())
+        List<BillItemData> data =new ArrayList();
+
+        AtomicReference<Double> payment = new AtomicReference<>(0.0);
+        AtomicReference<Double> deposit = new AtomicReference<>(0.0);
+         billService.getPatientBillItems(patientNumber, visitNumber, billNumber, null, servicePointId, hasBalance, status, range, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map((bill) -> bill.toData())
+                .map((bill) -> {
+                    if(!bill.getServicePoint().equals("Receipt"))
+                         data.add(bill.toData());
+                    else{
+                        ReceiptData receipt = paymentService.getPaymentByReceiptNumber(bill.getPaymentReference()).toData();
+                        if(receipt.getReceiptType()==ReceiptType.Deposit) {
+                            deposit.set(deposit.get() + bill.getAmount());
+                        }
+                        else{
+                            payment.set(payment.get()+bill.getAmount());
+                        }
+
+                    }
+                    return bill;
+                })
                 .collect(Collectors.toList());
         reportData.setPatientNumber(patientNumber);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.getFilters().put("deposit", deposit);
+        reportData.getFilters().put("payment", payment);
         reportData.setData(data);
         reportData.setFormat(format);
         reportData.setTemplate("/payments/patient_statement");

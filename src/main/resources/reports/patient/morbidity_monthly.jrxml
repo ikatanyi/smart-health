@@ -183,7 +183,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{term}.equals("<5")?"UNDER 5":"OVER 5" +"YEARS DAILY OUTPATIENT MORBIDITY SUMMARY SHEET"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($P{term}.equals("<5")?"UNDER 5":"OVER 5") +"YEARS DAILY OUTPATIENT MORBIDITY SUMMARY SHEET"]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement positionType="Float" mode="Transparent" x="1" y="19" width="207" height="14" forecolor="#000000" backcolor="#9999FF" uuid="59f9cccd-48f6-440b-a763-e5909589b187"/>
