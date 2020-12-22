@@ -705,7 +705,7 @@ public class BillingService {
         String visitNumber = data.getVisitNumber();
         Long schemeId = data.getSchemeId();
         //TODO check if the visit is valid or not
-        Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
+        Visit visit = visitRepository.findByVisitNumberAndStatusNot(visitNumber, VisitEnum.Status.CheckOut)
                 .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
         Scheme scheme = schemeService.fetchSchemeById(schemeId);
 
@@ -1116,7 +1116,7 @@ public class BillingService {
     }
 
     public String finalizeBill(String visitNumber, BillFinalizeData finalizeBill) {
-        Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
+        Visit visit = visitRepository.findByVisitNumberAndStatusNot(visitNumber, VisitEnum.Status.CheckOut)
                 .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
         String cinvoice = sequenceNumberService.next(1L, Sequences.CashBillNumber.name());
         List<PatientBillItem> lists = finalizeBill.getBillItems().stream()
