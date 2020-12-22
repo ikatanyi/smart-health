@@ -4,7 +4,6 @@ import io.smarthealth.accounting.cashier.domain.Shift;
 import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.infrastructure.domain.Auditable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 
 /**
  *
@@ -36,7 +36,7 @@ public class Receipt extends Auditable {
     private String description; //Insurance payment | Cheque deposit
     private BigDecimal amount;
 //    private BigDecimal credit;
-     private BigDecimal tenderedAmount;
+    private BigDecimal tenderedAmount;
     private BigDecimal refundedAmount;
     private BigDecimal paid;
     private String paymentMethod;
@@ -111,26 +111,25 @@ public class Receipt extends Auditable {
         );
         data.setReceiptItems(
                 this.getReceiptItems()
-                .stream().map(x->x.toData())
-                .collect(Collectors.toList())
+                        .stream().map(x -> x.toData())
+                        .collect(Collectors.toList())
         );
-        //ZXC
+
         data.setVoided(this.voided);
         data.setVoidedBy(this.voidedBy);
         data.setVoidedDatetime(this.voidedDatetime);
-        
+
+        if (prepayment) {
+            data.setReceiptType(ReceiptType.Deposit);
+        } else {
+
+            if (this.receiptItems.isEmpty() && (refundedAmount == BigDecimal.ZERO)) {
+                data.setReceiptType(ReceiptType.Payment);
+            } else {
+                data.setReceiptType(ReceiptType.POS);
+            }
+        }
 
         return data;
     }
 }
-
-//    private LocalDateTime receiptDatetime;
-//    private String paymentMethod;
-//    private String receiptNo;
-//    private String referenceNumber;
-//    private BigDecimal debit;
-//    private BigDecimal credit;
-//    private String transactionType; // Receipting | Refund | Banking
-//    private LocalDate transactionDate;
-//    private String transactionNo;
-//    private String shiftNo;

@@ -1,9 +1,10 @@
- package io.smarthealth.accounting.billing.domain.impl;
+package io.smarthealth.accounting.billing.domain.impl;
 
 import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.domain.BillRepository;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.math.BigDecimal;
@@ -35,9 +36,9 @@ public class BillRepositoryImpl implements BillRepository {
     }
 
     @Override
-    public List<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin,PaymentMethod paymentMode, DateRange range, Boolean includeCanceled ) {
+    public List<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, PaymentMethod paymentMode, DateRange range, Boolean includeCanceled, VisitEnum.VisitType visitType) {
         if (isWalkin != null && isWalkin) {
-            return getWalkIn(patientNumber, hasBalance,paymentMode,range, includeCanceled);
+            return getWalkIn(patientNumber, hasBalance, paymentMode, range, includeCanceled);
         }
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<SummaryBill> cq = cb.createQuery(SummaryBill.class);
@@ -50,7 +51,10 @@ public class BillRepositoryImpl implements BillRepository {
                 cb.sum(root.get("amount")).as(BigDecimal.class),
                 cb.sum(root.get("balance")).as(BigDecimal.class),
                 root.get("patientBill").get("paymentMode"),
-                root.get("patientBill").get("walkinFlag")
+                root.get("patientBill").get("walkinFlag"),
+//                root.get("scheme").get("schemeName"),
+                root.get("patientBill").get("visit").get("visitType")
+//                root.get("scheme").get("payer").get("payerName")
         );
 
         List<Predicate> predicates = new ArrayList<>();
@@ -64,10 +68,16 @@ public class BillRepositoryImpl implements BillRepository {
         }
         if (paymentMode != null) {
             predicates.add(cb.equal(root.get("patientBill").get("paymentMode"), paymentMode.name()));
+//            predicates.add(cb.equal(root.get("patientBill").get("visit").get("paymentMethod"), paymentMode));
         }
-         if (includeCanceled!=null && !includeCanceled) {
+        if (includeCanceled != null && !includeCanceled) {
             predicates.add(cb.notEqual(root.get("status"), BillStatus.Canceled));
         }
+
+        if (visitType != null) {
+            predicates.add(cb.equal(root.get("patientBill").get("visit").get("visitType"), visitType));
+        }
+
         if (range != null) {
             predicates.add(
                     cb.between(root.get("billingDate"), range.getStartDate(), range.getEndDate())
@@ -83,8 +93,8 @@ public class BillRepositoryImpl implements BillRepository {
             } else {
                 cq.having(cb.lessThanOrEqualTo(cb.sum(root.get("balance")), 0));
             }
-        } 
-        
+        }
+
         List<SummaryBill> result = em.createQuery(cq).getResultList();
 
         if (isWalkin == null) {
@@ -92,28 +102,26 @@ public class BillRepositoryImpl implements BillRepository {
                 patientNumber = visitNumber;
             }
 
-            List<SummaryBill> walkin = getWalkIn(patientNumber, hasBalance,paymentMode,range, includeCanceled);
+            List<SummaryBill> walkin = getWalkIn(patientNumber, hasBalance, paymentMode, range, includeCanceled);
             result.addAll(walkin);
 //            result.retainAll(walkin);
-            
+
 //            List<User> sortedUsers = users
 //        .stream()
 //        .sorted(Comparator.comparing(User::getScore))
 //        .collect(Collectors.toList());
-           
         }
-        //TODO:: find a better way to agreggate the patient bills, lets list items as credit and debit 
-        
-         List<SummaryBill> sortedBills = result
-                    .stream()
-                    .sorted(Comparator.comparing(SummaryBill::getDate))
-                    .collect(Collectors.toList());
+
+        List<SummaryBill> sortedBills = result
+                .stream()
+                .sorted(Comparator.comparing(SummaryBill::getDate))
+                .collect(Collectors.toList());
 
         return sortedBills;
     }
 
     @Override
-    public BigDecimal getBillTotal(String visitNumber, Boolean includeCanceled) {
+    public BigDecimal getBillTotal(String visitNumber, Boolean includeCanceled, VisitEnum.VisitType visitType) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Double> query = cb.createQuery(Double.class);
         Root<PatientBillItem> patientBillItem = query.from(PatientBillItem.class);
@@ -122,8 +130,11 @@ public class BillRepositoryImpl implements BillRepository {
         if (visitNumber != null) {
             predicates.add(cb.equal(patientBillItem.get("patientBill").get("visit").get("visitNumber"), visitNumber));
         }
-         if (includeCanceled!=null && !includeCanceled) {
+        if (includeCanceled != null && !includeCanceled) {
             predicates.add(cb.notEqual(patientBillItem.get("status"), BillStatus.Canceled));
+        }
+        if (visitType != null) {
+            predicates.add(cb.equal(patientBillItem.get("patientBill").get("visit").get("visitType"), visitType));
         }
         query.where(predicates.toArray(new Predicate[0]));
 
@@ -132,7 +143,7 @@ public class BillRepositoryImpl implements BillRepository {
         return BigDecimal.valueOf(sum);
     }
 
-    private List<SummaryBill> getWalkIn(String patientNumber, Boolean hasBalance,PaymentMethod paymentMode, DateRange range, Boolean includeCanceled) {
+    private List<SummaryBill> getWalkIn(String patientNumber, Boolean hasBalance, PaymentMethod paymentMode, DateRange range, Boolean includeCanceled) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<SummaryBill> cq = cb.createQuery(SummaryBill.class);
         Root<PatientBillItem> root = cq.from(PatientBillItem.class);
@@ -144,22 +155,25 @@ public class BillRepositoryImpl implements BillRepository {
                 cb.sum(root.get("amount")).as(BigDecimal.class),
                 cb.sum(root.get("balance")).as(BigDecimal.class),
                 root.get("patientBill").get("paymentMode"),
-                root.get("patientBill").get("walkinFlag")
+                root.get("patientBill").get("walkinFlag"),
+//                root.get("scheme").get("schemeName"),
+                root.get("patientBill").get("visit").get("visitType")
+//                root.get("scheme").get("payer").get("payerName")
         );
 
         List<Predicate> predicates = new ArrayList<>();
-         predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), true));
+        predicates.add(cb.equal(root.get("patientBill").get("walkinFlag"), true));
 
         if (patientNumber != null) {
             predicates.add(cb.equal(root.get("patientBill").get("reference"), patientNumber));
         }
-         if (paymentMode != null) {
+        if (paymentMode != null) {
             predicates.add(cb.equal(root.get("patientBill").get("paymentMode"), paymentMode.name()));
         }
-           if (includeCanceled!=null && !includeCanceled) {
+        if (includeCanceled != null && !includeCanceled) {
             predicates.add(cb.notEqual(root.get("status"), BillStatus.Canceled));
         }
-           if (range != null) {
+        if (range != null) {
             predicates.add(
                     cb.between(root.get("billingDate"), range.getStartDate(), range.getEndDate())
             );
@@ -179,8 +193,6 @@ public class BillRepositoryImpl implements BillRepository {
 
         return result;
     }
-    
+
     //can I select the items independently so that I can have fully control
-   
-    
 }

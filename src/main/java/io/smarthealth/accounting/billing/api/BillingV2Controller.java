@@ -11,6 +11,8 @@ import io.smarthealth.accounting.billing.domain.PatientBill;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.accounting.billing.data.BillFinalizeData;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -19,6 +21,7 @@ import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -96,6 +99,7 @@ public class BillingV2Controller {
             @RequestParam(value = "hasBalance", required = false) Boolean hasBalance,
             @RequestParam(value = "isWalkin", required = false) Boolean isWakin,
             @RequestParam(value = "paymentMode", required = false) PaymentMethod paymentMode,
+            @RequestParam(value = "visitType", required = false) VisitEnum.VisitType visitType,
             @RequestParam(value = "dateRange", required = false) String dateRange,
             @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
             @RequestParam(value = "page", required = false) Integer page,
@@ -104,7 +108,7 @@ public class BillingV2Controller {
         Pageable pageable = PaginationUtil.createPage(page, size);
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 
-        List<SummaryBill> list = service.getBillTotals(visitNumber, patientNumber, hasBalance, isWakin, paymentMode, range, includeCanceled);
+        List<SummaryBill> list = service.getBillTotals(visitNumber, patientNumber, hasBalance, isWakin, paymentMode, range, includeCanceled, visitType);
 
         int start = (int) pageable.getOffset();
         int end = (start + pageable.getPageSize()) > list.size() ? list.size() : (start + pageable.getPageSize());
@@ -129,26 +133,15 @@ public class BillingV2Controller {
     @PreAuthorize("hasAuthority('view_billV2')")
     public ResponseEntity<?> getBillDetails(
             @PathVariable(value = "visitNumber") String visitNumber,
-            @RequestParam(value = "billPayMode" , required = false) PaymentMethod paymentMethod,
+            @RequestParam(value = "billPayMode", required = false) PaymentMethod paymentMethod,
             @RequestParam(value = "finalized", required = false, defaultValue = "false") final boolean finalized,
             @RequestParam(value = "includeCanceled", required = false, defaultValue = "false") final boolean includeCanceled,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "pageSize", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createUnPaged(page, size);
-        BillDetail details = service.getBillDetails(visitNumber, includeCanceled,paymentMethod, pageable);
+        BillDetail details = service.getBillDetails(visitNumber, includeCanceled, paymentMethod, pageable);
 
-//        Pager<List<SummaryBill>> pagers = new Pager();
-//        pagers.setCode("0");
-//        pagers.setMessage("Success");
-//        pagers.setContent(list.getContent());
-//        PageDetails details = new PageDetails();
-//        details.setPage(list.getNumber() + 1);
-//        details.setPerPage(list.getSize());
-//        details.setTotalElements(list.getTotalElements());
-//        details.setTotalPage(list.getTotalPages());
-//        details.setReportName("Patient Bills");
-//        pagers.setPageDetails(details);
         return ResponseEntity.ok(details);
     }
 
@@ -158,8 +151,15 @@ public class BillingV2Controller {
         List<BillItemData> bills = service.voidBillItem(visitNumber, billItems).stream().map(x -> x.toData()).collect(Collectors.toList());
         return ResponseEntity.ok(bills);
     }
-    
-     @GetMapping("/billing/balance")
+
+    @PostMapping("/billing/{visitNumber}/finalize")
+    @PreAuthorize("hasAuthority('view_billV2')")
+    public ResponseEntity<?> finalizeBills(@PathVariable(value = "visitNumber") String visitNumber, @Valid @RequestBody BillFinalizeData finalizeBill) {
+        String invoice = service.finalizeBill(visitNumber, finalizeBill);
+        return ResponseEntity.ok(new FinalizedBill(invoice));
+    }
+
+    @GetMapping("/billing/balance")
     public ResponseEntity<PatientBalance> getBalance(
             @RequestParam(value = "visitNumber", required = false) String visitNumber,
             @RequestParam(value = "patientNumber", required = false) String patientNumber) {
@@ -178,5 +178,10 @@ public class BillingV2Controller {
         Page<SummaryBill> pageResponse = new PageImpl<>(list.subList(min, max), pageable, list.size());
         return pageResponse;
     }
- 
+
+    @Value
+    public class FinalizedBill {
+
+        String billNumber;
+    }
 }

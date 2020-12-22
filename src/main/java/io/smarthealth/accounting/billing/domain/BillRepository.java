@@ -6,6 +6,7 @@
 package io.smarthealth.accounting.billing.domain;
 
 import io.smarthealth.accounting.billing.data.SummaryBill;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.DateRange;
 import java.math.BigDecimal;
@@ -17,8 +18,8 @@ import java.util.List;
  */
 public interface BillRepository {
     
-    List<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin,PaymentMethod paymentMode, DateRange range, Boolean includeCanceled);
+    List<SummaryBill> getBillSummary(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin,PaymentMethod paymentMode, DateRange range, Boolean includeCanceled,VisitEnum.VisitType visitType);
     
-    BigDecimal getBillTotal(String visitNumber, Boolean includeCanceled);
+    BigDecimal getBillTotal(String visitNumber, Boolean includeCanceled, VisitEnum.VisitType visitType);
     
 }

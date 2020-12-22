@@ -41,6 +41,7 @@ import io.smarthealth.accounting.payment.service.RemittanceService;
 import io.smarthealth.clinical.record.data.PatientTestsData;
 import io.smarthealth.clinical.record.service.DiagnosisService;
 import io.smarthealth.clinical.record.service.PrescriptionService;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.VisitService;
@@ -63,8 +64,7 @@ import io.smarthealth.report.data.ReportData;
 import io.smarthealth.report.data.accounts.DailyBillingData;
 import io.smarthealth.report.data.accounts.InsuranceInvoiceData;
 import io.smarthealth.report.data.accounts.ReportReceiptData;
-import io.smarthealth.report.data.accounts.TrialBalanceData;
-import io.smarthealth.clinical.admission.service.AdmissionService;
+import io.smarthealth.report.data.accounts.TrialBalanceData; 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -117,8 +117,7 @@ public class AccountReportService {
     private final ReceiptingService receivePaymentService;
     private final DispatchService dispatchService;
     private final SchemeService schemeService;
-    private final DiagnosisService diagnosisService;
-    private final AdmissionService admissionService;
+    private final DiagnosisService diagnosisService; 
 
     public void getTrialBalance(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
 
@@ -371,11 +370,12 @@ public class AccountReportService {
         Boolean isWalkin = reportParam.getFirst("isWakin") != null ? Boolean.valueOf(reportParam.getFirst("isWakin")) : null;
         Boolean includeCanceled = reportParam.getFirst("includeCanceled") != null ? Boolean.valueOf(reportParam.getFirst("includeCanceled")) : Boolean.FALSE;
         
+        VisitEnum.VisitType  visitType =visitTypeToEnum(reportParam.getFirst("visitType"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
 
         List<DailyBillingData> billData = new ArrayList();
         ReportData reportData = new ReportData();
-        List<SummaryBill> bills = billService.getBillTotals(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range, includeCanceled);
+        List<SummaryBill> bills = billService.getBillTotals(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range, includeCanceled,visitType);
         for (SummaryBill bill : bills) {
             DailyBillingData data = new DailyBillingData();
 
@@ -1244,6 +1244,15 @@ public class AccountReportService {
             return PaymentMethod.valueOf(status);
         }
         throw APIException.internalError("Provide a Valid Payment Method");
+    }
+    private VisitEnum.VisitType visitTypeToEnum(String status) {
+        if (status == null || status.equals("null") || status.equals("")) {
+            return null;
+        }
+        if (EnumUtils.isValidEnum(VisitEnum.VisitType.class, status)) {
+            return VisitEnum.VisitType.valueOf(status);
+        }
+        throw APIException.internalError("Provide a Valid Visit Type");
     }
 
     private BillStatus BillStatusToEnum(String status) {

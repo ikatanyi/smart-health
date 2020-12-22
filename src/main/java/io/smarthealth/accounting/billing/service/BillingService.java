@@ -10,6 +10,7 @@ import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
 import io.smarthealth.accounting.billing.data.BillData;
+import io.smarthealth.accounting.billing.data.BillFinalizeData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.CopayData;
 import io.smarthealth.accounting.billing.domain.PatientBill;
@@ -21,8 +22,8 @@ import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.data.nue.BillPayment;
 import io.smarthealth.accounting.billing.domain.PatientBillItem;
+import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
-import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.stock.item.domain.Item;
@@ -38,8 +39,6 @@ import org.springframework.stereotype.Service;
 import io.smarthealth.accounting.billing.domain.PatientBillItemRepository;
 import lombok.RequiredArgsConstructor;
 import io.smarthealth.accounting.billing.domain.PatientBillRepository;
-import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
-import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecification;
 import io.smarthealth.accounting.doctors.domain.DoctorInvoice;
 import io.smarthealth.accounting.doctors.domain.DoctorItem;
 import io.smarthealth.accounting.doctors.service.DoctorInvoiceService;
@@ -78,6 +77,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.billing.domain.specification.BillingSpecification;
 import io.smarthealth.accounting.billing.domain.specification.PatientBillSpecification;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
+import io.smarthealth.accounting.payment.domain.repository.ReceiptRepository;
+import io.smarthealth.accounting.payment.domain.Receipt;
 
 /**
  *
@@ -101,6 +103,7 @@ public class BillingService {
     private final CashPaidUpdater cashPaidUpdater;
     private final PaymentDetailsService paymentDetailsService;
     private final PricelistService pricelistService;
+    private final ReceiptRepository receiptRepository;
 
     //Create service bill
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -171,8 +174,8 @@ public class BillingService {
         System.out.println("End of bill items");
 
         PatientBill savedBill = save(patientbill);
-        //TODO consider the inpatient billing 
-        if (savedBill.getPaymentMode().equals("Insurance") || (visit != null && visit.getVisitType() == VisitEnum.VisitType.Inpatient)) {
+        if (savedBill.getPaymentMode().equals("Insurance")) {
+
             journalService.save(toJournal(savedBill, null));
         }
         return savedBill;
@@ -182,18 +185,9 @@ public class BillingService {
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
         bill.setBillNumber(bill_no);
         PatientBill savedBill = save(bill);
-        if (savedBill.getPaymentMode().equals("Insurance") || (savedBill.getVisit() != null && savedBill.getVisit().getVisitType() == VisitEnum.VisitType.Inpatient)) {
+        if (savedBill.getPaymentMode().equals("Insurance")) {
             journalService.save(toJournal(savedBill, store));
         }
-    }
-
-    public PatientBill createPatientBill(PatientBill patientBill) {
-        PatientBill savedBill = patientBillRepository.saveAndFlush(patientBill);
-        //TODO consider the inpatient billing 
-        if (savedBill.getPaymentMode().equals("Insurance") || (savedBill.getVisit() != null && savedBill.getVisit().getVisitType() == VisitEnum.VisitType.Inpatient)) {
-            journalService.save(toJournal(savedBill, null));
-        }
-        return savedBill;
     }
 
     public PatientBill save(PatientBill bill) {
@@ -205,10 +199,15 @@ public class BillingService {
         }
         double amountToBill = 0.00;
         int itemCount = 0;
+        //TODO:: refactor scheme limit checks into a method
 
+        //update the scheme that paid this bill if insurance
         for (PatientBillItem b : bill.getBillItems()) {
-            amountToBill = amountToBill + b.getAmount();
-            itemCount++;
+            //ignore for now the receipts and copay from limit checks
+            if (b.getItem().getCategory() != ItemCategory.CoPay || b.getItem().getCategory() != ItemCategory.Receipt) {
+                amountToBill = amountToBill + b.getAmount();
+                itemCount++;
+            }
             if (bill.getVisit() != null) {
                 //Billing paymode added to accomodate exclusions and other functionalities
 //                b.setBillPayMode(bill.getVisit().getPaymentMethod());
@@ -323,14 +322,14 @@ public class BillingService {
 
     public PatientBillItem findBillItemByPatientBill(String billNumber) {
         Optional<PatientBill> patientBill = findByBillNumber(billNumber);
-//        if (patientBill.isPresent()) {
-//            Optional<PatientBillItem> billItem = billItemRepository.findByPatientBill(patientBill.get());
-//            if (billItem.isPresent()) {
-//                return billItem.get();
-//            } else {
-//                return null;
-//            }
-//        }
+        if (patientBill.isPresent()) {
+            Optional<PatientBillItem> billItem = billItemRepository.findByPatientBill(patientBill.get());
+            if (billItem.isPresent()) {
+                return billItem.get();
+            } else {
+                return null;
+            }
+        }
         return null;
     }
 
@@ -706,19 +705,8 @@ public class BillingService {
         String visitNumber = data.getVisitNumber();
         Long schemeId = data.getSchemeId();
         //TODO check if the visit is valid or not
-        Optional<Visit> visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn);
-        if(!visitOptional.isPresent()){
-            visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.Admitted);
-            if(!visitOptional.isPresent()){
-                visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.Discharged);
-            }
-        }
-        if(!visitOptional.isPresent()){
-            throw APIException.notFound("No active visit found for the patient selected");
-        }
-
-        Visit visit = visitOptional.get();
-
+        Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
+                .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
         Scheme scheme = schemeService.fetchSchemeById(schemeId);
 
         Optional<SchemeConfigurations> schemeConfigs = schemeService.fetchSchemeConfigByScheme(scheme);
@@ -791,8 +779,8 @@ public class BillingService {
     //TODO 2020-05-03 -> filter all the bills and group them together
 
     // Get Bills
-    public List<SummaryBill> getBillTotals(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, PaymentMethod paymentMode, DateRange range, Boolean includeCanceled) {
-        return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range, includeCanceled);
+    public List<SummaryBill> getBillTotals(String visitNumber, String patientNumber, Boolean hasBalance, Boolean isWalkin, PaymentMethod paymentMode, DateRange range, Boolean includeCanceled, VisitEnum.VisitType visitType) {
+        return billItemRepository.getBillSummary(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range, includeCanceled, visitType);
     }
 
     public BillDetail getBillDetails(String visitNumber, boolean includeCanceled, PaymentMethod paymentMethod, Pageable pageable) {
@@ -816,11 +804,20 @@ public class BillingService {
                         //only return receipts
                         if (x.getItem().getCategory() == ItemCategory.CoPay || x.getItem().getCategory() == ItemCategory.Receipt) {
                             BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
+                            ReceiptType receiptType = ReceiptType.Payment;
+
+                            if (x.getPaymentReference() != null) {
+                                Optional<Receipt> receipt = receiptRepository.findByReceiptNo(x.getPaymentReference());
+                                if (receipt.isPresent()) {
+                                    receiptType = receipt.get().toData().getReceiptType();
+                                }
+                            }
+
                             BigDecimal amount = BigDecimal.valueOf(x.getAmount());
                             if (amount.signum() == -1) {
                                 amount = amount.negate();
                             }
-                            payments.add(new BillPayment(type, x.getPaymentReference(), amount));
+                            payments.add(new BillPayment(type, x.getPaymentReference(), amount, receiptType));
                         }
                     } else {
                         System.err.println("Canceled Billed");
@@ -1056,23 +1053,20 @@ public class BillingService {
         BigDecimal amount = data.getReceipt().getAmount().negate();
         Double receiptedAmount = (amount.doubleValue() * -1);
 
-
+//        Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
+//                .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
         Optional<Visit> visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn);
-        if(!visitOptional.isPresent()){
+        if (!visitOptional.isPresent()) {
             visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.Admitted);
-            if(!visitOptional.isPresent()){
+            if (!visitOptional.isPresent()) {
                 visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.Discharged);
             }
         }
-        if(!visitOptional.isPresent()){
+        if (!visitOptional.isPresent()) {
             throw APIException.notFound("No active visit found for the patient selected");
         }
 
         Visit visit = visitOptional.get();
-
-
-
-
 
         Optional<Item> receiptItem = itemService.findFirstByCategory(ItemCategory.Receipt);
         if (receiptItem.isPresent()) {
@@ -1121,8 +1115,107 @@ public class BillingService {
         return null;
     }
 
+    public String finalizeBill(String visitNumber, BillFinalizeData finalizeBill) {
+        Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
+                .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
+        String cinvoice = sequenceNumberService.next(1L, Sequences.CashBillNumber.name());
+        List<PatientBillItem> lists = finalizeBill.getBillItems().stream()
+                .map(x -> {
+                    PatientBillItem item = findBillItemById(x.getBillItemId());
+                    if (item.isFinalized() == false) {
+                        item.setPaid(Boolean.TRUE);
+                        item.setStatus(BillStatus.Paid);
+                        if (item.getPaymentReference() == null) {
+                            item.setPaymentReference(cinvoice);
+                        }
+                        item.setFinalized(true);
+                        item.setInvoiceNumber(cinvoice);
+                        item.setBalance(0D);
+                        return item;
+                    }
+                    return null;
+                })
+                .filter(x -> x != null)
+                .collect(Collectors.toList());
+
+        //TODO consider expensing the deposits received
+        List<PatientBillItem> updatedBills = billItemRepository.saveAll(lists);
+
+        updatedBills.forEach(pi -> {
+            if(pi.getItem().getCategory() == ItemCategory.Receipt){
+                 Optional<Receipt> savedReceipt = receiptRepository.findByReceiptNo(pi.getPaymentReference());
+                 if(savedReceipt.isPresent() && savedReceipt.get().getPrepayment()){
+                     // we have a deposit to journal it
+                     
+                     
+                 }
+            }
+        }
+        );
+
+        return cinvoice;
+    }
+
     @Transactional
     public void updatePaymentReference(String oldReference, String newReference) {
         billItemRepository.updatePaymentReference(newReference, oldReference);
     }
+
+//    private JournalEntry toJournalDeposits(Receipt payment, CreateRemittance data) {
+//        Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.DeferredRevenue);
+//
+//        if (!creditAccount.isPresent()) {
+//            throw APIException.badRequest("Deferred Revenue (Deposit) Account is Not Mapped for Transaction");
+//        }
+//        //move the money from here to patient control
+//
+//        PayChannel channel = data.getPaymentChannel();
+//
+//        List<JournalEntryItem> items = new ArrayList<>();
+//        String descType = "";
+//        String liabilityNarration = "Patient Deposit " + payment.getAmount() + " " + (data.getNotes() != null ? "(" + data.getNotes() + ")" : "");
+//        items.add(new JournalEntryItem(creditAccount.get().getAccount(), liabilityNarration, BigDecimal.ZERO, payment.getAmount()));
+//        //create the invoice payments
+//        descType = "Patient Payment deposit";
+//
+//        //PAYMENT CHANNEL
+//        String narration = descType + "  for " + payment.getDescription() + " Reference No : " + payment.getReceiptNo();
+//        if (channel.getType() == PayChannel.Type.Bank) {
+//            BankAccount bank = bankingService.findBankAccountByNumber(channel.getAccountNumber())
+//                    .orElseThrow(() -> APIException.notFound("Bank Account Number {0} Not Found", channel.getAccountNumber()));
+//            Account debitAccount = bank.getLedgerAccount();
+//            //withdraw this amount from this bank
+//            bankingService.deposit(bank, payment, data.getAmount());
+//            items.add(new JournalEntryItem(debitAccount, narration, payment.getAmount(), BigDecimal.ZERO));
+//            //at this pointwithdraw the cash
+//        } else if (channel.getType() == PayChannel.Type.Cash) {
+//            Account debitAccount = null;
+//            if (channel.getAccountId() == 1) {
+//                Optional<FinancialActivityAccount> pettycashAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Petty_Cash);
+//                if (!pettycashAccount.isPresent()) {
+//                    throw APIException.badRequest("Petty Cash Account is Not Mapped");
+//                }
+//                debitAccount = pettycashAccount.get().getAccount();
+//            }
+//            if (channel.getAccountId() == 2) {
+//                Optional<FinancialActivityAccount> receiptAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Receipt_Control);
+//                if (!receiptAccount.isPresent()) {
+//                    throw APIException.badRequest("Undeposited Fund Account (Receipt Control) is Not Mapped");
+//                }
+//                debitAccount = receiptAccount.get().getAccount();
+//            }
+//            if (debitAccount == null) {
+//                return null;
+//            }
+//            items.add(new JournalEntryItem(debitAccount, narration, payment.getAmount(), BigDecimal.ZERO));
+//        }
+//
+//        String description = descType + " Reference No " + payment.getReceiptNo();
+//
+//        JournalEntry toSave = new JournalEntry(payment.getTransactionDate().toLocalDate(), description, items);
+//        toSave.setTransactionType(TransactionType.Receipting);
+//        toSave.setTransactionNo(payment.getTransactionNo());
+//        toSave.setStatus(JournalState.PENDING);
+//        return toSave;
+//    }
 }
