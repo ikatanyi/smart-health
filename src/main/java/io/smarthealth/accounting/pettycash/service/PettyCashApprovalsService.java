@@ -5,19 +5,18 @@
  */
 package io.smarthealth.accounting.pettycash.service;
 
-import io.smarthealth.approval.domain.PettyCashApprovedItems;
+import io.smarthealth.accounting.pettycash.domain.PettyCashApprovedItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
 import io.smarthealth.accounting.pettycash.domain.repository.PettyCashApprovalsRepository;
-import io.smarthealth.approval.domain.PettyCashApprovals;
-import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.accounting.pettycash.domain.PettyCashApprovals;
+
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.pettycash.domain.repository.PettyCashApprovedItemsRepository;
-import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.security.domain.User;
 
 /**

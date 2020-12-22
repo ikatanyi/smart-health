@@ -8,14 +8,14 @@ package io.smarthealth.accounting.pettycash.api;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestItemsData;
 import io.smarthealth.accounting.pettycash.data.PettyCashRequestsData;
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
-import io.smarthealth.approval.domain.PettyCashApprovedItems;
+import io.smarthealth.accounting.pettycash.domain.PettyCashApprovedItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
 import io.smarthealth.accounting.pettycash.service.PettyCashApprovalsService;
 import io.smarthealth.accounting.pettycash.service.PettyCashRequestsService;
 import io.smarthealth.approval.data.enums.ApprovalModule;
 import io.smarthealth.approval.domain.ModuleApprovers;
-import io.smarthealth.approval.domain.PettyCashApprovals;
+import io.smarthealth.accounting.pettycash.domain.PettyCashApprovals;
 import io.smarthealth.approval.service.ApprovalConfigService;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
@@ -24,7 +24,6 @@ import io.smarthealth.organization.facility.domain.Employee;
 import io.smarthealth.organization.facility.service.EmployeeService;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.UserService;
-import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,9 +67,6 @@ public class PettyCashRequestController {
 
     @Autowired
     PettyCashApprovalsService approvalsService;
-    
-    @Autowired
-    AuditTrailService auditTrailService;
 
     @PostMapping("/petty-cash-request")
     @PreAuthorize("hasAuthority('create_pettyCashRequest')")
@@ -119,10 +115,10 @@ public class PettyCashRequestController {
 
         //save items
         pettyCashRequestsService.createCashRequestItems(cri);
-        auditTrailService.saveAuditTrail("Petty Cash", "Created a petty cash request by "+employee.getFullName()+"for "+totalAmount);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(data);
     }
-
+//
 //    @GetMapping("/petty-cash-request/{requestNo}/approvals")
 //    public ResponseEntity<?> fetchPettyCashApprovalsByRequisitionNo(@PathVariable("requestNo") final String requestNo) {
 //
@@ -155,7 +151,6 @@ public class PettyCashRequestController {
                 .orElseThrow(() -> APIException.badRequest("User not found"));
         Employee employee = employeeService.fetchEmployeeByUser(user);
 
-        auditTrailService.saveAuditTrail("Petty Cash", "viewed all petty cash request by me "+employee.getFullName() );
         Page<PettyCashRequestsData> list = pettyCashRequestsService.findPettyCashRequestsByEmployeeWhoRequested(employee, pageable).map(r -> PettyCashRequestsData.map(r));
         Pager<List<PettyCashRequestsData>> pagers = new Pager();
         pagers.setCode("0");
@@ -175,7 +170,6 @@ public class PettyCashRequestController {
     @PreAuthorize("hasAuthority('view_pettyCashRequest')")
     public ResponseEntity<?> fetchPettyCashRequests(@RequestParam(value = "requestNo", required = false) final String requestNo, @RequestParam(value = "status", required = false) final PettyCashStatus status, Pageable pageable) {
         Page<PettyCashRequestsData> list = pettyCashRequestsService.findPettyCashRequests(requestNo, null, status, pageable).map(r -> PettyCashRequestsData.map(r));
-        auditTrailService.saveAuditTrail("Petty Cash", "viewed all petty cash requests");
         Pager<List<PettyCashRequestsData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -199,8 +193,7 @@ public class PettyCashRequestController {
         Employee employee = employeeService.fetchEmployeeByUser(user);
 
         int loggedInPersonApprovalLevel = approvalConfigService.fetchModuleApproverByModuleAndEmployee(ApprovalModule.PettyCash, employee).getApprovalLevel();
-        
-        auditTrailService.saveAuditTrail("Petty Cash", "viewed all petty cash requests pending approval");
+
         Page<PettyCashRequestsData> list = pettyCashRequestsService.fetchAllPettyCashRequestsByPendingApprovalLevel(loggedInPersonApprovalLevel, pageable).map(r -> PettyCashRequestsData.map(r));
         Pager<List<PettyCashRequestsData>> pagers = new Pager();
         pagers.setCode("0");
@@ -219,7 +212,6 @@ public class PettyCashRequestController {
     @GetMapping("/petty-cash-request/{requestNo}")
     @PreAuthorize("hasAuthority('view_pettyCashRequest')")
     public ResponseEntity<?> fetchPettyCashRequestByNo(@PathVariable("requestNo") final String requestNo, final Pageable pageable) {
-        auditTrailService.saveAuditTrail("Petty Cash", "viewed petty cash Identified by requestNo "+requestNo);
         PettyCashRequestsData data = PettyCashRequestsData.map(pettyCashRequestsService.fetchCashRequestByRequestNo(requestNo));
         Pager<PettyCashRequestsData> pagers = new Pager();
         pagers.setCode("0");
@@ -244,7 +236,6 @@ public class PettyCashRequestController {
         approval.setRequestNo(pettyCashRequest);
         approval = approvalsService.saveCashApproval(approval);
 
-        auditTrailService.saveAuditTrail("Petty Cash", "Approved Petty cash request Identified by requestNo "+requestNo);
         //check if there is next level approver
         List<ModuleApprovers> approvers = approvalConfigService.fetchModuleApproversByModuleAndLevel(ApprovalModule.PettyCash, pettyCashRequest.getApprovalPendingLevel() + 1);
         if (approvers.size() > 0) {

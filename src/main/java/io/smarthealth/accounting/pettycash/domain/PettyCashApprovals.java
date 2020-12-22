@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.approval.domain;
+package io.smarthealth.accounting.pettycash.domain;
 
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
-import io.smarthealth.accounting.pettycash.domain.PettyCashRequests;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.security.domain.User;
 import java.util.ArrayList;

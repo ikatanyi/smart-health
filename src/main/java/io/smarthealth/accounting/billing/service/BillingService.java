@@ -174,8 +174,17 @@ public class BillingService {
         System.out.println("End of bill items");
 
         PatientBill savedBill = save(patientbill);
-        //TODO consider the inpatient billing 
-        if (savedBill.getPaymentMode().equals("Insurance") || (visit != null && visit.getVisitType() == VisitEnum.VisitType.Inpatient)) {
+        if (savedBill.getPaymentMode().equals("Insurance")) {
+
+            journalService.save(toJournal(savedBill, null));
+        }
+        return savedBill;
+    }
+
+    public PatientBill createPatientBill(PatientBill patientBill) {
+        PatientBill savedBill = patientBillRepository.saveAndFlush(patientBill);
+        //TODO consider the inpatient billing
+        if (savedBill.getPaymentMode().equals("Insurance") || (savedBill.getVisit() != null && savedBill.getVisit().getVisitType() == VisitEnum.VisitType.Inpatient)) {
             journalService.save(toJournal(savedBill, null));
         }
         return savedBill;
@@ -185,18 +194,9 @@ public class BillingService {
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
         bill.setBillNumber(bill_no);
         PatientBill savedBill = save(bill);
-        if (savedBill.getPaymentMode().equals("Insurance") || (savedBill.getVisit() != null && savedBill.getVisit().getVisitType() == VisitEnum.VisitType.Inpatient)) {
+        if (savedBill.getPaymentMode().equals("Insurance")) {
             journalService.save(toJournal(savedBill, store));
         }
-    }
-
-    public PatientBill createPatientBill(PatientBill patientBill) {
-        PatientBill savedBill = patientBillRepository.saveAndFlush(patientBill);
-        //TODO consider the inpatient billing 
-        if (savedBill.getPaymentMode().equals("Insurance") || (savedBill.getVisit() != null && savedBill.getVisit().getVisitType() == VisitEnum.VisitType.Inpatient)) {
-            journalService.save(toJournal(savedBill, null));
-        }
-        return savedBill;
     }
 
     public PatientBill save(PatientBill bill) {
@@ -331,14 +331,14 @@ public class BillingService {
 
     public PatientBillItem findBillItemByPatientBill(String billNumber) {
         Optional<PatientBill> patientBill = findByBillNumber(billNumber);
-//        if (patientBill.isPresent()) {
-//            Optional<PatientBillItem> billItem = billItemRepository.findByPatientBill(patientBill.get());
-//            if (billItem.isPresent()) {
-//                return billItem.get();
-//            } else {
-//                return null;
-//            }
-//        }
+        if (patientBill.isPresent()) {
+            Optional<PatientBillItem> billItem = billItemRepository.findByPatientBill(patientBill.get());
+            if (billItem.isPresent()) {
+                return billItem.get();
+            } else {
+                return null;
+            }
+        }
         return null;
     }
 
@@ -714,19 +714,8 @@ public class BillingService {
         String visitNumber = data.getVisitNumber();
         Long schemeId = data.getSchemeId();
         //TODO check if the visit is valid or not
-        Optional<Visit> visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn);
-        if(!visitOptional.isPresent()){
-            visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.Admitted);
-            if(!visitOptional.isPresent()){
-                visitOptional = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.Discharged);
-            }
-        }
-        if(!visitOptional.isPresent()){
-            throw APIException.notFound("No active visit found for the patient selected");
-        }
-
-        Visit visit = visitOptional.get();
-
+        Visit visit = visitRepository.findByVisitNumberAndStatusNot(visitNumber, VisitEnum.Status.CheckOut)
+                .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
         Scheme scheme = schemeService.fetchSchemeById(schemeId);
 
         Optional<SchemeConfigurations> schemeConfigs = schemeService.fetchSchemeConfigByScheme(scheme);
@@ -1061,7 +1050,6 @@ public class BillingService {
         billItem.setServicePointId(priceList.getServicePoint().getId());
         billItem.setStatus(BillStatus.Draft);
         billItem.setMedicId(null);
-        billItem.setBillPayMode(visit.getPaymentMethod());
 
         patientbill.addBillItem(billItem);
 
@@ -1088,10 +1076,6 @@ public class BillingService {
         }
 
         Visit visit = visitOptional.get();
-
-
-
-
 
         Optional<Item> receiptItem = itemService.findFirstByCategory(ItemCategory.Receipt);
         if (receiptItem.isPresent()) {
@@ -1141,7 +1125,7 @@ public class BillingService {
     }
 
     public String finalizeBill(String visitNumber, BillFinalizeData finalizeBill) {
-        Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
+        Visit visit = visitRepository.findByVisitNumberAndStatusNot(visitNumber, VisitEnum.Status.CheckOut)
                 .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
         String cinvoice = sequenceNumberService.next(1L, Sequences.CashBillNumber.name());
         List<PatientBillItem> lists = finalizeBill.getBillItems().stream()

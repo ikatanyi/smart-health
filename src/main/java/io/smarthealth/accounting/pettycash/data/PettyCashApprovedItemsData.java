@@ -6,7 +6,7 @@
 package io.smarthealth.accounting.pettycash.data;
 
 import io.smarthealth.accounting.pettycash.data.enums.PettyCashStatus;
-import io.smarthealth.approval.domain.PettyCashApprovedItems;
+import io.smarthealth.accounting.pettycash.domain.PettyCashApprovedItems;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Data;

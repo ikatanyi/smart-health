@@ -5,7 +5,7 @@
  */
 package io.smarthealth.accounting.pettycash.domain.repository;
 
-import io.smarthealth.approval.domain.PettyCashApprovedItems;
+import io.smarthealth.accounting.pettycash.domain.PettyCashApprovedItems;
 import io.smarthealth.accounting.pettycash.domain.PettyCashRequestItems;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
