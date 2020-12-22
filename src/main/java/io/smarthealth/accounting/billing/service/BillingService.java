@@ -181,6 +181,15 @@ public class BillingService {
         return savedBill;
     }
 
+    public PatientBill createPatientBill(PatientBill patientBill) {
+        PatientBill savedBill = patientBillRepository.saveAndFlush(patientBill);
+        //TODO consider the inpatient billing
+        if (savedBill.getPaymentMode().equals("Insurance") || (savedBill.getVisit() != null && savedBill.getVisit().getVisitType() == VisitEnum.VisitType.Inpatient)) {
+            journalService.save(toJournal(savedBill, null));
+        }
+        return savedBill;
+    }
+
     public void createPatientBill(PatientBill bill, Store store) {
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
         bill.setBillNumber(bill_no);
