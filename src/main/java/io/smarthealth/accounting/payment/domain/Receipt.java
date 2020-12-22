@@ -122,7 +122,7 @@ public class Receipt extends Auditable {
             data.setReceiptType(ReceiptType.Deposit);
         } else {
 
-            if (this.receiptItems.isEmpty() && (refundedAmount == BigDecimal.ZERO)) {
+            if (this.receiptItems.isEmpty() && (refundedAmount.compareTo(BigDecimal.ZERO) == 0)) {
                 data.setReceiptType(ReceiptType.Payment);
             } else {
                 data.setReceiptType(ReceiptType.POS);
