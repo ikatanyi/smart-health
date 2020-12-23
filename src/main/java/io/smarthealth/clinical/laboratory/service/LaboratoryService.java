@@ -507,7 +507,7 @@ public class LaboratoryService {
             if (wi.isPresent()) {
                 patientbill.setOtherDetails(wi.get().getFirstName()+" "+wi.get().getSurname());
             } else {
-                patientbill.setOtherDetails(data.get);
+                 patientbill.setOtherDetails(data.getRequestedBy());
             }
             patientbill.setReference(data.getPatientNo());
 //            patientbill.setOtherDetails(data.getRequestedBy());
