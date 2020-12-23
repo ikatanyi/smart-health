@@ -241,8 +241,14 @@ public class DispensingService {
             patientbill.setPatient(visit.getPatient());
             patientbill.setWalkinFlag(Boolean.FALSE);
         } else {
+            Optional<WalkIn> wi = walkingService.fetchWalkingByWalkingNo(data.getPatientNumber());
+            if (wi.isPresent()) {
+                patientbill.setOtherDetails(wi.get().getFullName());
+            } else {
+                patientbill.setOtherDetails(data.getPatientName());
+            }
             patientbill.setReference(data.getPatientNumber());
-            patientbill.setOtherDetails(data.getPatientName());
+//            patientbill.setOtherDetails(data.getPatientName());
             patientbill.setWalkinFlag(Boolean.TRUE);
         }
 

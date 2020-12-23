@@ -101,7 +101,7 @@ public class LaboratoryService {
     public LabRegister createLabRegister(LabRegisterData data) {
 
         LabRegister request = toLabRegister(data);
-        
+
         String trnId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String labNo = sequenceNumberService.next(1L, Sequences.LabNumber.name());
         request.setLabNumber(labNo);
@@ -316,10 +316,11 @@ public class LaboratoryService {
             request.setVisit(visit);
             request.setRequestedBy(data.getRequestedBy());
 
-            if(data.getRequestedBy()==null&&data.getMedicId()!=null){
+            if (data.getRequestedBy() == null && data.getMedicId() != null) {
                 Optional<Employee> employee = employeeService.findByEmployeeID(data.getMedicId());
-                if(employee.isPresent())
+                if (employee.isPresent()) {
                     request.setRequestedBy(employee.get().getFullName());
+                }
             }
 
             request.setPatientNo(visit.getPatient().getPatientNumber());
@@ -334,9 +335,9 @@ public class LaboratoryService {
 
         } else {
             WalkIn w = createWalking(data.getPatientName());
-            if(data.getMedicId()!=null){
+            if (data.getMedicId() != null) {
                 Optional<Employee> employee = employeeService.findByEmployeeID(data.getMedicId());
-                if(employee.isPresent()){
+                if (employee.isPresent()) {
                     request.setRequestedBy(employee.get().getFullName());
                 }
             }
@@ -355,7 +356,7 @@ public class LaboratoryService {
                 .map(x -> toLabRegisterTest(x, method, panels))
                 .filter(x -> x != null)
                 .collect(Collectors.toList());
-        
+
         if (!panels.isEmpty()) {
             panels.forEach(x -> {
                 registeredlist.addAll(registerPanelTests(x, method));
@@ -370,7 +371,7 @@ public class LaboratoryService {
         LabTest labTest = getLabTest(data.getTestId());
         if (labTest.getIsPanel() != null && labTest.getIsPanel()) {
             panels.add(data);
-            
+
             return null;
         }
 
@@ -378,7 +379,7 @@ public class LaboratoryService {
         test.setCollected(Boolean.FALSE);
         test.setEntered(Boolean.FALSE);
         test.setLabTest(labTest);
-       test.setPaymentMethod(data.getPaymentMethod());
+        test.setPaymentMethod(data.getPaymentMethod());
         test.setPaid(paymentMode.equals("Cash") ? Boolean.FALSE : Boolean.TRUE);
         test.setVoided(Boolean.FALSE);
         test.setValidated(Boolean.FALSE);
@@ -475,7 +476,7 @@ public class LaboratoryService {
     public List<LabRegisterTest> getTestsByDate(DateRange range) {
         return testRepository.findTestsByDateRange(range.getStartDateTime(), range.getEndDateTime());
     }
-    
+
     public List<TotalTest> getPatientTestTotals(Instant fromDate, Instant toDate) {
         return testRepository.findTotalTests(fromDate, toDate);
     }
@@ -502,8 +503,14 @@ public class LaboratoryService {
         }
         // how do I deal with bills for Walkin
         if (data.getIsWalkin()) {
+            Optional<WalkIn> wi = walkingService.fetchWalkingByWalkingNo(data.getPatientNo());
+            if (wi.isPresent()) {
+                patientbill.setOtherDetails(wi.get().getFirstName()+" "+wi.get().getSurname());
+            } else {
+                patientbill.setOtherDetails(data.get);
+            }
             patientbill.setReference(data.getPatientNo());
-            patientbill.setOtherDetails(data.getRequestedBy());
+//            patientbill.setOtherDetails(data.getRequestedBy());
             patientbill.setWalkinFlag(Boolean.TRUE);
         }
         String method = data.getPaymentMode() != null ? data.getPaymentMode() : "Cash";
@@ -563,7 +570,7 @@ public class LaboratoryService {
             billItem.setBalance(price);
             billItem.setServicePoint(srvpoint.getName());
             billItem.setServicePointId(srvpoint.getId());
-            billItem.setStatus(BillStatus.Draft); 
+            billItem.setStatus(BillStatus.Draft);
             billItem.setBillPayMode(x.getPaymentMethod());
             //TODO enter the bills as array 
 //            billItem.setRequestReference(); //this is the one I need to know how to handle ot
