@@ -36,7 +36,7 @@ public class AuditTrailSpecification {
 
             if (name != null) {
                 final String likeExpression = "%" + name + "%";
-                predicates.add( cb.like(root.get("name"), likeExpression));
+                predicates.add( cb.like(root.get("createdBy"), likeExpression));
             } 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };

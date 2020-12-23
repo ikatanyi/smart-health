@@ -35,6 +35,7 @@ import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.data.ReceiptItemData;
 import io.smarthealth.accounting.payment.data.ReceiptTransactionData;
 import io.smarthealth.accounting.payment.data.RemittanceData;
+import io.smarthealth.accounting.payment.domain.enumeration.ReceiptType;
 import io.smarthealth.accounting.payment.domain.enumeration.TrnxType;
 import io.smarthealth.accounting.payment.service.ReceiptingService;
 import io.smarthealth.accounting.payment.service.RemittanceService;
@@ -75,6 +76,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -651,14 +653,17 @@ public class AccountReportService {
         String receiptNo = reportParam.getFirst("receiptNo");
         //"RCT-00009"
         ReceiptData receiptData = paymentService.getPaymentByReceiptNumber(receiptNo).toData();
-        if(receiptData.getPrepayment()){
+        if(receiptData.getPrepayment()||receiptData.getReceiptType()!= ReceiptType.POS){
             receiptData.setReceiptItems(new ArrayList());
             receiptData.setPaid(receiptData.getAmount());
             receiptData.setTenderedAmount(receiptData.getAmount());
             ReceiptItemData itemData = new ReceiptItemData();
             itemData.setDiscount(BigDecimal.ZERO);
             itemData.setAmountPaid(receiptData.getAmount());
-            itemData.setItemName(receiptData.getDescription());
+            if(receiptData.getReceiptType()== ReceiptType.Payment)
+                itemData.setItemName("Medical Services");
+            else
+                itemData.setItemName("Deposit");
             itemData.setPrice(receiptData.getAmount());
             itemData.setQuantity(1.0);
             receiptData.getReceiptItems().add(itemData);
@@ -847,13 +852,33 @@ public class AccountReportService {
         Boolean hasBalance = reportParam.getFirst("hasBalance") != null ? Boolean.getBoolean(reportParam.getFirst("hasBalance")) : null;
         BillStatus status = BillStatusToEnum(reportParam.getFirst("billStatus"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
-        List<BillItemData> data = billService.getPatientBillItems(patientNumber, visitNumber, billNumber, null, servicePointId, hasBalance, status, range, Pageable.unpaged())
+        List<BillItemData> data =new ArrayList();
+
+        AtomicReference<Double> payment = new AtomicReference<>(0.0);
+        AtomicReference<Double> deposit = new AtomicReference<>(0.0);
+         billService.getPatientBillItems(patientNumber, visitNumber, billNumber, null, servicePointId, hasBalance, status, range, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map((bill) -> bill.toData())
+                .map((bill) -> {
+                    if(!bill.getServicePoint().equals("Receipt"))
+                         data.add(bill.toData());
+                    else{
+                        ReceiptData receipt = paymentService.getPaymentByReceiptNumber(bill.getPaymentReference()).toData();
+                        if(receipt.getReceiptType()==ReceiptType.Deposit) {
+                            deposit.set(deposit.get() + bill.getAmount());
+                        }
+                        else{
+                            payment.set(payment.get()+bill.getAmount());
+                        }
+
+                    }
+                    return bill;
+                })
                 .collect(Collectors.toList());
         reportData.setPatientNumber(patientNumber);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.getFilters().put("deposit", deposit);
+        reportData.getFilters().put("payment", payment);
         reportData.setData(data);
         reportData.setFormat(format);
         reportData.setTemplate("/payments/patient_statement");

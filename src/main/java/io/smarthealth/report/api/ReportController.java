@@ -293,6 +293,9 @@ public class ReportController {
             case Audit_Report:
                 patientReportService.getAuditTrail(queryParams, format, response);
                 break;
+            case Inventory_Stock_Reorder_Statement:
+                stockReportService.InventoryReorderStock(queryParams, format, response);
+                break;
             default:
                 break;
         }

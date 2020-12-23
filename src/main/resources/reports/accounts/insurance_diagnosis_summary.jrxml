@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="insurance_diagnosis_summary" pageWidth="555" pageHeight="802" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="38"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<parameter name="from" class="java.util.Date"/>
@@ -65,7 +65,7 @@
 	<columnHeader>
 		<band height="65" splitType="Stretch">
 			<staticText>
-				<reportElement x="12" y="54" width="40" height="11" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
+				<reportElement mode="Opaque" x="12" y="54" width="40" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -82,7 +82,7 @@
 				<text><![CDATA[Statement between The given Dates]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="52" y="54" width="47" height="11" uuid="e13a8d32-7e95-48f9-ad19-5457db79778c"/>
+				<reportElement mode="Opaque" x="52" y="54" width="47" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="e13a8d32-7e95-48f9-ad19-5457db79778c"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -92,7 +92,7 @@
 				<text><![CDATA[Patient No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="433" y="54" width="47" height="11" uuid="60d06f24-e225-44e6-89f1-960d465d5bca"/>
+				<reportElement mode="Opaque" x="433" y="54" width="47" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="60d06f24-e225-44e6-89f1-960d465d5bca"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -102,7 +102,7 @@
 				<text><![CDATA[Invoice]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="249" y="54" width="101" height="11" uuid="db90166d-3d72-4d13-8d8d-8e4ac04c3234"/>
+				<reportElement mode="Opaque" x="249" y="54" width="101" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="db90166d-3d72-4d13-8d8d-8e4ac04c3234"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -112,7 +112,7 @@
 				<text><![CDATA[Insurance]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="350" y="54" width="83" height="11" uuid="45378037-4a5e-4a8f-83bf-08e4726571f1"/>
+				<reportElement mode="Opaque" x="350" y="54" width="83" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="45378037-4a5e-4a8f-83bf-08e4726571f1"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -123,7 +123,7 @@
 				<text><![CDATA[Diagnosis]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="173" y="54" width="76" height="11" uuid="46d751bb-1a89-425f-8acc-de69bd7a8fe8"/>
+				<reportElement mode="Opaque" x="173" y="54" width="76" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="46d751bb-1a89-425f-8acc-de69bd7a8fe8"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -133,7 +133,7 @@
 				<text><![CDATA[Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="480" y="54" width="35" height="11" uuid="34cbca87-f125-4a92-8a34-6b9c190fe78b"/>
+				<reportElement mode="Opaque" x="480" y="54" width="35" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="34cbca87-f125-4a92-8a34-6b9c190fe78b"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -143,7 +143,7 @@
 				<text><![CDATA[Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="54" width="11" height="11" uuid="608fb399-6664-40a9-8ecb-9ba4349c5b4e"/>
+				<reportElement mode="Opaque" x="1" y="54" width="11" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="608fb399-6664-40a9-8ecb-9ba4349c5b4e"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -179,7 +179,7 @@
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="99" y="54" width="74" height="11" uuid="0c60fcd2-1710-446e-80b5-fbdc2c0a2d32"/>
+				<reportElement mode="Opaque" x="99" y="54" width="74" height="11" forecolor="#FFFFFF" backcolor="#333333" uuid="0c60fcd2-1710-446e-80b5-fbdc2c0a2d32"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -307,7 +307,7 @@
 					<topPen lineWidth="0.25"/>
 					<bottomPen lineWidth="0.0"/>
 				</box>
-				<textElement textAlignment="Right">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 					<paragraph rightIndent="5"/>
 				</textElement>

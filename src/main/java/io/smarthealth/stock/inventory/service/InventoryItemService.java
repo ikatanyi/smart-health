@@ -122,7 +122,7 @@ public class InventoryItemService {
         inventoryItemRepository.save(balance);
     }
 
-    public Page<InventoryItemData> getInventoryItems(Long storeId, Long itemId, String search, Boolean includeClosed, Pageable page) {
+    public Page<InventoryItem> getInventoryItems(Long storeId, Long itemId, String search, Boolean includeClosed, Pageable page) {
 //        Store store = null;
 //        if (storeId != null) {
 //            Optional<Store> stor = storeService.getStore(storeId);
@@ -131,7 +131,7 @@ public class InventoryItemService {
 //            }
 //        }
         Specification<InventoryItem> spec = InventoryItemSpecification.createSpecification(storeId, itemId, search, includeClosed);
-        Page<InventoryItemData> inventoryItems = inventoryItemRepository.findAll(spec, page).map(itm -> itm.toData());
+        Page<InventoryItem> inventoryItems = inventoryItemRepository.findAll(spec, page);
 
         return inventoryItems;
     }
