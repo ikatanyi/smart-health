@@ -378,7 +378,7 @@ public class StockReportService {
 
         reportData.setData(inventoryItemData);
         reportData.setFormat(format);
-        reportData.setTemplate("/inventory/inventory_stock_reorder_statement");
+        reportData.setTemplate("/inventory/inventory_stock_reorder");
         reportData.setReportName("Inventory-Stock--Reorder-Statement");
         reportService.generateReport(reportData, response);
     }

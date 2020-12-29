@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="audit_report" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="7"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
@@ -90,8 +90,9 @@
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center">
+				<textElement>
 					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Date Time]]></text>
 			</staticText>
@@ -116,19 +117,12 @@
 				<text><![CDATA[#]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="554" height="13" uuid="ef2954aa-f626-4154-86d0-6a5f71596c0a"/>
+				<reportElement x="0" y="1" width="554" height="13" uuid="ef2954aa-f626-4154-86d0-6a5f71596c0a"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Period: "+$P{range}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Period: "+$P{range}== null?"-":$P{range}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="0" y="12" width="554" height="9" uuid="d8a6f8a9-74f4-4791-8f2f-d95be4f0df9d"/>
-				<textElement>
-					<font size="7" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Duration(Min)]]></text>
-			</staticText>
 		</band>
 	</columnHeader>
 	<detail>

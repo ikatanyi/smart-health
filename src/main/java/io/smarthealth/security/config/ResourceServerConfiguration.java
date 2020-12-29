@@ -1,14 +1,26 @@
 package io.smarthealth.security.config;
 
+import io.smarthealth.organization.facility.domain.Employee;
+import io.smarthealth.security.domain.User;
 import io.smarthealth.security.service.CustomAccessDeniedHandler;
 import io.smarthealth.security.service.CustomAuthenticationEntryPoint;
+import io.smarthealth.security.service.CustomBasicAuthFilter;
+import io.smarthealth.security.service.CustomFilter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  *
@@ -19,9 +31,11 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomFilter customFilter;
 
-    public ResourceServerConfiguration(CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+    public ResourceServerConfiguration(CustomAuthenticationEntryPoint customAuthenticationEntryPoint, CustomFilter customFilter) {
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+        this.customFilter = customFilter;
     }
 
     @Override
@@ -32,7 +46,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http
-                
+
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests().antMatchers(Public_Matchers).permitAll()
@@ -40,9 +54,12 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers(HttpMethod.GET,"/api/report/**").authenticated()
                 .anyRequest().authenticated()
                 .and()
+                .addFilterAfter(customFilter, BasicAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
                 .accessDeniedHandler(new CustomAccessDeniedHandler());
+
+
     }
 
      private final String[] Public_Matchers = {
