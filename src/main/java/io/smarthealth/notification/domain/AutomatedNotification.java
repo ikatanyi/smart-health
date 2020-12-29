@@ -14,6 +14,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
@@ -29,8 +30,10 @@ public class AutomatedNotification extends Identifiable {
 
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<User> users = new ArrayList<>();
+    
     private String notificationParameter; // hours
     private boolean active;
 

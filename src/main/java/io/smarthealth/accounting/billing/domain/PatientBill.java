@@ -3,6 +3,7 @@ package io.smarthealth.accounting.billing.domain;
 import io.smarthealth.accounting.billing.data.BillData;
 import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
+import io.smarthealth.clinical.visit.data.enums.VisitEnum;
 import io.smarthealth.clinical.visit.domain.Visit;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
@@ -46,8 +47,7 @@ public class PatientBill extends Auditable {
 
     @OneToMany(mappedBy = "patientBill", cascade = CascadeType.ALL)
     private List<PatientBillItem> billItems = new ArrayList<>();
-    //
-
+ 
     public void addBillItem(PatientBillItem billItem) {
         billItem.setPatientBill(this);
         billItems.add(billItem);

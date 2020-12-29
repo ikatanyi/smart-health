@@ -73,7 +73,7 @@ public class PatientBillItem extends Auditable {
     List<TheatreProvider> theatreProviders;
     @Transient
     private Long storeId;
-
+    
     public BillItemData toData() {
         BillItemData data = new BillItemData();
         data.setId(this.getId());
