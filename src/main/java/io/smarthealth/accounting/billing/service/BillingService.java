@@ -232,13 +232,14 @@ public class BillingService {
             pd = paymentDetailsService.fetchPaymentDetailsByVisitWithoutNotFoundDetection(bill.getVisit());
             PaymentDetails payDetails = pd.orElse(null);
             if (payDetails != null) {
-
+                System.out.println("Lie 235");
                 Optional<SchemeConfigurations> schemeConfigurations = payDetails.getScheme() != null ? schemeService.fetchSchemeConfigByScheme(payDetails.getScheme()) : Optional.empty();
 
                 if (schemeConfigurations.isPresent() && schemeConfigurations.get().isLimitEnabled()) {
 //                    if (pd.isPresent() && pd.get().getLimitEnabled()) {
 //                        PaymentDetails payDetails = pd.get();
-                    if (payDetails.getRunningLimit() < amountToBill && !payDetails.getExcessAmountEnabled()) {
+                    System.out.println("Visit type " + bill.getVisit().getVisitType().name());
+                    if (payDetails.getRunningLimit() < amountToBill && !payDetails.getExcessAmountEnabled() && bill.getVisit().getVisitType().equals(VisitEnum.VisitType.Outpatient)) {
                         throw APIException.badRequest("Bill amount (" + amountToBill + ") exceed running limit amount (" + payDetails.getRunningLimit() + ") ", "");
                     }
                     if (payDetails.getRunningLimit() < amountToBill && payDetails.getExcessAmountEnabled()) {

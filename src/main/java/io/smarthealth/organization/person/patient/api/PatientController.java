@@ -163,7 +163,7 @@ public class PatientController {
             patient.setBloodType(patientData.getBloodType());
             patient.setGender(patientData.getGender());
             patient.setGivenName(patientData.getGivenName());
-            patient.setMaritalStatus(patientData.getMaritalStatus().name());
+            patient.setMaritalStatus(patientData.getMaritalStatus()!=null?patientData.getMaritalStatus().name():null);
             patient.setMiddleName(patientData.getMiddleName());
             //patient.setPatientNumber(patientData.getPatientNumber());
             patient.setStatus(patientData.getStatus());
