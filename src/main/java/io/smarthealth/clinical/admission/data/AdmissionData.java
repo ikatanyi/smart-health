@@ -65,6 +65,9 @@ public class AdmissionData {
     private LocalDateTime dischargeDate;
 
     @ApiModelProperty(hidden = true)
+    private String admittingDoctor;
+
+    @ApiModelProperty(hidden = true)
     private String dischargedBy;
     @ApiModelProperty(example = "CheckIn,CheckOut,Admitted,Transferred, Discharged, Booked")
     private VisitEnum.Status status;
@@ -92,6 +95,8 @@ public class AdmissionData {
         d.setDischargedBy(adm.getDischargedBy());
         d.setId(adm.getId());
         d.setAdmittingReason(adm.getAdmissionReason());
+        if(adm.getHealthProvider()!=null)
+           d.setAdmittingDoctor(adm.getHealthProvider().getFullName());
         d.setPatientName(adm.getPatient().getFullName());
         d.setPatientNumber(adm.getPatient().getPatientNumber());
         d.setAge(adm.getPatient().getAge());

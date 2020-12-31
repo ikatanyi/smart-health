@@ -290,6 +290,24 @@ public class ReportController {
             case Discharge_Summary:
                 admissionReportService.getDischargeSummary(queryParams, format, response);
                 break;
+            case Admission_Report:
+                admissionReportService.getAdmittedPatients(queryParams, format, response);
+                break;
+            case Ward_Report:
+                admissionReportService.getWards(queryParams, format, response);
+                break;
+            case Room_Report:
+                admissionReportService.getRooms(queryParams, format, response);
+                break;
+            case Bed_Report:
+                admissionReportService.getBeds(queryParams, format, response);
+                break;
+            case Care_Team_Report:
+                admissionReportService.careTeam(queryParams, format, response);
+                break;
+            case Discharged_Patients:
+                admissionReportService.getDischarges(queryParams, format, response);
+                break;
             case Audit_Report:
                 patientReportService.getAuditTrail(queryParams, format, response);
                 break;

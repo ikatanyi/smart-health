@@ -119,16 +119,23 @@ public class LabReportService {
                     if(!billItem.isEmpty()){
                         data.setReferenceNo(billItem.get(0).getPaymentReference());
                         billItem.stream().map((item) -> {
-                            if(data.getPaymentMode().equalsIgnoreCase("Cash"))
-                                data.setTotalCash(+item.getAmount());
+                            if(billItem.get(0).getPatientBill().getPaymentMode().equals("Cash") || billItem.get(0).getPatientBill().getPaymentMode()==null)
+                                data.setTotalCash(data.getTotalCash()+item.getAmount());
+                            else
+                                data.setTotalInsurance(data.getTotalInsurance()+item.getAmount());
                             return item;
-                        }).filter((item) -> (data.getPaymentMode().equalsIgnoreCase("Insurance"))).forEachOrdered((item) -> {
-                            data.setTotalInsurance(+item.getAmount());
                         });
                     }
                     return data;
                 })
                 .collect(Collectors.toList());
+
+        Instant fromDate = range.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant toDate = range.getEndDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        List<TotalTest> tests = labService.getPatientTestTotals(fromDate, toDate);
+        List<TotalTest> requests = labService.getTotalRequests(fromDate, toDate);
+
         reportData.setData(patientData);
         reportData.setFormat(format);
         if (!expand) {
@@ -144,6 +151,9 @@ public class LabReportService {
         reportData.setPatientNumber(patientNumber);
         sortList.add(sortField);
         reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+
+        reportData.getFilters().put("tests", tests);
+        reportData.getFilters().put("requests", requests);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
         reportData.setReportName("Lab-Statement");
         reportService.generateReport(reportData, response);

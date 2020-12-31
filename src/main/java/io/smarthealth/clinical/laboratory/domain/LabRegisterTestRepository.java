@@ -54,6 +54,9 @@ public interface LabRegisterTestRepository extends JpaRepository<LabRegisterTest
     List<LabRegisterTest> findTestsByDateRange(@Param("frmdt") LocalDateTime from, @Param("todt") LocalDateTime todt);
     
     
-    @Query("SELECT d.testName as testName, count(d.testName) AS count, SUM(d.price) as totalPrice FROM LabRegisterTest d WHERE d.labRegister.createdOn BETWEEN :fromDate AND :toDate Group by d.testName")
+    @Query("SELECT d.labTest.testName as testName, count(d.labTest.testName) AS count, SUM(d.price) as totalPrice FROM LabRegisterTest d WHERE d.labRegister.createdOn BETWEEN :fromDate AND :toDate Group by d.labTest.testName")
     List<TotalTest>findTotalTests(@Param("fromDate")Instant fromDate, @Param("toDate")Instant toDate);
+
+    @Query("SELECT d.labTest.testName as testName, d.labRegister.requestedBy as practitioner, count(d.labTest.testName) AS count, SUM(d.price) as totalPrice FROM LabRegisterTest d WHERE d.labRegister.createdOn BETWEEN :fromDate AND :toDate Group by d.labRegister.requestedBy")
+    List<TotalTest>findTotalTestsByPractitioner(@Param("fromDate")Instant fromDate, @Param("toDate")Instant toDate);
 }

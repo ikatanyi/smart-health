@@ -6,5 +6,6 @@
  */
 public enum PaymentMethod {
     Cash,
-    Insurance
+    Insurance,
+    Credit
 }

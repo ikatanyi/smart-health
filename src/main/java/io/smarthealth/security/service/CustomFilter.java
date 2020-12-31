@@ -21,6 +21,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
@@ -39,16 +40,21 @@ private final AuditTrailRepository auditTrailRepository;
       ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if(authentication!=null && authentication.isAuthenticated()){
-            String user = String.valueOf(authentication.getPrincipal());
+            String username="";
+            Object principal = authentication.getPrincipal();
+            if(principal instanceof UserDetails)
+                username= ((UserDetails) principal).getUsername();
+            else
+                username=principal.toString();
             AuditTrail auditTrail  = new AuditTrail();
             auditTrail.setDescription("Logged In");
-            auditTrail.setLastModifiedBy(user);
-            auditTrail.setCreatedBy(user);
+//            auditTrail.setLastModifiedBy(username);
+//            auditTrail.setCreatedBy(username);
             auditTrail.setName("Login");
-            if(!user.equals("anonymousUser"))
+            if(!username.equals("anonymousUser"))
                auditTrailRepository.save(auditTrail);
-            System.out.println("=================LoggedIn=================");
         }
         chain.doFilter(request, response);
 

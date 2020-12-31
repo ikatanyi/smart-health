@@ -481,6 +481,10 @@ public class LaboratoryService {
         return testRepository.findTotalTests(fromDate, toDate);
     }
 
+    public List<TotalTest> getTotalRequests(Instant fromDate, Instant toDate) {
+        return testRepository.findTotalTestsByPractitioner(fromDate, toDate);
+    }
+
     private WalkIn createWalking(String patientName) {
         WalkIn w = new WalkIn();
         w.setFirstName(patientName);

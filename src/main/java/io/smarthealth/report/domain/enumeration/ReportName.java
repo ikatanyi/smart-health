@@ -86,5 +86,11 @@ public enum ReportName {
         Invoice_Balancing_Statement,
         Discharge_Summary,
         Audit_Report,
-        Inventory_Stock_Reorder_Statement
+        Inventory_Stock_Reorder_Statement,
+        Admission_Report,
+        Bed_Report,
+        Room_Report,
+        Ward_Report,
+        Discharged_Patients,
+        Care_Team_Report
 }
