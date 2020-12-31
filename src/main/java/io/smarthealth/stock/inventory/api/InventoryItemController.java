@@ -9,6 +9,7 @@ import io.smarthealth.stock.inventory.data.ItemDTO;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.inventory.service.InventoryItemService;
 import io.smarthealth.security.service.AuditTrailService;
+import io.smarthealth.stock.item.domain.Item;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,10 +56,12 @@ public class InventoryItemController {
     @PreAuthorize("hasAuthority('view_inventoryItem')")
     public InventoryItemData getInventoryItem(@PathVariable(value = "id") Long code, @PathVariable(value = "storeId") Long storeId) {
         InventoryItem inventoryItem = service.getInventoryItem(code, storeId).orElse(null);
-        auditTrailService.saveAuditTrail("Inventory", "viewed inventory item "+inventoryItem.getItem().getItemName()+"at the store identified by id "+storeId);
-        return inventoryItem!=null ? inventoryItem.toData() : null;
+        Item item = inventoryItem != null ? inventoryItem.getItem() : null;
+        if (item != null) {
+            auditTrailService.saveAuditTrail("Inventory", "viewed inventory item " + inventoryItem.getItem().getItemName() + "at the store identified by id " + storeId);
+        }
+        return inventoryItem != null ? inventoryItem.toData() : null;
     }
-    
 
     @GetMapping("/inventoryItem/store/{storeId}")
     @PreAuthorize("hasAuthority('view_inventoryItem')")
@@ -66,7 +69,7 @@ public class InventoryItemController {
         List<InventoryItemData> inventoryItem = service.getInventoryItemList(code, item)
                 .stream()
                 .map(x -> x.toData()).collect(Collectors.toList());
-        auditTrailService.saveAuditTrail("Inventory", "viewed inventory items at store identified by id "+code);
+        auditTrailService.saveAuditTrail("Inventory", "viewed inventory items at store identified by id " + code);
         return inventoryItem;
     }
 
@@ -99,19 +102,19 @@ public class InventoryItemController {
         auditTrailService.saveAuditTrail("Inventory", "viewed all inventory items ");
         return ResponseEntity.ok(pagers);
     }
-    
+
     @GetMapping("/inventoryItem/{itemCode}/item-count")
     @PreAuthorize("hasAuthority('view_inventoryItem')")
     public Integer getInventoryItemCount(@PathVariable(value = "itemCode") String itemCode) {
-        auditTrailService.saveAuditTrail("Inventory", "viewed inventory item count for item identified by "+itemCode);
+        auditTrailService.saveAuditTrail("Inventory", "viewed inventory item count for item identified by " + itemCode);
         return service.getItemCount(itemCode);
     }
-    
+
     @GetMapping("/inventoryItem/{itemCode}/store/{storeId}/item-count")
     @PreAuthorize("hasAuthority('view_inventoryItem')")
     public Integer getInventoryItemCountByStore(@PathVariable(value = "itemCode") String itemCode, @PathVariable(value = "storeId") Long storeId) {
-       auditTrailService.saveAuditTrail("Inventory", "viewed inventory item count for item identified by "+itemCode+" for store identified by "+storeId);
-        return service.getItemCountByItemAndStore(itemCode,storeId);
+        auditTrailService.saveAuditTrail("Inventory", "viewed inventory item count for item identified by " + itemCode + " for store identified by " + storeId);
+        return service.getItemCountByItemAndStore(itemCode, storeId);
     }
 
 //    @GetMapping("/inventory-balances")
