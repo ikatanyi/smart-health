@@ -82,7 +82,7 @@ public class ProcedureReportService {
                 .collect(Collectors.toList());
 
         if(range==null)
-             range = DateRange.fromIsoStringOrReturnNull("2020-11-01..2020-11-30");
+             range = DateRange.fromIsoStringOrReturnNull("2020-11-01..2040-11-30");
        Instant fromDate = range.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
        Instant toDate = range.getEndDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
 

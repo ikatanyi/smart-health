@@ -91,6 +91,8 @@ public class RadiologyReportService {
             reportData.setPatientNumber(patientData.get(0).getPatientNumber());
             reportData.setEmployeeId(patientData.get(0).getRequestedByStaffNumber());
         }
+        if(range==null)
+            range = DateRange.fromIsoStringOrReturnNull("2020-11-01..2040-11-30");
         Instant fromDate = range.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
         Instant toDate = range.getEndDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
 
@@ -118,9 +120,6 @@ public class RadiologyReportService {
         reportService.generateReport(reportData, response);
     }
 
-//    public List<TotalTest> getTotalRequests(Instant fromDate, Instant toDate) {
-//        return reportService.findTotalTestsByPractitioner(fromDate, toDate);
-//    }
 
     public void getPatientRadiolgyReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
