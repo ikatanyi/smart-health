@@ -95,6 +95,7 @@ public class RadiologyReportService {
         Instant toDate = range.getEndDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
 
         List<TotalTest> tests = scanService.getPatientScansTestTotals(fromDate, toDate);
+        List<TotalTest> requests = scanService.getTotalRequests(fromDate, toDate);
 
         reportData.setFormat(format);
         if (summary) {
@@ -103,6 +104,7 @@ public class RadiologyReportService {
             reportData.setTemplate("/clinical/radiology/radiology_statement");
         }
         reportData.getFilters().put("tests", tests);
+        reportData.getFilters().put("requests", requests);
         List<JRSortField> sortList = new ArrayList();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField.setName("status");
@@ -115,6 +117,10 @@ public class RadiologyReportService {
         reportData.setReportName("Radiology-Studies-Summary");
         reportService.generateReport(reportData, response);
     }
+
+//    public List<TotalTest> getTotalRequests(Instant fromDate, Instant toDate) {
+//        return reportService.findTotalTestsByPractitioner(fromDate, toDate);
+//    }
 
     public void getPatientRadiolgyReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();

@@ -18,7 +18,7 @@ public class RegisterTestSpecification {
         super();
     }
 
-    public static Specification<PatientProcedureTest> createSpecification(String PatientNumber,String scanNo, String visitId, ProcedureTestState status, DateRange range) {
+    public static Specification<PatientProcedureTest> createSpecification(String PatientNumber,String scanNo, String visitId, ProcedureTestState status,Boolean isWalkin, DateRange range) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
  
@@ -27,6 +27,9 @@ public class RegisterTestSpecification {
             }
             if (scanNo != null) {
                 predicates.add(cb.equal(root.get("patientProcedureRegister").get("accessNo"), scanNo));
+            }
+            if (isWalkin != null) {
+                predicates.add(cb.equal(root.get("patientProcedureRegister").get("isWalkin"), isWalkin));
             }
             if (visitId != null) {
                 predicates.add(cb.equal(root.get("patientProcedureRegister").get("visit").get("visitNumber"), visitId));

@@ -38,13 +38,19 @@ public class PatientProcedureTestData {
     private Boolean generalFeeItem;
     private double testPrice;
     private double discount;
-      private PaymentMethod paymentMethod;
+    private PaymentMethod paymentMethod;
     private double quantity;
     @ApiModelProperty(required = false, hidden = true)
     private String medicName;
     private Long medicId;
     private LocalDate procedureDate=LocalDate.now();
     private String createdBy;
+    @ApiModelProperty(required = false, hidden = true)
+    private Double totalCash=0.0;
+    @ApiModelProperty(required = false, hidden = true)
+    private Double totalInsurance=0.0;
+    @ApiModelProperty(required = false, hidden = true)
+    private String referenceNo;
 
 
     public static PatientProcedureTest map(PatientProcedureTestData scan) {

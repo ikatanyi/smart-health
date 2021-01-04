@@ -19,11 +19,14 @@ public class LabRegisterTestSpecification {
         super();
     }
 
-    public static Specification<LabRegisterTest> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status,DateRange range, String search) {
+    public static Specification<LabRegisterTest> createSpecification(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status,DateRange range, Boolean isWalkin, String search) {
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
             if (orderNumber != null) {
                 predicates.add(cb.equal(root.get("labRegister").get("orderNumber"), orderNumber));
+            }
+            if (isWalkin != null) {
+                predicates.add(cb.equal(root.get("labRegister").get("isWalkin"), isWalkin));
             }
             if (visitNumber != null) {
                 predicates.add(cb.equal(root.get("labRegister").get("visit").get("visitNumber"), visitNumber));

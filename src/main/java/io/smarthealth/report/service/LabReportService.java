@@ -110,7 +110,7 @@ public class LabReportService {
         Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));
         Boolean isWalkin = reportParam.getFirst("iswalkin")!=null?BooleanUtils.toBoolean(reportParam.getFirst("iswalkin")):null;
 
-        List<LabRegisterTestData> patientData = labService.getLabRegisterTest(labNumber, orderNumber, visitNumber, patientNumber, status, range, search, Pageable.unpaged())
+        List<LabRegisterTestData> patientData = labService.getLabRegisterTest(labNumber, orderNumber, visitNumber, patientNumber, status, range,isWalkin, search, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((register) -> {
@@ -137,6 +137,7 @@ public class LabReportService {
         List<TotalTest> requests = labService.getTotalRequests(fromDate, toDate);
 
         reportData.setData(patientData);
+
         reportData.setFormat(format);
         if (!expand) {
             reportData.setTemplate("/clinical/laboratory/LabStatement");

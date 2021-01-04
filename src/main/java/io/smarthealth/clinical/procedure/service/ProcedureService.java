@@ -22,6 +22,7 @@ import io.smarthealth.clinical.procedure.domain.Procedure;
 import io.smarthealth.clinical.procedure.domain.ProcedureTestRepository;
 import io.smarthealth.clinical.procedure.domain.enumeration.ProcedureTestState;
 import io.smarthealth.clinical.procedure.domain.specification.ProcedureSpecification;
+import io.smarthealth.clinical.radiology.domain.TotalTest;
 import io.smarthealth.clinical.record.data.enums.FullFillerStatusType;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.clinical.record.domain.DoctorsRequestRepository;
@@ -35,6 +36,8 @@ import io.smarthealth.sequence.SequenceNumberService;
 import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -272,8 +275,8 @@ public class ProcedureService {
         return patientprocedureRepository.findByVisit(visit);
     }
 
-    public Page<PatientProcedureTest> findPatientProcedureTests(String PatientNumber, String scanNo, String visitId, ProcedureTestState status, DateRange range, Pageable pgbl) {
-        Specification spec = RegisterTestSpecification.createSpecification(PatientNumber, scanNo, visitId, status, range);
+    public Page<PatientProcedureTest> findPatientProcedureTests(String PatientNumber, String scanNo, String visitId, ProcedureTestState status, Boolean isWalkin, DateRange range, Pageable pgbl) {
+        Specification spec = RegisterTestSpecification.createSpecification(PatientNumber, scanNo, visitId, status, isWalkin, range);
         return registerTestRepository.findAll(spec, pgbl);
     }
 
@@ -285,5 +288,13 @@ public class ProcedureService {
 
     public List<PatientProcedureTest> findProcedureResultsByVisit(Visit visit) {
         return registerTestRepository.findByVisit(visit);
+    }
+
+    public List<TotalTest> getPatientTestTotals(Instant fromDate, Instant toDate) {
+        return procTestRepository.findTotalTests(fromDate, toDate);
+    }
+
+    public List<TotalTest> getTotalRequests(Instant fromDate, Instant toDate) {
+        return procTestRepository.findTotalTestsByPractitioner(fromDate, toDate);
     }
 }

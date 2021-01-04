@@ -13,8 +13,8 @@ public interface TotalTest {
 
     public Integer getCount();
 
-    public Double getTotalPrice();
-
     public String getPractitioner();
+
+    public Double getTotalPrice();
     
 }

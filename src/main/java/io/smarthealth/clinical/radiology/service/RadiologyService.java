@@ -347,6 +347,10 @@ public class RadiologyService {
         return registerTestRepository.findTotalTests(fromDate, toDate);
     }
 
+    public List<TotalTest> getTotalRequests(Instant fromDate, Instant toDate) {
+        return registerTestRepository.findTotalTestsByPractitioner(fromDate, toDate);
+    }
+
     
     public List<PatientScanTest> findScanResultsByVisit(final Visit visit) {
         List<PatientScanRegister> scanTestFile = findPatientScanRegisterByVisit(visit);

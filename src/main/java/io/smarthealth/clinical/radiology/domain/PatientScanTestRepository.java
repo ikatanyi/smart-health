@@ -28,4 +28,7 @@ public interface PatientScanTestRepository extends JpaRepository<PatientScanTest
     
     @Query("SELECT d.radiologyTest.scanName as testName, count(d.radiologyTest.scanName) AS count, SUM(d.testPrice) as totalPrice FROM PatientScanTest d WHERE d.createdOn BETWEEN :fromDate AND :toDate Group by d.radiologyTest")
     List<TotalTest>findTotalTests(@Param("fromDate")Instant fromDate, @Param("toDate")Instant toDate);
+
+    @Query("SELECT d.radiologyTest.scanName as testName, d.request.requestedBy as practitioner, count(d.radiologyTest.scanName) AS count, SUM(d.testPrice) as totalPrice FROM PatientScanTest d WHERE d.createdOn BETWEEN :fromDate AND :toDate Group by d.request.requestedBy")
+    List<TotalTest>findTotalTestsByPractitioner(@Param("fromDate")Instant fromDate, @Param("toDate")Instant toDate);
 }

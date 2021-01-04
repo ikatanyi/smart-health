@@ -176,7 +176,7 @@ public class LaboratoryService {
         repository.save(requests);
     }
 
-    @Transactional
+//    @Transactional
     private void updateRegisterStatus(LabRegister requests) {
 
         if (requests.isCompleted()) {
@@ -197,8 +197,8 @@ public class LaboratoryService {
         return repository.findAll(spec, page);
     }
 
-    public Page<LabRegisterTest> getLabRegisterTest(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range, String search, Pageable page) {
-        Specification<LabRegisterTest> spec = LabRegisterTestSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status, range, search);
+    public Page<LabRegisterTest> getLabRegisterTest(String labNumber, String orderNumber, String visitNumber, String patientNumber, LabTestStatus status, DateRange range, Boolean isWalkin, String search, Pageable page) {
+        Specification<LabRegisterTest> spec = LabRegisterTestSpecification.createSpecification(labNumber, orderNumber, visitNumber, patientNumber, status, range, isWalkin, search);
         return testRepository.findAll(spec, page);
     }
 
@@ -269,7 +269,7 @@ public class LaboratoryService {
         return labResultRepository.findAll(spec, page);
     }
 
-    @Transactional
+//    @Transactional
     private void updateResultsEntry(LabResult savedResult, ArrayList<LabRegisterTest> testToNotify) {
 
         LabRegisterTest test = savedResult.getLabRegisterTest();
