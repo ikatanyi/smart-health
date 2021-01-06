@@ -1021,7 +1021,7 @@ public class BillingService {
     public PatientBill createFee(String admissionNumber, ItemCategory category, Integer qty) {
         Double sellingRate = 0.0;
         //TODO check if the visit is valid or not
-        Visit visit = visitRepository.findByVisitNumber(admissionNumber)
+        Visit visit = visitRepository.findByVisitNumberAndStatusNot(admissionNumber, VisitEnum.Status.CheckOut)
                 .orElseThrow(() -> APIException.badRequest("Admission Number {0} is not active for transaction", admissionNumber));
         PatientBill patientbill = null;
         PriceList priceList = pricelistService.fetchPriceListByItemCategory(category);
@@ -1139,7 +1139,7 @@ public class BillingService {
     }
 
     public String finalizeBill(String visitNumber, BillFinalizeData finalizeBill) {
-        Visit visit = visitRepository.findByVisitNumberAndStatus(visitNumber, VisitEnum.Status.CheckIn)
+        Visit visit = visitRepository.findByVisitNumberAndStatusNot(visitNumber, VisitEnum.Status.CheckOut)
                 .orElseThrow(() -> APIException.badRequest("Visit Number {0} is not active for transaction", visitNumber));
         String cinvoice = sequenceNumberService.next(1L, Sequences.CashBillNumber.name());
         List<PatientBillItem> lists = finalizeBill.getBillItems().stream()

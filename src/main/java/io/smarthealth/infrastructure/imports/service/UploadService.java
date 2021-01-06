@@ -51,16 +51,14 @@ public class UploadService {
 
     @Autowired
     private ResourceLoader resourceLoader;
-    
-    
-    public UploadService(ApplicationProperties properties,SequenceNumberService sequenceNumberService, GlobalConfigurationRepository globalConfigurationRepository, FileStorageRepository fileStorageRepository) throws IOException {
+
+    public UploadService(ApplicationProperties properties, SequenceNumberService sequenceNumberService, GlobalConfigurationRepository globalConfigurationRepository, FileStorageRepository fileStorageRepository) throws IOException {
         this.properties = properties;
         this.sequenceNumberService = sequenceNumberService;
         this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath());
         this.globalConfigurationRepository = globalConfigurationRepository;
         this.fileStorageRepository = fileStorageRepository;
     }
-
 
 //    public void init() {
 //        try {
@@ -70,14 +68,14 @@ public class UploadService {
 //            throw new StorageException("Could not initialize storage", e);
 //        }
 //    }
-
     public void UploadService() {
         GlobalConfiguration config = globalConfigurationRepository.findByName(GlobalConfigNum.PatientDocuments.name()).orElseThrow(() -> APIException.notFound("Patient documents folder {0} not set", GlobalConfigNum.PatientDocuments.name()));
         try {
             //this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath().concat("/").concat(dir));
             this.rootLocation = Paths.get(config.getValue());
-            if(!Files.exists(rootLocation, LinkOption.NOFOLLOW_LINKS))
+            if (!Files.exists(rootLocation, LinkOption.NOFOLLOW_LINKS)) {
                 Files.createDirectories(rootLocation);
+            }
         } catch (IOException ex) {
             throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
         }
@@ -85,7 +83,7 @@ public class UploadService {
 
     public String storeFile(MultipartFile file) {
         UploadService();
-        String documentNo=null;
+        String documentNo = null;
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
@@ -96,8 +94,8 @@ public class UploadService {
             }
 
             // Copy file to the target location (Replacing existing file with the Document No.)
-            documentNo = sequenceNumberService.next(1L, Sequences.DocumentNumber.name())+"."+FilenameUtils.getExtension(fileName);
-            
+            documentNo = sequenceNumberService.next(1L, Sequences.DocumentNumber.name()) + "." + FilenameUtils.getExtension(fileName);
+
             Path targetLocation = this.rootLocation.resolve(documentNo);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return documentNo;
@@ -107,26 +105,29 @@ public class UploadService {
     }
 
     public Resource loadFileAsResource(String fileName, String directory) {
-        Path filePath=null;
+        Path filePath = null;
         Resource resource = null;
+        GlobalConfiguration config = globalConfigurationRepository.findByName(GlobalConfigNum.PatientDocuments.name()).orElseThrow(() -> APIException.notFound("Patient documents folder {0} not set", GlobalConfigNum.PatientDocuments.name()));
         try {
-            this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath().concat("/").concat(directory));
+            this.rootLocation = Paths.get(config.getValue());
+//        try {
+//            this.rootLocation = Paths.get(properties.getStorageLocation().getURL().getPath().concat("/").concat(directory));
             filePath = this.rootLocation.resolve(fileName).normalize();
             resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;
-            } 
+            }
         } catch (MalformedURLException ex) {
             throw new MyFileNotFoundException("File not found " + filePath, ex);
         } catch (IOException ex) {
-             throw new MyFileNotFoundException("File not found " + filePath, ex);
+            throw new MyFileNotFoundException("File not found " + filePath, ex);
         }
         return resource;
     }
 
     public Resource loadPatientDocumentAsResource(final Long id) {
         Document document = fileStorageRepository.findById(id).orElseThrow(() -> APIException.notFound("Document identified by id {0} not found ", id));
-        Path filePath=null;
+        Path filePath = null;
         Resource resource = null;
         GlobalConfiguration config = globalConfigurationRepository.findByName(GlobalConfigNum.PatientDocuments.name()).orElseThrow(() -> APIException.notFound("Patient documents folder {0} not set", GlobalConfigNum.PatientDocuments.name()));
         try {
