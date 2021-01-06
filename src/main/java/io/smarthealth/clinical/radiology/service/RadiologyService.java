@@ -107,15 +107,18 @@ public class RadiologyService {
             patientScanReg.setVisit(visit);
             patientScanReg.setPatientName(visit.getPatient().getFullName());
             patientScanReg.setPatientNo(visit.getPatient().getPatientNumber());
+            if(visit.getHealthProvider()!=null)
+                patientScanReg.setRequestedBy(visit.getHealthProvider().getFullName());
         } else {
             patientScanReg.setPatientName(patientScanRegData.getPatientName());
             patientScanReg.setPatientNo(patientScanRegData.getPatientNumber());
+            patientScanReg.setRequestedBy(patientScanRegData.getRequestedBy());
         }
         
-        Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(patientScanRegData.getRequestedBy());
-        if (emp.isPresent()) {
-            patientScanReg.setRequestedBy(emp.get());
-        }
+//        Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(patientScanRegData.getRequestedBy());
+//        if (emp.isPresent()) {
+//            patientScanReg.setRequestedBy(emp.get());
+//        }
 
 //        if (requestId != null) {
 //            Optional<DoctorRequest> request = doctorRequestRepository.findById(requestId);

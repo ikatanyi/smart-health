@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="radiology_statement" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="3.0"/>
-	<property name="ireport.x" value="770"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
@@ -20,6 +20,7 @@
 	<parameter name="Footer_Data" class="java.util.List"/>
 	<parameter name="range" class="java.lang.String"/>
 	<parameter name="tests" class="java.util.List"/>
+	<parameter name="requests" class="java.util.List"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -78,7 +79,7 @@
 				<text><![CDATA[Radiology Studies Summary]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="90" y="36" width="92" height="12" uuid="69314529-a98d-4a99-a730-3b054b0c3de6"/>
+				<reportElement mode="Opaque" x="89" y="36" width="93" height="12" forecolor="#FFFFFF" backcolor="#333333" uuid="69314529-a98d-4a99-a730-3b054b0c3de6"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -88,7 +89,7 @@
 				<text><![CDATA[Patient Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="468" y="36" width="87" height="12" uuid="a632e177-6db8-45e7-9002-3f03c335da7d"/>
+				<reportElement mode="Opaque" x="468" y="36" width="87" height="12" forecolor="#FFFFFF" backcolor="#333333" uuid="a632e177-6db8-45e7-9002-3f03c335da7d"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -98,7 +99,7 @@
 				<text><![CDATA[Requested By]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="335" y="36" width="46" height="12" uuid="73fdcc28-03e1-4dc3-b7e2-68ea771e6212"/>
+				<reportElement mode="Opaque" x="335" y="36" width="46" height="12" forecolor="#FFFFFF" backcolor="#333333" uuid="73fdcc28-03e1-4dc3-b7e2-68ea771e6212"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -108,7 +109,7 @@
 				<text><![CDATA[Mode]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="183" y="36" width="48" height="12" uuid="c413311e-33fe-4cf6-8024-74b1b3b30468"/>
+				<reportElement mode="Opaque" x="182" y="36" width="49" height="12" forecolor="#FFFFFF" backcolor="#333333" uuid="c413311e-33fe-4cf6-8024-74b1b3b30468"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -118,7 +119,7 @@
 				<text><![CDATA[Patient No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="381" y="36" width="42" height="12" uuid="a4050875-50e0-435f-8b7b-ca60b73b91b7"/>
+				<reportElement mode="Opaque" x="381" y="36" width="42" height="12" forecolor="#FFFFFF" backcolor="#333333" uuid="a4050875-50e0-435f-8b7b-ca60b73b91b7"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -128,7 +129,7 @@
 				<text><![CDATA[Reference]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="231" y="36" width="104" height="12" uuid="67756dba-ca97-4e10-9095-d279db544eba"/>
+				<reportElement mode="Opaque" x="231" y="36" width="104" height="12" forecolor="#FFFFFF" backcolor="#333333" uuid="67756dba-ca97-4e10-9095-d279db544eba"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -138,7 +139,7 @@
 				<text><![CDATA[Test]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="423" y="36" width="44" height="12" uuid="26bf880c-0441-4d90-8398-c4966b078d47"/>
+				<reportElement mode="Opaque" x="423" y="36" width="44" height="12" forecolor="#FFFFFF" backcolor="#333333" uuid="26bf880c-0441-4d90-8398-c4966b078d47"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -148,7 +149,7 @@
 				<text><![CDATA[Price]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="19" y="36" width="70" height="12" uuid="22c1770b-b435-417e-8703-0d947e62e1bf"/>
+				<reportElement mode="Opaque" x="19" y="36" width="70" height="12" forecolor="#FFFFFF" backcolor="#333333" uuid="22c1770b-b435-417e-8703-0d947e62e1bf"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -158,12 +159,13 @@
 				<text><![CDATA[Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="36" width="19" height="12" uuid="991b1c23-ff1f-4b1b-9b51-f15579ca9de5"/>
+				<reportElement mode="Opaque" x="0" y="36" width="19" height="12" forecolor="#FFFFFF" backcolor="#333333" uuid="991b1c23-ff1f-4b1b-9b51-f15579ca9de5"/>
 				<box>
 					<bottomPen lineWidth="0.25"/>
 				</box>
-				<textElement>
+				<textElement verticalAlignment="Middle">
 					<font size="7"/>
+					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[#]]></text>
 			</staticText>
@@ -188,18 +190,19 @@
 				<reportElement x="0" y="0" width="19" height="20" uuid="28a286f5-96d7-4da6-a69c-c2fff1228a27"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
+					<paragraph leftIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="90" y="0" width="92" height="20" uuid="85ed173e-b92d-4939-bd99-a57a71e43dba"/>
+				<reportElement x="89" y="0" width="93" height="20" uuid="85ed173e-b92d-4939-bd99-a57a71e43dba"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{patientName}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="183" y="0" width="48" height="20" uuid="7d5cc57c-8607-4bbf-9422-d8fef653804b"/>
+				<reportElement x="182" y="0" width="49" height="20" uuid="7d5cc57c-8607-4bbf-9422-d8fef653804b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -266,9 +269,14 @@
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="14">
+		<band height="36">
 			<subreport>
-				<reportElement x="0" y="0" width="555" height="14" uuid="e3902b84-1a56-4a9d-ae15-2d54029d37cd"/>
+				<reportElement positionType="Float" x="0" y="22" width="335" height="14" uuid="b29d455a-d5c5-4b3d-ac20-fce3da5ef206"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{requests})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "total_requests_subreport.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="4" width="335" height="14" uuid="e3902b84-1a56-4a9d-ae15-2d54029d37cd"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{tests})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "statement_analytics_subreport.jasper"]]></subreportExpression>
 			</subreport>

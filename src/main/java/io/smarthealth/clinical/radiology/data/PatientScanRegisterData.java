@@ -78,6 +78,8 @@ public class PatientScanRegisterData {
         PatientScanRegister e = new PatientScanRegister();
         e.setAccessNo(this.getAccessionNo());
         e.setIsWalkin(this.getIsWalkin());
+        if(this.getIsWalkin())
+            e.setRequestedBy(this.getRequestedBy());
         e.setAmount(this.getAmount());
         e.setDiscount(this.getDiscount());
         e.setBalance(this.getBalance());

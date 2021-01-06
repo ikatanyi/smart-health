@@ -26,6 +26,6 @@ public interface ProcedureTestRepository extends JpaRepository<PatientProcedureT
     @Query("SELECT d.procedureTest.itemName as testName, count(d.procedureTest.itemName) AS count, SUM(d.testPrice) as totalPrice FROM PatientProcedureTest d WHERE d.patientProcedureRegister.createdOn BETWEEN :fromDate AND :toDate Group by d.procedureTest.itemName")
     List<TotalTest> findTotalTests(@Param("fromDate") Instant fromDate, @Param("toDate")Instant toDate);
 
-    @Query("SELECT d.procedureTest.itemName as testName, count(d.procedureTest.itemName) AS count, d.request.requestedBy.username as practitioner, SUM(d.testPrice) as totalPrice FROM PatientProcedureTest d WHERE d.patientProcedureRegister.createdOn BETWEEN :fromDate AND :toDate Group by d.request.requestedBy.id")
+    @Query("SELECT d.procedureTest.itemName as testName, count(d.procedureTest.itemName) AS count, d.patientProcedureRegister.requestedBy as practitioner, SUM(d.testPrice) as totalPrice FROM PatientProcedureTest d WHERE d.patientProcedureRegister.createdOn BETWEEN :fromDate AND :toDate Group by d.patientProcedureRegister.requestedBy")
     List<TotalTest>findTotalTestsByPractitioner(@Param("fromDate")Instant fromDate, @Param("toDate")Instant toDate);
 }

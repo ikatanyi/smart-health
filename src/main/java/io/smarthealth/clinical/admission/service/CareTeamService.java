@@ -60,6 +60,11 @@ public class CareTeamService {
         return careTeamRepository.findByAdmission(adm);
     }
 
+    public CareTeam fetchCareTeamByAdmissionNumberAndCareRole(final String admissionNumber, final CareTeamRole role) {
+        return careTeamRepository.findCareTeamByAdmission_AdmissionNoAndCareRole(admissionNumber, role)
+                .orElse(null);
+    }
+
     public CareTeam getCareTeam(Long id) {
         return careTeamRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("CareTeam with id  {0} not found.", id));

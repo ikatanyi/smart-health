@@ -11,10 +11,7 @@ import io.smarthealth.clinical.admission.data.CareTeamData;
 import io.smarthealth.clinical.admission.data.DischargeData;
 import io.smarthealth.clinical.admission.data.RoomData;
 import io.smarthealth.clinical.admission.data.WardData;
-import io.smarthealth.clinical.admission.domain.Admission;
-import io.smarthealth.clinical.admission.domain.Bed;
-import io.smarthealth.clinical.admission.domain.CareTeamRole;
-import io.smarthealth.clinical.admission.domain.DischargeSummary;
+import io.smarthealth.clinical.admission.domain.*;
 import io.smarthealth.clinical.admission.domain.Room.Type;
 import io.smarthealth.clinical.admission.service.AdmissionService;
 import io.smarthealth.clinical.admission.service.BedService;
@@ -80,19 +77,32 @@ public class AdmissionReportService {
 
     public void getAdmittedPatients(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
+        Long wardId = null, roomId=null, bedId=null;
+        Boolean active=null;
         String admissionNo = reportParam.getFirst("admissionNo");
-        Long wardId = NumberUtils.createLong(reportParam.getFirst("wardId"));
-        Long roomId = NumberUtils.createLong(reportParam.getFirst("roomId"));
-        Long bedId = NumberUtils.createLong(reportParam.getFirst("bedId"));
+        if(reportParam.getFirst("wardId")!=null)
+           wardId = NumberUtils.createLong(reportParam.getFirst("wardId"));
+        if(reportParam.getFirst("roomId")!=null)
+           roomId = NumberUtils.createLong(reportParam.getFirst("roomId"));
+        if(reportParam.getFirst("bedId")!=null)
+           bedId = NumberUtils.createLong(reportParam.getFirst("bedId"));
+        if(reportParam.getFirst("active")!=null)
+            active = Boolean.getBoolean(reportParam.getFirst("active"));
         String term = reportParam.getFirst("term");
         Boolean discharged = Boolean.getBoolean(reportParam.getFirst("discharged"));
-        Boolean active = Boolean.getBoolean(reportParam.getFirst("active"));
+//        Boolean active = Boolean.getBoolean(reportParam.getFirst("active"));
         DateRange dateRange = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         Status status = EnumUtils.getEnumIgnoreCase(Status.class, reportParam.getFirst("status"));
         List<AdmissionData> admissionData = admissionService.fetchAdmissions(admissionNo, wardId, roomId, bedId, term, discharged, active, status, dateRange, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map((adm) -> AdmissionData.map(adm))
+                .map((adm) ->{
+                    AdmissionData admissionData1 =  AdmissionData.map(adm);
+                    CareTeam ct = careTeamService.fetchCareTeamByAdmissionNumberAndCareRole(adm.getAdmissionNo(),CareTeamRole.Admitting);
+                    if(ct!=null)
+                        admissionData1.setAdmittingDoctor(ct.getMedic().getFullName());
+                    return admissionData1;
+                })
                 .collect(Collectors.toList());
 
         reportData.getFilters().put("range", DateRange.getReportPeriod(DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"))));

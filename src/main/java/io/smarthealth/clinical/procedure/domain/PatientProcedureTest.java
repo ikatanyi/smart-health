@@ -74,6 +74,7 @@ public class PatientProcedureTest extends Identifiable {
             entity.setMedicName(this.getMedic().getFullName());
         }
         if (this.getPatientProcedureRegister() != null) {
+            entity.setRequestedBy(this.patientProcedureRegister.getRequestedBy());
             if (this.getProcedureDate() == null) {
                 entity.setProcedureDate(this.getPatientProcedureRegister().getReceivedDate());
             }
@@ -82,7 +83,6 @@ public class PatientProcedureTest extends Identifiable {
             entity.setCreatedBy(this.getPatientProcedureRegister().getCreatedBy());
         }
         if (this.getRequest() != null) {
-            entity.setRequestedBy(this.getRequest().getRequestedBy().getName());
             entity.setRequestId(this.getRequest().getRequestedBy().getId());
         }
         return entity;

@@ -58,7 +58,7 @@ public class ProcedureReportService {
         String scanNo=reportParam.getFirst("scanNo"); 
         String visitNumber=reportParam.getFirst("visitNumber");
         Boolean isWalkin = reportParam.getFirst("iswalkin")!=null?Boolean.parseBoolean(reportParam.getFirst("iswalkin")):null;
-        ProcedureTestState status=statusToEnum(reportParam.getFirst("status"));
+        ProcedureTestState status=EnumUtils.getEnum(ProcedureTestState.class,reportParam.getFirst("status"));
         String dateRange=reportParam.getFirst("range");
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         List<PatientProcedureTestData> procTests = procedureService.findPatientProcedureTests(PatientNumber, scanNo, visitNumber, status, isWalkin, range, Pageable.unpaged())
@@ -68,7 +68,6 @@ public class ProcedureReportService {
                     List<PatientBillItem> billItem = billingService.getPatientBillItem(test.getPatientProcedureRegister().getTransactionId());
                     if(!billItem.isEmpty()){
                         data.setReferenceNo(billItem.get(0).getPaymentReference());
-
                         billItem.stream().map((item) -> {
                             if(billItem.get(0).getPatientBill().getPaymentMode().equals("Cash") || billItem.get(0).getPatientBill().getPaymentMode()==null)
                                 data.setTotalCash(data.getTotalCash()+item.getAmount());

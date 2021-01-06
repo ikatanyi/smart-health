@@ -138,18 +138,21 @@ public class ProcedureService {
             patientProcReg.setPatientName(patientProcRegData.getPatientName());
             patientProcReg.setPatientNo(patientProcRegData.getPatientNumber());
             patientProcReg.setIsWalkin(Boolean.TRUE);
+            patientProcReg.setRequestedBy(patientProcRegData.getRequestedBy());
         } else {
             Visit visit = visitService.findVisitEntityOrThrow(visitNo);
             patientProcReg.setVisit(visit);            
             patientProcReg.setPatientName(visit.getPatient().getFullName());
             patientProcReg.setPatientNo(visit.getPatient().getPatientNumber());
             patientProcReg.setIsWalkin(Boolean.FALSE);
+            if(visit.getHealthProvider()!=null)
+                patientProcReg.setRequestedBy(visit.getHealthProvider().getFullName());
         }
 
-        Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(patientProcRegData.getRequestedBy());
-        if (emp.isPresent()) {
-            patientProcReg.setRequestedBy(emp.get());
-        }
+//        Optional<Employee> emp = employeeService.findEmployeeByStaffNumber(patientProcRegData.getRequestedBy());
+//        if (emp.isPresent()) {
+//            patientProcReg.setRequestedBy(emp.get());
+//        }
 
         if (patientProcRegData.getAccessionNo() == null || patientProcRegData.getAccessionNo().equals("")) {
             String accessionNo = sequenceNumberService.next(1L, Sequences.Procedure.name());

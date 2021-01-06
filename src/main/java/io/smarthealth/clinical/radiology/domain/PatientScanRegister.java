@@ -75,9 +75,9 @@ public class PatientScanRegister extends Auditable {
     @OneToMany(mappedBy = "patientScanRegister", cascade = CascadeType.ALL)
     private List<PatientScanTest> patientScanTest = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_employee_id")) 
-    private Employee requestedBy;
+//    @ManyToOne
+//    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_scan_register_employee_id"))
+    private String requestedBy;
 
     private LocalDate receivedDate;
     
@@ -125,8 +125,7 @@ public class PatientScanRegister extends Auditable {
            
         }
         if(this.getRequestedBy()!=null){
-            data.setRequestedBy(this.getRequestedBy().getFullName());
-            data.setRequestedById(this.getRequestedBy().getStaffNumber());
+            data.setRequestedBy(this.getRequestedBy());
         }
         if(this.getVisit()!=null && !this.isWalkin){
             data.setPatientName(this.getVisit().getPatient().getFullName());

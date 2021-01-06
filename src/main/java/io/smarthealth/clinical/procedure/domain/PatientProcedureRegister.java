@@ -71,9 +71,9 @@ public class PatientProcedureRegister extends Auditable {
     @OneToMany(mappedBy = "patientProcedureRegister", cascade = CascadeType.ALL)
     private List<PatientProcedureTest> patientProcedureTest = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_bill_id"))
-    private Employee requestedBy;
+//    @ManyToOne
+//    @JoinColumn(foreignKey = @ForeignKey(name = "fk_patient_procedure_register_bill_id"))
+    private String requestedBy;
 
     private LocalDate receivedDate;
 
@@ -93,6 +93,7 @@ public class PatientProcedureRegister extends Auditable {
         PatientProcedureRegisterData data = new PatientProcedureRegisterData();
         data.setBillingDate(this.getBillingDate());
         data.setReceivedDate(this.getReceivedDate());
+        data.setRequestedBy(this.getRequestedBy());
         if (this.getVisit() != null && !this.isWalkin) {
             data.setVisitNumber(this.getVisit().getVisitNumber());
             data.setPatientName(this.getVisit().getPatient().getFullName());
@@ -101,13 +102,6 @@ public class PatientProcedureRegister extends Auditable {
             data.setPatientName(this.patientNo);
             data.setPatientNumber(this.patientNo);
         }
-//        if (this.getRequest() != null) {
-//            data.setRequestId(this.getRequest().getId());
-//            if (this.getRequest().getRequestedBy() != null) {
-//                data.setRequestedBy(this.getRequest().getRequestedBy().getUsername());
-//                data.setPhysicianName(this.getRequest().getCreatedBy());
-//            }
-//        }
         data.setAccessionNo(this.getAccessNo());
         if (this.getPatientProcedureTest() != null) {
             data.setPatientProcecedureTestData(
@@ -117,10 +111,7 @@ public class PatientProcedureRegister extends Auditable {
                             .collect(Collectors.toList())
             );
         }
-//        if (this.getRequest() != null) {
-//            data.setRequestId(this.getRequest().getId());
-//            data.setRequestData(DoctorRequestData.map(this.getRequest()));
-//        }
+
         data.setOrderedDate(DateConverter.toLocalDate(LocalDateTime.ofInstant(this.getCreatedOn(), ZoneOffset.systemDefault())));
 
         return data;
