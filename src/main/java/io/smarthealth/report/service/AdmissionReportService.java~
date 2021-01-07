@@ -72,7 +72,7 @@ public class AdmissionReportService {
     private final ProcedureService procedureService;
     private final LaboratoryService labService;
     private final PrescriptionService prescriptionService;
-    private final DiagnosisService diagnosisService;
+     private final DiagnosisService diagnosisService;
 
     private final VisitService visitService;
 

@@ -627,6 +627,7 @@ public class PatientReportServices {
         ReportData reportData = new ReportData();
         String dateRange = reportParam.getFirst("dateRange");
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
+        Moh706LabData anc = new Moh706LabData();
 
         List<Moh706LabData> Moh706LabDataArray = labService.getTestsByDate(range)
                 .stream()
@@ -640,6 +641,9 @@ public class PatientReportServices {
                     for (LabRegisterTest test : tests) {
                         String patientNo = test.getLabRegister().getPatientNo();
                         values.setTestName(test.getLabTest().getTestName());
+                        if(test.getLabTest().getIsPanel()){
+
+                        }
                         Optional<PatientData> patient = patientService.fetchPatientByPatientNumber(patientNo);
                         if (patient.isPresent()) {
                             age = patient.get().getAge();

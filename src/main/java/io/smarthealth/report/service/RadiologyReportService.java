@@ -16,7 +16,9 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
+import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.report.data.ReportData;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -25,6 +27,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +56,7 @@ public class RadiologyReportService {
     private final RadiologyService scanService;
     private final BillingService billingService;
     private final VisitService visitService;
+    private final WalkingService walkInService;
 
     public void getRadiologyStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -71,6 +75,11 @@ public class RadiologyReportService {
                 .stream()
                 .map((register) -> {
                     PatientScanTestData data = register.toData();
+                    if(data.getIsWalkin()) {
+                        Optional<WalkIn> walkin = walkInService.fetchWalkingByWalkingNo(data.getPatientNumber());
+                        if(walkin.isPresent())
+                            data.setPatientName(walkin.get().getFullName());
+                    }
                     List<PatientBillItem> billItem = billingService.getPatientBillItem(data.getReferenceNo());
                     if (!billItem.isEmpty()) {
                         data.setReferenceNo(billItem.get(0).getPaymentReference());
