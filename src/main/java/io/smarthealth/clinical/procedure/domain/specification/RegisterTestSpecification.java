@@ -38,7 +38,7 @@ public class RegisterTestSpecification {
                 predicates.add(cb.equal(root.get("status"), status));
              if(range!=null){
                   predicates.add(
-                     cb.between(root.get("procedureDate"), range.getStartDate(), range.getEndDate())
+                     cb.between(root.get("patientProcedureRegister").get("receivedDate"), range.getStartDate(), range.getEndDate())
                   );
               }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

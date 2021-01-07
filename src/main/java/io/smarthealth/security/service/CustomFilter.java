@@ -57,8 +57,5 @@ private final AuditTrailRepository auditTrailRepository;
                auditTrailRepository.save(auditTrail);
         }
         chain.doFilter(request, response);
-
-
-
     }
 }
