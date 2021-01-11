@@ -18,20 +18,22 @@ import lombok.Data;
  */
 @Data
 public class ModuleApproversData {
-
+    
     private String staffNumber;
     @ApiModelProperty(required = false, hidden = true)
     private String staffName;
     private int approvalLevel;
     @Enumerated(EnumType.STRING)
     private ApprovalModule moduleName;
-
+    private Long id;
+    
     public static ModuleApproversData map(ModuleApprovers approver) {
         ModuleApproversData data = new ModuleApproversData();
         data.setModuleName(approver.getModuleName());
         data.setApprovalLevel(approver.getApprovalLevel());
         data.setStaffName(approver.getEmployee().getFullName());
         data.setStaffNumber(approver.getEmployee().getStaffNumber());
+        data.setId(approver.getId());
         return data;
     }
 
