@@ -14,6 +14,6 @@ public enum ReceiverType {
     employee,
     DailyVisitPatient,//to provide date
     AllPatients,
-    AllSupliers,
+    AllSuppliers,
     SpecifiedNumbers//i.e 254777,254889366,254
 }

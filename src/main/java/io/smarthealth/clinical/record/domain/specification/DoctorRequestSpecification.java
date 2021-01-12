@@ -71,7 +71,7 @@ public class DoctorRequestSpecification {
 
             if (range != null) {
                 predicates.add(
-                        cb.between(root.get("orderDate"), range.getStartDate(), range.getEndDate())
+                        cb.between(root.get("orderDate"), range.getStartDateTime(), range.getEndDateTime())
                 // cb.between(root.get("visit").get("startDatetime"), range.getStartDate(), range.getEndDate())
                 );
             }

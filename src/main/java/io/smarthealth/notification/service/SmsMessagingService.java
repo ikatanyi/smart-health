@@ -7,6 +7,7 @@ package io.smarthealth.notification.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.lang.UnsafeOkHttpClient;
 import io.smarthealth.notification.data.SmsMessageData;
@@ -37,6 +38,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.notification.domain.SmsMessageRepository;
 import org.springframework.scheduling.annotation.Async;
+import io.smarthealth.clinical.visit.domain.Visit;
+import java.util.Arrays;
 
 /**
  *
@@ -50,6 +53,7 @@ public class SmsMessagingService {
     private final SmsMessageRepository messageRepository;
     private final PatientService patientService;
     private final EmployeeService employeeService;
+    private final VisitRepository visitRepository;
 
     @Transactional
     public SmsMessage sendBulkSMS(SmsMessageData d) {
@@ -57,9 +61,27 @@ public class SmsMessagingService {
         List<String> phoneNumbers = new ArrayList<String>();
 
         if (d.getReceiverType().equals(ReceiverType.AllPatients)) {
-//keen on this given that some hospitals has 26thousand patients --to be used safely. to stop the process unless you stop the server completely
-            sendMultipleSMS(phoneNumbers, d.getMessage());
+//keen on this given that some hospitals has 30thousand patients --to be used safely. to stop the process unless you stop the server completely- should have some approval level
+
         }
+        if (d.getReceiverType().equals(ReceiverType.AllSuppliers)) {
+
+        }
+        if (d.getReceiverType().equals(ReceiverType.DailyVisitPatient)) {
+            Page<Visit> visits = visitRepository.findBystartDatetime(d.getVisitDate().atStartOfDay(), Pageable.unpaged());
+
+            for (Visit v : visits.getContent()) {
+                if (v.getPatient().getPrimaryContact() != null) {
+                    phoneNumbers.add(v.getPatient().getPrimaryContact());
+                }
+            }
+        }
+        if (d.getReceiverType().equals(ReceiverType.SpecifiedNumbers)) {
+            if (d.getPhoneNumber() != null) {
+                phoneNumbers = Arrays.asList(d.getPhoneNumber().split(","));
+            }
+        }
+        sendMultipleSMS(phoneNumbers, d.getMessage());
         return messageRepository.save(msg);
     }
 
