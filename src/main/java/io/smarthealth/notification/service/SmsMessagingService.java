@@ -36,6 +36,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.notification.domain.SmsMessageRepository;
+import org.springframework.scheduling.annotation.Async;
 
 /**
  *
@@ -49,6 +50,18 @@ public class SmsMessagingService {
     private final SmsMessageRepository messageRepository;
     private final PatientService patientService;
     private final EmployeeService employeeService;
+
+    @Transactional
+    public SmsMessage sendBulkSMS(SmsMessageData d) {
+        SmsMessage msg = d.map();
+        List<String> phoneNumbers = new ArrayList<String>();
+
+        if (d.getReceiverType().equals(ReceiverType.AllPatients)) {
+//keen on this given that some hospitals has 26thousand patients --to be used safely. to stop the process unless you stop the server completely
+            sendMultipleSMS(phoneNumbers, d.getMessage());
+        }
+        return messageRepository.save(msg);
+    }
 
     @Transactional
     public SmsMessage createTextMessage(SmsMessageData msgData) {
@@ -70,7 +83,7 @@ public class SmsMessagingService {
     }
 
     public List<SmsMessage> createBatchTextMessage(List<SmsMessageData> msgDataList) {
-        List<SmsMessage>msgList = new ArrayList();
+        List<SmsMessage> msgList = new ArrayList();
         for (SmsMessageData msgData : msgDataList) {
             SmsMessage msg = msgData.map();
             if (msgData.getPhoneNumber() == null) {
@@ -100,10 +113,33 @@ public class SmsMessagingService {
         return messageRepository.findAll(spec, pageable);
     }
 
+    @Async
+    public void sendMultipleSMS(List<String> phoneNumbers, String msgBody) {
+        List<SmsMessage> msgList = new ArrayList();
+
+        for (String p : phoneNumbers) {
+            SmsMessage msg = new SmsMessage();
+            try {
+                String status = sendSMS(p, msgBody);
+                msg.setPhoneNumber(p);
+                msg.setMessage(msgBody);
+                msg.setStatus(status);
+                msgList.add(msg);
+
+                messageRepository.saveAll(msgList);
+            } catch (Exception e) {
+                //TODO: log any error captured for each message
+
+            }
+        }
+    }
+
     public String sendSMS(String phone, String msg) {
         String status = null;
-        
-        if(phone == null) return "";
+
+        if (phone == null) {
+            return "";
+        }
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 

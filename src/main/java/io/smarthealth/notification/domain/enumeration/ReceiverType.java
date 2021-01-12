@@ -10,6 +10,10 @@ package io.smarthealth.notification.domain.enumeration;
  * @author kent
  */
 public enum ReceiverType {
-     patient,
-     employee;
+    patient,
+    employee,
+    DailyVisitPatient,//to provide date
+    AllPatients,
+    AllSupliers,
+    SpecifiedNumbers//i.e 254777,254889366,254
 }

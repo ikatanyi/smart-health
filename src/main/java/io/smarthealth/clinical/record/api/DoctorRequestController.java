@@ -44,6 +44,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import io.smarthealth.clinical.record.data.OrdersRequest;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -110,7 +111,7 @@ public class DoctorRequestController {
             doctorRequest.setFulfillerStatus(FullFillerStatusType.Unfulfilled);
             doctorRequest.setFulfillerComment(FullFillerStatusType.Unfulfilled.name());
             doctorRequest.setRequestType(data.getRequestType());
-            doctorRequest.setOrderDate(LocalDate.now());
+            doctorRequest.setOrderDate(LocalDateTime.now());
             docRequests.add(doctorRequest);
             if (!requestType.contains(data.getRequestType())) {
                 requestType.add(data.getRequestType());

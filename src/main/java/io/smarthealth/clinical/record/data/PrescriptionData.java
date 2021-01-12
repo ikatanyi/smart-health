@@ -8,6 +8,7 @@ package io.smarthealth.clinical.record.data;
 import io.smarthealth.clinical.record.domain.Prescription;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 /**
@@ -34,7 +35,7 @@ public class PrescriptionData extends DoctorRequestData {
     private String asNeededCondition;//notes additional info
     private Integer numRefills;//number of installments
     private Double issuedQuantity;//number of issued quantity
-    private LocalDate prescriptionDate;
+    private LocalDateTime prescriptionDate;
     private Boolean onDischarge = false;
     @ApiModelProperty(required = false, hidden = true)
     private String patientName;

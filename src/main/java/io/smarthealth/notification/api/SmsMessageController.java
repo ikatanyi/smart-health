@@ -37,7 +37,6 @@ public class SmsMessageController {
 
     private final SmsMessagingService textMessageService;
 
-
     @Transactional
     @PostMapping("/sms")
     @ResponseBody
@@ -46,6 +45,12 @@ public class SmsMessageController {
         return ResponseEntity.ok(textMessageData);
     }
 
+    @PostMapping("/bulk-sms")
+    @ResponseBody
+    public ResponseEntity<?> sendBulkSMS(@RequestBody @Valid SmsMessageData data) {
+        SmsMessageData textMessageData = textMessageService.sendBulkSMS(data).toData();
+        return ResponseEntity.ok(textMessageData);
+    }
 
     @GetMapping("/sms")
     public ResponseEntity getAllTextMessages(

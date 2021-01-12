@@ -52,7 +52,7 @@ public class DoctorRequestData {
     private EmployeeData employeeData;
 
     @ApiModelProperty(required = false, hidden = true)
-    private LocalDate orderDate;
+    private LocalDateTime orderDate;
     private Urgency urgency;
     @ApiModelProperty(required = false, hidden = true)
     private String orderNumber;
