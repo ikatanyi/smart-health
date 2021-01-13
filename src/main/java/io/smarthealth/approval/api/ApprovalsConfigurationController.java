@@ -13,6 +13,7 @@ import io.smarthealth.approval.domain.ApprovalConfig;
 import io.smarthealth.approval.domain.ModuleApprovers;
 import io.smarthealth.approval.service.ApprovalConfigService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
+import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.organization.facility.service.EmployeeService;
@@ -28,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,16 +53,16 @@ public class ApprovalsConfigurationController {
 
     @Autowired
     EmployeeService employeeService;
-    
+
     @Autowired
-    AuditTrailService auditTrailService; 
+    AuditTrailService auditTrailService;
 
     @PostMapping("/approval-settings")
     @PreAuthorize("hasAuthority('create_approvalConfiguration')")
     public ResponseEntity<?> createApprovalConfiguration(@Valid @RequestBody ApprovalConfigData configData) {
         ApprovalConfig config = ApprovalConfigData.map(configData);
         config.setApprovalModule(configData.getModuleName());
-        auditTrailService.saveAuditTrail("Approval Settings", "Created Approval Settings for  "+configData.getModuleName().name());
+        auditTrailService.saveAuditTrail("Approval Settings", "Created Approval Settings for  " + configData.getModuleName().name());
         return ResponseEntity.status(HttpStatus.CREATED).body(ApprovalConfigData.map(approvalConfigService.saveApprovalConfig(config)));
     }
 
@@ -70,7 +72,7 @@ public class ApprovalsConfigurationController {
             @RequestParam(value = "pageSize", defaultValue = "1000", required = false) Integer size) {
 
         Pageable pageable = PaginationUtil.createPage(page, size);
-        auditTrailService.saveAuditTrail("Approval Settings", "Viewed Approval Settings for  "+moduleName.name());
+        auditTrailService.saveAuditTrail("Approval Settings", "Viewed Approval Settings for  " + moduleName.name());
         Page<ApprovalConfigData> list = approvalConfigService.fetchAllApprovalConfigByModuleName(moduleName, pageable).map(r -> ApprovalConfigData.map(r));
         Pager<List<ApprovalConfigData>> pagers = new Pager();
         pagers.setCode("0");
@@ -114,7 +116,7 @@ public class ApprovalsConfigurationController {
     @PreAuthorize("hasAuthority('edit_approvalConfiguration')")
     public ResponseEntity<?> updateApprovalConfigurations(@PathVariable(value = "id") Long approvalId, @Valid @RequestBody ApprovalConfigData configData) {
         ApprovalConfig config = approvalConfigService.fetchApprovalConfigById(approvalId);
-        auditTrailService.saveAuditTrail("Approval Settings", "Edited all Approval Settings for "+config.getApprovalModule().name());
+        auditTrailService.saveAuditTrail("Approval Settings", "Edited all Approval Settings for " + config.getApprovalModule().name());
         config.setApprovalModule(configData.getModuleName());
         config.setMinNoOfApprovers(configData.getMinNoOfApprovers());
         config.setNoOfApproveres(configData.getNoOfApproveres());
@@ -127,6 +129,9 @@ public class ApprovalsConfigurationController {
     @PreAuthorize("hasAuthority('create_approvers')")
     public ResponseEntity<?> addNewModuleApprovers(@Valid @RequestBody List<ModuleApproversData> approversData) {
         List<ModuleApprovers> approvers = new ArrayList<>();
+        if (approversData.size() < 1) {
+            throw APIException.badRequest("Please provide at least one approver");
+        }
 
         for (ModuleApproversData data : approversData) {
             ModuleApprovers approver = new ModuleApprovers();
@@ -135,7 +140,7 @@ public class ApprovalsConfigurationController {
             approver.setModuleName(data.getModuleName());
             approver.setApprovalLevel(data.getApprovalLevel());
             approvers.add(approver);
-            auditTrailService.saveAuditTrail("Approval Settings", "Added "+emp.getFullName()+"  as Approver for "+data.getModuleName());
+            auditTrailService.saveAuditTrail("Approval Settings", "Added " + emp.getFullName() + "  as Approver for " + data.getModuleName());
         }
 
         List<ModuleApprovers> approver = approvalConfigService.createModuleApprovers(approvers);
@@ -159,11 +164,24 @@ public class ApprovalsConfigurationController {
         entities.stream().map((a) -> ModuleApproversData.map(a)).forEachOrdered((d) -> {
             list.add(d);
         });
-        auditTrailService.saveAuditTrail("Approval Settings", "viewed approvers for "+moduleName);
+        auditTrailService.saveAuditTrail("Approval Settings", "viewed approvers for " + moduleName);
         Pager<List<ModuleApproversData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
         pagers.setContent(list);
         return ResponseEntity.ok(pagers);
     }
+
+    @DeleteMapping("/module-approver/{id}")
+    public ResponseEntity<?> deleteApprover(@PathVariable("id") final Long id) {
+
+        ModuleApprovers approver = approvalConfigService.fetchApproverById(id);
+        approvalConfigService.deleteApprover(id);
+        auditTrailService.saveAuditTrail(approver.getModuleName().name() + "Approval Settings", "Removed  ".concat(approver.getEmployee().getFullName()).concat(" from the list of approvers"));
+        Pager<ModuleApproversData> pagers = new Pager();
+        pagers.setCode("0");
+        pagers.setMessage("Successfully deleted approver ".concat(approver.getEmployee().getFullName()));
+        return ResponseEntity.ok(pagers);
+    }
+
 }

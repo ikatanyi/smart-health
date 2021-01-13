@@ -269,6 +269,7 @@ public class InventoryService {
         if (!savedList.isEmpty()) {
             savedList
                     .forEach((savedEntry) -> {
+                        System.out.println("Quantity "+savedEntry.getQuantity());
                         inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), savedEntry.getStore(), savedEntry.getItem(), savedEntry.getQuantity()));
                     });
         }

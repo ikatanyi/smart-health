@@ -5,8 +5,11 @@
  */
 package io.smarthealth.clinical.theatre.data;
 
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Data;
 
 /**
@@ -22,6 +25,9 @@ public class TheatreBillItem {
     private Double price = 0D;
     private Double amount = 0D;
     private Long storeId;
+    
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
     private List<TheatreProvider> providers = new ArrayList<>();
 
 }

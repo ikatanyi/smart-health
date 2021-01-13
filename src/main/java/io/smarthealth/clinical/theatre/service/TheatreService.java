@@ -64,7 +64,7 @@ import org.springframework.transaction.annotation.Propagation;
 @Service
 @RequiredArgsConstructor
 public class TheatreService {
-
+    
     private final BillingService billingService;
     private final VisitRepository visitRepository;
     private final SequenceNumberService sequenceNumberService;
@@ -79,7 +79,7 @@ public class TheatreService {
     private final PaymentDetailsService paymentDetailsService;
     private final PricelistService pricelistService;
     private final PricebookService pricebookService;
-
+    
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PatientBill createBill(TheatreBill data) {
         PatientBill patientbill = new PatientBill();
@@ -91,12 +91,12 @@ public class TheatreService {
         patientbill.setDiscount(0D);
         patientbill.setBalance(data.getAmount());
         patientbill.setBillingDate(data.getBillingDate());
-        patientbill.setPaymentMode(data.getPaymentMode()!=null ? data.getPaymentMode() : "Insurance");
+        patientbill.setPaymentMode(data.getPaymentMode() != null ? data.getPaymentMode() : "Insurance");
         patientbill.setStatus(BillStatus.Draft);
-
+        
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
-
+        
         patientbill.setBillNumber(bill_no);
         patientbill.setTransactionId(trdId);
         ServicePoint srv = servicePointService.getServicePoint(data.getServicePointId());
@@ -105,7 +105,7 @@ public class TheatreService {
                 .map(lineData -> {
                     Item item = itemService.findItemWithNoFoundDetection(lineData.getItemCode());
                     PatientBillItem billItem = new PatientBillItem();
-
+                    
                     billItem.setBillingDate(data.getBillingDate());
                     billItem.setTransactionId(trdId);
                     billItem.setItem(item);
@@ -123,7 +123,7 @@ public class TheatreService {
                     }
                     billItem.setDiscount(0D);
                     billItem.setBalance((billItem.getAmount()));
-
+                    
                     billItem.setServicePoint(srv.getName());
                     billItem.setServicePointId(data.getServicePointId());
                     billItem.setStatus(BillStatus.Draft);
@@ -133,7 +133,7 @@ public class TheatreService {
                     billItem.setTheatreProviders(lineData.getProviders());
                     //get store for the item if inventory
                     billItem.setStoreId(lineData.getStoreId());
-
+                    billItem.setBillPayMode(lineData.getPaymentMethod());
                     return billItem;
                 })
                 .collect(Collectors.toList());
@@ -142,22 +142,22 @@ public class TheatreService {
         PatientBill savedBill = billingService.createPatientBill(patientbill);
         //then we bill doctors fee
         List<DoctorInvoice> doctorInvoices = toDoctorInvoice(savedBill);
-        if (doctorInvoices.size() > 0) { 
+        if (doctorInvoices.size() > 0) {            
             doctorInvoices.forEach(inv -> doctorInvoiceService.save(inv));
         }
         List<StockEntry> stockEntries = createStockEntries(savedBill);
-        if (stockEntries.size() > 0) { 
+        if (stockEntries.size() > 0) {            
             inventoryService.saveAll(stockEntries);
             journalService.save(toJournal(savedBill));
         }
         return savedBill;
     }
-
+    
     private Visit findVisitEntityOrThrow(String visitNumber) {
         return this.visitRepository.findByVisitNumber(visitNumber)
                 .orElseThrow(() -> APIException.notFound("Visit Number {0} not found.", visitNumber));
     }
-
+    
     private BigDecimal computeTheatreFee(TheatreFee item, Double procedureFee) {
         if (item.getIsPercentage()) {
             BigDecimal fee = BigDecimal.valueOf(procedureFee);
@@ -166,22 +166,22 @@ public class TheatreService {
         }
         return item.getAmount();
     }
-
+    
     private List<DoctorInvoice> toDoctorInvoiceFix(List<DoctorFeeFix> doctorFeeFixList) {
         List<DoctorInvoice> toInvoice = new ArrayList<>();
-        int count =0;
-        for(DoctorFeeFix docFee: doctorFeeFixList){
+        int count = 0;
+        for (DoctorFeeFix docFee : doctorFeeFixList) {
             Item item = itemService.findItemWithNoFoundDetection(docFee.getItemCode());
-            Visit visit = visitRepository.findByVisitNumber(docFee.getVisitNumber()).orElseThrow(()-> APIException.notFound("No visit found"));
-           Double amount = 0.00;
-            if(visit.getPaymentMethod().equals(PaymentMethod.Cash)){
-               amount = item.getRate().doubleValue();
-           }else{
+            Visit visit = visitRepository.findByVisitNumber(docFee.getVisitNumber()).orElseThrow(() -> APIException.notFound("No visit found"));
+            Double amount = 0.00;
+            if (visit.getPaymentMethod().equals(PaymentMethod.Cash)) {
+                amount = item.getRate().doubleValue();
+            } else {
                 PaymentDetails paymentDetails = paymentDetailsService.fetchPaymentDetailsByVisit(visit);
-
+                
                 amount = pricelistService.fetchPriceAmountByItemAndPriceBook(item, paymentDetails.getPayer().getPriceBook());
-           }
-
+            }
+            
             Optional<TheatreFee> surgeonFee = theatreFeeService.findByItemAndCategory(item, FeeCategory.SurgeonFee);
             if (surgeonFee.isPresent()) {
                 BigDecimal amt = computeTheatreFee(surgeonFee.get(), (1 * amount));
@@ -201,7 +201,7 @@ public class TheatreService {
                 invoice.setVisit(visit);
                 toInvoice.add(invoice);
             }
-
+            
             Optional<TheatreFee> anaesthetistFee = theatreFeeService.findByItemAndCategory(item, FeeCategory.AnaesthetistFee);
             if (anaesthetistFee.isPresent()) {
                 BigDecimal amt = computeTheatreFee(anaesthetistFee.get(), (1 * amount));
@@ -221,19 +221,19 @@ public class TheatreService {
                 invoice.setVisit(visit);
                 toInvoice.add(invoice);
             }
-
+            
         }
-
+        
         return toInvoice;
     }
-
+    
     private List<DoctorInvoice> toDoctorInvoice(PatientBill bill) {
         List<DoctorInvoice> toInvoice = new ArrayList<>();
         bill.getBillItems()
                 .stream()
                 .filter(x -> x.getTheatreProviders() != null || !x.getTheatreProviders().isEmpty())
                 .forEach(billItem -> {
-
+                    
                     billItem.getTheatreProviders().stream()
                             .forEach(provider -> {
                                 Optional<TheatreFee> theatreFee = theatreFeeService.findByItemAndCategory(billItem.getItem(), provider.getRole());
@@ -259,17 +259,17 @@ public class TheatreService {
                 });
         return toInvoice;
     }
-
+    
     private List<StockEntry> createStockEntries(PatientBill patientBill) {
         return patientBill.getBillItems().stream()
                 .filter(x -> x.getStoreId() != null)
                 .map(drug -> {
                     Item item = drug.getItem();
                     Store store = storeService.getStoreWithNoFoundDetection(drug.getStoreId());
-
+                    
                     BigDecimal amt = BigDecimal.valueOf(drug.getAmount());
                     BigDecimal price = BigDecimal.valueOf(drug.getPrice());
-
+                    
                     StockEntry stock = new StockEntry();
                     stock.setAmount(amt);
                     stock.setQuantity(drug.getQuantity() * -1);
@@ -284,26 +284,26 @@ public class TheatreService {
                     stock.setTransactionNumber(drug.getTransactionId());
                     stock.setUnit("");
                     stock.setBatchNo("-");
-
+                    
                     return stock;
                 })
                 .collect(Collectors.toList());
-
+        
     }
-
+    
     private JournalEntry toJournal(PatientBill bill) {
         String description = "Patient Billing";
         if (bill.getPatient() != null) {
             description = bill.getPatient().getPatientNumber() + " " + bill.getPatient().getFullName();
         }
-
+        
         Optional<FinancialActivityAccount> debitAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Patient_Control);
         if (!debitAccount.isPresent()) {
             throw APIException.badRequest("Patient Control Account is Not Mapped");
         }
 //        String debitAcc = debitAccount.get().getAccount().getIdentifier();
         List<JournalEntryItem> items = new ArrayList<>();
-
+        
         if (!bill.getBillItems().isEmpty()) {
             Map<Long, Double> inventory = bill.getBillItems()
                     .stream()
@@ -325,27 +325,27 @@ public class TheatreService {
                     Account debit = srv.getExpenseAccount(); // cost of sales
                     Account credit = srv.getInventoryAssetAccount();//store.getInventoryAccount(); // Inventory Asset Account
                     BigDecimal amount = BigDecimal.valueOf(v);
-
+                    
                     items.add(new JournalEntryItem(debit, desc, amount, BigDecimal.ZERO));
                     items.add(new JournalEntryItem(credit, desc, BigDecimal.ZERO, amount));
-
+                    
                 });
             }
         }
-
+        
         JournalEntry toSave = new JournalEntry(bill.getBillingDate(), description, items);
         toSave.setTransactionNo(bill.getTransactionId());
         toSave.setTransactionType(TransactionType.Billing);
         toSave.setStatus(JournalState.PENDING);
         return toSave;
     }
-
-    public void fixDoctorFee(List<DoctorFeeFix> doctorFeeFixes){
+    
+    public void fixDoctorFee(List<DoctorFeeFix> doctorFeeFixes) {
         List<DoctorInvoice> doctorInvoices = toDoctorInvoiceFix(doctorFeeFixes);
-        System.out.println("Done with this number "+doctorInvoices.size());
+        System.out.println("Done with this number " + doctorInvoices.size());
         if (doctorInvoices.size() > 0) {
             doctorInvoices.forEach(inv -> doctorInvoiceService.save(inv));
         }
     }
-
+    
 }

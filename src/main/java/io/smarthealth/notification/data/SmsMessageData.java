@@ -5,8 +5,8 @@ package io.smarthealth.notification.data;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
+import com.fasterxml.jackson.annotation.JsonFormat;
+import static io.smarthealth.infrastructure.lang.Constants.DATE_PATTERN;
 import io.smarthealth.notification.domain.SmsMessage;
 import io.smarthealth.notification.domain.enumeration.ReceiverType;
 import java.time.LocalDate;
@@ -20,18 +20,22 @@ import lombok.Data;
  */
 @Data
 public class SmsMessageData {
+
     private Long id;
     private String name;
     private String message;
-    private String phoneNumber;
+    private String phoneNumber;//muliple specified numbers should be separated with a comma
     private String receiverId;//staffnumber/patientNumber
     private String status = "Unsent";
     private LocalDate msgDate = LocalDate.now();
     private String comments;
     @Enumerated(EnumType.STRING)
     private ReceiverType receiverType;
-    
-    public SmsMessage map(){
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
+    private LocalDate visitDate;
+
+    public SmsMessage map() {
         SmsMessage msg = new SmsMessage();
         msg.setMessage(this.getMessage());
         msg.setMsgDate(this.getMsgDate());

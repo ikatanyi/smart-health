@@ -7,6 +7,7 @@ package io.smarthealth.notification.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.smarthealth.clinical.visit.domain.VisitRepository;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.lang.UnsafeOkHttpClient;
 import io.smarthealth.notification.data.SmsMessageData;
@@ -36,6 +37,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.notification.domain.SmsMessageRepository;
+import org.springframework.scheduling.annotation.Async;
+import io.smarthealth.clinical.visit.domain.Visit;
+import java.util.Arrays;
 
 /**
  *
@@ -49,6 +53,37 @@ public class SmsMessagingService {
     private final SmsMessageRepository messageRepository;
     private final PatientService patientService;
     private final EmployeeService employeeService;
+    private final VisitRepository visitRepository;
+
+    @Transactional
+    public SmsMessage sendBulkSMS(SmsMessageData d) {
+        SmsMessage msg = d.map();
+        List<String> phoneNumbers = new ArrayList<String>();
+
+        if (d.getReceiverType().equals(ReceiverType.AllPatients)) {
+//keen on this given that some hospitals has 30thousand patients --to be used safely. to stop the process unless you stop the server completely- should have some approval level
+
+        }
+        if (d.getReceiverType().equals(ReceiverType.AllSuppliers)) {
+
+        }
+        if (d.getReceiverType().equals(ReceiverType.DailyVisitPatient)) {
+            Page<Visit> visits = visitRepository.findBystartDatetime(d.getVisitDate().atStartOfDay(), Pageable.unpaged());
+
+            for (Visit v : visits.getContent()) {
+                if (v.getPatient().getPrimaryContact() != null) {
+                    phoneNumbers.add(v.getPatient().getPrimaryContact());
+                }
+            }
+        }
+        if (d.getReceiverType().equals(ReceiverType.SpecifiedNumbers)) {
+            if (d.getPhoneNumber() != null) {
+                phoneNumbers = Arrays.asList(d.getPhoneNumber().split(","));
+            }
+        }
+        sendMultipleSMS(phoneNumbers, d.getMessage());
+        return messageRepository.save(msg);
+    }
 
     @Transactional
     public SmsMessage createTextMessage(SmsMessageData msgData) {
@@ -70,7 +105,7 @@ public class SmsMessagingService {
     }
 
     public List<SmsMessage> createBatchTextMessage(List<SmsMessageData> msgDataList) {
-        List<SmsMessage>msgList = new ArrayList();
+        List<SmsMessage> msgList = new ArrayList();
         for (SmsMessageData msgData : msgDataList) {
             SmsMessage msg = msgData.map();
             if (msgData.getPhoneNumber() == null) {
@@ -100,10 +135,33 @@ public class SmsMessagingService {
         return messageRepository.findAll(spec, pageable);
     }
 
+    @Async
+    public void sendMultipleSMS(List<String> phoneNumbers, String msgBody) {
+        List<SmsMessage> msgList = new ArrayList();
+
+        for (String p : phoneNumbers) {
+            SmsMessage msg = new SmsMessage();
+            try {
+                String status = sendSMS(p, msgBody);
+                msg.setPhoneNumber(p);
+                msg.setMessage(msgBody);
+                msg.setStatus(status);
+                msgList.add(msg);
+
+                messageRepository.saveAll(msgList);
+            } catch (Exception e) {
+                //TODO: log any error captured for each message
+
+            }
+        }
+    }
+
     public String sendSMS(String phone, String msg) {
         String status = null;
-        
-        if(phone == null) return "";
+
+        if (phone == null) {
+            return "";
+        }
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 

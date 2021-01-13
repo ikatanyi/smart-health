@@ -8,6 +8,7 @@ import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.stock.item.domain.Item;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,7 +45,7 @@ public class DoctorRequest extends Auditable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_doc_request_empoyee_id"))
     private User requestedBy;
 
-    private LocalDate orderDate;
+    private LocalDateTime orderDate;
     private String urgency;
     private String orderNumber;
     private String notes;

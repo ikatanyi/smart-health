@@ -192,6 +192,17 @@ public class PatientService {
         }
     }
 
+    public void deletePatient(final Long id) {
+        final Patient patient = this.fetchPatientByPersonId(id);
+        try {
+            this.patientRepository.delete(patient);
+        } catch (Exception e) {
+//            e.printStackTrace();
+            throw APIException.badRequest("You cannot delete patient who has already transacted");
+        }
+        this.portraitRepository.deleteByPerson(patient);
+    }
+
     @Transactional
     public Portrait createPortrait(Patient patient, MultipartFile file) throws IOException {
         if (file == null) {
@@ -535,6 +546,7 @@ public class PatientService {
     public Patient savePatient(Patient p) {
         return patientRepository.save(p);
     }
+
     public List<Patient> tafuta(String term) {
         return patientRepository.search(term);
     }

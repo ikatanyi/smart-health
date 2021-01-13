@@ -8,7 +8,7 @@ package io.smarthealth.clinical.record.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.clinical.record.domain.DoctorRequest;
 import io.smarthealth.infrastructure.lang.Constants;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 /**
@@ -25,7 +25,7 @@ public class OrdersRequest {
     private Long itemId;
     private String itemCode;
     @JsonFormat(pattern = Constants.DATE_PATTERN)
-    private LocalDate orderDate;
+    private LocalDateTime orderDate;
     private String orderNumber;
     private String notes;
     private String requestedBy;

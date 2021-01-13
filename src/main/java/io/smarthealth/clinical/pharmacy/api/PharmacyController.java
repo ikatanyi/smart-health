@@ -36,6 +36,7 @@ import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -110,7 +111,7 @@ public class PharmacyController {
             Item item = itemService.findItemWithNoFoundDetection(pd.getItemCode());
             p.setItem(item);
             p.setVisit(visit);
-            p.setOrderDate(LocalDate.now());
+            p.setOrderDate(LocalDateTime.now());
             p.setOrderNumber(prescriptionNo);
             p.setRequestedBy(user.get());
             p.setRequestType(RequestType.Pharmacy);
