@@ -2,7 +2,6 @@ package io.smarthealth.accounting.accounts.api;
 
 import io.smarthealth.accounting.accounts.data.financial.statement.FinancialCondition;
 import io.smarthealth.accounting.accounts.service.FinancialConditionService;
-import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.time.LocalDate;
 import java.util.Optional;

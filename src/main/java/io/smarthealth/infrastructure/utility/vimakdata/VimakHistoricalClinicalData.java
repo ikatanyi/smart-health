@@ -37,16 +37,20 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Statement;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Simon.waweru
  */
-@Component
+
 @RequiredArgsConstructor
+@Service
 public class VimakHistoricalClinicalData {
 
     ResultSet rs = null;
@@ -61,11 +65,6 @@ public class VimakHistoricalClinicalData {
     private final BillingService billingService;
     private final VisitService visitService;
     private final InvoiceRepository invoiceRepository;
-
-    public static void main(String[] args) {
-//        VimakHistoricalClinicalData sindano = new VimakHistoricalClinicalData();
-//        sindano.insertDoctorNotes();
-    }
 
     private void processData() {
         List<PatientData> patients = new ArrayList<>();
@@ -138,7 +137,7 @@ public class VimakHistoricalClinicalData {
         }
     }
 
-    private void insertDoctorNotes() {
+    public void insertDoctorNotes() {
         try {
             //insert triage history
             Connection connection = connector.ConnectToPastDB();
@@ -160,11 +159,15 @@ public class VimakHistoricalClinicalData {
 
                 LocalDateTime dtTime = toDt.atStartOfDay();
                 try {
-                    clinicalNotes = "INSERT INTO smarthealth.patient_clinical_notes (created_by, created_on, last_modified_by, last_modified_on, version, date_recorded, voided, chief_complaint, examination_notes, health_provider_id, patient_id, visit_id) "
-                            + "VALUES ('system', '" + dtTime + "', 'system', '" + dtTime + "', '0', '" + toDt + "', b'0', '" + chief_complaint + "', '" + examination_notes + "', NULL, '" + patientId + "', '" + (visitId == null ? 0 : visitId) + "')";
-                    pst = connection2.prepareStatement(clinicalNotes);
-                    pst.execute();
-                    System.out.println("Processed visitId" + visitId);
+                    if(pdata!=null) {
+                        clinicalNotes = "INSERT INTO smarthealth.patient_clinical_notes (created_by, created_on, last_modified_by, last_modified_on, version, date_recorded, voided, chief_complaint, examination_notes, health_provider_id, patient_id, visit_id) "
+                                + "VALUES ('system', '" + dtTime + "', 'system', '" + dtTime + "', '0', '" + toDt + "', b'0', '" + chief_complaint + "', '" + examination_notes + "', NULL, '" + patientId + "', '" + (visitId == null ? 0 : visitId) + "')";
+                        pst = connection2.prepareStatement(clinicalNotes);
+                        pst.execute();
+                        System.out.println("Processed visitId" + visitId);
+                    }
+                    else
+                        System.out.println("Skipped missing Patient" + patientId);
                 } catch (Exception e) {
 
                     System.out.println("error " + e.getMessage());
@@ -245,7 +248,7 @@ public class VimakHistoricalClinicalData {
 //                    LocalDate toDate = LocalDate.parse(rs.getString("date"));
                     LocalDateTime dateTime = toDate.atStartOfDay();
                     String visitRecord = "INSERT INTO smarthealth.patient_visit (created_by, created_on, last_modified_by, last_modified_on, version, comments, is_active_on_consultation, payment_method, scheduled, service_type, start_datetime, status, stop_datetime, triage_category, visit_number, visit_type, clinic_id, health_provider, patient_id, service_point_id) "
-                            + "VALUES ('system', '" + dateTime + "', 'system', '" + dateTime + "', '1', 'VISIT B/U', b'0', 'Cash', b'0', 'Consultation', '" + dateTime + "', 'CheckOut',  '" + dateTime + "', '3', '" + code + "', 'Outpatient', '1', NULL, '" + patientId + "', NULL)";
+                            + "VALUES ('system', '" + dateTime + "', 'system', '" + dateTime + "', '1', 'VISIT B/U', b'0', 'Cash', b'0', 'Consultation', '" + dateTime + "', 'CheckOut',  '" + dateTime + "', '3', '" + code + "', 'Outpatient', '10', NULL, '" + patientId + "', NULL)";
                     pst = connection.prepareStatement(visitRecord, Statement.RETURN_GENERATED_KEYS);
 
                     pst.executeUpdate();
@@ -373,12 +376,12 @@ public class VimakHistoricalClinicalData {
         }
     }
     
-    private void createBills() throws Exception {
+    public void createBills() {
         try {
             List<BillItemData> data = new ArrayList();
             ResultSet rs = null;
             Connection connection = connector.ConnectToCurrentDB();
-             List<InvoiceItem> items = new ArrayList();
+            List<InvoiceItem> items = new ArrayList();
             String qry = "SELECT * FROM `clinic_web`.`dt_billing` WHERE credit=0.0";
             pst = connection.prepareStatement(qry);
             rs = pst.executeQuery();
@@ -388,10 +391,11 @@ public class VimakHistoricalClinicalData {
                 billData.setBalance(rs.getDouble("edited_value"));
                 billData.setBillingDate(rs.getDate("date").toLocalDate());
                 billData.setDiscount(rs.getDouble("discount"));
-                Patient patient = patientService.findPatientOrThrow(rs.getString("customer_id"));
-                billData.setPatientName(patient.getFullName());
+                Optional<Patient> patient = patientService.findByPatientNumber(rs.getString("customer_id"));
+                if(patient.isPresent())
+                   billData.setPatientName(patient.get().getFullName());
                 billData.setPatientNumber(rs.getString("customer_id"));
-                billData.setPaymentMode(rs.getString(""));
+                billData.setPaymentMode(rs.getString("payment_method"));
                 billData.setStatus(BillStatus.Paid);
                 billData.setVisitNumber(rs.getString("visit_id"));
                 billData.setWalkinFlag(Boolean.FALSE);
@@ -404,7 +408,6 @@ public class VimakHistoricalClinicalData {
             connection.close();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Error validating visit number", e);
         }
     }
     

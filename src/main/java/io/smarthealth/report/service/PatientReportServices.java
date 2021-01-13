@@ -665,12 +665,48 @@ public class PatientReportServices {
                     return values;
                 })
                 .collect(Collectors.toList());
-
+        Moh706LabDataArray.addAll(getPanelLists(range));
         reportData.setData(Moh706LabDataArray);
         reportData.setFormat(format);
         reportData.setTemplate("/patient/moh706_lab_report");
         reportData.setReportName("moh706_lab_report");
         reportService.generateReport(reportData, response);
+    }
+
+    public List<Moh706LabData> getPanelLists(DateRange range){
+        return labService.getPanels()
+                .stream()
+                .map((testPanel) -> {
+                    Moh706LabData values = new Moh706LabData();
+                    Integer age = 0;
+                    Integer total = 0;
+                    Gender gender = null;
+                    List<LabRegisterTest> tests = labService.getPanelTestsByDate(testPanel.getId(), range.getStartDateTime(),range.getEndDateTime());
+                    for (LabRegisterTest test : tests) {
+                        String patientNo = test.getLabRegister().getPatientNo();
+                        values.setTestName(test.getParentLabTest().getTestName());
+                        Optional<PatientData> patient = patientService.fetchPatientByPatientNumber(patientNo);
+                        if (patient.isPresent()) {
+                            age = patient.get().getAge();
+                            gender = patient.get().getGender();
+                        }
+                        if (age < 5) {
+                            values.setUnder5(values.getUnder5()+1);
+                        } else {
+                            values.setOver5(values.getOver5()+1);
+                        }
+                        if (gender == Gender.M) {
+                            values.setMale(values.getMale()+1);
+                        } else {
+                            values.setFemale(values.getFemale()+1);
+                        }
+                        values.setTotal(values.getTotal()+1);
+                    }
+
+                    return values;
+                })
+                .collect(Collectors.toList());
+
     }
 
     public void getPatientRegisterReport(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {

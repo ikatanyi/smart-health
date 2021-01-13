@@ -64,4 +64,6 @@ public class InvoiceData {
     private BigDecimal excess = BigDecimal.ZERO;
 
      private Boolean capitation=Boolean.FALSE;
+    @ApiModelProperty(hidden=true, required=false)
+     private String visitType;
 }

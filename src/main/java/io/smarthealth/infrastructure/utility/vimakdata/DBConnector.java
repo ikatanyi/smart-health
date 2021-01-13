@@ -17,9 +17,9 @@ import java.sql.SQLException;
  */
 public class DBConnector {
 
-    String pastDB = "jdbc:mysql://127.0.0.1:3306/newpaint_limsoft_db?useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior = CONVERT_TO_NULL";
+    String pastDB = "jdbc:mysql://127.0.0.1:3307/clinic_web?useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior = CONVERT_TO_NULL";
 
-    String currentDB = "jdbc:mysql://127.0.0.1:3306/smarthealth?useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior = CONVERT_TO_NULL";
+    String currentDB = "jdbc:mysql://127.0.0.1:3307/smarthealth?useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior = CONVERT_TO_NULL";
 
     private final String USERNM = "smarthealth";
     private final String PASSWD = "Sm@rt_123";

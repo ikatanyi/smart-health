@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import io.smarthealth.clinical.laboratory.domain.LabTestPanel;
 
 /**
  *
@@ -52,8 +53,14 @@ public interface LabRegisterTestRepository extends JpaRepository<LabRegisterTest
     
     @Query("SELECT t FROM LabRegisterTest t WHERE t.entryDateTime BETWEEN :frmdt AND :todt GROUP BY t.labTest")
     List<LabRegisterTest> findTestsByDateRange(@Param("frmdt") LocalDateTime from, @Param("todt") LocalDateTime todt);
-    
-    
+
+    @Query("SELECT t FROM LabRegisterTest t WHERE t.parentLabTest.id =:labtest AND t.parentLabTest<>null AND t.entryDateTime BETWEEN :frmdt AND :todt GROUP BY t.parentLabTest, t.labRegister.patientNo")
+    List<LabRegisterTest> findPanelTestsByDateRange(@Param("labtest") Long labtest, @Param("frmdt") LocalDateTime from, @Param("todt") LocalDateTime todt);
+
+    @Query("SELECT t FROM LabTest t WHERE t.isPanel=true group by t.id")
+    List<LabTest> findPanels();
+
+
     @Query("SELECT d.labTest.testName as testName, count(d.labTest.testName) AS count, SUM(d.price) as totalPrice FROM LabRegisterTest d WHERE d.labRegister.createdOn BETWEEN :fromDate AND :toDate Group by d.labTest.testName")
     List<TotalTest>findTotalTests(@Param("fromDate")Instant fromDate, @Param("toDate")Instant toDate);
 

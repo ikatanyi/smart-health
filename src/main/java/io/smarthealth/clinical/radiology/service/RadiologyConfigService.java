@@ -77,7 +77,7 @@ public class RadiologyConfigService {
     }
 
     public Optional<ServiceTemplate> getServiceTemplateById(Long id) {
-        return serviceTemplateRepository.findById(id);
+           return serviceTemplateRepository.findById(id);
     }
 
     @Transactional
@@ -99,10 +99,12 @@ public class RadiologyConfigService {
                         if (item.isPresent()) {
                             test.setItem(item.get());
                         }
-                        Optional<ServiceTemplate> template = this.getServiceTemplateById(radiologyTest.getTemplateId());
-                        if (template.isPresent()) {
-                            test.setServiceTemplate(template.get());
+                        if(radiologyTest.getId()!=null) {
+                            Optional<ServiceTemplate> template = this.getServiceTemplateById(radiologyTest.getId());
+                            if (template.isPresent())
+                                test.setServiceTemplate(template.get());
                         }
+
                         return test;
                     })
                     .collect(Collectors.toList());

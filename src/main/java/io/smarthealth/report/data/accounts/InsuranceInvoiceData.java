@@ -36,4 +36,5 @@ public class InsuranceInvoiceData {
     private BigDecimal consultation = BigDecimal.ZERO;
     private BigDecimal procedure = BigDecimal.ZERO;
     private BigDecimal other = BigDecimal.ZERO;
+    private String visitType;
 }
