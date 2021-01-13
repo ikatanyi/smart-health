@@ -431,6 +431,10 @@ public class PatientService {
         return this.patientRepository.findByPatientNumber(patientNumber);
     }
 
+    public List<Patient> findAllPatients() {
+        return patientRepository.findAll();
+    }
+
     public void throwifDuplicatePatientNumber(String patientNumber) {
         if (patientRepository.existsByPatientNumber(patientNumber)) {
             throw APIException.conflict("Duplicate Patient Number {0}", patientNumber);

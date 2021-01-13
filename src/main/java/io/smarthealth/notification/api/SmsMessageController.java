@@ -46,8 +46,7 @@ public class SmsMessageController {
     }
 
     @PostMapping("/sms/bulk")
-    @ResponseBody
-    public ResponseEntity<?> sendBulkSMS(@RequestBody @Valid SmsMessageData data) {
+    public ResponseEntity<?> sendBulkSMS(@RequestBody SmsMessageData data) {
         SmsMessageData textMessageData = textMessageService.sendBulkSMS(data).toData();
         return ResponseEntity.ok(textMessageData);
     }
