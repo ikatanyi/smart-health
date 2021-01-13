@@ -41,7 +41,7 @@ public class MohController {
 //    @PreAuthorize("hasAuthority('view_moh')")
     public Moh getMoh(@PathVariable(value = "id") Long code) {
         Moh moh = service.fetchMohById(code);
-        auditTrailService.saveAuditTrail("Laboratory", "searched registered morbidity diseases "+moh.getDescription());
+        auditTrailService.saveAuditTrail("MOH", "searched registered morbidity diseases "+moh.getDescription());
         return moh;
     }
 
@@ -58,7 +58,7 @@ public class MohController {
         Page<MohData> list = service.fetchAllMoh(pageable).map(u -> {            
             return u.toData();
                 });
-        auditTrailService.saveAuditTrail("Laboratory", "viewed registered morbidity diseases ");
+        auditTrailService.saveAuditTrail("MOH", "viewed registered morbidity diseases ");
         Pager<List<MohData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
@@ -79,7 +79,7 @@ public class MohController {
     public ResponseEntity<?> createMoh(@Valid @RequestBody MohData mohData) {
 
         MohData result = service.createMoh(mohData).toData();
-        auditTrailService.saveAuditTrail("Laboratory", "Created morbidity diseases "+result.getDescription());
+        auditTrailService.saveAuditTrail("MOH", "Created morbidity diseases "+result.getDescription());
         Pager<MohData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Moh created successful");
@@ -96,7 +96,7 @@ public class MohController {
         List<MohData> result = service.createBatchMoh(mohData)
                 .stream()
                 .map(u -> {
-                    auditTrailService.saveAuditTrail("Laboratory", "Created morbidity disease "+u.getDescription());
+                    auditTrailService.saveAuditTrail("MOH", "Created morbidity disease "+u.getDescription());
                     return u.toData();
                         })
                 .collect(Collectors.toList());
@@ -115,7 +115,7 @@ public class MohController {
     public ResponseEntity<?> updateMoh(@PathVariable("id") Long id, @Valid @RequestBody MohData mohData) {
 
         MohData result = service.updateMoh(id, mohData).toData();
-        auditTrailService.saveAuditTrail("Laboratory", "Edited morbidity disease "+result.getDescription());
+        auditTrailService.saveAuditTrail("MOH", "Edited morbidity disease "+result.getDescription());
         Pager<MohData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Moh created successful");

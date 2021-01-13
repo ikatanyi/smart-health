@@ -223,9 +223,9 @@ public class BatchImportService {
             }
         }
         );
+        radiologyService.createRadiologyTest(imageArray);
         labService.createTest(labTestArray);
         procedureService.createProcedureTest(procArray);
-        radiologyService.createRadiologyTest(imageArray);
         //TODO: There should be a condition before updating stock 
         inventoryItemService.uploadInventoryItems(inventoryArray);
     }

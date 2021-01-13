@@ -13,12 +13,7 @@ import io.smarthealth.clinical.laboratory.data.LabRegisterTestData;
 import io.smarthealth.clinical.laboratory.data.LabResultData;
 import io.smarthealth.clinical.laboratory.data.PatientResults;
 import io.smarthealth.clinical.laboratory.data.StatusRequest;
-import io.smarthealth.clinical.laboratory.domain.LabRegister;
-import io.smarthealth.clinical.laboratory.domain.LabRegisterTest;
-import io.smarthealth.clinical.laboratory.domain.LabResult;
-import io.smarthealth.clinical.laboratory.domain.LabResultRepository;
-import io.smarthealth.clinical.laboratory.domain.LabTest;
-import io.smarthealth.clinical.laboratory.domain.LabTestRepository;
+import io.smarthealth.clinical.laboratory.domain.*;
 import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.clinical.laboratory.domain.specification.LabRegisterSpecification;
 import io.smarthealth.clinical.laboratory.domain.specification.LabResultSpecification;
@@ -38,8 +33,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import io.smarthealth.clinical.laboratory.domain.LabRegisterRepository;
-import io.smarthealth.clinical.laboratory.domain.LabRegisterTestRepository;
 import io.smarthealth.clinical.laboratory.domain.specification.LabRegisterTestSpecification;
 import io.smarthealth.clinical.radiology.domain.TotalTest;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
@@ -471,6 +464,14 @@ public class LaboratoryService {
 
     public List<LabRegisterTest> getLabTestsByDate(LabTest test, LocalDateTime date1, LocalDateTime date2) {
         return testRepository.findByLabTestAndEntryDateTimeBetween(test, date1, date2);
+    }
+
+    public List<LabRegisterTest> getPanelTestsByDate(Long labtestId, LocalDateTime date1, LocalDateTime date2) {
+        return testRepository.findPanelTestsByDateRange(labtestId, date1, date2);
+    }
+
+    public List<LabTest> getPanels() {
+        return testRepository.findPanels();
     }
 
     public List<LabRegisterTest> getTestsByDate(DateRange range) {

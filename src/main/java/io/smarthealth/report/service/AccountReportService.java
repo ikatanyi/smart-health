@@ -478,6 +478,8 @@ public class AccountReportService {
                 })
                 .collect(Collectors.toList());
 
+
+
         for (InvoiceData invoice : invoices) {
             InsuranceInvoiceData data = new InsuranceInvoiceData();
             data.setAmount(invoice.getAmount());
@@ -493,6 +495,7 @@ public class AccountReportService {
             data.setScheme(invoice.getScheme());
             data.setStatus(invoice.getStatus());
             data.setDate(invoice.getInvoiceDate());
+            data.setVisitType(invoice.getVisitType());
             data.setPaid(invoice.getAmount().subtract(invoice.getBalance()));
             for (InvoiceItemData item : invoice.getInvoiceItems()) {
                 switch (item.getServicePoint()) {

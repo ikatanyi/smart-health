@@ -18,7 +18,9 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import io.smarthealth.infrastructure.reports.service.JasperReportsService;
+import io.smarthealth.organization.person.domain.WalkIn;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.organization.person.service.WalkingService;
 import io.smarthealth.report.data.ReportData;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -58,6 +60,7 @@ public class LabReportService {
 
     private final VisitService visitService;
     private final LabConfigurationService labSetUpService;
+    private final WalkingService walkinService;
 
     public void getLabStatement(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -75,7 +78,15 @@ public class LabReportService {
         List<LabRegisterData> patientData = labService.getLabRegister(labNumber, orderNumber, visitNumber, patientNumber, status, range, search, Pageable.unpaged())
                 .getContent()
                 .stream()
-                .map((register) -> register.toData(expand))
+                .map((register) -> {
+                    LabRegisterData data = register.toData(expand);
+                    if(data.getIsWalkin()){
+                        Optional<WalkIn> walkin = walkinService.fetchWalkingByWalkingNo(register.getPatientNo());
+                        if(walkin.isPresent())
+                            data.setPatientName(walkin.get().getFullName());
+                    }
+                    return data;
+                })
                 .collect(Collectors.toList());
         reportData.setData(patientData);
         reportData.setPatientNumber(patientNumber);
@@ -108,13 +119,19 @@ public class LabReportService {
         LabTestStatus status = labService.LabTestStatusToEnum(reportParam.getFirst("status"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));
-        Boolean isWalkin = reportParam.getFirst("iswalkin")!=null?BooleanUtils.toBoolean(reportParam.getFirst("iswalkin")):null;
+        Boolean isWalkin = reportParam.getFirst("isWalkin")!=null?BooleanUtils.toBoolean(reportParam.getFirst("isWalkin")):null;
 
         List<LabRegisterTestData> patientData = labService.getLabRegisterTest(labNumber, orderNumber, visitNumber, patientNumber, status, range,isWalkin, search, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((register) -> {
                     LabRegisterTestData data = register.toData(expand);
+                    if(data.getIsWalkin()){
+                        Optional<WalkIn> walkin = walkinService.fetchWalkingByWalkingNo(register.getLabRegister().getPatientNo());
+                        if(walkin.isPresent())
+                           data.setPatientName(walkin.get().getFullName());
+                    }
+
                     List<PatientBillItem> billItem = billingService.getPatientBillItem(data.getReferenceNo());
                     if(!billItem.isEmpty()){
                         data.setReferenceNo(billItem.get(0).getPaymentReference());
