@@ -3,16 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.security.service;
+package io.smarthealth.clinical.procedure.domain.enumeration;
 
 /**
  *
  * @author Kelsas
  */
-public interface UserPhoneNumber {
+public enum FeeCategory {
+    SurgeonFee,
+    AnaesthetistFee,
+    TheatreFee;
 
-    public String getPhoneNumber();
-
-    public void setPhoneNumber(String phoneNumber);
-    
 }

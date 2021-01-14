@@ -6,7 +6,6 @@ import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.supplier.domain.Supplier;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import javax.persistence.*;
 import lombok.Data;
@@ -22,7 +21,8 @@ public class PurchaseInvoice extends Auditable {
 
     public enum Type {
         Stock_Delivery,
-        Stock_Returns
+        Stock_Returns,
+        Supplier_Bill
     }
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_purchase_invoice_supplier_id"))
@@ -38,17 +38,21 @@ public class PurchaseInvoice extends Auditable {
     private LocalDate dueDate;
     private BigDecimal invoiceAmount;
     private BigDecimal tax;
-    private BigDecimal discount;
+    private BigDecimal discount; 
     private BigDecimal netAmount;
     private BigDecimal invoiceBalance;
     private LocalDate transactionDate;
     private String transactionNumber;
+    private boolean approved= false;
+    private String approvedBy;
+    private LocalDate approvalDate;
 
     @Enumerated(EnumType.STRING)
     private PurchaseInvoiceStatus status;
 
     public PurchaseInvoiceData toData() {
         PurchaseInvoiceData data = new PurchaseInvoiceData();
+        data.setId(this.getId());
         if (this.supplier != null) {
             data.setSupplierId(this.supplier.getId());
             data.setSupplier(this.supplier.getSupplierName());
@@ -68,6 +72,10 @@ public class PurchaseInvoice extends Auditable {
         data.setCreatedBy(this.getCreatedBy());
         data.setTransactionId(this.getTransactionNumber());
         data.setAge(ChronoUnit.DAYS.between(this.transactionDate, LocalDate.now()));
+        data.setApproved(this.approved);
+        data.setApprovedBy(this.approvedBy);
+        
         return data;
     }
+
 }

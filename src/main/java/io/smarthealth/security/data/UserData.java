@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.ToString;
@@ -25,6 +26,7 @@ public class UserData implements Serializable {
     private Long id;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String uuid;
+    @Email(message = "Provide a valid email address")
     @NotNull(message = "Email cannot be blank")
     private String email;
     //@ApiModelProperty(hidden = true)
@@ -35,6 +37,7 @@ public class UserData implements Serializable {
     private String password;
     private String name;
     private boolean enabled;
+     private String langKey="en";
     @ApiModelProperty(hidden = true)
     private boolean account_locked;
     @ApiModelProperty(hidden = true)

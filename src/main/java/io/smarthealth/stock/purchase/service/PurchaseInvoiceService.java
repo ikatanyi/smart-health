@@ -1,6 +1,7 @@
 package io.smarthealth.stock.purchase.service;
 
 import io.smarthealth.accounting.accounts.data.FinancialActivity;
+import io.smarthealth.accounting.accounts.domain.AccountRepository;
 import io.smarthealth.accounting.accounts.domain.FinancialActivityAccount;
 import io.smarthealth.accounting.accounts.domain.FinancialActivityAccountRepository;
 import io.smarthealth.accounting.accounts.domain.JournalEntry;
@@ -23,14 +24,19 @@ import io.smarthealth.stock.inventory.service.InventoryEventSender;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
-import io.smarthealth.stock.purchase.data.PurchaseInvoiceData;
+import io.smarthealth.stock.purchase.data.SupplierBill;
 import io.smarthealth.stock.purchase.domain.PurchaseCreditNote;
 import io.smarthealth.stock.purchase.domain.PurchaseCreditNoteRepository;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
+import io.smarthealth.stock.purchase.data.SupplierBillItem;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoiceRepository;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
 import io.smarthealth.stock.purchase.domain.specification.PurchaseInvoiceSpecification;
 import io.smarthealth.stock.stores.domain.Store;
+import io.smarthealth.accounting.accounts.domain.Account;
+import io.smarthealth.security.domain.User;
+import io.smarthealth.security.domain.UserRepository;
+import io.smarthealth.security.util.SecurityUtils;
 import io.smarthealth.stock.stores.domain.StoreRepository;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
@@ -46,6 +52,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import io.smarthealth.stock.purchase.data.ApproveSupplierBill;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -65,29 +73,46 @@ public class PurchaseInvoiceService {
     private final InventoryEventSender inventoryEventSender;
     private final PurchaseCreditNoteRepository purchaseCreditNoteRepository;
     private final FinancialActivityAccountRepository activityAccountRepository;
+    private final AccountRepository accountRepository;
 
-    public PurchaseInvoice createPurchaseInvoice(PurchaseInvoiceData invoiceData) {
-        Supplier supplier = supplierService.getSupplierOrThrow(invoiceData.getSupplierId());
-        String trdId = invoiceData.getTransactionId() == null ? sequenceNumberService.next(1L, Sequences.Transactions.name()) : invoiceData.getTransactionId();
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public List<PurchaseInvoice> createPurchaseInvoice(SupplierBill invoiceData) {
 
-        PurchaseInvoice invoice = new PurchaseInvoice();
-        invoice.setSupplier(supplier);
-        invoice.setPurchaseOrderNumber(invoiceData.getPurchaseOrderNumber());
-        invoice.setInvoiceDate(invoiceData.getInvoiceDate());
-        invoice.setTransactionDate(invoiceData.getTransactionDate());
-        invoice.setTransactionNumber(trdId);
-        invoice.setDueDate(invoiceData.getDueDate());
-        invoice.setPaid(false);
-        invoice.setIsReturn(false);
-        invoice.setInvoiceNumber(invoiceData.getInvoiceNo());
-        invoice.setInvoiceAmount(invoiceData.getInvoiceAmount());
-        invoice.setInvoiceBalance(invoiceData.getInvoiceBalance());
+        String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
 
-        invoice.setStatus(PurchaseInvoiceStatus.Unpaid);
-        //then we need to save this
-        PurchaseInvoice savedInvoice = purchaseInvoiceRepository.save(invoice);
+        List<PurchaseInvoice> savedInvoices = new ArrayList<>();
+        invoiceData.getBills().stream()
+                .forEach(
+                        bill -> {
+                            Supplier supplier = supplierService.getSupplierOrThrow(invoiceData.getSupplierId());
+                            PurchaseInvoice invoice = new PurchaseInvoice();
+                            invoice.setSupplier(supplier);
+                            invoice.setPurchaseOrderNumber(bill.getReference());
+                            invoice.setInvoiceDate(bill.getInvoiceDate());
+                            invoice.setTransactionDate(LocalDate.now());
+                            invoice.setTransactionNumber(trdId);
+                            invoice.setType(PurchaseInvoice.Type.Supplier_Bill);
+                            invoice.setDueDate(bill.getDueDate());
+                            invoice.setPaid(false);
+                            invoice.setIsReturn(false);
+                            invoice.setApproved(false);
+                            invoice.setInvoiceNumber(bill.getInvoiceNumber());
+                            invoice.setInvoiceAmount(bill.getInvoiceAmount());
+                            invoice.setNetAmount(bill.getNetAmount());
+                            invoice.setDiscount(bill.getDiscountAmount());
+                            invoice.setTax(bill.getTaxAmount());
+                            invoice.setInvoiceBalance(bill.getNetAmount());
+                            invoice.setStatus(PurchaseInvoiceStatus.Unpaid);
 
-        return savedInvoice;
+                            bill.setTransactionId(trdId);
+
+                            PurchaseInvoice savedInv = purchaseInvoiceRepository.save(invoice);
+                            journalService.save(toJournal(supplier, bill));
+                            savedInvoices.add(savedInv);
+
+                        }
+                );
+        return savedInvoices;
     }
 
     public void createPurchaseInvoice(Store store, SupplierStockEntry stockEntry) {
@@ -158,14 +183,14 @@ public class PurchaseInvoiceService {
         return purchaseInvoiceRepository.findById(id)
                 .orElseThrow(() -> APIException.notFound("Purchase Invoice with Id {0} not found", id));
     }
-    
+
     public PurchaseCreditNote findByNumberWithNoFoundDetection(String creditNoteNumber) {
         return purchaseCreditNoteRepository.findByNumber(creditNoteNumber)
                 .orElseThrow(() -> APIException.notFound("Purchase Invoice with creditNoteNumber {0} not found", creditNoteNumber));
     }
 
-    public Page<PurchaseInvoice> getSupplierInvoices(Long supplierId, String invoiceNumber, Boolean paid, DateRange range,PurchaseInvoiceStatus status, Pageable page) {
-        Specification<PurchaseInvoice> specs = PurchaseInvoiceSpecification.createSpecification(supplierId, invoiceNumber, paid, range, status);
+    public Page<PurchaseInvoice> getSupplierInvoices(Long supplierId, String invoiceNumber, Boolean paid, DateRange range, PurchaseInvoiceStatus status, Boolean approved, Pageable page) {
+        Specification<PurchaseInvoice> specs = PurchaseInvoiceSpecification.createSpecification(supplierId, invoiceNumber, paid, range, status, approved);
         return purchaseInvoiceRepository.findAll(specs, page);
 
     }
@@ -177,49 +202,40 @@ public class PurchaseInvoiceService {
         return purchaseInvoiceRepository.findAll(page);
     }
 
-    private JournalEntry toJournal(PurchaseInvoice invoice, Store store) {
-        if (invoice.getSupplier().getCreditAccount() == null) {
-            throw APIException.badRequest("Supplier Ledger Account Not Mapped for {0} ", invoice.getSupplier().getSupplierName());
+    private JournalEntry toJournal(Supplier supplier, SupplierBillItem invoice) {
+        if (supplier.getCreditAccount() == null) {
+            throw APIException.badRequest("Supplier Ledger Account Not Mapped for {0} ", supplier.getSupplierName());
         }
-        if (store.getInventoryAccount() == null) {
-            throw APIException.badRequest("Inventory Asset Ledger Account Not Mapped for {0} ", store.getStoreName());
+        Optional<Account> debitAccount = accountRepository.findByIdentifier(invoice.getAccountIdentifier());
+
+        if (!debitAccount.isPresent()) {
+            throw APIException.badRequest("Expense Ledger with Identifier {0} Not Found ", invoice.getAccountIdentifier());
         }
 
         BigDecimal amount = invoice.getNetAmount();
-        BigDecimal discount = invoice.getDiscount();
+        BigDecimal discount = invoice.getDiscountAmount();
         JournalEntry toSave;
-        if (invoice.getType() == PurchaseInvoice.Type.Stock_Delivery) {
 
-            String narration = "Stocks delivery for the invoice " + invoice.getInvoiceNumber();
-            String narration2 = "Stocks delivery Discount for the invoice " + invoice.getInvoiceNumber();
-              List<JournalEntryItem> items = new ArrayList<>();
-             
-            items.add(new JournalEntryItem(store.getInventoryAccount(), narration, amount, BigDecimal.ZERO));
-            items.add(new JournalEntryItem(invoice.getSupplier().getCreditAccount(), narration, BigDecimal.ZERO, amount));
-             
-            if (invoice.getDiscount() !=null && invoice.getDiscount()!= BigDecimal.ZERO) { 
-                Optional<FinancialActivityAccount> discountAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Discount_Received);
-                if (!discountAccount.isPresent()) {
-                    throw APIException.badRequest("Discount Received Ledger Not Mapped");
-                }
-                items.add(new JournalEntryItem(invoice.getSupplier().getCreditAccount(), narration2, discount, BigDecimal.ZERO));
-                items.add(new JournalEntryItem(discountAccount.get().getAccount(), narration2, BigDecimal.ZERO, discount));
+        String narration = "Supplier bill " + invoice.getInvoiceNumber() + " received. " + invoice.getReference();
+        String narration2 = "Stocks delivery Discount for the invoice " + invoice.getInvoiceNumber();
+        List<JournalEntryItem> items = new ArrayList<>();
+
+        items.add(new JournalEntryItem(debitAccount.get(), narration, amount, BigDecimal.ZERO));
+        items.add(new JournalEntryItem(supplier.getCreditAccount(), narration, BigDecimal.ZERO, amount));
+
+        if (discount != null && discount != BigDecimal.ZERO) {
+            Optional<FinancialActivityAccount> discountAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Discount_Received);
+            if (!discountAccount.isPresent()) {
+                throw APIException.badRequest("Discount Received Ledger Not Mapped");
             }
-            
-            toSave = new JournalEntry(invoice.getInvoiceDate(), "Purchase Invoice - " + invoice.getInvoiceNumber(),items);
-            toSave.setTransactionType(TransactionType.Purchase);
-        } else {
-            String narration = "Credit Note  " + invoice.getPurchaseOrderNumber() + " for the Invoice No. " + invoice.getInvoiceNumber();
-            toSave = new JournalEntry(invoice.getInvoiceDate(), "Credit Note  " + invoice.getPurchaseOrderNumber() + " for Amount " + SystemUtils.formatCurrency(invoice.getInvoiceAmount()) + " in reference to " + invoice.getInvoiceNumber(),
-                    new JournalEntryItem[]{
-                        new JournalEntryItem(invoice.getSupplier().getCreditAccount(), narration, amount, BigDecimal.ZERO),
-                        new JournalEntryItem(store.getInventoryAccount(), narration, BigDecimal.ZERO, amount)
-                    }
-            );
-            toSave.setTransactionType(TransactionType.Purchase);
+            items.add(new JournalEntryItem(supplier.getCreditAccount(), narration2, discount, BigDecimal.ZERO));
+            items.add(new JournalEntryItem(discountAccount.get().getAccount(), narration2, BigDecimal.ZERO, discount));
         }
 
-        toSave.setTransactionNo(invoice.getTransactionNumber());
+        toSave = new JournalEntry(invoice.getInvoiceDate(), "Supplier Bill - " + invoice.getInvoiceNumber() + " received.", items);
+        toSave.setTransactionType(TransactionType.Purchase);
+
+        toSave.setTransactionNo(invoice.getTransactionId());
         toSave.setStatus(JournalState.PENDING);
 
         return toSave;
@@ -254,4 +270,75 @@ public class PurchaseInvoiceService {
         return storeRepository.findById(id).orElseThrow(() -> APIException.notFound("Store with id {0} not found", id));
     }
 
+    private JournalEntry toJournal(PurchaseInvoice invoice, Store store) {
+        if (invoice.getSupplier().getCreditAccount() == null) {
+            throw APIException.badRequest("Supplier Ledger Account Not Mapped for {0} ", invoice.getSupplier().getSupplierName());
+        }
+        if (store.getInventoryAccount() == null) {
+            throw APIException.badRequest("Inventory Asset Ledger Account Not Mapped for {0} ", store.getStoreName());
+        }
+
+        BigDecimal amount = invoice.getNetAmount();
+        BigDecimal discount = invoice.getDiscount();
+        JournalEntry toSave;
+        if (invoice.getType() == PurchaseInvoice.Type.Stock_Delivery) {
+
+            String narration = "Stocks delivery for the invoice " + invoice.getInvoiceNumber();
+            String narration2 = "Stocks delivery Discount for the invoice " + invoice.getInvoiceNumber();
+            List<JournalEntryItem> items = new ArrayList<>();
+
+            items.add(new JournalEntryItem(store.getInventoryAccount(), narration, amount, BigDecimal.ZERO));
+            items.add(new JournalEntryItem(invoice.getSupplier().getCreditAccount(), narration, BigDecimal.ZERO, amount));
+
+            if (invoice.getDiscount() != null && invoice.getDiscount() != BigDecimal.ZERO) {
+                Optional<FinancialActivityAccount> discountAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.Discount_Received);
+                if (!discountAccount.isPresent()) {
+                    throw APIException.badRequest("Discount Received Ledger Not Mapped");
+                }
+                items.add(new JournalEntryItem(invoice.getSupplier().getCreditAccount(), narration2, discount, BigDecimal.ZERO));
+                items.add(new JournalEntryItem(discountAccount.get().getAccount(), narration2, BigDecimal.ZERO, discount));
+            }
+
+            toSave = new JournalEntry(invoice.getInvoiceDate(), "Purchase Invoice - " + invoice.getInvoiceNumber(), items);
+            toSave.setTransactionType(TransactionType.Purchase);
+        } else {
+            String narration = "Credit Note  " + invoice.getPurchaseOrderNumber() + " for the Invoice No. " + invoice.getInvoiceNumber();
+            toSave = new JournalEntry(invoice.getInvoiceDate(), "Credit Note  " + invoice.getPurchaseOrderNumber() + " for Amount " + SystemUtils.formatCurrency(invoice.getInvoiceAmount()) + " in reference to " + invoice.getInvoiceNumber(),
+                    new JournalEntryItem[]{
+                        new JournalEntryItem(invoice.getSupplier().getCreditAccount(), narration, amount, BigDecimal.ZERO),
+                        new JournalEntryItem(store.getInventoryAccount(), narration, BigDecimal.ZERO, amount)
+                    }
+            );
+            toSave.setTransactionType(TransactionType.Purchase);
+        }
+
+        toSave.setTransactionNo(invoice.getTransactionNumber());
+        toSave.setStatus(JournalState.PENDING);
+
+        return toSave;
+    }
+
+    @Transactional
+    public List<PurchaseInvoice> approveInvoice(List<ApproveSupplierBill> billsToApprove) {
+
+        List<PurchaseInvoice> lists = billsToApprove.stream()
+                .map(
+                        bill -> {
+                            Optional<PurchaseInvoice> inv = purchaseInvoiceRepository.findById(bill.getBillId());
+                            if (inv.isPresent()) {
+                                PurchaseInvoice purchaseInvoice = inv.get();
+                                purchaseInvoice.setApproved(true);
+                                purchaseInvoice.setApprovalDate(LocalDate.now());
+                                purchaseInvoice.setApprovedBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
+                                return purchaseInvoice;
+                            }
+                            return null;
+                        }
+                )
+                .filter(x -> x != null)
+                .collect(Collectors.toList());
+
+        return purchaseInvoiceRepository.saveAll(lists);
+
+    }
 }

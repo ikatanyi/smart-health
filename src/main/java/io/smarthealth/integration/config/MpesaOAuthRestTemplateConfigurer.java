@@ -6,6 +6,7 @@
 package io.smarthealth.integration.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @Slf4j
 @EnableOAuth2Client
 @Configuration
-public class MpesaConfig {
+@ConditionalOnProperty(prefix = "smarthealth.oauth2.client", value = "grant-type", havingValue = "client_credentials")
+public class MpesaOAuthRestTemplateConfigurer {
 
     @Bean
     @ConfigurationProperties("smarthealth.oauth2.client")
@@ -38,4 +40,18 @@ public class MpesaConfig {
         
         return new OAuth2RestTemplate(resourceDetails, new DefaultOAuth2ClientContext(accessTokenRequest));
     }
+    
+//    @Bean
+//    @ConfigurationProperties("smarthealth.oauth2.client")
+//    public ClientCredentialsResourceDetails customOauth2RemoteResource() {
+//        ClientCredentialsResourceDetails details = new ClientCredentialsResourceDetails();
+//        return details;
+//    }
+//
+//    @Bean
+//    public OAuth2RestTemplate customOauth2RestTemplate() {
+//        OAuth2RestTemplate template = new OAuth2RestTemplate(customOauth2RemoteResource(), new DefaultOAuth2ClientContext());
+////        template.getAccessToken();
+//        return template;
+//    }
 }

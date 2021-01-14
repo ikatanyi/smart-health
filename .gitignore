@@ -42,4 +42,5 @@ build/
 /nb-configuration.xml
 /JavaApplication/nbproject/private/
 /JavaApplication2/nbproject/private/
-/io.smarthealth.organization.person.domain.Person/
+/io.smarthealth/**
+/.gitlab-ci.yml

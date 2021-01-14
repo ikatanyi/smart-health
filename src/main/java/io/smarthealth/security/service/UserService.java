@@ -62,6 +62,7 @@ public class UserService {
 
     public User saveUser(User user) {
         //{bcrypt}
+        
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }

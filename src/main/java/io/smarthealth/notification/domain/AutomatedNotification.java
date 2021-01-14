@@ -15,7 +15,10 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -30,16 +33,26 @@ public class AutomatedNotification extends Identifiable {
 
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
-    
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "app_automated_notifications_users",
+            joinColumns = {
+                @JoinColumn(name = "automated_notification_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_auto_notice_id"))},
+            inverseJoinColumns = {
+                @JoinColumn(name = "users_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_auto_user_id"))})
     private List<User> users = new ArrayList<>();
-    
+
     private String notificationParameter; // hours
+
     private boolean active;
 
     public void addUser(User user) {
         if (!this.getUsers().contains(user)) {
             this.getUsers().add(user);
         }
+    }
+
+    public void removeUser(User user) {
+        users.remove(user);
     }
 }
