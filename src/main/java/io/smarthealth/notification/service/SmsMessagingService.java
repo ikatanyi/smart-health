@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.notification.domain.SmsMessageRepository;
 import org.springframework.scheduling.annotation.Async;
 import io.smarthealth.clinical.visit.domain.Visit;
+import java.time.LocalTime;
 import java.util.Arrays;
 
 /**
@@ -61,15 +62,21 @@ public class SmsMessagingService {
         List<String> phoneNumbers = new ArrayList<String>();
 
         if (d.getReceiverType().equals(ReceiverType.AllPatients)) {
-//keen on this given that some hospitals has 30thousand patients --to be used safely. to stop the process unless you stop the server completely- should have some approval level
+//keen on this given that some hospitals has 30thousand patients --to be used safely. to stop the process unless you stop the server completely- should have some approval level - in my view
 
+            /*   List<Patient> patients = patientService.findAllPatients();
+            for (Patient p : patients) {
+                if (p.getPrimaryContact() != null) {
+                    phoneNumbers.add(p.getPrimaryContact());
+                }
+            }*/
         }
         if (d.getReceiverType().equals(ReceiverType.AllSuppliers)) {
-
+            
         }
         if (d.getReceiverType().equals(ReceiverType.DailyVisitPatient)) {
-            Page<Visit> visits = visitRepository.findBystartDatetime(d.getVisitDate().atStartOfDay(), Pageable.unpaged());
-
+            Page<Visit> visits = visitRepository.findByStartDatetimeBetween(d.getVisitDate().atStartOfDay(), d.getVisitDate().atTime(LocalTime.MAX), Pageable.unpaged());
+            System.out.println("Visits found " + visits.getContent().size());
             for (Visit v : visits.getContent()) {
                 if (v.getPatient().getPrimaryContact() != null) {
                     phoneNumbers.add(v.getPatient().getPrimaryContact());
@@ -138,7 +145,7 @@ public class SmsMessagingService {
     @Async
     public void sendMultipleSMS(List<String> phoneNumbers, String msgBody) {
         List<SmsMessage> msgList = new ArrayList();
-
+        System.out.println("Message count " + phoneNumbers.size());
         for (String p : phoneNumbers) {
             SmsMessage msg = new SmsMessage();
             try {
