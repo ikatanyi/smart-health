@@ -103,12 +103,12 @@ public class LabRegisterTest extends Identifiable {
             data.setLabNumber(this.labRegister.getLabNumber());
             data.setPatientNumber(this.labRegister.getPatientNo());
             data.setReferenceNo(this.labRegister.getTransactionId());
-
+            data.setIsWalkin(Boolean.TRUE);
             if (this.labRegister.getVisit() != null) {
                 data.setPatientName(this.labRegister.getVisit().getPatient().getGivenName());
                 data.setDOB(this.labRegister.getVisit().getPatient().getDateOfBirth());
                 data.setGender(this.labRegister.getVisit().getPatient().getGender());
-                data.setIsWalkin(this.labRegister.getIsWalkin());
+                data.setIsWalkin(Boolean.FALSE);
             }
         }
 
@@ -156,17 +156,5 @@ public class LabRegisterTest extends Identifiable {
 
     }
 
-//    private String getAttachmentUrl() {
-//        if (this.attachment != null) {
-//
-//            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-//                    .path("/api/downloadFile/")
-//                    .path("Laboratory/")
-//                    .path(this.attachment)
-//                    .toUriString();
-//            
-//            return fileDownloadUri;
-//        }
-//        return null;
-//    }
+
 }

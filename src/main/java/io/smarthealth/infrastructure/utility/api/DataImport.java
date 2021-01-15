@@ -39,4 +39,11 @@ public class DataImport {
 
         return ResponseEntity.status(HttpStatus.CREATED).body("finished imports");
     }
+
+    @PostMapping("/import/invoice")
+    public ResponseEntity<?> importInvoiceData() {
+        importService.uploadInvoices();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("finished imports");
+    }
 }

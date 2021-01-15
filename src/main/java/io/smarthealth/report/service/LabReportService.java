@@ -126,10 +126,12 @@ public class LabReportService {
                 .stream()
                 .map((register) -> {
                     LabRegisterTestData data = register.toData(expand);
-                    if(data.getIsWalkin()){
-                        Optional<WalkIn> walkin = walkinService.fetchWalkingByWalkingNo(register.getLabRegister().getPatientNo());
-                        if(walkin.isPresent())
-                           data.setPatientName(walkin.get().getFullName());
+                    if(data.getIsWalkin()!=null) {
+                        if (data.getIsWalkin()) {
+                            Optional<WalkIn> walkin = walkinService.fetchWalkingByWalkingNo(register.getLabRegister().getPatientNo());
+                            if (walkin.isPresent())
+                                data.setPatientName(walkin.get().getFullName());
+                        }
                     }
 
                     List<PatientBillItem> billItem = billingService.getPatientBillItem(data.getReferenceNo());

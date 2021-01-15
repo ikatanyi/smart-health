@@ -16,8 +16,14 @@ import io.smarthealth.accounting.invoice.domain.InvoiceItem;
 import io.smarthealth.accounting.invoice.domain.InvoiceRepository;
 import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
+import io.smarthealth.accounting.payment.data.ReceiptData;
+import io.smarthealth.accounting.payment.domain.ReceiptItem;
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.visit.data.VisitData;
 import io.smarthealth.clinical.visit.domain.Visit;
+import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
@@ -26,7 +32,11 @@ import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.stock.item.data.CreateItem;
+import io.smarthealth.stock.item.data.ItemData;
 import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.item.domain.enumeration.ItemCategory;
+import io.smarthealth.stock.item.domain.enumeration.ItemType;
 import io.smarthealth.stock.item.service.ItemService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -65,6 +75,8 @@ public class VimakHistoricalClinicalData {
     private final BillingService billingService;
     private final VisitService visitService;
     private final InvoiceRepository invoiceRepository;
+    private final ServicePointService servicePointService;
+    private final InvoiceService invoiceService;
 
     private void processData() {
         List<PatientData> patients = new ArrayList<>();
@@ -267,7 +279,7 @@ public class VimakHistoricalClinicalData {
         }
     }
 
-    private void uploadInvoices() throws Exception {
+    public void uploadInvoices() {
         try {
             PatientData data = null;
             ResultSet rs = null;
@@ -312,12 +324,12 @@ public class VimakHistoricalClinicalData {
                 invoice.setVisit(visit);
                 invoice.addItems(invoiceItems);
                 invoiceArray.add(invoice);
+                invoice = invoiceRepository.save(invoice);
+                System.out.println(invoice.getNumber());
             }
-            invoiceRepository.saveAll(invoiceArray);
             connection.close();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Error validating patient number", e);
         }
     }    
     
@@ -344,27 +356,63 @@ public class VimakHistoricalClinicalData {
         }
     }
     
-    private BillItemData getBillItem(String serviceCode) throws Exception {
+    private BillItemData getBillItem(Long id) throws Exception {
         try {
             ResultSet rs = null;
-            Long id = null;
+            ServicePoint servicePoint = null;
             BillItemData data = new BillItemData();
             Connection connection = connector.ConnectToCurrentDB();
+
             //check if exists
-            String qry = "SELECT * FROM clinic_web.dt_bill_details WHERE service_code = '" + serviceCode + "'";
+            String qry = "SELECT * FROM clinic_web.dt_bill_details WHERE id = '" + id + "'";
             pst = connection.prepareStatement(qry);
             rs = pst.executeQuery();
             if (rs.next()) {
-                data.setAmount(rs.getDouble(""));
+                String dept =rs.getString("dept_code");
+                switch(dept){
+                    case "nurse_005":
+                    case "doc_004":
+                        servicePoint = servicePointService.getServicePointByType(ServicePointType.Consultation);
+                        break;
+                    case "tri_008":
+                        servicePoint = servicePointService.getServicePointByType(ServicePointType.Procedure);
+                        break;
+                    case "scan_006":
+                        servicePoint = servicePointService.getServicePointByType(ServicePointType.Radiology);
+                        break;
+                    default:
+                        servicePoint = servicePointService.getServicePointByType(ServicePointType.Others);
+                        break;
+                }
+
+                data.setServicePoint(servicePoint.getName());
+                data.setServicePointId(servicePoint.getId());
                 data.setBalance(0.0);
                 data.setBillingDate(rs.getDate("date").toLocalDate());
-                data.setDiscount(rs.getDouble(""));
-                Item item = itemService.findByItemCodeOrThrow(serviceCode);
-                data.setItem(item.getItemName());
-                data.setItemCategory(item.getCategory());
+                data.setDiscount(0.0);
+                Optional<Item> item = itemService.findByItemName(rs.getString("description"));
+                if(item.isPresent()) {
+                    data.setItem(item.get().getItemName());
+                    data.setItemCategory(item.get().getCategory());
+                    data.setItemId(item.get().getId());
+                    data.setItemCode(item.get().getItemCode());
+                }
+                else {
+                    CreateItem createItem = new CreateItem();
+                    createItem.setItemName(rs.getString("description"));
+                    createItem.setItemType(ItemType.Service);
+                    createItem.setStockCategory(ItemCategory.Procedure);
+                    createItem.setPurchaseRate(NumberUtils.toScaledBigDecimal(rs.getDouble("unit_cost")));
+                    createItem.setRate(NumberUtils.toScaledBigDecimal(rs.getDouble("unit_cost")));
+                    ItemData itemdata = itemService.createItem(createItem);
+                    data.setItem(itemdata.getItemName());
+                    data.setItemCategory(itemdata.getCategory());
+                    data.setItemId(itemdata.getItemId());
+                    data.setItemCode(itemdata.getItemCode());
+                }
                 data.setMedicId(null);
                 data.setPatientNumber(rs.getString("customer_id"));
-                data.setPrice(rs.getDouble(""));
+                data.setPrice(rs.getDouble("unit_cost"));
                 data.setQuantity(rs.getDouble("units"));
                 data.setAmount(rs.getDouble("cost"));
             }
@@ -378,39 +426,131 @@ public class VimakHistoricalClinicalData {
     
     public void createBills() {
         try {
-            List<BillItemData> data = new ArrayList();
+
             ResultSet rs = null;
             Connection connection = connector.ConnectToCurrentDB();
             List<InvoiceItem> items = new ArrayList();
-            String qry = "SELECT * FROM `clinic_web`.`dt_billing` WHERE credit=0.0";
+            String qry = "SELECT * FROM `clinic_web`.`dt_billing` WHERE dept_code='acc_007'";
             pst = connection.prepareStatement(qry);
             rs = pst.executeQuery();
             while (rs.next()) {
-                BillData billData=new BillData();
-                billData.setAmount(rs.getDouble("debit"));
-                billData.setBalance(rs.getDouble("edited_value"));
-                billData.setBillingDate(rs.getDate("date").toLocalDate());
-                billData.setDiscount(rs.getDouble("discount"));
-                Optional<Patient> patient = patientService.findByPatientNumber(rs.getString("customer_id"));
-                if(patient.isPresent())
-                   billData.setPatientName(patient.get().getFullName());
-                billData.setPatientNumber(rs.getString("customer_id"));
-                billData.setPaymentMode(rs.getString("payment_method"));
-                billData.setStatus(BillStatus.Paid);
-                billData.setVisitNumber(rs.getString("visit_id"));
-                billData.setWalkinFlag(Boolean.FALSE);
-                BillItemData billItemData = getBillItem(rs.getString("id"));
-                billItemData.setBillNumber(rs.getString("receipt_no"));
-                data.add(billItemData);
-                billData.setBillItems(data);
-                billingService.createPatientBill(billData);
+                String qry2 = "SELECT * FROM `clinic_web`.`dt_bill_details` WHERE visit_id=" +rs.getString("visit_id")+" AND cost!=0";
+                pst = connection.prepareStatement(qry2);
+                ResultSet rs2 = pst.executeQuery();
+
+                while(rs2.next()) {
+                    BillData billData = new BillData();
+                    billData.setAmount(rs2.getDouble("cost"));
+                    billData.setBalance(rs2.getDouble("cost"));
+                    billData.setBillingDate(rs2.getDate("date").toLocalDate());
+                    billData.setDiscount(rs.getDouble("discount"));
+                    Optional<Patient> patient = patientService.findByPatientNumber(rs.getString("customer_id"));
+                    if (patient.isPresent())
+                        billData.setPatientName(patient.get().getFullName());
+                    billData.setPatientNumber(rs2.getString("customer_id"));
+                    billData.setPaymentMode(rs.getString("payment_method"));
+                    billData.setStatus(BillStatus.Paid);
+                    int visitId = getVisit(rs.getString("visit_id"), rs.getString("customer_id"), rs.getDate("date").toLocalDate());
+                    if (visitId == 0)
+                        continue;
+                    billData.setVisitNumber(rs.getString("visit_id"));
+                    billData.setWalkinFlag(Boolean.FALSE);
+                    BillItemData billItemData = getBillItem(rs.getLong("id"));
+                    billItemData.setPrice(rs2.getDouble("cost"));
+                    billItemData.setBillNumber(rs.getString("receipt_no"));
+                    if(rs.getString("payment_method").equals("Insurance"))
+                       billItemData.setPaymentMethod(PaymentMethod.Insurance);
+                    else
+                        billItemData.setPaymentMethod(PaymentMethod.Cash);
+                    if(billItemData.getItemCode()!=null) {
+                        List<BillItemData> data = new ArrayList();
+                        data.add(billItemData);
+                        billData.setBillItems(data);
+                        billingService.createPatientBill(billData);
+                        System.out.println(rs.getString("visit_id") + " processed successfully");
+                    }
+                    else{
+                        System.out.println(rs2.getString("description")+" - "+rs.getString("visit_id") + " not processed successfully");
+                    }
+                }
             }
             connection.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
+
+    private void uploadReceipts() throws Exception {
+        try {
+            PatientData data = null;
+            ResultSet rs = null;
+            Connection conn = connector.ConnectToPastDB();
+            Connection connection = connector.ConnectToCurrentDB();
+            InvoiceItem invoiceItem =null;
+            List<Invoice> invoiceArray = new ArrayList();
+            String historicalClinicalNotes = "SELECT *  FROM dt_billing group by receipt_no";
+            pst2 = conn.prepareStatement(historicalClinicalNotes);
+            rs = pst2.executeQuery();
+            while (rs.next()) {
+                ReceiptData receipt = new ReceiptData();
+                Patient patient = patientService.findPatientOrThrow(rs.getString("customer_id"));
+//                Payer payer = payerService.fetchByPayerCode(rs.getString("payer"));
+//                Scheme scheme = schemeService.fetchSchemeByCode(rs.getString("scheme_code"));
+
+                receipt.setReceiptNo(rs.getString("receipt_no"));
+                receipt.setAmount(NumberUtils.createBigDecimal(rs.getString("debit")));
+                receipt.setPayer(rs.getString(patient.getFullName()));
+                receipt.setPaymentMethod(rs.getString("payment_method"));
+                receipt.setReferenceNumber(rs.getString("paymentCode"));
+                receipt.setTenderedAmount(NumberUtils.createBigDecimal(rs.getString("amount_paid")));
+                receipt.setPaid(NumberUtils.createBigDecimal(rs.getString("amount_paid")));
+
+                List<ReceiptItem> receiptItem = new ArrayList();
+                String visitNumber=null;
+                String items = "SELECT *  FROM dt_billing_details where visit_id="+rs.getString("visit_id");
+                pst2 = conn.prepareStatement(historicalClinicalNotes);
+                ResultSet rs2 = pst2.executeQuery();
+//                while (rs2.next()) {
+//                    ReceiptItem rcptItem = new ReceiptItem();
+//
+//                    Optional<Item> item = itemService.findByItemName(rs2.getString("description"));
+//                    if(item.isPresent()) {
+//                        rcptItem.setItem();
+//                    }
+//                    else {
+//                        CreateItem createItem = new CreateItem();
+//                        createItem.setItemName(rs.getString("description"));
+//                        createItem.setItemType(ItemType.Service);
+//                        createItem.setStockCategory(ItemCategory.Procedure);
+//                        createItem.setPurchaseRate(NumberUtils.toScaledBigDecimal(rs.getDouble("unit_cost")));
+//                        createItem.setRate(NumberUtils.toScaledBigDecimal(rs.getDouble("unit_cost")));
+//                        ItemData itemdata = itemService.createItem(createItem);
+//                        data.setItem(itemdata.getItemName());
+//                        data.setItemCategory(itemdata.getCategory());
+//                        data.setItemId(itemdata.getItemId());
+//                        data.setItemCode(itemdata.getItemCode());
+//                    }
+//
+//                    rcptItem.setBillItem(item.getBillItem());
+//                    rcptItem.setRemarks("");
+//                    invoiceItems.add(item);
+//                    visitNumber=bill.getVisit().getVisitNumber();
+//                }
+//                Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
+//                invoice.setVisit(visit);
+//                invoice.addItems(invoiceItems);
+//                invoiceArray.add(invoice);
+            }
+            invoiceRepository.saveAll(invoiceArray);
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Error validating patient number", e);
+        }
+    }
+
+
 //    private List<InvoiceItem> getInvoiceItems(String invoiceNumber) throws Exception {
 //        try {
 //            VisitData data = null;
