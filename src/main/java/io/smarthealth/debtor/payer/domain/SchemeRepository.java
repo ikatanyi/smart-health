@@ -23,5 +23,7 @@ public interface SchemeRepository extends JpaRepository<Scheme, Long>, JpaSpecif
 
     Optional<Scheme> findBySchemeName(String schemeName);
 
+    Optional<Scheme> findSchemeBySchemeNameAndPayer_PayerCode(String schemeName, String payerCode);
+
     Optional<Scheme> findBySchemeCode(String schemeCode);
 }

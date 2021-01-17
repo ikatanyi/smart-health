@@ -62,6 +62,10 @@ public class SchemeService {
         return schemeRepository.findBySchemeName(schemeName);
     }
 
+    public Optional<Scheme> fetchSchemeBySchemeNameAndPayerCode(String schemeName, String payercode) {
+        return schemeRepository.findSchemeBySchemeNameAndPayer_PayerCode(schemeName,payercode);
+    }
+
     public Scheme fetchSchemeById(Long id) {
         return schemeRepository.findById(id).orElseThrow(() -> APIException.notFound("Scheme identified by id {0} not available ", id));
     }
