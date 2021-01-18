@@ -6,10 +6,8 @@ import static java.util.TimeZone.getTimeZone;
 import javax.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.jms.annotation.EnableJms;
 
-@SpringBootApplication
-@EnableJms 
+@SpringBootApplication 
 public class HealthApplication {
  
     public static void main(String[] args) {

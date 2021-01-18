@@ -13,7 +13,7 @@ import io.smarthealth.stock.inventory.domain.StockEntryRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
-import io.smarthealth.stock.inventory.service.InventoryEventSender;
+//import io.smarthealth.stock.inventory.service.InventoryEventSender;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.data.ItemData;
 import io.smarthealth.stock.item.data.Uoms;
@@ -47,6 +47,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.smarthealth.accounting.taxes.domain.TaxRepository;
+import io.smarthealth.stock.inventory.events.InventorySpringEventPublisher;
 import org.springframework.transaction.annotation.Propagation;
 
 /**
@@ -65,7 +66,8 @@ public class ItemService {
     private final StoreService storeService;
     private final ReorderRuleRepository reorderRuleRepository;
     private final StockEntryRepository stockEntryRepository;
-    private final InventoryEventSender inventoryEventSender;
+//    private final InventoryEventSender inventoryEventSender;
+    private final InventorySpringEventPublisher inventoryEventSender;
     private final SequenceNumberService sequenceNumberService;
     private final ServicePointRepository servicePointRepository;
 //    
@@ -107,7 +109,7 @@ public class ItemService {
             item.setRoute(createItem.getDrugRoute());
             item.setStrength(createItem.getDrugStrength());
         }
-        if (!createItem.getExpenseTo().isEmpty()) {            
+        if (!createItem.getExpenseTo().isEmpty()) {
             createItem.getExpenseTo()
                     .stream()
                     .forEach(x -> {
@@ -170,7 +172,7 @@ public class ItemService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Item updateItem(Long id, CreateItem createItem) {
-        System.out.println("getGeneralFeeItem "+createItem.getGeneralFeeItem());
+        System.out.println("getGeneralFeeItem " + createItem.getGeneralFeeItem());
         Item item = findItemEntityOrThrow(id);
         item.setDrug(Boolean.FALSE);
         item.setCategory(createItem.getStockCategory());
@@ -306,7 +308,8 @@ public class ItemService {
 
     public void saveStockEntry(StockEntry entry) {
         StockEntry savedEntry = stockEntryRepository.save(entry);
-        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), savedEntry.getStore(), savedEntry.getItem(), savedEntry.getQuantity()));
+//        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), savedEntry.getStore(), savedEntry.getItem(), savedEntry.getQuantity()));
+        inventoryEventSender.publishInventoryEvent(getEvent(savedEntry.getMoveType()), savedEntry.getStore(), savedEntry.getItem(), savedEntry.getQuantity());
     }
 
     //this should be cached
@@ -361,8 +364,8 @@ public class ItemService {
         data.setStockCategory(item.getCategory());
         return data;
     }
-    
-    public Double getItemReorderCount(String itemCode,Long storeId) {
+
+    public Double getItemReorderCount(String itemCode, Long storeId) {
         Store store = storeService.getStoreWithNoFoundDetection(storeId);
         Item stockItem = findByItemCodeOrThrow(itemCode);
         Optional<ReorderRule> rule = reorderRuleRepository.findByStoreAndStockItem(store, stockItem);
@@ -371,6 +374,14 @@ public class ItemService {
         } else {
             return 0.0;
         }
+    }
+
+    public List<Item> listActiveItem(ItemCategory category) {
+        return itemRepository.findByCategoryAndActiveTrue(category);
+    }
+    
+      public List<Item> listActiveItemByType(ItemType type) {
+        return itemRepository.findByItemTypeAndActiveTrue(type);
     }
 
 }

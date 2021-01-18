@@ -116,32 +116,14 @@ public class InventoryItemController {
         auditTrailService.saveAuditTrail("Inventory", "viewed inventory item count for item identified by " + itemCode + " for store identified by " + storeId);
         return service.getItemCountByItemAndStore(itemCode, storeId);
     }
+    //create endpoint to update stock balances if they are out of sync
 
-//    @GetMapping("/inventory-balances")
-//    public ResponseEntity<?> getAllItemsBalance(
-//            @RequestParam(value = "store", required = true) final Long store,
-//            @RequestParam(value = "item", required = false) final Long item,
-//            @RequestParam(value = "dateRange", required = false) String dateRange,
-//            @RequestParam(value = "page", required = false) Integer page,
-//            @RequestParam(value = "pageSize", required = false) Integer size) {
-//
-//        Pageable pageable = PaginationUtil.createPage(page, size);
-//        DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
-//        Page<InventoryBalanceData> list = service.getInventoryBalance(store, item, range, pageable);
-//
-//        Pager<List<InventoryBalanceData>> pagers = new Pager();
-//        pagers.setCode("0");
-//        pagers.setMessage("Success");
-//        pagers.setContent(list.getContent());
-//        PageDetails details = new PageDetails();
-//        details.setPage(list.getNumber() + 1);
-//        details.setPerPage(list.getSize());
-//        details.setTotalElements(list.getTotalElements());
-//        details.setTotalPage(list.getTotalPages());
-//        details.setReportName("Stock Inventory Balance");
-//        pagers.setPageDetails(details);
-//
-//        return ResponseEntity.ok(pagers);
-//    }
-    //stocks adjustment
+    @GetMapping("/inventoryItem/updateBalance")
+    public ResponseEntity<Void> updateBalances(
+            @RequestParam(value = "itemId", required = false) final Long itemId,
+            @RequestParam(value = "storeId", required = false) final Long storeId
+    ) {
+        service.doUpdateBalance(itemId, storeId);
+        return ResponseEntity.accepted().build();
+    }
 }

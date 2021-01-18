@@ -10,16 +10,17 @@ import org.springframework.stereotype.Component;
  *
  * @author Kelsas
  */
+@Deprecated
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class InventoryEventListener {
 
-    private final InventoryItemService service;
+   // private final InventoryItemService service;
 
     @JmsListener(destination = "stockBalanceQueue", containerFactory = "connectionFactory")
     public void receive(InventoryEvent inventoryEvent) {
-            service.processInventoryBalance(inventoryEvent);
+         //   service.processInventoryBalance(inventoryEvent);
             
 //        InventoryEvent event = inventoryEvent;
 //        

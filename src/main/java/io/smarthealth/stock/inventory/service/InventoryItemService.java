@@ -5,7 +5,6 @@ import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
-import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.imports.data.InventoryStockData;
 import io.smarthealth.sequence.SequenceNumberService;
@@ -15,7 +14,6 @@ import io.smarthealth.stock.inventory.data.ExpiryStock;
 import io.smarthealth.stock.inventory.data.InventoryItemData;
 import io.smarthealth.stock.inventory.data.ItemDTO;
 import io.smarthealth.stock.inventory.domain.InventoryItem;
-import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import io.smarthealth.stock.inventory.domain.specification.InventoryItemSpecification;
@@ -34,6 +32,7 @@ import io.smarthealth.stock.inventory.domain.StockEntry;
 import io.smarthealth.stock.inventory.domain.StockEntryRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
+import io.smarthealth.stock.inventory.events.InventoryCreatedEvent;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -42,6 +41,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -55,11 +55,9 @@ public class InventoryItemService {
 
     private final ItemService itemService;
     private final StoreService storeService;
-//    private final ServicePointService servicePointService;
     private final InventoryItemRepository inventoryItemRepository;
     private final StockEntryRepository stockEntryRepository;
     private final SequenceNumberService sequenceNumberService;
-    private final InventoryService inventoryService;
     private final JournalService journalService;
 
     private void decrease(Item item, Store store, double qty) {
@@ -78,6 +76,17 @@ public class InventoryItemService {
 
         balance.increase(qty);
         inventoryItemRepository.save(balance);
+    }
+
+    public void updateBalance(Item item, Store store) {
+        log.info("Updating Inventory Item Balance");
+        Double balance = stockEntryRepository.sumQuantities(item, store);
+        InventoryItem inventoryItem = inventoryItemRepository
+                .findByItemAndStore(item, store)
+                .orElse(InventoryItem.create(store, item));
+
+        inventoryItem.setAvailableStock(balance);
+        inventoryItemRepository.save(inventoryItem);
     }
 
     @Transactional
@@ -123,13 +132,6 @@ public class InventoryItemService {
     }
 
     public Page<InventoryItem> getInventoryItems(Long storeId, Long itemId, String search, Boolean includeClosed, Pageable page) {
-//        Store store = null;
-//        if (storeId != null) {
-//            Optional<Store> stor = storeService.getStore(storeId);
-//            if (stor.isPresent()) {
-//                store = stor.get();
-//            }
-//        }
         Specification<InventoryItem> spec = InventoryItemSpecification.createSpecification(storeId, itemId, search, includeClosed);
         Page<InventoryItem> inventoryItems = inventoryItemRepository.findAll(spec, page);
 
@@ -184,8 +186,23 @@ public class InventoryItemService {
         return inventoryItemRepository.findByStore(store, page).map(d -> d.toData());
     }
 
-    @Transactional
-    public void processInventoryBalance(InventoryEvent event) {
+//    @Transactional
+//    public void processInventoryBalance(InventoryEvent event) {
+//
+//        switch (event.getType()) {
+//            case Increase:
+//                increase(event.getItem(), event.getStore(), event.getQuantity());
+//                break;
+//            case Decrease:
+//                decrease(event.getItem(), event.getStore(), event.getQuantity());
+//                break;
+//            case Adjustment:
+//                adjustment(event.getItem(), event.getStore(), event.getQuantity());
+//            default:
+//                log.info("Nothing to calculate balance");
+//        }
+//    }
+    public void processInventoryBalance(InventoryCreatedEvent event) {
         switch (event.getType()) {
             case Increase:
                 increase(event.getItem(), event.getStore(), event.getQuantity());
@@ -207,7 +224,7 @@ public class InventoryItemService {
     public void uploadInventoryItems(List<InventoryStockData> itemData) {
         List<InventoryItem> items = new ArrayList<>();
         List<StockEntry> stockEntry = new ArrayList<>();
-        int i=0;
+        int i = 0;
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         itemData.stream()
                 .forEach(x -> {
@@ -225,11 +242,11 @@ public class InventoryItemService {
 //                        System.out.println("item.getItemName()");
 //                    }
 //                    System.out.println(i++ +"========="+item.getItemName());
-                    
+
                     items.add(inventory);
                     StockEntry entry = new StockEntry();
-                    
-                    entry.setAmount(BigDecimal.valueOf(x.getStockCount()*NumberUtils.toDouble(item.getRate())));
+
+                    entry.setAmount(BigDecimal.valueOf(x.getStockCount() * NumberUtils.toDouble(item.getRate())));
                     entry.setItem(item);
                     entry.setMoveType(MovementType.Opening_Balance);
                     entry.setPrice(item.getRate());
@@ -245,23 +262,24 @@ public class InventoryItemService {
 
                 });
 //        return save(inventory);
-       inventoryItemRepository.saveAll(items);
-        
+        inventoryItemRepository.saveAll(items);
+
         List<StockEntry> savedStockEntries = stockEntryRepository.saveAll(stockEntry);
 
         Map<Store, Double> map = savedStockEntries
                 .stream()
                 .collect(Collectors.groupingBy(StockEntry::getStore,
                         Collectors.summingDouble(x -> (x.getAmount().doubleValue()))
-                        )
+                )
                 );
         map.forEach((k, v) -> {
-        journalService.save(toJournal(k, LocalDate.now(), trdId, BigDecimal.valueOf(v)));
+            journalService.save(toJournal(k, LocalDate.now(), trdId, BigDecimal.valueOf(v)));
         });
-        
+
     }
+
     //
-     private JournalEntry toJournal(Store store, LocalDate date, String trdId, BigDecimal amount) {
+    private JournalEntry toJournal(Store store, LocalDate date, String trdId, BigDecimal amount) {
         if (store.getExpenseAccount() == null) {
             throw APIException.notFound("Expense Account is Not Defined for the Store " + store.getStoreName());
         }
@@ -272,12 +290,44 @@ public class InventoryItemService {
         JournalEntry toSave = new JournalEntry(date, narration,
                 new JournalEntryItem[]{
                     new JournalEntryItem(store.getExpenseAccount(), narration, amount, BigDecimal.ZERO),
-                    new JournalEntryItem(store.getInventoryAccount(), narration, BigDecimal.ZERO, amount) 
+                    new JournalEntryItem(store.getInventoryAccount(), narration, BigDecimal.ZERO, amount)
                 }
         );
         toSave.setTransactionNo(trdId);
         toSave.setTransactionType(TransactionType.Balance_Brought_Forward);
         toSave.setStatus(JournalState.PENDING);
         return toSave;
+    }
+
+    @Async
+    public void doUpdateBalance(Long itemId, Long storeId) {
+        Item item = null;
+        Store store = null;
+
+        if (itemId != null) {
+            item = itemService.findItemEntityOrThrow(itemId);
+        }
+
+        if (storeId != null) {
+            store = storeService.getStoreWithNoFoundDetection(storeId);
+        }
+
+        if (item != null) {
+            if (store != null) {
+                updateBalance(item, store);
+            } else {
+                //select all the stores and update the given item
+                for (Store stor : storeService.findActiveStores()) {
+                    updateBalance(item, stor);
+                }
+            }
+        } else {
+            for (InventoryItem invItem : inventoryItemRepository.findAll()) {
+                Double balance = stockEntryRepository.sumQuantities(invItem.getItem(), store != null ? store : invItem.getStore());
+                invItem.setAvailableStock(balance);
+                inventoryItemRepository.save(invItem);
+            }
+        }
+
     }
 }

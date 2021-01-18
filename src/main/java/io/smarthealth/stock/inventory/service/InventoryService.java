@@ -24,6 +24,7 @@ import io.smarthealth.stock.inventory.domain.enumeration.PurchaseType;
 import io.smarthealth.stock.inventory.domain.enumeration.RequisitionStatus;
 import io.smarthealth.stock.inventory.domain.specification.StockEntrySpecification;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
+import io.smarthealth.stock.inventory.events.InventorySpringEventPublisher;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.purchase.domain.PurchaseOrder;
@@ -55,7 +56,7 @@ public class InventoryService {
     private final StockEntryRepository stockEntryRepository;
     private final ItemService itemService;
     private final StoreService storeService;
-    private final InventoryEventSender inventoryEventSender;
+//    private final InventoryEventSender inventoryEventSender;
     private final PurchaseInvoiceService purchaseInvoiceService;
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
     private final PurchaseOrderRepository purchaseOrderRepository;
@@ -63,6 +64,8 @@ public class InventoryService {
     private final SequenceNumberService sequenceNumberService;
     private final JournalService journalService;
     private final RequisitionService requisitionService;
+
+    private final InventorySpringEventPublisher inventoryEventSender;
 
     @Transactional
     public String createStockEntry(CreateStockEntry stockData) {
@@ -145,7 +148,8 @@ public class InventoryService {
 
     public void doStockEntry(InventoryEvent.Type type, StockEntry stock, Store store, Item item, Double qty) {
         stockEntryRepository.save(stock);
-        inventoryEventSender.process(new InventoryEvent(type, store, item, qty));
+//        inventoryEventSender.process(new InventoryEvent(type, store, item, qty));
+        inventoryEventSender.publishInventoryEvent(type, store, item, qty);
     }
 
     private JournalEntry toJournal(Store store, LocalDate date, String trdId, BigDecimal amount) {
@@ -207,8 +211,11 @@ public class InventoryService {
                             purchaseOrderItemRepository.updateReceivedQuantity(st.getQuantity(), st.getPurchaseOrderId());
                         }
 
-                        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), store, item, qty.doubleValue()));
-                    });
+//                        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), store, item, qty.doubleValue()));
+                        inventoryEventSender.publishInventoryEvent(getEvent(savedEntry.getMoveType()), store, item, qty.doubleValue());
+//                    );
+                    }
+                    );
 
         }
 
@@ -249,12 +256,18 @@ public class InventoryService {
         }
         System.err.println("My values as dispensed " + qty);
 
-        inventoryEventSender.process(
-                new InventoryEvent(
-                        getEvent(entry.getMoveType()),
-                        entry.getStore(),
-                        entry.getItem(),
-                        qty)
+//        inventoryEventSender.process(
+//                new InventoryEvent(
+//                        getEvent(entry.getMoveType()),
+//                        entry.getStore(),
+//                        entry.getItem(),
+//                        qty)
+//        );
+        inventoryEventSender.publishInventoryEvent(
+                getEvent(entry.getMoveType()),
+                entry.getStore(),
+                entry.getItem(),
+                qty
         );
     }
 
@@ -269,8 +282,28 @@ public class InventoryService {
         if (!savedList.isEmpty()) {
             savedList
                     .forEach((savedEntry) -> {
-                        System.out.println("Quantity "+savedEntry.getQuantity());
-                        inventoryEventSender.process(new InventoryEvent(getEvent(savedEntry.getMoveType()), savedEntry.getStore(), savedEntry.getItem(), savedEntry.getQuantity()));
+                        System.out.println("Quantity " + savedEntry.getQuantity());
+//                        inventoryEventSender.process(
+//                                new InventoryEvent(
+//                                        getEvent(savedEntry.getMoveType()), 
+//                                        savedEntry.getStore(), 
+//                                        savedEntry.getItem(), 
+//                                        savedEntry.getQuantity()
+//                                )
+//                        );
+                        Double qty = savedEntry.getQuantity();
+                        if (savedEntry.getPurpose() == MovementPurpose.Issue && savedEntry.getMoveType() == MovementType.Dispensed) {
+                            if (BigDecimal.valueOf(qty).signum() == -1) {
+                                qty *= -1;
+                            }
+                        }
+                        
+                        inventoryEventSender.publishInventoryEvent(
+                                getEvent(savedEntry.getMoveType()),
+                                savedEntry.getStore(),
+                                savedEntry.getItem(),
+                                qty
+                        );
                     });
         }
     }

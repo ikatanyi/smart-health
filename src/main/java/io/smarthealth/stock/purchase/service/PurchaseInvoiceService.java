@@ -20,7 +20,7 @@ import io.smarthealth.stock.inventory.domain.StockEntryRepository;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementPurpose;
 import io.smarthealth.stock.inventory.domain.enumeration.MovementType;
 import io.smarthealth.stock.inventory.events.InventoryEvent;
-import io.smarthealth.stock.inventory.service.InventoryEventSender;
+//import io.smarthealth.stock.inventory.service.InventoryEventSender;
 import io.smarthealth.stock.item.domain.Item;
 import io.smarthealth.stock.item.service.ItemService;
 import io.smarthealth.stock.purchase.data.PurchaseCreditNoteData;
@@ -37,6 +37,7 @@ import io.smarthealth.accounting.accounts.domain.Account;
 import io.smarthealth.security.domain.User;
 import io.smarthealth.security.domain.UserRepository;
 import io.smarthealth.security.util.SecurityUtils;
+import io.smarthealth.stock.inventory.events.InventorySpringEventPublisher;
 import io.smarthealth.stock.stores.domain.StoreRepository;
 import io.smarthealth.supplier.domain.Supplier;
 import io.smarthealth.supplier.service.SupplierService;
@@ -70,7 +71,8 @@ public class PurchaseInvoiceService {
     private final ItemService itemService;
     private final StoreRepository storeRepository;
     private final StockEntryRepository stockEntryRepository;
-    private final InventoryEventSender inventoryEventSender;
+//    private final InventoryEventSender inventoryEventSender;
+    private final InventorySpringEventPublisher inventoryEventSender;
     private final PurchaseCreditNoteRepository purchaseCreditNoteRepository;
     private final FinancialActivityAccountRepository activityAccountRepository;
     private final AccountRepository accountRepository;
@@ -262,7 +264,8 @@ public class PurchaseInvoiceService {
                     stock.setTransactionNumber(creditNote.getTransactionId());
 
                     stockEntryRepository.save(stock);
-                    inventoryEventSender.process(new InventoryEvent(InventoryEvent.Type.Decrease, store, item, qty.doubleValue()));
+//                    inventoryEventSender.process(new InventoryEvent(InventoryEvent.Type.Decrease, store, item, qty.doubleValue()));
+                     inventoryEventSender.publishInventoryEvent(InventoryEvent.Type.Decrease, store, item, qty.doubleValue());
                 });
     }
 

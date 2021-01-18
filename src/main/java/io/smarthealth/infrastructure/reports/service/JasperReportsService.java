@@ -290,12 +290,12 @@ public class JasperReportsService {
                 config.setIgnoreGraphics(Boolean.TRUE);
                 config.setWrapText(Boolean.TRUE);
                 config.setColumnWidthRatio(2.0F);
-                config.setShowGridLines(Boolean.TRUE);
+                config.setShowGridLines(Boolean.TRUE); 
                 config.setDetectCellType(Boolean.TRUE);
 //                config.setRemoveEmptySpaceBetweenColumns(Boolean.TRUE);
                 config.setFontSizeFixEnabled(false);
                 config.setSheetNames(new String[]{"Sheet1"});
-                exporter.setConfiguration(config);
+               // exporter.setConfiguration(config);
                 exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
 //                File outputFile = new File("excelTest.xlsx");
 //                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputFile));

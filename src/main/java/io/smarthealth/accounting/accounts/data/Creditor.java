@@ -24,5 +24,6 @@ public final class Creditor {
         this.amount = amount;
         this.transactionType=transactionType;
     }
+    //
 
 }

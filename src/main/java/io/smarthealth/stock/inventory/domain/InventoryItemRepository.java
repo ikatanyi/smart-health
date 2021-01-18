@@ -33,4 +33,5 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, Lo
 
     List<InventoryItem> findByStoreAndItemIn(Store store, Collection<Item> items);
 
+
 }

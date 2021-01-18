@@ -16,8 +16,8 @@ public class QuantityCountData {
 
     private Long itemId;
     private String itemCode;
-    private Double quantityBalance;
-    private Double quantityCounted;
-    private double quantityAdjusted;
-
+    private Double quantityBalance; //the current available balance old balance
+    private Double quantityCounted;//the new balance - the actual available
+    private double quantityAdjusted; //(new balance - old balance)
+    private String reasons;
 }
