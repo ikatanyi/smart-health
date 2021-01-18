@@ -18,6 +18,7 @@ import io.smarthealth.accounting.invoice.domain.InvoiceStatus;
 import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.accounting.payment.data.ReceiptData;
 import io.smarthealth.accounting.payment.domain.ReceiptItem;
+import io.smarthealth.accounting.payment.domain.enumeration.PayerType;
 import io.smarthealth.administration.servicepoint.data.ServicePointType;
 import io.smarthealth.administration.servicepoint.domain.ServicePoint;
 import io.smarthealth.administration.servicepoint.service.ServicePointService;
@@ -27,11 +28,15 @@ import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.debtor.payer.domain.Payer;
 import io.smarthealth.debtor.payer.domain.Scheme;
+import io.smarthealth.debtor.payer.domain.enumeration.Type;
 import io.smarthealth.debtor.payer.service.PayerService;
+import io.smarthealth.debtor.scheme.domain.enumeration.PolicyCover;
 import io.smarthealth.debtor.scheme.service.SchemeService;
 import io.smarthealth.organization.person.patient.data.PatientData;
 import io.smarthealth.organization.person.patient.domain.Patient;
 import io.smarthealth.organization.person.patient.service.PatientService;
+import io.smarthealth.sequence.SequenceNumberService;
+import io.smarthealth.sequence.Sequences;
 import io.smarthealth.stock.item.data.CreateItem;
 import io.smarthealth.stock.item.data.ItemData;
 import io.smarthealth.stock.item.domain.Item;
@@ -77,6 +82,7 @@ public class VimakHistoricalClinicalData {
     private final InvoiceRepository invoiceRepository;
     private final ServicePointService servicePointService;
     private final InvoiceService invoiceService;
+    private final SequenceNumberService sequenceNumberService;
 
     private void processData() {
         List<PatientData> patients = new ArrayList<>();
@@ -287,14 +293,33 @@ public class VimakHistoricalClinicalData {
             Connection connection = connector.ConnectToCurrentDB();            
             InvoiceItem invoiceItem =null;
             List<Invoice> invoiceArray = new ArrayList();
-            String historicalClinicalNotes = "SELECT *  FROM clinic_web.ac.debtors";
+            String historicalClinicalNotes = "SELECT *  FROM clinic_web.ac_debtors WHERE description='DEBTOR' AND id>5358";
             pst2 = conn.prepareStatement(historicalClinicalNotes);
             rs = pst2.executeQuery();
             while (rs.next()) {
                 Invoice invoice = new Invoice();
-                Patient patient = patientService.findPatientOrThrow("patient_id");
-                Payer payer = payerService.fetchByPayerCode(rs.getString("payer"));
-                Scheme scheme = schemeService.fetchSchemeByCode(rs.getString("scheme_code"));
+                Patient patient=null;
+                Payer payer = null;
+                Optional<Patient> pat = patientService.findByPatientNumber(rs.getString("patient_id"));
+                if(pat.isPresent())
+                    patient = pat.get();
+                else
+                    continue;
+                Optional<Payer> payer1 = payerService.fetchByPayerCode2(rs.getString("payer"));
+                if(payer1.isPresent())
+                    payer = payer1.get();
+                else
+                    payer = createPayer(rs.getString("payer"));
+                Scheme scheme = null;
+                pst2 = conn.prepareStatement("SELECT  * from clinic_web.dt_schemes where id="+rs.getString("scheme_code"));
+                ResultSet rs2 = pst2.executeQuery();
+                if (rs2.next()) {
+                    Optional<Scheme> schem = schemeService.fetchSchemeBySchemeNameAndPayerCode(rs2.getString("scheme_name"), payer.getPayerCode());
+                    if(schem.isPresent())
+                        scheme=schem.get();
+                    else
+                        scheme=createScheme(rs.getString("scheme_code"), payer);
+                }
                 
                 invoice.setAmount(rs.getBigDecimal("debit"));
                 invoice.setBalance(rs.getBigDecimal("balance"));
@@ -310,16 +335,21 @@ public class VimakHistoricalClinicalData {
                 invoice.setScheme(scheme);
                 invoice.setStatus(InvoiceStatus.Sent);
                 List<InvoiceItem> invoiceItems = new ArrayList();     
-                String visitNumber=null;
-                List<PatientBill>patientBills = billingService.findByVisit(rs.getString("receipt_no"));
-                for(PatientBill bill:patientBills){
-                    InvoiceItem item=new InvoiceItem();
-                    item.setBalance(NumberUtils.toScaledBigDecimal(bill.getBalance()));
-                    item.setBillItem(item.getBillItem());
-                    item.setRemarks("");
-                    invoiceItems.add(item);
-                    visitNumber=bill.getVisit().getVisitNumber();
+                String visitNumber=getVisit(rs.getString("transaction_no"));
+                if(visitNumber==null)
+                    continue;
+                List<PatientBill>patientBills = billingService.findByVisit(visitNumber);
+                if(patientBills!=null) {
+                    for (PatientBill bill : patientBills) {
+                        InvoiceItem item = new InvoiceItem();
+                        item.setBalance(NumberUtils.toScaledBigDecimal(bill.getBalance()));
+                        item.setBillItem(item.getBillItem());
+                        item.setRemarks("");
+                        invoiceItems.add(item);
+                        visitNumber = bill.getVisit().getVisitNumber();
+                    }
                 }
+                getVisit(visitNumber, rs.getString("patient_id"), rs.getDate("date").toLocalDate());
                 Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
                 invoice.setVisit(visit);
                 invoice.addItems(invoiceItems);
@@ -331,7 +361,30 @@ public class VimakHistoricalClinicalData {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }    
+    }
+
+
+    private String getVisit(String transanctionNo) {
+        String visitId = null;
+        try {
+            VisitData data = null;
+            ResultSet rs = null;
+
+            Connection connection = connector.ConnectToCurrentDB();
+            //check if exists
+            String validPatientNo = "SELECT * FROM clinic_web.dt_billing WHERE transaction_type = '" + transanctionNo + "'";
+            pst = connection.prepareStatement(validPatientNo);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                visitId = rs.getString("visit_code");
+            }
+            connection.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return visitId;
+    }
     
     
 
@@ -422,6 +475,59 @@ public class VimakHistoricalClinicalData {
             e.printStackTrace();
             throw new Exception("Error validating visit number", e);
         }
+    }
+
+    private Payer createPayer(String insuranceCode){
+        Payer payer =null;
+        try {
+            VisitData data = null;
+            ResultSet rs = null;
+            Long id = null;
+            Connection connection = connector.ConnectToCurrentDB();
+            //check if exists
+            String payer1 = "SELECT * FROM clinic_web.dt_insurances WHERE insurance_code = '" + insuranceCode + "'";
+            pst = connection.prepareStatement(payer1);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                payer = new Payer();
+                payer.setPayerCode(rs.getString("insurance_code"));
+                payer.setPayerName(rs.getString("insurance_name"));
+                payer.setPayerType(Type.Business);
+                payer.setInsurance(Boolean.TRUE);
+                payer.setLegalName(rs.getString("insurance_name"));
+                payer = payerService.createPayer(payer);
+            }
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return payer;
+    }
+
+    private Scheme createScheme(String schemeId, Payer payer){
+        Scheme scheme =null;
+        try {
+            ResultSet rs = null;
+            Long id = null;
+            Connection connection = connector.ConnectToCurrentDB();
+            //check if exists
+            String payer1 = "SELECT * FROM clinic_web.dt_schemes WHERE id = '" + schemeId + "'";
+            pst = connection.prepareStatement(payer1);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                scheme = new Scheme();
+                scheme.setSchemeCode(sequenceNumberService.next(1L, Sequences.SchemeCode.name()));
+                scheme.setSchemeName(rs.getString("scheme_name"));
+                scheme.setCover(PolicyCover.Both);
+                scheme.setPayer(payer);
+                scheme.setType(Scheme.SchemeType.Corporate);
+                scheme = schemeService.createScheme(scheme);
+            }
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return scheme;
     }
     
     public void createBills() {
