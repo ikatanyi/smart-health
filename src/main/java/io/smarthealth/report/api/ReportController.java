@@ -221,6 +221,9 @@ public class ReportController {
             case Shift_Report:
                 paymentReportService.shiftPayments(queryParams, format, response);
                 break;
+            case Shift_Per_Cashier:
+                paymentReportService.cashierShiftPayments(queryParams, format, response);
+                break;
             case Patient_Statement:
                 reportService.getPatientStatement(queryParams, format, response);
                 break;

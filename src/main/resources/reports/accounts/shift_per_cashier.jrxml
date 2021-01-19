@@ -1,0 +1,740 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="shift_mode_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="104766fe-f4eb-4c51-934d-7443fe22e11e">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<subDataset name="Table Dataset 1" uuid="3d9dee5e-5fad-40ab-bf43-cc0c3867238f">
+		<field name="transactionDate" class="java.lang.Object"/>
+		<field name="payer" class="java.lang.String"/>
+		<field name="payerId" class="java.lang.Long"/>
+		<field name="description" class="java.lang.String"/>
+		<field name="amount" class="java.math.BigDecimal"/>
+		<field name="paid" class="java.math.BigDecimal"/>
+		<field name="tenderedAmount" class="java.math.BigDecimal"/>
+		<field name="refundedAmount" class="java.math.BigDecimal"/>
+		<field name="paymentMethod" class="java.lang.String"/>
+		<field name="receiptNo" class="java.lang.String"/>
+		<field name="referenceNumber" class="java.lang.String"/>
+		<field name="transactionType" class="java.lang.String"/>
+		<field name="transactionNo" class="java.lang.String"/>
+		<field name="shiftNo" class="java.lang.String"/>
+		<field name="currency" class="java.lang.String"/>
+		<field name="createdBy" class="java.lang.String"/>
+		<field name="lab" class="java.math.BigDecimal"/>
+		<field name="pharmacy" class="java.math.BigDecimal"/>
+		<field name="radiology" class="java.math.BigDecimal"/>
+		<field name="consultation" class="java.math.BigDecimal"/>
+		<field name="procedure" class="java.math.BigDecimal"/>
+		<field name="copayment" class="java.math.BigDecimal"/>
+		<field name="other" class="java.math.BigDecimal"/>
+		<field name="mobilemoney" class="java.math.BigDecimal"/>
+		<field name="cash" class="java.math.BigDecimal"/>
+		<field name="card" class="java.math.BigDecimal"/>
+		<field name="bank" class="java.math.BigDecimal"/>
+		<field name="discount" class="java.math.BigDecimal"/>
+		<field name="otherPayment" class="java.math.BigDecimal"/>
+	</subDataset>
+	<parameter name="IMAGE_DIR" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="range" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Header_Data" class="java.util.List"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="transactionDate" class="java.lang.Object"/>
+	<field name="payer" class="java.lang.String"/>
+	<field name="payerId" class="java.lang.Long"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="amount" class="java.math.BigDecimal"/>
+	<field name="paid" class="java.math.BigDecimal"/>
+	<field name="tenderedAmount" class="java.math.BigDecimal"/>
+	<field name="refundedAmount" class="java.math.BigDecimal"/>
+	<field name="paymentMethod" class="java.lang.String"/>
+	<field name="receiptNo" class="java.lang.String"/>
+	<field name="referenceNumber" class="java.lang.String"/>
+	<field name="transactionType" class="java.lang.String"/>
+	<field name="transactionNo" class="java.lang.String"/>
+	<field name="shiftNo" class="java.lang.String"/>
+	<field name="currency" class="java.lang.String"/>
+	<field name="createdBy" class="java.lang.String"/>
+	<field name="lab" class="java.math.BigDecimal"/>
+	<field name="pharmacy" class="java.math.BigDecimal"/>
+	<field name="radiology" class="java.math.BigDecimal"/>
+	<field name="consultation" class="java.math.BigDecimal"/>
+	<field name="procedure" class="java.math.BigDecimal"/>
+	<field name="copayment" class="java.math.BigDecimal"/>
+	<field name="other" class="java.math.BigDecimal"/>
+	<field name="mobilemoney" class="java.math.BigDecimal"/>
+	<field name="cash" class="java.math.BigDecimal"/>
+	<field name="card" class="java.math.BigDecimal"/>
+	<field name="bank" class="java.math.BigDecimal"/>
+	<field name="discount" class="java.math.BigDecimal"/>
+	<field name="otherPayment" class="java.math.BigDecimal"/>
+	<field name="cashier" class="java.lang.String"/>
+	<field name="startDate" class="java.lang.Object"/>
+	<field name="stopDate" class="java.lang.Object"/>
+	<field name="status" class="java.lang.Object"/>
+	<variable name="paid" class="java.math.BigDecimal" incrementType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{paid}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	</variable>
+	<variable name="amount" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="consultation" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{consultation}]]></variableExpression>
+	</variable>
+	<variable name="lab" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{lab}]]></variableExpression>
+	</variable>
+	<variable name="pharmacy" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{pharmacy}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="radiology" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{radiology}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="procedure" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{procedure}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="other" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{other}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="discount" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{discount}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="cash" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{cash}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="bank" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{bank}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="mobile" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{mobilemoney}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="card" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{card}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="balance" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$V{paid}.subtract($V{amount})]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="bal" class="java.math.BigDecimal" resetType="None">
+		<variableExpression><![CDATA[$F{paid}.subtract($F{amount})]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="consultation_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{consultation}]]></variableExpression>
+	</variable>
+	<variable name="lab_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{lab}]]></variableExpression>
+	</variable>
+	<variable name="pharmacy_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{pharmacy}]]></variableExpression>
+	</variable>
+	<variable name="pharmacy_2" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{pharmacy}]]></variableExpression>
+	</variable>
+	<variable name="radiology_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{radiology}]]></variableExpression>
+	</variable>
+	<variable name="procedure_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{procedure}]]></variableExpression>
+	</variable>
+	<variable name="copayment_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{copayment}]]></variableExpression>
+	</variable>
+	<variable name="discount_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{discount}]]></variableExpression>
+	</variable>
+	<variable name="cash_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{cash}]]></variableExpression>
+	</variable>
+	<variable name="bank_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{bank}]]></variableExpression>
+	</variable>
+	<variable name="mobilemoney_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{mobilemoney}]]></variableExpression>
+	</variable>
+	<variable name="card_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{card}]]></variableExpression>
+	</variable>
+	<variable name="amount_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="other_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cashier" calculation="Sum">
+		<variableExpression><![CDATA[$F{other}]]></variableExpression>
+	</variable>
+	<variable name="runing" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}.subtract($F{refundedAmount})]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	</variable>
+	<variable name="refundedAmount_1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{refundedAmount}]]></variableExpression>
+	</variable>
+	<group name="reportGroup">
+		<groupExpression><![CDATA[$P{REPORT_CONTEXT}]]></groupExpression>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<group name="cashier">
+		<groupExpression><![CDATA[$F{createdBy}]]></groupExpression>
+	</group>
+	<title>
+		<band height="115">
+			<subreport>
+				<reportElement x="0" y="0" width="554" height="34" isRemoveLineWhenBlank="true" uuid="7dc52d1a-d526-4b91-b95f-3389786a6924"/>
+				<subreportParameter name="IMAGE_DIR">
+					<subreportParameterExpression><![CDATA[$P{IMAGE_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Header_Data})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "header-banner.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="16" y="101" width="68" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="2d1f1fea-47b2-408d-9eed-b5ee8b5ddc8a"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[  Date/Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="0" y="101" width="16" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="b3e1e8e9-9c7e-498f-9741-2657e9e45f3a"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="163" y="101" width="163" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="e13a8d32-7e95-48f9-ad19-5457db79778c"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Payer]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="510" y="101" width="43" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="27731d5a-c33b-4e2c-9804-9bb5eeb5e0bc"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Running]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="466" y="101" width="44" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="bc3e128f-2cc8-478e-9f93-aba3b53b684f"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Refund]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="84" y="101" width="79" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="9638fb63-5268-480a-964c-bf730ccb175a"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Receipt No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="420" y="101" width="46" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="60d06f24-e225-44e6-89f1-960d465d5bca"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="41" width="228" height="19" uuid="2128f471-bc78-4bea-b26b-955f270cde40"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cashier Shift Report]]></text>
+			</staticText>
+			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="75" width="253" height="13" uuid="296dd85b-0679-49de-80e7-b8bed8a46890"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Start Date : "+$F{startDate}+"  End Date : "+$F{stopDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="63" width="40" height="11" uuid="009bcdf5-40cf-4e8d-af3b-9be3992c75cb"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Shift No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="413" y="41" width="52" height="11" uuid="b5fd470c-2e60-4e19-b90e-19276f1c3aef"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PrintDate :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="413" y="53" width="52" height="11" uuid="e3499038-3264-430b-8026-32e5a699af87"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Status :]]></text>
+			</staticText>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="40" y="63" width="125" height="11" uuid="316dd32c-d26e-4508-bff4-af509b684903"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shiftNo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="168" y="63" width="60" height="11" uuid="11064f9a-bdb0-44da-9c7b-b519d4c64017"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cashier :]]></text>
+			</staticText>
+			<textField>
+				<reportElement positionType="Float" x="228" y="63" width="113" height="11" uuid="330d33d8-f2d2-4de1-9618-a95101a998b5"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement>
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cashier}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="413" y="64" width="52" height="11" uuid="0e5c2ca1-53d2-4e44-9e9d-e8dd3702d5bc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Duration :]]></text>
+			</staticText>
+			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="466" y="41" width="87" height="11" uuid="6209b4d2-0151-4289-9a72-cadb1ac26a27"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="326" y="101" width="95" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="fdde327e-37ec-464e-ad2a-684182102748"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Mode]]></text>
+			</staticText>
+			<textField>
+				<reportElement positionType="Float" x="465" y="53" width="88" height="11" uuid="1ef6ec10-cdb7-4be7-bea4-c8f79e76f1a0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField pattern="dd-MM-yyyy" isBlankWhenNull="true">
+				<reportElement x="17" y="0" width="68" height="16" uuid="d2539c45-a4e2-42f0-8ef4-fee0acdab46b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{transactionDate}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="17" height="16" uuid="5a5cc46e-57c7-47ca-b77a-cfe2012c88b7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="165" y="0" width="162" height="16" uuid="c67db78c-e18a-4e91-90d2-5b3d73d213f7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{payer}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="511" y="0" width="43" height="16" uuid="1e894862-6b6b-436a-97f6-6c9d5fcff76a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{runing}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="467" y="0" width="44" height="16" uuid="f9cba8ce-c6e7-4c8d-bdae-c1d95f855d2e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{refundedAmount}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="85" y="0" width="79" height="16" uuid="beaa7bc8-3186-47e8-8c96-1b2fd521509f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{receiptNo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="421" y="0" width="46" height="16" uuid="b887a395-f535-4f7a-a732-2876f318982c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="327" y="0" width="95" height="16" uuid="bd25f5a3-47d1-4683-89e9-4cb92340646e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paymentMethod}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="23">
+			<line>
+				<reportElement x="1" y="0" width="554" height="1" uuid="c7fd485b-2f3b-4342-a865-a54cadcb5ed2"/>
+				<graphicElement>
+					<pen lineWidth="0.15"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="212" y="2" width="80" height="20" uuid="24cb7c30-e6a7-4c1d-9f23-5d6062dcae65"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="292" y="2" width="40" height="20" uuid="f1757f37-43a5-4b35-b368-b3f53056e660"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="103">
+			<textField isBlankWhenNull="true">
+				<reportElement x="510" y="0" width="44" height="13" uuid="95b65ae4-3659-4110-bf1d-c1993e9da334"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{amount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="420" y="0" width="46" height="13" uuid="95670427-dab9-41be-b1d1-7c00efa049ff"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{amount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="466" y="0" width="44" height="13" uuid="7cd76756-939e-4360-975f-7f7613eb9436"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{refundedAmount_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="0" width="418" height="13" uuid="f6033c0a-c218-4b3b-9451-8d7b188c8427"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total :]]></text>
+			</staticText>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="93" y="36" width="71" height="12" uuid="f3b39f22-f156-4df5-adb5-aed597489a76"/>
+				<box>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{lab}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="93" y="48" width="71" height="12" uuid="583ec2d0-5e82-4aa4-bffd-2c7db5c0b937"/>
+				<box>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{pharmacy}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="3" y="84" width="90" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="535bd46d-4867-4894-b02e-0eafcf6f0767"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Other/Deposit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="3" y="48" width="90" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="c57a3f8e-bac4-4890-b7f8-28e7f03e5c92"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pharmacy]]></text>
+			</staticText>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="93" y="72" width="71" height="12" uuid="6b5173fe-6ff1-49e4-b2f2-3b4de7860a2f"/>
+				<box>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{procedure}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="3" y="72" width="90" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="065fa6ef-9473-40a6-8a68-7862860cfd23"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Procedure/Nursing ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="3" y="36" width="90" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="aa217e3c-417a-4093-a32c-85552c79182a"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Laboratory]]></text>
+			</staticText>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="93" y="60" width="71" height="12" uuid="6bd18635-c381-43c2-9fd1-abf1d8ba8f36"/>
+				<box>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{radiology}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="3" y="60" width="90" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="c3531ea2-ce71-40bf-9925-7998de09889e"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Radiology]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="3" y="24" width="90" height="12" forecolor="#FFFFFF" backcolor="#666666" uuid="d5c68228-0750-49dd-a12e-b9812e7e55ea"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Consultation]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="93" y="84" width="71" height="12" uuid="0c6645ad-e554-49bb-8dad-bf8157176818"/>
+				<box>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{other}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="93" y="24" width="71" height="12" uuid="088bf4eb-55b9-4754-9155-b0cdbe127152"/>
+				<box>
+					<pen lineWidth="0.15"/>
+					<topPen lineWidth="0.15"/>
+					<leftPen lineWidth="0.15"/>
+					<bottomPen lineWidth="0.15"/>
+					<rightPen lineWidth="0.15"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{consultation}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

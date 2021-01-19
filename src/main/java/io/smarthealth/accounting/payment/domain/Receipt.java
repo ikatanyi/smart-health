@@ -101,6 +101,9 @@ public class Receipt extends Auditable {
         data.setReceivedFrom(this.getReceivedFrom());
         data.setTransactionDate(this.getTransactionDate());
         data.setCreatedBy(this.getCreatedBy());
+        if(this.getShift()!=null){
+            data.setShiftData(this.getShift().toData());
+        }
         if (this.shift != null) {
             data.setShiftNo(this.shift.getShiftNo());
         }

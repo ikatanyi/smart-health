@@ -80,10 +80,13 @@ public class LabReportService {
                 .stream()
                 .map((register) -> {
                     LabRegisterData data = register.toData(expand);
-                    if(data.getIsWalkin()){
-                        Optional<WalkIn> walkin = walkinService.fetchWalkingByWalkingNo(register.getPatientNo());
-                        if(walkin.isPresent())
-                            data.setPatientName(walkin.get().getFullName());
+                    if (data.getIsWalkin() != null) {
+                        if (data.getIsWalkin()) {
+                            Optional<WalkIn> walkin = walkinService.fetchWalkingByWalkingNo(register.getPatientNo());
+                            if (walkin.isPresent()) {
+                                data.setPatientName(walkin.get().getFullName());
+                            }
+                        }
                     }
                     return data;
                 })
@@ -96,12 +99,12 @@ public class LabReportService {
         } else {
             reportData.setTemplate("/clinical/laboratory/LabStatement_summary");
         }
-        
+
         Instant fromDate = range.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
         Instant toDate = range.getEndDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
 
         List<TotalTest> tests = labService.getPatientTestTotals(fromDate, toDate);
-        
+
         reportData.setReportName("Lab-Statement");
         reportData.getFilters().put("tests", tests);
         reportData.getFilters().put("range", DateRange.getReportPeriod(range));
@@ -119,29 +122,31 @@ public class LabReportService {
         LabTestStatus status = labService.LabTestStatusToEnum(reportParam.getFirst("status"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
         Boolean expand = Boolean.parseBoolean(reportParam.getFirst("summarized"));
-        Boolean isWalkin = reportParam.getFirst("isWalkin")!=null?BooleanUtils.toBoolean(reportParam.getFirst("isWalkin")):null;
+        Boolean isWalkin = reportParam.getFirst("isWalkin") != null ? BooleanUtils.toBoolean(reportParam.getFirst("isWalkin")) : null;
 
-        List<LabRegisterTestData> patientData = labService.getLabRegisterTest(labNumber, orderNumber, visitNumber, patientNumber, status, range,isWalkin, search, Pageable.unpaged())
+        List<LabRegisterTestData> patientData = labService.getLabRegisterTest(labNumber, orderNumber, visitNumber, patientNumber, status, range, isWalkin, search, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((register) -> {
                     LabRegisterTestData data = register.toData(expand);
-                    if(data.getIsWalkin()!=null) {
+                    if (data.getIsWalkin() != null) {
                         if (data.getIsWalkin()) {
                             Optional<WalkIn> walkin = walkinService.fetchWalkingByWalkingNo(register.getLabRegister().getPatientNo());
-                            if (walkin.isPresent())
+                            if (walkin.isPresent()) {
                                 data.setPatientName(walkin.get().getFullName());
+                            }
                         }
                     }
 
                     List<PatientBillItem> billItem = billingService.getPatientBillItem(data.getReferenceNo());
-                    if(!billItem.isEmpty()){
+                    if (!billItem.isEmpty()) {
                         data.setReferenceNo(billItem.get(0).getPaymentReference());
                         billItem.stream().map((item) -> {
-                            if(billItem.get(0).getPatientBill().getPaymentMode().equals("Cash") || billItem.get(0).getPatientBill().getPaymentMode()==null)
-                                data.setTotalCash(data.getTotalCash()+item.getAmount());
-                            else
-                                data.setTotalInsurance(data.getTotalInsurance()+item.getAmount());
+                            if (billItem.get(0).getPatientBill().getPaymentMode().equals("Cash") || billItem.get(0).getPatientBill().getPaymentMode() == null) {
+                                data.setTotalCash(data.getTotalCash() + item.getAmount());
+                            } else {
+                                data.setTotalInsurance(data.getTotalInsurance() + item.getAmount());
+                            }
                             return item;
                         });
                     }

@@ -271,6 +271,123 @@ public class PaymentReportService {
         reportService.generateReport(reportData, response);
     }
 
+    public void cashierShiftPayments(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
+        ReportData reportData = new ReportData();
+        String receiptNo = reportParam.getFirst("receiptNo");
+        String payee = reportParam.getFirst("payee");
+        String transactionNo = reportParam.getFirst("transactionNo");
+        Long servicePointId = NumberUtils.createLong(reportParam.getFirst("servicePointId"));
+        String shiftNo = reportParam.getFirst("shiftNo");
+        Long cashierId = NumberUtils.createLong(reportParam.getFirst("cashierId"));
+        DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
+        Boolean prepaid = reportParam.getFirst("prepaid") != null ? Boolean.parseBoolean(reportParam.getFirst("prepaid")) : null;
+        ReportReceiptData data = null;//new ReportReceiptData();
+        //"RCT-00009"
+        List<ReportReceiptData> receiptDataArray = new ArrayList();
+        List<ReceiptData> receiptData = receivePaymentService.getPayments(payee, receiptNo, transactionNo, shiftNo, servicePointId, cashierId, range, prepaid, Pageable.unpaged())
+                .stream()
+                .map((receipt) -> receipt.toData())
+                .collect(Collectors.toList());
+        for (ReceiptData receipt : receiptData) {
+            data = new ReportReceiptData();
+            data.setId(receipt.getId());
+            data.setPayer(receipt.getPayer());
+            data.setDescription(receipt.getDescription());
+//            data.setAmount(receipt.getAmount());
+            data.setRefundedAmount(receipt.getRefundedAmount());
+            data.setTenderedAmount(receipt.getTenderedAmount());
+            data.setPaymentMethod(receipt.getPaymentMethod());
+            data.setReferenceNumber(receipt.getReferenceNumber());
+            data.setTransactionNo(receipt.getTransactionNo());
+            data.setReceiptNo(receipt.getReceiptNo());
+            data.setCurrency(receipt.getCurrency());
+            data.setPaid(receipt.getPaid());
+            data.setShiftNo(receipt.getShiftNo());
+            data.setTransactionDate(receipt.getTransactionDate());
+            data.setCreatedBy(receipt.getCreatedBy());
+            data.setCashier(receipt.getShiftData().getCashier());
+            data.setStatus(receipt.getShiftData().getStatus());
+            data.setStartDate(receipt.getShiftData().getStartDate());
+            data.setStopDate(receipt.getShiftData().getEndDate());
+
+            if(receipt.getPrepayment())
+                data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
+            for (ReceiptTransactionData trx : receipt.getTransactions()) {
+                switch (trx.getMethod().toUpperCase()) {
+                    case "BANK":
+                        data.setBank(data.getBank().add(trx.getAmount()));
+                        break;
+                    case "CARD":
+                        data.setCard(data.getCard().add(trx.getAmount()));
+                        break;
+                    case "MOBILE MONEY":
+                        data.setMobilemoney(data.getMobilemoney().add(trx.getAmount()));
+                        data.setReferenceNumber(trx.getReference());
+                        break;
+                    case "CASH":
+                        data.setCash(data.getCash().add(trx.getAmount()));
+                        break;
+                    case "DISCOUNT":
+                        data.setDiscount(data.getDiscount().add(trx.getAmount()));
+                        break;
+                    default:
+                        data.setOtherPayment(data.getOtherPayment().add(trx.getAmount()));
+                        break;
+                }
+
+            }
+
+            for (ReceiptItemData item : receipt.getReceiptItems()) {
+                switch (item.getServicePoint().toUpperCase()) {
+                    case "LABORATORY":
+                        data.setLab(data.getLab().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
+                        break;
+                    case "PHARMACY":
+                        data.setPharmacy(data.getPharmacy().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
+                        break;
+                    case "PROCEDURE":
+                    case "TRIAGE":
+                    case "NURSING":
+                        data.setProcedure(data.getProcedure().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
+                        break;
+                    case "RADIOLOGY":
+                        data.setRadiology(data.getRadiology().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
+                        break;
+                    case "CONSULTATION":
+                        data.setConsultation(data.getConsultation().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
+                        break;
+                    case "COPAYMENT":
+                        data.setCopayment(data.getCopayment().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
+                        break;
+                    default:
+                        data.setOther(data.getOther() != null ? data.getOther().add(item.getAmountPaid()) : item.getAmountPaid());
+
+                        break;
+                }
+                data.setAmount(data.getAmount().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
+                data.setDiscount(data.getDiscount().add(NumberUtils.toScaledBigDecimal(item.getDiscount())));
+            }
+            receiptDataArray.add(data);
+        }
+
+        List<JRSortField> sortList = new ArrayList<>();
+        JRDesignSortField sortField = new JRDesignSortField();
+        sortField = new JRDesignSortField();
+        sortField.setName("transactionDate");
+        sortField.setOrder(SortOrderEnum.DESCENDING);
+        sortField.setType(SortFieldTypeEnum.FIELD);
+        sortList.add(sortField);
+        reportData.getFilters().put(JRParameter.SORT_FIELDS, sortList);
+        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+        reportData.setData(receiptDataArray);
+        reportData.setFormat(format);
+        reportData.setTemplate("/accounts/shift_per_cashier");
+        reportData.setReportName("Shift-Per-Cashier" + shiftNo);
+        reportService.generateReport(reportData, response);
+    }
+
+
+
     public void getCashierShift(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String receiptNo = reportParam.getFirst("receiptNo");
@@ -305,6 +422,9 @@ public class PaymentReportService {
             data.setShiftNo(receipt.getShiftNo());
             data.setTransactionDate(receipt.getTransactionDate());
             data.setCreatedBy(receipt.getCreatedBy());
+            if(receipt.getPrepayment())
+                data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
+
             for (ReceiptTransactionData trx : receipt.getTransactions()) {
                 switch (trx.getMethod().toUpperCase()) {
                     case "BANK":

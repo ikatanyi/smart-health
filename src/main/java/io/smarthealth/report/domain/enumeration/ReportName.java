@@ -92,5 +92,6 @@ public enum ReportName {
         Room_Report,
         Ward_Report,
         Discharged_Patients,
-        Care_Team_Report
+        Care_Team_Report,
+        Shift_Per_Cashier
 }
