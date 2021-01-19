@@ -305,6 +305,10 @@ public class PaymentReportService {
             data.setShiftNo(receipt.getShiftNo());
             data.setTransactionDate(receipt.getTransactionDate());
             data.setCreatedBy(receipt.getCreatedBy());
+            data.setCashier(receipt.getShiftData().getCashier());
+            data.setStatus(receipt.getShiftData().getStatus());
+            data.setStartDate(receipt.getShiftData().getStartDate());
+            data.setStopDate(receipt.getShiftData().getEndDate());
 
             if(receipt.getPrepayment())
                 data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
@@ -368,12 +372,6 @@ public class PaymentReportService {
 
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
-        sortField = new JRDesignSortField();
-        sortField.setName("createdBy");
-        sortField.setOrder(SortOrderEnum.DESCENDING);
-        sortField.setType(SortFieldTypeEnum.FIELD);
-        sortList.add(sortField);
-
         sortField = new JRDesignSortField();
         sortField.setName("transactionDate");
         sortField.setOrder(SortOrderEnum.DESCENDING);

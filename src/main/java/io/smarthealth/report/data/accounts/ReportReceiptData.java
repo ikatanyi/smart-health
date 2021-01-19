@@ -1,5 +1,6 @@
 package io.smarthealth.report.data.accounts;
 
+import io.smarthealth.accounting.cashier.domain.ShiftStatus;
 import io.smarthealth.accounting.payment.data.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.smarthealth.accounting.payment.domain.ReceiptItem;
@@ -38,6 +39,10 @@ public class ReportReceiptData {
     private String transactionType;
     private String transactionNo;
     private String shiftNo;
+    private String cashier;
+    private LocalDateTime startDate;
+    private LocalDateTime stopDate;
+    private ShiftStatus status;
     private String currency;
     private String createdBy;
     

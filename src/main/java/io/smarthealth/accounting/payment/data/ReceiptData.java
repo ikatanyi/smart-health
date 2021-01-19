@@ -1,6 +1,7 @@
 package io.smarthealth.accounting.payment.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.smarthealth.accounting.cashier.data.ShiftData;
 import io.smarthealth.infrastructure.lang.Constants;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -44,5 +45,6 @@ public class ReceiptData {
     private LocalDateTime voidedDatetime;
     private List<ReceiptTransactionData> transactions = new ArrayList<>();
     private List<ReceiptItemData> receiptItems = new ArrayList<>();
+    private ShiftData shiftData;
 
 }
