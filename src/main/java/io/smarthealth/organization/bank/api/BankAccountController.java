@@ -7,7 +7,6 @@ import io.smarthealth.organization.bank.data.BankAccountData;
 import io.smarthealth.organization.bank.domain.BankAccount;
 import io.smarthealth.organization.bank.domain.enumeration.BankType;
 import io.smarthealth.organization.bank.service.BankAccountService;
-import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import javax.validation.Valid;

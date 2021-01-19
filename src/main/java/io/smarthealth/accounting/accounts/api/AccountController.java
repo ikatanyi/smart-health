@@ -15,7 +15,6 @@ import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.utility.DateUtility;
 import io.smarthealth.infrastructure.utility.Pager;
-import io.smarthealth.security.service.AuditTrailService;
 import io.swagger.annotations.Api;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
