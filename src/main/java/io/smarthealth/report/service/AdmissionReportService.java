@@ -252,7 +252,7 @@ public class AdmissionReportService {
 
         i=1;
         for(LabRegisterTestData data:labTests){
-            tests=tests.concat(String.valueOf(i++)+". ").concat(StringUtils.clean(data.getTestName())).concat("("+data.getTestCode()+")\n");
+            tests=tests.concat(String.valueOf(i++)+". ").concat(StringUtils.clean(data.getTestName())).concat("\n");
         }
         i=1;
         for(PatientProcedureTestData data:proceduresData){

@@ -86,6 +86,10 @@ public class PayerService {
                 .orElseThrow(() -> APIException.notFound("Payer with code {0} Not Found", payerCode));
     }
 
+    public Optional<Payer> fetchByPayerCode2(String payerCode) {
+        return payerRepository.findByPayerCode(payerCode);
+    }
+
     public boolean removePayer(Payer payer) {
         payerRepository.deleteById(payer.getId());
         return true;
