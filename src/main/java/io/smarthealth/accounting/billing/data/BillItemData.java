@@ -41,6 +41,10 @@ public class BillItemData {
     private Double balance = 0.0;
     private String servicePoint;
     private Long servicePointId;
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private Double deposit = 0.0;
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private Double payment = 0.0;
     //bill item to a medic 
     @JsonProperty(access = Access.WRITE_ONLY)
     private Long medicId;
