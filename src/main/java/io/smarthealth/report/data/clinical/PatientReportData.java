@@ -28,5 +28,7 @@ public class PatientReportData {
     private String schemeName; //history of present complaints
     private String status;
     private LocalDate date;
+    private String serviceType;//Consultation, Review, Others
+    private String visitNumber;
 }
 

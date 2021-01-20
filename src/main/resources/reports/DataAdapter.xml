@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jdbcDataAdapter class="net.sf.jasperreports.data.jdbc.JdbcDataAdapterImpl"><name>Local MySQL Connection</name><driver>com.mysql.jdbc.Driver</driver><username>root</username><password>UPKFA&lt;72-(</password><savePassword>true</savePassword><url>jdbc:mysql://localhost/smarthealth</url><database></database><serverAddress></serverAddress><classpath>C:\Users\simon.waweru\Downloads\Compressed\mysql-connector-java-8.0.23.jar</classpath></jdbcDataAdapter>
