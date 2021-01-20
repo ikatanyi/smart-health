@@ -8,5 +8,6 @@ public enum MovementPurpose {
     Issue,
     Receipt,
     Transfer, 
-    Returns
+    Returns,
+    Adjustment
 }

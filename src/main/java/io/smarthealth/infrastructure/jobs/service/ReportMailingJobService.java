@@ -17,14 +17,11 @@ import io.smarthealth.report.service.StockReportService;
 import java.io.IOException;
 import java.sql.SQLException;
 import net.sf.jasperreports.engine.JRException;
-import javax.mail.MessagingException;
 import io.smarthealth.messaging.service.EmailService;
 import io.smarthealth.notification.domain.AutomatedNotification;
 import io.smarthealth.notification.domain.AutomatedNotificationRepository;
 import io.smarthealth.notification.domain.enumeration.NotificationType;
-import java.util.Locale;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  *
@@ -57,17 +54,7 @@ public class ReportMailingJobService {
                         users.getUsers().stream()
                                 .filter(x -> (x.getEmail() != null && x.isEnabled()))
                                 .forEach(user -> {
-                                    try {
-                                        String recipientName = user.getName(); //"Kelvin Kelsas";
-                                        String recipientEmail = user.getEmail();
-                                        Locale locale = new Locale("sw"); // Locale.ENGLISH;
-
-                                        mailService.sendMailWithAttachment(
-                                                recipientName, recipientEmail, "Stock_Expirty_" + UUID.randomUUID().toString(),
-                                                report, "application/pdf", locale);
-                                    } catch (MessagingException ex) {
-                                        log.error("shit has happen {} ", ex.getMessage());
-                                    }
+                                    mailService.sendStockExpiryEmail(user, report);
                                 });
                     }
                 } catch (SQLException | JRException | IOException ex) {
@@ -76,34 +63,6 @@ public class ReportMailingJobService {
             }
         }
 
-//        try {
-//            byte[] report = reportService.generateEmailReport(stockReportService.emailExpiryStock());
-////            Mail mail = new EmailBuilder()
-////                    .From("smarthealthv2@gmail.com")
-////                    .To("kevsasko@gmail.com")
-////                    .Subject("Expiry Stock")
-////                    .Attachment(ds)
-////                    .Template("mail-template.html")
-////                    .createMail();
-//            log.info("START... Sending email");
-//            DaEmail mail = new DaEmail();
-//            mail.setFrom("smarthealthv2@gmail.com");//replace with your desired email
-//            mail.setMailTo("kevsasko@gmail.com");//replace with your desired email
-//            mail.setSubject("Automated Email: Sijui kunaendaaje!");
-//            mail.setAttachments(Arrays.asList(ds));
-//            mail.setTemplate("newsletter-template");
-//
-//            Map<String, Object> model = new HashMap<String, Object>();
-//            model.put("name", "Developer!");
-//            model.put("location", "United States");
-//            model.put("sign", "Java Developer");
-//            mail.setProps(model);
-//            mailService.sendEmail(mail);
-//            log.info("END... Email sent success");
-//
-//        } catch (SQLException | JRException | MessagingException | IOException ex) {
-//            log.error("shit has happen {} ", ex.getMessage());
-//        }
     }
 
     @CronTarget(jobName = JobName.AUTO_CHECK_OUT_PATIENT)
@@ -116,4 +75,29 @@ public class ReportMailingJobService {
         }
     }
 
+    @CronTarget(jobName = JobName.EXECUTE_REPORT_REORDER_LEVEL_JOBS)
+    public void executeReorderLevelJobs() throws JobExecutionException {
+        log.info("Reorder lever report triggered for now at: " + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+
+        Optional<AutomatedNotification> recipients = automatedNotificationRepository.findByNotificationType(NotificationType.ReorderLevel);
+
+        if (recipients.isPresent()) {
+            AutomatedNotification users = recipients.get();
+            if (users.isActive()) {
+                try {
+                    byte[] report = reportService.generateEmailReport(stockReportService.emailReorderLevels(null));
+
+                    if (report != null && !users.getUsers().isEmpty()) {
+                        users.getUsers().stream()
+                                .filter(x -> (x.getEmail() != null && x.isEnabled()))
+                                .forEach(user -> {
+                                    mailService.sendStockReorderLevelEmail(user, report);
+                                });
+                    }
+                } catch (SQLException | JRException | IOException ex) {
+                    log.error("shit has happen {} ", ex.getMessage());
+                }
+            }
+        }
+    }
 }

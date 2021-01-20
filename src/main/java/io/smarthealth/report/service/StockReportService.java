@@ -173,10 +173,11 @@ public class StockReportService {
         ReportData reportData = new ReportData();
         Long supplierId = NumberUtils.createLong(reportParam.getFirst("supplierId"));
         Boolean paid = reportParam.getFirst("paid") != null ? BooleanUtils.toBoolean(reportParam.getFirst("paid")) : null;
+         Boolean approved = reportParam.getFirst("approved")!=null?Boolean.getBoolean(reportParam.getFirst("approved")):null;
         String invoiceNumber = reportParam.getFirst("invoiceNumber");
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         PurchaseInvoiceStatus status = EnumUtils.getEnum(PurchaseInvoiceStatus.class, reportParam.getFirst("status"));
-        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, Pageable.unpaged())
+        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status,approved, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((inv) -> {
@@ -278,7 +279,7 @@ public class StockReportService {
         reportData.setReportName("Inventory-expiry-Statement");
 
         return reportData;
-    }
+    } 
     public void getInventoryAdjustedItems(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         Long storeId = NumberUtils.createLong(reportParam.getFirst("storeId"));
@@ -412,5 +413,36 @@ public class StockReportService {
         }
         throw APIException.internalError("Provide a Valid Item Type");
     }
+    public ReportData emailReorderLevels( Long storeId){
+        ReportData reportData = new ReportData();
+       Long itemId = null;
+        String search = null;
+        Boolean includeClosed = null;
+//        if (reportParam != null) {
+//            storeId = NumberUtils.createLong(reportParam.getFirst("storeId"));
+//            itemId = NumberUtils.createLong(reportParam.getFirst("item_id"));
+//            search = reportParam.getFirst("search");
+//            includeClosed = reportParam.getFirst("includeClosed") != null ? Boolean.getBoolean(reportParam.getFirst("includeClosed")) : null;
+//        }
+        List<InventoryItemData> inventoryItemData =new ArrayList<>();
+                inventoryItemService.getInventoryItems(storeId, itemId, search, includeClosed, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map(itm -> {
+                     Double reOrderCount = itemService.getItemReorderCount(itm.getItem().getItemCode(), itm.getStore().getId());
+                     if(itm.getAvailableStock() <= reOrderCount){
+                         InventoryItemData data = itm.toData();
+                         data.setReorderLevel(reOrderCount);
+                         inventoryItemData.add(data);
+                     }
+                     return itm.toData();
+                        });
 
+        reportData.setData(inventoryItemData);
+        reportData.setFormat(ExportFormat.PDF);
+        reportData.setTemplate("/inventory/inventory_stock_reorder");
+        reportData.setReportName("Inventory-Stock--Reorder-Statement");
+        
+        return reportData;
+    }
 }

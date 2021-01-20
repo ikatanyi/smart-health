@@ -20,6 +20,7 @@ import lombok.Data;
 @Data
 public class PurchaseInvoiceData {
 
+    private Long id;
     private Long supplierId;
     private String supplier;
     private String purchaseOrderNumber;
@@ -40,11 +41,13 @@ public class PurchaseInvoiceData {
     private BigDecimal discount;
     private BigDecimal netAmount;
     private PurchaseInvoiceStatus status;
+    private boolean approved;
+    private String approvedBy;
     private String createdBy;
-    private List<StockEntryData>stockEntryData = new ArrayList();
-    @ApiModelProperty(hidden=true)
-    private List<SupplierData>supplierData = new ArrayList();
-    @ApiModelProperty(hidden=true)
+    private List<StockEntryData> stockEntryData = new ArrayList();
+    @ApiModelProperty(hidden = true)
+    private List<SupplierData> supplierData = new ArrayList();
+    @ApiModelProperty(hidden = true)
     private Long age;
 
 }

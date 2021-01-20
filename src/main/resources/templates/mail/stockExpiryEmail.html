@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
+    <head>
+        <title th:text="#{email.stock.expiry.title}">Smarthealth | Stock Expiry Report</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+    </head>
+    <body>
+        <p th:text="#{email.greeting(${user.username})}">Dear</p>
+        <p> <span th:text="#{email.stock.expiry.text1}">Attached Stock Expiry Report generated on:</span><span th:text="${currentDate}">28-12-2012</span> </p>
+        <p  th:text="#{email.stock.expiry.text2}">
+            You can find your uploaded attachment.
+        </p>
+        <p>
+            <span th:text="#{email.stock.expiry.text3}">Regards, </span>
+            <br />
+            <em th:text="#{email.signature}">Smarthealth.</em>
+        </p>
+    </body>
+</html>

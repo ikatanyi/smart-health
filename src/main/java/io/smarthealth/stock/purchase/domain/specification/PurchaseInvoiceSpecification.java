@@ -1,11 +1,8 @@
 package io.smarthealth.stock.purchase.domain.specification;
 
 import io.smarthealth.infrastructure.lang.DateRange;
-import io.smarthealth.stock.inventory.domain.specification.*;
-import io.smarthealth.stock.inventory.domain.InventoryItem;
 import io.smarthealth.stock.purchase.domain.PurchaseInvoice;
 import io.smarthealth.stock.purchase.domain.enumeration.PurchaseInvoiceStatus;
-import io.smarthealth.stock.stores.domain.Store;
 import java.util.ArrayList;
 import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,7 +17,7 @@ public class PurchaseInvoiceSpecification {
         super();
     }
 
-    public static Specification<PurchaseInvoice> createSpecification(Long supplierId, String invoiceNumber, Boolean paid, DateRange range, PurchaseInvoiceStatus status) {
+    public static Specification<PurchaseInvoice> createSpecification(Long supplierId, String invoiceNumber, Boolean paid, DateRange range, PurchaseInvoiceStatus status, Boolean approved) {
         
         return (root, query, cb) -> {
             final ArrayList<Predicate> predicates = new ArrayList<>();
@@ -34,6 +31,9 @@ public class PurchaseInvoiceSpecification {
             }
             if (status != null) {
                 predicates.add(cb.equal(root.get("status"), status));
+            }
+             if (approved != null) {
+                predicates.add(cb.equal(root.get("approved"), approved));
             }
             
              if (supplierId != null) {
@@ -58,4 +58,5 @@ public class PurchaseInvoiceSpecification {
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
+
 }

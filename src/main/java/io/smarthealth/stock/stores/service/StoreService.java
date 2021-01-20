@@ -65,9 +65,9 @@ public class StoreService {
     }
 
     public Store updateStore(Long storeId, StoreData data) {
-         
+
         Store toSave = getStoreWithNoFoundDetection(storeId);
-        
+
         toSave.setActive(data.isActive());
         toSave.setStoreType(Store.Type.valueOf(data.getStoreType()));
         toSave.setStoreName(data.getStoreName());
@@ -93,7 +93,7 @@ public class StoreService {
 
         return storeRepository.save(toSave);
     }
-    
+
     public Page<Store> fetchAllStores(Boolean patientStore, Pageable page) {
         if (patientStore != null) {
             return storeRepository.findByPatientStore(patientStore, page);
@@ -104,10 +104,14 @@ public class StoreService {
     public Optional<Store> getStore(Long id) {
         return storeRepository.findById(id);
     }
-    
+
     public Store getMainStore(Type type) {
         return storeRepository.findByStoreType(type.MainStore)
-                 .orElseThrow(() -> APIException.notFound("Main Store not found", ""));
+                .orElseThrow(() -> APIException.notFound("Main Store not found", ""));
+    }
+
+    public List<Store> findActiveStores() {
+        return storeRepository.findByActiveTrue();
     }
 
     public Store getStoreWithNoFoundDetection(Long id) {

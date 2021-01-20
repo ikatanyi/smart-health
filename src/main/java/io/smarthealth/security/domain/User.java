@@ -15,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import io.smarthealth.security.service.UserPhoneNumber;
+import javax.validation.constraints.Size;
 
 /**
  * Authentication User
@@ -24,7 +25,7 @@ import io.smarthealth.security.service.UserPhoneNumber;
 @Entity
 @Table(name = "auth_user")
 public class User extends Identifiable implements UserDetails, UserPhoneNumber {
-
+ 
     private String email;
     private String username;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -49,6 +50,10 @@ public class User extends Identifiable implements UserDetails, UserPhoneNumber {
     private boolean firstTimeLogin;
 
     private String phoneNumber;
+    
+    @Size(min = 2, max = 10)
+    @Column(length = 10)
+    private String langKey="en";
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "auth_role_user",
@@ -89,7 +94,6 @@ public class User extends Identifiable implements UserDetails, UserPhoneNumber {
         this.username = username;
         this.password = password;
         this.name = name;
-
         this.enabled = true;
         this.firstTimeLogin = true;
     }
@@ -221,6 +225,7 @@ public class User extends Identifiable implements UserDetails, UserPhoneNumber {
         data.setRoles(rolelist);
         data.setUsername(this.username);
         data.setVerified(this.verified);
+        data.setLangKey(this.langKey);
         return data;
     }
 
@@ -233,4 +238,13 @@ public class User extends Identifiable implements UserDetails, UserPhoneNumber {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+    public String getLangKey() {
+        return langKey;
+    }
+
+    public void setLangKey(String langKey) {
+        this.langKey = langKey;
+    }
+    
 }

@@ -18,50 +18,51 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import org.springframework.jms.annotation.EnableJms;
 
 /**
  *
  * @author Kelsas
  */
 @Configuration
+@EnableJms
 public class JmsConfig {
 
 //    @Bean
 //    public Queue queue() {
 //        return new ActiveMQQueue("journal-queue");
 //    }
-    
-     @Bean // Serialize message content to json using TextMessage
+    @Bean // Serialize message content to json using TextMessage
     public MessageConverter jacksonJmsMessageConverter() {
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
         converter.setTargetType(MessageType.TEXT);
         converter.setTypeIdPropertyName("_type");
         converter.setObjectMapper(objectMapper());
-         
+
         return converter;
     }
 
     @Bean
     public JmsListenerContainerFactory<?> connectionFactory(ConnectionFactory connectionFactory,
-                                                            DefaultJmsListenerContainerFactoryConfigurer configurer) {
+            DefaultJmsListenerContainerFactoryConfigurer configurer) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         // This provides all boot's default to this factory, including the message converter
         configurer.configure(factory, connectionFactory);
         // You could still override some of Boot's default if necessary.
         return factory;
     }
-    
+
     public ObjectMapper objectMapper() {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    mapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
-    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    JavaTimeModule javaTimeModule = new JavaTimeModule();
-    LocalDateSerializer localDateSerializer = new LocalDateSerializer(DateTimeFormatter.BASIC_ISO_DATE);
-    javaTimeModule.addSerializer(LocalDate.class, localDateSerializer);
-    LocalDateDeserializer localDateDeserializer = new LocalDateDeserializer(DateTimeFormatter.BASIC_ISO_DATE);
-    javaTimeModule.addDeserializer(LocalDate.class, localDateDeserializer);
-    mapper.registerModule(javaTimeModule);
-    return mapper;
-}
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        LocalDateSerializer localDateSerializer = new LocalDateSerializer(DateTimeFormatter.BASIC_ISO_DATE);
+        javaTimeModule.addSerializer(LocalDate.class, localDateSerializer);
+        LocalDateDeserializer localDateDeserializer = new LocalDateDeserializer(DateTimeFormatter.BASIC_ISO_DATE);
+        javaTimeModule.addDeserializer(LocalDate.class, localDateDeserializer);
+        mapper.registerModule(javaTimeModule);
+        return mapper;
+    }
 }

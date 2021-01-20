@@ -13,6 +13,7 @@ public enum JobName {
 
     AUTO_CHECK_OUT_PATIENT("Auto Checking Out of Patient Expired Visit"),
     EXECUTE_REPORT_MAILING_JOBS("Execute Report Mailing Jobs"),
+    EXECUTE_REPORT_REORDER_LEVEL_JOBS("Execute Reorder Level Jobs"),
     ACCOUNTING_RUNNING_BALANCE_UPDATE("Update Accounting Running Balances");
 
     private final String name;

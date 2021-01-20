@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
   
 @Component
 @ConfigurationProperties("safaricom")
-public class MpesaConfiguration {
+public class MpesaProperties { 
 
     private String shortCode;
     private String passKey;

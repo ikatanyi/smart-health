@@ -5,7 +5,9 @@
  */
 package io.smarthealth.stock.inventory.events;
 
-import java.util.List;
+import io.smarthealth.stock.inventory.events.InventoryEvent.Type;
+import io.smarthealth.stock.item.domain.Item;
+import io.smarthealth.stock.stores.domain.Store;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -14,16 +16,40 @@ import org.springframework.context.ApplicationEvent;
  */
 public class InventoryCreatedEvent extends ApplicationEvent {
 
-    private final List<InventoryEvent> inventoryEvent;
+//    public enum Type {
+//        Adjustment,
+//        Increase,
+//        Decrease;
+//    }
 
-    public InventoryCreatedEvent(Object source, List<InventoryEvent> inventoryEvent) {
+    private final Type type;
+    private final Store store;
+    private final Item item;
+    private final double quantity;
+
+    public InventoryCreatedEvent(Object source, Type type, Store storeId, Item itemId, double quantity) {
         super(source);
-        this.inventoryEvent = inventoryEvent;
+
+        this.type = type;
+        this.store = storeId;
+        this.item = itemId;
+        this.quantity = quantity;
     }
 
-    public List<InventoryEvent> getInventoryEvent() {
-        return inventoryEvent;
+    public Type getType() {
+        return type;
     }
- 
+
+    public Store getStore() {
+        return store;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public double getQuantity() {
+        return quantity;
+    }
 
 }

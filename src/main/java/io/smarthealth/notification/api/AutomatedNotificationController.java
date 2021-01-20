@@ -5,23 +5,21 @@
  */
 package io.smarthealth.notification.api;
 
-import io.smarthealth.clinical.laboratory.data.LabRegisterData;
-import io.smarthealth.clinical.laboratory.domain.enumeration.LabTestStatus;
 import io.smarthealth.infrastructure.common.ApiResponse;
 import io.smarthealth.infrastructure.common.PaginationUtil;
-import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.notification.data.AutomatedNotificationData;
 import io.smarthealth.notification.domain.AutomatedNotification;
+import io.smarthealth.notification.domain.enumeration.NotificationType;
 import io.smarthealth.notification.service.AutomatedNotificationService;
 import io.swagger.annotations.Api;
+import java.util.Arrays;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -80,17 +78,13 @@ public class AutomatedNotificationController {
         Page<AutomatedNotificationData> list = service.get(pageable)
                 .map(AutomatedNotificationData::map);
 
-//        Pager<List<AutomatedNotificationData>> pagers = new Pager();
-//        pagers.setCode("0");
-//        pagers.setMessage("Success");
-//        pagers.setContent(list.getContent());
-//        PageDetails details = new PageDetails();
-//        details.setPage(list.getNumber() + 1);
-//        details.setPerPage(list.getSize());
-//        details.setTotalElements(list.getTotalElements());
-//        details.setTotalPage(list.getTotalPages());
-//        details.setReportName("Automated Notification List");
-//        pagers.setPageDetails(details);
-        return ResponseEntity.ok((Pager<List<AutomatedNotificationData>>)PaginationUtil.toPager(list, "Automated Notification List"));
+        return ResponseEntity.ok((Pager<List<AutomatedNotificationData>>) PaginationUtil.toPager(list, "Automated Notification List"));
     }
+
+    @GetMapping("/automated-notification/types")
+    public ResponseEntity<?> getNotificationsTypes() {
+        List notifications = Arrays.asList(NotificationType.values());
+        return ResponseEntity.ok(notifications);
+    }
+
 }

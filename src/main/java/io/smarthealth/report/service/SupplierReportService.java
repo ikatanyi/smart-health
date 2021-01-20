@@ -163,10 +163,11 @@ public class SupplierReportService {
         Long supplierId = NumberUtils.createLong(reportParam.getFirst("supplierId"));  
         String invoiceNumber = reportParam.getFirst("invoiceNumber");
         Boolean paid = reportParam.getFirst("paid")!=null?Boolean.getBoolean(reportParam.getFirst("paid")):null;
+        Boolean approved = reportParam.getFirst("approved")!=null?Boolean.getBoolean(reportParam.getFirst("approved")):null;
         PurchaseInvoiceStatus status = PurchaseInvoiceStatusToEnum(reportParam.getFirst("status"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
         
-        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, Pageable.unpaged())
+        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, approved, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((invoice) -> invoice.toData())
@@ -192,10 +193,11 @@ public class SupplierReportService {
         Long supplierId = NumberUtils.createLong(reportParam.getFirst("supplierId"));  
         String invoiceNumber = reportParam.getFirst("invoiceNumber");
         Boolean paid = reportParam.getFirst("paid")!=null?Boolean.getBoolean(reportParam.getFirst("paid")):null;
+         Boolean approved = reportParam.getFirst("approved")!=null?Boolean.getBoolean(reportParam.getFirst("approved")):null;
         PurchaseInvoiceStatus status = PurchaseInvoiceStatusToEnum(reportParam.getFirst("status"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
         
-        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, Pageable.unpaged())
+        List<PurchaseInvoiceData> purchaseInvoiceData = purchaseInvoiceService.getSupplierInvoices(supplierId, invoiceNumber, paid, range, status, approved, Pageable.unpaged())
                 .getContent()
                 .stream()
                 .map((invoice) -> invoice.toData())

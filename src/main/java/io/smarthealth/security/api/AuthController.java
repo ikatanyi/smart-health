@@ -87,8 +87,8 @@ public class AuthController {
         String password = PassayPassword.generatePassayPassword();
 
         // Creating user's account
-        User user = new User(data.getEmail(),
-                data.getUsername(),
+        User user = new User(data.getEmail().toLowerCase(),
+                data.getUsername().toLowerCase(),
                 password,
                 data.getName()
         );

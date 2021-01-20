@@ -1,6 +1,6 @@
 package io.smarthealth.integration.service;
 
-import io.smarthealth.integration.config.MpesaConfiguration;
+import io.smarthealth.integration.config.MpesaProperties;
 import io.smarthealth.integration.data.MpesaRequest;
 import java.math.BigDecimal;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class MpesaService {
 
     private final OAuth2RestTemplate restTemplate;
-    private final MpesaConfiguration mpesaConfiguration;
+    private final MpesaProperties mpesaConfiguration;
 
-    public MpesaService(OAuth2RestTemplate restTemplate, MpesaConfiguration mpesaConfiguration) {
+    public MpesaService(OAuth2RestTemplate restTemplate, MpesaProperties mpesaConfiguration) {
         this.restTemplate = restTemplate;
         this.mpesaConfiguration = mpesaConfiguration;
     }

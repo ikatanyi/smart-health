@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
+    <head>
+        <title th:text="#{email.reorder.level.title}">SmartHealth | Stock Reorder Level Report</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+    </head>
+    <body>
+        <p th:text="#{email.greeting(${user.username})}">Dear</p>
+        <p> <span th:text="#{email.reorder.level.text1}">Attached Stock Reorder Level Report generated on: </span><span th:text="${currentDate}">2021-01-14</span> </p>
+        <p  th:text="#{email.reorder.level.text2}">
+            You can find your uploaded attachment.
+        </p>
+        <p>
+            <span th:text="#{email.signature.text1}">Regards, </span>
+            <br />
+            <em th:text="#{email.signature}">SmartHealth.</em>
+        </p>
+    </body>
+</html>
