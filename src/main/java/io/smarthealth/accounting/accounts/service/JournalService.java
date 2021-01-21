@@ -190,5 +190,6 @@ public class JournalService {
 
     private JournalEntryItem createJournalItem(JournalEntryItem je) {
         return new JournalEntryItem(je.getAccount(), je.getDescription() + "(Reversed Transaction)", je.getCredit(), je.getDebit());
-    }
+    } 
+     
 }

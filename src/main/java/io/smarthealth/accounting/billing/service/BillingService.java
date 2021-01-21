@@ -977,9 +977,7 @@ public class BillingService {
                         //this should return the stocks 
                     });
                 }
-
             }
-
         }
 
         JournalEntry toSave = new JournalEntry(LocalDate.now(), description, items);

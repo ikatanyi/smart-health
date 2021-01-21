@@ -167,6 +167,7 @@ public class BatchImportService {
                     throw APIException.notFound("Coming Soon!!!", "");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw APIException.badRequest("Error! {0} ", e.getMessage());
         }
     }

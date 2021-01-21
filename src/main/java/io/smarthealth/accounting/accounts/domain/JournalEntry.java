@@ -46,11 +46,11 @@ public class JournalEntry extends Auditable {
 
     @Column(name = "reversed", nullable = false)
     private boolean reversed = false;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reversal_id")
     private JournalEntry reversalJournalEntry;
-    
+
     @OneToMany(mappedBy = "journalEntry", cascade = CascadeType.ALL)
     private List<JournalEntryItem> items = new ArrayList<>();
 
@@ -70,7 +70,23 @@ public class JournalEntry extends Auditable {
         addItems(this.items);
     }
 
+    public JournalEntry(LocalDate date, String description, JournalEntryItem journalEntryItems[], boolean isOpeningBalance) {
+        List<JournalEntryItem> journalsClone = new ArrayList<>(Arrays.asList(journalEntryItems));
+        this.items = journalsClone;
+        if (!isOpeningBalance) {
+            if (!JournalEntry.isBalanced(this.items)) {
+                throw new IllegalArgumentException(
+                        "The total of debits must equal the total of credits");
+            }
+        }
+
+        this.date = date;
+        this.description = description;
+        addItems(this.items);
+    }
+
     public JournalEntry(LocalDate date, String description, List<JournalEntryItem> items) {
+
         if (!JournalEntry.isBalanced(items)) {
             throw new IllegalArgumentException(
                     "The total of debits must equal the total of credits");
@@ -91,7 +107,7 @@ public class JournalEntry extends Auditable {
                 .stream()
                 .filter(x -> x.isCredit())
                 .map(x -> x.getCredit())
-                .reduce(BigDecimal.ZERO, (x, y) -> x.add(y)); 
+                .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
         return d.compareTo(c) == 0;
     }
 
@@ -120,6 +136,7 @@ public class JournalEntry extends Auditable {
                 .reduce(BigDecimal.ZERO, (x, y) -> x.add(y));
 //        System.err.println("My credut ... " + c);
     }
+
     public JournalEntryData toData() {
         final JournalEntryData data = new JournalEntryData();
         data.setId(this.getId());
@@ -131,16 +148,16 @@ public class JournalEntry extends Auditable {
         data.setCreatedBy(this.getCreatedBy());
         Set<Debtor> debtors = new HashSet<>();
         Set<Creditor> creditors = new HashSet<>();
-        List<JournalEntryItemData> jeitems=new ArrayList<>();
+        List<JournalEntryItemData> jeitems = new ArrayList<>();
         this.getItems()
                 .stream()
                 .forEach(item -> {
-                     jeitems.add(item.toData());
+                    jeitems.add(item.toData());
                     if (item.isDebit()) {
-                        debtors.add(new Debtor(item.getDescription(), item.getAccount().getName(),item.getAccount().getIdentifier(), item.getDebit(), item.getJournalEntry().getTransactionType()));
+                        debtors.add(new Debtor(item.getDescription(), item.getAccount().getName(), item.getAccount().getIdentifier(), item.getDebit(), item.getJournalEntry().getTransactionType()));
                     }
                     if (item.isCredit()) {
-                        creditors.add(new Creditor(item.getDescription(), item.getAccount().getName(),item.getAccount().getIdentifier(), item.getCredit(),item.getJournalEntry().getTransactionType()));
+                        creditors.add(new Creditor(item.getDescription(), item.getAccount().getName(), item.getAccount().getIdentifier(), item.getCredit(), item.getJournalEntry().getTransactionType()));
                     }
                 });
         data.setJournalEntries(jeitems);
@@ -149,9 +166,9 @@ public class JournalEntry extends Auditable {
         data.setState(this.status);
         return data;
     }
-    
-      @Override
+
+    @Override
     public String toString() {
-        return "Journal Entry [id=" + getId() + ", description=" + description + ", transaction_no=" + transactionNo + ", date=" + date + ", status=" +status+ " ]";
+        return "Journal Entry [id=" + getId() + ", description=" + description + ", transaction_no=" + transactionNo + ", date=" + date + ", status=" + status + " ]";
     }
 }

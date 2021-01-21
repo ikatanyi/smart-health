@@ -221,6 +221,7 @@ public class InventoryItemService {
         return stockEntryRepository.findExpiryStockInterface();
     }
 
+    @Transactional
     public void uploadInventoryItems(List<InventoryStockData> itemData) {
         List<InventoryItem> items = new ArrayList<>();
         List<StockEntry> stockEntry = new ArrayList<>();
@@ -272,26 +273,29 @@ public class InventoryItemService {
                         Collectors.summingDouble(x -> (x.getAmount().doubleValue()))
                 )
                 );
+
         map.forEach((k, v) -> {
-            journalService.save(toJournal(k, LocalDate.now(), trdId, BigDecimal.valueOf(v)));
+//            journalService.save(toJournal(k, LocalDate.now(), trdId, BigDecimal.valueOf(v))); 
         });
 
     }
 
     //
     private JournalEntry toJournal(Store store, LocalDate date, String trdId, BigDecimal amount) {
-        if (store.getExpenseAccount() == null) {
-            throw APIException.notFound("Expense Account is Not Defined for the Store " + store.getStoreName());
+        if (store.getInventoryAccount() == null) {
+            throw APIException.notFound("Inventory Account is Not Defined for the Store " + store.getStoreName());
         }
-//        String debitAcc = store.getExpenseAccount().getIdentifier();
-//        String creditAcc = store.getInventoryAccount().getIdentifier();
+        //get opening balance equity account for openining stocks
+        
 
         String narration = "Opening Balance Inventory for  - " + store.getStoreName();
-        JournalEntry toSave = new JournalEntry(date, narration,
+        JournalEntry toSave = new JournalEntry(
+                date,
+                narration,
                 new JournalEntryItem[]{
-                    new JournalEntryItem(store.getExpenseAccount(), narration, amount, BigDecimal.ZERO),
-                    new JournalEntryItem(store.getInventoryAccount(), narration, BigDecimal.ZERO, amount)
-                }
+                    new JournalEntryItem(store.getInventoryAccount(), narration, amount, BigDecimal.ZERO)
+                },
+                true
         );
         toSave.setTransactionNo(trdId);
         toSave.setTransactionType(TransactionType.Balance_Brought_Forward);

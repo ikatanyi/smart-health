@@ -49,14 +49,15 @@ public class AccountlBalanceRepositoryImpl implements AccountlBalanceRepository 
 //                        cb.diff(journalItem.get("debit"), journalItem.get("credit"))
 //                )
 //        );
+ 
         Expression<BigDecimal> caseExpr = cb.selectCase()
                 .when(
                         cb.or(
-                                cb.equal(journalItem.get("account").get("type"), AccountType.REVENUE),
-                                cb.equal(journalItem.get("account").get("type"), AccountType.LIABILITY)
-                        ), cb.diff(journalItem.get("credit"), journalItem.get("debit"))
+                                cb.equal(journalItem.get("account").get("type"), AccountType.ASSET),
+                                cb.equal(journalItem.get("account").get("type"), AccountType.EXPENSE)
+                        ), cb.diff(journalItem.get("debit"), journalItem.get("credit"))
                 ).otherwise(
-                        cb.diff(journalItem.get("debit"), journalItem.get("credit"))
+                        cb.diff(journalItem.get("credit"), journalItem.get("debit"))
                 ).as(BigDecimal.class);
         
         query.select( cb.sum(caseExpr));
@@ -82,16 +83,15 @@ public class AccountlBalanceRepositoryImpl implements AccountlBalanceRepository 
         LocalDate period = date == null ? LocalDate.now() : date;
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<BigDecimal> query = cb.createQuery(BigDecimal.class);
-        Root<JournalEntryItem> journalItem = query.from(JournalEntryItem.class);
-        
+        Root<JournalEntryItem> journalItem = query.from(JournalEntryItem.class); 
         Expression<BigDecimal> caseExpr = cb.selectCase()
                 .when(
                         cb.or(
-                                cb.equal(journalItem.get("account").get("type"), AccountType.REVENUE),
-                                cb.equal(journalItem.get("account").get("type"), AccountType.LIABILITY)
-                        ), cb.diff(journalItem.get("credit"), journalItem.get("debit"))
+                                cb.equal(journalItem.get("account").get("type"), AccountType.ASSET),
+                                cb.equal(journalItem.get("account").get("type"), AccountType.EXPENSE)
+                        ), cb.diff(journalItem.get("debit"), journalItem.get("credit"))
                 ).otherwise(
-                        cb.diff(journalItem.get("debit"), journalItem.get("credit"))
+                        cb.diff(journalItem.get("credit"), journalItem.get("debit"))
                 ).as(BigDecimal.class);
         
         query.select( cb.sum(caseExpr)); 
