@@ -118,4 +118,5 @@ public class JournalEntryItem extends Auditable {
         DecimalFormat formatter = new DecimalFormat("###,###,##0.00");
         return formatter.format(Double.parseDouble(amount));
     }
+    //TODO am thinking of adding the journal entries here so that I can easily get the balance for the system
 }

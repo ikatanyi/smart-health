@@ -14,6 +14,7 @@ public class HealthApplication {
         SpringApplication.run(HealthApplication.class, args);
     }
 
+    //what exactly changed here
     @PostConstruct
     void started() {
         TimeZone.setDefault(getTimeZone(of("Africa/Nairobi")));

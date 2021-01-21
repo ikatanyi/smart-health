@@ -61,7 +61,7 @@ public class AccountController {
         validateLedger(account);
 
         Account savedAcc = accountService.createAccount(account);
-        
+
         Pager<AccountData> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Account Created Successfully");
@@ -217,6 +217,18 @@ public class AccountController {
         List<JournalEntryItemData> list = accountService.getAccountTransaction(identifier, range);
 
         return ResponseEntity.ok(PaginationUtil.paginateList(list, "Accounts transactions", getReportPeriod(range), pageable));
+    }
+
+    @PostMapping("/accounts/balance")
+    @ResponseBody
+//    @PreAuthorize("hasRole('admin')")
+    ResponseEntity<?> updateBalances(
+            @RequestParam(value = "all", required = false) Boolean all,
+            @RequestParam(value = "identifier", required = false) final String identifier) {
+
+        accountService.updateAccountBalance(identifier, all);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     private String getReportPeriod(DateRange range) {
