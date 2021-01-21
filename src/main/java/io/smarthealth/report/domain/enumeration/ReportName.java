@@ -93,5 +93,9 @@ public enum ReportName {
         Ward_Report,
         Discharged_Patients,
         Care_Team_Report,
-        Shift_Per_Cashier
+        Shift_Per_Cashier,
+        
+        /* */
+        WalkingRegister
+        /* */
 }
