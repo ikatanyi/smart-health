@@ -215,7 +215,7 @@
 				<textElement verticalAlignment="Middle" markup="none">
 					<font fontName="Serif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{first_name} == null ? "":$F{first_name}+" "+($F{second_name}==null ?"":$F{second_name})+" "+$F{surname}==null ? "": $F{surname}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{first_name}+" "+($F{second_name} == null ? "": $F{second_name})+" "+$F{surname}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="543" y="0" width="133" height="30" uuid="b9ca25d5-ac96-44cb-8e17-6cd2df9dee2f">
