@@ -25,6 +25,7 @@ import io.smarthealth.accounting.billing.data.BillItemData;
 import io.smarthealth.accounting.billing.data.SummaryBill;
 import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
+import io.smarthealth.accounting.billing.domain.PatientBillItem;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.accounting.billing.service.BillingService;
 import io.smarthealth.accounting.invoice.data.InvoiceData;
@@ -76,7 +77,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -373,13 +373,13 @@ public class AccountReportService {
         Boolean hasBalance = reportParam.getFirst("hasbalance") != null ? Boolean.valueOf(reportParam.getFirst("hasbalance")) : null;
         Boolean isWalkin = reportParam.getFirst("isWakin") != null ? Boolean.valueOf(reportParam.getFirst("isWakin")) : null;
         Boolean includeCanceled = reportParam.getFirst("includeCanceled") != null ? Boolean.valueOf(reportParam.getFirst("includeCanceled")) : Boolean.FALSE;
-        
-        VisitEnum.VisitType  visitType =visitTypeToEnum(reportParam.getFirst("visitType"));
+
+        VisitEnum.VisitType visitType = visitTypeToEnum(reportParam.getFirst("visitType"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
 
         List<DailyBillingData> billData = new ArrayList();
         ReportData reportData = new ReportData();
-        List<SummaryBill> bills = billService.getBillTotals(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range, includeCanceled,visitType);
+        List<SummaryBill> bills = billService.getBillTotals(visitNumber, patientNumber, hasBalance, isWalkin, paymentMode, range, includeCanceled, visitType);
         for (SummaryBill bill : bills) {
             DailyBillingData data = new DailyBillingData();
 
@@ -477,8 +477,6 @@ public class AccountReportService {
                     return data;
                 })
                 .collect(Collectors.toList());
-
-
 
         for (InvoiceData invoice : invoices) {
             InsuranceInvoiceData data = new InsuranceInvoiceData();
@@ -656,17 +654,18 @@ public class AccountReportService {
         String receiptNo = reportParam.getFirst("receiptNo");
         //"RCT-00009"
         ReceiptData receiptData = paymentService.getPaymentByReceiptNumber(receiptNo).toData();
-        if(receiptData.getPrepayment()||receiptData.getReceiptType()!= ReceiptType.POS){
+        if (receiptData.getPrepayment() || receiptData.getReceiptType() != ReceiptType.POS) {
             receiptData.setReceiptItems(new ArrayList());
             receiptData.setPaid(receiptData.getAmount());
             receiptData.setTenderedAmount(receiptData.getAmount());
             ReceiptItemData itemData = new ReceiptItemData();
             itemData.setDiscount(BigDecimal.ZERO);
             itemData.setAmountPaid(receiptData.getAmount());
-            if(receiptData.getReceiptType()== ReceiptType.Payment)
+            if (receiptData.getReceiptType() == ReceiptType.Payment) {
                 itemData.setItemName("Medical Services");
-            else
+            } else {
                 itemData.setItemName("Deposit");
+            }
             itemData.setPrice(receiptData.getAmount());
             itemData.setQuantity(1.0);
             receiptData.getReceiptItems().add(itemData);
@@ -855,46 +854,45 @@ public class AccountReportService {
         Boolean hasBalance = reportParam.getFirst("hasBalance") != null ? Boolean.getBoolean(reportParam.getFirst("hasBalance")) : null;
         BillStatus status = BillStatusToEnum(reportParam.getFirst("billStatus"));
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
-        List<BillItemData> data =new ArrayList();
+        List<BillItemData> data = new ArrayList();
 
-        AtomicReference<Double> payment = new AtomicReference<>(0.0);
-        AtomicReference<Double> deposit = new AtomicReference<>(0.0);
-         billService.getPatientBillItems(patientNumber, visitNumber, billNumber, null, servicePointId, hasBalance, status, range, Pageable.unpaged())
-                .getContent()
-                .stream()
-                .map((bill) -> {
-                    if(!bill.getServicePoint().equals("Receipt"))
-                         data.add(bill.toData());
-                    else{
-                        ReceiptData receipt = paymentService.getPaymentByReceiptNumber(bill.getPaymentReference()).toData();
-                        if(receipt.getReceiptType()==ReceiptType.Deposit) {
-                            deposit.set(deposit.get() + bill.getAmount());
-                        }
-                        else{
-                            payment.set(payment.get()+bill.getAmount());
-                        }
+        Double payment = 0.0;
+        Double deposit = 0.0;
+        List<PatientBillItem> items = billService.getPatientBillItems(patientNumber, visitNumber, billNumber, null, servicePointId, hasBalance, status, range, Pageable.unpaged())
+                .getContent();
 
-                    }
-                    return bill;
-                })
-                .collect(Collectors.toList());
-        reportData.setPatientNumber(patientNumber);
-        reportData.getFilters().put("range", DateRange.getReportPeriod(range));
-        reportData.getFilters().put("deposit", deposit);
-        reportData.getFilters().put("payment", payment);
-        reportData.setData(data);
-        reportData.setFormat(format);
-        reportData.setTemplate("/payments/patient_statement");
-        reportData.setReportName("Patient_Statement");
-        reportService.generateReport(reportData, response);
-    }
+        for (PatientBillItem item : items) {
+            if (!item.getServicePoint().equals("Receipt")) {
+                data.add(item.toData());
+            } else {
+                ReceiptData receipt = paymentService.getPaymentByReceiptNumber(item.getPaymentReference()).toData();
+                if (receipt.getReceiptType() == ReceiptType.Deposit) {
+                    deposit = deposit+item.getAmount();
+                } else {
+                    payment = payment+item.getAmount();
+                }
+            }
+        }
+
+            reportData.setPatientNumber(patientNumber);
+            reportData.getFilters().put("range", DateRange.getReportPeriod(range));
+            reportData.getFilters().put("deposit", deposit);
+            reportData.getFilters().put("payment", payment);
+            reportData.setData(data);
+            reportData.setFormat(format);
+            reportData.setTemplate("/payments/patient_statement");
+            reportData.setReportName("Patient_Statement");
+            reportService.generateReport(reportData, response);
+        }
+
+    
 
     public void getInterimBill(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
         String visitNumber = reportParam.getFirst("visitNumber");
         Visit visit = visitService.findVisitEntityOrThrow(visitNumber);
-         Boolean includeCanceled = reportParam.getFirst("includeCanceled") != null ? Boolean.valueOf(reportParam.getFirst("includeCanceled")) : Boolean.FALSE;
-        BillDetail data = billService.getBillDetails(visitNumber,includeCanceled,null, Pageable.unpaged());
+        Boolean includeCanceled = reportParam.getFirst("includeCanceled") != null ? Boolean.valueOf(reportParam.getFirst("includeCanceled")) : Boolean.FALSE;
+        BillDetail data = billService.getBillDetails(visitNumber, includeCanceled, null, Pageable.unpaged());
         reportData.setPatientNumber(visit.getPatient().getPatientNumber());
         reportData.setData(data.getBills());
         reportData.setFormat(format);
@@ -1217,8 +1215,8 @@ public class AccountReportService {
                 if (excess.equalsIgnoreCase("Less") && data.getExcess().compareTo(BigDecimal.ZERO) < 0) {
                     list1.add(data);
                 }
-                
-            }else{
+
+            } else {
                 list1.add(data);
             }
         });
@@ -1275,6 +1273,7 @@ public class AccountReportService {
         }
         throw APIException.internalError("Provide a Valid Payment Method");
     }
+
     private VisitEnum.VisitType visitTypeToEnum(String status) {
         if (status == null || status.equals("null") || status.equals("")) {
             return null;
