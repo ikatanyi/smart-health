@@ -158,7 +158,7 @@ public class CashierService {
                 return new ArrayList<>();
             }
         }
-        return shiftRepository.findByCashier(cashier);
+        return shiftRepository.findByCashierOrderByIdDesc(cashier);
     }
 
     public Shift closeShift(Cashier cashier) {
