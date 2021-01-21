@@ -309,10 +309,10 @@ public class PaymentReportService {
             data.setStatus(receipt.getShiftData().getStatus());
             data.setStartDate(receipt.getShiftData().getStartDate());
             data.setStopDate(receipt.getShiftData().getEndDate());
-
+              
             if(receipt.getPrepayment())
                 data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
-            for (ReceiptTransactionData trx : receipt.getTransactions()) {
+            for (ReceiptTransactionData trx : receipt.getTransactions()) {                
                 switch (trx.getMethod().toUpperCase()) {
                     case "BANK":
                         data.setBank(data.getBank().add(trx.getAmount()));
@@ -338,6 +338,7 @@ public class PaymentReportService {
             }
 
             for (ReceiptItemData item : receipt.getReceiptItems()) {
+                data.setDiscount(data.getDiscount().add(item.getDiscount()));
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
                         data.setLab(data.getLab().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
@@ -422,6 +423,10 @@ public class PaymentReportService {
             data.setShiftNo(receipt.getShiftNo());
             data.setTransactionDate(receipt.getTransactionDate());
             data.setCreatedBy(receipt.getCreatedBy());
+            data.setCashier(receipt.getShiftData().getCashier());
+            data.setStatus(receipt.getShiftData().getStatus());
+            data.setStartDate(receipt.getShiftData().getStartDate());
+            data.setStopDate(receipt.getShiftData().getEndDate());
             if(receipt.getPrepayment())
                 data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
 
@@ -451,6 +456,7 @@ public class PaymentReportService {
             }
 
             for (ReceiptItemData item : receipt.getReceiptItems()) {
+                data.setDiscount(data.getDiscount().add(item.getDiscount()));
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
                         data.setLab(data.getLab().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
@@ -459,6 +465,7 @@ public class PaymentReportService {
                         data.setPharmacy(data.getPharmacy().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
                         break;
                     case "PROCEDURE":
+                    case "NURSING":
                     case "TRIAGE":
                         data.setProcedure(data.getProcedure().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
                         break;
@@ -485,7 +492,7 @@ public class PaymentReportService {
         List<JRSortField> sortList = new ArrayList<>();
         JRDesignSortField sortField = new JRDesignSortField();
         sortField = new JRDesignSortField();
-        sortField.setName("createdBy");
+        sortField.setName("cashier");
         sortField.setOrder(SortOrderEnum.DESCENDING);
         sortField.setType(SortFieldTypeEnum.FIELD);
         sortList.add(sortField);

@@ -408,6 +408,7 @@ public class AccountReportService {
                         break;
                     case "PROCEDURE":
                     case "TRIAGE":
+                    case "NURSING":
                         data.setProcedure(data.getProcedure() + item.getAmount());
                         break;
                     case "RADIOLOGY":
@@ -711,6 +712,8 @@ public class AccountReportService {
             data.setShiftNo(receipt.getShiftNo());
             data.setTransactionDate(receipt.getTransactionDate());
             data.setCreatedBy(receipt.getCreatedBy());
+            if(receipt.getPrepayment())
+                data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
             for (ReceiptTransactionData trx : receipt.getTransactions()) {
                 switch (trx.getMethod().toUpperCase()) {
                     case "BANK":
@@ -725,10 +728,7 @@ public class AccountReportService {
                         break;
                     case "CASH":
                         data.setCash(data.getCash().add(trx.getAmount()));
-                        break;
-                    case "DISCOUNT":
-                        data.setDiscount(data.getDiscount().add(trx.getAmount()));
-                        break;
+                        break;                    
                     default:
                         data.setOtherPayment(data.getOtherPayment().add(trx.getAmount()));
                         break;
@@ -737,6 +737,7 @@ public class AccountReportService {
             }
 
             for (ReceiptItemData item : receipt.getReceiptItems()) {
+                 data.setDiscount(data.getDiscount().add(item.getDiscount()));
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
                         data.setLab(data.getLab().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
@@ -746,6 +747,7 @@ public class AccountReportService {
                         break;
                     case "PROCEDURE":
                     case "TRIAGE":
+                    case "NURSING":
                         data.setProcedure(data.getProcedure().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
                         break;
                     case "RADIOLOGY":
