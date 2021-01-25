@@ -5,12 +5,19 @@
  */
 package io.smarthealth.report.experiments;
 
+import io.smarthealth.ApplicationProperties;
+import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.report.storage.StorageService;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -18,6 +25,8 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ResourceUtils;
@@ -28,26 +37,29 @@ import org.springframework.util.ResourceUtils;
  */
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class ReportRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final ApplicationProperties appProperties;
+    private final ResourceLoader resourceLoader;
+    private final StorageService storageService;
 
-    public ReportRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
+//    public ReportRepository(JdbcTemplate jdbcTemplate) {
+//        this.jdbcTemplate = jdbcTemplate;
+//    }
     public JasperPrint generateJasperPrint(String template, Map<String, Object> parameters) throws SQLException, FileNotFoundException, JRException {
         try {
             Connection connection = jdbcTemplate.getDataSource().getConnection();
-            File file = ResourceUtils.getFile("classpath:reports:" + template);
-            JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-
+            String  jrxml = resourceLoader.getResource(appProperties.getReportLoc() + template).getFile().getAbsolutePath();
+            JasperReport jasperReport = JasperCompileManager.compileReport(jrxml);
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, connection);
             return jasperPrint;
-
-        } catch (FileNotFoundException | SQLException | JRException exception) {
+        } catch (SQLException | JRException | IOException exception) {
             log.error("Error  {} ", exception.getMessage());
-            return null;
+            exception.printStackTrace();
+            throw APIException.internalError(exception.getMessage());
+//            return null;
         }
     }
 

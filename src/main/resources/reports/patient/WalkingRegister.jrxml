@@ -109,20 +109,22 @@
 			<staticText>
 				<reportElement x="0" y="0" width="100" height="19" uuid="dda178b8-f058-459d-909d-33d36af6c6ef"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="SansSerif" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Walking Register]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="600" y="0" width="70" height="16" uuid="b47f0af4-b6e9-4e22-97c3-56b5be014c91"/>
 				<textElement verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Print Date: ]]></text>
 			</staticText>
 			<textField pattern="MMM d, yyyy">
 				<reportElement x="660" y="0" width="100" height="16" uuid="43953dbd-6b3c-45c6-aa24-61e382b0728a"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle" markup="styled"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="styled">
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<line>
@@ -137,7 +139,7 @@
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d36d6a0d-968b-4294-a210-aa221ba4e02f"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Serif" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Reg Date]]></text>
 			</staticText>
@@ -146,7 +148,7 @@
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="183664db-6da3-46a5-99e6-47c27c7298c8"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Serif" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Age]]></text>
 			</staticText>
@@ -155,7 +157,7 @@
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="78108c2c-8504-4d68-8ca3-0258f79425e1"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Serif" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Name]]></text>
 			</staticText>
@@ -164,7 +166,7 @@
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7238803d-ee4d-4138-b5a6-abd872f76958"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Serif" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[ID Number]]></text>
 			</staticText>
@@ -173,7 +175,7 @@
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b61c687b-d5b4-4b12-aae6-1369a41a2773"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Serif" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Phone No.]]></text>
 			</staticText>
@@ -182,7 +184,7 @@
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="95158fc6-a3cb-4af1-8ed8-ae7fd6618dca"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Serif" size="11" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Walk-In No.]]></text>
 			</staticText>
@@ -195,7 +197,7 @@
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d36d6a0d-968b-4294-a210-aa221ba4e02f"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle" markup="none">
-					<font fontName="Serif" size="10"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{created_on}]]></textFieldExpression>
 			</textField>
@@ -204,7 +206,7 @@
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="183664db-6da3-46a5-99e6-47c27c7298c8"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle" markup="none">
-					<font fontName="Serif" size="10"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{age}]]></textFieldExpression>
 			</textField>
@@ -213,16 +215,16 @@
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="78108c2c-8504-4d68-8ca3-0258f79425e1"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle" markup="none">
-					<font fontName="Serif" size="10"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{first_name}+" "+($F{second_name} == null ? "": $F{second_name})+" "+$F{surname}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{first_name}+" "+($F{second_name} == null ? "": $F{second_name})+" "+$F{surname}).toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="543" y="0" width="133" height="30" uuid="b9ca25d5-ac96-44cb-8e17-6cd2df9dee2f">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7238803d-ee4d-4138-b5a6-abd872f76958"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle" markup="none">
-					<font fontName="Serif" size="10"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{id_number}]]></textFieldExpression>
 			</textField>
@@ -231,7 +233,7 @@
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b61c687b-d5b4-4b12-aae6-1369a41a2773"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle" markup="none">
-					<font fontName="Serif" size="10"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{phone_no}]]></textFieldExpression>
 			</textField>
@@ -240,7 +242,7 @@
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="95158fc6-a3cb-4af1-8ed8-ae7fd6618dca"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle" markup="none">
-					<font fontName="Serif" size="10"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{walking_identitification_no}]]></textFieldExpression>
 			</textField>

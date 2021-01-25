@@ -1,10 +1,10 @@
+package io.smarthealth.report.experiments;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.smarthealth.report.experiments;
-
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,6 +35,8 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
+import io.smarthealth.infrastructure.reports.service.JasperReportsService;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 
 /**
  *
@@ -46,7 +48,7 @@ import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
 public class ReportExportService {
 
     private final ReportRepository reportRepository;
-//    private final JasperReportsService jasperReportService;
+    private final JasperReportsService jasperReportService;
 
 //    public ReportExportService(ReportRepository reportRepository) {
 //        this.reportRepository = reportRepository;
@@ -70,17 +72,25 @@ public class ReportExportService {
         String template = "/Patient/WalkingRegister.jrxml";
         String reportName = "Walking Report";
         Map<String, Object> params = new HashMap();
-//        Exporter exporter = new JRPdfExporter();
-//        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
-//        response.setContentType("application/pdf");
-//        response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + "pdf".toLowerCase()));
-//
-//        OutputStream out = response.getOutputStream();
-//        JasperPrint jasperPrint = reportRepository.generateJasperPrint(template, params);
-//        JasperExportManager.exportReportToPdfStream(jasperPrint, out);
-//        export(jasperPrint, format, template, response);
-    }
+        Exporter exporter = new JRPdfExporter();
 
+//        oOutputStream out = response.getOutputStream();
+////        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
+////        response.setContentType("application/pdf");
+////        respnse.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + "pdf".toLowerCase()));
+
+        JasperPrint jasperPrint = reportRepository.generateJasperPrint(template, params);
+//        JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+        jasperReportService.export(jasperPrint, format, template, response);
+
+//        JRPdfExporter exporter = new JRPdfExporter();
+//        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+////        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput("pdf/SplitTest.pdf"));
+//        SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+//        exporter.setConfiguration(configuration);
+//        exporter.exportReport();
+    }
+    /*
     public void export(final JasperPrint jprint, ExportFormat type, String reportName, HttpServletResponse response) throws JRException, IOException {
         final Exporter exporter;
         final OutputStream out = response.getOutputStream();
@@ -174,5 +184,5 @@ public class ReportExportService {
         exporter.setExporterInput(exporterInput);
         exporter.exportReport();
     }
-
+     */
 }
