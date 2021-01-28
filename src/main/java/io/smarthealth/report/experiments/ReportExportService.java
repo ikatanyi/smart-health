@@ -5,12 +5,18 @@ package io.smarthealth.report.experiments;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.infrastructure.lang.DateRange;
 import io.smarthealth.infrastructure.reports.domain.ExportFormat;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -72,23 +78,21 @@ public class ReportExportService {
         String template = "/Patient/WalkingRegister.jrxml";
         String reportName = "Walking Report";
         Map<String, Object> params = new HashMap();
+
+        DateRange dateRange = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("range"));
+        String date = null;
+        if(reportParam.getFirst("range")!=null){
+            date = reportParam.getFirst("range");
+        }else{
+            throw APIException.badRequest("Please provide date range");
+        }
+        List<String> dateList = Arrays.asList(date.replace("..", ",").split(","));
+
+        params.put("Date_From", LocalDate.parse(dateList.get(0)).atStartOfDay().toString() );
+        params.put("Date_To", LocalDate.parse(dateList.get(1)).atTime(LocalTime.MAX).toString());
         Exporter exporter = new JRPdfExporter();
-
-//        oOutputStream out = response.getOutputStream();
-////        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
-////        response.setContentType("application/pdf");
-////        respnse.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + "pdf".toLowerCase()));
-
         JasperPrint jasperPrint = reportRepository.generateJasperPrint(template, params);
-//        JasperExportManager.exportReportToPdfStream(jasperPrint, out);
         jasperReportService.export(jasperPrint, format, template, response);
-
-//        JRPdfExporter exporter = new JRPdfExporter();
-//        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-////        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput("pdf/SplitTest.pdf"));
-//        SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-//        exporter.setConfiguration(configuration);
-//        exporter.exportReport();
     }
     /*
     public void export(final JasperPrint jprint, ExportFormat type, String reportName, HttpServletResponse response) throws JRException, IOException {

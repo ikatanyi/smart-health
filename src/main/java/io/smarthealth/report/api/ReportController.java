@@ -60,7 +60,6 @@ public class ReportController {
             @RequestParam(required = false) MultiValueMap<String, String> queryParams,
             @RequestParam(value = "format", required = false) ExportFormat format,
             HttpServletResponse response) throws SQLException, JRException, IOException {
-        System.out.println("Format " + format.name());
         switch (reportName) {
 
             case Trial_Balance:

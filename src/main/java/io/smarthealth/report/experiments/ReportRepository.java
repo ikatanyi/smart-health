@@ -7,15 +7,19 @@ package io.smarthealth.report.experiments;
 
 import io.smarthealth.ApplicationProperties;
 import io.smarthealth.infrastructure.exception.APIException;
+import io.smarthealth.organization.facility.domain.Facility;
+import io.smarthealth.organization.facility.service.FacilityService;
+import io.smarthealth.report.data.clinical.Footer;
+import io.smarthealth.report.data.clinical.Header;
 import io.smarthealth.report.storage.StorageService;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+
+import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,12 +48,38 @@ public class ReportRepository {
     private final ApplicationProperties appProperties;
     private final ResourceLoader resourceLoader;
     private final StorageService storageService;
+    private final FacilityService facilityService;
 
 //    public ReportRepository(JdbcTemplate jdbcTemplate) {
 //        this.jdbcTemplate = jdbcTemplate;
 //    }
     public JasperPrint generateJasperPrint(String template, Map<String, Object> parameters) throws SQLException, FileNotFoundException, JRException {
         try {
+            /*Begin of header details */
+            List<Header> header = new ArrayList();
+            Facility facility = facilityService.loggedFacility();
+
+            Header headerData = Header.map(facility);
+            Footer footerData = Footer.map(facility);
+            if (facility.getCompanyLogo()==null) {
+                headerData.setIMAGE(new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
+                parameters.put("IMAGE_DIR", new ByteArrayInputStream((appProperties.getReportLoc() + "/logo.png").getBytes()));
+            } else {
+                headerData.setIMAGE(new ByteArrayInputStream(facility.getCompanyLogo().getData()));
+                parameters.put("IMAGE_DIR", new ByteArrayInputStream(facility.getCompanyLogo().getData()));
+            }
+
+            header.add(headerData);
+            parameters.put("Header_Data", header);
+            /*End of header details */
+
+            /*
+            Begin: Subreport base directory
+             */
+            parameters.put("SUBREPORT_DIR", appProperties.getReportLoc().concat("/subreports/"));
+            /*
+            End: Subreport base directory
+             */
             Connection connection = jdbcTemplate.getDataSource().getConnection();
             String  jrxml = resourceLoader.getResource(appProperties.getReportLoc() + template).getFile().getAbsolutePath();
             JasperReport jasperReport = JasperCompileManager.compileReport(jrxml);
