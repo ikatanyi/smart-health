@@ -603,7 +603,7 @@ public class AccountReportService {
         Long scheme = NumberUtils.createLong(reportParam.getFirst("schemeId"));
         String patientNo = reportParam.getFirst("patientNo");
         String invoiceNo = reportParam.getFirst("invoiceNo");
-        String dateRange = reportParam.getFirst("range");
+        String dateRange = reportParam.getFirst("dateRange");
         InvoiceStatus status = invoiceStatusToEnum(reportParam.getFirst("invoiceStatus"));
         Boolean awaitingSmart = null;
         Boolean hasCapitation = null;

@@ -309,10 +309,11 @@ public class PaymentReportService {
             data.setStatus(receipt.getShiftData().getStatus());
             data.setStartDate(receipt.getShiftData().getStartDate());
             data.setStopDate(receipt.getShiftData().getEndDate());
-              
-            if(receipt.getPrepayment())
+
+            if (receipt.getPrepayment()) {
                 data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
-            for (ReceiptTransactionData trx : receipt.getTransactions()) {                
+            }
+            for (ReceiptTransactionData trx : receipt.getTransactions()) {
                 switch (trx.getMethod().toUpperCase()) {
                     case "BANK":
                         data.setBank(data.getBank().add(trx.getAmount()));
@@ -338,6 +339,8 @@ public class PaymentReportService {
             }
 
             for (ReceiptItemData item : receipt.getReceiptItems()) {
+                data.setAmount(data.getAmount().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
+                data.setDiscount(data.getDiscount().add(NumberUtils.toScaledBigDecimal(item.getDiscount())));
                 data.setDiscount(data.getDiscount().add(item.getDiscount()));
                 switch (item.getServicePoint().toUpperCase()) {
                     case "LABORATORY":
@@ -362,12 +365,11 @@ public class PaymentReportService {
                         break;
                     default:
                         data.setOther(data.getOther() != null ? data.getOther().add(item.getAmountPaid()) : item.getAmountPaid());
-
                         break;
                 }
-                data.setAmount(data.getAmount().add(item.getPrice().multiply(new BigDecimal(item.getQuantity()))));
-                data.setDiscount(data.getDiscount().add(NumberUtils.toScaledBigDecimal(item.getDiscount())));
+
             }
+            
             receiptDataArray.add(data);
         }
 
@@ -386,8 +388,6 @@ public class PaymentReportService {
         reportData.setReportName("Shift-Per-Cashier" + shiftNo);
         reportService.generateReport(reportData, response);
     }
-
-
 
     public void getCashierShift(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -427,8 +427,9 @@ public class PaymentReportService {
             data.setStatus(receipt.getShiftData().getStatus());
             data.setStartDate(receipt.getShiftData().getStartDate());
             data.setStopDate(receipt.getShiftData().getEndDate());
-            if(receipt.getPrepayment())
+            if (receipt.getPrepayment()) {
                 data.setOther(data.getOther() != null ? data.getOther().add(receipt.getAmount()) : receipt.getAmount());
+            }
 
             for (ReceiptTransactionData trx : receipt.getTransactions()) {
                 switch (trx.getMethod().toUpperCase()) {
