@@ -317,6 +317,11 @@ public class ReportController {
             case Inventory_Stock_Reorder_Statement:
                 stockReportService.InventoryReorderStock(queryParams, format, response);
                 break;
+            case NHIF_Statement:
+                reportService.genNHIFStatement(queryParams, format, response);
+                break;
+            case Capitation_Invoice:
+                break;
             default:
                 break;
         }

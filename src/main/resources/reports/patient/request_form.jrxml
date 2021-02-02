@@ -3,8 +3,32 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.column.width" value="100"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.title" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.title" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="title"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="orgLegalName" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="orgName" class="java.lang.String" isForPrompting="false"/>
@@ -28,7 +52,7 @@
 		<defaultValueExpression><![CDATA["C:\\Users\\user\\Documents\\NetBeansProjects\\ClinicMangement\\src\\images\\headers\\mri-brain-ct-scan.jpg"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["E:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\subreports\\"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="PatientData" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Header_Data" class="java.util.List" isForPrompting="false"/>
@@ -55,7 +79,7 @@
 		<groupFooter>
 			<band height="49">
 				<staticText>
-					<reportElement x="0" y="7" width="80" height="12" forecolor="#000000" uuid="236be097-f127-4003-bcd5-1ed4e1a13d46"/>
+					<reportElement x="0" y="12" width="80" height="12" forecolor="#000000" uuid="236be097-f127-4003-bcd5-1ed4e1a13d46"/>
 					<textElement verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 						<paragraph leftIndent="5"/>
@@ -63,13 +87,13 @@
 					<text><![CDATA[Requested By :]]></text>
 				</staticText>
 				<line>
-					<reportElement x="77" y="13" width="215" height="1" uuid="55db7fb5-1b61-4be4-87f9-72802311b66f"/>
+					<reportElement x="77" y="18" width="215" height="1" uuid="55db7fb5-1b61-4be4-87f9-72802311b66f"/>
 					<graphicElement>
 						<pen lineWidth="0.25"/>
 					</graphicElement>
 				</line>
 				<subreport>
-					<reportElement x="87" y="14" width="183" height="12" isRemoveLineWhenBlank="true" uuid="1ce543d2-81b8-42fc-a9cc-44b9dffe7bad"/>
+					<reportElement x="87" y="19" width="183" height="12" isRemoveLineWhenBlank="true" uuid="1ce543d2-81b8-42fc-a9cc-44b9dffe7bad"/>
 					<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Employee_Data})]]></dataSourceExpression>
 					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "physician.jasper"]]></subreportExpression>
 				</subreport>
@@ -107,14 +131,11 @@
 	</title>
 	<pageHeader>
 		<band height="25">
-			<line>
-				<reportElement positionType="Float" x="-1" y="24" width="380" height="1" uuid="16617d21-17da-41bd-863e-96b027be2a11"/>
-				<graphicElement>
-					<pen lineWidth="0.15" lineColor="#666666"/>
-				</graphicElement>
-			</line>
 			<textField>
 				<reportElement x="0" y="11" width="555" height="14" forecolor="#000000" uuid="ff42cacf-ea39-492f-a7b5-4b8ffa40dae1"/>
+				<box>
+					<bottomPen lineWidth="0.15"/>
+				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font size="9" isBold="true"/>
 				</textElement>
@@ -139,7 +160,7 @@
 				<text><![CDATA[Comments]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="322" y="1" width="231" height="12" uuid="502ddc78-d224-4f46-8571-3761b542748a"/>
+				<reportElement x="269" y="1" width="231" height="12" uuid="502ddc78-d224-4f46-8571-3761b542748a"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
