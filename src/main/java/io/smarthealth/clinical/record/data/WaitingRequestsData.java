@@ -25,5 +25,6 @@ public class WaitingRequestsData {
     private PatientData patientData;
     private String requestedByName, requestedByNo;
     private List<DoctorRequestItem> item = new ArrayList<>();
+    private Boolean isDirectSent = Boolean.FALSE;
 
 }

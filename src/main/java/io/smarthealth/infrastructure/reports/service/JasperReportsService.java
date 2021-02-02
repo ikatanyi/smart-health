@@ -57,11 +57,13 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.export.AbstractXlsReportConfiguration;
 import net.sf.jasperreports.export.Exporter;
+import net.sf.jasperreports.export.SimpleCsvReportConfiguration;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import net.sf.jasperreports.j2ee.servlets.ImageServlet;
 import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
@@ -256,7 +258,7 @@ public class JasperReportsService {
                 break;
 
             case CSV:
-                exporter = new JRCsvExporter();
+                exporter = new JRCsvExporter();                
                 exporter.setExporterOutput(new SimpleWriterExporterOutput(out));
                 response.setContentType("text/csv");
                 response.setHeader("Content-Disposition", String.format("attachment; filename=" + reportName + "." + type.name().toLowerCase()));
@@ -278,24 +280,29 @@ public class JasperReportsService {
                     response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                 } else {
                     exporter = new JRXlsExporter();
-                    config = new SimpleXlsxReportConfiguration();
+                    config = new SimpleXlsReportConfiguration();
                     response.setContentType("application/vnd.ms-excel");
                 }
-
                 config.setOnePagePerSheet(false);
                 config.setIgnoreGraphics(Boolean.TRUE);
-//                config.setDetectCellType(Boolean.TRUE);
-                config.setRemoveEmptySpaceBetweenRows(Boolean.FALSE);
+                config.setDetectCellType(Boolean.TRUE);
+                config.setRemoveEmptySpaceBetweenRows(Boolean.TRUE);
                 config.setCollapseRowSpan(Boolean.TRUE);
-                config.setIgnoreGraphics(Boolean.TRUE);
-                config.setWrapText(Boolean.TRUE);
+//                config.setIgnoreGraphics(Boolean.TRUE);
+                config.setWrapText(Boolean.FALSE);
                 config.setColumnWidthRatio(2.0F);
+                config.setWhitePageBackground(Boolean.FALSE);
                 config.setShowGridLines(Boolean.TRUE); 
                 config.setDetectCellType(Boolean.TRUE);
-//                config.setRemoveEmptySpaceBetweenColumns(Boolean.TRUE);
-                config.setFontSizeFixEnabled(false);
+                config.setRemoveEmptySpaceBetweenColumns(Boolean.TRUE);
+                config.setFontSizeFixEnabled(Boolean.TRUE);
                 config.setSheetNames(new String[]{"Sheet1"});
-               // exporter.setConfiguration(config);
+//                config.setIgnoreCellBackground(Boolean.TRUE);
+                config.setIgnoreCellBorder(Boolean.FALSE);
+//                config.setCollapseRowSpan(Boolean.FALSE);
+                config.setIgnoreGraphics(Boolean.TRUE);
+                exporter.setConfiguration(config);
+                
                 exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
 //                File outputFile = new File("excelTest.xlsx");
 //                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputFile));
@@ -354,6 +361,7 @@ public class JasperReportsService {
 
         jasperParameter.put("facilityName", facility.getFacilityName());
         jasperParameter.put("facilityType", facility.getFacilityType());
+         jasperParameter.put("facilityCode", facility.getRegistrationNumber());
         if (facility.getCompanyLogo() != null) {
             jasperParameter.put("logo", facility.getCompanyLogo().getData());
 

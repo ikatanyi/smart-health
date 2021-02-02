@@ -28,6 +28,18 @@ public class DoctorRequestData {
         Radiology,
         Procedure,
         Admission
+/* Service point types */
+//        ,Triage,
+//        Consultation,
+//        Laboratory,
+//        Pharmacy,
+//        Radiology,
+//        Procedure,
+//        Inpatient,
+//        Theatre,
+//        Optical,
+//        Dental,
+//        Others
     }
 
     public enum Urgency {

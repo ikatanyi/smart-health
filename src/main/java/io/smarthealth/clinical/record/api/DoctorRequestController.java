@@ -1,5 +1,8 @@
 package io.smarthealth.clinical.record.api;
 
+import io.smarthealth.administration.servicepoint.data.ServicePointType;
+import io.smarthealth.administration.servicepoint.domain.ServicePoint;
+import io.smarthealth.administration.servicepoint.service.ServicePointService;
 import io.smarthealth.clinical.record.data.DoctorRequestData;
 import io.smarthealth.clinical.record.data.DoctorRequestData.RequestType;
 import io.smarthealth.clinical.record.data.DoctorRequestItem;
@@ -13,6 +16,7 @@ import io.smarthealth.clinical.visit.service.VisitService;
 import io.smarthealth.infrastructure.common.PaginationUtil;
 import io.smarthealth.infrastructure.exception.APIException;
 import io.smarthealth.infrastructure.lang.DateRange;
+import io.smarthealth.infrastructure.utility.ListToPage;
 import io.smarthealth.infrastructure.utility.PageDetails;
 import io.smarthealth.infrastructure.utility.Pager;
 import io.smarthealth.notification.service.NotificationEventPublisher;
@@ -73,6 +77,8 @@ public class DoctorRequestController {
     private final NotificationEventPublisher notificationEventPublisher;
     
     private final AuditTrailService auditTrailService;
+
+    private final ServicePointService servicePointService;
 
     @Transactional
     @PostMapping("/visit/{visitNo}/doctor-request")
@@ -285,7 +291,29 @@ public class DoctorRequestController {
         Pageable pageable = PaginationUtil.createPage(page, size);
         final DateRange range = DateRange.fromIsoStringOrReturnNull(dateRange);
 //        final DateRange range = DateRange.fromIsoString(dateRange);
-        Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", pageable, activeVisit, term, range);
+        Page<DoctorRequest> pageList = requestService.fetchAllDoctorRequests(visitNo, patientNo, requestType, fulfillerStatus, "patient", Pageable.unpaged(), activeVisit, term, range);
+        /* Queue directly sent-  */
+
+        ServicePointType pointType ;
+        if(requestType.equals(RequestType.Radiology)){
+            pointType = ServicePointType.Radiology;
+        }else if(requestType.equals(RequestType.Pharmacy)) {
+            pointType = ServicePointType.Pharmacy;
+        }else if(requestType.equals(RequestType.Laboratory)){
+            pointType = ServicePointType.Laboratory;
+        }else if(requestType.equals(RequestType.Procedure)){
+            pointType = ServicePointType.Procedure;
+        }else {
+            pointType = null;
+        }
+        List<Visit> directVisits = new ArrayList<>();
+        if(pointType !=null){
+            //Find service point by request type (point type) - assuming there is only one service point of each type
+            ServicePoint servicePoint = servicePointService.getServicePointByType(pointType);
+           directVisits =    visitService.visitByServicePointAndServedAtServicePoint(servicePoint, false);
+        }
+        
+        /* End of queue directly sent */
         List<WaitingRequestsData> waitingRequests = new ArrayList<>();
 
         for (DoctorRequest docReq : pageList.getContent()) {
@@ -304,6 +332,23 @@ public class DoctorRequestController {
             waitingRequest.setItem(requestItems);
             waitingRequests.add(waitingRequest);
         }
+int count = waitingRequests.size();
+        for(Visit v: directVisits){
+            count++;
+            WaitingRequestsData waitingRequest = new WaitingRequestsData();
+            waitingRequest.setPatientData(patientService.convertToPatientData(v.getPatient()));
+            waitingRequest.setPatientNumber(v.getPatient().getPatientNumber());
+            waitingRequest.setVisitData(visitService.convertVisitEntityToData(v));
+            waitingRequest.setVisitNumber(v.getVisitNumber());
+            waitingRequest.setRequestId(Long.valueOf(count));
+
+            waitingRequest.setIsDirectSent(Boolean.TRUE);
+            //no line items
+            waitingRequest.setItem(new ArrayList<>());
+            waitingRequests.add(waitingRequest);
+        }
+page = page -1;
+Page<WaitingRequestsData> list = ListToPage.map(waitingRequests,page , size);
 
         PagedListHolder waitingPage = new PagedListHolder(waitingRequests);
         waitingPage.setPageSize(pageable.getPageSize()); // number of items per page
@@ -312,12 +357,12 @@ public class DoctorRequestController {
         Pager<List<WaitingRequestsData>> pagers = new Pager();
         pagers.setCode("0");
         pagers.setMessage("Success");
-        pagers.setContent(waitingPage.getPageList());
+        pagers.setContent(list.getContent());
         PageDetails details = new PageDetails();
-        details.setPage(waitingPage.getPage() + 1);
-        details.setPerPage(waitingPage.getPageSize());
-        details.setTotalElements(Long.valueOf(waitingRequests.size()));
-        details.setTotalPage(waitingPage.getPageCount());
+        details.setPage(list.getNumber());
+        details.setPerPage(list.getSize());
+        details.setTotalElements(list.getTotalElements());
+        details.setTotalPage(list.getTotalPages());
         details.setReportName("Doctor Requests");
         pagers.setPageDetails(details);
         auditTrailService.saveAuditTrail("Consultation", "Viewed all patient requests");
