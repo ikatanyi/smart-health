@@ -218,6 +218,10 @@ public class InvoiceService {
     public Optional<Invoice> getInvoiceByNumber(String number) {
         return invoiceRepository.findByNumber(number);
     }
+    
+    public List<Invoice> getInvoiceByVisit(String visitNumber) {
+        return invoiceRepository.findByVisit_VisitNumber(visitNumber);
+    }
 
     //
     public Invoice getInvoiceByIdOrThrow(Long id) {

@@ -8,6 +8,7 @@ package io.smarthealth.clinical.admission.domain;
 import io.smarthealth.clinical.admission.data.DischargeData;
 import io.smarthealth.infrastructure.domain.Auditable;
 import io.smarthealth.organization.person.patient.domain.Patient;
+import java.math.BigDecimal;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,7 +26,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name = "patient_discharge") 
+@Table(name = "patient_discharge")
 public class DischargeSummary extends Auditable {
 
     @ManyToOne
@@ -47,8 +48,6 @@ public class DischargeSummary extends Auditable {
     public DischargeData toData() {
         DischargeData data = new DischargeData();
         data.setId(this.getId());
-        data.setAdmissionDate(this.admission.getAdmissionDate());
-        data.setAdmissionNumber(this.admission.getAdmissionNo());
         data.setDoctor(this.doctor);
         data.setDiagnosis(this.diagnosis);
         data.setDischargeDate(this.dischargeDate);
@@ -63,11 +62,16 @@ public class DischargeSummary extends Auditable {
         data.setResidence(this.getPatient().getResidence());
         data.setAge(this.getPatient().getAge());
         data.setReviewDate(this.getReviewDate());
-        if(this.getAdmission()!=null){
-            if(this.getAdmission().getBed()!=null)
-               data.setBed(this.getAdmission().getBed().getName());
-            if(this.getAdmission().getWard()!=null)
-               data.setWard(this.getAdmission().getWard().getName());
+        if (this.getAdmission() != null) {
+            data.setAdmissionDate(this.admission.getAdmissionDate());
+            data.setAdmissionNumber(this.admission.getAdmissionNo());
+            data.setPaymentMode(this.getAdmission().getPaymentMethod().name());
+            if (this.getAdmission().getBed() != null) {
+                data.setBed(this.getAdmission().getBed().getName());
+            }
+            if (this.getAdmission().getWard() != null) {
+                data.setWard(this.getAdmission().getWard().getName());
+            }
         }
         return data;
     }

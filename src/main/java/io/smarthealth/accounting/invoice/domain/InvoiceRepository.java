@@ -19,6 +19,7 @@ import io.smarthealth.clinical.visit.domain.Visit;
 public interface InvoiceRepository extends JpaRepository<Invoice, Long>, JpaSpecificationExecutor<Invoice> {
 
     public Optional<Invoice> findByNumber(String invoice);
+    public List<Invoice> findByVisit_VisitNumber(String visitNumber);
 
 //    public Page<Invoice> findByItemsVoidedFalse(Specification spec, Pageable page);
     @Modifying

@@ -5,6 +5,10 @@
  */
 package io.smarthealth.report.service;
 
+import io.smarthealth.accounting.billing.domain.PatientBill;
+import io.smarthealth.accounting.billing.service.BillingService;
+import io.smarthealth.accounting.invoice.domain.Invoice;
+import io.smarthealth.accounting.invoice.service.InvoiceService;
 import io.smarthealth.clinical.admission.data.AdmissionData;
 import io.smarthealth.clinical.admission.data.BedData;
 import io.smarthealth.clinical.admission.data.CareTeamData;
@@ -40,6 +44,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -73,8 +78,9 @@ public class AdmissionReportService {
     private final LaboratoryService labService;
     private final PrescriptionService prescriptionService;
     private final DiagnosisService diagnosisService;
-
+    private final BillingService billingService;
     private final VisitService visitService;
+    private final InvoiceService invoiceService;
 
     public void getAdmittedPatients(MultiValueMap<String, String> reportParam, ExportFormat format, HttpServletResponse response) throws SQLException, JRException, IOException {
         ReportData reportData = new ReportData();
@@ -179,8 +185,20 @@ public class AdmissionReportService {
         String term = reportParam.getFirst("term");
         DateRange range = DateRange.fromIsoStringOrReturnNull(reportParam.getFirst("dateRange"));
 
-        List<DischargeSummary> discharges = dischargeService.getDischarges(admissionNo, patientNo, term, range, Pageable.unpaged()).getContent();
-
+        List<DischargeData> discharges = dischargeService.getDischarges(admissionNo, patientNo, term, range, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .map(ds->{
+                    DischargeData data = ds.toData();
+                    List<Invoice>invoices = invoiceService.getInvoiceByVisit(ds.getAdmission().getAdmissionNo());
+                    for(Invoice invoice:invoices){
+                        data.setAmount(data.getAmount().add(invoice.getAmount()));
+                        data.setInvoiceNo(data.getInvoiceNo().concat(",").concat(invoice.getNumber()));
+                        data.setScheme(data.getScheme().concat(",").concat(invoice.getScheme().getSchemeName()));
+                    }
+                    return data;
+                })
+                .collect(Collectors.toList());
         reportData.setData(discharges);
         reportData.setFormat(format);
         reportData.setTemplate("/admission/discharge_report");
