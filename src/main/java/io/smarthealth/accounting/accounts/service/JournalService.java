@@ -111,7 +111,7 @@ public class JournalService {
                 .stream()
                 .forEach(je -> {
                     final Account accountEntity = je.getAccount();// accountService.findByAccountNumberOrThrow(je.getAccountNumber());
-                    System.out.println("accountEntity "+accountEntity.getName());
+//                    System.out.println("accountEntity "+accountEntity.getName());
                     final BigDecimal amount;
                     switch (accountEntity.getType()) {
                         case ASSET:

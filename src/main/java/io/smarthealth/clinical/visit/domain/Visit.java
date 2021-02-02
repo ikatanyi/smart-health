@@ -35,6 +35,8 @@ public class Visit extends Auditable {
     @JoinColumn(name = "service_point_id", foreignKey = @ForeignKey(name = "fk_visit_service_point"))
     private ServicePoint servicePoint;
 
+    private Boolean servedAtServicePoint = Boolean.FALSE;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "health_provider", foreignKey = @ForeignKey(name = "fk_visit_health_provider"))
     private Employee healthProvider;
