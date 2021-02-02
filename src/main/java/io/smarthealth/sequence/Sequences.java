@@ -32,5 +32,6 @@ public enum Sequences {
     PayerCode,
     SchemeCode,
     DischargeNumber,
-    CashBillNumber;
+    CashBillNumber,
+    ClaimNumber;
 }

@@ -824,7 +824,7 @@ public class BillingService {
                     } else if (x.getStatus() == BillStatus.Paid && x.isFinalized() == false) {
                         paidBills.add(x.toBillItem());
                         //only return receipts
-                        if (x.getItem().getCategory() == ItemCategory.CoPay || x.getItem().getCategory() == ItemCategory.Receipt) {
+                        if (x.getItem().getCategory() == ItemCategory.CoPay || x.getItem().getCategory() == ItemCategory.Receipt || x.getItem().getCategory() == ItemCategory.NHIF_Rebate ) {
                             BillPayment.Type type = x.getItem().getCategory() == ItemCategory.CoPay ? BillPayment.Type.Copayment : BillPayment.Type.Receipt;
                             ReceiptType receiptType = ReceiptType.Payment;
 
@@ -1038,7 +1038,7 @@ public class BillingService {
         patientbill.setBalance(sellingRate);
         patientbill.setBillingDate(LocalDate.now());
         patientbill.setPaymentMode(visit.getPaymentMethod().name());
-        patientbill.setStatus(BillStatus.Draft);
+        patientbill.setStatus(BillStatus.Paid); //27944
 
         String trdId = sequenceNumberService.next(1L, Sequences.Transactions.name());
         String bill_no = sequenceNumberService.next(1L, Sequences.BillNumber.name());
@@ -1051,7 +1051,7 @@ public class BillingService {
         billItem.setBillingDate(LocalDate.now());
         billItem.setTransactionId(trdId);
         billItem.setItem(priceList.getItem());
-        billItem.setPaid(false);
+        billItem.setPaid(true);
         billItem.setPrice(sellingRate);
         billItem.setQuantity(NumberUtils.createDouble(String.valueOf(qty)));
         billItem.setAmount(sellingRate * qty);
@@ -1059,7 +1059,7 @@ public class BillingService {
         billItem.setBalance(sellingRate * qty);
         billItem.setServicePoint(priceList.getServicePoint().getName());
         billItem.setServicePointId(priceList.getServicePoint().getId());
-        billItem.setStatus(BillStatus.Draft);
+        billItem.setStatus(BillStatus.Paid);
         billItem.setMedicId(null);
         billItem.setBillPayMode(visit.getPaymentMethod());
 

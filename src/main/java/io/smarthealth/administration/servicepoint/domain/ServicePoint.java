@@ -50,8 +50,8 @@ public class ServicePoint extends Identifiable {
     private Boolean active;
 
     public ServicePointData toData() {
-        this.stores.stream()
-                .forEach(x -> System.out.println("The store withing this point .... "+x.toString()));
+//        this.stores.stream()
+//                .forEach(x -> System.out.println("The store withing this point .... "+x.toString()));
         ServicePointData data = new ServicePointData();
         data.setId(this.getId());
         data.setActive(this.getActive());

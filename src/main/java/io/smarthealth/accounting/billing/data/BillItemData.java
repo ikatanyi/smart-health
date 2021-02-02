@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import io.smarthealth.accounting.billing.domain.enumeration.BillPayMode;
+import io.smarthealth.accounting.billing.domain.enumeration.BillEntryType;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.clinical.visit.domain.enumeration.PaymentMethod;
 import io.smarthealth.infrastructure.lang.Constants;
@@ -60,5 +60,5 @@ public class BillItemData {
     private String schemeId;
     private String invoiceNumber;
     private boolean finalized = false;
-
+    private BillEntryType entryType;
 }

@@ -59,6 +59,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import io.smarthealth.accounting.invoice.data.RebateInvoice;
+import java.time.LocalDate;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -209,6 +212,61 @@ public class InvoiceService {
 
         return savedInvoices;
 
+    }
+
+    public Invoice createInvoiceRebate(RebateInvoice invoiceData) {
+
+//        select date_part('year',now())||lpad(date_part('month',now())::text,2,'0')||lpad('5',5,'0'),date('now')
+//20210100005
+        String trxId = sequenceNumberService.next(1L, Sequences.Transactions.name());
+        String claimNo = sequenceNumberService.next(1L, Sequences.ClaimNumber.name());
+
+        LocalDate now = LocalDate.now();
+//         String month = String.format("%1$" + 2 + "s", now.getMonthValue()).replace(' ', '0');
+        String m = StringUtils.leftPad(String.valueOf(now.getMonthValue()), 2, "0");
+        claimNo = String.format("%s%s%s", now.getYear(), m, claimNo);
+
+        Scheme scheme = schemeService.fetchSchemeById(invoiceData.getSchemeId());
+        Visit visit = visitService.findVisitEntityOrThrow(invoiceData.getVisitNumber());
+        BigDecimal invoiceAmount = invoiceData.getAmount();
+
+        Integer creditDays = 30;
+        String terms = "Net 30";
+        Payer payer = scheme.getPayer();
+
+        if (payer.getPaymentTerms() != null) {
+            creditDays = payer.getPaymentTerms().getCreditDays();
+            terms = payer.getPaymentTerms().getTermsName();
+        }
+        //generate the claim number here
+
+        Invoice invoice = new Invoice();
+        invoice.setAmount(invoiceAmount);
+        invoice.setBalance(invoiceAmount);
+        invoice.setCapitation(false);
+        invoice.setDate(invoiceData.getDate());
+        invoice.setDueDate(invoiceData.getDate().plusDays(creditDays));
+        invoice.setInvoiceAmount(invoiceAmount);
+        invoice.setDiscount(BigDecimal.ZERO);
+        invoice.setMemberName(invoiceData.getMemberName());
+        invoice.setMemberNumber(invoiceData.getMemberNumber());
+        invoice.setNotes(invoiceData.getDescription());
+        invoice.setNumber(claimNo);
+        invoice.setPaid(Boolean.FALSE);
+        invoice.setPatient(visit.getPatient());
+        invoice.setPayer(payer);
+        invoice.setTerms(terms);
+        invoice.setScheme(scheme);
+        invoice.setStatus(InvoiceStatus.Draft);
+        invoice.setTax(BigDecimal.ZERO);
+        invoice.setTransactionNo(trxId);
+        invoice.setVisit(visit);
+        Invoice savedInvoice = saveInvoice(invoice);
+       //
+        
+        //debt Debtor
+        //credit sales
+        return savedInvoice;
     }
 
     public Optional<Invoice> getInvoiceById(Long id) {
@@ -586,4 +644,5 @@ public class InvoiceService {
 
         return invoiceRepository.save(invoice);
     }
+     
 }
