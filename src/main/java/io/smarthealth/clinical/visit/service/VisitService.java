@@ -280,4 +280,8 @@ public class VisitService {
         Specification<Visit> spec = VisitSpecification.createSpecification(visitNumber, patientNumber, dateRange);
         return visitRepository.findAll(spec, page);
     }
+
+    public  List<Visit> visitByServicePointAndServedAtServicePoint(final ServicePoint servicePoint, final Boolean served){
+      return   visitRepository.findByServicePointAndServedAtServicePointAndStatus(servicePoint,served, VisitEnum.Status.CheckIn);
+    }
 }
