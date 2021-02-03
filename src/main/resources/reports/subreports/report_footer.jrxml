@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_footer" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="570" leftMargin="10" rightMargin="15" topMargin="0" bottomMargin="0" uuid="f999e9d8-48c8-4d99-8793-0d8624a84a5f">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_footer" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="570" leftMargin="10" rightMargin="15" topMargin="0" bottomMargin="0" whenResourceMissingType="Empty" uuid="f999e9d8-48c8-4d99-8793-0d8624a84a5f">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-        <property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.xls.column.width" value="100"/>
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
@@ -27,14 +27,13 @@
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<field name="msg" class="java.lang.String"/>
 	<pageFooter>
 		<band height="15">
 			<textField evaluationTime="Report" isBlankWhenNull="true">
-				<reportElement x="0" y="1" width="449" height="14" uuid="93d35073-b523-4662-acc1-8c0b2decf3e5"/>
+				<reportElement x="0" y="1" width="387" height="14" uuid="93d35073-b523-4662-acc1-8c0b2decf3e5"/>
 				<box>
-					<topPen lineWidth="0.15"/>
+					<topPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
@@ -44,7 +43,7 @@
 			<staticText>
 				<reportElement x="387" y="1" width="36" height="14" uuid="82aafc75-51f1-417b-b08d-cc266a5e734e"/>
 				<box>
-					<topPen lineWidth="0.15"/>
+					<topPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
@@ -54,7 +53,7 @@
 			<textField pattern="dd/MM/yyyy HH:mm:ss" isBlankWhenNull="false">
 				<reportElement x="423" y="1" width="85" height="14" uuid="7555f5ad-4c25-46b1-9e41-583102067f3a"/>
 				<box>
-					<topPen lineWidth="0.15"/>
+					<topPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>

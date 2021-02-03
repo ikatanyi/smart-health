@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="admissions" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3996229f-062a-496c-b300-d882cd8dae54">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="190"/>
 	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
@@ -25,8 +25,7 @@
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.1" value="header-banner"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.header" value="pageHeader"/>
 	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.footer" value="pageFooter"/>
-	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
-	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.2" value="footer"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.footer" value="footer"/>
 	<parameter name="PIC_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["D:\\Smarthealthv2\\backend\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
 	</parameter>
@@ -241,7 +240,7 @@
 				<text><![CDATA[Discharge No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="441" y="0" width="71" height="15" uuid="98bf13d7-3b5e-47c6-af74-ca5149933f49"/>
+				<reportElement x="441" y="0" width="116" height="15" uuid="98bf13d7-3b5e-47c6-af74-ca5149933f49"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.0"/>
@@ -251,35 +250,26 @@
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
-					<paragraph leftIndent="2"/>
+					<paragraph rightIndent="5"/>
 				</textElement>
-				<text><![CDATA[Diagnosis]]></text>
+				<text><![CDATA[Reason]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="512" y="0" width="86" height="15" uuid="8b5abea9-dda0-45b2-9706-8e0d2d6efa4f"/>
+				<reportElement x="682" y="0" width="68" height="15" uuid="9453fa65-6d4f-4528-a5e0-8410b06e4cd8"/>
 				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.0"/>
-					<leftPen lineWidth="0.0"/>
 					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
-					<paragraph leftIndent="2"/>
-				</textElement>
-				<text><![CDATA[OutCome]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="704" y="0" width="46" height="15" uuid="9453fa65-6d4f-4528-a5e0-8410b06e4cd8"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-					<paragraph leftIndent="5"/>
+					<paragraph rightIndent="5"/>
 				</textElement>
 				<text><![CDATA[InvoiceNo]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="750" y="0" width="52" height="15" uuid="2b2d10d8-f78f-40e5-9914-fcd9a19b2997"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 					<paragraph leftIndent="5"/>
@@ -287,12 +277,15 @@
 				<text><![CDATA[Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="598" y="0" width="106" height="15" uuid="01c9af88-4a61-44a7-8d33-fef202a1e335"/>
+				<reportElement x="556" y="0" width="126" height="15" uuid="01c9af88-4a61-44a7-8d33-fef202a1e335"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
 				<textElement>
 					<font isBold="true"/>
-					<paragraph leftIndent="5"/>
+					<paragraph rightIndent="5"/>
 				</textElement>
-				<text><![CDATA[scheme]]></text>
+				<text><![CDATA[Scheme]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -433,8 +426,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{dischargeNo}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement isPrintRepeatedValues="false" x="441" y="0" width="71" height="12" uuid="d7c244bb-6173-4d8d-bdd6-626b761c2e03"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement isPrintRepeatedValues="false" x="441" y="0" width="116" height="12" uuid="d7c244bb-6173-4d8d-bdd6-626b761c2e03"/>
 				<box>
 					<pen lineWidth="0.0"/>
 					<topPen lineWidth="0.0"/>
@@ -444,30 +437,15 @@
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
-					<paragraph leftIndent="5"/>
+					<paragraph rightIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{diagnosis}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement isPrintRepeatedValues="false" x="512" y="0" width="86" height="12" uuid="fd69deac-69ed-4557-b6c3-a70ef6e2d163"/>
-				<box>
-					<pen lineWidth="0.0"/>
-					<topPen lineWidth="0.0"/>
-					<leftPen lineWidth="0.0"/>
-					<bottomPen lineWidth="0.0"/>
-					<rightPen lineWidth="0.0"/>
-				</box>
-				<textElement verticalAlignment="Middle">
-					<font size="7"/>
-					<paragraph leftIndent="5"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{outcome}]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="704" y="0" width="46" height="12" uuid="4fcab525-8c85-4dec-bad1-d8f0f505058f"/>
+				<reportElement x="682" y="0" width="68" height="12" uuid="4fcab525-8c85-4dec-bad1-d8f0f505058f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
-					<paragraph leftIndent="5"/>
+					<paragraph rightIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{invoiceNo}]]></textFieldExpression>
 			</textField>
@@ -480,28 +458,63 @@
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="598" y="-1" width="106" height="13" uuid="b3b0bd6a-5482-4c1c-88f3-7b3f81033820"/>
+				<reportElement x="556" y="-1" width="126" height="13" uuid="b3b0bd6a-5482-4c1c-88f3-7b3f81033820"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
-					<paragraph leftIndent="5"/>
+					<paragraph rightIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{scheme}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement positionType="Float" x="1" y="13" width="801" height="1" uuid="54f4d686-7172-4bfe-b8bf-a55c14a5a349"/>
 				<graphicElement>
-					<pen lineWidth="0.15" lineStyle="Dashed"/>
+					<pen lineWidth="0.1" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="16">
-			<subreport>
-				<reportElement x="0" y="0" width="802" height="16" uuid="401c8037-56d1-43ab-80bf-e3c776bbb549"/>
-				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{Footer_Data})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_footer.jasper"]]></subreportExpression>
-			</subreport>
+		<band height="19">
+			<frame>
+				<reportElement x="0" y="2" width="801" height="17" uuid="985de8fe-37f2-4e85-b742-ea98366fabdc"/>
+				<box>
+					<topPen lineWidth="0.15"/>
+				</box>
+				<textField pattern="dd/MM/yyyy HH:mm:ss" isBlankWhenNull="false">
+					<reportElement x="716" y="3" width="85" height="14" uuid="04f75229-fc50-473e-9e11-096f678287ee"/>
+					<box>
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="680" y="3" width="36" height="14" uuid="e8d26b86-0068-4a08-8a94-631d8052fb0a"/>
+					<box>
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Generated:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="338" y="0" width="80" height="17" uuid="97ea1eb1-2d63-4d8e-979d-75c105fd6eba"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				</textField>
+				<textField evaluationTime="Report">
+					<reportElement x="418" y="0" width="40" height="17" uuid="9d7a0a54-bd6c-4dcb-9e01-91cba36cae0f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				</textField>
+			</frame>
 		</band>
 	</columnFooter>
 </jasperReport>

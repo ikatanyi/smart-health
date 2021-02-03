@@ -41,7 +41,7 @@ public class DischargeData {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private BigDecimal amount=new BigDecimal(0);
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String invoiceNo="";
-//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String scheme="";
+    private String invoiceNo;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String scheme;
 }

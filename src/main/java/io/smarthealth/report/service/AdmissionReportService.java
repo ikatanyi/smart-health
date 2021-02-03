@@ -193,8 +193,8 @@ public class AdmissionReportService {
                     List<Invoice>invoices = invoiceService.getInvoiceByVisit(ds.getAdmission().getAdmissionNo());
                     for(Invoice invoice:invoices){
                         data.setAmount(data.getAmount().add(invoice.getAmount()));
-                        data.setInvoiceNo(data.getInvoiceNo().concat(",").concat(invoice.getNumber()));
-                        data.setScheme(data.getScheme().concat(",").concat(invoice.getScheme().getSchemeName()));
+                        data.setInvoiceNo(invoice.getNumber());
+                        data.setScheme(invoice.getScheme().getSchemeName());
                     }
                     return data;
                 })
