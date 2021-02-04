@@ -9,15 +9,8 @@ import io.smarthealth.accounting.accounts.domain.JournalEntryItem;
 import io.smarthealth.accounting.accounts.domain.JournalState;
 import io.smarthealth.accounting.accounts.domain.TransactionType;
 import io.smarthealth.accounting.accounts.service.JournalService;
-import io.smarthealth.accounting.billing.data.BillData;
-import io.smarthealth.accounting.billing.data.BillFinalizeData;
-import io.smarthealth.accounting.billing.data.BillItemData;
-import io.smarthealth.accounting.billing.data.CopayData;
+import io.smarthealth.accounting.billing.data.*;
 import io.smarthealth.accounting.billing.domain.PatientBill;
-import io.smarthealth.accounting.billing.data.PatientBillGroup;
-import io.smarthealth.accounting.billing.data.PatientReceipt;
-import io.smarthealth.accounting.billing.data.SummaryBill;
-import io.smarthealth.accounting.billing.data.VoidBillItem;
 import io.smarthealth.accounting.billing.data.nue.BillDetail;
 import io.smarthealth.accounting.billing.data.nue.BillItem;
 import io.smarthealth.accounting.billing.data.nue.BillPayment;
@@ -1181,6 +1174,10 @@ public class BillingService {
         billItemRepository.updatePaymentReference(newReference, oldReference);
     }
 
+    public Page<PatientBillDetails> getPatientBills(Pageable pageable){
+        //
+        return null;
+    }
 //    private JournalEntry toJournalDeposits(Receipt payment, CreateRemittance data) {
 //        Optional<FinancialActivityAccount> creditAccount = activityAccountRepository.findByFinancialActivity(FinancialActivity.DeferredRevenue);
 //

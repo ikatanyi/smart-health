@@ -1,5 +1,6 @@
 package io.smarthealth.accounting.billing.domain;
 
+import io.smarthealth.accounting.billing.data.PatientBillDetails;
 import io.smarthealth.accounting.billing.data.PatientBillGroup;
 import io.smarthealth.accounting.billing.domain.enumeration.BillStatus;
 import io.smarthealth.clinical.visit.domain.Visit;
@@ -31,4 +32,5 @@ public interface PatientBillRepository extends JpaRepository<PatientBill, Long>,
             + "b.transactionId) from PatientBill b where b.status=?1 group by b.visit.visitNumber")
     public List<PatientBillGroup> groupBy(BillStatus status);
 
+    //public List<PatientBillDetails>
 }

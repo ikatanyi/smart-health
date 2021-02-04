@@ -29,6 +29,7 @@ build/
 
 ### VS Code ###
 .vscode/
+.idea/**
 /src/main/resources/thoughts
 /src/main/resources/design-todos
 /src/main/java/io/smarthealth/clinical/visit/domain/Visit
