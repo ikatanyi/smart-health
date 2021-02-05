@@ -39,6 +39,8 @@ public class PettyCashRequests extends Auditable {
 
     private int approvalPendingLevel;
 
+    private Double approvedAmount;
+
     @ManyToOne(optional = false)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_petty_cash_requests_request_by"))
     private Employee requestedBy;

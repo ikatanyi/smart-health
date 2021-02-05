@@ -41,6 +41,8 @@ public class PettyCashRequestsData {
     
     @Enumerated(EnumType.STRING)
     private PettyCashStatus status;
+
+    private Double approvedAmount;
     
     @ApiModelProperty(hidden = true)
     private List<PettyCashRequestItemsData> requestItemsData;
@@ -55,6 +57,7 @@ public class PettyCashRequestsData {
         data.setRequestedBy(r.getRequestedBy().getFullName());
         data.setRequesterDept(r.getRequestedBy().getDepartment().getName());
         data.setCreatedOn(LocalDate.from(r.getCreatedOn().atZone(ZoneId.systemDefault())));
+        data.setApprovedAmount(r.getApprovedAmount()!=null? r.getApprovedAmount() : r.getTotalAmount());
         if (!r.getPettyCashRequestItems().isEmpty()) {
             List<PettyCashRequestItemsData> requestItems = new ArrayList<>();
             r.getPettyCashRequestItems().forEach((ri) -> {
