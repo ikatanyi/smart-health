@@ -295,16 +295,22 @@ public class DoctorRequestController {
         /* Queue directly sent-  */
 
         ServicePointType pointType ;
-        if(requestType.equals(RequestType.Radiology)){
-            pointType = ServicePointType.Radiology;
-        }else if(requestType.equals(RequestType.Pharmacy)) {
-            pointType = ServicePointType.Pharmacy;
-        }else if(requestType.equals(RequestType.Laboratory)){
-            pointType = ServicePointType.Laboratory;
-        }else if(requestType.equals(RequestType.Procedure)){
-            pointType = ServicePointType.Procedure;
-        }else {
-            pointType = null;
+        switch (requestType) {
+            case Radiology:
+                pointType = ServicePointType.Radiology;
+                break;
+            case Pharmacy:
+                pointType = ServicePointType.Pharmacy;
+                break;
+            case Laboratory:
+                pointType = ServicePointType.Laboratory;
+                break;
+            case Procedure:
+                pointType = ServicePointType.Procedure;
+                break;
+            default:
+                pointType = null;
+                break;
         }
         List<Visit> directVisits = new ArrayList<>();
         if(pointType !=null){
@@ -347,8 +353,12 @@ int count = waitingRequests.size();
             waitingRequest.setItem(new ArrayList<>());
             waitingRequests.add(waitingRequest);
         }
-page = page -1;
-Page<WaitingRequestsData> list = ListToPage.map(waitingRequests,page , size);
+        System.out.println("Page"+page);
+        System.out.println("size"+size);
+        if(page !=null){
+            page = page -1;
+        }
+        Page<WaitingRequestsData> list = ListToPage.map(waitingRequests,page , size);
 
         PagedListHolder waitingPage = new PagedListHolder(waitingRequests);
         waitingPage.setPageSize(pageable.getPageSize()); // number of items per page
